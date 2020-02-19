@@ -84,5 +84,17 @@ class GstTax extends BaseModel
         return self::where('tax_id', $tax_id)->first()->update($attributes);
     }
 
+    /** 
+     * @Author: Rent Aplha
+     * @Date: 2020-02-17 17:12:17 
+     * @Desc:  
+     */    
+    public static function getActiveGST(){
+        $result=self::select("*")
+        ->where("is_active","=",1)
+        ->get();
+        return $result?$result:false;
+    }
+
      
 }

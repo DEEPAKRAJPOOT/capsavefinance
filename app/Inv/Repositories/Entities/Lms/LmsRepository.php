@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 
 /**
@@ -414,4 +415,32 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return Transactions::updateTransaction($whereCondition, $data);
     }
     
+    /** 
+     * @Author: Rent Aplha
+     * @Date: 2020-02-17 14:53:10 
+     * @Desc:  
+     */    
+    public static function getManualTranType(){        
+     $result=TransType::getManualTranType();
+     return  $result? $result:false;
+    }
+      /** 
+     * @Author: Rent Aplha
+     * @Date: 2020-02-17 14:53:10 
+     * @Desc:  
+     */    
+    public static function getActiveGST(){        
+        $result=GstTax::getActiveGST();
+        return  $result? $result:false;
+       }
+
+       /** 
+        * @Author: Rent Alpha
+        * @Date: 2020-02-18 13:04:19 
+        * @Desc:  
+        */       
+       public function getAllLmsUser(){
+        $result=LmsUser::getLmsUser();
+        return  $result? $result:false;
+       }            
 }

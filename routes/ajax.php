@@ -717,7 +717,11 @@ Route::group(
         'as' => 'set_default_address',
         'uses' => 'AjaxController@setDefaultAddress'
     ]);
-
+    Route::get('get-field-val', [
+        'as' => 'get_field_val',
+        'uses' => 'AjaxController@getTableValByField'
+    ]);
+    
     /*lms route*/
 
 
