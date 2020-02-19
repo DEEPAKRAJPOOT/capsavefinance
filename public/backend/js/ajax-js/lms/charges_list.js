@@ -36,7 +36,7 @@ try {
                     {data: 'applicability'}, 
                     {data: 'chrg_desc'},
                     {data: 'created_at'},
-                    {data: 'edit'},
+                  
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });

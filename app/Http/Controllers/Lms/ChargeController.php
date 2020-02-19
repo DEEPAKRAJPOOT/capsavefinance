@@ -58,6 +58,7 @@ class ChargeController extends Controller
 
     
      public function editLmsCharges(Request $request){
+         
           $user_id =  $request->get('user_id');
           if($user_id)
           {
@@ -67,9 +68,8 @@ class ChargeController extends Controller
           $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
           $result  =  $this->invRepo->getCustomerId($user_id);
           $program  =  $this->lmsRepo->getProgramUser($user_id);
-          return view('lms.charges.edit_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program,'user' => $app]);
-   
-      }
+         return view('lms.charges.edit_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program,'user' => $app]);
+    }
     
      public function listLmsCharges(Request $request){
           $user_id =  $request->get('user_id');
