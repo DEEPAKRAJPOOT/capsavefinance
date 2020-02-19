@@ -44,7 +44,7 @@
                         <table width="100%" border="1">
                             <tbody>
                                 <tr>
-                                    <td colspan="4"><b>Invoice Number : {{($result->invoice_no) ? $result->invoice_no : '' }} </b> </td>
+                                    <td colspan="4" style="text-transform:uppercase"><b>Invoice Number : {{($result->invoice_no) ? $result->invoice_no : '' }} </b> </td>
                                 </tr>
                                 <tr>
                                     <td style="border-right:none;">
@@ -98,24 +98,24 @@
                                      <td style="border-right:none;">
                                     <b>     Processing Fee (%):   </b>
                                      </td>
-                                    <td style="border-left:none;">     0 %
+                                    <td style="border-left:none;">  {{($result->disbursal->processing_fee) ? $result->disbursal->processing_fee : 0 }}   	 
                                     </td> 
                                      <td style="border-right:none;">
                                     <b>     Discount Type:  </b>
                                       </td>
-                                    <td style="border-left:none;">  front end
+                                    <td style="border-left:none;">  Front End	 
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="border-right:none;">
                                     <b>     Grace period (in days):  </b>
                                       </td>
-                                    <td style="border-left:none;">     0
+                                    <td style="border-left:none;">      {{($result->disbursal->grace_period) ? $result->disbursal->grace_period : 0 }}  
                                     </td> 
                                       <td style="border-right:none;">
                                      <b>    Penal Interest Per Annum (%):  </b>
                                       </td>
-                                    <td style="border-left:none;">     0 %
+                                    <td style="border-left:none;">     {{($result->disbursal->penal_interest) ? $result->disbursal->penal_interest : 0 }}  %
                                     </td>
                                 </tr>
                                 <tr>
@@ -134,29 +134,30 @@
                                      <td style="border-right:none;">
                                      <b>    Penal days:  </b>
                                      </td>
-                                   <td style="border-left:none;">     0
+                                   <td style="border-left:none;">    {{($result->disbursal->penal_days) ? $result->disbursal->penal_days : 0 }}  
                                     </td> 
                                      <td style="border-right:none;">
                                       <b>   Penalty Amount:  </b>
                                        </td>
-                                    <td style="border-left:none;">    ₹0
+                                    <td style="border-left:none;">   {{($result->disbursal->penalty_amount) ? number_format($result->disbursal->penalty_amount) : 0 }}
                                     </td>
                                 </tr>
                                 <tr>
                                      <td style="border-right:none;">
                                       <b>   Principal Amount:  </b>
                                       </td>
-                                    <td style="border-left:none;">     0
+                                    <td style="border-left:none;">    {{($result->disbursal->principal_amount) ? $result->disbursal->principal_amount : 0 }}
                                     </td> 
                                      <td style="border-right:none;">
                                      <b>    Total Amount to Repay:  </b>
                                       </td>
-                                      <td style="border-left:none;">   ₹  <span id="totalAmountMsg">{{($repaymentAmount-$sum > 0) ?  number_format($repaymentAmount-$sum) : 0 }}</span>
+                                      <td style="border-left:none;">   ₹  <span id="totalAmountMsg">{{($result->disbursal->repayment_amount) ? $result->disbursal->repayment_amount : 0}}</span>
                                     </td>
                                 </tr>
 
                             </tbody>
                         </table>
+                      <!--  
                         <table width="100%" border="0">
                            <form id="signupForm">
                        <tr>
@@ -223,7 +224,7 @@
 
                        </tr>  
                        </form>
-                        </table>
+                        </table>  -->
                     </td>
                 </tr>
             </tbody>
