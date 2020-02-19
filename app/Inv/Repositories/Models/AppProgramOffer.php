@@ -270,6 +270,10 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
     }
 
+    public function invPL(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id')->where('product_id', 1);
+    }
+
     public static function getTotalOfferedLimit($app_id){
         if(empty($app_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
