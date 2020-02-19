@@ -217,12 +217,12 @@ trait LmsTrait
                 }
             } */
 
-            $invoiceRepaymentTrail['user_id']=$UIDetail->user_id; 
-            $invoiceRepaymentTrail['invoice_id']=$UIDetail->invoice_id; 
-            $invoiceRepaymentTrail['repaid_amount']=$UTDetail->amount; 
-            $invoiceRepaymentTrail['repaid_date']=$UTDetail->trans_date; 
-            $invoiceRepaymentTrail['trans_type']=$trans_type; 
-            InvoiceRepaymentTrail::create($invoiceRepaymentTrail);
+            // $invoiceRepaymentTrail['user_id']=$UIDetail->user_id; 
+            // $invoiceRepaymentTrail['invoice_id']=$UIDetail->invoice_id; 
+            // $invoiceRepaymentTrail['repaid_amount']=$UTDetail->amount; 
+            // $invoiceRepaymentTrail['repaid_date']=$UTDetail->trans_date; 
+            // $invoiceRepaymentTrail['trans_type']=$trans_type; 
+            // InvoiceRepaymentTrail::create($invoiceRepaymentTrail);
 
             foreach ($userTransDetails as $UTDkey => $UTDetail) {
                 foreach ($userInvoiceDetails as $UIDkey => $UIDetail) {
