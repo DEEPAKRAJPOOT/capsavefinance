@@ -1451,10 +1451,11 @@ class CamController extends Controller
       $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
 
 
-
       if ($limitData->product_id == 1) {
-        $anchors = [];
-        $anchorPrgms = [];
+        $user = $this->appRepo->getAppData($appId)->user;
+        $user_type = $user->is_buyer;
+        $anchors = $user->anchor;
+        $anchorPrgms = $this->appRepo->getPrgmsByAnchor(['anchor_id' => $anchors->anchor_id]);
       } else {
         $anchors = [];
         $anchorPrgms = [];

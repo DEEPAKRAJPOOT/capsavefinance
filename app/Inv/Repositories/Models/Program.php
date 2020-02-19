@@ -372,9 +372,11 @@ class Program extends BaseModel {
         return ($res ?: false);
     }
 
-    //to do
-    /*public function programLimits(){
-        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'prgm_id', 'prgm_id');
-    }*/
+    public static function getPrgmsByAnchor($where){
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        return Program::where($where)->where('parent_prgm_id', '<>', 0)->get();
+    }
 
 }
