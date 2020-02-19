@@ -1347,4 +1347,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getSharedColender($where){
         return ColenderShare::getSharedColender($where);
     }
+
+    public function getTotalPrgmLimitByAppId($appId){
+        return AppProgramLimit::getTotalPrgmLimitByAppId($appId);
+    }
 }

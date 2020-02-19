@@ -24,19 +24,23 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group INR">
-                                    <label>Available Exposure</label>
+                                    <label>Available Exposure (offered)</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure" disabled>
+                                    <input type="text" class="form-control form-control-sm number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure (offered)" disabled>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
                                     <label>Select Product Type</label>
                                     <select class="form-control" name="product_id" id="product_id">
                                         <option value="">Select Product</option>
-                                        <!-- <option value="1">Supply Chain</option> -->
+                                        <option value="1">Supply Chain</option>
                                         <option value="2">Term Loan</option>
                                         <option value="3">Leasing</option>
                                     </select>
@@ -44,38 +48,23 @@
                             </div>
 
                             <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Select Anchor</label><span class="limit float-right"></span>
-                                    <select class="form-control" name="anchor_id" id="anchor_id">
-                                        <option value="">Select Anchor</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Select Program</label><span class="limit float-right"></span>
-                                    <select class="form-control" name="prgm_id" id="program_id">
-                                        <option value="">Select Program</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
                                 <div class="form-group INR">
                                     <label>Enter Limit</label><span class="limit float-right"></span>
+                                    <span class="float-right text-success">Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}</span>
+
+
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:30px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control number_format" name="limit_amt" id="limit_amt" maxlength="15" placeholder="Enter Limit">
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button class="btn btn-success btn-sm float-right" type="submit" name="program_submit">Submit</button>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <button class="btn btn-success btn-sm float-right" type="submit" name="program_submit" style="margin-top: 30px;">Submit</button>
+                                </div>
                             </div>
                         </div>
                         </form>
+
                         <!-- To show suply chain data -->
                         @foreach($supplyPrgmLimitData as $key=>$prgmLimit)
                         @if($loop->first)
@@ -85,12 +74,12 @@
                                     <table id="supplier-listing" class="table table-striped cell-border  overview-table mb-0" cellspacing="0" width="100%">
                                         <thead>
                                             <tr role="row">
-                                            <th width="17%">Sr. No.</th>
-                                            <th width="17%">Product Type</th>
-                                            <th width="17%">Anchor</th>
-                                            <th width="17%">Program</th>
-                                            <th width="16%">Limit</th>
-                                            <th width="16%">Action</th>
+                                            <th width="5%">Sr. No.</th>
+                                            <th width="16%">Product Type</th>
+                                            <th width="18%">Limit</th>
+                                            <th width="18%">Cosumed Limit</th>
+                                            <th width="18%">Balance Limit</th>
+                                            <th width="25%">Action</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -102,12 +91,12 @@
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <tr role="row" class="odd">
-                                                       <td width="17%">{{($key+1)}}</td>
-                                                       <td width="17%">{{$prgmLimit->product->product_name}}</td>
-                                                       <td width="17%">{{$prgmLimit->anchor->comp_name}}</td>
-                                                       <td width="17%">{{$prgmLimit->program->prgm_name}}</td>
-                                                       <td width="16%">{{number_format($prgmLimit->limit_amt)}}</td>
-                                                       <td width="16%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
+                                                       <td width="5%">{{($key+1)}}</td>
+                                                       <td width="16%">{{$prgmLimit->product->product_name}}</td>
+                                                       <td width="18%">{{number_format($prgmLimit->limit_amt)}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

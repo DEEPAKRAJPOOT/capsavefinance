@@ -1336,17 +1336,18 @@ class CamController extends Controller
         $termPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 2);
         $leasingPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 3);
         $limitData = $this->appRepo->getAppLimit($appId);
+        $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
-                
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
                 ->with('limitData', $limitData)
                 ->with('totOfferedLimit', $tot_offered_limit)
+                ->with('prgmLimitTotal', $prgmLimitTotal)
                 ->with('approveStatus', $approveStatus)
                 ->with('supplyPrgmLimitData', $supplyPrgmLimitData)
                 ->with('termPrgmLimitData', $termPrgmLimitData)
