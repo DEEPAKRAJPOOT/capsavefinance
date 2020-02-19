@@ -3242,7 +3242,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'balance',
                 function ($transaction) {
-                    return $transaction->balance;
+                    return round($transaction->balance, 2);
                 }
             )
             ->filter(function ($query) use ($request) {
