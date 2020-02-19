@@ -177,7 +177,7 @@ class DisbursalController extends Controller
 			// dd($disburseAmount);		
 			if ($disburseAmount) {
 				if($disburseType == 2) {
-					dd($disburseRequestData);
+					// dd($disburseRequestData);
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
 					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $totalFunded], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
