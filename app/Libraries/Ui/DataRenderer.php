@@ -2964,12 +2964,12 @@ class DataRenderer implements DataProviderInterface
                         ->addColumn(
                                 'collection_date',
                                 function ($data) {
-                            return isset($data->collection_date) ? $data->collection_date : '-';
+                            return isset($data->settlement_date) ? $data->settlement_date : '-';
                         })
                         ->addColumn(
                                 'collection_amount',
                                 function ($data) {
-                            return isset($data->collection_amount) ? $data->collection_amount : '-';
+                            return isset($data->total_repaid_amt) ? $data->total_repaid_amt : '-';
                         })
                         ->editColumn(
                                 'accured_interest',
