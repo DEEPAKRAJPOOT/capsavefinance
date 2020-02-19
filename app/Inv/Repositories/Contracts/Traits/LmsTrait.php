@@ -1,6 +1,12 @@
 <?php
 namespace App\Inv\Repositories\Contracts\Traits;
 
+
+use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
+use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\InterestAccrual;
+
 trait LmsTrait
 {
     /**
@@ -174,6 +180,57 @@ trait LmsTrait
         $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
         
     }    
+
+    protected function paySettlement($userId){
+        $currentDate = date('Y-m-d');
+        
+        if($userId){
+            $userInvoiceDetails = Disbursal::where(['user_id'=>$userId,'status_id'=>[12,13]])
+                ->orderBy('inv_due_date','asc')
+                ->get();
+                
+            $settledInvoice = [];
+            $invoice = array();
+            foreach ($userInvoiceDetails as $key => $UIDetail) {
+                $invoice[] = [
+                    'disbursal_id' => $UIDetail->disbursal_id,
+                    'user_id' => $UIDetail->user_id,
+                    'invoice_id' => $UIDetail->invoice_id,
+                    'disburse_date' => $UIDetail->disburse_date,
+                    'inv_due_date' => $UIDetail->inv_due_date,
+                    'principal_amount' => $UIDetail->principal_amount,
+                    'total_interest' => $UIDetail->total_interest,
+                    'total_repaid_amt' => $UIDetail->total_repaid_amt,
+                    'interest_refund' => $UIDetail->interest_refund,
+                    'accrued_interest' => $UIDetail->interests->sum('accrued_interest')
+                ]; 
+            }
+
+            $userTransDetails = Transactions::where(['user_id'=>$userId,'trans_type'=>17])
+            ->orderBy('trans_date','asc')
+            ->get();
+
+         /*    foreach ($userTransDetails as $key => $UTDetail) {
+                $trans_amt = $UTDetail->amount;
+                foreach ($invoice as $key => $inv) {
+                    $invoice[$key]['trans_date']=$UTDetail->trans_date;
+                }
+            } */
+
+            $invoiceRepaymentTrail['user_id']=$UIDetail->user_id; 
+            $invoiceRepaymentTrail['invoice_id']=$UIDetail->invoice_id; 
+            $invoiceRepaymentTrail['repaid_amount']=$UTDetail->amount; 
+            $invoiceRepaymentTrail['repaid_date']=$UTDetail->trans_date; 
+            $invoiceRepaymentTrail['trans_type']=$trans_type; 
+            InvoiceRepaymentTrail::create($invoiceRepaymentTrail);
+
+            foreach ($userTransDetails as $UTDkey => $UTDetail) {
+                foreach ($userInvoiceDetails as $UIDkey => $UIDetail) {
+                    dump($UIDetail, $UIDetail->interests->sum('accrued_interest'));
+                }
+            }
+        }
+    }
     
     protected function calDisbursalAmount($principalAmount, $deductions)
     {

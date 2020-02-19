@@ -73,6 +73,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_disbursed_list',
                 'uses' => 'Lms\DisbursalController@disbursedList'
             ]);
+            Route::get('payment-settlement',[
+                'as' => 'lms-payment-settlement',
+                'uses' => 'Lms\DisbursalController@paymentSettlement' 
+            ]);
         });//end of application
 
         // Business address

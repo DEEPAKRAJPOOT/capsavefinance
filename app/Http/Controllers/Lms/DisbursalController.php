@@ -196,4 +196,9 @@ class DisbursalController extends Controller
         return view('lms.disbursal.disbursed_list')->with(['getAppStatus'=> $getAppStatus]);
     }
 
+
+	public function paymentSettlement()
+	{
+		$returnData = $this->paySettlement('251');
+	}
 }

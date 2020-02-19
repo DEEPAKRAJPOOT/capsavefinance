@@ -75,6 +75,15 @@ class Disbursal extends BaseModel {
     ];
 
     /**
+     * Get Interest Accrual 
+     * 
+     * @return type
+     */
+    public function interests() { 
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'disbursal_id', 'disbursal_id'); 
+    }
+
+    /**
      * Save or Update Disbursal Request
      * 
      * @param array $data
