@@ -3,14 +3,14 @@
 namespace App\Inv\Repositories\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use DB;
+
 use Illuminate\Notifications\Notifiable;
 //use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use Helpers;
 use Auth;
 
-class GroupCompanyEx extends BaseModel
+class GroupCompanyExposure extends BaseModel
 {
     use Notifiable;
     /**
@@ -65,5 +65,15 @@ class GroupCompanyEx extends BaseModel
         'updated_by'
     ];
 
-   
+ 
+
+    public static function saveGroupCompany($attributes){
+        $response = self::create($attributes);
+        return  $response ? true : false;
+
+    }
+
 }
+
+
+

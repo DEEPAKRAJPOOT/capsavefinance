@@ -6,19 +6,42 @@
             <tr role="row">
                <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
                <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit(Mn)</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure(Mn)</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure(Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Sanction Limit (In Mn)</th>
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Outstanding Exposure (In Mn)</th> 
+               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit (In Mn) </th>
+              
             </tr>
          </thead>
          <tbody>
-            <tr role="row" class="odd">
-            <td class="">{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
-               <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
-               <td class="">{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
-               <td class="">{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
-               <td class="">{{ isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : '' }}</td>
-            </tr>
+               @if(!empty($arrGroupCompany))
+                  @php $count = count($arrGroupCompany);
+                   @endphp
+                  @foreach($arrGroupCompany as $key=>$arr)
+                     <tr role="row" class="odd">
+                        @if($loop->first)
+                            <td class="" rowspan="{{$count+1}}"> {{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
+                        @endif
+                        <td class="">{{isset($arr['group_company_name']) ? $arr['group_company_name'] : ''}}</td>
+                        <td class="">{{isset($arr['sanction_limit']) ? $arr['sanction_limit'] : ''}}</td>
+                        <td class="">{{isset($arr['outstanding_exposure']) ? $arr['outstanding_exposure'] : ''}}</td>
+                        <td class="">--</td>
+                       
+                     </tr>
+                  @endforeach
+               @endif   
+                  <tr>
+                        <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
+                        <td class="">{{isset($arrCamData->sanction_limit_cam) ? $arrCamData->sanction_limit_cam : ''}}</td>
+                        <td class="">{{isset($arrCamData->outstanding_exposure_cam) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
+                        <td class="">{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
+                  </tr>
+                  <tr>
+                        <td class="" colspan="4"><b>Total</b></td>
+                        <td class=""><b>{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}</b></td>
+                       
+                        
+                  </tr>
+            
          </tbody>
       </table>
    </div>
