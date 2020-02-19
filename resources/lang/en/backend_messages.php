@@ -24,6 +24,7 @@ return [
     'co_lender_registration_success'=>'Co-lender registered successfully.',
     'co_lender_registration_update'=>'Co-lender information saved successfully.',
     'change_app_disbursed_status' => 'Application disbursed successfully.',
-    'limit_offer_success' => 'Offer generated successfully',
+    'limit_offer_success' => 'Offer generated successfully.',
+    'add_payment_manual' => 'Payment add successfully.',
 ];
 

@@ -48,6 +48,7 @@ class Transactions extends BaseModel {
         'virtual_acc_id',
         'trans_date',
         'trans_type',
+        'trans_by',
         'pay_from',
         'amount',
         'gst',
