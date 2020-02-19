@@ -1450,6 +1450,21 @@ class CamController extends Controller
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
 
+
+
+      if ($limitData->product_id == 1) {
+        $anchors = [];
+        $anchorPrgms = [];
+      } else {
+        $anchors = [];
+        $anchorPrgms = [];
+      }
+
+
+
+
+
+
       // get Total Sub Limit amount by app_prgm_limit_id
       $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
 
