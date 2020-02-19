@@ -108,7 +108,7 @@ class PaymentController extends Controller {
                
            }
           
-       }  */
+       }
       
             $utr  ="";
             $check  ="";
