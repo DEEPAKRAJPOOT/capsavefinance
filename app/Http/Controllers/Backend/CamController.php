@@ -1438,6 +1438,7 @@ class CamController extends Controller
       $appId = (int)$request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
+      $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
 
       $totalLimit; //total exposure limit amount
       $prgmLimit; //program limit
@@ -1447,16 +1448,8 @@ class CamController extends Controller
 
       $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
-      if ($limitData->product_id == 3) {
-          $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
-          if (!empty($prgmOfferId)) {
-            $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
-          } else {
-              $offerData = null;
-          }
-      } else {
-        $offerData= $this->appRepo->getProgramOffer($aplid);
-      }
+      $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+
       // get Total Sub Limit amount by app_prgm_limit_id
       $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
 
