@@ -33,7 +33,7 @@
                         
                         
                      <div class="col-md-6">
-                        <p class="mb-0"><b>Invoice No : </b>{{($invoice->invoice_no) ? $invoice->invoice_no : '' }}</p>
+                         <p class="mb-0" style="text-transform:uppercase"><b>Invoice No : </b>{{($invoice->invoice_no) ? $invoice->invoice_no : '' }}</p>
                      </div> 
                     
                   <div class="col-md-6">
