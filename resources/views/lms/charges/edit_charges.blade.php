@@ -1,11 +1,9 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-
- <div class="modal-body text-left">
+<div class="modal-body text-left">
      <form id="chargesForm" name="chargesForm" method="POST" action="{{route('save_manual_charges')}}" target="_top">
      @csrf
-     
-       <div class="row">
+      <div class="row">
         <div class="form-group col-md-12">
           <label for="chrg_name">User Name</label>
           <select class="form-control" id="user_id" name="user_id" readonly="readonly">

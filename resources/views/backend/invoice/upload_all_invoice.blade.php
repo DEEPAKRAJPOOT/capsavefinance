@@ -449,13 +449,13 @@ var messages = {
          if(getDays > tenor)
         {
            $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor); 
+           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
            e.preventDefault();
         }
        else if(getOldDays > tenor_old_invoice)
         {
            $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice); 
+           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
            e.preventDefault();
         }
          

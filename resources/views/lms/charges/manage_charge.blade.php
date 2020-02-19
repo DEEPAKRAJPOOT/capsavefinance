@@ -67,7 +67,7 @@
                                     <th>Applicability</th>
                                     <th>Description</th>
                                     <th>Date Time</th>
-                                   <th>Edit</th>
+                                   
                                 </tr>
                             </thead>
                             <tbody>
