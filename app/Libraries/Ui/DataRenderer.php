@@ -2602,7 +2602,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'ben_name',
                     function ($customer) {
-                        if ($customer->user->is_buyer == 1) {
+                        if ($customer->user->is_buyer == 2) {
                             return (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
                         } else {
                             return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
@@ -2612,7 +2612,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'ben_bank_name',
                         function ($customer) {
-                        if ($customer->user->is_buyer == 1) {
+                        if ($customer->user->is_buyer == 2) {
                             return (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
                         } else {
                             return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
@@ -2623,7 +2623,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'ben_ifsc',
                         function ($customer) {
-                        if ($customer->user->is_buyer == 1) {
+                        if ($customer->user->is_buyer == 2) {
                             $ifsc_code = (isset($customer->user->anchor_bank_details->ifsc_code)) ? $customer->user->anchor_bank_details->ifsc_code : '';
                         } else {
                             $ifsc_code = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
@@ -2634,7 +2634,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'ben_account_no',
                         function ($customer) {
-                        if ($customer->user->is_buyer == 1) {
+                        if ($customer->user->is_buyer == 2) {
                             $benAcc = (isset($customer->user->anchor_bank_details->acc_no)) ? $customer->user->anchor_bank_details->acc_no : '';
                         } else {
                             $benAcc = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
