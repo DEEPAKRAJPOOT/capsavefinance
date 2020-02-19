@@ -10,7 +10,7 @@
     <div class="row">
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Facility Type:</b></label> 
+        <label for="txtPassword"><b>Product</b></label> 
         <input type="text" class="form-control" value="Supply Chain" placeholder="Facility Type" maxlength="15" disabled>
       </div>
     </div>
@@ -23,8 +23,39 @@
 
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Loan Offer:</b></label> 
-        <span class="s_value" style="margin-left: 60px;">(<i class="fa fa-inr"></i>{{(int)$limitData->program->min_loan_size.' - '.(int)$limitData->program->max_loan_size}})</span><span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($actualBalance > 0)? $actualBalance: 0}}</span>
+        <label for="txtPassword" ><b>Limit</b></label> 
+        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+        <span class="float-right text-success">Total Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
+        <input type="text" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Anchor</b></label> 
+            <select name="anchor_id" id="anchor_id" class="form-control">
+                <option value="">Select Anchor</option>
+                <option value="1">Anchor 1</option>
+                <option value="2">Anchor 2</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Program</b></label> 
+            <select name="prgm_id" id="program_id" class="form-control">
+                <option value="">Select Program</option>
+                <option value="1">Program 1</option>
+                <option value="2">Program 2</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-group INR">
+        <label for="txtPassword"><b>Loan Offer</b></label>
+        <span class="float-right text-success s_value">zzzzzz</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->programLimit->limit_amt)? number_format($offerData->programLimit->limit_amt): number_format($limitData->limit_amt)}}" placeholder="Loan Offer" maxlength="15">
       </div>
@@ -32,57 +63,57 @@
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Interest(%):</b></label> 
-        <span class="float-right text-success">{{$limitData->program->min_interest_rate}}%-{{$limitData->program->max_interest_rate}}%</span>
+        <label for="txtPassword"><b>Interest(%)</b></label>
+        <span class="float-right text-success s_value">zzzzzz</span>
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Invoice Tenor(Days):</b></label> 
+        <label for="txtPassword"><b>Invoice Tenor(Days)</b></label> 
         <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Old Invoice Tenor(Days):</b></label> 
+        <label for="txtPassword"><b>Old Invoice Tenor(Days)</b></label> 
         <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Tenor for old invoice" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Margin(%):</b></label> 
+        <label for="txtPassword"><b>Margin(%)</b></label> 
         <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="5">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Overdue Interest(%):</b></label> 
+        <label for="txtPassword"><b>Overdue Interest(%)</b></label> 
         <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="5">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Adhoc Interest(%):</b></label> 
+        <label for="txtPassword"><b>Adhoc Interest(%)</b></label> 
         <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="5">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Grace Period(Days):</b></label> 
+        <label for="txtPassword"><b>Grace Period(Days)</b></label> 
         <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Processing Fee:</b></label> 
+        <label for="txtPassword"><b>Processing Fee</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
       </div>
@@ -90,7 +121,7 @@
     
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Check Bounce Fee:</b></label> 
+        <label for="txtPassword"><b>Check Bounce Fee</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" name="check_bounce_fee" class="form-control number_format" value="{{isset($offerData->check_bounce_fee)? number_format($offerData->check_bounce_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
       </div>
@@ -98,7 +129,7 @@
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Comment:</b></label> 
+        <label for="txtPassword"><b>Comment</b></label> 
         <textarea class="form-control" name="comment" rows="3" col="3" placeholder="Comment" maxlength="250">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
       </div>
     </div>
@@ -120,10 +151,6 @@
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
     let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
-    let program_min_limit = "{{$limitData->program->min_loan_size}}"; //program minimum limit
-    let program_max_limit = "{{$limitData->program->max_loan_size}}"; //program maximum limit
-    let program_min_rate = "{{$limitData->program->min_interest_rate}}"; //program minimum limit
-    let program_max_rate = "{{$limitData->program->max_interest_rate}}"; //program maximum limit
 
     let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
     let balance_limit = total_limit - total_offered_amount + current_offer_amount;

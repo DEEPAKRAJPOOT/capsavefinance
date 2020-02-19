@@ -1369,9 +1369,7 @@ class CamController extends Controller
 
             $checkProgram = $this->appRepo->checkduplicateProgram([
               'app_id'=>$appId,
-              'anchor_id'=>$request->anchor_id,
-              'product_id'=>$request->product_id,
-              'prgm_id'=>$request->prgm_id
+              'product_id'=>$request->product_id
               ]);
 
             if($checkProgram->count()){
@@ -1382,7 +1380,7 @@ class CamController extends Controller
             $totalLimit = $this->appRepo->getAppLimit($appId);
 
             if($totalLimit){
-              $this->appRepo->saveAppLimit(['tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt)], $totalLimit->app_limit_id);
+              //$this->appRepo->saveAppLimit(['tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt)], $totalLimit->app_limit_id);
             }else{
               $app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
