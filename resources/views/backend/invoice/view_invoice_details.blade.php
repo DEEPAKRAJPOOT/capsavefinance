@@ -42,7 +42,7 @@
                                    @endphp
 				   @foreach($status as $row)
                                    @if($row->id==$invoice->status_id && $row->id!=7)
-                                    <button type="button" class="{{$color[$row->id]}} btn-sm float-right">{{$row->status_name}}
+                                   <button type="button" class="{{$color[$row->id]}} btn-sm float-right" style="font-size: revert;">{{$row->status_name}}
                                     </button>
                                     @endif
                                    @endforeach
@@ -57,7 +57,7 @@
          <div class="card-body ">
             
            
-					 <h5 class="sub-title mb-2">Customer/Supplier Details</h5>
+					 <h4 class="sub-title mb-2">Customer/Supplier Details</h4>
 					 
 					 <ul class="p-0 m-0">
                         <li class="row mb-2">
@@ -97,7 +97,7 @@
          <div class="card-body">
             
            
-					 <h5 class="mb-2 sub-title">Anchor Details</h5>
+					 <h4 class="mb-2 sub-title">Anchor Details</h4>
 					 
 					 <ul class="p-0 m-0">
                         <li class="row mb-2">
