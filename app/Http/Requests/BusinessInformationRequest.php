@@ -23,10 +23,20 @@ class BusinessInformationRequest extends Request
      */
     public function rules()
     {
-        
+        if(request()->is_gst_manual == 1){
+            $rules['biz_gst_number_text'] = 'min:15|max:15';
+            request()->merge(['biz_gst_number' => request()->get('biz_gst_number_text')]);
+        } else {
+            $rules['biz_gst_number'] = 'required|string|min:10|max:10';
+            $rules['biz_address'] = 'required|string|max:100';
+            $rules['biz_city'] = 'required|string|max:50';
+            $rules['biz_state'] = 'required|string|max:50';
+            $rules['biz_pin'] = 'required|numeric|digits:6';
+        }
+        //dd(request());
         $rules =  [
             'biz_pan_number' => 'required|string|min:10|max:10',
-            'biz_gst_number' => 'required|min:15|max:15',
+            //'biz_gst_number' => 'required|min:15|max:15',
             'biz_entity_name' => 'required|string|max:100',
             'biz_type_id' => 'required|numeric',
             'incorporation_date' => 'required|date_format:d/m/Y',
@@ -35,10 +45,10 @@ class BusinessInformationRequest extends Request
             'segment' => 'required|numeric',
             'biz_turnover' => ['nullable','regex:/[0-9 \,]/'],
             '*.tenor_days' => 'nullable|numeric|lt:1000',
-            'biz_address' => 'required|string|max:100',
-            'biz_city' => 'required|string|max:50',
-            'biz_state' => 'required|string|max:50',
-            'biz_pin' => 'required|numeric|digits:6',
+            //'biz_address' => 'required|string|max:100',
+            //'biz_city' => 'required|string|max:50',
+            //'biz_state' => 'required|string|max:50',
+            //'biz_pin' => 'required|numeric|digits:6',
             'share_holding_date' =>'required|date_format:d/m/Y',
             'product_id' => 'required'
             // 'biz_corres_address' => 'required|string|max:100',
