@@ -16,9 +16,7 @@
     </div>
 
     @php
-    $programBalanceLimit = $programLimit - $programOfferedAmount + $currentOfferAmount;
-    $balanceLimit = $totalLimit - $totalOfferedAmount + $currentOfferAmount;
-    $actualBalance = ($programBalanceLimit < $balanceLimit)? $programBalanceLimit: $balanceLimit;
+    $currentOfferAmount = $offerData->prgm_limit_amt ?? 0;
     @endphp
 
     <div class="col-md-6">
@@ -146,27 +144,36 @@
         "get_program_balance_limit" : "{{route('ajax_get_program_balance_limit')}}",
         "token" : "{{ csrf_token() }}"  
     };
-    var current_offer_amt = prgm_balance_limit = 0;
+    var current_offer_amt = "{{$currentOfferAmount}}";
+    var prgm_consumed_limit = 0;
     var anchorPrgms = {!! json_encode($anchorPrgms) !!};
+    var anchor_id = {{$offerData->anchor_id ?? 0}};
+    var program_id = {{$offerData->prgm_id ?? 0}};
+    $(document).ready(function(){
+        fillPrograms(anchor_id, anchorPrgms)
+    })
 
     $('#anchor_id').on('change',function(){
+        unsetError('input[name=prgm_limit_amt]');
+        unsetError('input[name=interest_rate]');
         let anchor_id = $('#anchor_id').val();
         setLimit('input[name=prgm_limit_amt]', '');
         setLimit('input[name=interest_rate]', '');
         fillPrograms(anchor_id, anchorPrgms);
     });
-console.log(anchorPrgms);
+
     function fillPrograms(anchor_id, programs){
         let html = '<option value="" data-sub_limit="0" data-min_rate="0" data-max_rate="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
         $.each(programs, function(i,program){
             if(program.prgm_name != null && program.anchor_id == anchor_id)
-                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+program.min_interest_rate+'"  data-max_rate="'+program.max_interest_rate+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'">'+program.prgm_name+'</option>';
+                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+program.min_interest_rate+'"  data-max_rate="'+program.max_interest_rate+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
         });
         $('#program_id').html(html);
     }
 
     $('#program_id').on('change',function(){
-        //offers.program_limit = parseInt($('#program_id option:selected').data('sub_limit'));
+        unsetError('input[name=prgm_limit_amt]');
+        unsetError('input[name=interest_rate]');
         let program_min_rate = $('#program_id option:selected').data('min_rate');
         let program_max_rate = $('#program_id option:selected').data('max_rate');
         let program_min_limit = parseInt($('#program_id option:selected').data('min_limit'));
@@ -196,27 +203,25 @@ console.log(anchorPrgms);
                 alert(errorThrown);
             },
             success:function(res){
-                debugger;
                 res = JSON.parse(res);
-                let consumed_limit = parseInt(res);
-                //offers.program_balance_limit = offers.program_limit - consumed_limit;
-                //setLimit('#limit_amt', 'Balance: <i class="fa fa-inr" aria-hidden="true"></i> '+offers.program_balance_limit);
+                prgm_consumed_limit = parseInt(res) - current_offer_amt;
                 $('.isloader').hide();
             }
         })
     });
 
   function checkSupplyValidations(){
-    let total_limit = "{{$totalLimit}}"; //total exposure limit amount
-    let program_limit = "{{$programLimit}}"; //program limit
-    let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
-    let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
-    let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
-
-    let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
-    let balance_limit = total_limit - total_offered_amount + current_offer_amount;
-    let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
-
+    var limitObj={
+        'prgm_min_rate':$('#program_id option:selected').data('min_rate'),
+        'prgm_max_rate':$('#program_id option:selected').data('max_rate'),
+        'prgm_min_limit':$('#program_id option:selected').data('min_limit'),
+        'prgm_max_limit':$('#program_id option:selected').data('max_limit'),
+        'limit_balance_amt':"{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}",
+        'prgm_balance_limit':$('#program_id option:selected').data('sub_limit') - prgm_consumed_limit,
+    };
+    
+    unsetError('select[name=anchor_id]');
+    unsetError('select[name=prgm_id]');
     unsetError('input[name=prgm_limit_amt]');
     unsetError('input[name=interest_rate]');
     unsetError('input[name=tenor]');
@@ -229,6 +234,8 @@ console.log(anchorPrgms);
     unsetError('input[name=check_bounce_fee]');
 
     let flag = true;
+    let anchor_id = $('select[name=anchor_id]').val();
+    let prgm_id = $('select[name=prgm_id]').val();
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
     let interest_rate = $('input[name=interest_rate]').val();
     let tenor = $('input[name=tenor]').val();
@@ -240,31 +247,45 @@ console.log(anchorPrgms);
     let processing_fee = $('input[name=processing_fee]').val().trim();
     let check_bounce_fee = $('input[name=check_bounce_fee]').val().trim();
 
+    if(anchor_id == ''){
+        setError('select[name=anchor_id]', 'Please select Anchor');
+        flag = false;
+    }
+
+    if(prgm_id == ''){
+        setError('select[name=prgm_id]', 'Please select Program');
+        flag = false;
+    }
+
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
-    }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > actual_balance){
-        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
-        flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) < program_min_limit) || (parseInt(prgm_limit_amt.replace(/,/g, '')) > program_max_limit)){
-        setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+program_min_limit+' - '+program_max_limit+') range');
-        flag = false;
-    }else{
-        //TAKE REST
+    }else if(anchor_id !='' && prgm_id != ''){
+        if((parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(limitObj.prgm_min_limit)) ||(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_max_limit))){
+            setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+parseInt(limitObj.prgm_min_limit)+'-'+parseInt(limitObj.prgm_max_limit)+') program range');
+            flag = false;
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_balance_limit)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount should be less than ('+limitObj.prgm_balance_limit+') program balance limit');
+            flag = false;
+        }else{
+            //TAKE REST
+        }
     }
 
     if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill intereset rate');
         flag = false;
-    }else if(parseFloat(interest_rate) > 100){
-        setError('input[name=interest_rate]', 'Please fill correct intereset rate');
-        flag = false;
-    }else if((parseFloat(interest_rate) < program_min_rate) || parseFloat(interest_rate) > program_max_rate){
-        setError('input[name=interest_rate]', 'Interest rate should be ('+program_min_rate+'% - '+program_max_rate+'%) range');
-        flag = false;
-    }else{
-        //TAKE REST
-    }
+    }else if(anchor_id !='' && prgm_id != ''){
+        if(parseFloat(interest_rate) > 100){
+            setError('input[name=interest_rate]', 'Please fill correct intereset rate');
+            flag = false;
+        }else if((parseFloat(interest_rate) < parseFloat(limitObj.prgm_min_rate)) || parseFloat(interest_rate) > parseFloat(limitObj.prgm_min_rate)){
+            setError('input[name=interest_rate]', 'Interest rate should be ('+limitObj.prgm_min_rate+'% - '+limitObj.prgm_max_rate+'%) range');
+            flag = false;
+        }else{
+            //TAKE REST
+        }
+    } 
 
     if(tenor == ''){
         setError('input[name=tenor]', 'Please flll tenor');
@@ -319,7 +340,7 @@ console.log(anchorPrgms);
     }
 
     if(flag){
-        return true;
+        return false;
     }else{
         return false;
     }
