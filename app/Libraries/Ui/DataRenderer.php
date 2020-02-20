@@ -1220,7 +1220,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'customer_id',
                     function ($trans) {                        
-                       return $trans->disburse ? $trans->disburse->customer_id : '';
+                      // return $trans->disburse ? $trans->disburse->customer_id : '';
+                        return $trans->lmsUser ? $trans->lmsUser->customer_id : '';
                 })
                 ->addColumn(
                     'virtual_account_no',

@@ -134,7 +134,16 @@ class Transactions extends BaseModel {
     function disburse()
     {
        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
-    }      
-   
+    }    
+      /** 
+       * @Author: Rent Alpha
+       * @Date: 2020-02-20 10:53:40 
+       * @Desc:  function for get user details from lms user table using user id 
+       */      
+    public function lmsUser()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
+    }  
+
      
 }
