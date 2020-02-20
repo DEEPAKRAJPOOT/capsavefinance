@@ -149,6 +149,7 @@ trait LmsTrait
      */
     protected function calRepayment($virtualAccountId, $paidAmount)
     {
+       
         $disbursalWhereCond = [];
         $disbursalWhereCond['status']  = [12,13];   //12 => Disbursed, 13 => Repaid
         $disbursalWhereCond['virtual_acc_id']  = $virtualAccountId;
@@ -185,32 +186,72 @@ trait LmsTrait
         $currentDate = date('Y-m-d');
         
         if($userId){
-            $userInvoiceDetails = Disbursal::where(['user_id'=>$userId,'status_id'=>[12,13]])
+            $settledInvoice = [];
+            
+            $userInvoiceDetails = Disbursal::where(['user_id'=>$userId,'status_id'=>[12]])
                 ->orderBy('inv_due_date','asc')
                 ->get();
+
+            $userTransDetails = Transactions::where(['user_id'=>$userId,'trans_type'=>17])
+                ->orderBy('trans_date','asc')
+                ->get();
+            
+            $totalRepaidAmount = Transactions::where(['user_id'=>$userId,'trans_type'=>17])
+                ->orderBy('trans_date','asc')
+                ->sum('amount');
                 
-            $settledInvoice = [];
             $invoice = array();
             foreach ($userInvoiceDetails as $key => $UIDetail) {
                 $invoice[] = [
                     'disbursal_id' => $UIDetail->disbursal_id,
                     'user_id' => $UIDetail->user_id,
                     'invoice_id' => $UIDetail->invoice_id,
-                    'disburse_date' => $UIDetail->disburse_date,
-                    'inv_due_date' => $UIDetail->inv_due_date,
                     'principal_amount' => $UIDetail->principal_amount,
+                    'disburse_amount' => $UIDetail->disburse_amount,
                     'total_interest' => $UIDetail->total_interest,
                     'total_repaid_amt' => $UIDetail->total_repaid_amt,
                     'interest_refund' => $UIDetail->interest_refund,
-                    'accrued_interest' => $UIDetail->interests->sum('accrued_interest')
+                    'accrued_interest' => $UIDetail->interests->sum('accrued_interest'),
+                    'disburse_date' => \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $UIDetail->disburse_date)->format('Y-m-d'),
+                    'int_accrual_type'=>$UIDetail->offer->int_accrual_type,
+                    'inv_due_date' => $UIDetail->inv_due_date,
+                    //'new_interest_refund'=>($inv['accrued_interest']<=$inv['interest_refund'])?$inv['interest_refund']-$inv['accrued_interest']:NULL;
                 ]; 
             }
 
-            $userTransDetails = Transactions::where(['user_id'=>$userId,'trans_type'=>17])
-            ->orderBy('trans_date','asc')
-            ->get();
+            foreach ($invoice as $key => $inv) {
+                switch ($inv['int_accrual_type']) {
+                    case '1': //1=> upfrond
+                        $newInterest = null;
+                        if($inv['accrued_interest']<=$inv['total_interest']){
+                            $newInterest = $inv['total_interest']-$inv['accrued_interest'];
+                        }
+                        
+                        $invoice[$key]['disbursal']['interest_refund'] =  $newInterest;
 
-            $settledInvoice = [];
+                        if($totalRepaidAmount>=$inv['principal_amount']){
+                            $invoice[$key]['disbursal']['total_repaid_amt'] = $inv['principal_amount'];
+                            $totalRepaidAmount = $totalRepaidAmount - $inv['principal_amount'];
+                        }
+                       
+                        break;
+                    case '2': //2 => monthly
+                        # code...
+                        break;
+                    case '3': //3 => rear end
+                        # code...
+                        break;
+                }
+                
+            }
+
+           // dump($userInvoiceDetails[0]->offer);
+
+
+            dd($userTransDetails, $userInvoiceDetails, $invoice, $totalRepaidAmount);
+
+
+         /*    $settledInvoice = [];
             foreach ($userTransDetails as $UTDkey => $UTDetail) {
                 foreach ($UTDetail->disburse as $UIDkey => $UIDetail) {
                    $invoiceRepaymentTrail = [];
@@ -249,7 +290,7 @@ trait LmsTrait
                 //     unset($userInvoiceDetails[$UIDkey]);
                 //    }
                 } 
-            }
+            } */
            
         }
     }

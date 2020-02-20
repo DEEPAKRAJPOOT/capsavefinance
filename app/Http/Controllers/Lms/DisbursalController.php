@@ -197,8 +197,10 @@ class DisbursalController extends Controller
     }
 
 
-	public function paymentSettlement()
+	public function processInvoiceSettlement()
 	{
-		$returnData = $this->paySettlement('251');
+		$returnData = $this->paySettlement('250');
+
+		echo "Invoice Settled 250";
 	}
 }

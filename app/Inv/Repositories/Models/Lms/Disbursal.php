@@ -85,6 +85,15 @@ class Disbursal extends BaseModel {
     }
 
     /**
+     * Get App Program Offer 
+     * 
+     * @return type
+     */
+    public function offer() { 
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id'); 
+    }
+
+    /**
      * Save or Update Disbursal Request
      * 
      * @param array $data
