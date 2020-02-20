@@ -17,6 +17,8 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
+
 
 trait CamTrait
 {
@@ -74,24 +76,23 @@ trait CamTrait
 
 			$arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
 
+
 			if(isset($arrCamData['t_o_f_security_check'])){
 					$arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
 			}
 
-			/*start code for approve button */
-			$approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
-			$currStage = Helpers::getCurrentWfStage($appId);                
-			$currStageCode = isset($currStage->stage_code)? $currStage->stage_code: ''; 
-			/*end code for approve button */
-			 if(isset($arrCamData->existing_exposure) && $arrCamData->existing_exposure > 0){
-					 $arrCamData->existing_exposure =  format_number($arrCamData->existing_exposure/1000000);
-			}
-			if(isset($arrCamData->proposed_exposure) && $arrCamData->proposed_exposure > 0){
-					 $arrCamData->proposed_exposure =  format_number($arrCamData->proposed_exposure/1000000);
-			}
-			if( isset($arrCamData->total_exposure) &&  $arrCamData->total_exposure > 0){
-					 $arrCamData->total_exposure =  format_number($arrCamData->total_exposure/1000000);
-			}
+
+                 $arrGroupCompany = GroupCompanyExposure::where([
+                                                           ['biz_id','=',$arrRequest['biz_id']], 
+                                                           ['app_id','=',$arrRequest['app_id']]
+                                                           ])->get()->toArray();                 
+                /*start code for approve button */
+                $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
+                $currStage = Helpers::getCurrentWfStage($appId);                
+                $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: ''; 
+                /*end code for approve button */
+                 
+
 
                         if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
                             $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
@@ -123,7 +124,8 @@ trait CamTrait
 					'currStageCode' => $currStageCode,
 					'facilityTypeList'=>$facilityTypeList,                            
                                         'preCondArr' => $preCondArr,
-                                        'postCondArr' => $postCondArr
+                                        'postCondArr' => $postCondArr,
+                                        'arrGroupCompany' => $arrGroupCompany
 		];
 	
       } catch (Exception $ex) {

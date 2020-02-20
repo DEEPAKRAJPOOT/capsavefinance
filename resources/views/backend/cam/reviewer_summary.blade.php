@@ -101,19 +101,20 @@
                                        <td class=""><b>Additional Security</b></td>
                                        <td class="">
                                           @php
-                                           $add_sec_arr = '';
-                                           if(isset($leaseOffer->addl_security)){
-                                               $addl_sec_arr = explode(',', $leaseOffer->addl_security);
-                                               foreach($addl_sec_arr as $k=>$v){
-                                                   $add_sec_arr .= config('common.addl_security')[$v].', ';
-                                               }
-                                               if(isset($leaseOffer->comment)) {
-                                                   $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
-                                                }   
-                                           }
-                                           $add_sec_arr = trim($add_sec_arr, ', ');
-                                           @endphp
-                                           {!! $add_sec_arr !!}
+                                            $add_sec_arr = '';
+                                            if(isset($leaseOffer->addl_security) && $leaseOffer->addl_security !=''){
+                                                $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                                                foreach($addl_sec_arr as $k=>$v){
+                                                    $add_sec_arr .= config('common.addl_security')[$v].', ';
+                                                }
+                                            }
+                                            if($leaseOffer->comment != '' && $leaseOffer->addl_security !=''){
+                                                $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                                            }else{
+                                                $add_sec_arr .= $leaseOffer->comment;
+                                            }
+                                            @endphp 
+                                            {!! trim($add_sec_arr,', ') !!}
                                        </td>
                                     </tr>
                                  </tbody>

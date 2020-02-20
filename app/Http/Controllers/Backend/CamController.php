@@ -43,6 +43,8 @@ use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
+
 
 class CamController extends Controller
 {
@@ -114,8 +116,13 @@ class CamController extends Controller
             }else{
               $checkDisburseBtn='';
             }
-            //dd($product_ids,$checkDisburseBtn);
-            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
+            $arrGroupCompany = GroupCompanyExposure::where([
+                                                           ['biz_id','=',$arrRequest['biz_id']], 
+                                                           ['app_id','=',$arrRequest['app_id']]
+                                                           ])->get()->toArray();
+            
+            
+           $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
             return view('backend.cam.overview')->with([
                 'arrCamData' =>$arrCamData ,
@@ -124,7 +131,8 @@ class CamController extends Controller
                 'arrOwner' =>$arrOwner,
                 'limitData' =>$limitData,
                 'current_status_id'=>$current_status,
-                'checkDisburseBtn'=>$checkDisburseBtn
+                'checkDisburseBtn'=>$checkDisburseBtn,
+                'arrGroupCompany'=>$arrGroupCompany,
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -149,7 +157,26 @@ class CamController extends Controller
             }else{
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
-            $arrCamData['proposed_exposure'] = str_replace(',','', $arrCamData['proposed_exposure']);
+          
+            if(!empty($arrCamData['group_company_name']))
+            {
+              GroupCompanyExposure::where([
+                                            ['biz_id', $arrCamData['biz_id']],
+                                            ['app_id', $arrCamData['app_id']]
+                                          ])->delete();
+                foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
+                   $inputArr= array(
+                      'biz_id'=> $arrCamData['biz_id'] ,
+                      'app_id'=> $arrCamData['app_id'],
+                      'group_company_name'=> $groupCompanyName ?? null,
+                      'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? str_replace(',', '',$arrCamData['sanction_limit'][$key]) : null ,
+                      'outstanding_exposure'=> $arrCamData['outstanding_exposure'][$key] ? str_replace(',', '',$arrCamData['outstanding_exposure'][$key]) : null,
+                      'created_by'=>$userId
+                  );  
+                   GroupCompanyExposure::saveGroupCompany($inputArr);
+                }
+            }
+
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
