@@ -1352,7 +1352,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramLimit::getTotalPrgmLimitByAppId($appId);
     }
 
-    public function getPrgmsByAnchor($where){
-        return Program::getPrgmsByAnchor($where);
+    public function getPrgmsByAnchor($anchor_ids, $uesr_type){
+        return Program::getPrgmsByAnchor($anchor_ids, $uesr_type);
     }
 }

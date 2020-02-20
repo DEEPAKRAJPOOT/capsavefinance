@@ -1455,16 +1455,11 @@ class CamController extends Controller
         $user = $this->appRepo->getAppData($appId)->user;
         $user_type = $user->is_buyer;
         $anchors = $user->anchor;
-        $anchorPrgms = $this->appRepo->getPrgmsByAnchor(['anchor_id' => $anchors->anchor_id]);
+        $anchorPrgms = $this->appRepo->getPrgmsByAnchor([$anchors->anchor_id], $user_type);
       } else {
         $anchors = [];
         $anchorPrgms = [];
       }
-
-
-
-
-
 
       // get Total Sub Limit amount by app_prgm_limit_id
       $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
@@ -1483,7 +1478,7 @@ class CamController extends Controller
       }
 
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms]);
     }
 
     /*function for updating offer data*/

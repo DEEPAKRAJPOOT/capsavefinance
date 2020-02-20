@@ -35,8 +35,9 @@
         <label for="txtPassword"><b>Anchor</b></label> 
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
+                @foreach($anchors as $key=>$anchor)
                 <option value="1">Anchor 1</option>
-                <option value="2">Anchor 2</option>
+                @endforeach
             </select>
         </div>
     </div>
