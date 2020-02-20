@@ -111,7 +111,7 @@
                 </table>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Group Company Exposure</h2>
+                    <h2 class="sub-title bg">Group Company Exposure</h2>                       
                     <div class="col-md-12 mt-4 ">
                          <div class="row">
                             <div class="col-md-2">
@@ -120,27 +120,36 @@
                             <div class="col-md-3">
                                 <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name"/>
                             </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-3">
+                                    <span class="pull-right" style="font-size: 11px;">
+                                        @if(isset($arrCamData->By_updated))  
+                                            Updated By - {{$arrCamData->By_updated}}<br>
+                                            {!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $arrCamData->updated_at)->format('j F, Y') : '' !!}
+                                        @endif
+                                    </span>
+                            </div>
                         </div>
                      </div>   
 
                     <div class="col-md-12 mb-3">    
                         <div class="row">
                             <div class="col-md-4 mt-4">
-                                 <label for="txtPassword"><b>Group Company Name</b></label>
+                                 <label for="txtPassword"><b>Borrower</b></label>
                                 <input type="text" class="form-control" value="{{$arrBizData->biz_entity_name}}" readonly/>
                                 
                             </div>
                             <div class="col-md-3 mt-4">
                                     <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
-                                     <input type="number" name="sanction_limit_cam" class="form-control  calTotalExposure" value="{{isset($arrCamData->sanction_limit_cam) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="sanction_limit_cam" class="form-control  calTotalExposure" value="{{($arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-3 mt-4">
                                  <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
-                                 <input type="number" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{isset($arrCamData->outstanding_exposure_cam) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{($arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-2 mt-4">
                              <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
-                              <input type="number" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
+                              <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{($arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
                             </div>
                             
                         </div>
@@ -157,10 +166,10 @@
                                 </div>
                                 <div class="col-md-3">
                                    
-                                     <input type="number" name="sanction_limit[]" class="form-control calTotalExposure" value="{{isset($arr['sanction_limit']) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3">
-                                     <input type="number" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="{{isset($arr['outstanding_exposure']) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-2 center">
                                  @if($loop->first)
@@ -177,10 +186,10 @@
                                     <input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company"/>
                                 </div>
                                 <div class="col-md-3">
-                                      <input type="number" name="sanction_limit[]" class="form-control  calTotalExposure" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                      <input type="text" name="sanction_limit[]" class="form-control  calTotalExposure" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3">
-                                     <input type="number" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-1 ">
                                     <i class="fa fa-2x fa-plus-circle add-ptpq-block "></i>
@@ -191,14 +200,14 @@
 
                     
 
-                        <div class="col-md-12 mt-4" style="background: #e1f0eb;">
+                        <div class="col-md-12 mt-4 mb-2" style="background: #e1f0eb; padding: 5px;">
                             <div class="row">
                                 <div class="col-md-3 mt-2">
                                     <label for="txtPassword"><b>Total Exposure (In Mn)</b></label>
                                 </div>
                                 <div class="col-md-6 "></div>
                                  <div class="col-md-3 ">
-                                      <input type="text" class="form-control " name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" readonly />
+                                      <input type="text" class="form-control " name="total_exposure" value="{{($arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}" readonly />
                                 </div>
                             </div>
                         </div>    
@@ -401,10 +410,10 @@
                 '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required>'+
             '</div>'+
             '<div class="col-md-3">'+
-                '<input type="number" name="sanction_limit[]" class="form-control " value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
+                '<input type="text" name="sanction_limit[]" class="form-control " value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-3">'+
-                '<input type="number" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
+                '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
