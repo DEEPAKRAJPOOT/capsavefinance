@@ -524,7 +524,7 @@ trait LmsTrait
         $disbursalData['accured_interest'] = null;
         $disbursalData['interest_refund'] = null;
         $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
-        $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
+        $disbursalData['int_accrual_start_dt'] = ($disburseType == 2 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime($invoice['disburse_date'])) : null;
         $disbursalData['processing_fee'] = $invoice['program_offer']['processing_fee'] ?? null;
         $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
         $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;
