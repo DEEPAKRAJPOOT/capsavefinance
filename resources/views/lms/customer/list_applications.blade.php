@@ -1,11 +1,11 @@
 @extends('layouts.backend.admin-layout')
-
 @section('content')
-
 @include('layouts.backend.partials.admin_customer_links',['active'=>'summary'])
 <div class="content-wrapper">
 	<div class="row ">
-		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
+            
+           
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 			<div class="card">
 				<div class="card-body">
 					<div class="table-responsive ps ps--theme_default w-100">
@@ -24,12 +24,12 @@
 								<tr>
 									<td class="text-left" width="30%"><b>Total Limit</b></td>
 									<td>{{ $userInfo->total_limit }} </td> 
-									<td class="text-left" width="30%"><b>Avialable Limit</b></td>
-									<td>{{ $userInfo->avail_limit }} </td> 
+									<td class="text-left" width="30%"><b>Available Limit</b></td>
+									<td>{{  $userInfo->consume_limit }} </td> 
 								</tr>
 								<tr>
 									<td class="text-left" width="30%"><b>Utilize Limit</b></td>
-									<td>{{ $userInfo->consume_limit }} </td> 
+									<td>{{ $userInfo->utilize_limit }} </td> 
 									<td class="text-left" width="30%"><b>Sales Manager</b></td>
 									<td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>
 								</tr>

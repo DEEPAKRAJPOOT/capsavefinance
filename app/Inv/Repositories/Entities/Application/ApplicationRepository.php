@@ -283,9 +283,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	 */
 	public function getCustomerApplications($user_id) 
 	{
+            
 		return Application::with('business')
 				->with('appLimit')
 				->with('acceptedOffer')
+                                ->with('prgmLimit')
+                                ->with('disbursal')
+                                ->with('transactions') 
 				->whereHas('acceptedOffer')
 				->where(['user_id' => $user_id, 'status' => 1])
 				->get();

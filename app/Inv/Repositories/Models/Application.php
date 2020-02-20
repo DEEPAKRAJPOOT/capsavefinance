@@ -94,6 +94,20 @@ class Application extends BaseModel
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
     }
 
+    public function prgmLimit()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramLimit', 'app_id')->where(['product_id' => 1]);
+    }
+    
+    function disbursal()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'user_id','user_id');
+    }
+    
+    function transactions()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions', 'user_id','user_id')->where('trans_type', 17);
+    }
     public function invoices()
     {
         return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id')->where('status_id', 9);
