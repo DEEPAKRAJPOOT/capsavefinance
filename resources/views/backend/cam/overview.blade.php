@@ -138,15 +138,15 @@
                             </div>
                             <div class="col-md-3 mt-4">
                                     <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
-                                     <input type="text" name="sanction_limit_cam" class="form-control  calTotalExposure" value="{{($arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="sanction_limit_cam" class="form-control  calTotalExposure" value="{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-3 mt-4">
                                  <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
-                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{($arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{( $arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-2 mt-4">
                              <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
-                              <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{($arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
+                              <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{( $arrCamData &&  $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
                             </div>
                             
                         </div>
@@ -204,7 +204,7 @@
                                 </div>
                                 <div class="col-md-6 "></div>
                                  <div class="col-md-3 ">
-                                      <input type="text" class="form-control " name="total_exposure" value="{{($arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}" readonly />
+                                      <input type="text" class="form-control " name="total_exposure" value="{{($arrCamData && $arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}" readonly />
                                 </div>
                             </div>
                         </div>    
