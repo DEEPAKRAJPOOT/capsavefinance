@@ -111,24 +111,21 @@
                 </table>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Group Company Exposure</h2>                       
+                    <h2 class="sub-title bg">Group Company Exposure
+                      <span class="pull-right" style="font-size: 11px;">
+                                        @if(isset($arrCamData->By_updated))  
+                                            Updated By: {{$arrCamData->By_updated}} ({!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$arrCamData->updated_at)->format('j F, Y') : '' !!})
+                                        @endif
+                                    </span>   </h2>                    
                     <div class="col-md-12 mt-4 ">
                          <div class="row">
                             <div class="col-md-2">
                                 <label for="txtPassword"><b>Group Name</b></label>
                             </div>
-                            <div class="col-md-3">
-                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/>
+                            <div class="col-md-2">
+                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/ style="padding: -;position:absolute; right: 17px;">
                             </div>
-                            <div class="col-md-4"></div>
-                            <div class="col-md-3">
-                                    <span class="pull-right" style="font-size: 11px;">
-                                        @if(isset($arrCamData->By_updated))  
-                                            Updated By - {{$arrCamData->By_updated}}<br>
-                                            {!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $arrCamData->updated_at)->format('j F, Y') : '' !!}
-                                        @endif
-                                    </span>
-                            </div>
+                            
                         </div>
                      </div>   
 
