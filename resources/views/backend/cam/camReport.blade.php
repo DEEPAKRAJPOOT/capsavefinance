@@ -190,13 +190,16 @@
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br/> Borrower Vintage &amp; Constitution</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br/></th>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Deviation</th>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Remarks</th>
                </tr>
             </thead>
             <tbody>
+            <tr style="background-color: #d2d4de;">
+                  <th colspan="4" class="blank" >Borrower Vintage &amp; Constitution</th>
+               </tr>
                <tr>
                   <td>Constitution</td>
                   <td>- Registered Partnership Firm<br/> - Private Limited Company<br/> - Public Limited Company<br/> - Limited Liability Partnership </td>
@@ -209,7 +212,7 @@
                   <td>No</td>
                   <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                </tr>
-               <tr>
+               <tr style="background-color: #d2d4de;">
                   <td colspan="4" class="blank">&nbsp;</td>
                </tr>
                <tr>
@@ -248,7 +251,7 @@
                   <td>{{isset($arrHygieneData->neg_news_report_check) && $arrHygieneData->neg_news_report_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($arrHygieneData->neg_news_report_cmnt) ? trim($arrHygieneData->neg_news_report_cmnt) : ''}}</td>
                </tr>
-               <tr>
+               <tr style="background-color: #d2d4de;">
                   <td colspan="4" class="blank">&nbsp;</td>
                </tr>
                <tr>
@@ -269,7 +272,7 @@
                   <td>{{isset($arrHygieneData->trade_ref_check) && $arrHygieneData->trade_ref_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($arrHygieneData->trade_ref_cmnt) ? trim($arrHygieneData->trade_ref_cmnt) : ''}}</td>
                </tr>
-               <tr>
+               <tr style="background-color: #d2d4de;">
                   <td colspan="4"  class="blank">&nbsp;</td>
                </tr>
                <tr>
@@ -296,10 +299,8 @@
                   <td>{{isset($finacialDetails->debt_check) && $finacialDetails->debt_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($finacialDetails->debt_cmnt) ? trim($finacialDetails->debt_cmnt) : ''}}</td>
                </tr>
-               <tr>
-                  <td colspan="4" class="blank">
-                     <h5>Other</h5>
-                  </td>
+               <tr style="background-color: #d2d4de;">
+                  <th colspan="4" class="blank"> Other                </th>
                </tr>
                <tr>
                   <td>Negative Industry Segment</td>

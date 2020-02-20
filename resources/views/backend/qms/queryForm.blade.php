@@ -37,7 +37,7 @@
             {!! $errors->first('doc_file', '<span class="error">:message</span>') !!}
         </div>
 
-        <button type="submit" class="btn btn-primary float-right">Submit</button>
+        <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>
     </div>
 </div>	
 {!!Form::hidden('app_id',$app_id )!!} 
