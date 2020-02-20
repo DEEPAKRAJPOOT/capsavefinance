@@ -183,7 +183,16 @@ trait LmsTrait
     }   
 
     protected function getTransactions($userId, &$trans, &$offset, $pipedAmt, $settlementAmt, &$lastTransId){
+        
+        
         if($pipedAmt>=$settlementAmt){
+            $transactions = Transactions::find($lastTransId);
+            $trans[$transactions->trans_id] =[
+                'trans_id' => $transactions->trans_id,
+                'amount' => $transactions->amount,
+                'pipedAmt' => $pipedAmt,
+                'settledAmount' => ($settlementAmt>=$pipedAmt)?$pipedAmt:$settlementAmt
+            ];
             return $pipedAmt;
         }
         
@@ -196,6 +205,7 @@ trait LmsTrait
 
         $pipedAmt = ($lastTransId != $userTransDetails->trans_id)?$pipedAmt+$userTransDetails->amount:$pipedAmt;
         $lastTransId = $userTransDetails->trans_id;
+
         $trans[$userTransDetails->trans_id] =[
             'trans_id' => $userTransDetails->trans_id,
             'amount' => $userTransDetails->amount,
@@ -264,11 +274,12 @@ trait LmsTrait
                             $misspend = ($inv['accrued_interest']-$inv['total_interest']);
                             $totalRepaidAmount= $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, ($inv['accrued_interest']-$inv['total_interest']),$lastTransId);
                         }
+                        $totalRepaidAmount += $refund;
                         $totalRepaidAmount -= $misspend;
                         
 
                         // Interest Refund 
-                        $invoice[$key]['disbursal']['interest_refund'] =  $refund;
+                        //$invoice[$key]['disbursal']['interest_refund'] =  $refund;
 
                         
                         // Principal Settlement 
@@ -299,7 +310,6 @@ trait LmsTrait
                         # code...
                         break;
                 }
-               // dd(111111111111111111111111111);
             }
 
            // dump($userInvoiceDetails[0]->offer);
