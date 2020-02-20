@@ -1229,7 +1229,7 @@ class DataRenderer implements DataProviderInterface
                    ->addColumn(
                     'amount',
                     function ($trans) {                        
-                         return $trans->amount ? $trans->amount : '';
+                         return $trans->amount ? number_format($trans->amount) : '';
                 })  
                  ->addColumn(
                     'trans_by',

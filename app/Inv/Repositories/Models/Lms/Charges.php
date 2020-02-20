@@ -51,6 +51,8 @@ class Charges extends BaseModel
     protected $fillable = [
         'chrg_name',
         'chrg_desc',
+        'credit_desc',
+        'debit_desc',
         'chrg_type',
         'chrg_calculation_type',
         'chrg_calculation_amt',
