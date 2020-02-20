@@ -46,11 +46,18 @@
                                     </select>
                                 </div>
                             </div>
+                            @php
+                            $balance = isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '';
+                            @endphp
 
                             <div class="col-md-3">
                                 <div class="form-group INR">
                                     <label>Enter Limit</label><span class="limit float-right"></span>
-                                    <span class="float-right text-success">Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}</span>
+                                    <span class="float-right text-success">
+                                    @if($balance != '')
+                                        Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}
+                                    @endif
+                                    </span>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:30px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control number_format" name="limit_amt" id="limit_amt" value="{{old('limit_amt')}}" maxlength="15" placeholder="Enter Limit">
                                 </div>
@@ -180,8 +187,6 @@
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
-                                                       <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
-                                                       <a data-toggle="modal" data-target="#viewSharedColenderFrame" data-url ="{{route('view_shared_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;" title="View Shared Co-Lender"><i class="fa fa-eye"></i></a>
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -285,8 +290,6 @@
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
-                                                       <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
-                                                       <a data-toggle="modal" data-target="#viewSharedColenderFrame" data-url ="{{route('view_shared_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;" title="View Shared Co-Lender"><i class="fa fa-eye"></i></a>
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -422,8 +425,11 @@ function checkValidation(){
     if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=limit_amt]', 'Please fill limit amount');
         flag = false;
-    }else if((parseInt(limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))) || (parseInt(limit_amt.replace(/,/g, '')) > (parseInt(tot_limit_amt.replace(/,/g, '')) - prgmLimitTotal))){
+    }else if(parseInt(limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))){
         setError('input[name=limit_amt]', 'Limit amount can not exceed from Total Exposure');
+        flag = false;
+    }else if(parseInt(limit_amt.replace(/,/g, '')) > (parseInt(tot_limit_amt.replace(/,/g, '')) - prgmLimitTotal)){
+        setError('input[name=limit_amt]', 'Your limit has been expired');
         flag = false;
     }else{
         // TAKE REST
