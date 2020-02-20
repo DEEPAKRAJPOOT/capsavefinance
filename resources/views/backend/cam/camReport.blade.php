@@ -1,16 +1,22 @@
 <!-- Start PDF Section -->
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Group Company Exposure</h2>
+       <h2 class="sub-title bg">Group Company Exposure
+                      <span class="pull-right" style="font-size: 11px;">
+                                        @if(isset($arrCamData->By_updated))  
+                                            Updated By: {{$arrCamData->By_updated}} ({!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$arrCamData->updated_at)->format('j F, Y') : '' !!})
+                                        @endif
+                                    </span>   </h2>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
-                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group Name</th>
-                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Group Company Name</th>
-                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Sanction Limit (In Mn)</th>
-                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Outstanding Exposure (In Mn)</th> 
-                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit (In Mn) </th>
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="12%">Group Name</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="18%">Borrower</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="18%">Sanction Limit (In Mn)</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="22%">Outstanding Exposure (In Mn)</th> 
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="18%">Proposed Limit (In Mn) </th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="12%">Total (In Mn)</th>
                  
                </tr>
             </thead>
@@ -24,22 +30,24 @@
                                <td class="" rowspan="{{$count+1}}"> {{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
                            @endif
                            <td class="">{{isset($arr['group_company_name']) ? $arr['group_company_name'] : ''}}</td>
-                           <td class="">{{isset($arr['sanction_limit']) ? $arr['sanction_limit'] : ''}}</td>
-                           <td class="">{{isset($arr['outstanding_exposure']) ? $arr['outstanding_exposure'] : ''}}</td>
+                           <td class="">{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] : ''}}</td>
+                           <td class="">{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure'] : ''}}</td>
                            <td class="">--</td>
+                           <td class="">{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure'] : ''}}</td>
                           
                         </tr>
                      @endforeach
                   @endif   
                      <tr>
                            <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
-                           <td class="">{{isset($arrCamData->sanction_limit_cam) ? $arrCamData->sanction_limit_cam : ''}}</td>
-                           <td class="">{{isset($arrCamData->outstanding_exposure_cam) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
-                           <td class="">{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
+                           <td class="">{{($arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}</td>
+                           <td class="">{{($arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
+                           <td class="">{{($arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}</td>
+                           <td class="">{{(($arrCamData->proposed_exposure > 0) && ($arrCamData->outstanding_exposure_cam > 0)) ? $arrCamData->proposed_exposure + $arrCamData->outstanding_exposure_cam : ''}}</td>
                      </tr>
                      <tr>
-                           <td class="" colspan="4"><b>Total Exposure (In Mn)</b></td>
-                           <td class=""><b>{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}</b></td>   
+                           <td class="" colspan="5"><b>Total Exposure (In Mn)</b></td>
+                           <td class=""><b>{{($arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}</b></td>   
                      </tr>
             </tbody>
          </table>

@@ -76,6 +76,11 @@ trait CamTrait
 
 			$arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
 
+      if(!empty($arrCamData)){
+         $arrUserData = $this->userRepo->find($arrCamData->updated_by, '');
+         $arrCamData->By_updated = "$arrUserData->f_name $arrUserData->l_name";
+      }
+
 
 			if(isset($arrCamData['t_o_f_security_check'])){
 					$arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
