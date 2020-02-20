@@ -504,7 +504,7 @@ trait LmsTrait
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
         $disbursalData['prgm_offer_id'] = $invoice['prgm_offer_id'] ?? null;
         $disbursalData['bank_account_id'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank_account_id'] : $invoice['supplier_bank_detail']['bank_account_id'];
-        $disbursalData['disburse_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $disbursalData['disburse_date'] = (!empty($invoice['disburse_date'])) ? date("Y-m-d h:i:s", strtotime($invoice['disburse_date'])) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['bank_name'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank']['bank_name'] : $invoice['supplier_bank_detail']['bank']['bank_name'] ;
         $disbursalData['ifsc_code'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['ifsc_code'] : $invoice['supplier_bank_detail']['ifsc_code'];
         $disbursalData['acc_no'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['acc_no'] : $invoice['supplier_bank_detail']['acc_no'];            

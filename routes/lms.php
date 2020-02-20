@@ -111,6 +111,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms-payment-settlement',
                 'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
             ]);
+            
+            // manage refund routes 
+
+            Route::get('/refund/refund-list', [
+                'as' => 'lms_refund_list',
+                'uses' => 'Lms\RefundController@refundList'
+            ]);
+
         });//end of application
 
         // Business address
