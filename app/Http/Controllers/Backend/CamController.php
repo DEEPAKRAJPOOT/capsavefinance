@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
+use App\Inv\Repositories\Models\Master\Group;
 
 
 class CamController extends Controller
@@ -126,6 +127,7 @@ class CamController extends Controller
             
            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
+
             return view('backend.cam.overview')->with([
                 'arrCamData' =>$arrCamData ,
                 'arrRequest' =>$arrRequest, 
@@ -179,6 +181,12 @@ class CamController extends Controller
                 }
             }
 
+            $masterGroupData= array(
+                'name'=> $arrCamData['group_company'],
+                'is_active' => '1',
+                'created_by'=>Auth::user()->user_id
+            );
+            Group::updateOrcreate($masterGroupData);
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
