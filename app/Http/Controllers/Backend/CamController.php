@@ -1454,13 +1454,16 @@ class CamController extends Controller
       if ($limitData->product_id == 1) {
         $user = $this->appRepo->getAppData($appId)->user;
         $user_type = $user->is_buyer;
-        $anchors = $user->anchor;
-        $anchorPrgms = $this->appRepo->getPrgmsByAnchor([$anchors->anchor_id], $user_type);
+        $anchors = $user->anchors;
+        $anchorArr=[];
+        foreach($anchors as $anchor){
+          array_push($anchorArr, $anchor->anchor_id);
+        }
+        $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
         $anchors = [];
         $anchorPrgms = [];
       }
-
       // get Total Sub Limit amount by app_prgm_limit_id
       $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
 
@@ -1483,6 +1486,7 @@ class CamController extends Controller
 
     /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
+      //dd($request->all());
       try{
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
@@ -1503,15 +1507,17 @@ class CamController extends Controller
 
         /*Start add offer PTPQ block*/
         $ptpqArr =[];
-        foreach($request->ptpq_from as $key=>$val){
-          $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
-          $ptpqArr[$key]['ptpq_from'] = $request->ptpq_from[$key];
-          $ptpqArr[$key]['ptpq_to'] = $request->ptpq_to[$key];
-          $ptpqArr[$key]['ptpq_rate'] = $request->ptpq_rate[$key];
-          $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
-          $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
+        if($request->has('ptpq_from')){
+          foreach($request->ptpq_from as $key=>$val){
+            $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
+            $ptpqArr[$key]['ptpq_from'] = $request->ptpq_from[$key];
+            $ptpqArr[$key]['ptpq_to'] = $request->ptpq_to[$key];
+            $ptpqArr[$key]['ptpq_rate'] = $request->ptpq_rate[$key];
+            $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
+            $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
+          }
+          $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
         }
-        $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
         /*End add offer PTPQ block*/
 
         if($offerData){

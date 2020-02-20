@@ -92,8 +92,8 @@
                                                        <td width="5%">{{($key+1)}}</td>
                                                        <td width="16%">{{$prgmLimit->product->product_name}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
-                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
                                                        <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
@@ -121,12 +121,12 @@
                                             @if($prgmLimit->offer->count() != 0)
                                             @foreach($prgmLimit->offer as $k=>$prgmOffer)
                                             </tr>
-                                                <td>{{$offerData->overdue_interest_rate}}%</td>
-                                                <td>{{$offerData->interest_rate}}%</td>
+                                                <td>{{$prgmOffer->overdue_interest_rate}}%</td>
+                                                <td>{{$prgmOffer->interest_rate}}%</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
-                                                <td>{{$offerData->margin}}%</td>
-                                                <td>{{$offerData->grace_period}}</td>
+                                                <td>{{$prgmOffer->margin}}%</td>
+                                                <td>{{$prgmOffer->grace_period}}</td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
                                                 <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
                                             </tr>
@@ -383,10 +383,6 @@
 @endsection
 @section('jscript')
 <script>
-var messages = {
-    "get_program_balance_limit" : "{{route('ajax_get_program_balance_limit')}}",
-    "token" : "{{ csrf_token() }}"  
-};
 
 $(document).ready(function(){
     $('.add-offer').on('click', function(){

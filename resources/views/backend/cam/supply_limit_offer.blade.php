@@ -25,7 +25,6 @@
       <div class="form-group INR">
         <label for="txtPassword" ><b>Limit</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <span class="float-right text-success">Total Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
         <input type="text" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
       </div>
     </div>
@@ -36,7 +35,7 @@
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
                 @foreach($anchors as $key=>$anchor)
-                <option value="1">Anchor 1</option>
+                <option value="{{$anchor->anchor_id}}">{{$anchor->comp_name}}</option>
                 @endforeach
             </select>
         </div>
@@ -46,9 +45,6 @@
       <div class="form-group">
         <label for="txtPassword"><b>Program</b></label> 
             <select name="prgm_id" id="program_id" class="form-control">
-                <option value="">Select Program</option>
-                <option value="1">Program 1</option>
-                <option value="2">Program 2</option>
             </select>
         </div>
     </div>
@@ -56,7 +52,8 @@
     <div class="col-md-6">
       <div class="form-group INR">
         <label for="txtPassword"><b>Loan Offer</b></label>
-        <span class="float-right text-success s_value">zzzzzz</span>
+        <span class="text-success limit"></span>
+        <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Loan Offer" maxlength="15">
       </div>
@@ -65,7 +62,7 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Interest(%)</b></label>
-        <span class="float-right text-success s_value">zzzzzz</span>
+        <span class="float-right text-success limit"></span>
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
       </div>
     </div>
@@ -113,10 +110,9 @@
     </div>
     
     <div class="col-md-6">
-      <div class="form-group INR">
-        <label for="txtPassword"><b>Processing Fee</b></label> 
-        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
+      <div class="form-group">
+            <label for="txtPassword"><b>Processing Fee (%)</b></label>
+            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
       </div>
     </div>
     
@@ -146,6 +142,70 @@
 
 @section('jscript')
 <script>
+    var messages = {
+        "get_program_balance_limit" : "{{route('ajax_get_program_balance_limit')}}",
+        "token" : "{{ csrf_token() }}"  
+    };
+    var current_offer_amt = prgm_balance_limit = 0;
+    var anchorPrgms = {!! json_encode($anchorPrgms) !!};
+
+    $('#anchor_id').on('change',function(){
+        let anchor_id = $('#anchor_id').val();
+        setLimit('input[name=prgm_limit_amt]', '');
+        setLimit('input[name=interest_rate]', '');
+        fillPrograms(anchor_id, anchorPrgms);
+    });
+console.log(anchorPrgms);
+    function fillPrograms(anchor_id, programs){
+        let html = '<option value="" data-sub_limit="0" data-min_rate="0" data-max_rate="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
+        $.each(programs, function(i,program){
+            if(program.prgm_name != null && program.anchor_id == anchor_id)
+                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+program.min_interest_rate+'"  data-max_rate="'+program.max_interest_rate+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'">'+program.prgm_name+'</option>';
+        });
+        $('#program_id').html(html);
+    }
+
+    $('#program_id').on('change',function(){
+        //offers.program_limit = parseInt($('#program_id option:selected').data('sub_limit'));
+        let program_min_rate = $('#program_id option:selected').data('min_rate');
+        let program_max_rate = $('#program_id option:selected').data('max_rate');
+        let program_min_limit = parseInt($('#program_id option:selected').data('min_limit'));
+        let program_max_limit = parseInt($('#program_id option:selected').data('max_limit'));
+        let program_id = $('#program_id').val();
+        setLimit('input[name=prgm_limit_amt]', '');
+        setLimit('input[name=interest_rate]', '');
+
+        if(program_id == ''){
+            unsetError('select[name=prgm_id]');
+            setLimit('input[name=prgm_limit_amt]', '');
+            setLimit('input[name=interest_rate]', '');
+            return;
+        }else{
+            unsetError('select[name=prgm_id]');
+            setLimit('input[name=prgm_limit_amt]', '(<i class="fa fa-inr" aria-hidden="true"></i> '+program_min_limit+'-<i class="fa fa-inr" aria-hidden="true"></i> '+program_max_limit+')');
+            setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
+        }
+        let token = "{{ csrf_token() }}";
+        $('.isloader').show();
+        $.ajax({
+            'url':messages.get_program_balance_limit,
+            'type':"POST",
+            'data':{"_token" : messages.token, "program_id" : program_id},
+            error:function (xhr, status, errorThrown) {
+                $('.isloader').hide();
+                alert(errorThrown);
+            },
+            success:function(res){
+                debugger;
+                res = JSON.parse(res);
+                let consumed_limit = parseInt(res);
+                //offers.program_balance_limit = offers.program_limit - consumed_limit;
+                //setLimit('#limit_amt', 'Balance: <i class="fa fa-inr" aria-hidden="true"></i> '+offers.program_balance_limit);
+                $('.isloader').hide();
+            }
+        })
+    });
+
   function checkSupplyValidations(){
     let total_limit = "{{$totalLimit}}"; //total exposure limit amount
     let program_limit = "{{$programLimit}}"; //program limit

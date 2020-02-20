@@ -12,15 +12,9 @@
         <div class="col-md-6">
           <div class="form-group ">
             <label for="txtPassword" ><b>Product</b></label> 
-            <input type="text" class="form-control" value="Term Loan" placeholder="Facility Type" maxlength="15" disabled>
+            <input type="text" class="form-control" value="Tearm Loan" placeholder="Facility Type" maxlength="15" disabled>
           </div>
         </div>
-
-        @php
-        $programBalanceLimit = $programLimit - $programOfferedAmount + $currentOfferAmount;
-        $balanceLimit = $totalLimit - $totalOfferedAmount + $currentOfferAmount;
-        $actualBalance = ($programBalanceLimit < $balanceLimit)? $programBalanceLimit: $balanceLimit;
-        @endphp
 
         <div class="col-md-6">
           <div class="form-group INR">
@@ -237,16 +231,11 @@
   function checkLeasingValidations(){
     let limit_amt = "{{$limitData->limit_amt}}"; //limit from app_prgm_limit table
     let total_limit = "{{$totalLimit}}"; //total exposure limit amount
-    let program_limit = "{{$programLimit}}"; //program limit
     let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
-    let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
     let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
 
     let sub_total_amount = "{{$subTotalAmount}}"; //Sub total amount by app_prgm_limit_id
 
-    let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
-    let balance_limit = total_limit - total_offered_amount + current_offer_amount;
-    let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
     let sub_total_balance = limit_amt - (sub_total_amount - current_offer_amount);
 
     unsetError('input[name=prgm_limit_amt]');
@@ -291,9 +280,6 @@
 
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
-        flag = false;
-    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
-        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }
 
