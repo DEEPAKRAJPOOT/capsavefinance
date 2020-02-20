@@ -952,11 +952,11 @@
                                 </tbody>
                              </table>
                              <div class="data mt-4">
-                                <h2 class="sub-title bg">Risk Comments on Financials</h2>
-                                <div class="pl-4 pr-4 pb-4 pt-2">
+                                <h2 class="sub-title bg"  style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments on Financials</h2>
+                                <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                                    <textarea class="form-control form-control-sm" id="financial_risk_comments" name="financial_risk_comments" rows="3" value="" spellcheck="false">{{isset($finDetailData->financial_risk_comments) ? $finDetailData->financial_risk_comments : ''}}</textarea>
                                    <div class="clearfix"></div>
-                                </div>
+                                <!-- </div> -->
                              </div>
                              <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
                             </div>
