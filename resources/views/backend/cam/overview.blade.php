@@ -193,11 +193,12 @@
 
                         <div class="col-md-12 mt-4" style="background: #e1f0eb;">
                             <div class="row">
-                                <div class="col-md-3 ">
-                                    <label for="txtPassword"><b>Total Exposure </b></label>
+                                <div class="col-md-3 mt-2">
+                                    <label for="txtPassword"><b>Total Exposure (In Mn)</b></label>
                                 </div>
+                                <div class="col-md-6 "></div>
                                  <div class="col-md-3 ">
-                                      <input type="text" class="form-control " name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" />
+                                      <input type="text" class="form-control " name="total_exposure" value="{{isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : ''}}" readonly />
                                 </div>
                             </div>
                         </div>    
@@ -377,12 +378,12 @@
        var outstandingExposure = 0;
             $('input[name*=outstanding_exposure]').each(function(){
                 if($.isNumeric($(this).val().replace(/,/g, ''))){
-                    outstandingExposure  = parseInt(outstandingExposure) + parseInt($(this).val().replace(/,/g, ''));
+                    outstandingExposure  = parseFloat(outstandingExposure) + parseFloat($(this).val().replace(/,/g, ''));
     
                 }      
             });
-        var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, ''));
-        var outstandingExposureCam =  parseInt($("input[name='outstanding_exposure_cam']").val().replace(/,/g, ''));
+        var proposed =  parseFloat($("input[name='proposed_exposure']").val().replace(/,/g, ''));
+        var outstandingExposureCam =  parseFloat($("input[name='outstanding_exposure_cam']").val().replace(/,/g, ''));
         var outstandingExposure = (!isNaN(outstandingExposure))?outstandingExposure:0;
         outstandingExposureCam = (!isNaN(outstandingExposureCam))?outstandingExposureCam:0;
         proposed = (!isNaN(proposed))?proposed:0;
