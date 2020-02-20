@@ -383,17 +383,18 @@
     function calTotalExposure(){
        var outstandingExposure = 0;
             $('input[name*=outstanding_exposure]').each(function(){
-                if($.isNumeric($(this).val().replace(/,/g, ''))){
-                    outstandingExposure  = parseFloat(outstandingExposure) + parseFloat($(this).val().replace(/,/g, ''));
+                if($.isNumeric($(this).val())){
+                    outstandingExposure  = parseFloat(outstandingExposure) + parseFloat($(this).val());
     
                 }      
             });
-        var proposed =  parseFloat($("input[name='proposed_exposure']").val().replace(/,/g, ''));
-        var outstandingExposureCam =  parseFloat($("input[name='outstanding_exposure_cam']").val().replace(/,/g, ''));
+        var proposed =  parseFloat($("input[name='proposed_exposure']").val());
+        var outstandingExposureCam =  parseFloat($("input[name='outstanding_exposure_cam']").val());
         var outstandingExposure = (!isNaN(outstandingExposure))?outstandingExposure:0;
         outstandingExposureCam = (!isNaN(outstandingExposureCam))?outstandingExposureCam:0;
         proposed = (!isNaN(proposed))?proposed:0;
-        $("input[name='total_exposure']").val(proposed+outstandingExposure);
+        
+        $("input[name='total_exposure']").val((proposed+outstandingExposure).toFixed(2));
 
     }
 
