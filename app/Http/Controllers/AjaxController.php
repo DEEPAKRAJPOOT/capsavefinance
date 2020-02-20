@@ -3668,6 +3668,7 @@ if ($err) {
     public function getDisbursalList(DataProviderInterface $dataProvider)
     {
      $getDisList = $this->userRepo->getDisbursalList();
+     //dd($getDisList->get());
      return $dataProvider->getDisbursalList($this->request , $getDisList);   
     }
 
