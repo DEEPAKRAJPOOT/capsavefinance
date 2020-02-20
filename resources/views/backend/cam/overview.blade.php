@@ -118,7 +118,7 @@
                                 <label for="txtPassword"><b>Group Name</b></label>
                             </div>
                             <div class="col-md-3">
-                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name"/>
+                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/>
                             </div>
                             <div class="col-md-4"></div>
                             <div class="col-md-3">
