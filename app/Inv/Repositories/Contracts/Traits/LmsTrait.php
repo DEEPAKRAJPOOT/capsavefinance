@@ -220,28 +220,44 @@ trait LmsTrait
             }
 
             foreach ($invoice as $key => $inv) {
-                switch ($inv['int_accrual_type']) {
-                    case '1': //1=> upfrond
-                        $newInterest = null;
-                        if($inv['accrued_interest']<=$inv['total_interest']){
-                            $newInterest = $inv['total_interest']-$inv['accrued_interest'];
-                        }
-                        
-                        $invoice[$key]['disbursal']['interest_refund'] =  $newInterest;
+                    
+                    switch ($inv['int_accrual_type']) {
+                        case '1': //1=> upfrond
 
-                        if($totalRepaidAmount>=$inv['principal_amount']){
-                            $invoice[$key]['disbursal']['total_repaid_amt'] = $inv['principal_amount'];
-                            $totalRepaidAmount = $totalRepaidAmount - $inv['principal_amount'];
-                        }
-                       
-                        break;
-                    case '2': //2 => monthly
-                        # code...
-                        break;
-                    case '3': //3 => rear end
-                        # code...
-                        break;
-                }
+                            $newInterest = null;
+                            if($inv['accrued_interest']<=$inv['total_interest']){
+                                $newInterest = $inv['total_interest']-$inv['accrued_interest'];
+                            }
+                            
+                            $invoice[$key]['disbursal']['interest_refund'] =  $newInterest;
+
+                            if($totalRepaidAmount >= $inv['principal_amount']){
+                                $invoice[$key]['disbursal']['total_repaid_amt'] = $inv['principal_amount'];
+                            }else{
+                                $invoice[$key]['disbursal']['total_repaid_amt'] = $totalRepaidAmount;
+                            }
+
+
+                            $invoice[$key]['invoiceRepayment'] = [
+                                'user_id'=> $inv['user_id'],
+                                'invoice_id'=> $inv['invoice_id'],
+                                'repaid_amount'=> $invoice[$key]['disbursal']['total_repaid_amt'],
+                                'repaid_date'=> \Carbon\Carbon::now()->format('Y-m-d h:i:s'),
+                                'trans_type'=> 17,
+                            ];
+
+                            $totalRepaidAmount -= $invoice[$key]['disbursal']['total_repaid_amt'];
+                            
+                        
+                            break;
+                        case '2': //2 => monthly
+                            # code...
+                            break;
+                        case '3': //3 => rear end
+                            # code...
+                            break;
+                    }
+        
                 
             }
 
