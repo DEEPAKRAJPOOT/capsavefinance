@@ -132,15 +132,15 @@
                             </div>
                             <div class="col-md-3 mt-4">
                                     <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
-                                     <input type="text" name="sanction_limit_cam" class="form-control  calTotalExposure" value="{{isset($arrCamData->sanction_limit_cam) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="number" name="sanction_limit_cam" class="form-control  calTotalExposure" value="{{isset($arrCamData->sanction_limit_cam) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-3 mt-4">
                                  <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
-                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{isset($arrCamData->outstanding_exposure_cam) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                 <input type="number" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{isset($arrCamData->outstanding_exposure_cam) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-2 mt-4">
                              <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
-                              <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
+                              <input type="number" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
                             </div>
                             
                         </div>
@@ -157,10 +157,10 @@
                                 </div>
                                 <div class="col-md-3">
                                    
-                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure" value="{{isset($arr['sanction_limit']) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="number" name="sanction_limit[]" class="form-control calTotalExposure" value="{{isset($arr['sanction_limit']) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3">
-                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="{{isset($arr['outstanding_exposure']) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     <input type="number" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="{{isset($arr['outstanding_exposure']) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-2 center">
                                  @if($loop->first)
@@ -177,10 +177,10 @@
                                     <input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company"/>
                                 </div>
                                 <div class="col-md-3">
-                                      <input type="text" name="sanction_limit[]" class="form-control  calTotalExposure" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                      <input type="number" name="sanction_limit[]" class="form-control  calTotalExposure" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3">
-                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     <input type="number" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-1 ">
                                     <i class="fa fa-2x fa-plus-circle add-ptpq-block "></i>
@@ -401,10 +401,10 @@
                 '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required>'+
             '</div>'+
             '<div class="col-md-3">'+
-                '<input type="text" name="sanction_limit[]" class="form-control " value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
+                '<input type="number" name="sanction_limit[]" class="form-control " value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-3">'+
-                '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
+                '<input type="number" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
