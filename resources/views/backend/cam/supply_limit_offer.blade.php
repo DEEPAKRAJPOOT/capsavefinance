@@ -279,7 +279,7 @@
         if(parseFloat(interest_rate) > 100){
             setError('input[name=interest_rate]', 'Please fill correct intereset rate');
             flag = false;
-        }else if((parseFloat(interest_rate) < parseFloat(limitObj.prgm_min_rate)) || parseFloat(interest_rate) > parseFloat(limitObj.prgm_min_rate)){
+        }else if((parseFloat(interest_rate) < parseFloat(limitObj.prgm_min_rate)) || parseFloat(interest_rate) > parseFloat(limitObj.prgm_max_rate)){
             setError('input[name=interest_rate]', 'Interest rate should be ('+limitObj.prgm_min_rate+'% - '+limitObj.prgm_max_rate+'%) range');
             flag = false;
         }else{
@@ -340,7 +340,7 @@
     }
 
     if(flag){
-        return false;
+        return true;
     }else{
         return false;
     }
