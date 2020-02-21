@@ -70,6 +70,34 @@
                                                         {!! Form::text('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['class'=>'form-control' ,'readonly'=>true ,'id'=>'anchor_limit'])   !!}
                                                     </div>
                                                 </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="txtCreditPeriod">
+                                                            {{ trans('backend.add_program.program_detail') }}
+                                                            <span class="error_message_label">*</span></label>
+                                                        <div class="block-div clearfix ">
+                                                            <div class="form-check-inline float-left">
+                                                                <label class="form-check-label fnt">
+                                                                    {!! Form::radio('prgm_type','1','', ['class'=>'form-check-input']) !!}
+                                                                    <strong>
+                                                                        {{ trans('backend.add_program.vendor_finance') }}   
+                                                                    </strong>
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check-inline float-left">
+                                                                <label class="form-check-label fnt">
+                                                                    {!! Form::radio('prgm_type','2','', ['class'=>'form-check-input'])!!}<strong>
+                                                                        {{ trans('backend.add_program.channel_finance') }}    
+                                                                    </strong>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <label id="prgm_type-error" class="error mb-0" for="prgm_type"></label>
+                                                    </div>
+
+                                                </div>
+
                                                 <div class="col-md-12">
                                                     <h5 class="card-title">Terms</h5>
                                                 </div>

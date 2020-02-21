@@ -94,9 +94,6 @@ try {
                     product_id: {
                         required: true
                     },
-                    prgm_type: {
-                        required: true
-                    },
                     prgm_name: {
                         required: true,
                         lettersonly: true
@@ -160,9 +157,6 @@ try {
                 {data: 'f_name'},
                 {
                     data: 'prgm_name'
-                },
-                {
-                    data: 'prgm_type'
                 },
                 {
                     data: 'anchor_limit'
@@ -426,7 +420,9 @@ try {
                 {
                     data: 'product_name'
                 },
-
+                {
+                    data: 'prgm_type'
+                },
                 {
                     data: 'anchor_limit'
                 },
@@ -470,6 +466,9 @@ try {
             var maxloan = $("input[name='max_loan_size']").val().replace(/,/g, "");
             let validationRules = {
                 rules: {
+                    prgm_type: {
+                        required: true
+                    },
                     product_name: {
                         required: true,
                         lettersonly: true
