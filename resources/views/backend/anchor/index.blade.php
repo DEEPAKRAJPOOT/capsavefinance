@@ -74,6 +74,7 @@
 </div>
 {!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('add_bank_account','Add Bank Detail', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
