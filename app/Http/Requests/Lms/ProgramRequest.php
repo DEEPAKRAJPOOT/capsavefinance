@@ -28,7 +28,7 @@ class ProgramRequest extends FormRequest {
             'prgm_name' => "required",
             'prgm_type' => 'required',
             'industry_id' => "required",
-            'sub_industry_id' => "required",
+//            'sub_industry_id' => "required",
             'anchor_limit' => "required",
             'is_fldg_applicable' => "required",
         ];
