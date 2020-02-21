@@ -124,7 +124,7 @@ try {
 <script>
     $('#confim_acc_no').val($('#account_no').val());
     $(function () {
-        $("form[name='bank_account46546456']").validate({
+        $("form[name='bank_account']").validate({
             rules: {
                 'acc_name': {
                     required: true,
