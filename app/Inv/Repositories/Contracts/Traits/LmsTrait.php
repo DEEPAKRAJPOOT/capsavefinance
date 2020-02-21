@@ -36,7 +36,7 @@ trait LmsTrait
         $currentDate = date('Y-m-d');
                 
         $disbursalWhereCond = [];
-        $disbursalWhereCond['status_id']  = [12,13];
+        $disbursalWhereCond['status_id']  = [12];
         //$disbursalWhereCond['int_accrual_start_dt']  = $currentDate;
         $disbursalData = $this->lmsRepo->getDisbursalRequests($disbursalWhereCond);
         $returnData = [];
@@ -67,7 +67,7 @@ trait LmsTrait
                 $interestRate = $disburse->interest_rate;
                 
                 if ($intAccrualDt > $gracePeriodDate && $balancePrincipalAmt > 0) {
-                    $interestRate = $interestRate + $overdueIntRate;
+                    $interestRate = $overdueIntRate;
                     $reculateInterest = true;
                 }
                 $calInterestRate  = round($interestRate / 100, 2);
@@ -184,31 +184,35 @@ trait LmsTrait
 
     protected function getTransactions($userId, &$trans, &$offset, $pipedAmt, $settlementAmt, &$lastTransId){
         
-        
-        if($pipedAmt>=$settlementAmt){
-            $transactions = Transactions::find($lastTransId);
-            $trans[$transactions->trans_id] =[
-                'trans_id' => $transactions->trans_id,
-                'amount' => $transactions->amount,
+        $transactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17 ]);
+
+        if($lastTransId && (($pipedAmt>=$settlementAmt) || ($transactions->where(['is_settled'=>'0'])->count()-1 < $offset)) ){
+            $transaction =  Transactions::find($lastTransId);
+            $trans[$transaction->trans_id] =[
+                'trans_id' => $transaction->trans_id,
+                'trans_date' => $transaction->trans_date,
+                'amount' => $transaction->amount,
                 'pipedAmt' => $pipedAmt,
                 'settledAmount' => ($settlementAmt>=$pipedAmt)?$pipedAmt:$settlementAmt
             ];
+        }
+
+        if($pipedAmt>=$settlementAmt){
             return $pipedAmt;
         }
         
-        $transactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17])->orderBy('trans_date','asc');
-        
-        if($transactions->count()-1 < $offset){
+        if($transactions->where(['is_settled'=>'0'])->count()-1 < $offset){
             return $pipedAmt;
         }
-        $userTransDetails = $transactions->offset($offset)->limit(1)->first();
 
-        $pipedAmt = ($lastTransId != $userTransDetails->trans_id)?$pipedAmt+$userTransDetails->amount:$pipedAmt;
-        $lastTransId = $userTransDetails->trans_id;
-
-        $trans[$userTransDetails->trans_id] =[
-            'trans_id' => $userTransDetails->trans_id,
-            'amount' => $userTransDetails->amount,
+        $transaction = $transactions->where(['is_settled'=>[0]])->orderBy('trans_date','asc')->offset($offset)->limit(1)->first();
+        
+        $pipedAmt = ($lastTransId != $transaction->trans_id)?$pipedAmt+$transaction->amount:$pipedAmt;
+        $lastTransId = $transaction->trans_id;
+        $trans[$transaction->trans_id] =[
+            'trans_id' => $transaction->trans_id,
+            'trans_date' => $transaction->trans_date,
+            'amount' => $transaction->amount,
             'pipedAmt' => $pipedAmt,
             'settledAmount' => ($settlementAmt>=$pipedAmt)?$pipedAmt:$settlementAmt
         ];
@@ -230,14 +234,13 @@ trait LmsTrait
         if($userId){
             $settledInvoice = [];
             
-            $userInvoiceDetails = Disbursal::where(['user_id'=>$userId,'status_id'=>[12]])
+            $userInvoiceDetails = Disbursal::where(['user_id'=>$userId])
+                ->whereIn('status_id',[13,12])
                 ->orderBy('inv_due_date','asc')
                 ->get();
 
-            $transactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17])
-                ->orderBy('trans_date','asc');
+            $noOfTransactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17])->whereIn('is_settled',[0,1])->count();
             
-            $totalRepaidAmount = $transactions->sum('amount'); 
  
             $invoice = array();
             foreach ($userInvoiceDetails as $key => $UIDetail) {
@@ -260,11 +263,15 @@ trait LmsTrait
             $invoiceLoop = 0;
             $totalRepaidAmount = 0;
             $lastTransId=NULL;
+            
             foreach ($invoice as $key => $inv) {
+            
                 $trans = array();
                 $misspend= 0; 
-                switch ($inv['int_accrual_type']) {
-                    case '1': //1=> upfrond
+                $is_inv_settled = 0;
+                $is_settled = 0;
+                // switch ($inv['int_accrual_type']) {
+                //     case '1': //1=> upfrond
                     
                         // Interest Settlement 
                         if($inv['accrued_interest']<=$inv['total_interest']){
@@ -272,92 +279,75 @@ trait LmsTrait
                         }else{
                             $refund = null;
                             $misspend = ($inv['accrued_interest']-$inv['total_interest']);
-                            $totalRepaidAmount= $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, ($inv['accrued_interest']-$inv['total_interest']),$lastTransId);
+                            $totalRepaidAmount= $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount,$misspend,$lastTransId);
                         }
+                        if($totalRepaidAmount<=0 && $key>0 && $noOfTransactions >= $invoiceLoop) break;
+
                         $totalRepaidAmount += $refund;
+                        
+
                         $totalRepaidAmount -= $misspend;
                         
 
                         // Interest Refund 
-                        //$invoice[$key]['disbursal']['interest_refund'] =  $refund;
+                        $invoice[$key]['disbursal']['interest_refund'] =  $refund;
 
+                        $balancePrincipalAmt = $inv['principal_amount'] - $inv['total_repaid_amt']-$inv['interest_refund'];
                         
                         // Principal Settlement 
-                        $totalRepaidAmount = $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, $inv['principal_amount'],$lastTransId);
+                        $totalRepaidAmount = $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, $balancePrincipalAmt,$lastTransId);
                         
-                        if($totalRepaidAmount >= $inv['principal_amount']){
+                        if($totalRepaidAmount >= $balancePrincipalAmt){
                             $invoice[$key]['disbursal']['total_repaid_amt'] = $inv['principal_amount'];
                         }else{
                             $invoice[$key]['disbursal']['total_repaid_amt'] = $totalRepaidAmount;
                         }
                         $totalRepaidAmount -= $invoice[$key]['disbursal']['total_repaid_amt'];
+                        $is_inv_settled = ($balancePrincipalAmt>$invoice[$key]['disbursal']['total_repaid_amt'])?1:2;
+
+                        $invoice[$key]['disbursal']['status_id'] = ($is_inv_settled == 1)?13:15;
 
                         $invoice[$key]['invoiceRepayment'] = [
                             'user_id'=> $inv['user_id'],
                             'invoice_id'=> $inv['invoice_id'],
-                            'repaid_amount'=> $invoice[$key]['disbursal']['total_repaid_amt'],
+                            'repaid_amount'=> round($invoice[$key]['disbursal']['total_repaid_amt'],2),
                             'repaid_date'=> \Carbon\Carbon::now()->format('Y-m-d h:i:s'),
-                            'trans_type'=> 17,
+                            'trans_type'=> ($is_inv_settled == 1)?13:17,
                         ];
 
                         $invoice[$key]['trans']= $trans;
 
-                        break;
-                    case '2': //2 => monthly
-                        # code...
-                        break;
-                    case '3': //3 => rear end
-                        # code...
-                        break;
-                }
+                        $lastTransaction = end($invoice[$key]['trans']);
+
+                        $invoice[$key]['disbursal']['settlement_date'] = $lastTransaction['trans_date'];
+
+                        $is_settled = ($lastTransaction['pipedAmt']>=$balancePrincipalAmt)?1:2;
+                //         break;
+                //     case '2': //2 => monthly
+                //         # code...
+                //         break;
+                //     case '3': //3 => rear end
+                //         # code...
+                //         break;
+                // }
+
+                $this->lmsRepo->saveTransaction(['is_settled'=> $is_settled],['trans_id'=>$lastTransaction['trans_id']]);
+                $this->lmsRepo->saveRepayment($invoice[$key]['invoiceRepayment']);
+                $this->lmsRepo->saveDisbursalRequest($invoice[$key]['disbursal'], ['disbursal_id' => $inv['disbursal_id']]);
             }
 
-           // dump($userInvoiceDetails[0]->offer);
+            $unUsedTrnsactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17])->whereIn('is_settled',[0,1])->orderBy('trans_date','asc')->offset($invoiceLoop+1)->limit($noOfTransactions)->pluck('amount','trans_id');
+            
+            foreach ($unUsedTrnsactions as $trans_id => $amt) {
+                $totalRepaidAmount += $amt;
+                $this->lmsRepo->saveTransaction(['is_settled'=> '2'],['trans_id'=>$trans_id]);
+            }
 
+            if(!empty($invoice)){
+                $this->lmsRepo->saveDisbursalRequest(['surplus_amount'=>($totalRepaidAmount>0)?$totalRepaidAmount:NULL], ['disbursal_id' => $invoice[$key]['disbursal_id']]);
+            }
 
-            dd( $userInvoiceDetails, $invoice);
-
-
-         /*    $settledInvoice = [];
-            foreach ($userTransDetails as $UTDkey => $UTDetail) {
-                foreach ($UTDetail->disburse as $UIDkey => $UIDetail) {
-                   $invoiceRepaymentTrail = [];
-                   $invoiceRepaymentTrail['user_id']=$UIDetail->user_id; 
-                   $invoiceRepaymentTrail['invoice_id']=$UIDetail->invoice_id; 
-                   $invoiceRepaymentTrail['repaid_amount']=$UTDetail->amount; 
-                   $invoiceRepaymentTrail['repaid_date']=$UTDetail->trans_date; 
-                   $invoiceRepaymentTrail['trans_type']=$UTDetail->trans_type; 
-                
-                   $UIDetail->principal_amount;
-                   $UIDetail->total_repaid_amt;
-
-                   $UIDetail->interests->sum('accrued_interest');
-                   $UIDetail->total_interest;
-
-                   $UIDetail->inv_due_date;
-                   $UTDetail->trans_date;
-
-                   $totalDueAmtWithInt = $UIDetail->principal_amount+$UIDetail->interests->sum('accrued_interest');
-                   $totalPaidAmt = $UTDetail->amount+$UIDetail->total_repaid_amt;
-                   
-                   $totalBalance = $totalPaidAmt - $totalDueAmtWithInt; 
-                    
-                   $status = ($totalBalance >= 0) ? 15 : 13;
-
-                    
-                   $UIDetail->update(['status_id'=> $status ,'total_repaid_amt'=>$UTDetail->amount]);
-                   InvoiceRepaymentTrail::create($invoiceRepaymentTrail);                      
-                
-
-                //    $balRepaymentAmt = $UTDetail->amount - ($UIDetail->principal_amount+$UIDetail->interests->sum('accrued_interest'));
-                //     dump($balRepaymentAmt, $UTDetail->amount, $UIDetail->principal_amount, $UIDetail->interests->sum('accrued_interest'));
-                //    if($balRepaymentAmt<=0){
-                //     $UIDetail->update(['status_id'=>15]);
-                //     InvoiceRepaymentTrail::create($settledInvoice[0]);
-                //     unset($userInvoiceDetails[$UIDkey]);
-                //    }
-                } 
-            } */
+            dd($invoice, 'Surplus='.$totalRepaidAmount);
            
         }
     }
