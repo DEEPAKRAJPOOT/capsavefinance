@@ -6,6 +6,7 @@
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
+    <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id">
     
     <div class="row">
     <div class="col-md-6">
@@ -17,6 +18,7 @@
 
     @php
     $currentOfferAmount = $offerData->prgm_limit_amt ?? 0;
+    $limitBalance = (int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount;
     @endphp
 
     <div class="col-md-6">
@@ -33,7 +35,7 @@
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
                 @foreach($anchors as $key=>$anchor)
-                <option value="{{$anchor->anchor_id}}">{{$anchor->comp_name}}</option>
+                <option value="{{$anchor->anchor_id}}" {{(isset($offerData->anchor_id) && $anchor->anchor_id == $offerData->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
                 @endforeach
             </select>
         </div>
@@ -51,7 +53,7 @@
       <div class="form-group INR">
         <label for="txtPassword"><b>Sub Limit</b></label>
         <span class="text-success limit"></span>
-        <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}</span>
+        <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($limitBalance<0)? 0: $limitBalance}}</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Loan Offer" maxlength="15">
       </div>
@@ -149,6 +151,7 @@
     var anchorPrgms = {!! json_encode($anchorPrgms) !!};
     var anchor_id = {{$offerData->anchor_id ?? 0}};
     var program_id = {{$offerData->prgm_id ?? 0}};
+    var limit_balance = {{$limitBalance}};
     $(document).ready(function(){
         fillPrograms(anchor_id, anchorPrgms)
     })
@@ -267,8 +270,11 @@
         }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_balance_limit)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should be less than ('+limitObj.prgm_balance_limit+') program balance limit');
             flag = false;
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
+            flag = false;
         }else{
-            //TAKE REST
+            //TAKE REST limit_balance
         }
     }
 
