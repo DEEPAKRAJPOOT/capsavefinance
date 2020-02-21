@@ -41,7 +41,11 @@
                                                         </p>
 
 
-                                                        <p class="float-left mb-0"><b>Programe Type : </b> {{ \Helpers::getProgramType($programData->prgm_type) }} </p>
+                                                        <p class="float-right mb-0">
+                                                            <b>Remaining Anchor Limit : </b>
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                                            {{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }} 
+                                                        </p>
                                                     </div>
                                                     <!--                                                    <div class="col-sm-3 text-right">
                                                        <a class="edit-btn" href="{{route('add_program',['program_id'=> $program_id ,'anchor_id'=>$anchor_id ])}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
@@ -57,20 +61,10 @@
                                             {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}
                                             {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
                                             {!! Form::hidden('product_id',isset($programData) ? $programData->product_id : null) !!}
-
+                                            {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit'])   !!}
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
                                             <div class="sub-form renew-form" id="subform">
-                                                <div class="col-md-12">
-                                                    <div class="form-group INR">
-                                                        <label for="txtCreditPeriod">Remaining Anchor Limit</label>
-                                                        <a href="javascript:void(0);" class="verify-owner-no" style="top:42px;">
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                        </a>   
-                                                        {!! Form::text('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['class'=>'form-control' ,'readonly'=>true ,'id'=>'anchor_limit'])   !!}
-                                                    </div>
-                                                </div>
-
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="txtCreditPeriod">
