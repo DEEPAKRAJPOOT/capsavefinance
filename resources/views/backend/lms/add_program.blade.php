@@ -97,7 +97,7 @@
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.sub_industry') }}
-                                                    <span class="error_message_label">*</span> </label>
+                                                    <span class="error_message_label"></span> </label>
                                                 {!! Form::select('sub_industry_id', [''=>trans('backend.please_select')], '', ['class'=>'form-control sub_industry']) !!}
                                             </div>
                                         </div>
