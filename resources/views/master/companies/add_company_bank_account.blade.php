@@ -112,6 +112,7 @@ try {
     var p = window.parent;
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
     p.jQuery('#add_bank_account').modal('hide');
+    p.window.location.reload();
     p.reloadDataTable();
 } catch (e) {
     if (typeof console !== 'undefined') {
