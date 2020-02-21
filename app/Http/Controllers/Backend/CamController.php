@@ -2,50 +2,50 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Auth;
+use Mail;
+use Helpers;
+use Session;
+use Storage;
+use PDF as DPDF;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use Carbon\Carbon;
+use App\Mail\ReviewerSummary;
+use App\Libraries\Pdf;
+use App\Libraries\Perfios_lib;
+use App\Libraries\Bsa_lib;
+use App\Libraries\MobileAuth_lib;
+use App\Libraries\Gupshup_lib;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
-use App\Http\Requests\AnchorInfoRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\AnchorInfoRequest;
+use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\Cam;
-use App\Libraries\Perfios_lib;
-use App\Libraries\Bsa_lib;
-use App\Libraries\MobileAuth_lib;
-use PHPExcel;
-use PHPExcel_IOFactory;
-use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
-use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\CamHygiene;
-use Auth;
-use Session;
-use Storage;
-use App\Libraries\Gupshup_lib;
-date_default_timezone_set('Asia/Kolkata');
-use Helpers;
-use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
-use App\Mail\ReviewerSummary;
-use Mail;
-use App\Inv\Repositories\Models\AppProgramOffer;
-use Carbon\Carbon;
-use App\Inv\Repositories\Models\OfferPTPQ;
-use App\Inv\Repositories\Models\AppApprover;
-use App\Libraries\Pdf;
-use App\Inv\Repositories\Models\UserAppDoc;
-use PDF as DPDF;
-use App\Inv\Repositories\Contracts\Traits\CamTrait;
-use App\Inv\Repositories\Models\CamReviewSummPrePost;
-use App\Inv\Repositories\Contracts\Traits\CommonTrait;
-use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\OfferPTPQ;
+use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\UserAppDoc;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 
+date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
 {
@@ -161,7 +161,6 @@ class CamController extends Controller
             }else{
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
-          
             if(!empty($arrCamData['group_company_name']))
             {
               GroupCompanyExposure::where([
