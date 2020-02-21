@@ -283,27 +283,37 @@ trait LmsTrait
                         }
                         if($totalRepaidAmount<=0 && $key>0 && $noOfTransactions >= $invoiceLoop) break;
 
-                        $totalRepaidAmount += $refund;
+                        //$totalRepaidAmount += $refund;
                         
 
                         $totalRepaidAmount -= $misspend;
                         
 
                         // Interest Refund 
-                        $invoice[$key]['disbursal']['interest_refund'] =  $refund;
-
+                       
                         $balancePrincipalAmt = $inv['principal_amount'] - $inv['total_repaid_amt']-$inv['interest_refund'];
                         
                         // Principal Settlement 
                         $totalRepaidAmount = $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, $balancePrincipalAmt,$lastTransId);
                         
-                        if($totalRepaidAmount >= $balancePrincipalAmt){
+                        if($totalRepaidAmount+$refund >= $balancePrincipalAmt){
+                            $invoice[$key]['disbursal']['interest_refund'] =  $refund;
                             $invoice[$key]['disbursal']['total_repaid_amt'] = $inv['principal_amount'];
+                            $totalRepaidAmount -= $refund;
+                            $is_inv_settled = 2;
                         }else{
                             $invoice[$key]['disbursal']['total_repaid_amt'] = $totalRepaidAmount;
+                            $is_inv_settled = 1;
                         }
+
+                        // $is_inv_settled = ($balancePrincipalAmt>$invoice[$key]['disbursal']['total_repaid_amt'])?1:2;
+
+                        // if($is_inv_settled == 1){
+                        //     $invoice[$key]['disbursal']['interest_refund'] =  NULL;
+                        //     $totalRepaidAmount -= $refund;
+                        // }
+
                         $totalRepaidAmount -= $invoice[$key]['disbursal']['total_repaid_amt'];
-                        $is_inv_settled = ($balancePrincipalAmt>$invoice[$key]['disbursal']['total_repaid_amt'])?1:2;
 
                         $invoice[$key]['disbursal']['status_id'] = ($is_inv_settled == 1)?13:15;
 
