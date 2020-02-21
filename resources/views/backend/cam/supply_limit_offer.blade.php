@@ -49,7 +49,7 @@
 
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Loan Offer</b></label>
+        <label for="txtPassword"><b>Sub Limit</b></label>
         <span class="text-success limit"></span>
         <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>

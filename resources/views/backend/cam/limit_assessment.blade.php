@@ -399,8 +399,12 @@ $(document).ready(function(){
         $('#openLimitModal').attr('data-url', data_url);
         $('#openLimitModal').trigger('click');
     });
-
 });
+
+$(document).ready(function(){
+    $('.card-header').eq(0).removeClass('collapsed');
+    $('.card-body').eq(1).addClass('show');
+})
 
 function checkValidation(){
     unsetError('select[name=product_id]');

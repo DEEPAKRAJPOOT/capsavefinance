@@ -100,7 +100,7 @@ class Helper extends PaypalHelper
 
      //return \App\Inv\Repositories\Models\CorpStatus::all(); 
     
-        return "<div  class=\"modal\" id=\"$modelId\">
+        return "<div  class=\"modal\" id=\"$modelId\" data-keyboard=\"false\" data-backdrop=\"static\">
         <div class=\"modal-dialog $model\">
           <div class=\"modal-content\">
               <div class=\"modal-header\">
