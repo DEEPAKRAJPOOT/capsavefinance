@@ -241,6 +241,9 @@ trait LmsTrait
 
             $noOfTransactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17])->whereIn('is_settled',[0,1])->count();
             
+            if($noOfTransactions==0){
+                return [];
+            }
  
             $invoice = array();
             foreach ($userInvoiceDetails as $key => $UIDetail) {
@@ -274,48 +277,51 @@ trait LmsTrait
                 //     case '1': //1=> upfrond
                     
                         // Interest Settlement 
+
+
+
                         if($inv['accrued_interest']<=$inv['total_interest']){
                             $refund = $inv['total_interest']-$inv['accrued_interest'];
                         }else{
-                            $refund = null;
+                            $refund = 0;
                             $misspend = ($inv['accrued_interest']-$inv['total_interest']);
-                            $totalRepaidAmount= $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount,$misspend,$lastTransId);
                         }
-                        if($totalRepaidAmount<=0 && $key>0 && $noOfTransactions >= $invoiceLoop) break;
 
-                        //$totalRepaidAmount += $refund;
+                        $totalRepaidAmount = $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount,$misspend,$lastTransId);
                         
+                        //if($totalRepaidAmount<=0 && $noOfTransactions >= $invoiceLoop) break;
 
+
+                        // Interest Settlement Step 1
+                        
                         $totalRepaidAmount -= $misspend;
                         
 
-                        // Interest Refund 
-                       
+                        // Principal Settlement Step 2
+
                         $balancePrincipalAmt = $inv['principal_amount'] - $inv['total_repaid_amt']-$inv['interest_refund'];
                         
-                        // Principal Settlement 
-                        $totalRepaidAmount = $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, $balancePrincipalAmt,$lastTransId);
+                        $totalRepaidAmount = $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, $balancePrincipalAmt, $lastTransId);
                         
                         if($totalRepaidAmount+$refund >= $balancePrincipalAmt){
-                            $invoice[$key]['disbursal']['interest_refund'] =  $refund;
                             $invoice[$key]['disbursal']['total_repaid_amt'] = $inv['principal_amount'];
-                            $totalRepaidAmount -= $refund;
+                            $invoice[$key]['disbursal']['status_id'] = 15;
                             $is_inv_settled = 2;
                         }else{
                             $invoice[$key]['disbursal']['total_repaid_amt'] = $totalRepaidAmount;
+                            $invoice[$key]['disbursal']['status_id'] = 13;
                             $is_inv_settled = 1;
                         }
-
-                        // $is_inv_settled = ($balancePrincipalAmt>$invoice[$key]['disbursal']['total_repaid_amt'])?1:2;
-
-                        // if($is_inv_settled == 1){
-                        //     $invoice[$key]['disbursal']['interest_refund'] =  NULL;
-                        //     $totalRepaidAmount -= $refund;
-                        // }
-
                         $totalRepaidAmount -= $invoice[$key]['disbursal']['total_repaid_amt'];
 
-                        $invoice[$key]['disbursal']['status_id'] = ($is_inv_settled == 1)?13:15;
+
+                        // Interest Refund Step 3
+                        if($is_inv_settled == 2){
+                            $totalRepaidAmount += $refund;
+                            $invoice[$key]['disbursal']['interest_refund'] = $refund;
+                        }else{
+                            $invoice[$key]['disbursal']['interest_refund'] = 0;
+                        }
 
                         $invoice[$key]['invoiceRepayment'] = [
                             'user_id'=> $inv['user_id'],
@@ -341,20 +347,20 @@ trait LmsTrait
                 //         break;
                 // }
 
-                $this->lmsRepo->saveTransaction(['is_settled'=> $is_settled],['trans_id'=>$lastTransaction['trans_id']]);
-                $this->lmsRepo->saveRepayment($invoice[$key]['invoiceRepayment']);
-                $this->lmsRepo->saveDisbursalRequest($invoice[$key]['disbursal'], ['disbursal_id' => $inv['disbursal_id']]);
+              //  $this->lmsRepo->saveTransaction(['is_settled'=> $is_settled],['trans_id'=>$lastTransaction['trans_id']]);
+             //   $this->lmsRepo->saveRepayment($invoice[$key]['invoiceRepayment']);
+              //  $this->lmsRepo->saveDisbursalRequest($invoice[$key]['disbursal'], ['disbursal_id' => $inv['disbursal_id']]);
             }
 
             $unUsedTrnsactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17])->whereIn('is_settled',[0,1])->orderBy('trans_date','asc')->offset($invoiceLoop+1)->limit($noOfTransactions)->pluck('amount','trans_id');
             
             foreach ($unUsedTrnsactions as $trans_id => $amt) {
                 $totalRepaidAmount += $amt;
-                $this->lmsRepo->saveTransaction(['is_settled'=> '2'],['trans_id'=>$trans_id]);
+               // $this->lmsRepo->saveTransaction(['is_settled'=> '2'],['trans_id'=>$trans_id]);
             }
 
             if(!empty($invoice)){
-                $this->lmsRepo->saveDisbursalRequest(['surplus_amount'=>($totalRepaidAmount>0)?$totalRepaidAmount:NULL], ['disbursal_id' => $invoice[$key]['disbursal_id']]);
+               // $this->lmsRepo->saveDisbursalRequest(['surplus_amount'=>($totalRepaidAmount>0)?$totalRepaidAmount:NULL], ['disbursal_id' => $invoice[$key]['disbursal_id']]);
             }
 
             dd($invoice, 'Surplus='.$totalRepaidAmount);
