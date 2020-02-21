@@ -619,6 +619,7 @@ class User extends Authenticatable
         return $this->hasOne('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
 
+
      public static function getProgramUser($user_id)
     {
          $appIds = Application::where('user_id', $user_id)->pluck('app_id');
@@ -643,6 +644,11 @@ class User extends Authenticatable
     {
          return $this->belongsTo('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->where(['status' =>1]);
     }
+
+    public function anchors(){
+        return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
+    }
+
     /**
      * Get Backend Users
      * 

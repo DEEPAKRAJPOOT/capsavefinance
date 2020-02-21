@@ -45,6 +45,7 @@ use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\ColenderShare;
 /**
  * Application repository class
  */
@@ -1358,6 +1359,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
     }
 
+
     public function getPrgmLimitByAppId($appId){
         return AppProgramLimit::where([
                 'app_id' => $appId, 
@@ -1405,4 +1407,20 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->pluck('is_buyer')->first();
     } 
     
+
+    public function saveShareToColender($data, $co_lenders_share_id=null){
+        return ColenderShare::saveShareToColender($data, $co_lenders_share_id);
+    }
+
+    public function getSharedColender($where){
+        return ColenderShare::getSharedColender($where);
+    }
+
+    public function getTotalPrgmLimitByAppId($appId){
+        return AppProgramLimit::getTotalPrgmLimitByAppId($appId);
+    }
+
+    public function getPrgmsByAnchor($anchor_ids, $uesr_type){
+        return Program::getPrgmsByAnchor($anchor_ids, $uesr_type);
+    }
 }

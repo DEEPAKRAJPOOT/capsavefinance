@@ -3,9 +3,8 @@
 
 <div class="modal-body text-left">
     {!! Form::open(['url'=>route('save_co_lenders'),'id'=>'save_co_lenders' ,'autocomplete' => 'off']) !!}
-
-  {!! Form::hidden('co_lender_id', isset($coLenderData->co_lender_id) ? $coLenderData->co_lender_id : null ) !!}
-  {!! Form::hidden('user_id', isset($coLenderData->user_id) ? $coLenderData->user_id : null ) !!}
+    {!! Form::hidden('co_lender_id', isset($coLenderData->co_lender_id) ? $coLenderData->co_lender_id : null ) !!}
+    {!! Form::hidden('user_id', isset($coLenderData->user_id) ? $coLenderData->user_id : null ) !!}
 
     <div class="row">
         <div class="col-6">
@@ -13,9 +12,7 @@
                 <label for="txtCreditPeriod">Full Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="employee" id="employee" 
-                       value="{{ isset($coLenderData->f_name) ? $coLenderData->f_name  : null }}" 
-                       class="form-control employee" tabindex="1" placeholder="Full Name" >
+                <input type="text" name="employee" id="employee" value="{{ isset($coLenderData->f_name) ? $coLenderData->f_name  : null }}" class="form-control employee" tabindex="1" placeholder="Full Name" maxlength="30">
             </div>
         </div>
         <div class="col-6">
@@ -23,12 +20,10 @@
                 <label for="txtSupplierName">Business Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="comp_name" id="comp_name"  value="{{ isset($coLenderData->biz_name) ? $coLenderData->biz_name  : null }}" class="form-control comp_name" tabindex="2" placeholder="Business Name" >
+                <input type="text" name="comp_name" id="comp_name"  value="{{ isset($coLenderData->biz_name) ? $coLenderData->biz_name  : null }}" class="form-control comp_name" tabindex="2" placeholder="Business Name" maxlength="50">
             </div>
         </div>
     </div>
-  
-  
   
     <div class="row">
          <div class="col-6">
@@ -36,21 +31,16 @@
                 <label for="txtMobile">GST Number
                     <span class="mandatory">*</span>
                 </label>
-
-                <input class="form-control percentage"  value="{{ isset($coLenderData->gst) ? $coLenderData->gst  : null }}"  name="gst" id="gst"  type="text"  placeholder="GST Number" required>
-
+                <input class="form-control gst" value="{{ isset($coLenderData->gst) ? $coLenderData->gst : null }}"  name="gst" id="gst" type="text" placeholder="GST Number" minlength="15" maxlength="15">
             </div>
         </div>
-
 
         <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">PAN Number
                     <span class="mandatory">*</span>
                 </label>
-
-                <input class="form-control" value="{{ isset($coLenderData->pan_no	) ? $coLenderData->pan_no	  : null }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" required="">
-
+                <input class="form-control pan-validate pan_no" value="{{ isset($coLenderData->pan_no) ? $coLenderData->pan_no : null }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" minlength="10" maxlength="10">
             </div>
         </div>
     </div>
@@ -60,7 +50,7 @@
                 <label for="txtEmail">Email
                     <span class="mandatory">*</span>
                 </label>
-                <input type="email" {{ isset($coLenderData->co_lender_id) ? "disabled"  : null }} name="email" id="email"  value="{{ isset($coLenderData->comp_email) ? $coLenderData->comp_email  : null }}" class="form-control email" tabindex="3" placeholder="Email" >
+                <input type="email" name="email" id="email"  value="{{ isset($coLenderData->comp_email) ? $coLenderData->comp_email  : null }}" class="form-control email" tabindex="3" placeholder="Email" maxlength="50" {{ isset($coLenderData->co_lender_id) ? "disabled"  : null }}>
             </div>
         </div>
 
@@ -69,12 +59,10 @@
                 <label for="txtMobile">Mobile
                     <span class="mandatory">*</span>
                 </label>
-
-                <input class="form-control numbercls phone"  value="{{ isset($coLenderData->comp_phone) ? $coLenderData->comp_phone  : null }}" name="phone" id="phone" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
+                <input class="form-control numbercls phone"  value="{{ isset($coLenderData->comp_phone) ? $coLenderData->comp_phone  : null }}" name="phone" id="phone" tabindex="4" type="text" maxlength="10" placeholder="Mobile">
                 <div class="failed">
                     <div style="color:#FF0000">
-                        <small class="erro-sms" id="erro-sms">
-                        </small>
+                        <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
             </div>
@@ -83,18 +71,15 @@
 
 
     <div class="row">
-
         <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">Address
                     <span class="mandatory">*</span>
                 </label>
-
-                <input class="form-control comp_addr"  value="{{ isset($coLenderData->comp_addr) ? $coLenderData->comp_addr  : null }}"  name="comp_addr" id="comp_addr" tabindex="5" type="text"  placeholder="Address" required="">
+                <input class="form-control comp_addr" value="{{ isset($coLenderData->comp_addr) ? $coLenderData->comp_addr  : null }}" name="comp_addr" id="comp_addr" tabindex="5" type="text"  placeholder="Address" maxlength="100">
                 <div class="failed">
                     <div style="color:#FF0000">
-                        <small class="erro-sms" id="erro-sms">
-                        </small>
+                        <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
             </div>
@@ -105,9 +90,6 @@
                 <label for="txtEmail">State
                     <span class="mandatory">*</span>
                 </label>     
-
-
-
                 <select class="form-control state" name="state" id="state" tabindex="6">
                     <option value=""> Select State</option>
                     @foreach($states as $key => $state)
@@ -116,21 +98,18 @@
                 </select>
             </div>
         </div>
-
-
     </div>
+
     <div class="row">
         <div class="col-6">
             <div class="form-group">
                 <label for="txtMobile">City
                     <span class="mandatory">*</span>
                 </label>
-
-                <input class="form-control city" name="city" id="city"  value="{{ isset($coLenderData->comp_city) ? $coLenderData->comp_city  : null }}"  tabindex="7" type="text" maxlength="10" placeholder="City" required="">
+                <input class="form-control city" name="city" id="city"  value="{{ isset($coLenderData->comp_city) ? $coLenderData->comp_city  : null }}"  tabindex="7" type="text" maxlength="10" placeholder="City">
                 <div class="failed">
                     <div style="color:#FF0000">
-                        <small class="erro-sms" id="erro-sms">
-                        </small>
+                        <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
             </div>
@@ -140,19 +119,17 @@
                 <label for="txtMobile">Pin Code
                     <span class="mandatory">*</span>
                 </label>
-
-                <input class="form-control numbercls pin_code" name="pin_code" value="{{ isset($coLenderData->comp_zip) ? $coLenderData->comp_zip  : null }}"  id="pin_code" tabindex="8" type="text" maxlength="6" placeholder="Pin Code" required="">
+                <input class="form-control numbercls pin_code" name="pin_code" value="{{ isset($coLenderData->comp_zip) ? $coLenderData->comp_zip  : null }}"  id="pin_code" tabindex="8" type="text" maxlength="6" placeholder="Pin Code">
                 <div class="failed">
                     <div style="color:#FF0000">
-                        <small class="erro-sms" id="erro-sms">
-                        </small>
+                        <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-       
-     
+    <div class="row">
          <div class="col-6">
             <div class="form-group">
                 <label for="txtCreditPeriod">Status
@@ -161,74 +138,51 @@
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
         </div>
-
-
-
     </div>
 
-
-
-
-    <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
+    <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button> 
     {!! Form::close()  !!}
 </div>
-
-
-
-
 @endsection
 
 @section('jscript')
 
-<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-
 <script>
-
 var messages = {
-//get_lead: "{{ URL::route('get_lead') }}",
-data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        //get_lead: "{{ URL::route('get_lead') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-};</script>
-
-
+};
+</script>
 
 @php
-
 $messages = session()->get('message', false);
 $error = session()->get('error', false);
 @endphp
 
-
-
-
-
 @if( session()->has('message'))
-
 <script>
     try {
-    var p = window.parent;
-    p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
-    p.jQuery('#addcolenders').modal('hide');
-    p.refresh();
-    // p.reloadDataTable();
+        var p = window.parent;
+        p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
+        p.jQuery('#addcolenders').modal('hide');
+        p.refresh();
+        // p.reloadDataTable();
     } catch (e) {
-    if (typeof console !== 'undefined') {
-    console.log(e);
-    }
+        if (typeof console !== 'undefined') {
+        console.log(e);
+        }
     }
 </script>
-
-
 @elseif(session()->has('error'))
 <script>
     var p = window.parent;
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($error, 'error') !!}');
     p.jQuery('#addcolenders').modal('hide');
-p.refresh();
+    p.refresh();
 </script>
 @endif
 <script type="text/javascript">
-
   $(document).ready(function () {
 	$('#saveAnch').on('click', function (event) {
 		$('input.employee').each(function () {
@@ -250,14 +204,6 @@ p.refresh();
 			$(this).rules("add", {
 				required: true,
 				email: true,
-				//                                remote: {
-				//                                url: messages.check_exist_user,
-				//                                type: 'post',
-				//                                data: {
-				//                                'username': $('#email').val()
-				//                                }
-				//                            }
-
 			})
 		});
 		$('input.phone').each(function () {
@@ -268,6 +214,20 @@ p.refresh();
 				maxlength: 10
 			})
 		});
+        $('input.pan_no').each(function () {
+            $(this).rules("add", {
+                required: true,
+                minlength: 10,
+                maxlength: 10
+            })
+        });
+        $('input.gst').each(function () {
+            $(this).rules("add", {
+                required: true,
+                minlength: 15,
+                maxlength: 15
+            })
+        });
 		$('select.state').each(function () {
 			$(this).rules("add", {
 				required: true
@@ -287,14 +247,15 @@ p.refresh();
 			$(this).rules("add", {
 				required: true,
 				number: true,
+                minlength: 6,
+                maxlength: 6
 			})
 		});
 		// test if form is valid                
 	})
 	//$("#btnAddMore").on('click', addInput);
-	$('form#save_co_lenders').validate();
-        
-          $(document).on('keyup', '.percentage', function () {
+	$('form#save_co_lenders').validate();   
+        $(document).on('keyup', '.percentage', function () {
             var result = $(this).val();
             if (result == 0) {
                 $(this).val('');
@@ -315,20 +276,13 @@ p.refresh();
         });
         
         
-        
-         function setTabIndex()
-        {
+        function setTabIndex(){
             var n = 1;
             $('input.form-control,input.form-check-input, select.form-control').each(function () {
-
                 $(this).attr('tabindex', n++);
             });
-
         }
-
-
         setTabIndex();
-});
-
+    });
 </script>
 @endsection

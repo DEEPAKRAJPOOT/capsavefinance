@@ -1402,24 +1402,25 @@ class CamController extends Controller
      */
     public function showLimitAssessment(Request $request)
     {
-        $appId = $request->get('app_id');
+        $appId = (int)$request->get('app_id');
         $bizId = $request->get('biz_id');
 
         $supplyPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 1);
         $termPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 2);
         $leasingPrgmLimitData = $this->appRepo->getProgramLimitData($appId, 3);
         $limitData = $this->appRepo->getAppLimit($appId);
+        $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
-                
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
                 ->with('limitData', $limitData)
                 ->with('totOfferedLimit', $tot_offered_limit)
+                ->with('prgmLimitTotal', $prgmLimitTotal)
                 ->with('approveStatus', $approveStatus)
                 ->with('supplyPrgmLimitData', $supplyPrgmLimitData)
                 ->with('termPrgmLimitData', $termPrgmLimitData)
@@ -1436,14 +1437,12 @@ class CamController extends Controller
     public function saveLimitAssessment(Request $request)            
     {
         try {
-            $appId = $request->get('app_id');
+            $appId = (int)$request->get('app_id');
             $bizId = $request->get('biz_id');
 
             $checkProgram = $this->appRepo->checkduplicateProgram([
               'app_id'=>$appId,
-              'anchor_id'=>$request->anchor_id,
-              'product_id'=>$request->product_id,
-              'prgm_id'=>$request->prgm_id
+              'product_id'=>$request->product_id
               ]);
 
             if($checkProgram->count()){
@@ -1454,7 +1453,7 @@ class CamController extends Controller
             $totalLimit = $this->appRepo->getAppLimit($appId);
 
             if($totalLimit){
-              $this->appRepo->saveAppLimit(['tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt)], $totalLimit->app_limit_id);
+              //$this->appRepo->saveAppLimit(['tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt)], $totalLimit->app_limit_id);
             }else{
               $app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
@@ -1509,9 +1508,10 @@ class CamController extends Controller
 
     /*function for showing offer data*/
     public function showLimitOffer(Request $request){
-      $appId = $request->get('app_id');
+      $appId = (int)$request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
+      $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
 
       $totalLimit; //total exposure limit amount
       $prgmLimit; //program limit
@@ -1521,15 +1521,21 @@ class CamController extends Controller
 
       $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
-      if ($limitData->product_id == 3) {
-          $prgmOfferId = $request->has('prgm_offer_id') ? $request->get('prgm_offer_id') : null;
-          if (!empty($prgmOfferId)) {
-            $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
-          } else {
-              $offerData = null;
-          }
+      $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+
+
+      if ($limitData->product_id == 1) {
+        $user = $this->appRepo->getAppData($appId)->user;
+        $user_type = $user->is_buyer;
+        $anchors = $user->anchors;
+        $anchorArr=[];
+        foreach($anchors as $anchor){
+          array_push($anchorArr, $anchor->anchor_id);
+        }
+        $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
-        $offerData= $this->appRepo->getProgramOffer($aplid);
+        $anchors = [];
+        $anchorPrgms = [];
       }
       // get Total Sub Limit amount by app_prgm_limit_id
       $totalSubLmtAmt = $this->appRepo->getTotalByPrgmLimitId($aplid);
@@ -1548,11 +1554,12 @@ class CamController extends Controller
       }
 
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms]);
     }
 
     /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
+      //dd($request->all());
       try{
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
@@ -1573,15 +1580,17 @@ class CamController extends Controller
 
         /*Start add offer PTPQ block*/
         $ptpqArr =[];
-        foreach($request->ptpq_from as $key=>$val){
-          $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
-          $ptpqArr[$key]['ptpq_from'] = $request->ptpq_from[$key];
-          $ptpqArr[$key]['ptpq_to'] = $request->ptpq_to[$key];
-          $ptpqArr[$key]['ptpq_rate'] = $request->ptpq_rate[$key];
-          $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
-          $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
+        if($request->has('ptpq_from')){
+          foreach($request->ptpq_from as $key=>$val){
+            $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
+            $ptpqArr[$key]['ptpq_from'] = $request->ptpq_from[$key];
+            $ptpqArr[$key]['ptpq_to'] = $request->ptpq_to[$key];
+            $ptpqArr[$key]['ptpq_rate'] = $request->ptpq_rate[$key];
+            $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
+            $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
+          }
+          $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
         }
-        $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
         /*End add offer PTPQ block*/
 
         if($offerData){
@@ -1597,7 +1606,7 @@ class CamController extends Controller
     }
 
     public function showLimit(Request $request){
-      $appId = $request->get('app_id');
+      $appId = (int)$request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
 
