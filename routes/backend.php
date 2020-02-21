@@ -652,7 +652,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('accept-application-pool', [
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
-            ]);  
+            ]); 
+            
+            //add anchor bank details
+            
+            Route::get('add-anchor-bank', [
+                'as' => 'add_anchor_bank_account',
+                'uses' => 'Backend\LeadController@addAnchorBank'
+            ]);
+            
+            Route::post('/save-anchor-bank-account', [
+                'as' => 'save_anchor_bank_account',
+                'uses' => 'Backend\LeadController@saveAnchorBankAccount'
+            ]);
             
             
             
