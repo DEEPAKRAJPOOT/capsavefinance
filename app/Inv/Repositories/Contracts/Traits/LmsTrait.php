@@ -364,6 +364,7 @@ trait LmsTrait
                             $this->lmsRepo->saveTransaction(['is_settled'=> 1],['trans_id'=>$transVal['trans_id']]);
                         }else{
                             $invoiceLoop--;
+                            $invoiceLoop = ($invoiceLoop<0)?0:$invoiceLoop;
                             $this->lmsRepo->saveTransaction(['is_settled'=> 2],['trans_id'=>$transVal['trans_id']]);
                         }
                     }
