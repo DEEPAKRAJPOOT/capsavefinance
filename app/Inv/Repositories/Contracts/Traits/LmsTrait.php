@@ -206,8 +206,7 @@ trait LmsTrait
         }
 
         $transaction = $transactions->orderBy('trans_date','asc')->offset($offset)->limit(1)->first();
-        
-        $pipedAmt = ($lastTransId != $transaction->trans_id)?$pipedAmt+$transaction->amount:$pipedAmt;
+        $pipedAmt = ($lastTransId != $transaction->trans_id)?($pipedAmt+$transaction->amount)-$transaction->settled_amount:$pipedAmt;
         $lastTransId = $transaction->trans_id;
         $trans[$transaction->trans_id] =[
             'trans_id' => $transaction->trans_id,
