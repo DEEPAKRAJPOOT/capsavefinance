@@ -417,7 +417,16 @@ use CommonRepositoryTraits;
         }
          
     }
-    
+      public function getUserBusinessNameApp($status_id)
+    {
+        try
+        {
+           return InvoiceModel::getUserBusinessNameApp($status_id);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
      public function getRepaymentAmount($uid)
      {
           try
@@ -460,7 +469,16 @@ use CommonRepositoryTraits;
         }
          
     } 
-    
+     public function getUserAllInvoice($request)
+    {
+        try
+        {
+           return InvoiceModel::getUserAllInvoice($request);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
     public function getAllActivityInvoiceLog($invId)
     {
         try
@@ -563,6 +581,17 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }
+      public function getLmsUserBehalfApplication($attr)
+    {
+       
+        try
+        {
+          return Application::getLmsUserBehalfApplication($attr);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    } 
+    
      public function getAnchor($aid)
     {
        
@@ -672,7 +701,16 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }
-    
+    public function getLimitProgram($aid)
+    {
+     
+        try
+        {
+          return AppProgramLimit::getLimitProgram($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    } 
    public function getLimitAllAnchor()
     {
      
@@ -830,6 +868,26 @@ use CommonRepositoryTraits;
         }
 
        return BizInvoice::getBizAnchor($attributes);  
+    }  
+    
+      public function getUserBizAnchor($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return BizInvoice::getUserBizAnchor($attributes);  
     }  
 
     public function getAllBankInvoice()

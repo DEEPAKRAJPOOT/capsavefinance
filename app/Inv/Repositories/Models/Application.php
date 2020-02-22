@@ -11,8 +11,9 @@ use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\Master\State;
-    use App\Inv\Repositories\Models\Master\Company;
+use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use Auth;
 
 class Application extends BaseModel
 {
@@ -666,5 +667,10 @@ class Application extends BaseModel
     { 
        
         return  User::where(['anchor_id' => $attr['anchor_id']])->get();
+    }  
+    public static function getLmsUserBehalfApplication($attr)
+    { 
+        $id = Auth::user()->user_id;
+        return  User::where(['user_id' =>$id,'anchor_id' => $attr['anchor_id']])->get();
     }  
 }

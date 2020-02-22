@@ -74,17 +74,21 @@ class InvoiceController extends Controller {
                 $app_id = $req->get('app_id') ?: null;
                 $userInfo = $this->invRepo->getCustomerDetail($user_id);
                 $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(7);
-                $get_bus = $this->invRepo->getBusinessNameApp(7);
-                return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+                $get_bus = $this->invRepo->getUserBusinessNameApp(7);
+                $status =  DB::table('mst_status')->where(['status_type' =>4])->get();
+                return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
   
         }
       
-       public function viewApproveInvoice() {
-           
-          $getAllInvoice    =   $this->invRepo->getAllAnchor();
-          $get_bus = $this->invRepo->getBusinessName();
-          return view('frontend.application.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
-      }
+       public function viewApproveInvoice(Request $req) {
+            $flag = $req->get('flag') ?: null;
+            $user_id = $req->get('user_id') ?: null;
+            $app_id = $req->get('app_id') ?: null;
+            $userInfo = $this->invRepo->getCustomerDetail($user_id);
+            $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(8);
+            $get_bus = $this->invRepo->getUserBusinessNameApp(8);
+            return view('frontend.application.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+       }
       
        public function viewDisbursedQueInvoice() {
             $getAllInvoice    =   $this->invRepo->getAllAnchor();
@@ -92,13 +96,16 @@ class InvoiceController extends Controller {
             return view('frontend.application.invoice.disbursed_que_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
 
       }
-        public function viewSentBankInvoice() {
+        public function viewSentBankInvoice(Request $req) {
         
-             $getAllInvoice    =   $this->invRepo->getAllAnchor();
-            $get_bus = $this->invRepo->getBusinessName();
-            return view('frontend.application.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
-
-      }
+        $flag = $req->get('flag') ?: null;
+        $user_id = $req->get('user_id') ?: null;
+        $app_id = $req->get('app_id') ?: null;
+        $userInfo = $this->invRepo->getCustomerDetail($user_id);
+        $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(13);
+        $get_bus = $this->invRepo->getBusinessNameApp(13);
+        return view('frontend.application.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+   }
       public function viewFailedDisbursedInvoice() {
         
              $getAllInvoice    =   $this->invRepo->getAllAnchor();

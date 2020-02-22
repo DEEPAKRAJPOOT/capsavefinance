@@ -12,12 +12,9 @@ try {
                 "url": messages.frontend_get_invoice_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.anchor_id = $('select[name=search_anchor]').val();
-                    d.supplier_id = $('select[name=search_supplier]').val();
-                    d.biz_id = $('select[name=search_biz]').val();
-                    d.front = $('input[name=front]').val();
+                    d.status_id = $('select[name=status_id]').val();
                     d._token = messages.token;
-                    d.app_id = messages.appp_id;
+                  
                 },
                 "error": function () {  // error handling
                    
@@ -26,13 +23,15 @@ try {
                 }
             },
             columns: [
-                {data: 'anchor_id'},
+             
                 {data: 'invoice_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
                 {data: 'invoice_date'},
                 {data: 'invoice_amount'},
-                {data: 'action'}
+                {data:'invoice_upload'},
+                {data: 'status'}
+               
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });

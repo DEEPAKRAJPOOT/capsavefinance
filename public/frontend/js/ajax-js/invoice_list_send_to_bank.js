@@ -10,7 +10,7 @@ try {
             searching: false,
             bSort: true,
             ajax: {
-                "url": messages.backend_get_invoice_list_bank, // json datasource
+                "url": messages.frontend_get_invoice_list_bank, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.anchor_id = $('select[name=search_anchor]').val();
