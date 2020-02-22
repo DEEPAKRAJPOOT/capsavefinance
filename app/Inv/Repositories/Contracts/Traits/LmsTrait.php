@@ -193,7 +193,8 @@ trait LmsTrait
                 'trans_date' => $transaction->trans_date,
                 'amount' => $transaction->amount,
                 'pipedAmt' => $pipedAmt,
-                'settledAmount' => ($settlementAmt>=$pipedAmt)?$pipedAmt:$settlementAmt
+                'settledAmount' => ($settlementAmt>=$pipedAmt)?$pipedAmt:$settlementAmt,
+
             ];
         }
 
