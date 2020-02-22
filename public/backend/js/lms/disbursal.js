@@ -72,8 +72,8 @@ try {
                 {data: 'principal_amount'},
                 {data: 'status_name'},
                 {data: 'disburse_amount'},
-                {data: 'collection_date'},
-                {data: 'collection_amount'},
+                {data: 'settlement_date'},
+                {data: 'settlement_amount'},
                 {data: 'accured_interest'},
                 {data: 'surplus_amount'}
             ],
