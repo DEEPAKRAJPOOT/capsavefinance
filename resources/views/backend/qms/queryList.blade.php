@@ -43,7 +43,7 @@
                                                 </tr>
                                                 @empty
                                                     <tr>
-                                                         <td class="text-center" colspan="4">No record found</td>
+                                                         <td class="text-center" colspan="5">No record found</td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
@@ -60,7 +60,7 @@
 </div>
 </div>
 
-{!!Helpers::makeIframePopup('queryFrame','Add Query', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('queryFrame','Add Query', 'modal-md')!!}
 {!!Helpers::makeIframePopup('queryDeatailsFrame','Download File(s)', 'modal-md')!!}
 
 
