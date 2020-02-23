@@ -36,6 +36,10 @@ $(document).ready(function(){
 				if(res == null){
 					$('.isloader').hide();
 				}else if(res['statusCode'] == 101){
+					$(".span_gst_text").hide();
+					$(".span_gst_select").show();
+					setUnsetError(0);
+					$('input[name=is_gst_manual]').val('0');					
 			    	$('#pan-msg').show();
 			    	$('.pan-verify').text('Verified');
 			    	$('.pan-verify').css('pointer-events','none');
@@ -43,6 +47,10 @@ $(document).ready(function(){
 			    	$('input[name=biz_pan_number] +span').remove();
 			    	fillGSTinput(res.result);
 			    }else{
+					$(".span_gst_select").hide();
+					$(".span_gst_text").show();		
+					setUnsetError(1);
+					$('input[name=is_gst_manual]').val('1');			
 			    	alert('No GST associated with the entered PAN.');
 			    }
 			    $('.isloader').hide();
@@ -50,6 +58,22 @@ $(document).ready(function(){
 		});
 	})
 })
+
+function setUnsetError(is_gst_manual){
+	if(is_gst_manual == 1) {
+		$(".gst_address").html('');
+		unsetError('input[name=biz_address]');
+		unsetError('select[name=biz_state]');
+		unsetError('input[name=biz_city]');
+		unsetError('input[name=biz_pin]');
+	} else {
+		$(".gst_address").html('*');
+		//setError('input[name=biz_address]', 'Registered address is required');
+		//setError('select[name=biz_state]', 'Registered State is required');
+		//setError('input[name=biz_city]', 'Registered City is required');
+		//setError('input[name=biz_pin]', 'Registered Pin is required');
+	}
+}
 
 function fillGSTinput(datas){
 	let res ='';
@@ -120,6 +144,7 @@ function getCIN(entityName){
 function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
 	unsetError('select[name=biz_gst_number]');
+	//unsetError('input[name=biz_gst_number_text]');
 	unsetError('input[name=biz_entity_name]');
 	unsetError('select[name=biz_type_id]');
 	unsetError('input[name=incorporation_date]');
@@ -147,8 +172,12 @@ function checkValidation(){
 
 	
 	let flag = true;
+	let is_gst_manual = $('input[name=is_gst_manual]').val().trim();
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
 	let biz_gst_number = $('select[name=biz_gst_number]').val();
+	if(is_gst_manual == 1) {
+		biz_gst_number = $('input[name=biz_gst_number_text]').val();
+	}
 	let biz_entity_name = $('input[name=biz_entity_name]').val().trim();
 	let biz_type_id = $('select[name=biz_type_id]').val();
 	let incorporation_date = $('input[name=incorporation_date]').val();
@@ -188,13 +217,14 @@ function checkValidation(){
 	}else if(!(/[a-zA-z]{5}\d{4}[a-zA-Z]{1}/.test(biz_pan_number))){
 		setError('input[name=biz_pan_number]', 'Please fill correct PAN number');
 		flag = false;
-	}else if($('.pan-verify').text() == 'Verify'){
+	}else if($('.pan-verify').text() == 'Verify' && is_gst_manual!=1){
 		setError('input[name=biz_pan_number]', 'Please verify Business PAN First');
 		flag = false;
 	}
 
-	if(biz_gst_number == ''){
+	if((biz_gst_number == '' || biz_gst_number == null) && is_gst_manual!=1){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
+		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
 	}
 	/*else if($('input[name=biz_cin]').val()  == ''){
@@ -283,25 +313,25 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if(biz_address.length == ''){
+	if(biz_address.length == '' && is_gst_manual!=1){
 		setError('input[name=biz_address]', 'Registered address is required');
 		flag = false;
 	}
 
-	if(biz_state == ''){
+	if(biz_state == '' && is_gst_manual!=1){
 		setError('select[name=biz_state]', 'Registered State is required');
 		flag = false;
 	}
 
-	if(biz_city.length == '' || !isNaN(biz_city)){
+	if((biz_city.length == '' || !isNaN(biz_city)) && is_gst_manual!=1){
 		setError('input[name=biz_city]', 'Registered City is required');
 		flag = false;
 	}
 
-	if(biz_pin.length != 6){
+	if(biz_pin.length != 6 && is_gst_manual!=1){
 		setError('input[name=biz_pin]', 'Registered Pin is required');
 		flag = false;
-	}else if(!(/^\d{6}$/.test(biz_pin)) || parseInt(biz_pin) < 100000){
+	}else if((!(/^\d{6}$/.test(biz_pin)) || parseInt(biz_pin) < 100000) && is_gst_manual!=1){
 		setError('input[name=biz_pin]', 'Registered Pin should be numeric only');
 		flag = false;
 	}

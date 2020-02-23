@@ -118,6 +118,9 @@ class ApplicationController extends Controller
     public function updateCompanyDetail(BusinessInformationRequest $request){
         try {
             $arrFileData = $request->all();
+            if(request()->is_gst_manual == 1){
+                $arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
+            }
             $appId = $request->app_id;
             $bizId = $request->biz_id;
             
@@ -865,6 +868,11 @@ class ApplicationController extends Controller
         try {
 
             $arrFileData = $request->all();
+
+            if(request()->is_gst_manual == 1){
+                $arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
+            }
+
             $user_id = $request->user_id;
             $business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
             //$appId  = Session::put('appId', $business_info['app_id']);
