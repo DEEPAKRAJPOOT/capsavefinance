@@ -429,7 +429,7 @@ trait LmsTrait
                     $interestRefund = (float)$disbursalDetail->total_interest-((float)$accured_interest-(float)$penalAmount);
 
                 /* Step 1 : Interest Settlement */
-
+ 
                     if($interestDue>0 && $trans['balance_amount']>0)
                     {
                         $interestPaidAmt = ($trans['balance_amount']>=$interestDue)?$interestDue:$trans['balance_amount'];
