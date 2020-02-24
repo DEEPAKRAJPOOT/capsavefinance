@@ -764,6 +764,7 @@ Route::group(
         'as' => 'get_group_company',
         'uses' => 'AjaxController@getGroupCompany'
     ]);   
+
           
    /////////// get transa name//////////
     
@@ -771,6 +772,11 @@ Route::group(
         'as' => 'get_trans_name',
         'uses' => 'AjaxController@getTransName'
     ]);   
+       
+    Route::post('get-group-company-exposure', [
+        'as' => 'get_group_company_exposure',
+        'uses' => 'AjaxController@getGroupCompanyExposure'
+    ]);       
 
      Route::post('get_chrg_amount', [
                 'as' => 'get_chrg_amount',

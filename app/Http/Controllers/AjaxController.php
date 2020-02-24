@@ -33,6 +33,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
 
 
 class AjaxController extends Controller {
@@ -3680,7 +3681,7 @@ if ($err) {
      */
     public function getGroupCompany(Request $request ){
       
-        $data = Group::select("name")
+        $data = Group::select(['id','name'])
                 ->where("name","LIKE","%{$request->input('query')}%")
                 ->get();
     
@@ -3757,6 +3758,7 @@ if ($err) {
         return $data;
     }
 
+
     /** 
      * @Author: Rent Alpha
      * @Date: 2020-02-18 10:49:29 
@@ -3772,4 +3774,12 @@ if ($err) {
         $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
         echo $columnVal;
     }
+
+
+    public function getGroupCompanyExposure(Request $request ){
+        $groupId = $request->get('groupid');
+        $arrData = GroupCompanyExposure::where("group_Id", $groupId)->groupBy('group_company_name')->get();
+        return response()->json($arrData);
+    }
+
 }

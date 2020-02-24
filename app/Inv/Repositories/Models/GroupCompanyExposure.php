@@ -56,6 +56,7 @@ class GroupCompanyExposure extends BaseModel
     protected $fillable = [
         'biz_id',
         'app_id',
+        'group_Id',
         'group_company_name',
         'sanction_limit',
         'outstanding_exposure',

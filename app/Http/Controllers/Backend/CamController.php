@@ -102,10 +102,7 @@ class CamController extends Controller
             $arrBizData['email']  = $arrEntityData['email'];
             $arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
             $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-            if(!empty($arrCamData)){
-                $arrUserData = $this->userRepo->find($arrCamData->updated_by, '');
-                $arrCamData->By_updated = "$arrUserData->f_name $arrUserData->l_name";
-            }
+            
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
@@ -124,7 +121,10 @@ class CamController extends Controller
                                                            ['biz_id','=',$arrRequest['biz_id']], 
                                                            ['app_id','=',$arrRequest['app_id']]
                                                            ])->get()->toArray();
-            
+            if(!empty($arrGroupCompany)){
+                $arrUserData = $this->userRepo->find($arrGroupCompany['0']['updated_by'], '');
+                $arrCamData->By_updated = "$arrUserData->f_name $arrUserData->l_name";
+            }
            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
 
@@ -161,31 +161,35 @@ class CamController extends Controller
             }else{
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
-            if(!empty($arrCamData['group_company_name']))
-            {
-              GroupCompanyExposure::where([
-                                            ['biz_id', $arrCamData['biz_id']],
-                                            ['app_id', $arrCamData['app_id']]
-                                          ])->delete();
-                foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
-                   $inputArr= array(
-                      'biz_id'=> $arrCamData['biz_id'] ,
-                      'app_id'=> $arrCamData['app_id'],
-                      'group_company_name'=> $groupCompanyName ?? null,
-                      'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? str_replace(',', '',$arrCamData['sanction_limit'][$key]) : null ,
-                      'outstanding_exposure'=> $arrCamData['outstanding_exposure'][$key] ? str_replace(',', '',$arrCamData['outstanding_exposure'][$key]) : null,
-                      'created_by'=>$userId
-                  );  
-                   GroupCompanyExposure::saveGroupCompany($inputArr);
+
+            if(isset($arrCamData['group_company'])){
+                $masterGroupData= array(
+                    'name'=> $arrCamData['group_company'],
+                    'is_active' => '1',
+                    'created_by'=>Auth::user()->user_id
+                );
+                $arrMstGroup = Group::updateOrcreate($masterGroupData)->toArray();
+                if(isset($arrCamData['group_company_name']))
+                {
+                  GroupCompanyExposure::where([
+                                                ['biz_id', $arrCamData['biz_id']],
+                                                ['app_id', $arrCamData['app_id']]
+                                              ])->delete();
+                    foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
+                       $inputArr= array(
+                          'biz_id'=> $arrCamData['biz_id'] ,
+                          'app_id'=> $arrCamData['app_id'],
+                          'group_Id'=> $arrMstGroup['id'],
+                          'group_company_name'=> $groupCompanyName ?? null,
+                          'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? str_replace(',', '',$arrCamData['sanction_limit'][$key]) : null ,
+                          'outstanding_exposure'=> $arrCamData['outstanding_exposure'][$key] ? str_replace(',', '',$arrCamData['outstanding_exposure'][$key]) : null,
+                          'created_by'=>$userId
+                      );  
+                       GroupCompanyExposure::saveGroupCompany($inputArr);
+                    }
                 }
             }
-
-            $masterGroupData= array(
-                'name'=> $arrCamData['group_company'],
-                'is_active' => '1',
-                'created_by'=>Auth::user()->user_id
-            );
-            Group::updateOrcreate($masterGroupData);
+            
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
