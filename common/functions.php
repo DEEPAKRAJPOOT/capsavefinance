@@ -357,80 +357,17 @@ function CalculateAssetsReceivables($Assets){
 function CalculateAssetsInventory($Assets){
 	return 'Need to Calculate';
 }
-function CalculateAssetsStockInProcess($Assets){
-	return 'Need to Calculate';
-}
-function CalculateAssetsFinishedGoods($Assets){
-	return 'Need to Calculate';
-}
 function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
 }
-function CalculateAssetsSubTotalInventory($Assets){
-	return 'Need to Calculate';
-}
 function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
 	return 'Need to Calculate';
 }
-function CalculateAssetsAdvanceReceivableInOrKind($Assets){
-	return 'Need to Calculate';
-}
-function CalculateTotalCurrentAssets($Assets){
-	return 'Need to Calculate';
-}
-function CalculateAssetsGrossBlock($Assets){
-	return 'Need to Calculate';
-}
-function CalculateAssetsNetBlock($Assets){
-	return 'Need to Calculate';
-}
-function CalculateTotalOtherNonCurrentAssets($Assets){
-	return 'Need to Calculate';
-}
 function CalculateIntangibleAssetSubtotal($Assets){
-	return 'Need to Calculate';
+	$IntangibleAssetSubtotal = $Assets['AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses'] + $Assets['DeferredTaxAsset'];
+	return sprintf('%.2f', $IntangibleAssetSubtotal);
 }
-function CalculateIntangibleAssetTotal($Assets){
-	return 'Need to Calculate';
-}
-function CalculateTangibleAssetNetworth($Assets){
-	return 'Need to Calculate';
-}
-function CalculateTotalLiabilitiesMinusTotalAssets($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsConsumption0($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsConsumption1($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsConsumption2($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsConsumption3($Assets){
-	return 'Need to Calculate';
-}
-function CalculateStockInProcessMinusAmount($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsCostOfProduction($Assets){
-	return 'Need to Calculate';
-}
-function CalculateFinishedGoodsMinusAmount($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsCostOfSales($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsDomesticIncome($Assets){
-	return 'Need to Calculate';
-}
-function CalculateMonthsExportIncome($Assets){
-	return 'Need to Calculate';
-}
-
 
 
 
@@ -453,22 +390,22 @@ function getBalanceSheetAssetsColumns() {
 			'CalculateAssetsInventory' =>  'INVENTORY',
 			'RawMaterialIndigenous' =>  'Raw Material - Indigenous',
 			'RawMaterialImported' =>  'Raw Material - Imported',
-			'CalculateAssetsStockInProcess' =>  'Stock in process',
-			'CalculateAssetsFinishedGoods' =>  'Finished Goods',
+			'StockInProcess' =>  'Stock in process',
+			'FinishedGoods' =>  'Finished Goods',
 			'OtherConsumableSparesIndigenous' =>  'Other Consumable spares - Indigenous',
 			'OtherConsumableSparesImported' =>  'Other Consumable spares - Imported',
 			'CalculateAssetsSubTotalOtherComsumableSpares' =>  'Sub Total: Other Consumable spares',
 			'OtherStocks' =>  'Other stocks',
-			'CalculateAssetsSubTotalInventory' =>  'Sub Total: Inventory',
-			'CalculateAssetsAdvancesToSuplierofRawMaterial' =>  'Advances to suppliers of raw material',
+			'SubTotalInventory' =>  'Sub Total: Inventory',
+			'AdvancesToSuppliersOfRawMaterial' =>  'Advances to suppliers of raw material',
 			'AdvancePaymentOfTax' =>  'Advance payment of tax',
 			'OtherCurrentAssets' =>  'Other Current Assets:',
 			'InterestAccrued' =>  'Interest Accrued',
-			'CalculateAssetsAdvanceReceivableInOrKind' =>  'Advance receivable in cash or kind',
+			'AdvanceReceivableInCashOrKind' =>  'Advance receivable in cash or kind',
 			'SundryDeposit' =>  'Sundry Deposit',
 			'ModvatCreditReceivable' =>  'Modvat Credit Receivable',
 			'OtherCurrentAssets' =>  'Other current assets',
-			'CalculateTotalCurrentAssets' =>  'TOTAL CURRENT ASSETS',
+			'TotalCurrentAssets' =>  'TOTAL CURRENT ASSETS',
 		),
 		'aasetsFixed_cols' => array(
 			'Land' => '(I) Land',
@@ -478,9 +415,9 @@ function getBalanceSheetAssetsColumns() {
 			'FurnitureFixtures' => '(v) Furniture & Fixtures',
 			'OtherFixedAssets' => '(vi) Other Fixed Assets',
 			'CapitalWip' => '(vii) Capital WIP',
-			'CalculateAssetsGrossBlock' => 'GROSS BLOCK',
+			'GrossBlock' => 'GROSS BLOCK',
 			'LessAccumulatedDepreciation' => 'Less: Accumulated Depreciation',
-			'CalculateAssetsNetBlock' => 'NET BLOCK',
+			'NetBlock' => 'NET BLOCK',
 		),
 		'otherNonCurrentAssets' => array(
 			'InvestmentsInSubsidiaryCompaniesAffiliates' => '(I) Investments in Subsidiary companies/ affiliates',
@@ -492,33 +429,33 @@ function getBalanceSheetAssetsColumns() {
 			'AdvanceAgainstMortgageOfHouseProperty' => '(vii) Advance against mortgage of house property',
 			'DeferredRevenueExpenditure' => '(viii) Deferred Revenue Expenditure',
 			'OtherNonCurrentAssetsSurplusForFutureExpansionLoansAdvancesNonCurrentInNatureIcdSDuesFromDirectors' => '(ix) Other Non current assets (surplus for Future expansion, Loans & Advances non current in nature, ICD\'s, Dues from Directors)',
-			'CalculateTotalOtherNonCurrentAssets' => 'TOTAL OTHER NON CURRENT ASSETS',
+			'TotalOtherNonCurrentAssets' => 'TOTAL OTHER NON CURRENT ASSETS',
 		),
 		'inTangibleAssets_cols' => array(
 			'AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses' => '(i) Accumulated Losses, Preliminary expenses, Miscellaneous expenditure not w/off, Other deferred revenue expenses',
 			'DeferredTaxAsset' => '(ii) Deferred Tax Asset',
 			'CalculateIntangibleAssetSubtotal' => 'Sub Total',
-			'CalculateIntangibleAssetTotal' => 'TOTAL ASSETS',
-			'CalculateTangibleAssetNetworth' => 'TANGIBLE NETWORTH',
-			'CalculateTotalLiabilitiesMinusTotalAssets' => 'Total Liabilities - Total Assets',
+			'TotalAssets' => 'TOTAL ASSETS',
+			'TangibleNetworth' => 'TANGIBLE NETWORTH',
+			'TotalLiabilitiesTotalAssets' => 'Total Liabilities - Total Assets',
 		),
 		'buildUpofCurrentAssets_cols' => array(
-			'RawMaterialIndigenous' => 'Raw Material - Indigenous AMOUNT',
-			'CalculateMonthsConsumption0' => 'MONTH\'S CONSUMPTION',
-			'RawMaterialImported' => 'Raw Material - Imported AMOUNT',
-			'CalculateMonthsConsumption1' => 'MONTH\'S CONSUMPTION',
+			'RawMaterialIndigenousAmount' => 'Raw Material - Indigenous AMOUNT',
+			'MonthSConsumptionIndigenous' => 'MONTH\'S CONSUMPTION',
+			'RawMaterialImportedAmount' => 'Raw Material - Imported AMOUNT',
+			'MonthSConsumptionImported' => 'MONTH\'S CONSUMPTION',
 			'OtherConsumableSparesIndigenous' => 'Consumable spares indigenous AMOUNT',
-			'CalculateMonthsConsumption2' => 'MONTH\'S CONSUMPTION',
+			'MonthSConsumptionConsumableSparesIndigenous' => 'MONTH\'S CONSUMPTION',
 			'OtherConsumableSparesImported' => 'Consumable spares- Imported AMOUNT',
-			'CalculateMonthsConsumption3' => 'MONTH\'S CONSUMPTION',
-			'CalculateStockInProcessMinusAmount' => 'Stock in process - AMOUNT',
-			'CalculateMonthsCostOfProduction' => 'MONTH\'S COST OF PRODUCTION',
-			'CalculateFinishedGoodsMinusAmount' => 'Finished Goods - AMOUNT',
-			'CalculateMonthsCostOfSales' => 'MONTH\'S COST OF SALES',
-			'ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks' => 'RECEIVABLES (DOMESTIC) other than deferred & exports (Incl. bills purchased & discounted by banks) AMOUNT',
-			'CalculateMonthsDomesticIncome' => 'MONTH\'S DOMESTIC Income',
+			'MonthSConsumptionConsumableSparesImported' => 'MONTH\'S CONSUMPTION',
+			'StockInProcessAmount' => 'Stock in process - AMOUNT',
+			'MonthSCostOfProduction' => 'MONTH\'S COST OF PRODUCTION',
+			'FinishedGoodsAmount' => 'Finished Goods - AMOUNT',
+			'MonthSCostOfSales' => 'MONTH\'S COST OF SALES',
+			'ReceivablesDomesticOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanksAmount' => 'RECEIVABLES (DOMESTIC) other than deferred & exports (Incl. bills purchased & discounted by banks) AMOUNT',
+			'MonthSDomesticIncome' => 'MONTH\'S DOMESTIC Income',
 			'ExportReceivablesIncludingBillPurchasedAndDiscounted' => 'EXPORT RECV.(Incl. bills purchased & discounted by banks) AMOUNT',
-			'CalculateMonthsExportIncome' => 'MONTH\'S EXPORT Income',
+			'MonthSExportIncome' => 'MONTH\'S EXPORT Income',
 		),
 	);
 	return $fields;
