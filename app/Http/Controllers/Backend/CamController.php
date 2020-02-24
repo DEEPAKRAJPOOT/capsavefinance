@@ -233,7 +233,7 @@ class CamController extends Controller
       $active_json_filename = $json_files['curr_file'];
        if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
             $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
-            $contents = array_replace_recursive($contents, json_decode(base64_decode(getFinContent()),true));
+            $contents = array_replace_recursive(json_decode(base64_decode(getFinContent()),true), $contents);
         }else{
           if ($this->genBlankfinJSON) {
             $active_json_filename = $this->getCommonFilePath('common_finance.json');
@@ -539,7 +539,7 @@ class CamController extends Controller
         $contents = array();
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
-          $contents = array_replace_recursive($contents, json_decode(base64_decode(getFinContent()),true));
+          $contents = array_replace_recursive(json_decode(base64_decode(getFinContent()),true) , $contents);
         }else{
           if ($this->genBlankfinJSON) {
             $active_json_filename = $this->getCommonFilePath('common_finance.json');
