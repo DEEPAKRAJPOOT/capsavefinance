@@ -29,7 +29,7 @@
                                 <div class="ima"></div>
                                 <div class="documents-detail inner-subform" id="terms">
                                     <div class="form-sections parent_div">
-                                        <div class="col-md-8 col-md-offset-2 subD">
+                                        <div class="col-md-12 subD">
                                             <div class="sub-progrem">
                                                 <div class="row">
                                                     <div class="col-sm-9">

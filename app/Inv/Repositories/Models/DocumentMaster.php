@@ -74,7 +74,9 @@ class DocumentMaster extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        $res = self::where($where)->pluck('doc_name', 'id');
+        $res = self::where($where)->whereHas('product_document', function($query){
+                    $query->where('product_id', 1);
+                })->pluck('doc_name', 'id');
         return $res ?: false;
     }
 
