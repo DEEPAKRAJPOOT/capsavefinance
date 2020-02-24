@@ -361,7 +361,7 @@
                         @endforeach
                         <div>
                             <a data-toggle="modal" data-target="#limitOfferFrame" data-url ="" data-height="600px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openOfferModal" style="display: none;"><i class="fa fa-plus"></i>Add Offer</a>
-                            <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="400px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
+                            <a data-toggle="modal" data-target="#editLimitFrame" data-url ="" data-height="250px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openLimitModal" style="display: none;"><i class="fa fa-plus"></i>Edit Limit</a>
                             @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
                                 <form method="POST" action="{{route('approve_offer')}}">
                                 @csrf
