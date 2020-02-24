@@ -3606,7 +3606,7 @@ if ($err) {
      */
     public function getGroupCompany(Request $request ){
       
-        $data = Group::select("name")
+        $data = Group::select(['id','name'])
                 ->where("name","LIKE","%{$request->input('query')}%")
                 ->get();
     
