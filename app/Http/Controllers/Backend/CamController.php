@@ -1537,26 +1537,15 @@ class CamController extends Controller
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
 
-      $totalLimit; //total exposure limit amount
-      $prgmLimit; //program limit
-      $totalOfferedAmount; //total offered amount including all product type from offer table
-      $prgmOfferedAmount; //total offered amount related to program from offer table
-      $currentOfferAmount; //current offered amount corresponding to app_prgm_limit_id
+      $currentPrgmLimitData= $this->appRepo->getLimit($aplid); // current program limit amount
+      $totalPrgmLimit= $this->appRepo->getTotalPrgmLimitByAppId($appId); // total limit of all program from program limit table
+      $totalLimit = $this->appRepo->getAppLimit($appId); //total exposure limit
+      
 
-      $limitData= $this->appRepo->getLimit($aplid);
-      $offerData= $this->appRepo->getProgramOffer($aplid);
-      $currentOfferAmount = isset($offerData->prgm_limit_amt)? $offerData->prgm_limit_amt: 0;
-      $totalOfferedAmount = $this->appRepo->getTotalOfferedLimit($appId);
-      $totalLimit = $this->appRepo->getAppLimit($appId);
+     //dd($totalPrgmLimit);
 
-      if(!is_null($limitData->prgm_id)){
-        $prgmOfferedAmount= $this->appRepo->getProgramBalanceLimit($limitData->prgm_id);
-        $prgmLimit = $limitData->program->anchor_sub_limit;
-      }else{
-        $prgmOfferedAmount = 0;
-        $prgmLimit = 0;
-      }
-      return view('backend.cam.limit', ['limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit]);
+
+      return view('backend.cam.limit', ['currentPrgmLimitData'=>$currentPrgmLimitData,  'totalLimit'=> $totalLimit->tot_limit_amt, 'totalPrgmLimit'=> $totalPrgmLimit]);
     }
 
     public function updateLimit(Request $request){
