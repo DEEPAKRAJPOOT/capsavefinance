@@ -523,7 +523,6 @@ class CamController extends Controller
       return storage_path('app/public/user/').$extrapath;
     }
 
-
    public function finance(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
         $xlsx_arr = $this->_getXLSXTable($appId,'finance');
