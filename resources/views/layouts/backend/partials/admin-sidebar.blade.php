@@ -369,7 +369,7 @@
                         <a class="nav-link" href="{{ route('get_fin_trans_list') }}">Transaction Type List</a>
                     </li>                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_agency_user_list') }}">Journal List</a>
+                        <a class="nav-link" href="{{ route('get_fin_journal') }}">Journal List</a>
                     </li>  
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_agency_user_list') }}">Accounts List</a>

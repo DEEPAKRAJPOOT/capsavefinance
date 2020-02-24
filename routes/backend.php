@@ -1120,6 +1120,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_fin_trans_list',
                 'uses' => 'Backend\FinanceController@getFinTransList'
             ]);
+            Route::get('fin-journal', [
+                'as' => 'get_fin_journal',
+                'uses' => 'Backend\FinanceController@getFinJournal'
+            ]);
         });
 
     });

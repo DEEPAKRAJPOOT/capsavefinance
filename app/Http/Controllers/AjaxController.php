@@ -46,6 +46,8 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $finRepo;
+    private $dataRecords;
+    private $providerResult;
 
     function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo) {
 
@@ -3673,8 +3675,14 @@ if ($err) {
     }
 
     public function getTransTypeList(DataProviderInterface $dataProvider) { 
-        $transTypeList = $this->finRepo->getAllTransType();
-        $transType = $dataProvider->getTransTypeListByDataProvider($this->request, $transTypeList);
-        return $transType;
+        $this->dataRecords = $this->finRepo->getAllTransType();
+        $this->providerResult = $dataProvider->getTransTypeListByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getJournalList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllJournal();
+        $this->providerResult = $dataProvider->getJournalByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
     }
 }

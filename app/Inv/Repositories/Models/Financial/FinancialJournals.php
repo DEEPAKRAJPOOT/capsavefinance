@@ -48,4 +48,9 @@ class FinancialJournals extends BaseModel {
         'updated_by'
     ];
 
+    public static function getAllJournal() 
+    {
+        $result = self::select('name','journal_type')->orderBy('id', 'DESC');
+        return $result;
+    }
 }

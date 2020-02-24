@@ -17,6 +17,11 @@ class FinanceController extends Controller {
 
 
     public function getFinTransList() {
-        return view('backend.finance.finance_list');
+        return view('backend.finance.trans_list');
     }    
+
+    public function getFinJournal() {
+        return view('backend.finance.journal_list');
+    }  
+
 }

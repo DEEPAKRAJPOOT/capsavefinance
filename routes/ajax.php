@@ -749,12 +749,18 @@ Route::group(
           
           
     //Financial 
-    /*transaction type route*/
     Route::post(
         'get-trans-type-list',
         [
         'as' => 'get_ajax_trans_type_list',
         'uses' => 'AjaxController@getTransTypeList'
+        ]
+    );    
+    Route::post(
+        'get-journal-list',
+        [
+        'as' => 'get_ajax_journal_list',
+        'uses' => 'AjaxController@getJournalList'
         ]
     );
 });
