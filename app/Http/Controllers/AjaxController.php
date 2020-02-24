@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
+
 
 
 class AjaxController extends Controller {
@@ -3670,6 +3672,14 @@ if ($err) {
         $equipment = $this->masterRepo->getEquipments();
         $data = $dataProvider->getEquipments($this->request, $equipment);
         return $data;
+    }
+
+
+
+    public function getGroupCompanyExposure(Request $request ){
+        $groupId = $request->get('groupid');
+        $arrData = GroupCompanyExposure::where("group_Id", $groupId)->groupBy('group_company_name')->get();
+        return response()->json($arrData);
     }
 
 }

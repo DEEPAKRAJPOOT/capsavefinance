@@ -746,7 +746,10 @@ Route::group(
         'as' => 'get_group_company',
         'uses' => 'AjaxController@getGroupCompany'
     ]);   
-          
-          
+       
+    Route::post('get-group-company-exposure', [
+        'as' => 'get_group_company_exposure',
+        'uses' => 'AjaxController@getGroupCompanyExposure'
+    ]);       
 
 });

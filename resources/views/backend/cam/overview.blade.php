@@ -149,8 +149,10 @@
                             <div class="col-md-2 mt-4 INR">
                                  <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
                                  <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                 <div class="d-flex">
                                   <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
-                                   <i class="fa fa-2x fa-plus-circle add-ptpq-block "  style="color: green;"></i>
+                                   <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
+                                   </div>
                             </div>
                             
                             
@@ -408,5 +410,51 @@
     $(this).parent('div').parent('div').remove();
         calTotalExposure();
   });
+
+
+  $(document).on('click', '.dropdown-menu .dropdown-item .groupid', function(argument) {
+      
+       var messages = {
+              get_group_company_exposure: "{{ URL::route('get_group_company_exposure') }}",
+              data_not_found: "{{ trans('error_messages.data_not_found') }}",
+              token: "{{ csrf_token() }}",
+         };
+         var groupid = $(this).attr('groupid');
+         var dataStore = {'groupid': groupid,'_token': messages.token };
+      jQuery.ajax({
+             url: messages.get_group_company_exposure,
+             method: 'post',
+             dataType: 'json',
+             data: dataStore,
+             error: function (xhr, status, errorThrown) {
+                               // alert(errorThrown);
+             },
+             success: function (data) {  
+              $.each(data, function(i, arr) {
+                    let ptpq_block = '<div class="row mt10">'+
+                                '<div class="col-md-4">'+
+                                    '<input type="text" name="group_company_name[]" class="form-control" value="'+arr.group_company_name+'" placeholder="Group Company" required>'+
+                                '</div>'+
+                                '<div class="col-md-3 INR">'+
+                                    '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                    '<input type="text" name="sanction_limit[]" class="form-control " value="'+arr.sanction_limit+'" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
+                                '</div>'+
+                                '<div class="col-md-3 INR">'+
+                                    '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                    '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="'+arr.outstanding_exposure+'" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
+                                '</div>'+
+                                '<div class="col-md-2 center">'+
+                                    '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
+                                '</div>'+
+                            '</div>';
+                    $('#ptpq-block').append(ptpq_block);
+              }); 
+               calTotalExposure();    
+            }
+      });
+   })
+
+
+
 </script>
 @endsection
