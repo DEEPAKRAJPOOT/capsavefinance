@@ -33,7 +33,7 @@
                     <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX,XLS,XLSX )</small>
                 </h2>
             </div>
-            @if($noDocFlag == 1)
+            @if($docFlag == 0)
                  <div class="card card-color mb-0">
                     <div class="card-header">
                         <a class="card-title ">
@@ -74,7 +74,6 @@
                             </div>
                         </div>
                         <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0 show" data-parent="#accordion">
-
                             <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
                                 <tbody>
                                     <tr>
@@ -84,6 +83,7 @@
                                         <td width="20%">Download</td>
                                         <td align="center" width="20%">Action</td>
                                     </tr>
+                                    @if(!empty($documentData[$data->ppDocument->doc_name]))
                                     @foreach($documentData[$data->ppDocument->doc_name] as $value)
                                     <tr>
                                         <td width="20%"> {{ (isset($value->userFile->file_name)) ? $value->userFile->file_name : ''}} </td>
@@ -97,6 +97,7 @@
                                         </td>
                                     </tr>
                                     @endforeach
+                                    @endif
                                 </tbody>
                             </table>
 
@@ -104,6 +105,15 @@
                     </div>
 
                     @endforeach
+                @else
+                 <div class="card card-color mb-0">
+                    <div class="card-header">
+                        <a class="card-title ">
+                            No Document Required.
+                        </a>
+
+                    </div>
+                </div>
                 @endif
                 </div>
             </div>

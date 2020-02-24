@@ -1184,9 +1184,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getAppProducts($app_id)
     {
-        return Application::with('products')
-                ->where('app_id', $app_id)
-                ->first();
+        return AppProgramOffer::with('programLimit')
+                ->where(['app_id' => $app_id,
+                    'is_active' => 1]
+                )
+                ->get();
+        // return Application::with('products')
+        //         ->where('app_id', $app_id)
+        //         ->first();
     }/**
      * get Bank account 
      * 

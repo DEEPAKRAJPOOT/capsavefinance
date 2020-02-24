@@ -2620,7 +2620,7 @@ class DataRenderer implements DataProviderInterface
 	                        }
 	                    }
 
-                        return ($this->overDueFlag == 0) ? "<input type='checkbox' class='user_id' value=".$customer->user_id.">" : '';
+                        return ($this->overDueFlag == 0) ? "<input type='checkbox' class='user_id' value=".$customer->user_id.">" : '-';
                     }
                 )
                 ->addColumn(
