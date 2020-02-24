@@ -73,7 +73,7 @@
                                                         <div class="block-div clearfix ">
                                                             <div class="form-check-inline float-left">
                                                                 <label class="form-check-label fnt">
-                                                                    {!! Form::radio('prgm_type','1','', ['class'=>'form-check-input']) !!}
+                                                                    {!! Form::radio('prgm_type','1',(isset($subProgramData->prgm_type) == 1) ? 'checked' : 'null', ['class'=>'form-check-input']) !!}
                                                                     <strong>
                                                                         {{ trans('backend.add_program.vendor_finance') }}   
                                                                     </strong>
@@ -81,7 +81,8 @@
                                                             </div>
                                                             <div class="form-check-inline float-left">
                                                                 <label class="form-check-label fnt">
-                                                                    {!! Form::radio('prgm_type','2','', ['class'=>'form-check-input'])!!}<strong>
+                                                                    {!! Form::radio('prgm_type','2',(isset($subProgramData->prgm_type) == 2) ? 'checked' : 'null', ['class'=>'form-check-input']) !!}
+                                                                    <strong>
                                                                         {{ trans('backend.add_program.channel_finance') }}    
                                                                     </strong>
                                                                 </label>
