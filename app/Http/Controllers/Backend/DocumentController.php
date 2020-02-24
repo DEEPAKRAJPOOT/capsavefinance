@@ -47,7 +47,7 @@ class DocumentController extends Controller
                     $requiredDocs[$key]['productInfo'] = $value->programLimit->product;
                     $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->programLimit->product_id);
                     if($requiredDocs[$key]['documents']->count() != 0){
-                        $docData = $this->docRepo->appPPDocuments($requiredDocs[$key]['documents'], $appId);
+                        $docData += $this->docRepo->appPPDocuments($requiredDocs[$key]['documents'], $appId);
                     }
                 }
             }
