@@ -43,6 +43,7 @@
 <script>
   function checkLimitValidation(){
     let balance_limit = "{{$balanceLimit}}";
+    let totalOfferedAmount = "{{$totalOfferedAmount}}";
 
     unsetError('input[name=limit_amt]');
 
@@ -55,8 +56,11 @@
     }else if(balance_limit == 0){
         setError('input[name=limit_amt]', 'Your limit has been expired');
         flag = false;
-    }else if((parseInt(limit_amt.replace(/,/g, '')) > balance_limit)){
+    }else if(parseInt(limit_amt.replace(/,/g, '')) > parseInt(balance_limit)){
         setError('input[name=limit_amt]', 'Limit amount can not exceed from balance amount');
+        flag = false;
+    }else if(parseInt(limit_amt.replace(/,/g, '')) < parseInt(totalOfferedAmount)){
+        setError('input[name=limit_amt]', 'Limit amount can not be less than applied offered amount');
         flag = false;
     }
 

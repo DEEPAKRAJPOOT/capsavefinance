@@ -1540,12 +1540,10 @@ class CamController extends Controller
       $currentPrgmLimitData= $this->appRepo->getLimit($aplid); // current program limit amount
       $totalPrgmLimit= $this->appRepo->getTotalPrgmLimitByAppId($appId); // total limit of all program from program limit table
       $totalLimit = $this->appRepo->getAppLimit($appId); //total exposure limit
-      
 
-     //dd($totalPrgmLimit);
+      $totalOfferedAmount = $this->appRepo->getTotalByPrgmLimitId($aplid); // total offered amount by app_prgm_limit_id
 
-
-      return view('backend.cam.limit', ['currentPrgmLimitData'=>$currentPrgmLimitData,  'totalLimit'=> $totalLimit->tot_limit_amt, 'totalPrgmLimit'=> $totalPrgmLimit]);
+      return view('backend.cam.limit', ['totalOfferedAmount'=>$totalOfferedAmount', currentPrgmLimitData'=>$currentPrgmLimitData,  'totalLimit'=> $totalLimit->tot_limit_amt, 'totalPrgmLimit'=> $totalPrgmLimit]);
     }
 
     public function updateLimit(Request $request){
