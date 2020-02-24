@@ -107,7 +107,6 @@ class ProgramController extends Controller {
                 'anchor_id' => $anchor_id,
                 //   'anchor_user_id' => $request->get('anchor_user_id'),
                 'prgm_name' => $request->get('prgm_name'),
-                'prgm_type' => $request->get('prgm_type'),
                 'industry_id' => $request->get('industry_id'),
                 'sub_industry_id' => $request->get('sub_industry_id'),
                 'anchor_limit' => ($request->get('anchor_limit')) ? str_replace(',', '', $request->get('anchor_limit')) : null,
@@ -161,8 +160,10 @@ class ProgramController extends Controller {
             $program_id = (int) $request->get('program_id');
             $action = $request->get('action');
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
+//            dd($subProgramData);
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
+//            dd($programData);
             $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
@@ -250,6 +251,7 @@ class ProgramController extends Controller {
             'anchor_user_id' => $request->get('anchor_user_id'),
             'product_name' => $request->get('product_name'),
             'prgm_name' => $request->get('product_name'),
+            'prgm_type' => $request->get('prgm_type'),
             'interest_rate' => $request->get('interest_rate'),
             'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : null,
             'anchor_limit' => $request->get('anchor_limit'),

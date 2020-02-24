@@ -151,7 +151,6 @@ try {
                 },
                 'branch_name': {
                     required: true,
-                    lettersonly: true
 
                 },
                 'is_active': {

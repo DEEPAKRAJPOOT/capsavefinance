@@ -26,7 +26,6 @@ class ProgramRequest extends FormRequest {
         return [
             'anchor_id' => 'required',
             'prgm_name' => "required",
-            'prgm_type' => 'required',
             'industry_id' => "required",
 //            'sub_industry_id' => "required",
             'anchor_limit' => "required",
