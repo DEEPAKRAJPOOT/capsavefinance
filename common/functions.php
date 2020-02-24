@@ -202,11 +202,7 @@ function CalculateCostofProduction($ProfitAndLoss) {
 	return sprintf('%.2f', $CostofProduction);
 }
 function CalculateCOPSofGrossIncome($ProfitAndLoss) {
-<<<<<<< HEAD
-	$COPSofGrossIncome =  CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : (CalculateCostofProduction($ProfitAndLoss)/ CalculateGrossSale($ProfitAndLoss));
-=======
 	$COPSofGrossIncome =  CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateCostofProduction($ProfitAndLoss)/ CalculateGrossSale($ProfitAndLoss)))  * 100;
->>>>>>> ravi
 	return sprintf('%.2f', $COPSofGrossIncome);
 }
 function CalculateCostofSales($ProfitAndLoss) {
@@ -215,11 +211,7 @@ function CalculateCostofSales($ProfitAndLoss) {
 	return sprintf('%.2f', $CostofSales);
 }
 function CalculateCostofSalesasPerGrossIncome($ProfitAndLoss) {
-<<<<<<< HEAD
-	$CostofSalesasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : (CalculateCostofSales($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss));
-=======
 	$CostofSalesasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateCostofSales($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss))) * 100;
->>>>>>> ravi
 	return sprintf('%.2f', $CostofSalesasPerGrossIncome);
 
 }
@@ -232,11 +224,7 @@ function CalculateProfitBeforeInterestTax($ProfitAndLoss) {
 	 return sprintf('%.2f', $ProfitBeforeInterestTax);
 }
 function CalculatePBITasPerGrossSale($ProfitAndLoss) {
-<<<<<<< HEAD
-	$PBITasPerGrossSale = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : (CalculateProfitBeforeInterestTax($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss));
-=======
 	$PBITasPerGrossSale = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateProfitBeforeInterestTax($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss))) * 100;
->>>>>>> ravi
 	return sprintf('%.2f', $PBITasPerGrossSale);
 }
 function CalculateInterestOtherFinanceCharge($ProfitAndLoss) {
@@ -246,11 +234,7 @@ function CalculateInterestOtherFinanceCharge($ProfitAndLoss) {
 	return sprintf('%.2f', $InterestOtherFinanceCharge);
 }
 function CalculateInttFinChargeasPerGrossSale($ProfitAndLoss) {
-<<<<<<< HEAD
-	$InttFinChargeasPerGrossSale = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : (CalculateInterestOtherFinanceCharge($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss));
-=======
 	$InttFinChargeasPerGrossSale = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateInterestOtherFinanceCharge($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss))) * 100;
->>>>>>> ravi
 	return sprintf('%.2f', $InttFinChargeasPerGrossSale);
 }
 function CalculateOperatingProfitBeforeTax($ProfitAndLoss) {
@@ -258,11 +242,7 @@ function CalculateOperatingProfitBeforeTax($ProfitAndLoss) {
 	return sprintf('%.2f', $OperatingProfitBeforeTax);
 }
 function CalculateOPBTasPerGrossIncome($ProfitAndLoss) {
-<<<<<<< HEAD
-	$OPBTasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : (CalculateOperatingProfitBeforeTax($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss));
-=======
 	$OPBTasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateOperatingProfitBeforeTax($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss))) * 100;
->>>>>>> ravi
 	return sprintf('%.2f', $OPBTasPerGrossIncome);
 }
 function CalculateTotalNonOperatingIncome($ProfitAndLoss) {
@@ -297,11 +277,7 @@ function CalculateNetProfitLoss($ProfitAndLoss) {
 	return sprintf('%.2f', $NetProfitLoss);
 }
 function CalculatePATasPerGrossIncome($ProfitAndLoss) {
-<<<<<<< HEAD
-	$PATasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : (CalculateNetProfitLoss($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss));
-=======
 	$PATasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateNetProfitLoss($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss))) * 100;
->>>>>>> ravi
 	return sprintf('%.2f', $PATasPerGrossIncome);
 }
 function CalculateTotalExtraordinaryItems($ProfitAndLoss) {
