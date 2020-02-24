@@ -39,14 +39,14 @@
                   @endif   
                      <tr>
                            <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
-                           <td class="">{{($arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}</td>
-                           <td class="">{{($arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
-                           <td class="">{{($arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}</td>
-                           <td class="">{{(($arrCamData->proposed_exposure > 0) && ($arrCamData->outstanding_exposure_cam > 0)) ? $arrCamData->proposed_exposure + $arrCamData->outstanding_exposure_cam : ''}}</td>
+                           <td class="">{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}</td>
+                           <td class="">{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
+                           <td class="">{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}</td>
+                           <td class="">{{($arrCamData && ($arrCamData->proposed_exposure > 0) && ($arrCamData->outstanding_exposure_cam > 0)) ? $arrCamData->proposed_exposure + $arrCamData->outstanding_exposure_cam : ''}}</td>
                      </tr>
                      <tr>
                            <td class="" colspan="5"><b>Total Exposure (In Mn)</b></td>
-                           <td class=""><b>{{($arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}</b></td>   
+                           <td class=""><b>{{($arrCamData && $arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}</b></td>   
                      </tr>
             </tbody>
          </table>
@@ -66,8 +66,6 @@
                </tr>
             </thead>
             <tbody>
-              
-               
                <tr role="row" class="odd">
                   <td class=""><b>Facility Type</b></td>
                   <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
