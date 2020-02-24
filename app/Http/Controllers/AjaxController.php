@@ -3226,8 +3226,13 @@ if ($err) {
              {
                 $amount =  $getamount->chrg_calculation_amt; 
              }
-             
-             return response()->json(['status' => 1,'chrg_applicable_id' => $getamount->chrg_applicable_id,'amount' => number_format($amount),'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
+             return response()->json(['status' => 1,
+                 'chrg_applicable_id' => $getamount->chrg_applicable_id,
+                 'amount' => number_format($amount),
+                 'id' => $getamount->id,
+                 'type' => $getamount->chrg_calculation_type,
+                 'is_gst_applicable' => $getamount->is_gst_applicable,
+                 'applicable' =>$app]); 
           }
           else
           {
