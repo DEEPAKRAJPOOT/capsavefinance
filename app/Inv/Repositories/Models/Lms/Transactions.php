@@ -77,7 +77,7 @@ class Transactions extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveTransaction($transactions)
+    public static function saveTransaction($transactions,$whereCondition=[])
     {
         if (!is_array($transactions)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
@@ -90,12 +90,17 @@ class Transactions extends BaseModel {
             $transactions['created_at'] = \Auth::user()->user_id;
         }        
         
-        if (!isset($transactions[0])) {            
+        if (!empty($whereCondition)) {
+            return self::where($whereCondition)->update($transactions);
+        } else if (!isset($transactions[0])) {
             return self::create($transactions);
         } else {            
             return self::insert($transactions);
         }
     }
+
+
+    
     
     /**
      * Get Transactions
@@ -143,7 +148,7 @@ class Transactions extends BaseModel {
     
     public function disburse()
     {
-       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
+       return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
     }      
     
     public function trans_detail()
@@ -193,5 +198,15 @@ class Transactions extends BaseModel {
     public static function updateTransaction($whereCondition, $data)
     {
         return self::where($whereCondition)->update($data);
+    }
+
+    /** 
+       * @Author: Rent Alpha
+       * @Date: 2020-02-20 10:53:40 
+       * @Desc:  function for get user details from lms user table using user id 
+       */      
+    public function lmsUser()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
     }
 }

@@ -105,7 +105,7 @@ try {
                         required: true
                     },
                     sub_industry_id: {
-                        required: true
+                        required: false
                     },
                     anchor_limit: {
                         required: true,

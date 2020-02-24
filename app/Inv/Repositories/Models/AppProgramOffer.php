@@ -47,6 +47,8 @@ class AppProgramOffer extends BaseModel {
         'prgm_offer_id',
         'app_id',
         'app_prgm_limit_id',
+        'prgm_id',
+        'anchor_id',
         'prgm_limit_amt',
         'loan_amount',
         'loan_offer',        
@@ -58,6 +60,7 @@ class AppProgramOffer extends BaseModel {
         'adhoc_interest_rate',        
         'grace_period',        
         'processing_fee',
+        'document_fee',
         'check_bounce_fee',
         'equipment_type_id',
         'facility_type_id',
@@ -270,6 +273,10 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id');
     }
 
+    public function invPL(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id', 'app_prgm_limit_id')->where('product_id', 1);
+    }
+
     public static function getTotalOfferedLimit($app_id){
         if(empty($app_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
@@ -326,6 +333,19 @@ class AppProgramOffer extends BaseModel {
         $tot_offered_limit = AppProgramOffer::where(['app_prgm_limit_id' => $appPrgmLimitId, 'is_active'=>1])->sum('prgm_limit_amt');
         
         return $tot_offered_limit;
+    }
+    
+    
+    public static function getLimitAmount($arr)
+    {
+     
+         if(empty($arr->app_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+       //////* get   app_prgm_limit_id behalf of app_id  ********//////////////
+       $app_prgm_limit_id  = AppProgramLimit::where(['app_id' => $arr->app_id,'product_id' =>1])->pluck('app_prgm_limit_id');
+       $result = self::whereIn('app_prgm_limit_id',$app_prgm_limit_id)->where(['prgm_id'=>(int) $arr->prog_id, 'is_active'=>1])->sum('prgm_limit_amt');
+       return ($result ? $result : false);
     }
     
 }

@@ -3171,7 +3171,15 @@ if ($err) {
        $res  =  $this->lmsRepo->getTransName($request);
        if(count($res) > 0)
        {
-               return response()->json(['status' => 1,'res' => $res]);
+               $amountSum  =  $this->lmsRepo->getLimitAmount($request);
+               if($amountSum)
+               {
+                  return response()->json(['status' => 1,'res' => $res,'amount' =>$amountSum]);
+               }
+               else
+               {
+                 return response()->json(['status' => 0]);  
+               }
     
        }
        else
@@ -3380,7 +3388,7 @@ if ($err) {
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
      }
            
 
@@ -3660,6 +3668,7 @@ if ($err) {
     public function getDisbursalList(DataProviderInterface $dataProvider)
     {
      $getDisList = $this->userRepo->getDisbursalList();
+     //dd($getDisList->get());
      return $dataProvider->getDisbursalList($this->request , $getDisList);   
     }
 
@@ -3748,4 +3757,19 @@ if ($err) {
         return $data;
     }
 
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-02-18 10:49:29 
+     * @Desc:  
+     */    
+    public function getTableValByField(Request $request)
+    {
+        $tableName = $request->get('tableName');
+        $whereId = $request->get('whereId');
+        $fieldVal = $request->get('fieldVal');
+        $column = $request->get('column');
+        $getFieldVal= Helpers::getTableVal($tableName, $whereId, $fieldVal); 
+        $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
+        echo $columnVal;
+    }
 }

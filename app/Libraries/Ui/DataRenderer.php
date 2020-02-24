@@ -142,7 +142,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-warning btn-sm  report-btn btn-x-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                    return  "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -203,9 +203,9 @@ class DataRenderer implements DataProviderInterface
                     'name',
                     function ($app) {                        
                         if($app->user_type && $app->user_type==1){
-                            $anchorUserType='<small>( Supplier )</small>'; 
+                            $anchorUserType='<small class="aprveAppListBtn">( Supplier )</small>'; 
                         }else if($app->user_type && $app->user_type==2){
-                            $anchorUserType='<small>( Buyer )</small>';
+                            $anchorUserType='<small class="aprveAppListBtn">( Buyer )</small>';
                         }else{
                             $anchorUserType='';
                         }
@@ -311,17 +311,17 @@ class DataRenderer implements DataProviderInterface
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
                         if ($view_only && $app->status == 1) {
                             if(Helpers::checkPermission('add_app_note')){
-                                $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="170px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
+                                $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
                             if(Helpers::checkPermission('send_case_confirmBox')){
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
                                 $roleData = Helpers::getUserRole();                                
-                                if ($currentStage && $currentStage->order_no <= 15 ) {
-                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                if ($currentStage && $currentStage->order_no <= 16 ) {
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                 }
                                 
                                 if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
-                                    $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="300px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                    $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                                 }
                             }
                             
@@ -1050,11 +1050,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                      if ($request->front) {         
-                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="420px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      }
                      else
                      {
-                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="430px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      
                      }
                 })
@@ -1219,7 +1219,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'customer_id',
                     function ($trans) {                        
-                       return $trans->disburse ? $trans->disburse->customer_id : '';
+                      // return $trans->disburse ? $trans->disburse->customer_id : '';
+                        return $trans->lmsUser ? $trans->lmsUser->customer_id : '';
                 })
                 ->addColumn(
                     'virtual_account_no',
@@ -1499,6 +1500,13 @@ class DataRenderer implements DataProviderInterface
                      if(isset($users->file_path)){
                         $act .= "<a  href=". Storage::url($users->file_path) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
                      }
+                     if(isset($users)){
+                        $act .= "<a  data-toggle=\"modal\" data-target=\"#add_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Add Bank Detail\"><i class=\"fa fa-plus-square\"></i></a>";
+                     }
+//                     if(isset($users)){
+//                        $act .= "<a  data-toggle=\"modal\" data-target=\"#add_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id, 'bank_account_id' => $bank['bank_account_id']]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Bank Detail\"><i class=\"fa fa-edit\"></i></a>";
+//                     }
+                     
                      return $act;
                     }
                 )
@@ -2632,27 +2640,44 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'ben_name',
                     function ($customer) {
-                        return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                        if ($customer->user->is_buyer == 2) {
+                            return (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
+                        } else {
+                            return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                        }
                     }
                 )     
                 ->editColumn(
                     'ben_bank_name',
                         function ($customer) {
-                        return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                        if ($customer->user->is_buyer == 2) {
+                            return (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
+                        } else {
+                            return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                        }
+                        
                     }
                 )
                 ->editColumn(
                     'ben_ifsc',
                         function ($customer) {
-                        $email = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
-                        return $email;
+                        if ($customer->user->is_buyer == 2) {
+                            $ifsc_code = (isset($customer->user->anchor_bank_details->ifsc_code)) ? $customer->user->anchor_bank_details->ifsc_code : '';
+                        } else {
+                            $ifsc_code = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
+                        }
+                        return $ifsc_code;
                     
                 })
                 ->editColumn(
                     'ben_account_no',
                         function ($customer) {
-                        $mobile_no = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
-                        return $mobile_no;
+                        if ($customer->user->is_buyer == 2) {
+                            $benAcc = (isset($customer->user->anchor_bank_details->acc_no)) ? $customer->user->anchor_bank_details->acc_no : '';
+                        } else {
+                            $benAcc = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
+                        }
+                        return $benAcc;
                     
                 })
                 ->editColumn(
@@ -2975,14 +3000,14 @@ class DataRenderer implements DataProviderInterface
                             return $data->disburse_amount;
                         })
                         ->addColumn(
-                                'collection_date',
+                                'settlement_date',
                                 function ($data) {
-                            return isset($data->collection_date) ? $data->collection_date : '-';
+                            return isset($data->settlement_date) ? $data->settlement_date : '-';
                         })
                         ->addColumn(
-                                'collection_amount',
+                                'settlement_amount',
                                 function ($data) {
-                            return isset($data->collection_amount) ? $data->collection_amount : '-';
+                            return isset($data->settlement_amount) ? $data->settlement_amount : '-';
                         })
                         ->editColumn(
                                 'accured_interest',
@@ -3255,7 +3280,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'balance',
                 function ($transaction) {
-                    return $transaction->balance;
+                    return round($transaction->balance, 2);
                 }
             )
             ->filter(function ($query) use ($request) {

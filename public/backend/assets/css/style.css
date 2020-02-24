@@ -6553,9 +6553,7 @@ ul {
     outline: 1px solid slategrey; }
 
 .table {
-  /* font-size: .9rem;  */
-  font-size: 13px;
-}
+  font-size: .9rem; }
   .table td {
     vertical-align: middle; }
 
@@ -9137,19 +9135,32 @@ table.gridlines {
 }
 .p-relative{position: relative;}
 
+.remove-ptpq-block.remove,.remove-ptpq-block.remove-post{color: red;font-size: 20px;     position: absolute;
+  top: 5px;
+  right: -10px;}
+.add-ptpq-block.add-more-post,.add-ptpq-block.add-more{color:green;font-size: 20px;     position: absolute;
+top: 5px;
+right: -10px;}
+.remove-ptpq-block.remove,.remove-ptpq-block.remove-post{color: red;font-size: 20px;     position: absolute;
+top: 5px;
+right: -10px;}
+.add-ptpq-block.add-more-post,.add-ptpq-block.add-more{color:green;font-size: 20px;     position: absolute;
+top: 5px;
+right: -10px;}
+.input-group.control-group.row{margin-top: 15px !important;}
 .aprveAppListBtn{
-  font-size: 10px;
-  color: #0056b3 !important;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  text-align: left;
-  margin-left: 16px;
-}
-a.aprveAppListBtn:hover {
-  color: #0056b3;
-  cursor: pointer;
-  text-decoration: underline !important;
-}
-
+      font-size: 10px;
+      color: #0056b3 !important;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: left;
+      margin-left: 8px;
+      bottom: -2px;
+    }
+    a.aprveAppListBtn:hover {
+      color: #0056b3;
+      cursor: pointer;
+      text-decoration: underline !important;
+    }

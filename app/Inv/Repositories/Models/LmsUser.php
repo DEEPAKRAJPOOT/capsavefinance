@@ -67,6 +67,12 @@ class LmsUser extends Authenticatable
             ->where(DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.m_name, rta_users.l_name)"), 'like', '%'.$search.'%')
             ->orwhere("customer_id","LIKE","%{$search}%")->get();
     }
+      /////////////* get customer id   */////////////////
+      public static function  getLmsUser()
+      {
+           $result= self::with('user')->groupBy('user_id')->get();
+           return $result?$result:false;
+      }
 
     public function user()
     {
@@ -81,7 +87,7 @@ class LmsUser extends Authenticatable
 
     public static function lmsGetDisbursalCustomer()
     {
-        return self::with(['bank_details.bank', 'app.invoices.program_offer'])
+        return self::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank'])
                 ->whereHas('app');
     }
 

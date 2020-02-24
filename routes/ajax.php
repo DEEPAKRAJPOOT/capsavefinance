@@ -677,11 +677,14 @@ Route::group(
         'uses' => 'AjaxController@lmsGetDisbursalCustomer'
     ]);
     
-     
     Route::post('lms-get-soa-list', [
         'as' => 'lms_get_soa_list',
         'uses' => 'AjaxController@lmsGetSoaList'
     ]);
+    // Route::post('lms-get-disbursal-list', [
+    //     'as' => 'lms_get_disbursal_list',
+    //     'uses' => 'AjaxController@lmsGetDisbursalList'
+    // ]);
     
     Route::post('get-bank-account-list', [
         'as' => 'get_bank_account_list',
@@ -717,7 +720,11 @@ Route::group(
         'as' => 'set_default_address',
         'uses' => 'AjaxController@setDefaultAddress'
     ]);
-
+    Route::get('get-field-val', [
+        'as' => 'get_field_val',
+        'uses' => 'AjaxController@getTableValByField'
+    ]);
+    
     /*lms route*/
 
 

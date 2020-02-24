@@ -156,7 +156,7 @@
 
                             </tbody>
                         </table>
-                        <table width="100%" border="0">
+                      <!--  <table width="100%" border="0">
                            <form id="signupForm">
                        <tr>
                            <td colspan="2">
@@ -222,7 +222,7 @@
 
                        </tr>  
                        </form>
-                        </table>
+                        </table>  -->
                     </td>
                 </tr>
             </tbody>

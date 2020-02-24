@@ -7,6 +7,7 @@ use Auth;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use Illuminate\Database\Eloquent\Builder;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -148,7 +149,7 @@ class AppProgramLimit extends BaseModel {
       public static function getLimitProgram($aid)
      {
      
-         return AppProgramLimit::whereHas('supplyOffers')->with('program')->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
+        return AppProgramLimit::whereHas('supplyOffers')->with(['program' => function($query) { $query->where('status', 1 ); }])->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
      }
      
     public static function getLimitAnchor($aid){
@@ -198,12 +199,7 @@ class AppProgramLimit extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $aplids = AppProgramLimit::where('prgm_id', $program_id)->pluck('app_prgm_limit_id');
-        if($aplids->count() == 0){
-            return 0;
-        }else{
-            return AppProgramOffer::where('app_prgm_limit_id', $aplids)->sum('prgm_limit_amt');
-        }
+        return AppProgramOffer::where('prgm_id', $program_id)->sum('prgm_limit_amt');
      }
 
     public function appLimit(){
@@ -239,5 +235,13 @@ class AppProgramLimit extends BaseModel {
                 ->where('app_prgm_limit.product_id',$productId)
                 ->where('app_prgm_offer.is_active', config('common.active.yes'))
                 ->first();  
+    }
+
+    public function getTotalByPrgmLimitId(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id', 'app_prgm_limit_id')->where(['is_active'=>1])->sum('prgm_limit_amt');
+    }
+
+    public static function getTotalPrgmLimitByAppId($appId){
+        return AppProgramLimit::where(['app_id'=>$appId])->sum('limit_amt');
     }
 }

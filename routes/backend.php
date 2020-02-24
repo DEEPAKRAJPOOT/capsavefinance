@@ -652,7 +652,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('accept-application-pool', [
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
-            ]);  
+            ]); 
+            
+            //add anchor bank details
+            
+            Route::get('add-anchor-bank', [
+                'as' => 'add_anchor_bank_account',
+                'uses' => 'Backend\LeadController@addAnchorBank'
+            ]);
+            
+            Route::post('/save-anchor-bank-account', [
+                'as' => 'save_anchor_bank_account',
+                'uses' => 'Backend\LeadController@saveAnchorBankAccount'
+            ]);
             
             
             
@@ -812,6 +824,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/save-co-lender', [
                 'as' => 'save_co_lenders',
                 'uses' => 'Master\CoLenderControllers@saveCoLender'
+            ]);
+            Route::get('/share-to-colender', [
+                'as' => 'share_to_colender',
+                'uses' => 'Master\CoLenderControllers@shareToColender'
+            ]);  
+            Route::post('/share-to-colender', [
+                'as' => 'save_share_to_colender',
+                'uses' => 'Master\CoLenderControllers@saveShareToColender'
+            ]);
+            Route::get('/view-shared-colender', [
+                'as' => 'view_shared_colender',
+                'uses' => 'Master\CoLenderControllers@viewSharedColender'
             ]);  
             
             

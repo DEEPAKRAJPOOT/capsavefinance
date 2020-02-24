@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
@@ -18,6 +19,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 
 /**
@@ -88,9 +90,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public function saveTransaction($transactions)
+    public static function saveTransaction($transactions,$whereCondition=[])
     {
-        return Transactions::saveTransaction($transactions);
+        return Transactions::saveTransaction($transactions,$whereCondition);
     }
 
     /**
@@ -193,7 +195,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getInvoices($invoiceIds)
     {
         return BizInvoice::whereIn('invoice_id', $invoiceIds)
-               ->with(['program_offer','lms_user' , 'supplier', 'supplier_bank_detail.bank'])
+               ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank'])
                ->get();
     }  
 
@@ -299,6 +301,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
                
     }  
     
+    public static function getUserDetails($uid)
+    {
+       try
+       {
+          return User::getUserDetails($uid); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }    
       public static function getSingleChargeAmount($attr)
     {
        try
@@ -367,6 +380,26 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        
                
     }    
+    /**
+     * Get program offer limit amount  //
+     *      
+     * @param array $whereCondition
+     * @param array $data
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+      public static function getLimitAmount($attr)
+    {
+       try
+       {
+          return AppProgramOffer::getLimitAmount($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }     
     
     /**
      * Update Transactions
@@ -382,4 +415,32 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return Transactions::updateTransaction($whereCondition, $data);
     }
     
+    /** 
+     * @Author: Rent Aplha
+     * @Date: 2020-02-17 14:53:10 
+     * @Desc:  
+     */    
+    public static function getManualTranType(){        
+     $result=TransType::getManualTranType();
+     return  $result? $result:false;
+    }
+      /** 
+     * @Author: Rent Aplha
+     * @Date: 2020-02-17 14:53:10 
+     * @Desc:  
+     */    
+    public static function getActiveGST(){        
+        $result=GstTax::getActiveGST();
+        return  $result? $result:false;
+       }
+
+       /** 
+        * @Author: Rent Alpha
+        * @Date: 2020-02-18 13:04:19 
+        * @Desc:  
+        */       
+       public function getAllLmsUser(){
+        $result=LmsUser::getLmsUser();
+        return  $result? $result:false;
+       }            
 }

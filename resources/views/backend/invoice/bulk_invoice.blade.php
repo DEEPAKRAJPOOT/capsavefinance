@@ -129,6 +129,7 @@
                    </div>
                   <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
                   <input type="hidden" value="" id="tenor" name="tenor">
+                  <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
                   <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                   <input type="submit" id="final_submit" class="btn btn-secondary btn-sm mt-3 float-right finalButton" value="Final Submit"> 	
             </div> 
@@ -269,9 +270,11 @@
                      
                            $("#program_bulk_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
-                           
+                             if(v.program!=null)
+                             {
                                    $("#program_bulk_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
-                            });
+                             }  
+                         });
                     }
                     else
                     {
@@ -306,7 +309,9 @@
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
                         var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#prgm_offer_id").val(offer_id);
+                        $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
@@ -405,11 +410,25 @@
         var  second = $(this).val();
         var getDays  = parseInt(findDaysWithDate(first,second));
         var tenor  = parseInt($('#tenor').val());
-        if(getDays < tenor)
+         var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //As January is 0.
+        var yyyy = today.getFullYear();
+        var cDate  = dd+"/"+mm+"/"+yyyy;
+        var getOldDays  = findDaysWithDate(cDate,second);
+        var tenor  = $('#tenor').val();
+        var tenor_old_invoice  = $('#tenor_old_invoice').val();
+       if(getDays > tenor)
         {
            $(".appendExcel"+count).css("background-color","#ea9292");
            $("#tenorMsg").show(); 
            $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
+           e.preventDefault();
+        }
+         else if(getOldDays > tenor_old_invoice)
+        {
+           $("#tenorMsg").show(); 
+           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
            e.preventDefault();
         }
          else if(getDays < 0)
@@ -531,7 +550,7 @@
                     var getDays  = parseInt(findDaysWithDate(invoice_due_date,invoice_date));
                     var tenor  = parseInt($('#tenor').val());
                     var getClass ="";
-                    if(getDays < tenor)
+                    if(getDays > tenor)
                     {
                       var getClass = "background-color: #ea9292;";  
                     }

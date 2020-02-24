@@ -6,7 +6,7 @@
       <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
       <style>
          @page {
-            margin: 1cm 0.5cm 0.5cm 0.5cm;
+            margin: 2cm 1.44cm 2.25cm 1.44cm;
          }
          /** Define the header rules **/
          header {
@@ -82,10 +82,13 @@
          @php
             $date = \Carbon\Carbon::now();   
          @endphp
-         <p align="right"><b>{{ $date->isoFormat('MMMM D, Y')}}</b></p>
-
+        
+         <span align="left"><b>{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></span>
+         <span align="right" style="float: right;"><b>{{ $date->isoFormat('MMMM D, Y')}}</b></span>
+         
       </header>
       <footer>
+            <hr>
           <span class="pagenum"></span><b> |</b> CFPL
       </footer>
      <main>

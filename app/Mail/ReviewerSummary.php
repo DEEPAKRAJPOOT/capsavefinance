@@ -13,11 +13,14 @@ use App\Inv\Repositories\Models\AppDocumentFile;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\AppProgramOffer;
 
 class ReviewerSummary extends Mailable
 {
     use Queueable, SerializesModels;
+    use CommonTrait;
 
     /**
      * Create a new message instance.
@@ -46,6 +49,15 @@ class ReviewerSummary extends Mailable
         if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
             $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
         }
+        if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+            $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                            ->where('is_active', 1)->get();
+            $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
+            if(!empty($dataPrePostCond)) {
+              $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
+              $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
+            }
+        }         
         $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, config('common.review_summ_mail_docs_id'));
         $leaseOfferData = $facilityTypeList = array();
         $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
@@ -60,6 +72,8 @@ class ReviewerSummary extends Mailable
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
             'offerPTPQ' => $offerPTPQ,
+            'preCondArr' => $preCondArr,
+            'postCondArr' => $postCondArr,
             'leaseOfferData'=> $leaseOfferData,
             'arrStaticData' => $arrStaticData,
             'facilityTypeList' => $facilityTypeList

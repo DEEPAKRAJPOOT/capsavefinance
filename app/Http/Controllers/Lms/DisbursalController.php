@@ -177,21 +177,18 @@ class DisbursalController extends Controller
 			// dd($disburseAmount);		
 			if ($disburseAmount) {
 				if($disburseType == 2) {
+					// dd($disburseRequestData);
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-					$transactionData = $this->createTransactionData($disburseRequestData, $totalFunded, $transId, 16);
+					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $totalFunded], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
-					// $tranType = 4 for processing acc. to mst_trans_type table
-					// $prcsAmt = 1005;
 					
-					// $prcsTrnsData = $this->createTransactionData($disburseRequestData, $prcsAmt, $transId, 4);
-					// $createTransaction = $this->lmsRepo->saveTransaction($prcsTrnsData);
-
 					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
 					$intrstAmt = round($totalInterest,2);
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9);
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt], $transId, 9);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData, $intrstAmt, $transId, 9, 1);
+
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt], $transId, 9, 1);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
 				}
@@ -277,4 +274,43 @@ class DisbursalController extends Controller
 
 		return $requestData;
     }
+
+	public function uploadPfDf($user_id, $appId) {
+	    $prcsAmt = $this->appRepo->getPrgmLimitByAppId($appId);
+	    // dd($prcsAmt);
+	    if(isset($prcsAmt->offer)){
+
+			foreach ($prcsAmt->offer as $key => $offer) {
+					// $tranType = 4 for processing acc. to mst_trans_type table
+				$pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+				$pfWGst = round((($pf*18)/100),2);
+
+				$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+				$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
+
+				$pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+				$pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
+
+				// $tranType = 20 for document fee acc. to mst_trans_type table
+				$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+				$dfWGst = round((($df*18)/100),2);
+
+				$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+				$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
+
+				$dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
+				$createTransaction = $this->appRepo->saveTransaction($dfCreditData);
+			}
+	    } else {
+	    	die("No offer");
+	    }
+		die("Done !!!");
+	}
+
+	// public function processInvoiceSettlement()
+	// {
+	// 	$returnData = $this->paySettlement('315');
+
+	// 	echo "Invoice Settled 315";
+	// }
 }

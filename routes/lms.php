@@ -12,6 +12,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(['prefix' => 'lms'], function () {
         	
+            Route::get('/upload-pf-df/{userId}/{appId}', [
+                'as' => 'lms_get_customer_list',
+                'uses' => 'Lms\DisbursalController@uploadPfDf'
+            ]);
+
             Route::get('/', [
                 'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list'
@@ -97,7 +102,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'list_lms_charges',
                 'uses' => 'Lms\ChargeController@listLmsCharges'
             ]);
-            
+            Route::get('get-lms-charges-edit', [
+                'as' => 'get_lms_charges_edit',
+                'uses' => 'Lms\ChargeController@editLmsCharges'
+            ]);  
+        
+            Route::get('payment-settlement',[
+                'as' => 'lms-payment-settlement',
+                'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
+            ]);
         });//end of application
 
         // Business address

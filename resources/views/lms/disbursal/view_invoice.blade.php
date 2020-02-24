@@ -5,6 +5,10 @@
 		<div class="row">
 			<div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse show" data-parent="#accordion" style="">
 				@foreach($userIvoices as $invoice)
+
+				@php 
+					$margin = (isset($invoice->app->acceptedOffer->margin))	? $invoice->app->acceptedOffer->margin : 0;
+				@endphp
 				<ul class=" p-0 m-0 d-flex justify-content-between">
 					<li>
 					@if($status == 0)
@@ -15,9 +19,9 @@
 					<li>Invoice Date <br> <b>{{ $invoice->invoice_date }}</b></li>
 					<li>Invoice Due Date <br> <b>{{ $invoice->invoice_due_date }}</b></li>
 					<li>Invoice Amt. <br> <i class="fa fa-inr"></i><b>{{ $invoice->invoice_approve_amount }}</b></li>
-					<li>Margin(%). <br> <i class="fa fa-inr"></i><b>{{ $invoice->app->acceptedOffer->margin }}</b></li>
+					<li>Margin(%). <br> <i class="fa fa-inr"></i><b>{{ $margin }}</b></li>
 					<li>Disburse Amt. <br> <i class="fa fa-inr"></i><b>
-					{{ $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->app->acceptedOffer->margin)/100) }}
+					{{ $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100) }}
 					</b></li>
 					<li>Actual Funded Amt. <br> <i class="fa fa-inr"></i><b>
 					@php

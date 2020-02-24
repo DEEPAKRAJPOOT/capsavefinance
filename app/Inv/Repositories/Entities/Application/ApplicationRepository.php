@@ -45,6 +45,9 @@ use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\ColenderShare;
+use App\Inv\Repositories\Models\Master\Bank;
+
 /**
  * Application repository class
  */
@@ -1120,6 +1123,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 				->with('program')
 				->whereHas('appLimit.app.acceptedOffer')
 				->whereHas('offer')
+                ->where('product_id', 1)
 				->get();
 	}   
 
@@ -1234,6 +1238,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return UserBankAccount::getBankAccountDataByCompanyId($bank_acc_id,$comp_id);
     }
+    
+    /**
+     * get Bank account by Anchor ID 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getBankAccountDataByAnchorId($anchorId)
+    {
+        return UserBankAccount::getBankAccountDataByAnchorId($anchorId);
+    }
 
 
     /**
@@ -1254,6 +1269,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getConstitutionDropDown()
     {
         return Constitution::getConstitutionDropDown();
+    }
+    
+    /**
+     * get Bank list
+     * 
+     * @return type mixed
+     */
+    public function getBankList()
+    {
+        return Bank::getBankList();
     }
 
 
@@ -1355,5 +1380,70 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getTotalByPrgmLimitId($appPrgmLimitId){
         return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
+    }
+
+
+    public function getPrgmLimitByAppId($appId){
+        return AppProgramLimit::where([
+                'app_id' => $appId, 
+                'product_id' => 1
+                ])
+            ->with('offer')
+            ->first();
+    }
+
+    /**
+     * Save Transactions
+     * 
+     * @param array $transactions
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveTransaction($transactions)
+    {
+        return Transactions::saveTransaction($transactions);
+    }
+    
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getVirtualAccIdByUserId($userId)
+    {
+        return LmsUser::where('user_id', $userId)
+                ->pluck('virtual_acc_id')->first();
+    }
+
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getUserTypeByUserId($userId)
+    {
+        return User::where('user_id', $userId)
+                ->pluck('is_buyer')->first();
+    } 
+    
+
+    public function saveShareToColender($data, $co_lenders_share_id=null){
+        return ColenderShare::saveShareToColender($data, $co_lenders_share_id);
+    }
+
+    public function getSharedColender($where){
+        return ColenderShare::getSharedColender($where);
+    }
+
+    public function getTotalPrgmLimitByAppId($appId){
+        return AppProgramLimit::getTotalPrgmLimitByAppId($appId);
+    }
+
+    public function getPrgmsByAnchor($anchor_ids, $uesr_type){
+        return Program::getPrgmsByAnchor($anchor_ids, $uesr_type);
     }
 }

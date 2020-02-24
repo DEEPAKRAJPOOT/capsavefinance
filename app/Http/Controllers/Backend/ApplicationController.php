@@ -22,12 +22,14 @@ use Session;
 use Helpers;
 use App\Libraries\Pdf;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\AppAssignment;
 use Mail;
 class ApplicationController extends Controller
 {
     use ApplicationTrait;
+    use LmsTrait;
     
     protected $appRepo;
     protected $userRepo;
@@ -118,6 +120,9 @@ class ApplicationController extends Controller
     public function updateCompanyDetail(BusinessInformationRequest $request){
         try {
             $arrFileData = $request->all();
+            if(request()->is_gst_manual == 1){
+                $arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
+            }
             $appId = $request->app_id;
             $bizId = $request->biz_id;
             
@@ -706,7 +711,7 @@ class ApplicationController extends Controller
                         
             $addl_data = [];
             $addl_data['sharing_comment'] = $sharing_comment;
-            
+
             if ($curr_role_id && $assign_case) {
                 $selData = explode('-', $sel_assign_role);
                 $selRoleId = $selData[0];
@@ -714,7 +719,7 @@ class ApplicationController extends Controller
                 $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-            } else {                
+            } else {
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 //Validate the stage
                 if ($currStage->stage_code == 'credit_mgr') {
@@ -773,6 +778,7 @@ class ApplicationController extends Controller
                         return redirect()->back();                                            
                     }
                 } else if ($currStage->stage_code == 'opps_checker') {
+
                   	$capId = sprintf('%09d', $user_id);
                   	$customerId = 'CAP'.$capId;
                   	$lmsCustomerArray = array(
@@ -785,8 +791,31 @@ class ApplicationController extends Controller
 	                  	$capId = sprintf('%07d', $createCustomer->lms_user_id);
 	                  	$virtualId = 'CAPVA'.$capId;
               			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
+
+              			$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+						foreach ($prcsAmt->offer as $key => $offer) {
+              				// $tranType = 4 for processing acc. to mst_trans_type table
+							$pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+							$pfWGst = round((($pf*18)/100),2);
+
+							$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+							$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
+
+							$pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+							$pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
+
+							// $tranType = 20 for document fee acc. to mst_trans_type table
+							$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+							$dfWGst = round((($df*18)/100),2);
+
+							$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+							$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
+
+							$dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
+							$createTransaction = $this->appRepo->saveTransaction($dfCreditData);
+						}
                   	}
-                } 
+                }
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
@@ -865,6 +894,11 @@ class ApplicationController extends Controller
         try {
 
             $arrFileData = $request->all();
+
+            if(request()->is_gst_manual == 1){
+                $arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
+            }
+
             $user_id = $request->user_id;
             $business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
             //$appId  = Session::put('appId', $business_info['app_id']);
