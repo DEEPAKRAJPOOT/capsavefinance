@@ -49,18 +49,24 @@
 										</div>
 									</div>
 									<div class="col-md-4">
-										<div class="form-group password-input">
-											<label for="txtPassword">GST Number
-												<span class="mandatory">*</span>
-											</label>
+										<div class="form-group password-input">											
 											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
-											<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
+											<span class="span_gst_select">
+												<label for="txtPassword">GST Number
+													<span class="mandatory">*</span>
+												</label>
+												<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
 												</select>
 												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
 												@error('biz_gst_number')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
-											</select>
+											</span>
+											<input type="hidden" name="is_gst_manual" value="0"/>
+											<span class="span_gst_text" style="display: none">
+												<label for="txtPassword">GST Number</label>
+												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+											</span>
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -279,7 +285,7 @@
 										<div class="col-md-4">
 											<div class="form-group">
 												<label for="txtCreditPeriod">Address
-													<span class="mandatory">*</span>
+													<span class="mandatory gst_address">*</span>
 												</label>
 												<input type="text" name="biz_address" value="{{old('biz_address')}}" class="form-control" tabindex="12" placeholder="Enter Your Address" maxlength="100" >
 												@error('biz_address')
@@ -290,7 +296,7 @@
 										<div class="col-md-3">
 											<div class="form-group password-input">
 												<label for="txtPassword">State
-													<span class="mandatory">*</span>
+													<span class="mandatory gst_address">*</span>
 												</label>
 												<select class="form-control" name="biz_state" tabindex="13" >
 													<option value=""> Select State</option>
@@ -306,7 +312,7 @@
 										<div class="col-md-3">
 											<div class="form-group">
 												<label for="txtEmail">City
-													<span class="mandatory">*</span>
+													<span class="mandatory gst_address">*</span>
 												</label>
 												<input type="text" name="biz_city" value="{{old('biz_city')}}" class="form-control" tabindex="14" placeholder="Enter City Name" maxlength="50" >
 												@error('biz_city')
@@ -318,7 +324,7 @@
 
 											<div class="form-group password-input">
 												<label for="txtPassword">Pin Code
-													<span class="mandatory">*</span>
+													<span class="mandatory gst_address">*</span>
 												</label>
 												<input type="text" name="biz_pin" value="{{old('biz_pin')}}" class="form-control" tabindex="15" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6" >
 												@error('biz_pin')

@@ -1,12 +1,12 @@
 <!-- Start PDF Section -->
    <div class="data mt-4">
-       <h2 class="sub-title bg">Group Company Exposure
+       <h2 class="sub-title bg" style="margin-bottom: 0px;">Group Company Exposure
                       <span class="pull-right" style="font-size: 11px;">
                                         @if(isset($arrCamData->By_updated))  
                                             Updated By: {{$arrCamData->By_updated}} ({!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$arrCamData->updated_at)->format('j F, Y') : '' !!})
                                         @endif
                                     </span>   </h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -52,14 +52,14 @@
                      </tr>
             </tbody>
          </table>
-      </div>
+     
    </div>
    
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Deal Structure</h2>
+      <h2 class="sub-title bg" style="margin-bottom: 0px;">Deal Structure</h2>
       @forelse($leaseOfferData as $key=>$leaseOffer)
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -148,7 +148,7 @@
                </tr>
             </tbody>
          </table>
-      </div>
+      <!-- </div> -->
 
       @empty
          <div class="pl-4 pr-4 pb-4 pt-2">
@@ -159,8 +159,8 @@
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Pre Disbursement Conditions</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg"  style="margin-bottom: 0px;">Pre Disbursement Conditions</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -184,12 +184,12 @@
                @endif
             </tbody>
          </table>
-      </div>
+      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Post Disbursement Conditions</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg"  style="margin-bottom: 0px;">Post Disbursement Conditions</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -212,23 +212,26 @@
                @endif
             </tbody>
          </table>
-      </div>
+      <!-- </div> -->
    </div>
 
  
    <div class="data mt-4">
-      <h2 class="sub-title bg">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg"  style="margin-bottom: 0px;">Minimum Acceptance Criteria as per NBFC Credit Policy</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
-                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br/> Borrower Vintage &amp; Constitution</th>
+                  <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Parameter <br/></th>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="10%">Deviation</th>
                   <th class="sorting_asc text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="25%">Remarks</th>
                </tr>
             </thead>
             <tbody>
+            <tr style="background-color: #d2d4de;">
+                  <th colspan="4" class="blank" >Borrower Vintage &amp; Constitution</th>
+               </tr>
                <tr>
                   <td>Constitution</td>
                   <td>- Registered Partnership Firm<br/> - Private Limited Company<br/> - Public Limited Company<br/> - Limited Liability Partnership </td>
@@ -241,7 +244,7 @@
                   <td>No</td>
                   <td>{{isset($arrBizData->date_of_in_corp) ? \Carbon\Carbon::parse($arrBizData->date_of_in_corp)->format('d/m/Y') : '' }}</td>
                </tr>
-               <tr>
+               <tr style="background-color: #d2d4de;">
                   <td colspan="4" class="blank">&nbsp;</td>
                </tr>
                <tr>
@@ -280,7 +283,7 @@
                   <td>{{isset($arrHygieneData->neg_news_report_check) && $arrHygieneData->neg_news_report_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($arrHygieneData->neg_news_report_cmnt) ? trim($arrHygieneData->neg_news_report_cmnt) : ''}}</td>
                </tr>
-               <tr>
+               <tr style="background-color: #d2d4de;">
                   <td colspan="4" class="blank">&nbsp;</td>
                </tr>
                <tr>
@@ -301,7 +304,7 @@
                   <td>{{isset($arrHygieneData->trade_ref_check) && $arrHygieneData->trade_ref_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($arrHygieneData->trade_ref_cmnt) ? trim($arrHygieneData->trade_ref_cmnt) : ''}}</td>
                </tr>
-               <tr>
+               <tr style="background-color: #d2d4de;">
                   <td colspan="4"  class="blank">&nbsp;</td>
                </tr>
                <tr>
@@ -328,10 +331,8 @@
                   <td>{{isset($finacialDetails->debt_check) && $finacialDetails->debt_check == 'Yes' ? 'Yes' : 'No'}}</td>
                   <td>{{isset($finacialDetails->debt_cmnt) ? trim($finacialDetails->debt_cmnt) : ''}}</td>
                </tr>
-               <tr>
-                  <td colspan="4" class="blank">
-                     <h5>Other</h5>
-                  </td>
+               <tr style="background-color: #d2d4de;">
+                  <th colspan="4" class="blank"> Other                </th>
                </tr>
                <tr>
                   <td>Negative Industry Segment</td>
@@ -371,12 +372,12 @@
                </tr>
             </tbody>
          </table>
-      </div>
+      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Approval Criteria for IC</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg"  style="margin-bottom: 0px;">Approval Criteria for IC</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
@@ -427,14 +428,14 @@
                </tr>
             </tbody>
          </table>
-      </div>
+      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Purpose of Rental Facility</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg"  style="margin-bottom: 0px;">Purpose of Rental Facility</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <p>{!! isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : '' !!}</p>
-      </div>
+      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
@@ -452,8 +453,8 @@
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Board of Directors as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg" style="margin-bottom: 0px;">Board of Directors as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
@@ -497,7 +498,7 @@
             @endif
             </tbody>
          </table>
-      </div>
+      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
@@ -515,8 +516,8 @@
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Standalone Financials of {{$arrBizData->biz_entity_name}}</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg"  style="margin-bottom: 0px;">Standalone Financials of {{$arrBizData->biz_entity_name}}</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table width="100%" id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                   <tr>
@@ -556,7 +557,7 @@
                <li>&#x2714; Net Worth = Share Capital + Reserves – Revaluation reserve</li>
             </ul> 
          -->
-      </div>
+      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
@@ -582,7 +583,7 @@
 
    <div class="data mt-4">
       <h2 class="sub-title bg">Risk Comments</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
 
          <div class="data mt-4">
             <h2 class="sub-title bg">Deal Positives</h2>
@@ -640,7 +641,7 @@
             </div>
          </div>
 
-      </div>
+      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
@@ -651,8 +652,8 @@
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg"  style="margin-bottom: 0px;">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
@@ -711,7 +712,7 @@
                </tr>
             </tbody>
          </table>
-      </div>
+      <!-- </div> -->
    </div>
 
 <script>

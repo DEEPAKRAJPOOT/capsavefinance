@@ -139,18 +139,18 @@
                             <div class="col-md-3 mt-4 INR">
                                     <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
-                                     <input type="text" name="sanction_limit_cam" class="form-control " value="{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="sanction_limit_cam" class="form-control float_format" value="{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-3 mt-4 INR">
                                  <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
                                  <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure float_format" value="{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-2 mt-4 INR">
                                  <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
                                  <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                  <div class="d-flex">
-                                  <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
+                                  <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure float_format"  value="{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
                                    <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
                                    </div>
                             </div>
@@ -170,11 +170,11 @@
                                 </div>
                                 <div class="col-md-3 INR">
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure float_format" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3 INR">
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-2 center">
                                     <i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>
@@ -197,15 +197,15 @@
                 </div>  
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Rating Rationale</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg"  style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Rating Rationale</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Terms Of Facility</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Terms Of Facility</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <table class="table overview-table table-bordered" cellpadding="0" cellspacing="0" border="1">
                             <tbody>
                                 <tr>
@@ -271,26 +271,26 @@
                                  
                             </tbody>
                         </table>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Brief Profile of the Company</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Brief Profile of the Company</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false" >{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}</textarea>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Risk Comments</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <textarea class="form-control" id="risk_comments" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Recommendation and Comments of Credit Manager</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         @php 
                         $role_id=Helpers::getUserRole(Auth::user()->user_id);
                         @endphp
@@ -298,22 +298,25 @@
                         <textarea @if (in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])) disabled="true" @endif class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{ isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
 
                         <div class="clearfix"></div>
-                    </div>
+                    <!-- </div> -->
 
                 </div>
                  <div class="data mt-4">
-                    <h2 class="sub-title bg">Contigent Liabilities & Auditors Observations</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="border: 1px solid #d1d1d1;">Contigent Liabilities & Auditors Observations </h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <div class="form-group row">
                          <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
                          <div class="col-sm-4">
                            <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('d/m/Y') : '' }}" name="debt_on" id="debt_on" placeholder="Select Date">
                          </div>
                        </div>
+                       <div class="form-group row">
+                       <div class="col-sm-12">
                         <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="contigent_observations">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
-
+                       </div>
+                        </div>
                         <div class="clearfix"></div>
-                    </div>
+                    <!-- </div> -->
 
                 </div>
                 @if(request()->get('view_only'))
@@ -454,6 +457,24 @@
       });
    })
 
+
+$(document).on('keypress','.float_format', function(event) {
+let num = $(this).val();
+num.split('.')[1]
+    if(event.which == 8 || event.which == 0){
+        return true;
+    }
+    if(event.which < 46 || event.which > 59) {
+        return false;
+    }
+   
+    if(event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
+return false;
+}
+});
 
 
 </script>
