@@ -40,8 +40,8 @@ class FinancialJeConfig extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'journal_id',
-        'trans_config_id'
+        'trans_config_id',
+        'journal_id'        
     ];
 
 }

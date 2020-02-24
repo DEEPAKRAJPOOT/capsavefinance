@@ -17,7 +17,7 @@ class FinancialJournalEntries extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'journal_entry_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -40,10 +40,10 @@ class FinancialJournalEntries extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'journal_id',
         'entry_type',
         'reference', 
-        'date',
-        'journal_id',    
+        'date',            
         'created_at',   
         'created_by',        
         'updated_at',

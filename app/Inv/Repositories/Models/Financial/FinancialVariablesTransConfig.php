@@ -40,8 +40,8 @@ class FinancialVariablesTransConfig extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'variable_id',
-        'trans_config_id'
+        'trans_config_id',
+        'variable_id'        
     ];
 
 }

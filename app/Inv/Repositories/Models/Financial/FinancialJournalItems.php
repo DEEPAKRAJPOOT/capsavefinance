@@ -40,14 +40,15 @@ class FinancialJournalItems extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'je_config_id',
         'date',
         'account_id', 
         'biz_id',
         'label',    
-        'debit',
-        'credit',  
-        'journal_entry_id',
-        'journal_id',
+        'debit_amount',
+        'credit_amount', 
+        'journal_id', 
+        'journal_entry_id',        
         'created_at',   
         'created_by',        
         'updated_at',
