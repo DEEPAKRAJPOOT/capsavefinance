@@ -148,7 +148,10 @@
                                                   <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                      <table class="table-border-none" width="100%">
                                                         <tbody>
-                                                          @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                          @php 
+                                                          $finance_data_prev = !empty($finance_data[$year-1]) ? $finance_data[$year-1] : array();
+                                                          $yearly_fin_data = getTotalFinanceData($fin_data, $finance_data_prev);
+                                                          @endphp
                                                           @foreach($performance_analysis_cols as $key => $cols)
                                                             <tr>
                                                               <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>

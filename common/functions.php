@@ -47,52 +47,6 @@ function format_number($number) {
     return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
 }
 
-function getPaginate($pages, $currpage = 1, $title = array()) {
-	$output = '';
-	if($pages > 1) {
-		if($currpage == 1) 
-			$output .= '<li class="paginate_button disabled"><span>First</span></li><li class="paginate_button disabled"><span>Previous</span></li>';
-		else	
-			$output .= '<li class="paginate_button" onclick="getresult(1)" title="'.($title[0] ?? '').'"><span>First</span></li><li class="paginate_button"  onclick="getresult('.($currpage-1).')"  title="'.($title[$currpage-2] ?? '').'"><span>Previous</span></li>';
-
-		if(($currpage-3)>0) {
-			if($currpage == 1)
-				$output .= '<li class="paginate_button active" title="'.($title[0] ?? '').'"><span>1</span></li>';
-			else				
-				$output .= '<li class="paginate_button" onclick="getresult(1)" title="'.($title[0] ?? '').'"><span>1</span></li>';
-		}
-		if(($currpage-3)>1) {
-				$output .= '<li class="paginate_button"><span>....</span></li>';
-		}
-		
-		for($i=($currpage-2); $i<=($currpage+2); $i++)	{
-			if($i<1) continue;
-			if($i>$pages) break;
-			if($currpage == $i)
-				$output .= '<li class="paginate_button active" id="'.$i.'" title="'.($title[$i-1] ?? '').'"><span>'.$i.'</span></li>';
-			else
-				$output .= '<li class="paginate_button" onclick="getresult('.$i.')" title="'.($title[$i-1] ?? '').'"><span>'.$i.'</span></li>';
-		}
-		
-		if(($pages-($currpage+2))>1) {
-			$output .= '<li class="paginate_button"><span>....</span></li>';
-		}
-		if(($pages-($currpage+2))>0) {
-			if($currpage == $pages)
-				$output .= '<li class="paginate_button active" id="'.$pages.'" title="'.($title[$pages-1] ?? '').'"><span>'.$pages.'</span></li>';
-			else				
-				$output .= '<li class="paginate_button" onclick="getresult('.$pages.')" title="'.($title[$pages-1] ?? '').'"><span>'.$pages.'</span></li>';
-		}
-		
-		if($currpage < $pages)
-			$output .= '<li class="paginate_button" onclick="getresult('.($currpage+1).')" title="'.($title[$currpage] ?? '').'"><span>Next</span></li><li class="paginate_button"  onclick="getresult('.$pages.')" title="'.($title[$pages-1] ?? '').'"><span>Last</span></li>';
-		else				
-			$output .= '<li class="paginate_button disabled"><span>Next</span></li><li class="paginate_button disabled"><span>Last</span></li>';
-	}
-	return !empty($output) ? '<ul class="pagination_ul">'.$output.'</ul>' : $output;
-}
-
-
 function extra_char($string = ''){
 	 $i = 0;
 	 $extra_char = '';
@@ -125,6 +79,51 @@ function _getRand($stringLen = 12, $min_year = 1950) {
 		$randStrLen = $stringLen - strlen($timestamp);
 		return $timestamp . ($randStrLen <= 0 ? '' : _rand_str($randStrLen));
 }
+
+function getPaginate($pages, $currpage = 1, $title = array()) {
+		$output = '';
+		if($pages > 1) {
+			if($currpage == 1) 
+				$output .= '<li class="paginate_button disabled"><span>First</span></li><li class="paginate_button disabled"><span>Previous</span></li>';
+			else	
+				$output .= '<li class="paginate_button" onclick="getresult(1)" title="'.($title[0] ?? '').'"><span>First</span></li><li class="paginate_button"  onclick="getresult('.($currpage-1).')"  title="'.($title[$currpage-2] ?? '').'"><span>Previous</span></li>';
+
+			if(($currpage-3)>0) {
+				if($currpage == 1)
+					$output .= '<li class="paginate_button active" title="'.($title[0] ?? '').'"><span>1</span></li>';
+				else				
+					$output .= '<li class="paginate_button" onclick="getresult(1)" title="'.($title[0] ?? '').'"><span>1</span></li>';
+			}
+			if(($currpage-3)>1) {
+					$output .= '<li class="paginate_button"><span>....</span></li>';
+			}
+			
+			for($i=($currpage-2); $i<=($currpage+2); $i++)	{
+				if($i<1) continue;
+				if($i>$pages) break;
+				if($currpage == $i)
+					$output .= '<li class="paginate_button active" id="'.$i.'" title="'.($title[$i-1] ?? '').'"><span>'.$i.'</span></li>';
+				else
+					$output .= '<li class="paginate_button" onclick="getresult('.$i.')" title="'.($title[$i-1] ?? '').'"><span>'.$i.'</span></li>';
+			}
+			
+			if(($pages-($currpage+2))>1) {
+				$output .= '<li class="paginate_button"><span>....</span></li>';
+			}
+			if(($pages-($currpage+2))>0) {
+				if($currpage == $pages)
+					$output .= '<li class="paginate_button active" id="'.$pages.'" title="'.($title[$pages-1] ?? '').'"><span>'.$pages.'</span></li>';
+				else				
+					$output .= '<li class="paginate_button" onclick="getresult('.$pages.')" title="'.($title[$pages-1] ?? '').'"><span>'.$pages.'</span></li>';
+			}
+			
+			if($currpage < $pages)
+				$output .= '<li class="paginate_button" onclick="getresult('.($currpage+1).')" title="'.($title[$currpage] ?? '').'"><span>Next</span></li><li class="paginate_button"  onclick="getresult('.$pages.')" title="'.($title[$pages-1] ?? '').'"><span>Last</span></li>';
+			else				
+				$output .= '<li class="paginate_button disabled"><span>Next</span></li><li class="paginate_button disabled"><span>Last</span></li>';
+		}
+		return !empty($output) ? '<ul class="pagination_ul">'.$output.'</ul>' : $output;
+	}
 
 function _getRandReverse($string = '', $min_year = 1950) {
 		if (is_numeric($string) || strlen($string) < 9) return $string;
@@ -203,7 +202,7 @@ function CalculateCostofProduction($ProfitAndLoss) {
 	return sprintf('%.2f', $CostofProduction);
 }
 function CalculateCOPSofGrossIncome($ProfitAndLoss) {
-	$COPSofGrossIncome =  CalculateCostofProduction($ProfitAndLoss)/ CalculateGrossSale($ProfitAndLoss);
+	$COPSofGrossIncome =  CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateCostofProduction($ProfitAndLoss)/ CalculateGrossSale($ProfitAndLoss)))  * 100;
 	return sprintf('%.2f', $COPSofGrossIncome);
 }
 function CalculateCostofSales($ProfitAndLoss) {
@@ -212,7 +211,7 @@ function CalculateCostofSales($ProfitAndLoss) {
 	return sprintf('%.2f', $CostofSales);
 }
 function CalculateCostofSalesasPerGrossIncome($ProfitAndLoss) {
-	$CostofSalesasPerGrossIncome = CalculateCostofSales($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss);
+	$CostofSalesasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateCostofSales($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss))) * 100;
 	return sprintf('%.2f', $CostofSalesasPerGrossIncome);
 
 }
@@ -225,7 +224,7 @@ function CalculateProfitBeforeInterestTax($ProfitAndLoss) {
 	 return sprintf('%.2f', $ProfitBeforeInterestTax);
 }
 function CalculatePBITasPerGrossSale($ProfitAndLoss) {
-	$PBITasPerGrossSale = CalculateProfitBeforeInterestTax($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss);
+	$PBITasPerGrossSale = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateProfitBeforeInterestTax($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss))) * 100;
 	return sprintf('%.2f', $PBITasPerGrossSale);
 }
 function CalculateInterestOtherFinanceCharge($ProfitAndLoss) {
@@ -235,7 +234,7 @@ function CalculateInterestOtherFinanceCharge($ProfitAndLoss) {
 	return sprintf('%.2f', $InterestOtherFinanceCharge);
 }
 function CalculateInttFinChargeasPerGrossSale($ProfitAndLoss) {
-	$InttFinChargeasPerGrossSale = CalculateInterestOtherFinanceCharge($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss);
+	$InttFinChargeasPerGrossSale = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateInterestOtherFinanceCharge($ProfitAndLoss) / CalculateGrossSale($ProfitAndLoss))) * 100;
 	return sprintf('%.2f', $InttFinChargeasPerGrossSale);
 }
 function CalculateOperatingProfitBeforeTax($ProfitAndLoss) {
@@ -243,7 +242,7 @@ function CalculateOperatingProfitBeforeTax($ProfitAndLoss) {
 	return sprintf('%.2f', $OperatingProfitBeforeTax);
 }
 function CalculateOPBTasPerGrossIncome($ProfitAndLoss) {
-	$OPBTasPerGrossIncome = CalculateOperatingProfitBeforeTax($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss);
+	$OPBTasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateOperatingProfitBeforeTax($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss))) * 100;
 	return sprintf('%.2f', $OPBTasPerGrossIncome);
 }
 function CalculateTotalNonOperatingIncome($ProfitAndLoss) {
@@ -255,7 +254,7 @@ function CalculateTotalNonOperatingExpenses($ProfitAndLoss) {
 	return sprintf('%.2f', $TotalNonOperatingExpenses);
 }
 function CalculateNetofNonOperatingIncomeExpenses($ProfitAndLoss) {
-	$NetofNonOperatingIncomeExpenses = CalculateTotalNonOperatingExpenses($ProfitAndLoss)-CalculateTotalNonOperatingIncome($ProfitAndLoss);
+	$NetofNonOperatingIncomeExpenses = CalculateTotalNonOperatingIncome($ProfitAndLoss) - CalculateTotalNonOperatingExpenses($ProfitAndLoss);
 	return sprintf('%.2f', $NetofNonOperatingIncomeExpenses);
 }
 function CalculateProfitBeforeInterestDepreciationTax($ProfitAndLoss) {
@@ -267,7 +266,7 @@ function CalculateProfitBeforeTaxLoss($ProfitAndLoss) {
 	return sprintf('%.2f', $ProfitBeforeTaxLoss);
 }
 function CalculateDefferedTaxes($ProfitAndLoss) {
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateProvisionForTaxesTotal($ProfitAndLoss) {
 	$ProvisionForTaxesTotal = $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
@@ -278,7 +277,7 @@ function CalculateNetProfitLoss($ProfitAndLoss) {
 	return sprintf('%.2f', $NetProfitLoss);
 }
 function CalculatePATasPerGrossIncome($ProfitAndLoss) {
-	$PATasPerGrossIncome = CalculateNetProfitLoss($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss);
+	$PATasPerGrossIncome = CalculateGrossSale($ProfitAndLoss) == 0 ? 0 : ((CalculateNetProfitLoss($ProfitAndLoss)/CalculateGrossSale($ProfitAndLoss))) * 100;
 	return sprintf('%.2f', $PATasPerGrossIncome);
 }
 function CalculateTotalExtraordinaryItems($ProfitAndLoss) {
@@ -353,83 +352,83 @@ function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($Liab
 #====================================================================================#
 
 function CalculateAssetsReceivables($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsInventory($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsStockInProcess($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsFinishedGoods($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
 }
 function CalculateAssetsSubTotalInventory($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsAdvanceReceivableInOrKind($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateTotalCurrentAssets($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsGrossBlock($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateAssetsNetBlock($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateTotalOtherNonCurrentAssets($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateIntangibleAssetSubtotal($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateIntangibleAssetTotal($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateTangibleAssetNetworth($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateTotalLiabilitiesMinusTotalAssets($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsConsumption0($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsConsumption1($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsConsumption2($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsConsumption3($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateStockInProcessMinusAmount($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsCostOfProduction($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateFinishedGoodsMinusAmount($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsCostOfSales($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsDomesticIncome($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 function CalculateMonthsExportIncome($Assets){
-	return '0';
+	return 'Need to Calculate';
 }
 
 
@@ -720,7 +719,7 @@ function getProfitandLossColumns(){
 			'CalculateProfitBeforeTaxLoss' => 'PROFIT BEFORE TAX / LOSS (PBT)',
 			'TaxPaid' => 'TAX PAID',
 			'ProvisionForTaxesCurrentPeriod' => 'PROVISION FOR TAXES - Current Period',
-			'CalculateDefferedTaxes' => 'Deffered Taxes',
+			//'CalculateDefferedTaxes' => 'Deffered Taxes',
 			'CalculateProvisionForTaxesTotal' => 'PROVISION FOR TAXES - TOTAL',
 			'CalculateNetProfitLoss' => 'NET PROFIT/LOSS (PAT)',
 			'CalculatePATasPerGrossIncome' => 'PAT AS % OF GROSS Income',
@@ -769,10 +768,16 @@ function extraData($wholeArary) {
 }
 
 
-function getTotalFinanceData($fullArray){
+function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$ProfitAndLoss = $fullArray['ProfitAndLoss'];
 	$Liabilities = $fullArray['BalanceSheet']['Liabilities'];
 	$Assets = $fullArray['BalanceSheet']['Assets'];
+
+
+	$PrevProfitAndLoss = $prevFullArray['ProfitAndLoss'] ?? [];
+	$PrevLiabilities = $prevFullArray['BalanceSheet']['Liabilities'] ?? [];
+	$PrevAssets = $prevFullArray['BalanceSheet']['Assets'] ?? [];
+
 	extract($ProfitAndLoss);
 	extract($Liabilities);
 	extract($Assets);
@@ -782,13 +787,18 @@ function getTotalFinanceData($fullArray){
 	$InterestPaymentToBanksSum = $InterestPaymentToBanks['InterestWc'] + $InterestPaymentToBanks['InterestTermLoans'];
 	$InterestPaymentToFIsSum = $InterestPaymentToFIs['InterestWc'] + $InterestPaymentToFIs['InterestTermLoans'];
 
-	$response['TotalOperatingIncome'] = $TotalOperatingIncome = $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $Others;
+	$response['TotalOperatingIncome'] = $TotalOperatingIncome; //= $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $Others;
 	$response['TotalNonOperatingIncome'] = $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack;
 	$response['PBDITOperatingProfit'] = $TotalOperatingIncome -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $Depreciation;
 	$response['Depreciation'] = $Depreciation;
 
-	$a = (($Land+$Building+$Vehicles+$PlantMachinery+$FurnitureFixtures + $OtherFixedAssets + $CapitalWip-$LessAccumulatedDepreciation-$RevaluationReserve)/2);
-	$response['DeprecationAverageNetFixedAssetsPer'] = $a == 0 ? 0 : (($Depreciation / $a)  * 100);
+
+	$curr_netblock = $NetBlock;
+	$prev_netblock = $PrevAssets['NetBlock'] ?? 0;
+	$Prev_TotalRepaymentsDueWithin1Year = $PrevLiabilities['TotalRepaymentsDueWithin1Year'] ?? 0;
+	$netBlock = $curr_netblock + $prev_netblock;
+	$a = ($netBlock/2);
+	$response['DeprecationAverageNetFixedAssetsPer'] = ($a == 0) ? 0 : (($Depreciation / $a)  * 100);
 	$response['Interest'] = $InterestPaymentToBanksSum+$InterestPaymentToFIsSum+$BankCharges;
 	$response['InterestNetSalesPer'] = $TotalOperatingIncome == 0 ? 0 : (($response['Interest']/$TotalOperatingIncome)*100); 
 	$response['PbditInterestPer'] = $response['Interest'] == 0 ? 0 : ($response['PBDITOperatingProfit']/$response['Interest']);
@@ -807,11 +817,18 @@ function getTotalFinanceData($fullArray){
 	$response['cashProfitNetSales'] = $response['TotalOperatingIncome'] == 0 ? 0 : (($response['CashProfit'] / $response['TotalOperatingIncome']) * 100);
 	$response['TotalFixedAssets'] = $Land + $Building + $Vehicles + $PlantMachinery + $FurnitureFixtures + $OtherFixedAssets + $CapitalWip-$LessAccumulatedDepreciation-$RevaluationReserve;
 	$response['TotalOutsideLiabilities'] = $FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances + $PartnersCapitalProprietorSCapital + $ShareCapitalPaidUp + $ShareApplicationFinalizedForAllotment + $StatutoryAndCapitalReserves + $GeneralReserve + $RevaluationReserve + $OtherReservesExcludingProvisions + $SurplusOrDeficitInPLAccount + $SharePremiumAC + $CapitalSubsidy + $InvestmentAllowanceUtilizationReserve-$RevaluationReserve-($PartnersCapitalProprietorSCapital + $ShareCapitalPaidUp + $ShareApplicationFinalizedForAllotment + $StatutoryAndCapitalReserves + $GeneralReserve + $RevaluationReserve + $OtherReservesExcludingProvisions + $SurplusOrDeficitInPLAccount + $SharePremiumAC + $CapitalSubsidy + $InvestmentAllowanceUtilizationReserve-$RevaluationReserve);
-	$d = ($InterestPaymentToBanks['InterestTermLoans'] + $InterestPaymentToFIs['InterestTermLoans'] + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year);
+
+
+	$d = ($InterestPaymentToBanks['InterestTermLoans'] + $InterestPaymentToFIs['InterestTermLoans'] + $Prev_TotalRepaymentsDueWithin1Year);
+
 	$response['DSCR'] =  $d == 0 ? 0 : ($response['CashProfit'] + $InterestPaymentToBanks['InterestTermLoans'] + $InterestPaymentToFIs['InterestTermLoans']) / $d;
 
 	$response['AdjustedTangibleNetWorth'] =  $AdjustedTangibleNetWorth;
 	return $response;
+}
+
+function getFinContent() {
+	return 'ewogICJGaW5hbmNpYWxTdGF0ZW1lbnQiOiB7CiAgICAiRlkiOiBbCiAgICAgIHsKICAgICAgICAieWVhciI6IDAsCiAgICAgICAgIlByb2ZpdEFuZExvc3MiOiB7CiAgICAgICAgICAiQWRkT3BlbmluZ1N0b2NrSW5Qcm9jZXNzIjogMCwKICAgICAgICAgICJQcmVsaUV4cE9uZVRpbWVFeHBlbnNlc1dyaXR0ZW5PZmYiOiAwLAogICAgICAgICAgIk5ldExvc3NPbkZvcmVpZ25DdXJyZW5jeVRyYW5zbGF0aW9uQW5kVHJhbnNhY3Rpb25zTG9zc0R1ZVRvRmlyZSI6IDAsCiAgICAgICAgICAiRXhwb3J0SW5jZW50aXZlcyI6IDAsCiAgICAgICAgICAiRXh0cmFvcmRpbmFyeUV4cGVuc2VzQWRqdXN0bWVudHMiOiAwLAogICAgICAgICAgIkxlc3NFeGNpc2VEdXR5IjogMCwKICAgICAgICAgICJQcm92aXNpb25Gb3JUYXhlc0RlZmZlcmVkVGF4ZXMiOiAwLAogICAgICAgICAgIk5vbk9wZXJhdGluZ0luY29tZUZyb21TdWJzaWRpYXJpZXMiOiAwLAogICAgICAgICAgIk1pc2NFeHBXcml0dGVuT2ZmIjogMCwKICAgICAgICAgICJGb3JleEdhaW5zIjogMCwKICAgICAgICAgICJFcXVpdHlEaXZpZGVuZFBhaWRBbW91bnQiOiAwLAogICAgICAgICAgIlRheFBhaWQiOiAwLAogICAgICAgICAgIkludGVyZXN0UGF5bWVudFRvRklzIjogewogICAgICAgICAgICAiSW50ZXJlc3RXYyI6IDAsCiAgICAgICAgICAgICJJbnRlcmVzdFRlcm1Mb2FucyI6IDAKICAgICAgICAgIH0sCiAgICAgICAgICAiRHV0eURyYXdiYWNrIjogMCwKICAgICAgICAgICJXZWFsdGhUYXgiOiAwLAogICAgICAgICAgIkRlcHJlY2lhdGlvbiI6IDAsCiAgICAgICAgICAiUHJvdkZvckRvdWJEZWJ0c0RpbUluVGhlVmFsT2ZJbnYiOiAwLAogICAgICAgICAgIlJhd01hdGVyaWFscyI6IHsKICAgICAgICAgICAgIkluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiSW1wb3J0ZWQiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIkVxdWl0eURpdmlkZW5kUGFpZFJhdGUiOiAwLAogICAgICAgICAgIlBhcnRuZXJzV2l0aGRyYXdhbCI6IDAsCiAgICAgICAgICAiVGF4UmVmdW5kIjogMCwKICAgICAgICAgICJDb3N0T2ZUcmFkaW5nR29vZHMiOiAwLAogICAgICAgICAgIkRpdmlkZW5kUHJlZmVyZW5jZSI6IDAsCiAgICAgICAgICAiQWRkT3BlbmluZ1N0b2NrT2ZGaW5pc2hlZEdvb2RzIjogMCwKICAgICAgICAgICJFeHBvcnRTYWxlcyI6IDAsCiAgICAgICAgICAiU2VsbGluZ0dlbmVyYWxBZG1FeHBlbnNlcyI6IDAsCiAgICAgICAgICAiRGlyZWN0TGFib3VyIjogMCwKICAgICAgICAgICJEZXJpdmF0aXZlTG9zc2VzQm9va2VkIjogMCwKICAgICAgICAgICJJbnRlcmVzdFBheW1lbnRUb0JhbmtzIjogewogICAgICAgICAgICAiSW50ZXJlc3RXYyI6IDAsCiAgICAgICAgICAgICJJbnRlcmVzdFRlcm1Mb2FucyI6IDAKICAgICAgICAgIH0sCiAgICAgICAgICAiUHJvdmlzaW9uc0V4cGVuc2VzV3JpdHRlbkJhY2siOiAwLAogICAgICAgICAgIkJhbmtDaGFyZ2VzIjogMCwKICAgICAgICAgICJEaXZpZGVuZFRheCI6IDAsCiAgICAgICAgICAiR3Jvc3NEb21lc3RpY1NhbGVzIjogMCwKICAgICAgICAgICJEZWR1Y3RDbG9zaW5nU3RvY2tPZkZpbmlzaGVkR29vZHMiOiAwLAogICAgICAgICAgIk90aGVycyI6IDAsCiAgICAgICAgICAiUmVwYWlyc01haW50ZW5hbmNlIjogMCwKICAgICAgICAgICJJbnRlcmVzdE9uRGVwb3NpdHNEaXZpZGVuZFJlY2VpdmVkIjogMCwKICAgICAgICAgICJPdGhlckluY29tZSI6IDAsCiAgICAgICAgICAiQWRkVHJhZGluZ090aGVyT3BlcmF0aW5nSW5jb21lIjogMCwKICAgICAgICAgICJEZWR1Y3RDbG9zaW5nU3RvY2tJblByb2Nlc3MiOiAwLAogICAgICAgICAgIk90aGVyTWFudWZhY3R1cmluZ0V4cGVuc2VzIjogMCwKICAgICAgICAgICJQcm9maXRPblNhbGVPZkFzc2V0c0ludmVzdG1lbnRzIjogMCwKICAgICAgICAgICJPdGhlclNwYXJlcyI6IHsKICAgICAgICAgICAgIkluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiSW1wb3J0ZWQiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIk1pc2NJbmNvbWUiOiAwLAogICAgICAgICAgIlBvd2VyRnVlbCI6IDAsCiAgICAgICAgICAiTG9zc09uU2FsZU9mSW52ZXN0bWVudHMiOiAwLAogICAgICAgICAgIkV4dHJhb3JkaW5hcnlJbmNvbWVBZGp1c3RtZW50cyI6IDAsCiAgICAgICAgICAiTG9zc09uU2FsZU9mRmEiOiAwLAogICAgICAgICAgIlByb3Zpc2lvbkZvclRheGVzQ3VycmVudFBlcmlvZCI6IDAKICAgICAgICB9LAogICAgICAgICJCYWxhbmNlU2hlZXQiOiB7CiAgICAgICAgICAiTGlhYmlsaXRpZXMiOiB7CiAgICAgICAgICAgICJTdXJwbHVzT3JEZWZpY2l0SW5QTEFjY291bnQiOiAwLAogICAgICAgICAgICAiU2hhcmVDYXBpdGFsUGFpZFVwIjogMCwKICAgICAgICAgICAgIlByb3Bvc2VkRGl2aWRlbmQiOiAwLAogICAgICAgICAgICAiSW5zdGFsbG1lbnRzT2ZUZXJtTG9hbnNEZWJlbnR1cmVzRHBnc0V0Y0R1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIk9mSUFuZElpSW5XaGljaEJpbGxQdXJjaGFzZWREaXNjIjogMCwKICAgICAgICAgICAgIkZyb21PdGhlckJhbmtzIjogMCwKICAgICAgICAgICAgIk90aGVyQ3VycmVudExpYWJpbGl0aWVzUHJvdmlzaW9uc0R1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIlNob3J0VGVybUJvcnJvd2luZ3NDb21tZXJjaWFsUGFwZXIiOiAwLAogICAgICAgICAgICAiQm9ycm93aW5nc0Zyb21TdWJzaWRpYXJpZXNBZmZpbGlhdGVzUXVhc2lFcXVpdHkiOiAwLAogICAgICAgICAgICAiV2N0bCI6IDAsCiAgICAgICAgICAgICJEZXBvc2l0c0R1ZUZvclJlcGF5bWVudER1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIkNhcGl0YWxTdWJzaWR5IjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvclRheGF0aW9uIjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvck5wYSI6IDAsCiAgICAgICAgICAgICJTdW5kcnlDcmVkaXRvcnNUcmFkZSI6IDAsCiAgICAgICAgICAgICJQcmVmZXJlbmNlU2hhcmVzUmVkZWVtYWJsZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIkdlbmVyYWxSZXNlcnZlIjogMCwKICAgICAgICAgICAgIkludmVzdG1lbnRBbGxvd2FuY2VVdGlsaXphdGlvblJlc2VydmUiOiAwLAogICAgICAgICAgICAiQWR2YW5jZXNQYXltZW50c0Zyb21DdXN0b21lcnNEZXBvc2l0c0Zyb21EZWFsZXJzIjogMCwKICAgICAgICAgICAgIkZyb21BcHBsaWNhbnRCYW5rQ2NXY2RsIjogMCwKICAgICAgICAgICAgIlRheE9uSW50ZXJpbURpdmlkZW5kUGF5YWJsZSI6IDAsCiAgICAgICAgICAgICJTaG9ydFRlcm1Cb3Jyb3dpbmdzRnJvbUFzc29jaWF0ZXNHcm91cENvbmNlcm5zIjogMCwKICAgICAgICAgICAgIlJldmFsdWF0aW9uUmVzZXJ2ZSI6IDAsCiAgICAgICAgICAgICJPdGhlclN0YXR1dG9yeUxpYWJpbGl0aWVzRHVlV2l0aGluT25lWWVhciI6IDAsCiAgICAgICAgICAgICJEdWVUb1N1YnNpZGlhcnlDb21wYW5pZXNBZmZpbGlhdGVzIjogMCwKICAgICAgICAgICAgIlVuc2VjdXJlZExvYW5zIjogMCwKICAgICAgICAgICAgIkludGVyZXN0QWNjQnV0Tm90RHVlIjogMCwKICAgICAgICAgICAgIkRlYmVudHVyZXMiOiAwLAogICAgICAgICAgICAiUGFydG5lcnNDYXBpdGFsUHJvcHJpZXRvclNDYXBpdGFsIjogMCwKICAgICAgICAgICAgIlN0YXR1dG9yeUFuZENhcGl0YWxSZXNlcnZlcyI6IDAsCiAgICAgICAgICAgICJTaGFyZUFwcGxpY2F0aW9uRmluYWxpemVkRm9yQWxsb3RtZW50IjogMCwKICAgICAgICAgICAgIk90aGVyTGlhYmlsaXRpZXMiOiAwLAogICAgICAgICAgICAiU2hvcnRUZXJtQm9ycm93aW5nc0Zyb21PdGhlcnMiOiAwLAogICAgICAgICAgICAiRGVmZXJyZWRUYXhMaWFiaWxpdHkiOiAwLAogICAgICAgICAgICAiVGVybURlcG9zaXRzIjogMCwKICAgICAgICAgICAgIk90aGVyVGVybUxpYWJpbGl0aWVzIjogMCwKICAgICAgICAgICAgIk90aGVyTG9hbkFkdmFuY2VzIjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvckxlYXZlRW5jYXNobWVudEdyYXR1aXR5IjogMCwKICAgICAgICAgICAgIlVuY2xhaW1lZERpdmlkZW5kIjogMCwKICAgICAgICAgICAgIkRlcG9zaXRGcm9tRGVhbGVyc09ubHlJZkNvbnNpZGVyZWRBc0F2YWlsYWJsZUZvckxvbmdUZXJtIjogMCwKICAgICAgICAgICAgIlNoYXJlUHJlbWl1bUFDIjogMCwKICAgICAgICAgICAgIk90aGVyUmVzZXJ2ZXNFeGNsdWRpbmdQcm92aXNpb25zIjogMCwKICAgICAgICAgICAgIlByZWZTaGFyZXNQb3J0aW9uUmVkZWVtYWJsZUFmdGVyMVlyIjogMCwKICAgICAgICAgICAgIlRlcm1Mb2Fuc0V4Y2x1ZGluZ0luc3RhbGxtZW50c1BheWFibGVXaXRoaW5PbmVZZWFyIjogMCwKICAgICAgICAgICAgIlRlcm1Mb2Fuc0Zyb21GaXMiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIkFzc2V0cyI6IHsKICAgICAgICAgICAgIkJ1aWxkaW5nIjogMCwKICAgICAgICAgICAgIkludGVyZXN0QWNjcnVlZCI6IDAsCiAgICAgICAgICAgICJBY2N1bXVsYXRlZExvc3Nlc1ByZWxpbWluYXJ5RXhwZW5zZXNNaXNjZWxsYW5lb3VzRXhwZW5kaXR1cmVOb3RXT2ZmT3RoZXJEZWZlcnJlZFJldmVudWVFeHBlbnNlcyI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFJlY2VpdmFibGVzTWF0dXJpdHlFeGNlZWRpbmcxWWVhciI6IDAsCiAgICAgICAgICAgICJPdGhlck5vbkN1cnJlbnRBc3NldHNTdXJwbHVzRm9yRnV0dXJlRXhwYW5zaW9uTG9hbnNBZHZhbmNlc05vbkN1cnJlbnRJbk5hdHVyZUljZFNEdWVzRnJvbURpcmVjdG9ycyI6IDAsCiAgICAgICAgICAgICJSZWNlaXZhYmxlc090aGVyVGhhbkRlZmVycmVkRXhwb3J0c0luY2xCaWxsc1B1cmNoYXNlZERpc2NvdW50ZWRCeUJhbmtzIjogMCwKICAgICAgICAgICAgIkZ1cm5pdHVyZUZpeHR1cmVzIjogMCwKICAgICAgICAgICAgIk90aGVyRml4ZWRBc3NldHMiOiAwLAogICAgICAgICAgICAiQ2FzaEFuZEJhbmtCYWxhbmNlcyI6IDAsCiAgICAgICAgICAgICJGaXhlZERlcG9zaXRzV2l0aEJhbmtzIjogMCwKICAgICAgICAgICAgIkdvdnRPdGhlclNlY3VyaXRpZXMiOiAwLAogICAgICAgICAgICAiVmVoaWNsZXMiOiAwLAogICAgICAgICAgICAiT3RoZXJJbnZlc3RtZW50c0ludmVzdG1lbnRGb3JBY3F1aXNpdGlvbiI6IDAsCiAgICAgICAgICAgICJPdGhlclN0b2NrcyI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFRheEFzc2V0IjogMCwKICAgICAgICAgICAgIkFkdmFuY2VzVG9TdXBwbGllcnNPZlJhd01hdGVyaWFsIjogMCwKICAgICAgICAgICAgIlBsYW50TWFjaGluZXJ5IjogMCwKICAgICAgICAgICAgIkFkdmFuY2VSZWNlaXZhYmxlSW5DYXNoT3JLaW5kIjogMCwKICAgICAgICAgICAgIkV4cG9ydFJlY2VpdmFibGVzSW5jbHVkaW5nQmlsbFB1cmNoYXNlZEFuZERpc2NvdW50ZWQiOiAwLAogICAgICAgICAgICAiQWR2YW5jZUFnYWluc3RNb3J0Z2FnZU9mSG91c2VQcm9wZXJ0eSI6IDAsCiAgICAgICAgICAgICJPdGhlcnMiOiAwLAogICAgICAgICAgICAiQ2FwaXRhbFdpcCI6IDAsCiAgICAgICAgICAgICJBZHZhbmNlUGF5bWVudE9mVGF4IjogMCwKICAgICAgICAgICAgIkludmVzdG1lbnRzSW5TdWJzaWRpYXJ5Q29tcGFuaWVzQWZmaWxpYXRlcyI6IDAsCiAgICAgICAgICAgICJEZXBvc2l0cyI6IDUxLjQsCiAgICAgICAgICAgICJPdGhlckNvbnN1bWFibGVTcGFyZXNJbXBvcnRlZCI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFJldmVudWVFeHBlbmRpdHVyZSI6IDAsCiAgICAgICAgICAgICJPdGhlckN1cnJlbnRBc3NldHMiOiAwLAogICAgICAgICAgICAiT3RoZXJDb25zdW1hYmxlU3BhcmVzSW5kaWdlbm91cyI6IDAsCiAgICAgICAgICAgICJSYXdNYXRlcmlhbEluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiTGFuZCI6IDAsCiAgICAgICAgICAgICJNYXJnaW5Nb25leUtlcHRXaXRoQmFua3MiOiAwLAogICAgICAgICAgICAiTGVzc0FjY3VtdWxhdGVkRGVwcmVjaWF0aW9uIjogMCwKICAgICAgICAgICAgIkR1ZUZyb21TdWJzaWRpYXJpZXMiOiAwLAogICAgICAgICAgICAiU3VuZHJ5RGVwb3NpdCI6IDAsCiAgICAgICAgICAgICJEZWJ0b3JzTW9yZVRoYW42TW9udGhzIjogMCwKICAgICAgICAgICAgIlJldGVudGlvbk1vbmV5U2VjdXJpdHlEZXBvc2l0IjogMCwKICAgICAgICAgICAgIlJhd01hdGVyaWFsSW1wb3J0ZWQiOiAwLAogICAgICAgICAgICAiTW9kdmF0Q3JlZGl0UmVjZWl2YWJsZSI6IDAKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0sCiAgICAgIHsKICAgICAgICAieWVhciI6IDAsCiAgICAgICAgIlByb2ZpdEFuZExvc3MiOiB7CiAgICAgICAgICAiQWRkT3BlbmluZ1N0b2NrSW5Qcm9jZXNzIjogMCwKICAgICAgICAgICJQcmVsaUV4cE9uZVRpbWVFeHBlbnNlc1dyaXR0ZW5PZmYiOiAwLAogICAgICAgICAgIk5ldExvc3NPbkZvcmVpZ25DdXJyZW5jeVRyYW5zbGF0aW9uQW5kVHJhbnNhY3Rpb25zTG9zc0R1ZVRvRmlyZSI6IDAsCiAgICAgICAgICAiRXhwb3J0SW5jZW50aXZlcyI6IDAsCiAgICAgICAgICAiRXh0cmFvcmRpbmFyeUV4cGVuc2VzQWRqdXN0bWVudHMiOiAwLAogICAgICAgICAgIkxlc3NFeGNpc2VEdXR5IjogMCwKICAgICAgICAgICJQcm92aXNpb25Gb3JUYXhlc0RlZmZlcmVkVGF4ZXMiOiAwLAogICAgICAgICAgIk5vbk9wZXJhdGluZ0luY29tZUZyb21TdWJzaWRpYXJpZXMiOiAwLAogICAgICAgICAgIk1pc2NFeHBXcml0dGVuT2ZmIjogMCwKICAgICAgICAgICJGb3JleEdhaW5zIjogMCwKICAgICAgICAgICJFcXVpdHlEaXZpZGVuZFBhaWRBbW91bnQiOiAwLAogICAgICAgICAgIlRheFBhaWQiOiAwLAogICAgICAgICAgIkludGVyZXN0UGF5bWVudFRvRklzIjogewogICAgICAgICAgICAiSW50ZXJlc3RXYyI6IDAsCiAgICAgICAgICAgICJJbnRlcmVzdFRlcm1Mb2FucyI6IDAKICAgICAgICAgIH0sCiAgICAgICAgICAiRHV0eURyYXdiYWNrIjogMCwKICAgICAgICAgICJXZWFsdGhUYXgiOiAwLAogICAgICAgICAgIkRlcHJlY2lhdGlvbiI6IDAsCiAgICAgICAgICAiUHJvdkZvckRvdWJEZWJ0c0RpbUluVGhlVmFsT2ZJbnYiOiAwLAogICAgICAgICAgIlJhd01hdGVyaWFscyI6IHsKICAgICAgICAgICAgIkluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiSW1wb3J0ZWQiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIkVxdWl0eURpdmlkZW5kUGFpZFJhdGUiOiAwLAogICAgICAgICAgIlBhcnRuZXJzV2l0aGRyYXdhbCI6IDAsCiAgICAgICAgICAiVGF4UmVmdW5kIjogMCwKICAgICAgICAgICJDb3N0T2ZUcmFkaW5nR29vZHMiOiAwLAogICAgICAgICAgIkRpdmlkZW5kUHJlZmVyZW5jZSI6IDAsCiAgICAgICAgICAiQWRkT3BlbmluZ1N0b2NrT2ZGaW5pc2hlZEdvb2RzIjogMCwKICAgICAgICAgICJFeHBvcnRTYWxlcyI6IDAsCiAgICAgICAgICAiU2VsbGluZ0dlbmVyYWxBZG1FeHBlbnNlcyI6IDAsCiAgICAgICAgICAiRGlyZWN0TGFib3VyIjogMCwKICAgICAgICAgICJEZXJpdmF0aXZlTG9zc2VzQm9va2VkIjogMCwKICAgICAgICAgICJJbnRlcmVzdFBheW1lbnRUb0JhbmtzIjogewogICAgICAgICAgICAiSW50ZXJlc3RXYyI6IDAsCiAgICAgICAgICAgICJJbnRlcmVzdFRlcm1Mb2FucyI6IDAKICAgICAgICAgIH0sCiAgICAgICAgICAiUHJvdmlzaW9uc0V4cGVuc2VzV3JpdHRlbkJhY2siOiAwLAogICAgICAgICAgIkJhbmtDaGFyZ2VzIjogMCwKICAgICAgICAgICJEaXZpZGVuZFRheCI6IDAsCiAgICAgICAgICAiR3Jvc3NEb21lc3RpY1NhbGVzIjogMCwKICAgICAgICAgICJEZWR1Y3RDbG9zaW5nU3RvY2tPZkZpbmlzaGVkR29vZHMiOiAwLAogICAgICAgICAgIk90aGVycyI6IDAsCiAgICAgICAgICAiUmVwYWlyc01haW50ZW5hbmNlIjogMCwKICAgICAgICAgICJJbnRlcmVzdE9uRGVwb3NpdHNEaXZpZGVuZFJlY2VpdmVkIjogMCwKICAgICAgICAgICJPdGhlckluY29tZSI6IDAsCiAgICAgICAgICAiQWRkVHJhZGluZ090aGVyT3BlcmF0aW5nSW5jb21lIjogMCwKICAgICAgICAgICJEZWR1Y3RDbG9zaW5nU3RvY2tJblByb2Nlc3MiOiAwLAogICAgICAgICAgIk90aGVyTWFudWZhY3R1cmluZ0V4cGVuc2VzIjogMCwKICAgICAgICAgICJQcm9maXRPblNhbGVPZkFzc2V0c0ludmVzdG1lbnRzIjogMCwKICAgICAgICAgICJPdGhlclNwYXJlcyI6IHsKICAgICAgICAgICAgIkluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiSW1wb3J0ZWQiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIk1pc2NJbmNvbWUiOiAwLAogICAgICAgICAgIlBvd2VyRnVlbCI6IDAsCiAgICAgICAgICAiTG9zc09uU2FsZU9mSW52ZXN0bWVudHMiOiAwLAogICAgICAgICAgIkV4dHJhb3JkaW5hcnlJbmNvbWVBZGp1c3RtZW50cyI6IDAsCiAgICAgICAgICAiTG9zc09uU2FsZU9mRmEiOiAwLAogICAgICAgICAgIlByb3Zpc2lvbkZvclRheGVzQ3VycmVudFBlcmlvZCI6IDAKICAgICAgICB9LAogICAgICAgICJCYWxhbmNlU2hlZXQiOiB7CiAgICAgICAgICAiTGlhYmlsaXRpZXMiOiB7CiAgICAgICAgICAgICJTdXJwbHVzT3JEZWZpY2l0SW5QTEFjY291bnQiOiAwLAogICAgICAgICAgICAiU2hhcmVDYXBpdGFsUGFpZFVwIjogMCwKICAgICAgICAgICAgIlByb3Bvc2VkRGl2aWRlbmQiOiAwLAogICAgICAgICAgICAiSW5zdGFsbG1lbnRzT2ZUZXJtTG9hbnNEZWJlbnR1cmVzRHBnc0V0Y0R1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIk9mSUFuZElpSW5XaGljaEJpbGxQdXJjaGFzZWREaXNjIjogMCwKICAgICAgICAgICAgIkZyb21PdGhlckJhbmtzIjogMCwKICAgICAgICAgICAgIk90aGVyQ3VycmVudExpYWJpbGl0aWVzUHJvdmlzaW9uc0R1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIlNob3J0VGVybUJvcnJvd2luZ3NDb21tZXJjaWFsUGFwZXIiOiAwLAogICAgICAgICAgICAiQm9ycm93aW5nc0Zyb21TdWJzaWRpYXJpZXNBZmZpbGlhdGVzUXVhc2lFcXVpdHkiOiAwLAogICAgICAgICAgICAiV2N0bCI6IDAsCiAgICAgICAgICAgICJEZXBvc2l0c0R1ZUZvclJlcGF5bWVudER1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIkNhcGl0YWxTdWJzaWR5IjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvclRheGF0aW9uIjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvck5wYSI6IDAsCiAgICAgICAgICAgICJTdW5kcnlDcmVkaXRvcnNUcmFkZSI6IDAsCiAgICAgICAgICAgICJQcmVmZXJlbmNlU2hhcmVzUmVkZWVtYWJsZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIkdlbmVyYWxSZXNlcnZlIjogMCwKICAgICAgICAgICAgIkludmVzdG1lbnRBbGxvd2FuY2VVdGlsaXphdGlvblJlc2VydmUiOiAwLAogICAgICAgICAgICAiQWR2YW5jZXNQYXltZW50c0Zyb21DdXN0b21lcnNEZXBvc2l0c0Zyb21EZWFsZXJzIjogMCwKICAgICAgICAgICAgIkZyb21BcHBsaWNhbnRCYW5rQ2NXY2RsIjogMCwKICAgICAgICAgICAgIlRheE9uSW50ZXJpbURpdmlkZW5kUGF5YWJsZSI6IDAsCiAgICAgICAgICAgICJTaG9ydFRlcm1Cb3Jyb3dpbmdzRnJvbUFzc29jaWF0ZXNHcm91cENvbmNlcm5zIjogMCwKICAgICAgICAgICAgIlJldmFsdWF0aW9uUmVzZXJ2ZSI6IDAsCiAgICAgICAgICAgICJPdGhlclN0YXR1dG9yeUxpYWJpbGl0aWVzRHVlV2l0aGluT25lWWVhciI6IDAsCiAgICAgICAgICAgICJEdWVUb1N1YnNpZGlhcnlDb21wYW5pZXNBZmZpbGlhdGVzIjogMCwKICAgICAgICAgICAgIlVuc2VjdXJlZExvYW5zIjogMCwKICAgICAgICAgICAgIkludGVyZXN0QWNjQnV0Tm90RHVlIjogMCwKICAgICAgICAgICAgIkRlYmVudHVyZXMiOiAwLAogICAgICAgICAgICAiUGFydG5lcnNDYXBpdGFsUHJvcHJpZXRvclNDYXBpdGFsIjogMCwKICAgICAgICAgICAgIlN0YXR1dG9yeUFuZENhcGl0YWxSZXNlcnZlcyI6IDAsCiAgICAgICAgICAgICJTaGFyZUFwcGxpY2F0aW9uRmluYWxpemVkRm9yQWxsb3RtZW50IjogMCwKICAgICAgICAgICAgIk90aGVyTGlhYmlsaXRpZXMiOiAwLAogICAgICAgICAgICAiU2hvcnRUZXJtQm9ycm93aW5nc0Zyb21PdGhlcnMiOiAwLAogICAgICAgICAgICAiRGVmZXJyZWRUYXhMaWFiaWxpdHkiOiAwLAogICAgICAgICAgICAiVGVybURlcG9zaXRzIjogMCwKICAgICAgICAgICAgIk90aGVyVGVybUxpYWJpbGl0aWVzIjogMCwKICAgICAgICAgICAgIk90aGVyTG9hbkFkdmFuY2VzIjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvckxlYXZlRW5jYXNobWVudEdyYXR1aXR5IjogMCwKICAgICAgICAgICAgIlVuY2xhaW1lZERpdmlkZW5kIjogMCwKICAgICAgICAgICAgIkRlcG9zaXRGcm9tRGVhbGVyc09ubHlJZkNvbnNpZGVyZWRBc0F2YWlsYWJsZUZvckxvbmdUZXJtIjogMCwKICAgICAgICAgICAgIlNoYXJlUHJlbWl1bUFDIjogMCwKICAgICAgICAgICAgIk90aGVyUmVzZXJ2ZXNFeGNsdWRpbmdQcm92aXNpb25zIjogMCwKICAgICAgICAgICAgIlByZWZTaGFyZXNQb3J0aW9uUmVkZWVtYWJsZUFmdGVyMVlyIjogMCwKICAgICAgICAgICAgIlRlcm1Mb2Fuc0V4Y2x1ZGluZ0luc3RhbGxtZW50c1BheWFibGVXaXRoaW5PbmVZZWFyIjogMCwKICAgICAgICAgICAgIlRlcm1Mb2Fuc0Zyb21GaXMiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIkFzc2V0cyI6IHsKICAgICAgICAgICAgIkJ1aWxkaW5nIjogMCwKICAgICAgICAgICAgIkludGVyZXN0QWNjcnVlZCI6IDAsCiAgICAgICAgICAgICJBY2N1bXVsYXRlZExvc3Nlc1ByZWxpbWluYXJ5RXhwZW5zZXNNaXNjZWxsYW5lb3VzRXhwZW5kaXR1cmVOb3RXT2ZmT3RoZXJEZWZlcnJlZFJldmVudWVFeHBlbnNlcyI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFJlY2VpdmFibGVzTWF0dXJpdHlFeGNlZWRpbmcxWWVhciI6IDAsCiAgICAgICAgICAgICJPdGhlck5vbkN1cnJlbnRBc3NldHNTdXJwbHVzRm9yRnV0dXJlRXhwYW5zaW9uTG9hbnNBZHZhbmNlc05vbkN1cnJlbnRJbk5hdHVyZUljZFNEdWVzRnJvbURpcmVjdG9ycyI6IDAsCiAgICAgICAgICAgICJSZWNlaXZhYmxlc090aGVyVGhhbkRlZmVycmVkRXhwb3J0c0luY2xCaWxsc1B1cmNoYXNlZERpc2NvdW50ZWRCeUJhbmtzIjogMCwKICAgICAgICAgICAgIkZ1cm5pdHVyZUZpeHR1cmVzIjogMCwKICAgICAgICAgICAgIk90aGVyRml4ZWRBc3NldHMiOiAwLAogICAgICAgICAgICAiQ2FzaEFuZEJhbmtCYWxhbmNlcyI6IDAsCiAgICAgICAgICAgICJGaXhlZERlcG9zaXRzV2l0aEJhbmtzIjogMCwKICAgICAgICAgICAgIkdvdnRPdGhlclNlY3VyaXRpZXMiOiAwLAogICAgICAgICAgICAiVmVoaWNsZXMiOiAwLAogICAgICAgICAgICAiT3RoZXJJbnZlc3RtZW50c0ludmVzdG1lbnRGb3JBY3F1aXNpdGlvbiI6IDAsCiAgICAgICAgICAgICJPdGhlclN0b2NrcyI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFRheEFzc2V0IjogMCwKICAgICAgICAgICAgIkFkdmFuY2VzVG9TdXBwbGllcnNPZlJhd01hdGVyaWFsIjogMCwKICAgICAgICAgICAgIlBsYW50TWFjaGluZXJ5IjogMCwKICAgICAgICAgICAgIkFkdmFuY2VSZWNlaXZhYmxlSW5DYXNoT3JLaW5kIjogMCwKICAgICAgICAgICAgIkV4cG9ydFJlY2VpdmFibGVzSW5jbHVkaW5nQmlsbFB1cmNoYXNlZEFuZERpc2NvdW50ZWQiOiAwLAogICAgICAgICAgICAiQWR2YW5jZUFnYWluc3RNb3J0Z2FnZU9mSG91c2VQcm9wZXJ0eSI6IDAsCiAgICAgICAgICAgICJPdGhlcnMiOiAwLAogICAgICAgICAgICAiQ2FwaXRhbFdpcCI6IDAsCiAgICAgICAgICAgICJBZHZhbmNlUGF5bWVudE9mVGF4IjogMCwKICAgICAgICAgICAgIkludmVzdG1lbnRzSW5TdWJzaWRpYXJ5Q29tcGFuaWVzQWZmaWxpYXRlcyI6IDAsCiAgICAgICAgICAgICJEZXBvc2l0cyI6IDUxLjQsCiAgICAgICAgICAgICJPdGhlckNvbnN1bWFibGVTcGFyZXNJbXBvcnRlZCI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFJldmVudWVFeHBlbmRpdHVyZSI6IDAsCiAgICAgICAgICAgICJPdGhlckN1cnJlbnRBc3NldHMiOiAwLAogICAgICAgICAgICAiT3RoZXJDb25zdW1hYmxlU3BhcmVzSW5kaWdlbm91cyI6IDAsCiAgICAgICAgICAgICJSYXdNYXRlcmlhbEluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiTGFuZCI6IDAsCiAgICAgICAgICAgICJNYXJnaW5Nb25leUtlcHRXaXRoQmFua3MiOiAwLAogICAgICAgICAgICAiTGVzc0FjY3VtdWxhdGVkRGVwcmVjaWF0aW9uIjogMCwKICAgICAgICAgICAgIkR1ZUZyb21TdWJzaWRpYXJpZXMiOiAwLAogICAgICAgICAgICAiU3VuZHJ5RGVwb3NpdCI6IDAsCiAgICAgICAgICAgICJEZWJ0b3JzTW9yZVRoYW42TW9udGhzIjogMCwKICAgICAgICAgICAgIlJldGVudGlvbk1vbmV5U2VjdXJpdHlEZXBvc2l0IjogMCwKICAgICAgICAgICAgIlJhd01hdGVyaWFsSW1wb3J0ZWQiOiAwLAogICAgICAgICAgICAiTW9kdmF0Q3JlZGl0UmVjZWl2YWJsZSI6IDAKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0sCiAgICAgIHsKICAgICAgICAieWVhciI6IDAsCiAgICAgICAgIlByb2ZpdEFuZExvc3MiOiB7CiAgICAgICAgICAiQWRkT3BlbmluZ1N0b2NrSW5Qcm9jZXNzIjogMCwKICAgICAgICAgICJQcmVsaUV4cE9uZVRpbWVFeHBlbnNlc1dyaXR0ZW5PZmYiOiAwLAogICAgICAgICAgIk5ldExvc3NPbkZvcmVpZ25DdXJyZW5jeVRyYW5zbGF0aW9uQW5kVHJhbnNhY3Rpb25zTG9zc0R1ZVRvRmlyZSI6IDAsCiAgICAgICAgICAiRXhwb3J0SW5jZW50aXZlcyI6IDAsCiAgICAgICAgICAiRXh0cmFvcmRpbmFyeUV4cGVuc2VzQWRqdXN0bWVudHMiOiAwLAogICAgICAgICAgIkxlc3NFeGNpc2VEdXR5IjogMCwKICAgICAgICAgICJQcm92aXNpb25Gb3JUYXhlc0RlZmZlcmVkVGF4ZXMiOiAwLAogICAgICAgICAgIk5vbk9wZXJhdGluZ0luY29tZUZyb21TdWJzaWRpYXJpZXMiOiAwLAogICAgICAgICAgIk1pc2NFeHBXcml0dGVuT2ZmIjogMCwKICAgICAgICAgICJGb3JleEdhaW5zIjogMCwKICAgICAgICAgICJFcXVpdHlEaXZpZGVuZFBhaWRBbW91bnQiOiAwLAogICAgICAgICAgIlRheFBhaWQiOiAwLAogICAgICAgICAgIkludGVyZXN0UGF5bWVudFRvRklzIjogewogICAgICAgICAgICAiSW50ZXJlc3RXYyI6IDAsCiAgICAgICAgICAgICJJbnRlcmVzdFRlcm1Mb2FucyI6IDAKICAgICAgICAgIH0sCiAgICAgICAgICAiRHV0eURyYXdiYWNrIjogMCwKICAgICAgICAgICJXZWFsdGhUYXgiOiAwLAogICAgICAgICAgIkRlcHJlY2lhdGlvbiI6IDAsCiAgICAgICAgICAiUHJvdkZvckRvdWJEZWJ0c0RpbUluVGhlVmFsT2ZJbnYiOiAwLAogICAgICAgICAgIlJhd01hdGVyaWFscyI6IHsKICAgICAgICAgICAgIkluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiSW1wb3J0ZWQiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIkVxdWl0eURpdmlkZW5kUGFpZFJhdGUiOiAwLAogICAgICAgICAgIlBhcnRuZXJzV2l0aGRyYXdhbCI6IDAsCiAgICAgICAgICAiVGF4UmVmdW5kIjogMCwKICAgICAgICAgICJDb3N0T2ZUcmFkaW5nR29vZHMiOiAwLAogICAgICAgICAgIkRpdmlkZW5kUHJlZmVyZW5jZSI6IDAsCiAgICAgICAgICAiQWRkT3BlbmluZ1N0b2NrT2ZGaW5pc2hlZEdvb2RzIjogMCwKICAgICAgICAgICJFeHBvcnRTYWxlcyI6IDAsCiAgICAgICAgICAiU2VsbGluZ0dlbmVyYWxBZG1FeHBlbnNlcyI6IDAsCiAgICAgICAgICAiRGlyZWN0TGFib3VyIjogMCwKICAgICAgICAgICJEZXJpdmF0aXZlTG9zc2VzQm9va2VkIjogMCwKICAgICAgICAgICJJbnRlcmVzdFBheW1lbnRUb0JhbmtzIjogewogICAgICAgICAgICAiSW50ZXJlc3RXYyI6IDAsCiAgICAgICAgICAgICJJbnRlcmVzdFRlcm1Mb2FucyI6IDAKICAgICAgICAgIH0sCiAgICAgICAgICAiUHJvdmlzaW9uc0V4cGVuc2VzV3JpdHRlbkJhY2siOiAwLAogICAgICAgICAgIkJhbmtDaGFyZ2VzIjogMCwKICAgICAgICAgICJEaXZpZGVuZFRheCI6IDAsCiAgICAgICAgICAiR3Jvc3NEb21lc3RpY1NhbGVzIjogMCwKICAgICAgICAgICJEZWR1Y3RDbG9zaW5nU3RvY2tPZkZpbmlzaGVkR29vZHMiOiAwLAogICAgICAgICAgIk90aGVycyI6IDAsCiAgICAgICAgICAiUmVwYWlyc01haW50ZW5hbmNlIjogMCwKICAgICAgICAgICJJbnRlcmVzdE9uRGVwb3NpdHNEaXZpZGVuZFJlY2VpdmVkIjogMCwKICAgICAgICAgICJPdGhlckluY29tZSI6IDAsCiAgICAgICAgICAiQWRkVHJhZGluZ090aGVyT3BlcmF0aW5nSW5jb21lIjogMCwKICAgICAgICAgICJEZWR1Y3RDbG9zaW5nU3RvY2tJblByb2Nlc3MiOiAwLAogICAgICAgICAgIk90aGVyTWFudWZhY3R1cmluZ0V4cGVuc2VzIjogMCwKICAgICAgICAgICJQcm9maXRPblNhbGVPZkFzc2V0c0ludmVzdG1lbnRzIjogMCwKICAgICAgICAgICJPdGhlclNwYXJlcyI6IHsKICAgICAgICAgICAgIkluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiSW1wb3J0ZWQiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIk1pc2NJbmNvbWUiOiAwLAogICAgICAgICAgIlBvd2VyRnVlbCI6IDAsCiAgICAgICAgICAiTG9zc09uU2FsZU9mSW52ZXN0bWVudHMiOiAwLAogICAgICAgICAgIkV4dHJhb3JkaW5hcnlJbmNvbWVBZGp1c3RtZW50cyI6IDAsCiAgICAgICAgICAiTG9zc09uU2FsZU9mRmEiOiAwLAogICAgICAgICAgIlByb3Zpc2lvbkZvclRheGVzQ3VycmVudFBlcmlvZCI6IDAKICAgICAgICB9LAogICAgICAgICJCYWxhbmNlU2hlZXQiOiB7CiAgICAgICAgICAiTGlhYmlsaXRpZXMiOiB7CiAgICAgICAgICAgICJTdXJwbHVzT3JEZWZpY2l0SW5QTEFjY291bnQiOiAwLAogICAgICAgICAgICAiU2hhcmVDYXBpdGFsUGFpZFVwIjogMCwKICAgICAgICAgICAgIlByb3Bvc2VkRGl2aWRlbmQiOiAwLAogICAgICAgICAgICAiSW5zdGFsbG1lbnRzT2ZUZXJtTG9hbnNEZWJlbnR1cmVzRHBnc0V0Y0R1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIk9mSUFuZElpSW5XaGljaEJpbGxQdXJjaGFzZWREaXNjIjogMCwKICAgICAgICAgICAgIkZyb21PdGhlckJhbmtzIjogMCwKICAgICAgICAgICAgIk90aGVyQ3VycmVudExpYWJpbGl0aWVzUHJvdmlzaW9uc0R1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIlNob3J0VGVybUJvcnJvd2luZ3NDb21tZXJjaWFsUGFwZXIiOiAwLAogICAgICAgICAgICAiQm9ycm93aW5nc0Zyb21TdWJzaWRpYXJpZXNBZmZpbGlhdGVzUXVhc2lFcXVpdHkiOiAwLAogICAgICAgICAgICAiV2N0bCI6IDAsCiAgICAgICAgICAgICJEZXBvc2l0c0R1ZUZvclJlcGF5bWVudER1ZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIkNhcGl0YWxTdWJzaWR5IjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvclRheGF0aW9uIjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvck5wYSI6IDAsCiAgICAgICAgICAgICJTdW5kcnlDcmVkaXRvcnNUcmFkZSI6IDAsCiAgICAgICAgICAgICJQcmVmZXJlbmNlU2hhcmVzUmVkZWVtYWJsZVdpdGhpbjFZZWFyIjogMCwKICAgICAgICAgICAgIkdlbmVyYWxSZXNlcnZlIjogMCwKICAgICAgICAgICAgIkludmVzdG1lbnRBbGxvd2FuY2VVdGlsaXphdGlvblJlc2VydmUiOiAwLAogICAgICAgICAgICAiQWR2YW5jZXNQYXltZW50c0Zyb21DdXN0b21lcnNEZXBvc2l0c0Zyb21EZWFsZXJzIjogMCwKICAgICAgICAgICAgIkZyb21BcHBsaWNhbnRCYW5rQ2NXY2RsIjogMCwKICAgICAgICAgICAgIlRheE9uSW50ZXJpbURpdmlkZW5kUGF5YWJsZSI6IDAsCiAgICAgICAgICAgICJTaG9ydFRlcm1Cb3Jyb3dpbmdzRnJvbUFzc29jaWF0ZXNHcm91cENvbmNlcm5zIjogMCwKICAgICAgICAgICAgIlJldmFsdWF0aW9uUmVzZXJ2ZSI6IDAsCiAgICAgICAgICAgICJPdGhlclN0YXR1dG9yeUxpYWJpbGl0aWVzRHVlV2l0aGluT25lWWVhciI6IDAsCiAgICAgICAgICAgICJEdWVUb1N1YnNpZGlhcnlDb21wYW5pZXNBZmZpbGlhdGVzIjogMCwKICAgICAgICAgICAgIlVuc2VjdXJlZExvYW5zIjogMCwKICAgICAgICAgICAgIkludGVyZXN0QWNjQnV0Tm90RHVlIjogMCwKICAgICAgICAgICAgIkRlYmVudHVyZXMiOiAwLAogICAgICAgICAgICAiUGFydG5lcnNDYXBpdGFsUHJvcHJpZXRvclNDYXBpdGFsIjogMCwKICAgICAgICAgICAgIlN0YXR1dG9yeUFuZENhcGl0YWxSZXNlcnZlcyI6IDAsCiAgICAgICAgICAgICJTaGFyZUFwcGxpY2F0aW9uRmluYWxpemVkRm9yQWxsb3RtZW50IjogMCwKICAgICAgICAgICAgIk90aGVyTGlhYmlsaXRpZXMiOiAwLAogICAgICAgICAgICAiU2hvcnRUZXJtQm9ycm93aW5nc0Zyb21PdGhlcnMiOiAwLAogICAgICAgICAgICAiRGVmZXJyZWRUYXhMaWFiaWxpdHkiOiAwLAogICAgICAgICAgICAiVGVybURlcG9zaXRzIjogMCwKICAgICAgICAgICAgIk90aGVyVGVybUxpYWJpbGl0aWVzIjogMCwKICAgICAgICAgICAgIk90aGVyTG9hbkFkdmFuY2VzIjogMCwKICAgICAgICAgICAgIlByb3Zpc2lvbkZvckxlYXZlRW5jYXNobWVudEdyYXR1aXR5IjogMCwKICAgICAgICAgICAgIlVuY2xhaW1lZERpdmlkZW5kIjogMCwKICAgICAgICAgICAgIkRlcG9zaXRGcm9tRGVhbGVyc09ubHlJZkNvbnNpZGVyZWRBc0F2YWlsYWJsZUZvckxvbmdUZXJtIjogMCwKICAgICAgICAgICAgIlNoYXJlUHJlbWl1bUFDIjogMCwKICAgICAgICAgICAgIk90aGVyUmVzZXJ2ZXNFeGNsdWRpbmdQcm92aXNpb25zIjogMCwKICAgICAgICAgICAgIlByZWZTaGFyZXNQb3J0aW9uUmVkZWVtYWJsZUFmdGVyMVlyIjogMCwKICAgICAgICAgICAgIlRlcm1Mb2Fuc0V4Y2x1ZGluZ0luc3RhbGxtZW50c1BheWFibGVXaXRoaW5PbmVZZWFyIjogMCwKICAgICAgICAgICAgIlRlcm1Mb2Fuc0Zyb21GaXMiOiAwCiAgICAgICAgICB9LAogICAgICAgICAgIkFzc2V0cyI6IHsKICAgICAgICAgICAgIkJ1aWxkaW5nIjogMCwKICAgICAgICAgICAgIkludGVyZXN0QWNjcnVlZCI6IDAsCiAgICAgICAgICAgICJBY2N1bXVsYXRlZExvc3Nlc1ByZWxpbWluYXJ5RXhwZW5zZXNNaXNjZWxsYW5lb3VzRXhwZW5kaXR1cmVOb3RXT2ZmT3RoZXJEZWZlcnJlZFJldmVudWVFeHBlbnNlcyI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFJlY2VpdmFibGVzTWF0dXJpdHlFeGNlZWRpbmcxWWVhciI6IDAsCiAgICAgICAgICAgICJPdGhlck5vbkN1cnJlbnRBc3NldHNTdXJwbHVzRm9yRnV0dXJlRXhwYW5zaW9uTG9hbnNBZHZhbmNlc05vbkN1cnJlbnRJbk5hdHVyZUljZFNEdWVzRnJvbURpcmVjdG9ycyI6IDAsCiAgICAgICAgICAgICJSZWNlaXZhYmxlc090aGVyVGhhbkRlZmVycmVkRXhwb3J0c0luY2xCaWxsc1B1cmNoYXNlZERpc2NvdW50ZWRCeUJhbmtzIjogMCwKICAgICAgICAgICAgIkZ1cm5pdHVyZUZpeHR1cmVzIjogMCwKICAgICAgICAgICAgIk90aGVyRml4ZWRBc3NldHMiOiAwLAogICAgICAgICAgICAiQ2FzaEFuZEJhbmtCYWxhbmNlcyI6IDAsCiAgICAgICAgICAgICJGaXhlZERlcG9zaXRzV2l0aEJhbmtzIjogMCwKICAgICAgICAgICAgIkdvdnRPdGhlclNlY3VyaXRpZXMiOiAwLAogICAgICAgICAgICAiVmVoaWNsZXMiOiAwLAogICAgICAgICAgICAiT3RoZXJJbnZlc3RtZW50c0ludmVzdG1lbnRGb3JBY3F1aXNpdGlvbiI6IDAsCiAgICAgICAgICAgICJPdGhlclN0b2NrcyI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFRheEFzc2V0IjogMCwKICAgICAgICAgICAgIkFkdmFuY2VzVG9TdXBwbGllcnNPZlJhd01hdGVyaWFsIjogMCwKICAgICAgICAgICAgIlBsYW50TWFjaGluZXJ5IjogMCwKICAgICAgICAgICAgIkFkdmFuY2VSZWNlaXZhYmxlSW5DYXNoT3JLaW5kIjogMCwKICAgICAgICAgICAgIkV4cG9ydFJlY2VpdmFibGVzSW5jbHVkaW5nQmlsbFB1cmNoYXNlZEFuZERpc2NvdW50ZWQiOiAwLAogICAgICAgICAgICAiQWR2YW5jZUFnYWluc3RNb3J0Z2FnZU9mSG91c2VQcm9wZXJ0eSI6IDAsCiAgICAgICAgICAgICJPdGhlcnMiOiAwLAogICAgICAgICAgICAiQ2FwaXRhbFdpcCI6IDAsCiAgICAgICAgICAgICJBZHZhbmNlUGF5bWVudE9mVGF4IjogMCwKICAgICAgICAgICAgIkludmVzdG1lbnRzSW5TdWJzaWRpYXJ5Q29tcGFuaWVzQWZmaWxpYXRlcyI6IDAsCiAgICAgICAgICAgICJEZXBvc2l0cyI6IDUxLjQsCiAgICAgICAgICAgICJPdGhlckNvbnN1bWFibGVTcGFyZXNJbXBvcnRlZCI6IDAsCiAgICAgICAgICAgICJEZWZlcnJlZFJldmVudWVFeHBlbmRpdHVyZSI6IDAsCiAgICAgICAgICAgICJPdGhlckN1cnJlbnRBc3NldHMiOiAwLAogICAgICAgICAgICAiT3RoZXJDb25zdW1hYmxlU3BhcmVzSW5kaWdlbm91cyI6IDAsCiAgICAgICAgICAgICJSYXdNYXRlcmlhbEluZGlnZW5vdXMiOiAwLAogICAgICAgICAgICAiTGFuZCI6IDAsCiAgICAgICAgICAgICJNYXJnaW5Nb25leUtlcHRXaXRoQmFua3MiOiAwLAogICAgICAgICAgICAiTGVzc0FjY3VtdWxhdGVkRGVwcmVjaWF0aW9uIjogMCwKICAgICAgICAgICAgIkR1ZUZyb21TdWJzaWRpYXJpZXMiOiAwLAogICAgICAgICAgICAiU3VuZHJ5RGVwb3NpdCI6IDAsCiAgICAgICAgICAgICJEZWJ0b3JzTW9yZVRoYW42TW9udGhzIjogMCwKICAgICAgICAgICAgIlJldGVudGlvbk1vbmV5U2VjdXJpdHlEZXBvc2l0IjogMCwKICAgICAgICAgICAgIlJhd01hdGVyaWFsSW1wb3J0ZWQiOiAwLAogICAgICAgICAgICAiTW9kdmF0Q3JlZGl0UmVjZWl2YWJsZSI6IDAKICAgICAgICAgIH0KICAgICAgICB9CiAgICAgIH0KICAgIF0sCiAgICAiTmFtZU9mVGhlQm9ycm93ZXIiOiAiIgogIH0KfQo=';
 }
 
 ?>
