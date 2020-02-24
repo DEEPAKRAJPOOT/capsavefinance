@@ -1543,7 +1543,7 @@ class CamController extends Controller
 
       $totalOfferedAmount = $this->appRepo->getTotalByPrgmLimitId($aplid); // total offered amount by app_prgm_limit_id
 
-      return view('backend.cam.limit', ['totalOfferedAmount'=>$totalOfferedAmount', currentPrgmLimitData'=>$currentPrgmLimitData,  'totalLimit'=> $totalLimit->tot_limit_amt, 'totalPrgmLimit'=> $totalPrgmLimit]);
+      return view('backend.cam.limit', ['totalOfferedAmount'=>$totalOfferedAmount, 'currentPrgmLimitData'=>$currentPrgmLimitData,  'totalLimit'=> $totalLimit->tot_limit_amt, 'totalPrgmLimit'=> $totalPrgmLimit]);
     }
 
     public function updateLimit(Request $request){

@@ -60,7 +60,7 @@
         setError('input[name=limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
     }else if(parseInt(limit_amt.replace(/,/g, '')) < parseInt(totalOfferedAmount)){
-        setError('input[name=limit_amt]', 'Limit amount can not be less than applied offered amount');
+        setError('input[name=limit_amt]', 'Limit amount can not be less than applied offer amount');
         flag = false;
     }
 
