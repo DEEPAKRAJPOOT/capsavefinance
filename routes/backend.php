@@ -1114,6 +1114,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
          }); 
+
+         Route::group(['prefix' => 'finance'], function () {
+            Route::get('/', [
+                'as' => 'get_fin_trans_list',
+                'uses' => 'Backend\FinanceController@getFinTransList'
+            ]);
+        });
+
     });
 
   });

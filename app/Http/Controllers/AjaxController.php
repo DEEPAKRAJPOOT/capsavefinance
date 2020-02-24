@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
-
+use App\Inv\Repositories\Contracts\FinanceInterface;
 
 class AjaxController extends Controller {
 
@@ -43,11 +43,11 @@ class AjaxController extends Controller {
     protected $request;
     protected $user;
     protected $application;
-   protected $invRepo;
-   protected $docRepo;
-   
+    protected $invRepo;
+    protected $docRepo;
+    protected $finRepo;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo) {
 
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
@@ -57,9 +57,9 @@ class AjaxController extends Controller {
         $this->userRepo = $user;
         $this->application = $application;
         $this->masterRepo = $master;
-        $this->invRepo   =    $invRepo;
-        $this->docRepo          = $docRepo;
-
+        $this->invRepo = $invRepo;
+        $this->docRepo = $docRepo;
+        $this->finRepo = $finRepo;
     }
 
     /**
@@ -3672,4 +3672,9 @@ if ($err) {
         return $data;
     }
 
+    public function getTransTypeList(DataProviderInterface $dataProvider) { 
+        $transTypeList = $this->finRepo->getAllTransType();
+        $transType = $dataProvider->getTransTypeListByDataProvider($this->request, $transTypeList);
+        return $transType;
+    }
 }

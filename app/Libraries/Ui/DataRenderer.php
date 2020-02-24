@@ -3088,4 +3088,16 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
+        public function getTransTypeListByDataProvider(Request $request, $transTypeList)
+        {
+            
+            return DataTables::of($transTypeList)
+                    ->editColumn(
+                        'trans_type',
+                        function ($transTypeList) {
+                        return $transTypeList->trans_type;
+                    }) 
+                    ->make(true);
+        }
+
 }

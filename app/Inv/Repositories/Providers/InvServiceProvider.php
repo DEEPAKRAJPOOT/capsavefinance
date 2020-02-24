@@ -62,6 +62,11 @@ class InvServiceProvider extends ServiceProvider
         $this->app->bind(
             'App\Inv\Repositories\Contracts\LmsInterface',
             'App\Inv\Repositories\Entities\Lms\LmsRepository'
-        );        
+        );   
+        
+        $this->app->bind(
+            'App\Inv\Repositories\Contracts\FinanceInterface',
+            'App\Inv\Repositories\Entities\Finance\FinanceRepository'
+        );
     }
 }
