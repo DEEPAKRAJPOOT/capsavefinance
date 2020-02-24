@@ -51,13 +51,13 @@ class CamController extends Controller
 {
     use CamTrait;
     use CommonTrait;
-
     protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
     protected $docRepo;
     protected $pdf;
-    protected $genBlankfinJSON = FALSE;
+    protected $genBlankfinJSON = TRUE;
+
     public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
@@ -226,7 +226,7 @@ class CamController extends Controller
     }
 
 
-    public function saveFinanceDetail(Request $request) {
+     public function saveFinanceDetail(Request $request) {
       $appId = $request->get('app_id');
       $NameOfTheBorrower = $request->get('borrower_name');
       $json_files = $this->getLatestFileName($appId,'finance', 'json');
@@ -523,7 +523,8 @@ class CamController extends Controller
       return storage_path('app/public/user/').$extrapath;
     }
 
-    public function finance(Request $request, FinanceModel $fin){
+
+   public function finance(Request $request, FinanceModel $fin){
         $appId = $request->get('app_id');
         $xlsx_arr = $this->_getXLSXTable($appId,'finance');
         $xlsx_html = $xlsx_arr[0];
@@ -568,13 +569,12 @@ class CamController extends Controller
         $financeData =  arrayValuesToInt($financeData);
         $growth_data = [];
         foreach ($audited_years as $Kolkata => $year) {
-          if (!empty($financeData[$year-2])) {
-             $growth_data[$year] =  getGrowth($financeData[$year], $financeData[$year-2]);
+          if (!empty($financeData[$year-1])) {
+             $growth_data[$year] =  getGrowth($financeData[$year], $financeData[$year-1]);
           }else{
              $growth_data[$year] = 0;
           }
         }
-
         $finDetailData = AppBizFinDetail::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
         return view('backend.cam.finance', [
           'financedocs' => $financedocs, 
