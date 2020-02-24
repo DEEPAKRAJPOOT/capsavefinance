@@ -37,7 +37,9 @@
                         </tr>
                      @endforeach
                   @endif   
-                     <tr>
+                     <tr>  @if(empty($arrGroupCompany))
+                              <td></td>
+                           @endif  
                            <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
                            <td class="">{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}</td>
                            <td class="">{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
