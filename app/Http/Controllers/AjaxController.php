@@ -3252,9 +3252,7 @@ if ($err) {
                $sel ="";
                 $res =   [  1 => "Limit Amount",
                             2 => "Outstanding Amount",
-                            3 => "Outstanding Principal",
-                            4 => "Outstanding Interest",
-                            5 => "Overdue Amount"];
+                            3 => "Outstanding Principal"];
              if($getamount->chrg_applicable_id > 0)
              {
                 

@@ -149,7 +149,7 @@
                                                      <table class="table-border-none" width="100%">
                                                         <tbody>
                                                           @php 
-                                                          $finance_data_prev = !empty($finance_data[$year-1]) ? $finance_data[$year-1] : array();
+                                                          $finance_data_prev = (!empty($finance_data[$year-1]) ? $finance_data[$year-1] : array());
                                                           $yearly_fin_data = getTotalFinanceData($fin_data, $finance_data_prev);
                                                           @endphp
                                                           @foreach($performance_analysis_cols as $key => $cols)
