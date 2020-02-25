@@ -1505,9 +1505,12 @@ class CamController extends Controller
         }        
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
-        /*Start add offer PTPQ block*/
-        $ptpqArr =[];
-        if($request->has('ptpq_from')){
+        $limitData = $this->appRepo->getLimit($aplid);
+        if($limitData->product_id == 1){
+          //sadfghjk
+        }elseif($limitData->product_id == 2 || $limitData->product_id == 3){
+          /*Add offer PTPQ block*/
+          $ptpqArr =[];
           foreach($request->ptpq_from as $key=>$val){
             $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
             $ptpqArr[$key]['ptpq_from'] = $request->ptpq_from[$key];
@@ -1518,7 +1521,6 @@ class CamController extends Controller
           }
           $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
         }
-        /*End add offer PTPQ block*/
 
         if($offerData){
           Session::flash('message',trans('backend_messages.limit_offer_success'));
