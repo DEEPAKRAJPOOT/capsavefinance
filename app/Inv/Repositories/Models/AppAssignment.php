@@ -4,7 +4,7 @@ namespace App\Inv\Repositories\Models;
 
 use DB;
 use File;
-
+use App\Jobs\ProcessMails;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Factory\Models\BaseModel;
@@ -59,6 +59,7 @@ class AppAssignment extends BaseModel
         'role_id',
         'assigned_user_id',
         'app_id',
+        'assign_type',
         'assign_status',
         'sharing_comment',
         'is_owner',
@@ -91,6 +92,7 @@ class AppAssignment extends BaseModel
         }
 
         $status =  self::create($attributes);
+        dispatch(new ProcessMails($status));
         return true;
     }
     

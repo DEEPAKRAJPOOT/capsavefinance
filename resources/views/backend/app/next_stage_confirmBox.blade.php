@@ -46,20 +46,11 @@
                    @endif                   
                    
                    @if ($assign_case)
-                    <label for="txtCreditPeriod">Please select Assignee
-                      <span class="mandatory">*</span>
-                    </label>
-                   <br>
-                    @if ($roles)
-                    {!!
-                    Form::select('sel_assign_role',
-                    [
-                    ''=>'Assignee']+$roles,
-                    null,
-                    array('id' => 'is_active',
-                    'class'=>'form-control'))
-                    !!}
-                    @endif 
+                        <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>
+                        <br>
+                        @if ($roles)
+                            {!! Form::select('sel_assign_role', [ ''=>'Assignee']+$roles, null, array('id' => 'is_active', 'class'=>'form-control')) !!}
+                        @endif 
                     @php 
                     $confirmBtn = 'Assign';
                     $closeBtn = 'Cancel';
