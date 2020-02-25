@@ -3246,6 +3246,19 @@ if ($err) {
       {
           $res =  $request->all();
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
+            if($getamount->chrg_applicable_id==1)
+            {
+                $getamount  =  $this->lmsRepo->getLimitAmount($request);
+                $getamount  = $amountSum[0];
+            }
+            else if($getamount->chrg_applicable_id==2 || $request->chrg_applicable_id==3)
+            {
+                $getamount  =  $this->lmsRepo->getOutstandingAmount($request);
+            }
+            else
+            {
+                $getamount =  0;
+            }
           if($getamount)
           {
                $app = "";
