@@ -538,7 +538,7 @@
           </tr>
        </table>
       <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
-         <table width="100%" id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+         <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                   <tr>
                      <th valign="middle" bgcolor="#efefef"> Particular</th>
