@@ -86,12 +86,11 @@
                                             <div class="col-md-2">				 
 
                                                 <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                    <option value="">Select Anchor  </option>
                                                     @foreach($anchor_list as $row)
+                                                    @php if(isset($row->anchor->anchor_id)) { @endphp
                                                     <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                                                    @php } @endphp
                                                     @endforeach
-
-
                                                 </select>
 
                                             </div>
@@ -183,7 +182,9 @@
 
                                         <option value="">Select Anchor  </option>
                                         @foreach($anchor_list as $row)
+                                        @php if(isset($row->anchor->anchor_id)) { @endphp
                                         <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                                          @php } @endphp
                                         @endforeach
                                     </select>
                                     <span id="anc_limit"></span>
