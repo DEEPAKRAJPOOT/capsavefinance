@@ -715,21 +715,19 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$PrevLiabilities = $prevFullArray['BalanceSheet']['Liabilities'] ?? [];
 	$PrevAssets = $prevFullArray['BalanceSheet']['Assets'] ?? [];
 
-	extract($ProfitAndLoss);
-	extract($Liabilities);
-	extract($Assets);
+	extract($ProfitAndLoss);	
 	$response = [];
 	$AddOpeningStockInProcessRawMaterials = $RawMaterials['Imported'] + $RawMaterials['Indigenous'];
 	$OtherSpares = $OtherSpares['Imported'] + $OtherSpares['Indigenous'] ;
 	$InterestPaymentToBanksSum = $InterestPaymentToBanks['InterestWc'] + $InterestPaymentToBanks['InterestTermLoans'];
 	$InterestPaymentToFIsSum = $InterestPaymentToFIs['InterestWc'] + $InterestPaymentToFIs['InterestTermLoans'];
 
-	$response['TotalOperatingIncome'] = $TotalOperatingIncome; //= $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $Others;
+	$response['TotalOperatingIncome'] =  $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $Others;
 	$response['TotalNonOperatingIncome'] = $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack;
-	$response['PBDITOperatingProfit'] = $TotalOperatingIncome -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $Depreciation;
+	$response['PBDITOperatingProfit'] = $response['TotalOperatingIncome'] -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $Depreciation;
 	$response['Depreciation'] = $Depreciation;
-
-
+	extract($Liabilities);
+	extract($Assets);
 	$curr_netblock = $NetBlock;
 	$prev_netblock = $PrevAssets['NetBlock'] ?? 0;
 	$Prev_TotalRepaymentsDueWithin1Year = $PrevLiabilities['TotalRepaymentsDueWithin1Year'] ?? 0;
@@ -737,10 +735,10 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$a = ($netBlock/2);
 	$response['DeprecationAverageNetFixedAssetsPer'] = ($a == 0) ? 0 : (($Depreciation / $a)  * 100);
 	$response['Interest'] = $InterestPaymentToBanksSum+$InterestPaymentToFIsSum+$BankCharges;
-	$response['InterestNetSalesPer'] = $TotalOperatingIncome == 0 ? 0 : (($response['Interest']/$TotalOperatingIncome)*100); 
+	$response['InterestNetSalesPer'] = $response['TotalOperatingIncome'] == 0 ? 0 : (($response['Interest']/$response['TotalOperatingIncome'])*100); 
 	$response['PbditInterestPer'] = $response['Interest'] == 0 ? 0 : ($response['PBDITOperatingProfit']/$response['Interest']);
 	$response['NetProfit'] = $response['TotalOperatingIncome']-($AddOpeningStockInProcessRawMaterials+$OtherSpares+$PowerFuel+$DirectLabour+$OtherManufacturingExpenses+$Depreciation+$RepairsMaintenance+$CostOfTradingGoods+0+$AddOpeningStockInProcess-$DeductClosingStockInProcess+$AddOpeningStockOfFinishedGoods-$DeductClosingStockOfFinishedGoods+$SellingGeneralAdmExpenses)-$response['Interest']+$response['TotalNonOperatingIncome']+0-($LossOnSaleOfInvestments+$LossOnSaleOfFa+$DerivativeLossesBooked+$NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire + $PreliExpOneTimeExpensesWrittenOff+$MiscExpWrittenOff+$ProvForDoubDebtsDimInTheValOfInv+$WealthTax)-$TaxPaid-($ProvisionForTaxesCurrentPeriod+$ProvisionForTaxesDefferedTaxes);
-	$response['CashProfit'] = ($TotalOperatingIncome -($AddOpeningStockInProcessRawMaterials+$OtherSpares+$PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses)) - ($InterestPaymentToBanksSum + $InterestPaymentToFIsSum + $BankCharges) + ( $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack) - ($LossOnSaleOfInvestments+$LossOnSaleOfFa+$DerivativeLossesBooked+$NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire+$PreliExpOneTimeExpensesWrittenOff+$MiscExpWrittenOff +$ProvForDoubDebtsDimInTheValOfInv +$WealthTax) - $TaxPaid - ($ProvisionForTaxesCurrentPeriod + $ProvisionForTaxesDefferedTaxes) +$Depreciation - $ProvisionsExpensesWrittenBack;
+	$response['CashProfit'] = ($response['TotalOperatingIncome'] -($AddOpeningStockInProcessRawMaterials+$OtherSpares+$PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses)) - ($InterestPaymentToBanksSum + $InterestPaymentToFIsSum + $BankCharges) + ( $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack) - ($LossOnSaleOfInvestments+$LossOnSaleOfFa+$DerivativeLossesBooked+$NetLossOnForeignCurrencyTranslationAndTransactionsLossDueToFire+$PreliExpOneTimeExpensesWrittenOff+$MiscExpWrittenOff +$ProvForDoubDebtsDimInTheValOfInv +$WealthTax) - $TaxPaid - ($ProvisionForTaxesCurrentPeriod + $ProvisionForTaxesDefferedTaxes) +$Depreciation - $ProvisionsExpensesWrittenBack;
 	$response['TangibleNetWorth'] = ($PartnersCapitalProprietorSCapital+ $ShareCapitalPaidUp + $ShareApplicationFinalizedForAllotment+$StatutoryAndCapitalReserves+ $GeneralReserve+ $RevaluationReserve+ $OtherReservesExcludingProvisions + $SurplusOrDeficitInPLAccount+ $SharePremiumAC + $CapitalSubsidy + $InvestmentAllowanceUtilizationReserve -$RevaluationReserve) - ($AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses + $DeferredTaxAsset);
 	$response['TolTnw'] = $response['TangibleNetWorth'] == 0 ? 0 :(($FromApplicantBankCcWcdl + $FromOtherBanks + $OfIAndIiInWhichBillPurchasedDisc + $SundryCreditorsTrade + $ShortTermBorrowingsFromAssociatesGroupConcerns + $ShortTermBorrowingsCommercialPaper + $ShortTermBorrowingsFromOthers + $AdvancesPaymentsFromCustomersDepositsFromDealers + $ProvisionForTaxation + $ProposedDividend + $OtherStatutoryLiabilitiesDueWithinOneYear + $InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year + $DepositsDueForRepaymentDueWithin1Year + $PreferenceSharesRedeemableWithin1Year + $OtherCurrentLiabilitiesProvisionsDueWithin1Year + $InterestAccButNotDue + $ProvisionForNpa + $ProvisionForLeaveEncashmentGratuity + $UnclaimedDividend + $OtherLiabilities + $DueToSubsidiaryCompaniesAffiliates + $TaxOnInterimDividendPayable + $Wctl + $PrefSharesPortionRedeemableAfter1Yr + $TermLoansExcludingInstallmentsPayableWithinOneYear + $TermLoansFromFis + $Debentures + $TermDeposits + $UnsecuredLoans + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity + $DepositFromDealersOnlyIfConsideredAsAvailableForLongTerm + $OtherTermLiabilities + $DeferredTaxLiability + $OtherLoanAdvances)/ $response['TangibleNetWorth']);
 	$AdjustedTangibleNetWorth = ($response['TangibleNetWorth'] -$InvestmentsInSubsidiaryCompaniesAffiliates + $BorrowingsFromSubsidiariesAffiliatesQuasiEquity);
