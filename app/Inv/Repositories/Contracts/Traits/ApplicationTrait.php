@@ -56,7 +56,7 @@ trait ApplicationTrait
     protected function getAppProductIds($app_id, $prgmDocsWhere=[])
     {
         $ProductIds = [];
-        if ($prgmDocsWhere['stage_code'] == 'doc_upload') {
+        if (isset($prgmDocsWhere['stage_code']) && $prgmDocsWhere['stage_code'] == 'doc_upload') {
             $appProducts = $this->appRepo->getApplicationProduct($app_id);
             foreach($appProducts->products as $product){
                 array_push($ProductIds, $product->id);
