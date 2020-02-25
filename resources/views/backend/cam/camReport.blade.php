@@ -181,6 +181,13 @@
                      </td>
                   </tr>
                   @endforeach
+               @else
+                  <tr role="row" class="odd">
+                     <td class="">
+                        <p>No Record Found.</p> 
+                        
+                     </td> 
+                  </tr>  
                @endif
             </tbody>
          </table>
@@ -209,6 +216,13 @@
                            </td>
                      </tr>
                   @endforeach
+               @else
+                  <tr role="row" class="odd">
+                     <td class="">
+                        <p>No Record Found.</p> 
+                        
+                     </td> 
+                  </tr> 
                @endif
             </tbody>
          </table>
@@ -580,12 +594,11 @@
    </div>
 
    <div class="data mt-4">
-      <h2 class="sub-title bg">Risk Comments</h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      <h2 class="sub-title bg" style="margin-bottom: 0px;">Risk Comments</h2>
+      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
 
-         <div class="data mt-4">
-            <h2 class="sub-title bg">Deal Positives</h2>
-            <div class="pl-4 pr-4 pb-4 pt-2">
+         <div class="data ">
+            <h2 class="sub-title bg" style="background: #138864 !important; margin-bottom: 0px;" >Deal Positives</h2>
                <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
                   <tbody>
                      <tr>
@@ -611,12 +624,10 @@
                      </tr>
                   </tbody>
                </table>
-            </div>
          </div>  
 
-         <div class="data mt-4">
-            <h2 class="sub-title bg">Deal Negatives</h2>
-            <div class="pl-4 pr-4 pb-4 pt-2">
+         <div class="data ">
+            <h2 class="sub-title bg" style="background: #138864 !important; margin-bottom: 0px;" >Deal Negatives</h2>
                <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
                   <tbody>
                      <tr>
@@ -636,7 +647,6 @@
                      </tr>
                   </tbody>
                </table>
-            </div>
          </div>
 
       </div>
