@@ -803,8 +803,8 @@ class ApplicationController extends Controller
 							$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
 							$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
 
-							$pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
-							$pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
+							// $pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+							// $pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
 
 							// $tranType = 20 for document fee acc. to mst_trans_type table
 							$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
@@ -813,8 +813,8 @@ class ApplicationController extends Controller
 							$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
 							$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
 
-							$dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
-							$createTransaction = $this->appRepo->saveTransaction($dfCreditData);
+							// $dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
+							// $createTransaction = $this->appRepo->saveTransaction($dfCreditData);
 						}
                   	}
                 }
