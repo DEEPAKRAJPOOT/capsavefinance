@@ -162,6 +162,7 @@ class ProgramController extends Controller {
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
 //            dd($subProgramData);
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
+//          dd($program_id);
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
 //            dd($programData);
             $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
