@@ -133,12 +133,12 @@ try {
                 'acc_no': {
                     required: true,
                     number: true,
-                    maxlength: 15,
+                    maxlength: 16,
                 },
                 'confim_acc_no': {
                     required: true,
                     equalTo: "#account_no",
-                    maxlength: 15,
+                    maxlength: 16,
                 },
                 
                 'bank_id': {
