@@ -91,6 +91,7 @@
 													<th>Collection Amount</th>
 													<th>Accured Intrest</th>
 													<th>Surplus Amount</th>
+                                                                                                        <th>Action</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -110,6 +111,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('viewInterestAccrual','Interest Accrual', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

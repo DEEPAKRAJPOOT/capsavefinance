@@ -3011,6 +3011,16 @@ class DataRenderer implements DataProviderInterface
                                 function ($data) {
                             return isset($data->surplus_amount) ? $data->surplus_amount : '-';
                         })
+                        ->addColumn(
+                                'action',
+                                function ($data) {
+                            $act = '<a data-toggle="modal"  data-height="550px" 
+                            data-width="100%" 
+                            data-target="#viewInterestAccrual"
+                            data-url="' . route('view_interest_accrual', ['disbursal_id' => $data->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye-slash"></i></a>';
+
+                            return $act;
+                        })                        
                         ->filter(function ($query) use ($request) {
                             if ($request->get('search_keyword') != '') {
                                 $query->where(function ($query) use ($request) {

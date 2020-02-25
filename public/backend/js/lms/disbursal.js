@@ -76,7 +76,8 @@ try {
                 {data: 'collection_date'},
                 {data: 'collection_amount'},
                 {data: 'accured_interest'},
-                {data: 'surplus_amount'}
+                {data: 'surplus_amount'},
+                {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
