@@ -45,7 +45,7 @@ class InvoiceController extends Controller {
     {
     
         $get_anchor = $this->invRepo->getLimitAllAnchor();
-         return view('backend.invoice.upload_all_invoice')
+        return view('backend.invoice.upload_all_invoice')
          ->with(['get_anchor' => $get_anchor]);
   
     }
@@ -68,13 +68,13 @@ class InvoiceController extends Controller {
       
        public function viewApproveInvoice() {
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
-          $get_bus = $this->invRepo->getBusinessName();
+         $get_bus = $this->invRepo->getBusinessName();
         return view('backend.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
        public function viewDisbursedInvoice() {
          $getAllInvoice    =   $this->invRepo->getAllAnchor();
-          $get_bus = $this->invRepo->getBusinessName();
+         $get_bus = $this->invRepo->getBusinessName();
         return view('backend.invoice.disbursed_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
