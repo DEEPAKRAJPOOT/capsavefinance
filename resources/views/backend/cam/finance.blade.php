@@ -8,6 +8,7 @@
    extract(getBalanceSheetLiabilitiesColumns());
    extract(getBalanceSheetAssetsColumns());
 ?>
+
 @extends('layouts.backend.admin-layout')
 @section('content')
 @include('layouts.backend.partials.admin-sidebar')

@@ -557,6 +557,7 @@ class CamController extends Controller
             $contents = json_decode(base64_decode(file_get_contents($active_json_filename)),true);
           }
         }
+        
         $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
         $latest_finance_year = 2010;
         $fy = $contents['FinancialStatement']['FY'] ?? array();
@@ -1941,4 +1942,5 @@ class CamController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    
 }
