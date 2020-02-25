@@ -10,6 +10,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 class AppProgramLimit extends BaseModel {
     /* The database table used by the model.
@@ -126,7 +127,7 @@ class AppProgramLimit extends BaseModel {
       public static function getAllAnchor()
     {
          
-       return self::whereHas('supplyOffers')->where(['product_id' =>1])->with('anchorOne')->groupBy('anchor_id')->get(['anchor_id']);
+       return AppProgramOffer::where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorOne')->groupBy('anchor_id')->get(['anchor_id']);
     }  
     
    /* public static function getAnchorBehalfStatus($status)
