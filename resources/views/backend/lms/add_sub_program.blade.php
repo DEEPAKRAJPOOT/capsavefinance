@@ -33,14 +33,15 @@
                                             <div class="sub-progrem">
                                                 <div class="row">
                                                     <div class="col-sm-12">
-                                                        <h4 class="gc"> {{ isset($anchorData) ? $anchorData->f_name : null }}</h4>
+                                                        <h4 class="gc"><label>Program Name: </label> {{ isset($programData) ? $programData->prgm_name : null }} <span class="float-right mb-0"> <label>Anchor Name: </label> {{ isset($anchorData) ? $anchorData->f_name : null }}</span> </h4>
+                                                        
                                                         <p class="float-left mr-3 mb-0">
                                                             <b>Total Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
                                                             {!! isset($programData->anchor_limit) ?  \Helpers::formatCurreny($programData->anchor_limit )   : null !!}
                                                         </p>
 
-
+                                                        
                                                         <p class="float-right mb-0">
                                                             <b>Remaining Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i>

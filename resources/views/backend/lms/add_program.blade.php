@@ -25,7 +25,7 @@
                             {{ Form::open(array('url' => route('save_program') ,'id'=>'addProgram')) }}
 
                             <div class="form-sections">
-                                <div class="col-md-8 col-md-offset-2">
+                                <div class="col-md-12">
 
                                     <h3 class="pull-left"><small>
                                  {{ trans('backend.add_program.add_program') }}
@@ -108,12 +108,12 @@
                                     </div>
                                 </div>
                                 <div class="ima"></div>
-                                <div class="col-md-8 col-md-offset-2">
+                                <div class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="text-right mt-3">
 
-                                                <a class="btn btn-secondary btn-sm" href='{{ $redirectUrl }}'> Cancel </a> {!! Form::submit('Save and Next', ['class'=>'btn btn-primary submit' ,'id'=>'pre3']) !!}
+                                                <a class="btn btn-secondary btn-sm" href='{{ $redirectUrl }}'> Cancel </a> {!! Form::submit('Save and Next', ['class'=>'btn btn-primary btn-sm submit' ,'id'=>'pre3']) !!}
 
                                             </div>
                                         </div>
