@@ -773,5 +773,8 @@ Route::group(
                 'as' => 'get_chrg_amount',
                 'uses' => 'AjaxController@getChrgAmount'
             ]);
-    
+      Route::post('get_calculation_amount', [
+                'as' => 'get_calculation_amount',
+                'uses' => 'AjaxController@getCalculationAmount'
+            ]);
 });

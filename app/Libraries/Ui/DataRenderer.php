@@ -2134,7 +2134,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'is_gst_applicable',
                     function ($charges) {
-                     return ($charges->ChargeMaster->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                     return ($charges->transaction->gst == 1) ? 'Yes' : 'No'; 
                 })      
                  ->addColumn(
                     'charge_percent',

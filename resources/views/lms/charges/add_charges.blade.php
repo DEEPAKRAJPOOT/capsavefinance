@@ -57,7 +57,7 @@
         </div>
            <div class="form-group col-md-6 chargeTypeCal" id="approved_limit_div"  style="display: none">
              <label for="chrg_type">Charge Applicable On</label>
-              <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
+              <select class="form-control chrg_applicable_id" name="chrg_applicable_id" id="chrg_applicable_id">
                  
               </select>
              
@@ -127,6 +127,7 @@
         var messages = {
             get_chrg_amount: "{{ URL::route('get_chrg_amount') }}",
             get_trans_name: "{{ URL::route('get_trans_name') }}",
+            get_calculation_amount: "{{ URL::route('get_calculation_amount') }}", 
             token: "{{ csrf_token() }}",
  };
  
@@ -209,6 +210,32 @@
                 }
         });         
     });
+    
+    /////////// get calculation according ////////////////
+    
+    $(document).on('change','.chrg_applicable_id',function(){
+      var chrg_applicable_id  =  $(this).val();   
+      var is_gst_applicable =  $("input[name=is_gst_applicable]").val();
+      var postData =  ({'is_gst_applicable':is_gst_applicable,'percent':$("#amount").val(),'app_id':$("#app_id").val(),'chrg_applicable_id':chrg_applicable_id,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_calculation_amount,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                },
+                success: function (res) {
+                                  $("#limit_amount_new").val(res.limit_amount);
+                                  $("#charge_amount_new").val(res.charge_amount);
+                                  $("#charge_amount_gst_new").val(res.gst_amount);
+                                }
+                      }); 
+      }); 
+  
+    
+    
+    
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','#chrg_name',function(){
       $(".chargeTypeGstCal, #charge_amount_gst_new").css("display","inline");
@@ -246,7 +273,7 @@
                           var  applicable  = res.applicable;  
                           $("#chrg_applicable_id").html(applicable);
                           $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
-                          $("#chrg_applicable_id option").attr('disabled','disabled');
+                         //// $("#chrg_applicable_id option").attr('disabled','disabled');
                           ////**** calculation here for according charge applicable ******/
                           $("#amount").val(res.amount);
                           $("#id").val(res.id);

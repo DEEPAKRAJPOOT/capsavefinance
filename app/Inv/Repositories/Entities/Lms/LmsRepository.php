@@ -399,7 +399,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        }
        
                
+    }    
+      public static function getOutstandingAmount($attr)
+    {
+       try
+       {
+          return Disbursal::getOutstandingAmount($attr); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
     }     
+    
     
     /**
      * Update Transactions
