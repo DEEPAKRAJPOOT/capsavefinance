@@ -256,7 +256,7 @@ class FinanceModel extends BaseModel
             'body' => base64_encode($emailData['body']),
             'name' => $emailData['name'] ?? NULL,
             'fileid' => $emailData['fileid'] ?? NULL,
-            'sent_by' => \Auth::user()->user_id,
+            'sent_by' => \Auth::user() ? \Auth::user()->user_id : 1,
         ];
 
         if (!empty($emailData['email_cc'])) {
