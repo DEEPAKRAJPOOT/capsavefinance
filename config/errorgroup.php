@@ -24,6 +24,11 @@ return [
         'anuj.chauhan@prolitus.com',
         'gaurav.agarwal@prolitus.com',
         'ravi.awasthi@prolitus.com',
-        'varun.dudani@zuron.in'
+        'varun.dudani@zuron.in',
+        'binay.kumar@prolitus.com',
+        'gajendra.singh@prolitus.com',
+        'akash.kumar@prolitus.com',
+        'sudesh.kumar@prolitus.com',
+        'updesh.sharma@prolitus.com'
     ]
 ];
