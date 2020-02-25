@@ -245,7 +245,7 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="txtCreditPeriod">Adhoc Facility<span class="error_message_label">*</span></label>
+                                                                <label for="is_adhoc_facility">Adhoc Facility<span class="error_message_label">*</span</label>
                                                                 <div class="">
                                                                     <div class="form-check-inline">
                                                                         <label class="form-check-label fnt">

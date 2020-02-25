@@ -3057,9 +3057,12 @@ if ($err) {
         if (is_null($id)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-
         
-        $result = $this->application->getSubIndustryByWhere(['industry_id' => $id, 'segment_id' => $segment_id]);
+        if($segment_id != null)
+            $result = $this->application->getSubIndustryByWhere(['industry_id' => $id, 'segment_id' => $segment_id]);
+        else
+            $result = $this->application->getSubIndustryByWhere(['industry_id' => $id]);
+        
         return response()->json($result);
     }
     

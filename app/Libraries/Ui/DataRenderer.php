@@ -1609,16 +1609,16 @@ class DataRenderer implements DataProviderInterface {
                         ->addColumn(
                                 'action', function ($program) {
                             $action = '';
-                            if (Helpers::checkPermission('manage_sub_program') && $program->product_id == 1) {
-                                $action .= '<a title="View Sub-Program" href="' . route('manage_sub_program', ['program_id' => $program->prgm_id, 'anchor_id' => $program->anchor_id]) . '" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                            if (Helpers::checkPermission('manage_sub_program') && ($program->product_id == 1) && $program->status == '1') {
+                                $action .= '<a title="View Sub-Program" href="' . route('manage_sub_program', ['program_id' => $program->prgm_id, 'anchor_id' => $program->anchor_id]) . '" class="btn btn-action-btn btn-sm "><i class="fa fa-file-text-o" aria-hidden="true"></i></a>';
                             }
 
                             //add_sub_program
 
                             if ($program->status) {
-                                return $action . '<a title="In Active" href="' . route('change_program_status', ['program_id' => $program->prgm_id, 'status' => 0]) . '"  class="btn btn-action-btn btn-sm program_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                                return $action . '<a title="In Active" href="' . route('change_program_status', ['program_id' => $program->prgm_id, 'status' => 0]) . '"  class="btn btn-action-btn btn-sm program_status "><i class="fa fa-unlock" aria-hidden="true"></i></a>';
                             } else {
-                                return $action . '<a title="Active" href="' . route('change_program_status', ['program_id' => $program->prgm_id, 'status' => 1]) . '"  class="btn btn-action-btn btn-sm  program_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
+                                return $action . '<a title="Active" href="' . route('change_program_status', ['program_id' => $program->prgm_id, 'status' => 1]) . '"  class="btn btn-action-btn btn-sm  program_status"><i class="fa fa-ban" aria-hidden="true"></i></a>';
                             }
                         })
                         ->filter(function ($query) use ($request) {

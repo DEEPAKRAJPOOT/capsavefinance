@@ -49,6 +49,7 @@ try {
         $.fn.handleIndustryChange = function () {
             let selector = $(this);
             let currentValue = selector.val();
+//            alert(currentValue);
             let subIndus = $('.sub_industry');
             let selected = null;
             $.ajax({
@@ -80,8 +81,12 @@ try {
         /**
          *  Handle change event
          */
-        $(document).on('change', '.industry_change', function () {
-            $(this).handleIndustryChange();
+//        $(document).on('change', '.industry_change', function () {
+//            $(this).handleIndustryChange();
+//        });
+        $('.industry_change').on('change', function(){
+            let country_id = $(this).val();
+            $(this).handleIndustryChange(country_id);
         });
 
 
