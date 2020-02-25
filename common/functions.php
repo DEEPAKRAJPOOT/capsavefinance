@@ -369,16 +369,13 @@ function CalculateTotalOtherNonCurrentAssets($Assets){
 	return sprintf('%.2f', $TotalOtherNonCurrentAssets);
 }
 function CalculateGrossBlock($Assets, $Liabilities=array()){
-	$GrossBlock = $Assets['Land'] +
-						$Assets['Building'] +
-						$Assets['Vehicles'] +
-						$Assets['PlantMachinery'] +
-						$Assets['FurnitureFixtures'] +
-						$Assets['OtherFixedAssets'] +
-						$Assets['CapitalWip'];
+	$GrossBlock = $Assets['Land'] + $Assets['Building'] +  $Assets['Vehicles'] + $Assets['PlantMachinery'] + $Assets['FurnitureFixtures'] + $Assets['OtherFixedAssets'] + $Assets['CapitalWip'];
 	return sprintf('%.2f', $GrossBlock);
 }
 function CalculateNetBlock($Assets, $Liabilities=array()){
+	if (empty($Assets)) {
+		return "0.00";
+	}
 	$NetBlock = CalculateGrossBlock($Assets) - $Assets['LessAccumulatedDepreciation'] - $Liabilities['RevaluationReserve'];
 	return sprintf('%.2f', $NetBlock);
 }
@@ -767,8 +764,8 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$response['TotalOperatingIncome'] =  $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $fullArray['ProfitAndLoss']['Others'];
 	$response['TotalNonOperatingIncome'] = $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack;
 	$response['PBDITOperatingProfit'] = $response['TotalOperatingIncome'] -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $response['Depreciation']+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $response['Depreciation'];
-	$curr_netblock = $NetBlock ?? 0;
-	$prev_netblock = $PrevAssets['NetBlock'] ?? 0;
+	$curr_netblock = CalculateNetBlock($Assets, $Liabilities) ?? 0;
+	$prev_netblock = CalculateNetBlock($PrevAssets, $PrevLiabilities) ?? 0;
 	$Prev_TotalRepaymentsDueWithin1Year = $PrevLiabilities['TotalRepaymentsDueWithin1Year'] ?? 0;
 	$netBlock = $curr_netblock + $prev_netblock;
 	$a = ($netBlock/2);
