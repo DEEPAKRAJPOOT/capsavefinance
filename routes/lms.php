@@ -102,6 +102,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'list_lms_charges',
                 'uses' => 'Lms\ChargeController@listLmsCharges'
             ]);
+
             Route::get('get-lms-charges-edit', [
                 'as' => 'get_lms_charges_edit',
                 'uses' => 'Lms\ChargeController@editLmsCharges'
@@ -118,7 +119,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_refund_list',
                 'uses' => 'Lms\RefundController@refundList'
             ]);
-
+                          
+            Route::get('view-interest-accrual', [
+                'as' => 'view_interest_accrual',
+                'uses' => 'Lms\DisbursalController@viewInterestAccrual'
+            ]);
+             
         });//end of application
 
         // Business address

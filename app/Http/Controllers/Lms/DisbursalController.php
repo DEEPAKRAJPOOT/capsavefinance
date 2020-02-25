@@ -315,4 +315,20 @@ class DisbursalController extends Controller
 
 	// 	echo "Invoice Settled 315";
 	// }
+        
+        /**
+         * View Interest Accrual Data
+         * 
+         * @return type
+         */
+        public function viewInterestAccrual(Request $request)
+        {
+            $disbursalId = $request->get('disbursal_id');            
+            $whereCond = [];
+            $whereCond['disbursal_id'] = $disbursalId;
+            //$whereCond['interest_date_eq'] = $intAccrualDt;                
+            $intAccrualData = $this->lmsRepo->getAccruedInterestData($whereCond);    
+            //dd('rrrrrr', $intAccrualData);
+            return view('lms.disbursal.view_interest_accrual')->with('data', $intAccrualData);
+        }
 }

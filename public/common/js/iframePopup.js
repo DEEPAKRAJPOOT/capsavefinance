@@ -85,6 +85,7 @@ var iframe_ids = [
         'editEquipmentFrame',
         'shareColenderFrame',
         'viewSharedColenderFrame',
+        'viewInterestAccrual'
     ];
 
 iframe_ids.forEach(function(id) {
