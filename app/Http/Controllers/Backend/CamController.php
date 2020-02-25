@@ -444,6 +444,8 @@ class CamController extends Controller
         $files = scandir($scanpath, SCANDIR_SORT_DESCENDING);
       }
       $files = array_diff($files, [".", ".."]);
+      natsort($files);
+      $files = array_reverse($files, false);
       $filename = "";
       if (!empty($files)) {
         foreach ($files as $key => $file) {

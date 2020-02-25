@@ -332,27 +332,6 @@ function CalculateTotalLiabilities($Liabilities){
 $Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDeficitInPLAccount'] + $Liabilities['SharePremiumAC'] + $Liabilities['CapitalSubsidy'] + $Liabilities['InvestmentAllowanceUtilizationReserve'] - $Liabilities['RevaluationReserve'];
 	return sprintf('%.2f', $TotalLiabilities);
 }
-function CalculateArrearsOfCumulativeDividends($Liabilities){
-	return '0';
-}
-function CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities($Liabilities){
-	return '0';
-}
-function CalculateGratuityLiabilityNotProvidedFor($Liabilities){
-	return '0';
-}
-function CalculateGuaranteesIssuedRelatingToBusiness($Liabilities){
-	return '0';
-}
-function CalculateGuaranteesIssuedRelatingToCompanies($Liabilities){
-	return '0';
-}
-function CalculateLCs($Liabilities){
-	return '0';
-}
-function CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC($Liabilities){
-	return '0';
-}
 
 #====================================================================================#
 
@@ -365,9 +344,6 @@ function CalculateAssetsInventory($Assets){
 function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
-}
-function CalculateAssetsAdvancesToSuplierofRawMaterial($Assets){
-	return 'Need to Calculate';
 }
 function CalculateIntangibleAssetSubtotal($Assets){
 	$IntangibleAssetSubtotal = $Assets['AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses'] + $Assets['DeferredTaxAsset'];
@@ -532,13 +508,13 @@ function getBalanceSheetLiabilitiesColumns() {
 			'CalculateTotalLiabilities' => 'TOTAL LIABILITIES',
 		),
 		'contingentLiabilities_cols' => array(
-			'CalculateArrearsOfCumulativeDividends' =>  'Arrears of cumulative dividends',
-			'CalculateDisputedExciseCustomIncomeTaxSalesTaxLiabilities' =>  'Disputed excise / customs / Income tax / Sales tax Liabilities',
-			'CalculateGratuityLiabilityNotProvidedFor' =>  'Gratuity Liability not provided for',
-			'CalculateGuaranteesIssuedRelatingToBusiness' =>  'Guarantees issued (relating to business)',
-			'CalculateGuaranteesIssuedRelatingToCompanies' =>  'Guarantees issued (for group companies)',
-			'CalculateLCs' =>  'LCs',
-			'CalculateAllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLC' =>  'All other contingent liabilities -(incldg. Bills purchased - Under LC)',
+			'ArrearsOfCumulativeDividends' =>  'Arrears of cumulative dividends',
+			'DisputedExciseCustomsIncomeTaxSalesTaxLiabilities' =>  'Disputed excise / customs / Income tax / Sales tax Liabilities',
+			'GratuityLiabilityNotProvidedFor' =>  'Gratuity Liability not provided for',
+			'GuaranteesIssuedRelatingToBusiness' =>  'Guarantees issued (relating to business)',
+			'GuaranteesIssuedForGroupCompanies' =>  'Guarantees issued (for group companies)',
+			'Lcs' =>  'LCs',
+			'AllOtherContingentLiabilitiesIncldgBillsPurchasedUnderLc' =>  'All other contingent liabilities -(incldg. Bills purchased - Under LC)',
 		),
 	);
 	return $fields;
