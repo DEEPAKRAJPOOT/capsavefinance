@@ -197,7 +197,7 @@ try {
             if ($(this).hasClass("minus")) {
 
                 $(this).removeClass("minus");
-
+                
             } else {
                 $(this).addClass("minus");
 

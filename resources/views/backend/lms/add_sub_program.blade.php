@@ -70,7 +70,8 @@
                                                     <div class="form-group">
                                                         <label for="txtCreditPeriod">
                                                             {{ trans('backend.add_program.program_detail') }}
-                                                            <span class="error_message_label">*</span></label>
+                                                            <span class="error_message_label">*</span>
+                                                        </label>
                                                         <div class="block-div clearfix ">
                                                             <div class="form-check-inline float-left">
                                                                 <label class="form-check-label fnt">
@@ -178,6 +179,7 @@
                                                                 !!}
                                                             </div>
                                                         </div>
+                                                        <label id="prgm_type-error" class="error mb-0" for="interest_rate"></label>
                                                         <div class="row fixed" style="display:none;">
                                                             <div class="col-md-6">
 
@@ -270,6 +272,7 @@
                                                                         </label>
                                                                     </div>
                                                                 </div>
+                                                                <label id="prgm_type-error" class="error mb-0" for="is_adhoc_facility"></label>
                                                                 <div class="mt-3">
                                                                     <div id="facility1" class="desc" style="display:none;">
                                                                         <label for="txtCreditPeriod">Max. Interset Rate (%) <span class="error_message_label">*</span></label>
@@ -316,6 +319,7 @@
                                                                         </label>
                                                                     </div>
                                                                 </div>
+                                                                <label id="prgm_type-error" class="error mb-0" for="is_grace_period"></label>
                                                                 <div class="mt-3">
                                                                     <div id="facility2" class="desc" style="display:none;">
                                                                         <label for="txtCreditPeriod">Grace Period (In Days) <span class="error_message_label">*</span></label>
@@ -409,6 +413,7 @@
                                                                 <label for="invoice_upload_2"> Customer/Supplier</label>
                                                             </div>
                                                         </div>
+                                                        <label id="prgm_type-error" class="error mb-0" for="invoice_upload[]"></label>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -471,6 +476,7 @@
                                                                 <label for="bulk_invoice_upload_2"> Customer/Supplier</label>
                                                             </div>
                                                         </div>
+                                                        <label id="prgm_type-error" class="error mb-0" for="bulk_invoice_upload[]"></label>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -541,6 +547,7 @@
                                                                 <label for="invoice_approval_4"> Auto Approval</label>
                                                             </div>
                                                         </div>
+                                                        <label id="prgm_type-error" class="error mb-0" for="invoice_approval[]"></label>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -560,9 +567,6 @@
                                                                 'class'=>'form-control multi-select-demo ',
                                                                 'multiple'=>'multiple'])
                                                                 !!}
-
-
-
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <h5>Post Sanction </h5>
