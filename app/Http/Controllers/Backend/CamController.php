@@ -1904,4 +1904,5 @@ class CamController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+    
 }
