@@ -711,7 +711,7 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$response['Depreciation'] = $Depreciation;
 	extract($Liabilities);
 	extract($Assets);
-	$curr_netblock = $NetBlock;
+	$curr_netblock = $NetBlock ?? 0;
 	$prev_netblock = $PrevAssets['NetBlock'] ?? 0;
 	$Prev_TotalRepaymentsDueWithin1Year = $PrevLiabilities['TotalRepaymentsDueWithin1Year'] ?? 0;
 	$netBlock = $curr_netblock + $prev_netblock;
