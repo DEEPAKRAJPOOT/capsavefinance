@@ -40,13 +40,15 @@ use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
 use PDF as DPDF;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
-
 
 class CamController extends Controller
 {
     use CamTrait;
-    
+    use CommonTrait;
+
     protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
@@ -238,6 +240,8 @@ class CamController extends Controller
 
     public function reviewerSummary(Request $request){
       $offerPTPQ = '';
+      $preCondArr = [];
+      $postCondArr = [];
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
       $leaseOfferData = $facilityTypeList = array();
@@ -250,14 +254,30 @@ class CamController extends Controller
       $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
       $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
       $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
+      if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
+        $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
+      }
+      if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+        $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                        ->where('is_active', 1)->get();
+        $dataPrePostCond = $dataPrePostCond ? $dataPrePostCond->toArray() : [];
+        if(!empty($dataPrePostCond)) {
+          $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
+          $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
+        }
+      } 
+
+
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
         'leaseOfferData'=> $leaseOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
+        'offerPTPQ' => $offerPTPQ,
+        'preCondArr' => $preCondArr,
+        'postCondArr' => $postCondArr,
         'arrStaticData' => $arrStaticData,
-        'facilityTypeList' => $facilityTypeList,
-        
+        'facilityTypeList' => $facilityTypeList
       ]);
     }
 
@@ -269,6 +289,7 @@ class CamController extends Controller
         if(isset($arrData['cam_reviewer_summary_id']) && $arrData['cam_reviewer_summary_id']){
               $result = CamReviewerSummary::updateData($arrData, $userId);
               if($result){
+                    $this->savePrePostConditions($request, $arrData['cam_reviewer_summary_id']);
                     Session::flash('message',trans('Reviewer Summary updated successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not updated'));
@@ -276,6 +297,7 @@ class CamController extends Controller
         }else{
             $result = CamReviewerSummary::createData($arrData, $userId);
             if($result){
+                    $this->savePrePostConditions($request, $result->cam_reviewer_summary_id);
                     Session::flash('message',trans('Reviewer Summary saved successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not saved'));
@@ -288,16 +310,22 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      Mail::to(config('common.review_summ_mails'))
-        ->send(new ReviewerSummary());
+      if( env('SEND_MAIL_ACTIVE') == 1){
+        Mail::to(explode(',', env('SEND_MAIL')))
+          ->bcc(explode(',', env('SEND_MAIL_BCC')))
+          ->cc(explode(',', env('SEND_MAIL_CC')))
+          ->send(new ReviewerSummary($this->mstRepo));
 
-      if(count(Mail::failures()) > 0 ) {
-        Session::flash('error',trans('Mail not sent, try again later.'));
+        if(count(Mail::failures()) > 0 ) {
+          Session::flash('error',trans('Mail not sent, Please try again later..'));
+        } else {
+          Session::flash('message',trans('Mail sent successfully.'));        
+        }
       } else {
-        Session::flash('message',trans('Mail sent successfully.'));        
+        Session::flash('message',trans('Mail not sent, Please try again later.')); 
       }
       return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-      //return new \App\Mail\ReviewerSummary();        
+      //return new \App\Mail\ReviewerSummary($this->mstRepo);        
     }
 
      public function uploadFinanceXLSX(Request $request){
@@ -357,24 +385,8 @@ class CamController extends Controller
       if ($total_pages <= 1) {
         return "";
       }
-      $middleEdges = 3;
       $curr_page = $curr_sheet + 1;
-      $k = (($curr_page+$middleEdges > $total_pages) ? $total_pages-$middleEdges : (($curr_page-$middleEdges < 1) ? ($middleEdges + 1) : $curr_page));
-      if($curr_page >= 2){ 
-        $paginate .="<span class='pagination unselect' id='1' title='".$sheets[0]."'>First</span>";
-        $paginate .="<span class='pagination unselect' id='".($curr_page-1)."' title='".$sheets[$curr_page-2]."'>Prev</span>";
-      } 
-      for ($i=-$middleEdges; $i<=$middleEdges; $i++) { 
-        if($k+$i == $curr_page)
-          $paginate .="<span class='pagination selected' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";
-        else
-          $paginate .="<span class='pagination unselect' id='".($k+$i)."' title='".$sheets[$k+$i-1]."'>".($k+$i)."</span>";  
-      };    
-      if($curr_page<$total_pages){ 
-        $paginate .="<span class='pagination unselect' id='".($curr_page+1)."' title='".$sheets[$curr_page]."'>Next</span>";
-        $paginate .="<span class='pagination unselect' id='".$total_pages."' title='".$sheets[$total_pages-1]."'>Last</span>";
-      } 
-      return $paginate;
+      return getPaginate($total_pages, $curr_page, $sheets);
     }
 
     private function _getXLSXTable($appId, $fileType = 'finance', $sheet_no = 0){

@@ -238,7 +238,7 @@
 {!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
 @endsection
 @section('jscript')
-<script src="https://cdn.ckeditor.com/4.13.1/standard-all/ckeditor.js"></script>
+
 <script>
     var messages = {
         get_applications: "{{ URL::route('ajax_app_list') }}",
@@ -246,87 +246,89 @@
         token: "{{ csrf_token() }}",
 
     };
-    $(document).ready(function(){ 
-        if($('textarea[name="delay_pymt_chrg"]').length){
-            CKEDITOR.replace('delay_pymt_chrg',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="insurance"]').length){
-            CKEDITOR.replace('insurance',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="bank_chrg"]').length){
-            CKEDITOR.replace('bank_chrg',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="legal_cost"]').length){
-            CKEDITOR.replace('legal_cost',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="po"]').length){
-            CKEDITOR.replace('po',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="pdp"]').length){
-            CKEDITOR.replace('pdp',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="disburs_guide"]').length){
-            CKEDITOR.replace('disburs_guide',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="other_cond"]').length){
-            CKEDITOR.replace('other_cond',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="covenants"]').length){
-            CKEDITOR.replace('covenants',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
-        if($('textarea[name="rating_rational"]').length){
-            CKEDITOR.replace('rating_rational',{
-                fullPage: true,
-                extraPlugins: 'docprops',
-                allowedContent: true,
-                height:220
-            });
-        }
+    CKEDITOR.replace('delay_pymt_chrg');
+    CKEDITOR.replace('insurance');
+    CKEDITOR.replace('bank_chrg');
+    CKEDITOR.replace('legal_cost');
+    CKEDITOR.replace('po');
+    CKEDITOR.replace('pdp');
+    CKEDITOR.replace('disburs_guide');
+    CKEDITOR.replace('other_cond');
+    CKEDITOR.replace('covenants');
+    CKEDITOR.replace('rating_rational');
+    $(document).ready(function(){
+        // if($('textarea[name="insurance"]').length){
+        //     CKEDITOR.replace('insurance',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="bank_chrg"]').length){
+        //     CKEDITOR.replace('bank_chrg',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="legal_cost"]').length){
+        //     CKEDITOR.replace('legal_cost',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="po"]').length){
+        //     CKEDITOR.replace('po',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="pdp"]').length){
+        //     CKEDITOR.replace('pdp',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="disburs_guide"]').length){
+        //     CKEDITOR.replace('disburs_guide',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="other_cond"]').length){
+        //     CKEDITOR.replace('other_cond',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="covenants"]').length){
+        //     CKEDITOR.replace('covenants',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
+        // if($('textarea[name="rating_rational"]').length){
+        //     CKEDITOR.replace('rating_rational',{
+        //         fullPage: true,
+        //         extraPlugins: 'docprops',
+        //         allowedContent: true,
+        //         height:220
+        //     });
+        // }
        
         $('#payment_type').on('change', function(){
             $('#payment_type_comment').val('');
