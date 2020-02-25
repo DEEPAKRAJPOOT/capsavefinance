@@ -755,17 +755,16 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$PrevProfitAndLoss = $prevFullArray['ProfitAndLoss'] ?? [];
 	$PrevLiabilities = $prevFullArray['BalanceSheet']['Liabilities'] ?? [];
 	$PrevAssets = $prevFullArray['BalanceSheet']['Assets'] ?? [];
-	extract($ProfitAndLoss);	
+	extract($ProfitAndLoss);
+	extract($Liabilities);
+	extract($Assets);	
 	$response = [];
 	$AddOpeningStockInProcessRawMaterials = $RawMaterials['Imported'] + $RawMaterials['Indigenous'];
 	$OtherSpares = $OtherSpares['Imported'] + $OtherSpares['Indigenous'] ;
 	$InterestPaymentToBanksSum = $InterestPaymentToBanks['InterestWc'] + $InterestPaymentToBanks['InterestTermLoans'];
 	$InterestPaymentToFIsSum = $InterestPaymentToFIs['InterestWc'] + $InterestPaymentToFIs['InterestTermLoans'];
 
-	$response['TotalOperatingIncome'] =  $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $Others;
-
-	extract($Liabilities);
-	extract($Assets);
+	$response['TotalOperatingIncome'] =  $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $$fullArray['ProfitAndLoss']['Others'];
 	$response['TotalNonOperatingIncome'] = $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack;
 	$response['PBDITOperatingProfit'] = $response['TotalOperatingIncome'] -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $Depreciation;
 	$response['Depreciation'] = $Depreciation;
