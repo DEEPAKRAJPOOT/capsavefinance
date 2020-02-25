@@ -793,27 +793,30 @@ class ApplicationController extends Controller
               			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
 
               			$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
-						foreach ($prcsAmt->offer as $key => $offer) {
-              				// $tranType = 4 for processing acc. to mst_trans_type table
-							$pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
-							$pfWGst = round((($pf*18)/100),2);
+						        if(isset($prcsAmt->offer)) {
+                        foreach ($prcsAmt->offer as $key => $offer) {
+                                  // $tranType = 4 for processing acc. to mst_trans_type table
+                          $pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+                          $pfWGst = round((($pf*18)/100),2);
 
-							$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
-							$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
+                          $pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+                          $pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
 
-							// $pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
-							// $pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
+                          // $pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+                          // $pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
 
-							// $tranType = 20 for document fee acc. to mst_trans_type table
-							$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
-							$dfWGst = round((($df*18)/100),2);
+                          // $tranType = 20 for document fee acc. to mst_trans_type table
+                          $df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+                          $dfWGst = round((($df*18)/100),2);
 
-							$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
-							$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
+                          $dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+                          $createTransaction = $this->appRepo->saveTransaction($dfDebitData);
 
-							// $dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
-							// $createTransaction = $this->appRepo->saveTransaction($dfCreditData);
-						}
+                          // $dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
+                          // $createTransaction = $this->appRepo->saveTransaction($dfCreditData);
+                        }
+                      
+                    }
                   	}
                 }
                 $wf_order_no = $currStage->order_no;
