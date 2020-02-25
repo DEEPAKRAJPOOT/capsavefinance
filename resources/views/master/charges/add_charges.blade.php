@@ -19,6 +19,19 @@
             <textarea class="form-control" id="chrg_desc" name="chrg_desc" placeholder="Charge Description" maxlength="500"></textarea>
         </div>
       </div>
+              
+      <div class="row">
+         <div class="form-group col-md-12">
+            <label for="chrg_type">Credit Description</label>
+            <textarea class="form-control" id="credit_desc" name="credit_desc" placeholder="Credit Description" maxlength="200"></textarea>
+        </div>
+      </div>
+        <div class="row">
+         <div class="form-group col-md-12">
+            <label for="chrg_type">Debit Description</label>
+            <textarea class="form-control" id="debit_desc" name="debit_desc" placeholder="Debit Description" maxlength="200"></textarea>
+        </div>
+      </div>       
 
       <div class="row">
         
@@ -141,6 +154,12 @@
                 'chrg_desc' : {
                     required : true,
                 },
+                 'credit_desc' : {
+                    required : true,
+                },
+                 'debit_desc' : {
+                    required : true,
+                },
                 'chrg_calculation_amt' : {
                     required : true,
                 },
@@ -160,6 +179,12 @@
                 },
                 'chrg_desc': {
                     required: "Please enter Charge Description",
+                },
+                 'credit_desc': {
+                    required: "Please enter Credit Description",
+                },
+                 'debit_desc': {
+                    required: "Please enter Debit Description",
                 },
                 'chrg_calculation_amt': {
                     required: "Please enter Charge Amount",

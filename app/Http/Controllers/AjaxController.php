@@ -3189,7 +3189,60 @@ if ($err) {
        }
      }
     
-         public function  getChrgAmount(Request $request)
+         public function  getCalculationAmount(Request $request)
+      {
+          
+       if($request->chrg_applicable_id==1)
+       {
+         $amountSum  =  $this->lmsRepo->getLimitAmount($request);
+         $amountSum  = $amountSum[0];
+       }
+       else if($request->chrg_applicable_id==2 || $request->chrg_applicable_id==3)
+       {
+         $amountSum  =  $this->lmsRepo->getOutstandingAmount($request);
+       }
+       else
+       {
+            $amountSum =  0;
+       }
+     
+     
+        if($amountSum)
+        {
+          
+            if($request->is_gst_applicable==1)
+            {
+                /* apply percentage on amount  ****/
+                $getPercentAmount =   $amountSum*$request->percent/100;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount =  $getPercentAmount*18/100;
+                $final_amount = $getPercentAmount+$getAfterGstAmount; 
+            }
+            else
+            { /* apply percentage on amount  ****/
+                $getPercentAmount =  0;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount = 0;
+                $final_amount = 0; 
+                
+            }
+            return response()->json(['status' => 1,'limit_amount' =>str_replace(".", "", $amountSum),'charge_amount' => str_replace(".", "", $getPercentAmount),'gst_amount' => str_replace(".", "", $final_amount)]); 
+          }
+          else
+          {
+              /* apply percentage on amount  ****/
+                $getPercentAmount =  0;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount = 0;
+                $final_amount = 0; 
+                   return response()->json(['status' => 0,'limit_amount' =>str_replace(".", "", $amountSum),'charge_amount' => str_replace(".", "", $getPercentAmount),'gst_amount' => str_replace(".", "", $final_amount)]); 
+         
+         
+          }
+          
+      }
+      
+           public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
@@ -3227,8 +3280,13 @@ if ($err) {
              {
                 $amount =  $getamount->chrg_calculation_amt; 
              }
-             
-             return response()->json(['status' => 1,'chrg_applicable_id' => $getamount->chrg_applicable_id,'amount' => number_format($amount),'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
+             return response()->json(['status' => 1,
+                 'chrg_applicable_id' => $getamount->chrg_applicable_id,
+                 'amount' => number_format($amount),
+                 'id' => $getamount->id,
+                 'type' => $getamount->chrg_calculation_type,
+                 'is_gst_applicable' => $getamount->is_gst_applicable,
+                 'applicable' =>$app]); 
           }
           else
           {

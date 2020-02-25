@@ -32,7 +32,7 @@
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="cin_no">CIN No. <span class="mandatory">*</span></label>
+                <label for="cin_no">CIN No. <span class="mandatory"></span></label>
                 <input type="text" class="form-control cinnumber" id="cin_no" name="cin_no" placeholder="Enter CIN No." maxlength="50" value="{{ isset($comData['cin_no']) ? $comData['cin_no'] : ''}}">
                 {!! $errors->first('cin_no', '<span class="error">:message</span>') !!}
             </div>
@@ -45,6 +45,36 @@
                 </select>
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
+        </div>
+          <div class="row">
+               <div class="form-group col-md-6">
+                <label for="chrg_type">State<span class="mandatory">*</span></label><br />
+           <select class="form-control" name="state" id="state">
+                    <option value="">Please Select</option>
+                    @foreach($state as $key=>$val)
+                    @php 
+                  
+                 
+                    if($val==$comData['state']['id'])
+                    {
+                       $sel = "selected";
+                    }
+                    else
+                    {
+                       $sel = "";
+                    }
+                    @endphp
+                    <option  value="{{$val}}" {{$sel}}>{{$key}}</option>
+                    @endforeach
+                </select>
+               
+            </div>
+            <div class="form-group col-md-6">
+                <label for="cin_no">City <span class="mandatory">*</span></label>
+                <input type="text" class="form-control" id="city" name="city" placeholder="Enter City" maxlength="50" value="{{ isset($comData['city']) ? $comData['city'] : ''}}">
+             
+            </div>
+           
         </div>
         <div class="row">
             <div class="form-group col-md-12 text-right">
@@ -121,14 +151,16 @@
                     required: true,
                     maxlength: 10,
                 },
-                'cin_no': {
-                    required: true,
-                    maxlength: 21,
-                },
                 'ifsc_code': {
                     required: true,
                 },
                 'is_active': {
+                    required: true,
+                },
+                 'state': {
+                    required: true,
+                },
+                 'city': {
                     required: true,
                 },
             },
@@ -145,9 +177,6 @@
                 'pan_no': {
                     required: "Please Enter Pan No",
                 },
-                'cin_no': {
-                    required: "Please Enter CIN No",
-                },
                 'bank_acc_no': {
                     required: "Please Enter Bank A/C No",
                 },
@@ -160,6 +189,12 @@
                 },
                 'is_active': {
                     required: "Please Select Status of Company",
+                },
+                'state': {
+                    required: "Please Select State",
+                },
+                'city': {
+                    required: "Please Enter City",
                 }
             }
         });

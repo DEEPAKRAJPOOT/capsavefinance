@@ -69,6 +69,7 @@ class ApplicationController extends Controller
      * @return view
      */
     public function showCompanyDetails(Request $request){
+       
         try {
             $arrFileData = $request->all();
             $appId = $request->get('app_id');
