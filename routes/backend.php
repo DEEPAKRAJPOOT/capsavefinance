@@ -1124,6 +1124,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_fin_journal',
                 'uses' => 'Backend\FinanceController@getFinJournal'
             ]);
+            Route::get('fin-account', [
+                'as' => 'get_fin_account',
+                'uses' => 'Backend\FinanceController@getFinAccount'
+            ]);
+            Route::get('fin-variable', [
+                'as' => 'get_fin_variable',
+                'uses' => 'Backend\FinanceController@getFinVariable'
+            ]);
         });
 
     });

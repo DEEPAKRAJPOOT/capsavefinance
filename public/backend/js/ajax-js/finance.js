@@ -51,6 +51,55 @@ try {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
 
+        oTableAccount = $('#accountList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: false,
+            bSort: true,
+            ajax: {
+               "url": messages.get_ajax_account_list, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_name = $('input[name=search_keyword]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling                   
+                    $("#accountList").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+           columns: [
+                    {data: 'account_code'},
+                    {data: 'account_name'}
+                ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+        });
+
+        oTableVariable = $('#variableList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: false,
+            bSort: true,
+            ajax: {
+               "url": messages.get_ajax_variable_list, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_name = $('input[name=search_keyword]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling                   
+                    $("#variableList").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+           columns: [
+                    {data: 'name'}
+                ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+        });
+
         // //Search
         // $('#searchbtn').on('click', function (e) {
         //     oTable.draw();

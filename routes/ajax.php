@@ -763,4 +763,18 @@ Route::group(
         'uses' => 'AjaxController@getJournalList'
         ]
     );
+    Route::post(
+        'get-account-list',
+        [
+        'as' => 'get_ajax_account_list',
+        'uses' => 'AjaxController@getAccountList'
+        ]
+    );
+    Route::post(
+        'get-variable-list',
+        [
+        'as' => 'get_ajax_variable_list',
+        'uses' => 'AjaxController@getVariableList'
+        ]
+    );
 });

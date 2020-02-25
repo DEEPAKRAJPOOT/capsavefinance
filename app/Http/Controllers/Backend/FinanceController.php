@@ -24,4 +24,11 @@ class FinanceController extends Controller {
         return view('backend.finance.journal_list');
     }  
 
+    public function getFinAccount() {
+        return view('backend.finance.account_list');
+    }    
+
+    public function getFinVariable() {
+        return view('backend.finance.variable_list');
+    }  
 }

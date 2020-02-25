@@ -3116,4 +3116,33 @@ class DataRenderer implements DataProviderInterface
                     }) 
                     ->make(true);
         }
+
+        public function getAccountByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'account_code',
+                        function ($dataRecords) {
+                        return $dataRecords->account_code;
+                    }) 
+                    ->editColumn(
+                        'account_name',
+                        function ($dataRecords) {
+                        return $dataRecords->account_name;
+                    }) 
+                    ->make(true);
+        }
+
+        public function getVariableByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'name',
+                        function ($dataRecords) {
+                        return $dataRecords->name;
+                    })
+                    ->make(true);
+        }
 }

@@ -47,4 +47,9 @@ class FinancialVariables extends BaseModel {
         'updated_by'
     ];
 
+    public static function getAllVariable() 
+    {
+        $result = self::select('name')->orderBy('id', 'DESC');
+        return $result;
+    }
 }

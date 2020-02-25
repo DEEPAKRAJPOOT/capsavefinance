@@ -372,10 +372,10 @@
                         <a class="nav-link" href="{{ route('get_fin_journal') }}">Journal List</a>
                     </li>  
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_agency_user_list') }}">Accounts List</a>
+                        <a class="nav-link" href="{{ route('get_fin_account') }}">Accounts List</a>
                     </li> 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_agency_user_list') }}">Variables List</a>
+                        <a class="nav-link" href="{{ route('get_fin_variable') }}">Variables List</a>
                     </li>                       
                 </ul>
             </div>

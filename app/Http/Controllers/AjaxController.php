@@ -3685,4 +3685,16 @@ if ($err) {
         $this->providerResult = $dataProvider->getJournalByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
+    public function getAccountList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllAccount();
+        $this->providerResult = $dataProvider->getAccountByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getVariableList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllVariable();
+        $this->providerResult = $dataProvider->getVariableByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
 }

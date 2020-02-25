@@ -48,4 +48,9 @@ class FinancialAccount extends BaseModel {
         'updated_by'
     ];
 
+    public static function getAllAccount() 
+    {
+        $result = self::select('account_code','account_name')->orderBy('id', 'DESC');
+        return $result;
+    }
 }
