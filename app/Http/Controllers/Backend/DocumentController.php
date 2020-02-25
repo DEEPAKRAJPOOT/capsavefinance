@@ -54,11 +54,14 @@ class DocumentController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-
-            foreach($requiredDocs as $key => $product) {
-                if($product['documents']->count() > 0 ) {
-                    $docFlag ++;
+            if(!isset($requiredDocs)) {
+                $requiredDocs = [];
+                foreach($requiredDocs as $key => $product) {
+                    if($product['documents']->count() > 0 ) {
+                        $docFlag ++;
+                    }
                 }
+                
             }
             return view('backend.document.list', [
                 'requiredDocs' => $requiredDocs,

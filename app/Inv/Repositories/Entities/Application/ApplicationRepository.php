@@ -1190,10 +1190,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                     'is_active' => 1]
                 )
                 ->get();
-        // return Application::with('products')
-        //         ->where('app_id', $app_id)
-        //         ->first();
-    }/**
+    }
+    public function getApplicationProduct($app_id)
+    {
+        return Application::with('products')
+                ->where('app_id', $app_id)
+                ->first();
+    }
+    /**
      * get Bank account 
      * 
      * @param type $where array
