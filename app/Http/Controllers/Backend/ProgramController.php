@@ -137,7 +137,7 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
-
+//            dd($anchor_id,$program_id);
             \Session::put('list_program_id', $program_id);
 
             $is_prg_list = $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
