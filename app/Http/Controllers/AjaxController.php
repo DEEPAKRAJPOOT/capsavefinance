@@ -3226,7 +3226,7 @@ if ($err) {
                 $final_amount = 0; 
                 
             }
-            return response()->json(['status' => 1,'limit_amount' =>str_replace(".", "", $amountSum),'charge_amount' => str_replace(".", "", $getPercentAmount),'gst_amount' => str_replace(".", "", $final_amount)]); 
+            return response()->json(['status' => 1,'limit_amount' =>$amountSum,'charge_amount' => $getPercentAmount,'gst_amount' => $final_amount]); 
           }
           else
           {
@@ -3235,8 +3235,8 @@ if ($err) {
                   /* apply GST on percentage amount  ****/
                 $getAfterGstAmount = 0;
                 $final_amount = 0; 
-                   return response()->json(['status' => 0,'limit_amount' =>str_replace(".", "", $amountSum),'charge_amount' => str_replace(".", "", $getPercentAmount),'gst_amount' => str_replace(".", "", $final_amount)]); 
-         
+                     return response()->json(['status' => 0,'limit_amount' =>$amountSum,'charge_amount' => $getPercentAmount,'gst_amount' => $final_amount]); 
+        
          
           }
           
