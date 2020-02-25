@@ -332,7 +332,6 @@ function CalculateTotalLiabilities($Liabilities){
 $Liabilities['OtherReservesExcludingProvisions'] + $Liabilities['SurplusOrDeficitInPLAccount'] + $Liabilities['SharePremiumAC'] + $Liabilities['CapitalSubsidy'] + $Liabilities['InvestmentAllowanceUtilizationReserve'] - $Liabilities['RevaluationReserve'];
 	return sprintf('%.2f', $TotalLiabilities);
 }
-
 #====================================================================================#
 
 function CalculateAssetsReceivables($Assets){
@@ -345,9 +344,64 @@ function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
 }
-function CalculateIntangibleAssetSubtotal($Assets){
+function CalculateIntangibleAssetSubtotal($Assets, $Liabilities=array()){
 	$IntangibleAssetSubtotal = $Assets['AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses'] + $Assets['DeferredTaxAsset'];
 	return sprintf('%.2f', $IntangibleAssetSubtotal);
+}
+function CalculateTotalAssets($Assets, $Liabilities=array()){
+	$IntangibleTotalAssets = CalculateTotalCurrentAssets($Assets) + CalculateNetBlock($Assets, $Liabilities) + CalculateTotalOtherNonCurrentAssets($Assets) + CalculateIntangibleAssetSubtotal($Assets);
+	return sprintf('%.2f', $IntangibleTotalAssets);
+}
+function CalculateTangibleNetworth($Assets, $Liabilities=array()){
+	$TangibleNetworth = CalculateTotalNetWorth($Liabilities) - $Liabilities['RevaluationReserve'] -CalculateIntangibleAssetSubtotal($Assets);
+	return sprintf('%.2f', $TangibleNetworth);
+}
+function CalculateTotalLiabilitiesMinusTotalAssets($Assets, $Liabilities=array()){
+	$TotalLiabilitiesMinusTotalAssets = CalculateTotalLiabilities($Liabilities) - CalculateTotalAssets($Assets, $Liabilities);
+	return sprintf('%.2f', $TotalLiabilitiesMinusTotalAssets);
+}
+function CalculateTotalOtherNonCurrentAssets($Assets){
+	$TotalOtherNonCurrentAssets = $Assets['InvestmentsInSubsidiaryCompaniesAffiliates'] + $Assets['OtherInvestmentsInvestmentForAcquisition'] + $Assets['DueFromSubsidiaries'] + $Assets['DeferredReceivablesMaturityExceeding1Year'] + $Assets['MarginMoneyKeptWithBanks'] + $Assets['DebtorsMoreThan6Months'] + $Assets['AdvanceAgainstMortgageOfHouseProperty'] + $Assets['DeferredRevenueExpenditure'] + $Assets['OtherNonCurrentAssetsSurplusForFutureExpansionLoansAdvancesNonCurrentInNatureIcdSDuesFromDirectors'] + $Assets['Deposits'];
+	return sprintf('%.2f', $TotalOtherNonCurrentAssets);
+}
+function CalculateGrossBlock($Assets, $Liabilities=array()){
+	$GrossBlock = $Assets['Land'] +
+						$Assets['Building'] +
+						$Assets['Vehicles'] +
+						$Assets['PlantMachinery'] +
+						$Assets['FurnitureFixtures'] +
+						$Assets['OtherFixedAssets'] +
+						$Assets['CapitalWip'];
+	return sprintf('%.2f', $GrossBlock);
+}
+function CalculateNetBlock($Assets, $Liabilities=array()){
+	$NetBlock = CalculateGrossBlock($Assets) - $Assets['LessAccumulatedDepreciation'] - $Liabilities['RevaluationReserve'];
+	return sprintf('%.2f', $NetBlock);
+}
+function CalculateTotalCurrentAssets($Assets){
+	$TotalCurrentAssets = $Assets['GovtOtherSecurities'] + 
+				$Assets['CashAndBankBalances'] + 
+				$Assets['FixedDepositsWithBanks'] + 
+				$Assets['Others'] + 
+				$Assets['ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks'] + 
+				$Assets['ExportReceivablesIncludingBillPurchasedAndDiscounted'] + 
+				$Assets['RetentionMoneySecurityDeposit'] + 
+				$Assets['RawMaterialIndigenous'] + 
+				$Assets['RawMaterialImported'] + 
+				$Assets['StockInProcess'] + 
+				$Assets['FinishedGoods'] + 
+				$Assets['OtherConsumableSparesIndigenous'] + 
+				$Assets['OtherConsumableSparesImported'] + 
+				CalculateAssetsSubTotalOtherComsumableSpares($Assets) + 
+				$Assets['OtherStocks'] + 
+				$Assets['AdvancesToSuppliersOfRawMaterial'] + 
+				$Assets['AdvancePaymentOfTax'] + 
+				$Assets['InterestAccrued'] + 
+				$Assets['AdvanceReceivableInCashOrKind'] + 
+				$Assets['SundryDeposit'] + 
+				$Assets['ModvatCreditReceivable'] + 
+				$Assets['OtherCurrentAssets'];
+	return sprintf('%.2f', $TotalCurrentAssets);
 }
 
 
@@ -364,11 +418,11 @@ function getBalanceSheetAssetsColumns() {
 			'GovtOtherSecurities' =>  '(i) Govt. & other securities',
 			'FixedDepositsWithBanks' =>  '(ii) Fixed deposits with banks',
 			'Others' =>  '(iii) Others',
-			'CalculateAssetsReceivables' =>  'RECEIVABLES',
+			//'CalculateAssetsReceivables' =>  'RECEIVABLES',
 			'ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks' =>  'RECEIVABLES other than deferred & exports (Incl. bills purchased & discounted by banks)',
 			'ExportReceivablesIncludingBillPurchasedAndDiscounted' =>  'Export Receivables (including bill purchased and discounted)',
 			'RetentionMoneySecurityDeposit' =>  'Retention Money / Security Deposit',
-			'CalculateAssetsInventory' =>  'INVENTORY',
+			//'CalculateAssetsInventory' =>  'INVENTORY',
 			'RawMaterialIndigenous' =>  'Raw Material - Indigenous',
 			'RawMaterialImported' =>  'Raw Material - Imported',
 			'StockInProcess' =>  'Stock in process',
@@ -380,13 +434,12 @@ function getBalanceSheetAssetsColumns() {
 			'SubTotalInventory' =>  'Sub Total: Inventory',
 			'AdvancesToSuppliersOfRawMaterial' =>  'Advances to suppliers of raw material',
 			'AdvancePaymentOfTax' =>  'Advance payment of tax',
-			'OtherCurrentAssets' =>  'Other Current Assets:',
 			'InterestAccrued' =>  'Interest Accrued',
 			'AdvanceReceivableInCashOrKind' =>  'Advance receivable in cash or kind',
 			'SundryDeposit' =>  'Sundry Deposit',
 			'ModvatCreditReceivable' =>  'Modvat Credit Receivable',
-			'OtherCurrentAssets' =>  'Other current assets',
-			'TotalCurrentAssets' =>  'TOTAL CURRENT ASSETS',
+			'OtherCurrentAssets' =>  'Other Current Assets:',
+			'CalculateTotalCurrentAssets' =>  'TOTAL CURRENT ASSETS',
 		),
 		'aasetsFixed_cols' => array(
 			'Land' => '(I) Land',
@@ -396,9 +449,9 @@ function getBalanceSheetAssetsColumns() {
 			'FurnitureFixtures' => '(v) Furniture & Fixtures',
 			'OtherFixedAssets' => '(vi) Other Fixed Assets',
 			'CapitalWip' => '(vii) Capital WIP',
-			'GrossBlock' => 'GROSS BLOCK',
+			'CalculateGrossBlock' => 'GROSS BLOCK',
 			'LessAccumulatedDepreciation' => 'Less: Accumulated Depreciation',
-			'NetBlock' => 'NET BLOCK',
+			'CalculateNetBlock' => 'NET BLOCK',
 		),
 		'otherNonCurrentAssets' => array(
 			'InvestmentsInSubsidiaryCompaniesAffiliates' => '(I) Investments in Subsidiary companies/ affiliates',
@@ -410,15 +463,16 @@ function getBalanceSheetAssetsColumns() {
 			'AdvanceAgainstMortgageOfHouseProperty' => '(vii) Advance against mortgage of house property',
 			'DeferredRevenueExpenditure' => '(viii) Deferred Revenue Expenditure',
 			'OtherNonCurrentAssetsSurplusForFutureExpansionLoansAdvancesNonCurrentInNatureIcdSDuesFromDirectors' => '(ix) Other Non current assets (surplus for Future expansion, Loans & Advances non current in nature, ICD\'s, Dues from Directors)',
-			'TotalOtherNonCurrentAssets' => 'TOTAL OTHER NON CURRENT ASSETS',
+			'Deposits' => '(x) Deposits',
+			'CalculateTotalOtherNonCurrentAssets' => 'TOTAL OTHER NON CURRENT ASSETS',
 		),
 		'inTangibleAssets_cols' => array(
 			'AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses' => '(i) Accumulated Losses, Preliminary expenses, Miscellaneous expenditure not w/off, Other deferred revenue expenses',
 			'DeferredTaxAsset' => '(ii) Deferred Tax Asset',
 			'CalculateIntangibleAssetSubtotal' => 'Sub Total',
-			'TotalAssets' => 'TOTAL ASSETS',
-			'TangibleNetworth' => 'TANGIBLE NETWORTH',
-			'TotalLiabilitiesTotalAssets' => 'Total Liabilities - Total Assets',
+			'CalculateTotalAssets' => 'TOTAL ASSETS',
+			'CalculateTangibleNetworth' => 'TANGIBLE NETWORTH',
+			'CalculateTotalLiabilitiesMinusTotalAssets' => 'Total Liabilities - Total Assets',
 		),
 		'buildUpofCurrentAssets_cols' => array(
 			'RawMaterialIndigenousAmount' => 'Raw Material - Indigenous AMOUNT',
@@ -711,7 +765,7 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$response['Depreciation'] = $Depreciation;
 	extract($Liabilities);
 	extract($Assets);
-	$curr_netblock = $NetBlock;
+	$curr_netblock = $NetBlock ?? 0;
 	$prev_netblock = $PrevAssets['NetBlock'] ?? 0;
 	$Prev_TotalRepaymentsDueWithin1Year = $PrevLiabilities['TotalRepaymentsDueWithin1Year'] ?? 0;
 	$netBlock = $curr_netblock + $prev_netblock;

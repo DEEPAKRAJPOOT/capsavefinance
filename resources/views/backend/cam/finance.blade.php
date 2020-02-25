@@ -38,12 +38,12 @@
                          @endif
                          <div class="clearfix"></div>
                          <div style="text-align: right;">
-                         @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
+                         @if(!empty($active_json_filename) && !empty($active_xlsx_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
                                <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
-                               @can('upload_xlsx_document')
-                               <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
-                               @endcan
                          @endif 
+                         @can('upload_xlsx_document')
+                               <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
+                         @endcan
                          @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
                                <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
@@ -95,7 +95,7 @@
                                             <tbody>
                                                <tr>
                                                   <td><b>Name of the Borrower</b></td>
-                                                  <td colspan="4">{{$borrower_name}}</td>
+                                                  <td colspan="4"><input type="text" class="form-control form-control-sm" value="{{$borrower_name}}" name="borrower_name"></td>
                                                </tr>
                                                <tr>
                                                   <td width="25%"><b>Latest Audited Financial Year</b></td>
@@ -785,7 +785,7 @@
                                                         <tbody>
                                                           @foreach($aasetsFixed_cols as $key => $aasetsFixed_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets'],$fin_data['BalanceSheet']['Liabilities']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
@@ -841,7 +841,7 @@
                                                         <tbody>
                                                           @foreach($inTangibleAssets_cols as $key => $inTangibleAssets_col)
                                                             <tr>
-                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets']) : $key)}}"></td>
+                                                              <td height="46" align="right"><input  type="text" <?php echo function_exists($key) ? 'disabled' : 'name="year['.$year.'][BalanceSheet][Assets]['.$key.']"' ?> class="form-control form-control-sm" value="{{isset($fin_data['BalanceSheet']['Assets'][$key]) ? sprintf('%.2f', $fin_data['BalanceSheet']['Assets'][$key]) : (function_exists($key) ? $key($fin_data['BalanceSheet']['Assets'],$fin_data['BalanceSheet']['Liabilities']) : $key)}}"></td>
                                                            </tr>
       
                                                            @endforeach
