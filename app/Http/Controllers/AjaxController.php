@@ -3245,20 +3245,20 @@ if ($err) {
            public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
-          $result  =   $this->lmsRepo->getSingleChargeAmount($res);
-            if($result->chrg_applicable_id==1)
+          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
+          /*  if($getamount->chrg_applicable_id==1)
             {
                 $getamount  =  $this->lmsRepo->getLimitAmount($request);
                 $getamount  = $amountSum[0];
             }
-            else if($result->chrg_applicable_id==2 || $result->chrg_applicable_id==3)
+            else if($getamount->chrg_applicable_id==2 || $request->chrg_applicable_id==3)
             {
                 $getamount  =  $this->lmsRepo->getOutstandingAmount($request);
             }
             else
             {
                 $getamount =  0;
-            }
+            }  */
           if($getamount)
           {
                $app = "";
@@ -3266,12 +3266,12 @@ if ($err) {
                 $res =   [  1 => "Limit Amount",
                             2 => "Outstanding Amount",
                             3 => "Outstanding Principal"];
-             if($result->chrg_applicable_id > 0)
+             if($getamount->chrg_applicable_id > 0)
              {
                 
                  foreach($res as $key=>$val)
                  {
-                     if($result->chrg_applicable_id==$key)
+                     if($getamount->chrg_applicable_id==$key)
                      {
                          $sel = "selected";
                      }
@@ -3283,20 +3283,20 @@ if ($err) {
                  }
              }
              
-             if($result->chrg_calculation_type==1)
+             if($getamount->chrg_calculation_type==1)
              {
-                $amount =  number_format($result->chrg_calculation_amt);
+                $amount =  number_format($getamount->chrg_calculation_amt);
              }
              else
              {
-                $amount =  $result->chrg_calculation_amt; 
+                $amount =  $getamount->chrg_calculation_amt; 
              }
              return response()->json(['status' => 1,
-                 'chrg_applicable_id' => $result->chrg_applicable_id,
-                 'amount' => $getamount,
-                 'id' => $result->id,
-                 'type' => $result->chrg_calculation_type,
-                 'is_gst_applicable' => $result->is_gst_applicable,
+                 'chrg_applicable_id' => $getamount->chrg_applicable_id,
+                 'amount' => number_format($amount),
+                 'id' => $getamount->id,
+                 'type' => $getamount->chrg_calculation_type,
+                 'is_gst_applicable' => $getamount->is_gst_applicable,
                  'applicable' =>$app]); 
           }
           else
