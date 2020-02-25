@@ -317,7 +317,7 @@ class AppProgramOffer extends BaseModel {
             return false;
         }
     }
-
+   
     public function offerPtpq(){
         return $this->hasMany('App\Inv\Repositories\Models\OfferPTPQ', 'prgm_offer_id', 'prgm_offer_id');
     }
@@ -351,8 +351,20 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
     }
 
-    public function program(){
+
+       function anchorOne()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
+    
+     }
+     public  function anchorList(){   
+        return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
+    }   
+      public function program(){
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+    }
+     public function app(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
     }
     
 }

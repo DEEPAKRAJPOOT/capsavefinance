@@ -117,14 +117,7 @@ class AppProgramLimit extends BaseModel {
         return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
     }     
 
-
-       function anchorOne()
-     {
-          return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
-    
-     }
-     
-      public static function getAllAnchor()
+   public static function getAllAnchor()
     {
          
        return AppProgramOffer::where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorOne')->groupBy('anchor_id')->get(['anchor_id']);
@@ -150,7 +143,7 @@ class AppProgramLimit extends BaseModel {
       public static function getLimitProgram($aid)
      {
      
-        return AppProgramLimit::whereHas('supplyOffers')->with(['program' => function($query) { $query->where('status', 1 ); }])->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
+        return AppProgramOffer::where(['is_active' =>1,'is_approve' =>1,'status' =>1])->with('program')->where(['anchor_id' =>$aid])->groupBy('prgm_id')->get();
      }
      
     public static function getLimitAnchor($aid){
@@ -167,7 +160,7 @@ class AppProgramLimit extends BaseModel {
     }
      
     public static function getLimitAllAnchor(){
-        return AppProgramLimit::whereHas('supplyOffers')->where(['product_id' =>1])->with('anchorList')->groupBy('anchor_id')->get();
+            return AppProgramOffer::where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorList')->groupBy('anchor_id')->get();
     }
      
     public  function anchorList(){   
@@ -175,7 +168,7 @@ class AppProgramLimit extends BaseModel {
     }   
     
     public static function getLimitSupplier($pid){
-        return AppProgramLimit::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'prgm_id' => $pid])->get();
+        return AppProgramOffer::where(['is_active' =>1,'is_approve' =>1,'status' =>1])->with('app.user')->where(['prgm_id' => $pid])->get();
     }  
 
    
