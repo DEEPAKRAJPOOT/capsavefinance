@@ -380,8 +380,8 @@ function CalculateNetBlock($Assets, $Liabilities=array()){
 	return sprintf('%.2f', $NetBlock);
 }
 function CalculateTotalCurrentAssets($Assets){
-	$TotalCurrentAssets = $Assets['GovtOtherSecurities'] + 
-				$Assets['CashAndBankBalances'] + 
+	$TotalCurrentAssets = $Assets['CashAndBankBalances'] + 
+				$Assets['GovtOtherSecurities'] + 
 				$Assets['FixedDepositsWithBanks'] + 
 				$Assets['Others'] + 
 				$Assets['ReceivablesOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanks'] + 
@@ -393,7 +393,6 @@ function CalculateTotalCurrentAssets($Assets){
 				$Assets['FinishedGoods'] + 
 				$Assets['OtherConsumableSparesIndigenous'] + 
 				$Assets['OtherConsumableSparesImported'] + 
-				CalculateAssetsSubTotalOtherComsumableSpares($Assets) + 
 				$Assets['OtherStocks'] + 
 				$Assets['AdvancesToSuppliersOfRawMaterial'] + 
 				$Assets['AdvancePaymentOfTax'] + 
