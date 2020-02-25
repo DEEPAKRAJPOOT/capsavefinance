@@ -66,6 +66,331 @@
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
       </div>
     </div>
+
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Interest Payment Frequency</b></label> 
+        <select name="interest_payment_frequency" class="form-control">
+            <option value="">Select Interest Payment Frequency</option>
+            <option value="1">Monthly</option>
+            <option value="2">Upfront</option>
+            <option value="3">Rear Ended</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Benchmark Date</b></label> 
+        <select name="interest_payment_frequency" class="form-control">
+            <option value="">Select Benchmark Date</option>
+            <option value="1">Invoice Date</option>
+            <option value="2">BOE Date</option>
+            <option value="3">GRN Date</option>
+            <option value="4">Date of discounting</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- -------------- PRIMARY SECURITY BLOCK ------------ -->
+    <div class="col-md-12">
+          <div class="form-group row">
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>Primary Security</b></label>
+            <div class="col-md-6">
+                <select name="primary_security" class="form-control show-hide" data-block_id="#primary-security-block">
+                    <option value="">Select Primary Security</option>
+                    <option value="1">Applicable</option>
+                    <option value="2">Not Applicable</option>
+                </select>
+            </div>
+            <div class="col-md-12" id="primary-security-block" style="display: none;">
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Select Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Type of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Satus of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Time for security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Desc of Security</b></label>
+                        <input name="" class="form-control">
+                    </div>
+                    <div class="col-md-2 center">
+                        <i class="fa fa-2x fa-plus-circle add-primary-security-block mt-4"></i>
+                        <!-- <i class="fa fa-2x fa-times-circle remove-primary-security-block" style="color: red;"></i> -->
+                    </div>
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    <!-- -------------- -->
+
+    <!-- -------------- COLLATERAL SECURITY BLOCK ------------ -->
+    <div class="col-md-12">
+          <div class="form-group row">
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>Collateral Security</b></label>
+            <div class="col-md-6">
+                <select name="collateral_security" class="form-control show-hide" data-block_id="#collateral-security-block">
+                    <option value="">Select Collateral Security</option>
+                    <option value="1">Applicable</option>
+                    <option value="2">Not Applicable</option>
+                </select>
+            </div>
+            <div class="col-md-12" id="collateral-security-block" style="display: none;">
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Select Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Type of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Satus of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Time for security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Desc of Security</b></label>
+                        <input name="" class="form-control">
+                    </div>
+                    <div class="col-md-2 center">
+                        <i class="fa fa-2x fa-plus-circle add-collateral-security-block mt-4"></i>
+                        <!-- <i class="fa fa-2x fa-times-circle remove-collateral-security-block" style="color: red;"></i> -->
+                    </div>
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    <!-- -------------- -->
+
+    <!-- -------------- PERSONAL GUARANTEE BLOCK ------------ -->
+    <div class="col-md-12">
+          <div class="form-group row">
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>Personal Guarantee</b></label>
+            <div class="col-md-6">
+                <select name="personal_guarantee" class="form-control show-hide" data-block_id="#personal-guarantee-block">
+                    <option value="">Select Personal Guarantee</option>
+                    <option value="1">Applicable</option>
+                    <option value="2">Not Applicable</option>
+                </select>
+            </div>
+            <div class="col-md-12" id="personal-guarantee-block" style="display: none;">
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Select Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Type of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Satus of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Time for security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Desc of Security</b></label>
+                        <input name="" class="form-control">
+                    </div>
+                    <div class="col-md-2 center">
+                        <i class="fa fa-2x fa-plus-circle add-personal-guarantee-block mt-4"></i>
+                        <!-- <i class="fa fa-2x fa-times-circle remove-personal-guarantee-block" style="color: red;"></i> -->
+                    </div>
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    <!-- -------------- -->
+
+    <!-- -------------- CORPORATE GUARANTEE BLOCK ------------ -->
+    <div class="col-md-12">
+          <div class="form-group row">
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>Corporate Guarantee</b></label>
+            <div class="col-md-6">
+                <select name="corporate_guarantee" class="form-control show-hide" data-block_id="#corporate-guarantee-block">
+                    <option value="">Select Corporate Guarantee</option>
+                    <option value="1">Applicable</option>
+                    <option value="2">Not Applicable</option>
+                </select>
+            </div>
+            <div class="col-md-12" id="corporate-guarantee-block" style="display: none;">
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Select Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Type of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Satus of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Time for security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Desc of Security</b></label>
+                        <input name="" class="form-control">
+                    </div>
+                    <div class="col-md-2 center">
+                        <i class="fa fa-2x fa-plus-circle add-corporate-guarantee-block mt-4"></i>
+                        <!-- <i class="fa fa-2x fa-times-circle remove-corporate-guarantee-block" style="color: red;"></i> -->
+                    </div>
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    <!-- -------------- -->
+
+    <!-- -------------- ESCROW MECHANISM BLOCK ------------ -->
+    <div class="col-md-12">
+          <div class="form-group row">
+            <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>ESCROW MECHANISM</b></label>
+            <div class="col-md-6">
+                <select name="escrow_mechanism" class="form-control show-hide" data-block_id="#escrow-mechanism-block">
+                    <option value="">Select Escrow Mechanism</option>
+                    <option value="1">Applicable</option>
+                    <option value="2">Not Applicable</option>
+                </select>
+            </div>
+            <div class="col-md-12" id="escrow-mechanism-block" style="display: none;">
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Select Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Type of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Satus of Security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Time for security</b></label>
+                        <select name="" class="form-control">
+                            <option value="">Select option</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtPassword"><b>Desc of Security</b></label>
+                        <input name="" class="form-control">
+                    </div>
+                    <div class="col-md-2 center">
+                        <i class="fa fa-2x fa-plus-circle add-escrow-mechanism-block mt-4"></i>
+                        <!-- <i class="fa fa-2x fa-times-circle remove-escrow-mechanism-block" style="color: red;"></i> -->
+                    </div>
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    <!-- -------------- -->
     
     <div class="col-md-6">
       <div class="form-group">
@@ -118,9 +443,9 @@
     
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Check Bounce Fee</b></label> 
+        <label for="txtPassword"><b>Documentation Fee (%)</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="check_bounce_fee" class="form-control number_format" value="{{isset($offerData->check_bounce_fee)? number_format($offerData->check_bounce_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
+        <input type="text" name="document_fee" class="form-control number_format" value="{{isset($offerData->document_fee)? number_format($offerData->document_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
       </div>
     </div>
     
@@ -234,7 +559,7 @@
     unsetError('input[name=adhoc_interest_rate]');
     unsetError('input[name=grace_period]');
     unsetError('input[name=processing_fee]');
-    unsetError('input[name=check_bounce_fee]');
+    unsetError('input[name=document_fee]');
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
@@ -248,7 +573,7 @@
     let adhoc_interest_rate = $('input[name=adhoc_interest_rate]').val().trim();
     let grace_period = $('input[name=grace_period]').val().trim();
     let processing_fee = $('input[name=processing_fee]').val().trim();
-    let check_bounce_fee = $('input[name=check_bounce_fee]').val().trim();
+    let document_fee = $('input[name=document_fee]').val().trim();
 
     if(anchor_id == ''){
         setError('select[name=anchor_id]', 'Please select Anchor');
@@ -340,8 +665,11 @@
         flag = false;
     }
 
-    if(check_bounce_fee == ''){
-        setError('input[name=check_bounce_fee]', 'Please fill check bounce fee');
+    if(document_fee == '' || isNaN(document_fee)){
+        setError('input[name=document_fee]', 'Please fill document fee');
+        flag = false;
+    }else if(parseFloat(document_fee) > 100){
+        setError('input[name=document_fee]', 'Document fee can not be greater than 100 percent');
         flag = false;
     }
 
@@ -351,5 +679,221 @@
         return false;
     }
   }
+
+  $(document).on('click', '.add-primary-security-block', function(){
+    let primary_security_block = '<div class="row mt10">'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<input name="" class="form-control">'+
+            '</div>'+
+            '<div class="col-md-2 center">'+
+                '<i class="fa fa-2x fa-times-circle remove-primary-security-block" style="color: red;"></i>'+
+            '</div>'+
+        '</div>';
+    $('#primary-security-block').append(primary_security_block);
+  });
+
+  $(document).on('click', '.add-collateral-security-block', function(){
+    let primary_security_block = '<div class="row mt10">'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<input name="" class="form-control">'+
+            '</div>'+
+            '<div class="col-md-2 center">'+
+                '<i class="fa fa-2x fa-times-circle remove-collateral-security-block" style="color: red;"></i>'+
+            '</div>'+
+        '</div>';
+    $('#collateral-security-block').append(primary_security_block);
+  });
+
+  $(document).on('click', '.add-personal-guarantee-block', function(){
+    let personal_guarantee_block = '<div class="row mt10">'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<input name="" class="form-control">'+
+            '</div>'+
+            '<div class="col-md-2 center">'+
+                '<i class="fa fa-2x fa-times-circle remove-personal-guarantee-block" style="color: red;"></i>'+
+            '</div>'+
+        '</div>';
+    $('#personal-guarantee-block').append(personal_guarantee_block);
+  });
+
+  $(document).on('click', '.add-corporate-guarantee-block', function(){
+    let corporate_guarantee_block = '<div class="row mt10">'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<input name="" class="form-control">'+
+            '</div>'+
+            '<div class="col-md-2 center">'+
+                '<i class="fa fa-2x fa-times-circle remove-corporate-guarantee-block" style="color: red;"></i>'+
+            '</div>'+
+        '</div>';
+    $('#corporate-guarantee-block').append(corporate_guarantee_block);
+  });
+
+  $(document).on('click', '.add-escrow-mechanism-block', function(){
+    let escrow_mechanism_block = '<div class="row mt10">'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="" class="form-control">'+
+                    '<option value="">Select option</option>'+
+                    '<option value="1">option one</option>'+
+                    '<option value="2">option two</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<input name="" class="form-control">'+
+            '</div>'+
+            '<div class="col-md-2 center">'+
+                '<i class="fa fa-2x fa-times-circle remove-escrow-mechanism-block" style="color: red;"></i>'+
+            '</div>'+
+        '</div>';
+    $('#escrow-mechanism-block').append(escrow_mechanism_block);
+  });
+
+  $(document).on('click', '.remove-primary-security-block, .remove-collateral-security-block, .remove-personal-guarantee-block, .remove-corporate-guarantee-block, .remove-escrow-mechanism-block', function(){
+    $(this).parent('div').parent('div').remove();
+  });
+
+  $(document).on('change', '.show-hide', function(){
+    let selected_val = $(this).find('option:selected').val();
+    let selector = $(this).data('block_id');
+
+    if(selected_val == 1){
+        $(selector).show();
+    }else{
+        $(selector).hide();
+        $(selector+'>div:not(:first)').remove();
+    }
+  })
 </script>
 @endsection
