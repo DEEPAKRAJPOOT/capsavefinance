@@ -265,9 +265,6 @@ function CalculateProfitBeforeTaxLoss($ProfitAndLoss) {
 	$ProfitBeforeTaxLoss = CalculateOperatingProfitBeforeTax($ProfitAndLoss)+ CalculateNetofNonOperatingIncomeExpenses($ProfitAndLoss);
 	return sprintf('%.2f', $ProfitBeforeTaxLoss);
 }
-function CalculateDefferedTaxes($ProfitAndLoss) {
-	return 'Need to Calculate';
-}
 function CalculateProvisionForTaxesTotal($ProfitAndLoss) {
 	$ProvisionForTaxesTotal = $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
 	return sprintf('%.2f', $ProvisionForTaxesTotal);
@@ -285,7 +282,7 @@ function CalculateTotalExtraordinaryItems($ProfitAndLoss) {
 	return sprintf('%.2f', $TotalExtraordinaryItems);
 }
 function CalculateAdjustedPAT($ProfitAndLoss) {
-	$AdjustedPAT = CalculateNetProfitLoss($ProfitAndLoss) + $ProfitAndLoss['ExtraordinaryIncomeAdjustments']-$ProfitAndLoss['ExtraordinaryExpensesAdjustments'];
+	$AdjustedPAT = CalculateNetProfitLoss($ProfitAndLoss) - ($ProfitAndLoss['ExtraordinaryIncomeAdjustments']-$ProfitAndLoss['ExtraordinaryExpensesAdjustments']);
 	return sprintf('%.2f', $AdjustedPAT);
 }
 function CalculateRetainedProfit($ProfitAndLoss) {
@@ -294,9 +291,17 @@ function CalculateRetainedProfit($ProfitAndLoss) {
 }
 
 #====================================================================================#
-function CalculateCurrentLiabilitiesSubTotal($Liabilities){
+function CalculateCurrentLiabilitiesBankSubTotal($Liabilities){
 	$SubTotal = $Liabilities['FromApplicantBankCcWcdl'] + $Liabilities['FromOtherBanks'] + $Liabilities['OfIAndIiInWhichBillPurchasedDisc'];
 	return sprintf('%.2f', $SubTotal);
+}
+function CalculateCurrentLiabilitiesSubTotal($Liabilities){
+	$SubTotal = $Liabilities['SundryCreditorsTrade'] + $Liabilities['ShortTermBorrowingsFromAssociatesGroupConcerns'] + $Liabilities['ShortTermBorrowingsCommercialPaper'] + $Liabilities['ShortTermBorrowingsFromOthers'] + $Liabilities['AdvancesPaymentsFromCustomersDepositsFromDealers'] + $Liabilities['ProvisionForTaxation'] + $Liabilities['ProposedDividend'] + $Liabilities['OtherStatutoryLiabilitiesDueWithinOneYear'] + $Liabilities['InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year'] + $Liabilities['DepositsDueForRepaymentDueWithin1Year'] + $Liabilities['PreferenceSharesRedeemableWithin1Year'] + $Liabilities['OtherCurrentLiabilitiesProvisionsDueWithin1Year'] + $Liabilities['InterestAccButNotDue'] + $Liabilities['ProvisionForNpa'] + $Liabilities['ProvisionForLeaveEncashmentGratuity'] + $Liabilities['UnclaimedDividend'] + $Liabilities['OtherLiabilities'] + $Liabilities['DueToSubsidiaryCompaniesAffiliates'] + $Liabilities['TaxOnInterimDividendPayable'];
+	return sprintf('%.2f', $SubTotal);
+}
+function CalculateTotalCurrentLiabilities($Liabilities){
+	$TotalCurrentLiabilities = CalculateCurrentLiabilitiesSubTotal($Liabilities) + CalculateCurrentLiabilitiesBankSubTotal($Liabilities);
+	return sprintf('%.2f', $TotalCurrentLiabilities);
 }
 function CalculateTotalRepaymentDueWithin1Year($Liabilities){
 	$TotalRepaymentDueWithin1Year = $Liabilities['InstallmentsOfTermLoansDebenturesDpgsEtcDueWithin1Year'] + $Liabilities['DepositsDueForRepaymentDueWithin1Year'] + $Liabilities['PreferenceSharesRedeemableWithin1Year'];
@@ -467,7 +472,7 @@ function getBalanceSheetLiabilitiesColumns() {
 			'FromApplicantBankCcWcdl' => '(i) from applicant bank (CC / WCDL)',
 			'FromOtherBanks' => '(ii) from other banks',
 			'OfIAndIiInWhichBillPurchasedDisc' => '(of (i) and (ii) in which Bill purchased & disc.)',
-			'CalculateCurrentLiabilitiesSubTotal' => 'SUB TOTAL',
+			'CalculateCurrentLiabilitiesBankSubTotal' => 'SUB TOTAL',
 			'SundryCreditorsTrade' => 'Sundry Creditors (Trade)',
 			'ShortTermBorrowingsFromAssociatesGroupConcerns' => 'Short term borrowings from Associates & Group Concerns',
 			'ShortTermBorrowingsCommercialPaper' => 'Short Term borrowings / Commercial Paper',
@@ -488,6 +493,8 @@ function getBalanceSheetLiabilitiesColumns() {
 			'OtherLiabilities' => 'Other Liabilities',
 			'DueToSubsidiaryCompaniesAffiliates' => 'Due to Subsidiary companies/ affiliates',
 			'TaxOnInterimDividendPayable' => 'Tax on Interim Dividend Payable',
+			'CalculateCurrentLiabilitiesSubTotal' => 'Sub Total',
+			'CalculateTotalCurrentLiabilities' => 'Total current Liabilities',
 		),
 		'termLiabilities_cols' => array(
 			'Wctl' => 'WCTL',
@@ -656,7 +663,7 @@ function getProfitandLossColumns(){
 			'CalculateProfitBeforeTaxLoss' => 'PROFIT BEFORE TAX / LOSS (PBT)',
 			'TaxPaid' => 'TAX PAID',
 			'ProvisionForTaxesCurrentPeriod' => 'PROVISION FOR TAXES - Current Period',
-			//'CalculateDefferedTaxes' => 'Deffered Taxes',
+			'ProvisionForTaxesDefferedTaxes' => 'Deffered Taxes',
 			'CalculateProvisionForTaxesTotal' => 'PROVISION FOR TAXES - TOTAL',
 			'CalculateNetProfitLoss' => 'NET PROFIT/LOSS (PAT)',
 			'CalculatePATasPerGrossIncome' => 'PAT AS % OF GROSS Income',
