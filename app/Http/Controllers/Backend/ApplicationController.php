@@ -713,14 +713,14 @@ class ApplicationController extends Controller
             $addl_data = [];
             $addl_data['sharing_comment'] = $sharing_comment;
 
-            if ($curr_role_id && $assign_case) {              
+            if ($curr_role_id && $assign_case) {
                 $selData = explode('-', $sel_assign_role);
                 $selRoleId = $selData[0];
                 $selUserId = $selData[1];                
                 $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-            } else {              
+            } else {
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 //Validate the stage
                 if ($currStage->stage_code == 'credit_mgr') {
