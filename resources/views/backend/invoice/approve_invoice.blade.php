@@ -80,11 +80,11 @@
                   
                    </div>
                <div class="col-md-2">				 
-                                                              
+                                                         
                     <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
                            <option value="">Select Anchor  </option>
                            @foreach($anchor_list as $row)
-                           <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                           <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
                            @endforeach
                           
                         
@@ -174,7 +174,7 @@
                                              
                 <option value="">Select Anchor  </option>
                 @foreach($anchor_list as $row)
-                <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
                 @endforeach
                                              </select>
                                              <span id="anc_limit"></span>
