@@ -755,7 +755,6 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$PrevProfitAndLoss = $prevFullArray['ProfitAndLoss'] ?? [];
 	$PrevLiabilities = $prevFullArray['BalanceSheet']['Liabilities'] ?? [];
 	$PrevAssets = $prevFullArray['BalanceSheet']['Assets'] ?? [];
-
 	extract($ProfitAndLoss);	
 	$response = [];
 	$AddOpeningStockInProcessRawMaterials = $RawMaterials['Imported'] + $RawMaterials['Indigenous'];
@@ -764,11 +763,12 @@ function getTotalFinanceData($fullArray, $prevFullArray = []){
 	$InterestPaymentToFIsSum = $InterestPaymentToFIs['InterestWc'] + $InterestPaymentToFIs['InterestTermLoans'];
 
 	$response['TotalOperatingIncome'] =  $GrossDomesticSales + $ExportSales - $LessExciseDuty+ $AddTradingOtherOperatingIncome+ $ExportIncentives+ $DutyDrawback+ $Others;
+
+	extract($Liabilities);
+	extract($Assets);
 	$response['TotalNonOperatingIncome'] = $InterestOnDepositsDividendReceived + $ForexGains + $NonOperatingIncomeFromSubsidiaries + $TaxRefund + $MiscIncome + $ProfitOnSaleOfAssetsInvestments + $OtherIncome + $ProvisionsExpensesWrittenBack;
 	$response['PBDITOperatingProfit'] = $response['TotalOperatingIncome'] -($AddOpeningStockInProcessRawMaterials + $OtherSpares + $PowerFuel + $DirectLabour + $OtherManufacturingExpenses+ $Depreciation+ $RepairsMaintenance + $CostOfTradingGoods + $AddOpeningStockInProcess - $DeductClosingStockInProcess + $AddOpeningStockOfFinishedGoods - $DeductClosingStockOfFinishedGoods + $SellingGeneralAdmExpenses ) + $Depreciation;
 	$response['Depreciation'] = $Depreciation;
-	extract($Liabilities);
-	extract($Assets);
 	$curr_netblock = $NetBlock ?? 0;
 	$prev_netblock = $PrevAssets['NetBlock'] ?? 0;
 	$Prev_TotalRepaymentsDueWithin1Year = $PrevLiabilities['TotalRepaymentsDueWithin1Year'] ?? 0;
