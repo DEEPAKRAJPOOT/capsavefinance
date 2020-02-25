@@ -1609,7 +1609,7 @@ class DataRenderer implements DataProviderInterface {
                         ->addColumn(
                                 'action', function ($program) {
                             $action = '';
-                            if (Helpers::checkPermission('manage_sub_program')) {
+                            if (Helpers::checkPermission('manage_sub_program') && $program->product_id == 1) {
                                 $action .= '<a title="View Sub-Program" href="' . route('manage_sub_program', ['program_id' => $program->prgm_id, 'anchor_id' => $program->anchor_id]) . '" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                             }
 
