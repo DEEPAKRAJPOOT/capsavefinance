@@ -326,17 +326,17 @@ var messages = {
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
    };
    
-   $('[name="invoice_approve_amount"]').on('change blur keyup', function() {
+   $('[name="invoice_approve_amount"]').on('change keyup', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
      var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
-   
+    // var invoice_approve_amount = invoice_approve_amount.replace(',', '');
+    /// var invoice_approve_amount = parseInt(invoice_approve_amount);
+   ///  alert(invoice_approve_amount); return false;
      if(invoice_approve_amount  > pro_limit)
      {
-       
          $("#msgProLimit").text('Invoice amount should not more than program limit');
          $("#submit").css("pointer-events","none");
          return false;
-         
      }
      else
      {
