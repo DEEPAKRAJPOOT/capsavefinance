@@ -415,14 +415,13 @@
   });
 
 
-  $(document).on('click', '.dropdown-menu .dropdown-item .groupid', function(argument) {
-      
+  $(document).on('click', '.dropdown-menu .dropdown-item ', function(argument) {
        var messages = {
               get_group_company_exposure: "{{ URL::route('get_group_company_exposure') }}",
               data_not_found: "{{ trans('error_messages.data_not_found') }}",
               token: "{{ csrf_token() }}",
          };
-         var groupid = $(this).attr('groupid');
+         var groupid = $(this).find('.groupid').attr('groupid');
          var dataStore = {'groupid': groupid,'_token': messages.token };
       jQuery.ajax({
              url: messages.get_group_company_exposure,
