@@ -137,21 +137,20 @@
                                 
                             </div>
                             <div class="col-md-3 mt-4 INR">
-                                    <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
-                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
-
-                                     <input type="text" name="sanction_limit_cam" class="form-control " value="{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
+                                <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
+                                 <input type="text" name="sanction_limit_cam" class="form-control float_format" value="{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-3 mt-4 INR">
                                  <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
                                  <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure" value="{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure float_format" value="{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                             </div>
                             <div class="col-md-2 mt-4 INR">
                                  <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
                                  <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                  <div class="d-flex">
-                                  <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure"  value="{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
+                                  <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure float_format"  value="{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
                                    <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
                                    </div>
                             </div>
@@ -170,11 +169,11 @@
                                 </div>
                                 <div class="col-md-3 INR">
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure float_format" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3 INR">
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-2 center">
                                     <i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>
@@ -458,6 +457,24 @@
       });
    })
 
+
+$(document).on('keypress','.float_format', function(event) {
+let num = $(this).val();
+num.split('.')[1]
+    if(event.which == 8 || event.which == 0){
+        return true;
+    }
+    if(event.which < 46 || event.which > 59) {
+        return false;
+    }
+   
+    if(event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
+return false;
+}
+});
 
 
 </script>

@@ -1,13 +1,13 @@
 <!-- Start PDF Section -->
 
    <div class="data mt-4">
-       <h2 class="sub-title bg">Group Company Exposure
+       <h2 class="sub-title bg" style="margin-bottom: 0px;">Group Company Exposure
                       <span class="pull-right" style="font-size: 11px;">
                                         @if(isset($arrCamData->By_updated))  
                                             Updated By: {{$arrCamData->By_updated}} ({!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$arrCamData->updated_at)->format('j F, Y') : '' !!})
                                         @endif
                                     </span>   </h2>
-      <div class="pl-4 pr-4 pb-4 pt-2">
+      
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -38,7 +38,9 @@
                         </tr>
                      @endforeach
                   @endif   
-                     <tr>
+                     <tr>  @if(empty($arrGroupCompany))
+                              <td></td>
+                           @endif  
                            <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
                            <td class="">{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}</td>
                            <td class="">{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
@@ -51,7 +53,7 @@
                      </tr>
             </tbody>
          </table>
-      </div>
+     
    </div>
 
    <div class="data mt-4">
