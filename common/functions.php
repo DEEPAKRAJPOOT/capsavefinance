@@ -270,7 +270,7 @@ function CalculateProvisionForTaxesTotal($ProfitAndLoss) {
 	return sprintf('%.2f', $ProvisionForTaxesTotal);
 }
 function CalculateNetProfitLoss($ProfitAndLoss) {
-	$NetProfitLoss = CalculateProfitBeforeTaxLoss($ProfitAndLoss)- $ProfitAndLoss['TaxPaid'] - $ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes'];
+	$NetProfitLoss = CalculateProfitBeforeTaxLoss($ProfitAndLoss)- $ProfitAndLoss['TaxPaid'] - ($ProfitAndLoss['ProvisionForTaxesCurrentPeriod'] + $ProfitAndLoss['ProvisionForTaxesDefferedTaxes']);
 	return sprintf('%.2f', $NetProfitLoss);
 }
 function CalculatePATasPerGrossIncome($ProfitAndLoss) {
