@@ -25,9 +25,9 @@
                <!--
                   <h2 class="sub-title bg mb-4"><span class=" mt-2">Company CIBIL</span> <button  class="btn btn-primary  btn-sm float-right"> Upload Document</button></h2>
                   -->
-               <h2 class="sub-title bg">Company</h2>
+               <h2 class="sub-title bg"   style="margin-bottom: 0px;">Company</h2>
                <div id="pullMsgCommercial"></div>
-               <div class="pl-4 pr-4 pb-4 pt-2">
+               <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                   <div class="row ">
                      <div class="col-sm-12">
                         <table id="cibil-table" class="table table-striped  no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="cibil-table_info" style="width: 100%;">
@@ -67,12 +67,12 @@
                         </table>
                      </div>
                   </div>
-               </div>
+               <!-- </div> -->
             </div>
             <div class="data mt-4">
-               <h2 class="sub-title bg ">Director / Proprietor / Owner / Partner</h2>
+               <h2 class="sub-title bg "    style="margin-bottom: 0px;">Director / Proprietor / Owner / Partner</h2>
                <div id="pullMsg"></div>
-               <div class="pl-4 pr-4 pb-4 pt-2">
+               <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                   <div class="row ">
                      <div class="col-sm-12">
                         <table id="cibil-dpop-table" class="table table-striped  no-footer overview-table"" cellspacing="0" width="100%" role="grid" aria-describedby="cibil-dpop-table_info" style="width: 100%;">
@@ -114,11 +114,11 @@
                         </table>
                      </div>
                   </div>
-               </div>
+               <!-- </div> -->
             </div>
             <div class="data mt-4">
-               <h2 class="sub-title bg">Hygiene Check</h2>
-               <div class="pl-4 pr-4 pb-4 pt-2">
+               <h2 class="sub-title bg"   style="margin-bottom: 0px;">Hygiene Check</h2>
+               <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                <form method="POST" action="{{route('cam_hygiene_save')}}"> 
                   @csrf
                   <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
@@ -516,7 +516,7 @@
                      </div>
                   </div>
                </form>
-               </div>
+               <!-- </div> -->
             </div>
          </div>
       </div>
