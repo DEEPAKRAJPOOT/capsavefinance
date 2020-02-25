@@ -344,6 +344,10 @@ function CalculateAssetsSubTotalOtherComsumableSpares($Assets){
 	$SubTotalOtherComsumableSpares = $Assets['OtherConsumableSparesIndigenous'] + $Assets['OtherConsumableSparesImported'];
 	return sprintf('%.2f', $SubTotalOtherComsumableSpares);
 }
+function CalculateSubTotalInventory($Assets){
+	$SubTotalInventory = $Assets['RawMaterialIndigenous'] + $Assets['RawMaterialImported'] + $Assets['StockInProcess'] + $Assets['FinishedGoods'] + CalculateAssetsSubTotalOtherComsumableSpares($Assets) + $Assets['OtherStocks'];
+	return sprintf('%.2f', $SubTotalInventory);
+}
 function CalculateIntangibleAssetSubtotal($Assets, $Liabilities=array()){
 	$IntangibleAssetSubtotal = $Assets['AccumulatedLossesPreliminaryExpensesMiscellaneousExpenditureNotWOffOtherDeferredRevenueExpenses'] + $Assets['DeferredTaxAsset'];
 	return sprintf('%.2f', $IntangibleAssetSubtotal);
@@ -431,7 +435,7 @@ function getBalanceSheetAssetsColumns() {
 			'OtherConsumableSparesImported' =>  'Other Consumable spares - Imported',
 			'CalculateAssetsSubTotalOtherComsumableSpares' =>  'Sub Total: Other Consumable spares',
 			'OtherStocks' =>  'Other stocks',
-			'SubTotalInventory' =>  'Sub Total: Inventory',
+			'CalculateSubTotalInventory' =>  'Sub Total: Inventory',
 			'AdvancesToSuppliersOfRawMaterial' =>  'Advances to suppliers of raw material',
 			'AdvancePaymentOfTax' =>  'Advance payment of tax',
 			'InterestAccrued' =>  'Interest Accrued',
@@ -479,9 +483,9 @@ function getBalanceSheetAssetsColumns() {
 			'MonthSConsumptionIndigenous' => 'MONTH\'S CONSUMPTION',
 			'RawMaterialImportedAmount' => 'Raw Material - Imported AMOUNT',
 			'MonthSConsumptionImported' => 'MONTH\'S CONSUMPTION',
-			'OtherConsumableSparesIndigenous' => 'Consumable spares indigenous AMOUNT',
+			'ConsumableSparesIndigenousAmount' => 'Consumable spares indigenous AMOUNT',
 			'MonthSConsumptionConsumableSparesIndigenous' => 'MONTH\'S CONSUMPTION',
-			'OtherConsumableSparesImported' => 'Consumable spares- Imported AMOUNT',
+			'ConsumableSparesImportedAmount' => 'Consumable spares- Imported AMOUNT',
 			'MonthSConsumptionConsumableSparesImported' => 'MONTH\'S CONSUMPTION',
 			'StockInProcessAmount' => 'Stock in process - AMOUNT',
 			'MonthSCostOfProduction' => 'MONTH\'S COST OF PRODUCTION',
@@ -489,7 +493,7 @@ function getBalanceSheetAssetsColumns() {
 			'MonthSCostOfSales' => 'MONTH\'S COST OF SALES',
 			'ReceivablesDomesticOtherThanDeferredExportsInclBillsPurchasedDiscountedByBanksAmount' => 'RECEIVABLES (DOMESTIC) other than deferred & exports (Incl. bills purchased & discounted by banks) AMOUNT',
 			'MonthSDomesticIncome' => 'MONTH\'S DOMESTIC Income',
-			'ExportReceivablesIncludingBillPurchasedAndDiscounted' => 'EXPORT RECV.(Incl. bills purchased & discounted by banks) AMOUNT',
+			'ExportRecvInclBillsPurchasedDiscountedByBanksAmount' => 'EXPORT RECV.(Incl. bills purchased & discounted by banks) AMOUNT',
 			'MonthSExportIncome' => 'MONTH\'S EXPORT Income',
 		),
 	);
