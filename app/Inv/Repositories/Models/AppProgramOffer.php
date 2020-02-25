@@ -348,4 +348,12 @@ class AppProgramOffer extends BaseModel {
        return ($result ? $result : false);
     }
     
+    public function anchor(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
+    }
+
+    public function program(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+    }
+    
 }

@@ -71,7 +71,6 @@ class CustomerController extends Controller
 			$userInfo->total_limit = number_format($totalLimit);
 			$userInfo->consume_limit = number_format($consumeLimit);
 			$userInfo->avail_limit = number_format($totalLimit- $consumeLimit);
-			
 
 			return view('lms.customer.list_applications')
 				->with([

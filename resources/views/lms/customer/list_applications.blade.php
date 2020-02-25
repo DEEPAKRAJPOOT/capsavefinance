@@ -55,6 +55,7 @@
 					   <tbody>
 					   		@if($anchors->count() >0)
 							@foreach ($anchors AS $anchor)
+							@if(!empty($anchor->anchor))
 							<tr role="row" class="odd">
 								<td class="sorting_1">{{ $anchor->anchor->anchor_id }}</td>
 								<td>{{ $anchor->anchor->comp_name }}</td>
@@ -62,6 +63,7 @@
 								<td><i class="fa fa-inr"></i> {{ $anchor->limit_amt }}</td>
 								<td><i class="fa fa-inr"></i> {{ (isset($anchor->offer->prgm_limit_amt)) ?? $anchor->offer->prgm_limit_amt - (isset($anchor->offer->loan_amount)) ?? $anchor->offer->loan_amount }}</td>
 							</tr>
+							@endif
 						   	@endforeach
 							@else
 							<tr>

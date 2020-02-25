@@ -89,6 +89,7 @@ class DisbursalController extends Controller
 		$customerRecords = $request->user_ids;
 		$disburseType = $request->disburse_type;
 		$transId = $request->trans_id;
+		$disburseDate = $request->disburse_date;
 		// $utrNo = $request->utr_no;
 		$remarks = $request->remarks;
 
@@ -119,6 +120,7 @@ class DisbursalController extends Controller
 
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
+				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
 				// dd($disburseRequestData);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);

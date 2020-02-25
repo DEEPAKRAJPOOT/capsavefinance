@@ -724,6 +724,13 @@ Route::group(
         'as' => 'get_field_val',
         'uses' => 'AjaxController@getTableValByField'
     ]);
+
+
+    Route::post('lms-get-refund-customer', [
+        'as' => 'lms_get_refund_customer',
+        'uses' => 'AjaxController@lmsGetDisbursalCustomer'
+    ]);
+    
     
     /*lms route*/
 
