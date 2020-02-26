@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Backend;
 
 use Helpers;
+use Session;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\FinanceInterface;
+use App\Http\Requests\Backend\CreateJeConfigRequest;
 
 class FinanceController extends Controller {
 
@@ -13,6 +15,7 @@ class FinanceController extends Controller {
     private $transType = [];
     private $variables = [];    
     private $journals = [];  
+    private $inputData = [];
 
     public function __construct(FinanceInterface $finRepo) {
         $this->middleware('guest')->except('logout');
@@ -48,4 +51,34 @@ class FinanceController extends Controller {
             'journals'=> $this->journals
             ]);
     }  
+
+    public function saveJeConfig(CreateJeConfigRequest $request) {
+        try {
+            $transTypeId = $request->get('trans_type');
+            $variables = $request->get('variable');
+            $journalId = $request->get('journal');
+
+            $this->inputData = [];
+            $this->inputData = [
+                'trans_config_id'=>$transTypeId,
+                'journal_id'=>$journalId
+            ];
+            $outputQryJe = $this->finRepo->saveJeData($this->inputData);
+            if(isset($outputQryJe->je_config_id)) {
+                $this->inputData = [];
+                foreach($variables as $key=>$val) {
+                    $this->inputData[] = [
+                        'trans_config_id'=>$transTypeId,
+                        'variable_id'=>$val
+                    ];
+                }
+                $outputQryTransVar = $this->finRepo->saveTransVarData($this->inputData);
+            }
+            Session::flash('message','Journal entry config saved successfully');
+            return redirect()->back();
+        } catch (Exception $ex) {
+            die;
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

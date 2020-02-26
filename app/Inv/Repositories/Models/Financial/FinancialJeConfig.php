@@ -41,7 +41,18 @@ class FinancialJeConfig extends BaseModel {
      */
     protected $fillable = [
         'trans_config_id',
-        'journal_id'        
+        'journal_id',
+        'created_at',   
+        'created_by',        
+        'updated_at',
+        'updated_by'        
     ];
+
+    public static function saveJeData($data){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }        
+        return self::create($data);       
+    }
 
 }

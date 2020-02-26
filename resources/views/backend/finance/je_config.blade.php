@@ -13,19 +13,31 @@
     </section>
     <div class="card">
         <div class="card-body">
+            {!!
+                Form::open(
+                array(
+                'method' => 'post',
+                'route' => 'save_je_config',
+                'id' => 'frmJeConfig',
+                )
+                ) 
+            !!}   
             <div class="row align-items-center">
                 <div class="col-md-2">
                     <div class="form-group">
                         <label class="mb-0">Select Type</label>
+                        <span class="mandatory">*</span>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <select name="trans_type" id="trans_type"  class="form-control form-control-sm">
                             <option value="">Select Type</option>
-                            @foreach($transType as $key=>$val)
-                            <option value="{{$val->trans_config_id}}" {{(old('trans_type') == $val->trans_config_id)? 'selected': ''}}> {{$val->trans_type}} </option>                            
-                            @endforeach
+                            @if(isset($transType) && !empty($transType))
+                                @foreach($transType as $key=>$val)
+                                <option value="{{$val->trans_config_id}}" {{(old('trans_type') == $val->trans_config_id)? 'selected': ''}}> {{$val->trans_type}} </option>                            
+                                @endforeach
+                            @endif
                         </select>
                     </div>
 
@@ -36,15 +48,18 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <label class="mb-0">Variables</label>
+                        <span class="mandatory">*</span>
                     </div>
                 </div>
 
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select name="variable" id="variable" class="multi-select-demo form-control form-control-sm" multiple="multiple">
+                        <select name="variable[]" id="variable" class="multi-select-demo form-control form-control-sm" multiple="multiple">
+                        @if(isset($variables) && !empty($variables))
                             @foreach($variables as $key=>$val)
-                            <option value="{{$val->id}}" {{(old('variable') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
+                            <option value="{{$val->id}}"> {{$val->name}} </option>                            
                             @endforeach
+                        @endif
                         </select>
                     </div>
                 </div>
@@ -54,15 +69,18 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <label class="mb-0">Select Journal</label>
+                        <span class="mandatory">*</span>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select name="trans_type" id="trans_type"  class="form-control form-control-sm">
+                        <select name="journal" id="journal"  class="form-control form-control-sm">
                             <option value="">Select Journal</option>
-                            @foreach($journals as $key=>$val)
-                            <option value="{{$val->id}}" {{(old('trans_type') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
-                            @endforeach
+                            @if(isset($journals) && !empty($journals))
+                                @foreach($journals as $key=>$val)
+                                <option value="{{$val->id}}" {{(old('journal') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
+                                @endforeach
+                            @endif
                         </select>
                     </div>
 
@@ -78,7 +96,7 @@
                     </div>
                 </div>
             </div>
-
+            {!!  Form::close() !!} 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">
@@ -103,6 +121,7 @@
 @endsection
 
 @section('jscript')
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script>
 $('.multi-select-demo').multiselect();
@@ -111,6 +130,29 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };
+
+    $(document).ready(function(){
+        $('#frmJeConfig').validate({
+            rules: {
+                trans_type: {
+                    required: true
+                },
+                variable: {
+                   required: true
+                },
+                journal: {
+                   required: true
+                }
+            }
+        });
+
+        $('select').change(function(){
+            if ($(this).val()!="")
+            {
+                $(this).valid();
+            }
+        });
+    });
 </script>
 <script src="{{ asset('backend/js/ajax-js/finance.js') }}"></script>
 @endsection

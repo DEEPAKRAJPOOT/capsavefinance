@@ -24,14 +24,14 @@ class FinancialVariablesTransConfig extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = true;
+    public $userstamps = false;
 
 
     /**
@@ -44,4 +44,10 @@ class FinancialVariablesTransConfig extends BaseModel {
         'variable_id'        
     ];
 
+    public static function saveTransVarData($data){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }        
+        return self::insert($data);       
+    }
 }

@@ -8,6 +8,8 @@ use App\Inv\Repositories\Models\Financial\FinancialTransConfig;
 use App\Inv\Repositories\Models\Financial\FinancialJournals;
 use App\Inv\Repositories\Models\Financial\FinancialAccount;
 use App\Inv\Repositories\Models\Financial\FinancialVariables;
+use App\Inv\Repositories\Models\Financial\FinancialJeConfig;
+use App\Inv\Repositories\Models\Financial\FinancialVariablesTransConfig;
 
 class FinanceRepository extends BaseRepositories implements FinanceInterface
 {
@@ -56,5 +58,13 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     {
         $this->result = FinancialVariables::getAllVariable();
         return $this->result;
+    }
+
+    public function saveJeData($arrData){
+        return FinancialJeConfig::saveJeData($arrData);
+    }
+
+    public function saveTransVarData($arrData){
+        return FinancialVariablesTransConfig::saveTransVarData($arrData);
     }
 }

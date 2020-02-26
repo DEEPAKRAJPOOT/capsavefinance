@@ -1136,6 +1136,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'create_je_config',
                 'uses' => 'Backend\FinanceController@crateJeConfig'
             ]);
+            Route::post('save-je-config', [
+                'as' => 'save_je_config',
+                'uses' => 'Backend\FinanceController@saveJeConfig'
+            ]);
         });
 
     });
