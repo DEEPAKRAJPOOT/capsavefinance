@@ -355,4 +355,10 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
     }
     
+     function productHas()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id','app_prgm_limit_id')->where(['product_id' =>1]);  
+    
+    }
+    
 }
