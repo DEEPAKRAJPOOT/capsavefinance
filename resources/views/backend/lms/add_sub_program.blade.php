@@ -594,41 +594,43 @@
 
                                                 @foreach($programCharges as $keys =>$programChrg)
 
-                                                <div class="charge_parent_div">
+                                                <div class="charge_parent_div editpart">
+                                                    <div class="toduplicate">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group password-input">
+                                                                    <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
+                                                                    </label>
+                                                                    {!!
+                                                                    Form::select('charge['.$keys.']',
+                                                                    [''=>'Please select']+$charges,
+                                                                    $programChrg['charge_id'],
+                                                                    ['id' => 'charge_'.$keys,
+                                                                    'class'=>'form-control  charges',
+                                                                    'required'=>'required',
+                                                                    'data-rel'=>$keys
+                                                                    ])
+                                                                    !!}
 
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group password-input">
-                                                                <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
-                                                                </label>
-                                                                {!!
-                                                                Form::select('charge['.$keys.']',
-                                                                [''=>'Please select']+$charges,
-                                                                $programChrg['charge_id'],
-                                                                ['id' => 'charge_'.$keys,
-                                                                'class'=>'form-control  charges',
-                                                                'required'=>'required',
-                                                                'data-rel'=>$keys
-                                                                ])
-                                                                !!}
 
-
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-6 col-sm-6">
-                                                            <label for="txtPassword">&nbsp;
-                                                            </label> <br/>
-                                                            <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"> Delete</button>
-                                                            <button  style="display: none"  type="button" class="btn btn-primary  btn-sm add_more"> Add More</button>
+                                                            <div class="col-6 col-sm-6">
+                                                                <label for="txtPassword">&nbsp;
+                                                                </label> <br/>
+                                                                <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"> Delete</button>
+                                                                <button  style="display: none"  type="button" class="btn btn-primary  btn-sm add_more"> Add More</button>
+                                                            </div>
                                                         </div>
                                                         <div class="col-md-12 col-sm-12">
                                                             <div class="html_append">
                                                                 @include('backend/lms/charges_html', ['data'=> (object) $programChrg , 'len'=>$keys ]) 
                                                             </div>
                                                         </div>
-
                                                     </div>
+
                                                 </div>
+
                                                 @endforeach
                                                 @else 
 
@@ -664,29 +666,30 @@
                                                     </div>
                                                 </div>
                                                 @endif
-                                                <div class="col-md-12">
-                                                        <div class="form-group password-input">
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                <label for="txtCreditPeriod">Status <span class="error_message_label">*</span> </label>
-                                                                {!! Form::select('status', [''=>trans('backend.please_select') ,1=>'Active',0 =>'In Active'],
-                                                                isset($subProgramData->status) ? $subProgramData->status : null, ['class'=>'form-control']) !!}
-                                                            </div>
+                                                <!--@include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])-->
+
+
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group password-input">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="txtCreditPeriod">Status <span class="error_message_label">*</span> </label>
+                                                            {!! Form::select('status', [''=>trans('backend.please_select') ,1=>'Active',0 =>'In Active'],
+                                                            isset($subProgramData->status) ? $subProgramData->status : null, ['class'=>'form-control']) !!}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!--@include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])-->
-
-                                                <div class="col-md-12">
-                                                    <div class="text-right mt-3">
-
-                                                        <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
-                                                        <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
-                                                    </div>
-                                                </div>
-
-                                                {{ Form::close()}}
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="text-right mt-3">
+
+                                                    <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
+                                                    <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
+                                                </div>
+                                            </div>
+
+                                            {{ Form::close()}}
                                         </div>
                                     </div>
                                 </div>
