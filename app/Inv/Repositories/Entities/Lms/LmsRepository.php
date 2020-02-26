@@ -88,9 +88,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public function saveTransaction($transactions)
+    public static function saveTransaction($transactions,$whereCondition=[])
     {
-        return Transactions::saveTransaction($transactions);
+        return Transactions::saveTransaction($transactions,$whereCondition);
     }
 
     /**

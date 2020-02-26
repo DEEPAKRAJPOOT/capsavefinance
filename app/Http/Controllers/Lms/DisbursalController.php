@@ -322,4 +322,11 @@ class DisbursalController extends Controller
             //dd('rrrrrr', $intAccrualData);
             return view('lms.disbursal.view_interest_accrual')->with('data', $intAccrualData);
         }
+
+	// public function processInvoiceSettlement()
+	// {
+	// 	$returnData = $this->paySettlement('315');
+
+	// 	echo "Invoice Settled 315";
+	// }
 }
