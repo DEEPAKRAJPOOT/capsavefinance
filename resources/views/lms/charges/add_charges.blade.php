@@ -281,7 +281,7 @@
                         if(res.type==1)
                          {
                            
-                              $("#chrg_calculation_type2").attr('checked',false);
+                             $("#chrg_calculation_type2").attr('checked',false);
                              $("#approved_limit_div, .chargeTypeCal").hide();
                              $("#chrg_calculation_type1").attr('checked',true);
                              $("#chrg_calculation_type2").attr('disabled','disabled');

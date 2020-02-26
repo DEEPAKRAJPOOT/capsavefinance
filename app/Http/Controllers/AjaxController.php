@@ -3245,19 +3245,31 @@ if ($err) {
       {
           $res =  $request->all();
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
-          /*  if($getamount->chrg_applicable_id==1)
+         if($getamount->chrg_calculation_type==2)
+        {  
+            
+            $percent  =  $getamount->chrg_calculation_amt; 
+            if($getamount->chrg_applicable_id==1)
             {
-                $getamount  =  $this->lmsRepo->getLimitAmount($request);
-                $getamount  = $amountSum[0];
+                $amountSum  =  $this->lmsRepo->getLimitAmount($request);
+                $amountSum  = $amountSum[0];
             }
-            else if($getamount->chrg_applicable_id==2 || $request->chrg_applicable_id==3)
+            else if($getamount->chrg_applicable_id==2 || $getamount->chrg_applicable_id==3)
             {
-                $getamount  =  $this->lmsRepo->getOutstandingAmount($request);
+                $amountSum  =  $this->lmsRepo->getOutstandingAmount($request);
             }
             else
             {
-                $getamount =  0;
-            }  */
+                $amountSum =  0;
+            }
+        }
+        else
+        {
+           
+            $percent  =  $getamount->chrg_calculation_amt; 
+          
+        }
+     
           if($getamount)
           {
                $app = "";
@@ -3282,25 +3294,39 @@ if ($err) {
                  }
              }
              
-             if($getamount->chrg_calculation_type==1)
-             {
-                $amount =  number_format($getamount->chrg_calculation_amt);
-             }
-             else
-             {
-                $amount =  $getamount->chrg_calculation_amt; 
-             }
+             if($getamount->is_gst_applicable==1)
+            {
+               
+                /* apply percentage on amount  ****/
+                $getPercentAmount =   $amountSum*$percent/100;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount =  $getPercentAmount*18/100;
+                $final_amount = $getPercentAmount+$getAfterGstAmount; 
+            }
+            else
+            { /* apply percentage on amount  ****/
+                $getPercentAmount =  0;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount = 0;
+                $final_amount = 0; 
+                
+            }
+            
              return response()->json(['status' => 1,
                  'chrg_applicable_id' => $getamount->chrg_applicable_id,
-                 'amount' => number_format($amount),
+                 'amount' => number_format($percent),
                  'id' => $getamount->id,
                  'type' => $getamount->chrg_calculation_type,
                  'is_gst_applicable' => $getamount->is_gst_applicable,
+                 'limit_amount' =>$amountSum,
+                 'charge_amount' => $getPercentAmount,
+                 'gst_amount' => $final_amount,
                  'applicable' =>$app]); 
           }
           else
           {
-              return response()->json(['status' => 0]); 
+              return response()->json(['status' => 0,'limit_amount' =>$amountSum,'charge_amount' => $getPercentAmount,'gst_amount' => $final_amount]); 
+        
           }
           
       }
