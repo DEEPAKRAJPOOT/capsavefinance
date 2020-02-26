@@ -1132,6 +1132,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_fin_variable',
                 'uses' => 'Backend\FinanceController@getFinVariable'
             ]);
+            Route::get('create-je-config', [
+                'as' => 'create_je_config',
+                'uses' => 'Backend\FinanceController@crateJeConfig'
+            ]);
         });
 
     });

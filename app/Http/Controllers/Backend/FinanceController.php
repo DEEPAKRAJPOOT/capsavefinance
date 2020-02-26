@@ -31,4 +31,7 @@ class FinanceController extends Controller {
     public function getFinVariable() {
         return view('backend.finance.variable_list');
     }  
+    public function crateJeConfig() {
+        return view('backend.finance.je_config');
+    }  
 }
