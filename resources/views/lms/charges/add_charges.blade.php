@@ -359,6 +359,9 @@
         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
        /////////////// validation the time of final submit/////////////// 
       $(document).on('click','#add_charge',function(e){
+        var amount = $("#amount").val()
+        var amount = amount.replace(",", "");
+        var chrg_calculation_type  =  $("input[name='chrg_calculation_type']:checked"). val();
       
        if ($('form#chargesForm').validate().form()) {
         $("#user_id" ).rules( "add", {
@@ -380,6 +383,7 @@
         required: "Please select charge",
         }
         });
+         
          $("#amount" ).rules( "add", {
         required: true,
         messages: {
@@ -391,8 +395,29 @@
         messages: {
         required: "Please enter date",
         }
-        });      
-      
+        });   
+        if(amount==0)
+        {
+            if(chrg_calculation_type==1)
+            {
+              
+                alert('Please Enter Amount');
+                
+            }
+            else
+            {
+              
+                 alert('Please Enter Percentage');
+            }
+            return false;
+          }
+       else if(amount > 100)
+          {
+               alert('Percentage should not  greater than 100%');
+               return false;
+
+          }
+        
         
        } else {
         /// alert();
