@@ -60,6 +60,7 @@ class GroupCompanyExposure extends BaseModel
         'group_company_name',
         'sanction_limit',
         'outstanding_exposure',
+        'proposed_exposure',
         'created_by',
         'created_at',
         'updated_at',

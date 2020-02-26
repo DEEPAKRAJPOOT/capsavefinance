@@ -1,4 +1,4 @@
-<!-- Start PDF Section -->
+Start PDF Section -->
    <div class="data mt-4">
        
 
@@ -34,26 +34,21 @@
                      @foreach($arrGroupCompany as $key=>$arr)
                         <tr role="row" class="odd">
                            @if($loop->first)
-                               <td class="" rowspan="{{$count+1}}"> {{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
+                               <td class="" rowspan="{{$count}}"> {{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
                            @endif
                            <td class="">{{isset($arr['group_company_name']) ? $arr['group_company_name'] : ''}}</td>
                            <td class="">{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] : ''}}</td>
-                           <td class="">{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure'] : ''}}</td>
-                           <td class="">--</td>
-                           <td class="">{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure'] : ''}}</td>
+                           <td class="">{{ (($arr['outstanding_exposure'] > 0) && $loop->first) ? $arr['outstanding_exposure']: $arr['outstanding_exposure'] + $arr['proposed_exposure'] }}</td>
+
+
+
+                           <td class="">{{ (($arr['proposed_exposure'] > 0) && $loop->first) ? $arr['proposed_exposure'] : '--' }}</td>
+                           <td class="">{{ (($arr['outstanding_exposure'] > 0) && $loop->first) ? $arr['outstanding_exposure']: $arr['outstanding_exposure'] + $arr['proposed_exposure'] }}</td>
                           
                         </tr>
                      @endforeach
                   @endif   
-                     <tr>  @if(empty($arrGroupCompany))
-                              <td></td>
-                           @endif  
-                           <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
-                           <td class="">{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}</td>
-                           <td class="">{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}</td>
-                           <td class="">{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}</td>
-                           <td class="">{{($arrCamData && ($arrCamData->proposed_exposure > 0) && ($arrCamData->outstanding_exposure_cam > 0)) ? $arrCamData->proposed_exposure + $arrCamData->outstanding_exposure_cam : ''}}</td>
-                     </tr>
+                     
                      <tr>
                            <td class="" colspan="5"><b>Total Exposure (In Mn)</b></td>
                            <td class=""><b>{{($arrCamData && $arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}</b></td>   
@@ -814,4 +809,4 @@ if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0)
    document.getElementById("isApproved").textContent += "approved";
 }
 </script>         
- <!-- End PDF Section -->
+ <!-- End PDF Section
