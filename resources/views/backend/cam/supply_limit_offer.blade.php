@@ -107,7 +107,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Security</b></label>
-                        <select name="ps_security" class="form-control">
+                        <select name="ps[ps_security_id][]" class="form-control">
                             <option value="">Select Security</option>
                             <option value="1">Current assets</option>
                             <option value="2">Plant and Machinery</option>
@@ -127,7 +127,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
-                        <select name="ps_type_of_security" class="form-control">
+                        <select name="ps[ps_type_of_security_id][]" class="form-control">
                             <option value="">Select type of Security</option>
                             <option value="1">Registered Mortgage</option>
                             <option value="2">Equitable Mortgage</option>
@@ -140,7 +140,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword"><b>Status of Security</b></label>
-                        <select name="ps_status_of_security" class="form-control">
+                        <select name="ps[ps_status_of_security_id][]" class="form-control">
                             <option value="">Select status of Security</option>
                             <option value="1">First Pari-pasu</option>
                             <option value="2">Exclusive</option>
@@ -151,7 +151,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
-                        <select name="ps_time_for_perfecting_security" class="form-control">
+                        <select name="ps[ps_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
                             <option value="2">With in 30 days from date of first disbusrement</option>
@@ -164,7 +164,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
-                        <input name="ps_desc_of_security" class="form-control" value="">
+                        <input name="ps[ps_desc_of_security][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-primary-security-block mt-4"></i>
@@ -192,7 +192,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc Security</b></label>
-                        <select name="cs_desc_security" class="form-control">
+                        <select name="cs[cs_desc_security_id][]" class="form-control">
                             <option value="">Select Security</option>
                             <option value="1">Current assets</option>
                             <option value="2">Plant and Machinery</option>
@@ -212,7 +212,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
-                        <select name="cs_type_of_security" class="form-control">
+                        <select name="cs[cs_type_of_security_id][]" class="form-control">
                             <option value="">Select type of Security</option>
                             <option value="1">Registered Mortgage</option>
                             <option value="2">Equitable Mortgage</option>
@@ -226,7 +226,7 @@
                     <div class="col-md-2">
                         <label for="txtPassword"><b>Status of Security</b></label>
                         <select name="" class="form-control">
-                            <option value="cs_status_of_security">Select status of Security</option>
+                            <option value="cs[cs_status_of_security_id][]">Select status of Security</option>
                             <option value="1">First Pari-pasu</option>
                             <option value="2">Exclusive</option>
                             <option value="3">Third Pari-pasu</option>
@@ -236,7 +236,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
-                        <select name="cs_time_for_perfecting_security" class="form-control">
+                        <select name="cs[cs_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
                             <option value="2">With in 30 days from date of first disbusrement</option>
@@ -249,7 +249,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
-                        <input name="cs_desc_of_security" class="form-control" value="">
+                        <input name="cs[cs_desc_of_security][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-collateral-security-block mt-4"></i>
@@ -277,7 +277,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
-                        <select name="pg_name_of_guarantor" class="form-control">
+                        <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
                             <option value="1">option one</option>
                             <option value="2">option two</option>
@@ -285,7 +285,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
-                        <select name="pg_time_for_perfecting_security" class="form-control">
+                        <select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
                             <option value="2">With in 30 days from date of first disbusrement</option>
@@ -298,15 +298,15 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword"><b>Residential Address </b></label>
-                        <input name="pg_residential_address" class="form-control" value="">
+                        <input name="pg[pg_residential_address][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Net worth</b></label>
-                        <input name="pg_net_worth" class="form-control" value="">
+                        <input name="pg[pg_net_worth][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
-                        <input name="pg_comments" class="form-control" value="">
+                        <input name="pg[pg_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-personal-guarantee-block mt-4"></i>
@@ -334,7 +334,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Type</b></label>
-                        <select name="cg_type" class="form-control">
+                        <select name="cg[cg_type_id][]" class="form-control">
                             <option value="">Select type</option>
                             <option value="1">Corporate Guarante with BR</option>
                             <option value="2">Letter of Comfort with BR</option>
@@ -346,7 +346,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
-                        <select name="cg_name_of_guarantor" class="form-control">
+                        <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
                             <option value="1">option one</option>
                             <option value="2">option two</option>
@@ -354,7 +354,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
-                        <select name="cg_time_for_perfecting_security" class="form-control">
+                        <select name="cg[cg_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
                             <option value="2">With in 30 days from date of first disbusrement</option>
@@ -367,11 +367,11 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword"><b>Residential Address</b></label>
-                        <input name="cg_residential_address" class="form-control" value="">
+                        <input name="cg[cg_residential_address][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
-                        <input name="cg_comments" class="form-control" value="">
+                        <input name="cg[cg_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-corporate-guarantee-block mt-4"></i>
@@ -399,7 +399,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Name of Debtor</b></label>
-                        <select name="em_debtor" class="form-control">
+                        <select name="em[em_debtor_id][]" class="form-control">
                             <option value="">Select Debtor</option>
                             <option value="1">option one</option>
                             <option value="2">option two</option>
@@ -407,11 +407,11 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword"><b>Expected cash flow per month</b></label>
-                        <input name="em_expected_cash_flow" class="form-control" value="">
+                        <input name="em[em_expected_cash_flow][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
-                        <select name="em_time_for_perfecting_security" class="form-control">
+                        <select name="em[em_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
                             <option value="2">With in 30 days from date of first disbusrement</option>
@@ -424,7 +424,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Mechanism</b></label>
-                        <select name="em_mechanism" class="form-control">
+                        <select name="em[em_mechanism_id][]" class="form-control">
                             <option value="">Select Mechanism</option>
                             <option value="1">With direct Payment confirmation</option>
                             <option value="2">W/o direct payment confirmation</option>
@@ -434,7 +434,7 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
-                        <input name="em_comments" class="form-control" value="">
+                        <input name="em[em_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-escrow-mechanism-block mt-4"></i>
@@ -731,42 +731,67 @@
     if(flag){
         return true;
     }else{
-        return false;
+        return true;
     }
   }
 
   $(document).on('click', '.add-primary-security-block', function(){
     let primary_security_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="ps[ps_security_id][]" class="form-control">'+
+                    '<option value="">Select Security</option>'+
+                    '<option value="1">Current assets</option>'+
+                    '<option value="2">Plant and Machinery</option>'+
+                    '<option value="3">Land & Building</option>'+
+                    '<option value="4">Commercial Property</option>'+
+                    '<option value="5">Land</option>'+
+                    '<option value="6">Industrial Premises</option>'+
+                    '<option value="7">Residential Property</option>'+
+                    '<option value="8">Farm House & Land</option>'+
+                    '<option value="9">Listed Share</option>'+
+                    '<option value="10">Unlisted Share</option>'+
+                    '<option value="11">Mutual Funds</option>'+
+                    '<option value="12">Intercorporate Deposits</option>'+
+                    '<option value="13">Bank Guarantee</option>'+
+                    '<option value="14">SBLC</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="ps[ps_type_of_security_id][]" class="form-control">'+
+                    '<option value="">Select type of Security</option>'+
+                    '<option value="1">Registered Mortgage</option>'+
+                    '<option value="2">Equitable Mortgage</option>'+
+                    '<option value="3">Hypothecation</option>'+
+                    '<option value="4">Pledge</option>'+
+                    '<option value="5">Lien</option>'+
+                    '<option value="6">Negative Lien</option>'+
+                    '<option value="7">Deposit of Title deeds</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="ps[ps_status_of_security_id][]" class="form-control">'+
+                    '<option value="">Select status of Security</option>'+
+                    '<option value="1">First Pari-pasu</option>'+
+                    '<option value="2">Exclusive</option>'+
+                    '<option value="3">Third Pari-pasu</option>'+
+                    '<option value="4">Second Pari-pasu</option>'+
+                    '<option value="5">Sub-Servient</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="ps[ps_time_for_perfecting_security_id][]" class="form-control">'+
+                    '<option value="">Select time for perfecting security</option>'+
+                    '<option value="1">Before Disbusrement</option>'+
+                    '<option value="2">With in 30 days from date of first disbusrement</option>'+
+                    '<option value="3">With in 60 days from date of first disbsurement</option>'+
+                    '<option value="4">With in 90 days from date of first disbursement </option>'+
+                    '<option value="5">With in 120 days from date of first disbursement</option>'+
+                    '<option value="6">with in 180 days from date of first disbursement</option>'+
+                    '<option value="7">with in 360 days from date of first disbsurement</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<input name="" class="form-control">'+
+                '<input name="ps[ps_desc_of_security][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-primary-security-block" style="color: red;"></i>'+

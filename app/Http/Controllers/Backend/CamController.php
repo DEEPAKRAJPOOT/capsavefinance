@@ -1486,7 +1486,7 @@ class CamController extends Controller
 
     /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
-      //dd($request->all());
+      dd($request->all());
       try{
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
