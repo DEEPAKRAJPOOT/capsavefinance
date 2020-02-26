@@ -18,17 +18,19 @@ use Helpers;
 use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
+use App\Inv\Repositories\Contracts\ApplicationInterface;
 
 class PaymentController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
     use LmsTrait;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo) {
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
+        $this->appRepo = $appRepo;
         $this->middleware('auth');
     }
 

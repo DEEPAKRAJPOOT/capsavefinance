@@ -3012,7 +3012,7 @@ class DataRenderer implements DataProviderInterface
                         ->addColumn(
                                 'settlement_amount',
                                 function ($data) {
-                            return isset($data->settlement_amount) ? $data->settlement_amount : '-';
+                            return isset($data->total_repaid_amt) ? $data->total_repaid_amt : '-';
                         })
                         ->editColumn(
                                 'accured_interest',
@@ -3030,7 +3030,7 @@ class DataRenderer implements DataProviderInterface
                             $act = '<a data-toggle="modal"  data-height="550px" 
                             data-width="100%" 
                             data-target="#viewInterestAccrual"
-                            data-url="' . route('view_interest_accrual', ['disbursal_id' => $data->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye-slash"></i></a>';
+                            data-url="' . route('view_interest_accrual', ['disbursal_id' => $data->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
 
                             return $act;
                         })                        

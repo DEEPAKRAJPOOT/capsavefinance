@@ -102,7 +102,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'list_lms_charges',
                 'uses' => 'Lms\ChargeController@listLmsCharges'
             ]);
-
+             
+             
+            Route::get('view-interest-accrual', [
+                'as' => 'view_interest_accrual',
+                'uses' => 'Lms\DisbursalController@viewInterestAccrual'
+            ]);
+             
             Route::get('get-lms-charges-edit', [
                 'as' => 'get_lms_charges_edit',
                 'uses' => 'Lms\ChargeController@editLmsCharges'
