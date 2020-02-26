@@ -270,7 +270,7 @@ trait LmsTrait
                 ]; 
 
             }
-
+            $totalInterestRrefund = 0;
             $invoiceLoop = 0;
             $totalRepaidAmount = 0;
             $lastTransId=NULL;
@@ -308,11 +308,10 @@ trait LmsTrait
                             $invoice[$key]['disbursal']['status_id'] = 13;
                             $is_inv_settled = 1;
                         }
-                        
 
                         // Principal Settlement Step 2
 
-                        $balancePrincipalAmt = $inv['principal_amount'] - ($inv['total_repaid_amt']+$inv['interest_refund']);
+                        $balancePrincipalAmt = $inv['principal_amount'] - ($inv['total_repaid_amt']);
                         
                         $totalRepaidAmount = $this->getTransactions($userId, $trans, $invoiceLoop, $totalRepaidAmount, $balancePrincipalAmt, $lastTransId);
                         
@@ -328,15 +327,12 @@ trait LmsTrait
                             $totalRepaidAmount -= $totalRepaidAmount;
                         }
 
-
-
                         // Interest Refund Step 3
 
                         if($is_inv_settled == 2){
                             $totalRepaidAmount += $interestRrefund;
                             $invoice[$key]['disbursal']['interest_refund'] += $interestRrefund;
-                        }else{
-                            $invoice[$key]['disbursal']['interest_refund'] += 0;
+                            $totalInterestRrefund += $interestRrefund; 
                         }
 
                         $invoice[$key]['disbursal']['settlement_amount'] = $invoice[$key]['disbursal']['total_repaid_amt']-$invoice[$key]['disbursal']['interest_refund'];
@@ -379,15 +375,12 @@ trait LmsTrait
                         }
                     }
 
-                $totalInterestRrefund += $invoice[$key]['disbursal']['interest_refund'];
+               
                 $this->lmsRepo->saveRepayment($invoice[$key]['invoiceRepayment']);
                 $this->lmsRepo->saveDisbursalRequest($invoice[$key]['disbursal'], ['disbursal_id' => $inv['disbursal_id']]);
              
                 if($is_inv_settled==1 && $totalRepaidAmount == 0) break;
             }
-            
-            
-            
             
             
             $unUsedTrnsactions = Transactions::where(['user_id'=>$userId,'trans_type'=>17])
@@ -402,9 +395,8 @@ trait LmsTrait
                 $this->lmsRepo->saveTransaction(['is_settled'=> '2'],['trans_id'=>$trans_id]);
             }
             
-           // $totalInterestRrefund =  Disbursal::where(['user_id'=>$userId])->whereIn('status_id',[15])->sum('interest_refund');
 
-            $surplusAmount = $totalRepaidAmount-$totalInterestRrefund;
+            $surplusAmount = $totalRepaidAmount;
 
             if(isset($invoice[$key]['disbursal_id']) && $surplusAmount>0){
                 $this->lmsRepo->saveDisbursalRequest(['surplus_amount'=>($surplusAmount>0)?$surplusAmount:NULL], ['disbursal_id' => $invoice[$key]['disbursal_id']]);
@@ -414,8 +406,6 @@ trait LmsTrait
                 $intrstTrnsData = $this->createTransactionData($userId, ['amount' => $totalInterestRrefund], null, 9, 1);
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
             }
-
-            //dd($invoice, 'Surplus='.$totalRepaidAmount);
            
         }
     }
