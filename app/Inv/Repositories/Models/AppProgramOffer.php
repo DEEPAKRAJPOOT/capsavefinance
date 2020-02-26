@@ -343,7 +343,7 @@ class AppProgramOffer extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
        //////* get   app_prgm_limit_id behalf of app_id  ********//////////////
-       return AppProgramLimit::where(['app_id' => $arr->app_id,'product_id' =>1])->pluck('limit_amt');
+       return AppProgramOffer::where(['app_id' => $arr->app_id,'is_approve'=> 1,'status' =>1,'is_approve' =>1])->sum('prgm_limit_amt');
       
     }
     

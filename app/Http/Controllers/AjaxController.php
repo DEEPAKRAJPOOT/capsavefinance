@@ -3242,32 +3242,23 @@ if ($err) {
           
       }
       
+        
            public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
+          
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
-          /*  if($getamount->chrg_applicable_id==1)
-            {
-                $getamount  =  $this->lmsRepo->getLimitAmount($request);
-                $getamount  = $amountSum[0];
-            }
-            else if($getamount->chrg_applicable_id==2 || $request->chrg_applicable_id==3)
-            {
-                $getamount  =  $this->lmsRepo->getOutstandingAmount($request);
-            }
-            else
-            {
-                $getamount =  0;
-            }  */
           if($getamount)
           {
+              $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
                $app = "";
                $sel ="";
                 $res =   [  1 => "Limit Amount",
                             2 => "Outstanding Amount",
-                            3 => "Outstanding Principal"];
-             if($getamount->chrg_applicable_id > 0)
-             {
+                            3 => "Outstanding Principal",
+                            4 => "Not Found",
+                            5 => "Not Found" ];
+           
                 
                  foreach($res as $key=>$val)
                  {
@@ -3281,20 +3272,35 @@ if ($err) {
                      }
                      $app.= "<option value=".$key." $sel>".$val."</option>";
                  }
-             }
              
-             if($getamount->chrg_calculation_type==1)
-             {
-                $amount =  number_format($getamount->chrg_calculation_amt);
-             }
-             else
-             {
-                $amount =  $getamount->chrg_calculation_amt; 
-             }
+                 if($getamount->chrg_applicable_id==1)
+                 {
+                   
+                     $limitAmount  =  $this->lmsRepo->getLimitAmount($request);
+                     $limitAmount  = $limitAmount[0];
+                     dd($limitAmount);
+                 }
+                 else if($getamount->chrg_applicable_id==2)
+                 {
+                     
+                     $limitAmount  =  $this->lmsRepo->getOutstandingAmount($request);
+                    
+                 }
+                 else if($getamount->chrg_applicable_id==3)
+                 {
+                     $limitAmount  =  $this->lmsRepo->getOutstandingAmount($request);
+                 }
+                 else
+                 {
+                     $limitAmount  = 0;
+                 }
+             
+          
              return response()->json(['status' => 1,
                  'chrg_applicable_id' => $getamount->chrg_applicable_id,
-                 'amount' => number_format($amount),
+                 'amount' => number_format($getamount->chrg_calculation_amt),
                  'id' => $getamount->id,
+                 'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
                  'is_gst_applicable' => $getamount->is_gst_applicable,
                  'applicable' =>$app]); 
