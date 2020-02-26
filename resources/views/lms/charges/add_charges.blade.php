@@ -114,6 +114,7 @@
               <input type="hidden"   id="pay_from" name="pay_from"  value="{{$user->is_buyer}}">
                <input type="hidden"   id="charge_type" name="charge_type"  value="">
               <input type="hidden"   id="programamount" name="programamount" >
+               <input type="hidden"   id="chrg_applicable_hidden_id" name="chrg_applicable_hidden_id" >
               <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit"/>
         </div>
       </div>
@@ -257,7 +258,7 @@
              $("#amount").empty();
               return false;
       }
-      var postData =  ({'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
+      var postData =  ({'app_id':$("#app_id").val(),'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
        jQuery.ajax({
         url: messages.get_chrg_amount,
                 method: 'post',
@@ -269,11 +270,11 @@
                 success: function (res) {
                       if(res.status==1)
                       {
-                         
+                          $("#limit_amount_new").val(res.limit);  
                           var  applicable  = res.applicable;  
                           $("#chrg_applicable_id").html(applicable);
                           $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
-                         //// $("#chrg_applicable_id option").attr('disabled','disabled');
+                          $("#chrg_applicable_id option").attr('disabled','disabled');
                           ////**** calculation here for according charge applicable ******/
                           $("#amount").val(res.amount);
                           $("#id").val(res.id);
@@ -306,6 +307,7 @@
                          } 
                           if(res.is_gst_applicable==1)
                          {
+                            $("#is_gst_applicable2").attr('disabled','disabled'); 
                              $("#is_gst_applicable1").prop('checked',true);
                             $("#is_gst_applicable2").prop('checked',false);
                             $(".chargeTypeGstCal").css({"display":"inline"});
@@ -321,7 +323,7 @@
                              $(".chargeTypeGstCal").css({"display":"none"});
                              $("#is_gst_applicable2").prop('checked',true);
                              $("#is_gst_applicable1").prop('checked',false);
-                           
+                              $("#is_gst_applicable1").attr('disabled','disabled');
                             } 
                          
                       }

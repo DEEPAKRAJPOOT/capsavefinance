@@ -3241,44 +3241,23 @@ if ($err) {
           
       }
       
+        
            public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
-          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
-         if($getamount->chrg_calculation_type==2)
-        {  
-            
-            $percent  =  $getamount->chrg_calculation_amt; 
-            if($getamount->chrg_applicable_id==1)
-            {
-                $amountSum  =  $this->lmsRepo->getLimitAmount($request);
-                $amountSum  = $amountSum[0];
-            }
-            else if($getamount->chrg_applicable_id==2 || $getamount->chrg_applicable_id==3)
-            {
-                $amountSum  =  $this->lmsRepo->getOutstandingAmount($request);
-            }
-            else
-            {
-                $amountSum =  0;
-            }
-        }
-        else
-        {
-           
-            $percent  =  $getamount->chrg_calculation_amt; 
           
-        }
-     
+          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
+              $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
                $app = "";
                $sel ="";
                 $res =   [  1 => "Limit Amount",
                             2 => "Outstanding Amount",
-                            3 => "Outstanding Principal"];
-             if($getamount->chrg_applicable_id > 0)
-             {
+                            3 => "Outstanding Principal",
+                            4 => "Not Found",
+                            5 => "Not Found" ];
+           
                 
                  foreach($res as $key=>$val)
                  {
@@ -3292,41 +3271,42 @@ if ($err) {
                      }
                      $app.= "<option value=".$key." $sel>".$val."</option>";
                  }
-             }
              
-             if($getamount->is_gst_applicable==1)
-            {
-               
-                /* apply percentage on amount  ****/
-                $getPercentAmount =   $amountSum*$percent/100;
-                  /* apply GST on percentage amount  ****/
-                $getAfterGstAmount =  $getPercentAmount*18/100;
-                $final_amount = $getPercentAmount+$getAfterGstAmount; 
-            }
-            else
-            { /* apply percentage on amount  ****/
-                $getPercentAmount =  0;
-                  /* apply GST on percentage amount  ****/
-                $getAfterGstAmount = 0;
-                $final_amount = 0; 
-                
-            }
-            
+                 if($getamount->chrg_applicable_id==1)
+                 {
+                   
+                     $limitAmount  =  $this->lmsRepo->getLimitAmount($request);
+                     $limitAmount  = $limitAmount[0];
+                     dd($limitAmount);
+                 }
+                 else if($getamount->chrg_applicable_id==2)
+                 {
+                     
+                     $limitAmount  =  $this->lmsRepo->getOutstandingAmount($request);
+                    
+                 }
+                 else if($getamount->chrg_applicable_id==3)
+                 {
+                     $limitAmount  =  $this->lmsRepo->getOutstandingAmount($request);
+                 }
+                 else
+                 {
+                     $limitAmount  = 0;
+                 }
+             
+          
              return response()->json(['status' => 1,
                  'chrg_applicable_id' => $getamount->chrg_applicable_id,
-                 'amount' => number_format($percent),
+                 'amount' => number_format($getamount->chrg_calculation_amt),
                  'id' => $getamount->id,
+                 'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
                  'is_gst_applicable' => $getamount->is_gst_applicable,
-                 'limit_amount' =>$amountSum,
-                 'charge_amount' => $getPercentAmount,
-                 'gst_amount' => $final_amount,
                  'applicable' =>$app]); 
           }
           else
           {
-              return response()->json(['status' => 0,'limit_amount' =>$amountSum,'charge_amount' => $getPercentAmount,'gst_amount' => $final_amount]); 
-        
+              return response()->json(['status' => 0]); 
           }
           
       }

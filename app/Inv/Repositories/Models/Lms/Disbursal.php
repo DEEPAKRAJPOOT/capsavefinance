@@ -220,6 +220,7 @@ class Disbursal extends BaseModel {
     
     public static function getOutstandingAmount($attr)
     {
+      
         $user_id  = $attr->user_id;
         $pAmount  =   self::where('user_id',$user_id)->sum('principal_amount');
         $tAmount  =   self::where('user_id',$user_id)->sum('total_interest');

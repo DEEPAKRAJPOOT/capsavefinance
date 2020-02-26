@@ -111,7 +111,7 @@ class ChargeController extends Controller
                  }
                  else
                  {
-                    $chrg_applicable_id = $request->chrg_applicable_id; 
+                    $chrg_applicable_id = $request->chrg_applicable_hidden_id; 
                     $percent  = $request->amount;
                    if($request->is_gst_applicable==1)
                    {
