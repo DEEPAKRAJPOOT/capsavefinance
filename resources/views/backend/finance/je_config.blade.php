@@ -25,14 +25,14 @@
             <div class="row align-items-center">
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label class="mb-0">Select Type</label>
+                        <label class="mb-0">Transaction Type</label>
                         <span class="mandatory">*</span>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <select name="trans_type" id="trans_type"  class="form-control form-control-sm">
-                            <option value="">Select Type</option>
+                            <option value="">Select Transaction Type</option>
                             @if(isset($transType) && !empty($transType))
                                 @foreach($transType as $key=>$val)
                                 <option value="{{$val->trans_config_id}}" {{(old('trans_type') == $val->trans_config_id)? 'selected': ''}}> {{$val->trans_type}} </option>                            
@@ -68,7 +68,7 @@
             <div class="row align-items-center">
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label class="mb-0">Select Journal</label>
+                        <label class="mb-0">Journal</label>
                         <span class="mandatory">*</span>
                     </div>
                 </div>
