@@ -77,7 +77,6 @@ class FinanceController extends Controller {
             Session::flash('message','Journal entry config saved successfully');
             return redirect()->back();
         } catch (Exception $ex) {
-            die;
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
