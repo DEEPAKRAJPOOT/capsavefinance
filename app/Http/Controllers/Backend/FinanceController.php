@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Backend;
 use Helpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Inv\Repositories\Contracts\FinanceInterface;
 
 class FinanceController extends Controller {
 
+    protected $finRepo;
+    protected $allTransType;
 
-    public function __construct() {
+    public function __construct(FinanceInterface $finRepo) {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
+        $this->finRepo = $finRepo;
     }
 
 
@@ -31,7 +34,14 @@ class FinanceController extends Controller {
     public function getFinVariable() {
         return view('backend.finance.variable_list');
     }  
+    
     public function crateJeConfig() {
+        $this->allTransType = $this->finRepo->getAllTransType()->get();
+        
+        if($this->allTransType){
+            $this->allTransType = $this->allTransType->toArray();
+        }
+        dd($this->allTransType);
         return view('backend.finance.je_config');
     }  
 }

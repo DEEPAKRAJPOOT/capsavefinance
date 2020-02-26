@@ -50,7 +50,7 @@ class FinancialAccount extends BaseModel {
 
     public static function getAllAccount() 
     {
-        $result = self::select('account_code','account_name')->orderBy('id', 'DESC');
+        $result = self::select('id','account_code','account_name')->orderBy('id', 'DESC');
         return $result;
     }
 }

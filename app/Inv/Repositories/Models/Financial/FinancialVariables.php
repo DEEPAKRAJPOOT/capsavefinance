@@ -49,7 +49,7 @@ class FinancialVariables extends BaseModel {
 
     public static function getAllVariable() 
     {
-        $result = self::select('name')->orderBy('id', 'DESC');
+        $result = self::select('id','name')->orderBy('id', 'DESC');
         return $result;
     }
 }

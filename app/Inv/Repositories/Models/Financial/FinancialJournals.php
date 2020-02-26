@@ -50,7 +50,7 @@ class FinancialJournals extends BaseModel {
 
     public static function getAllJournal() 
     {
-        $result = self::select('name','journal_type')->orderBy('id', 'DESC');
+        $result = self::select('id','name','journal_type')->orderBy('id', 'DESC');
         return $result;
     }
 }

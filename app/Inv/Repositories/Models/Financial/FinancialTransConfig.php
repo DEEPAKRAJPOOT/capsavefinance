@@ -49,7 +49,7 @@ class FinancialTransConfig extends BaseModel {
 
     public static function getAllTransType() 
     {
-        $result = self::select('trans_type')->orderBy('trans_config_id', 'DESC');
+        $result = self::select('trans_config_id','trans_type')->orderBy('trans_config_id', 'DESC');
         return $result;
     }
 }
