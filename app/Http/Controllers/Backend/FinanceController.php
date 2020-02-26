@@ -9,8 +9,10 @@ use App\Inv\Repositories\Contracts\FinanceInterface;
 
 class FinanceController extends Controller {
 
-    protected $finRepo;
-    protected $allTransType;
+    private $finRepo;
+    private $transType = [];
+    private $variables = [];    
+    private $journals = [];  
 
     public function __construct(FinanceInterface $finRepo) {
         $this->middleware('guest')->except('logout');
@@ -34,14 +36,16 @@ class FinanceController extends Controller {
     public function getFinVariable() {
         return view('backend.finance.variable_list');
     }  
-    
+
     public function crateJeConfig() {
-        $this->allTransType = $this->finRepo->getAllTransType()->get();
-        
-        if($this->allTransType){
-            $this->allTransType = $this->allTransType->toArray();
-        }
-        dd($this->allTransType);
-        return view('backend.finance.je_config');
+        $this->transType = $this->finRepo->getAllTransType()->get();
+        $this->variables = $this->finRepo->getAllVariable()->get();
+        $this->journals = $this->finRepo->getAllJournal()->get();
+        return view('backend.finance.je_config')
+            ->with([
+            'transType'=> $this->transType,
+            'variables'=> $this->variables,
+            'journals'=> $this->journals
+            ]);
     }  
 }

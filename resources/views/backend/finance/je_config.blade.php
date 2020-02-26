@@ -19,17 +19,13 @@
                         <label class="mb-0">Select Type</label>
                     </div>
                 </div>
-
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select class="form-control form-control-sm">
-                            <option>Select Type</option>
-                            <option>Loan Sanction</option>
-                            <option>Disbursal</option>
-                            <option>Repayment</option>
-                            <option>Charges</option>
-                            <option>Penalty</option>
-                            <option>Fees</option>
+                        <select name="trans_type" id="trans_type"  class="form-control form-control-sm">
+                            <option value="">Select Type</option>
+                            @foreach($transType as $key=>$val)
+                            <option value="{{$val->trans_config_id}}" {{(old('trans_type') == $val->trans_config_id)? 'selected': ''}}> {{$val->trans_type}} </option>                            
+                            @endforeach
                         </select>
                     </div>
 
@@ -45,11 +41,40 @@
 
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select class="multi-select-demo form-control form-control-sm" multiple="multiple">
-                            <option>IA</option>
-                            <option>ROI</option>
-                            <option>TP</option>
+                        <select name="variable" id="variable" class="multi-select-demo form-control form-control-sm" multiple="multiple">
+                            @foreach($variables as $key=>$val)
+                            <option value="{{$val->id}}" {{(old('variable') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
+                            @endforeach
                         </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="mb-0">Select Journal</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <select name="trans_type" id="trans_type"  class="form-control form-control-sm">
+                            <option value="">Select Journal</option>
+                            @foreach($journals as $key=>$val)
+                            <option value="{{$val->id}}" {{(old('trans_type') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
+                            @endforeach
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <button class="mb-0">Submit</button>
                     </div>
                 </div>
             </div>
