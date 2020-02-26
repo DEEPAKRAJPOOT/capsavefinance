@@ -18,7 +18,7 @@ use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
-
+use App\Inv\Repositories\Models\Master\Group;
 
 trait CamTrait
 {
@@ -87,6 +87,37 @@ trait CamTrait
                                                            ['biz_id','=',$arrRequest['biz_id']], 
                                                            ['app_id','=',$arrRequest['app_id']]
                                                            ])->get()->toArray();
+
+
+
+                 $arrGroupCompany = array();
+                  if(isset($arrCamData['group_company'])){
+                    $arrGroupCompany = GroupCompanyExposure::where('group_Id', $arrCamData['group_company'])->get()->toArray();
+                    $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
+                    if(!empty($arrMstGroup)){
+                      $arrCamData['group_company'] = $arrMstGroup['name'];
+                    }
+                  } 
+
+     
+                  if(!empty($arrGroupCompany)){
+                      $temp = array();
+                      $total = 0;
+                      foreach ($arrGroupCompany as $key => $value) {
+                        $total = $total + $value['proposed_exposure'] + $value['outstanding_exposure'];
+                        if($arrBizData->biz_entity_name == $value['group_company_name']){
+                            $temp[] = $value;
+                            unset($arrGroupCompany[$key]);
+                        }
+                      }
+                      if(!empty($temp)){
+                        $arrGroupCompany = array_merge($temp, $arrGroupCompany);
+                      }
+                      $arrCamData['total_exposure'] = round($total,2);
+                  }
+
+
+
                  //dd($arrGroupCompany);
                 /*start code for approve button */
                 $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);

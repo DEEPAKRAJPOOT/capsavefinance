@@ -116,13 +116,32 @@ class CamController extends Controller
             }else{
               $checkDisburseBtn='';
             }
-            $arrGroupCompany = GroupCompanyExposure::where([
-                                                           ['biz_id','=',$arrRequest['biz_id']], 
-                                                           ['app_id','=',$arrRequest['app_id']]
-                                                           ])->get()->toArray();
+            $arrGroupCompany = array();
+            if(isset($arrCamData['group_company'])){
+              $arrGroupCompany = GroupCompanyExposure::where('group_Id', $arrCamData['group_company'])->get()->toArray();
+              $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
+              if(!empty($arrMstGroup)){
+                $arrCamData['group_company'] = $arrMstGroup['name'];
+              }
+            } 
+
+     
             if(!empty($arrGroupCompany)){
+                $temp = array();
                 $arrUserData = $this->userRepo->find($arrGroupCompany['0']['updated_by'], '');
                 $arrCamData->By_updated = "$arrUserData->f_name $arrUserData->l_name";
+                $total = 0;
+                foreach ($arrGroupCompany as $key => $value) {
+                  $total = $total + $value['proposed_exposure'] + $value['outstanding_exposure'];
+                  if($arrBizData->biz_entity_name == $value['group_company_name']){
+                      $temp[] = $value;
+                      unset($arrGroupCompany[$key]);
+                  }
+                }
+                if(!empty($temp)){
+                  $arrGroupCompany = array_merge($temp, $arrGroupCompany);
+                }
+                $arrCamData['total_exposure'] = round($total,2);
             }
            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
@@ -145,7 +164,9 @@ class CamController extends Controller
 
     public function camInformationSave(Request $request){
        try{
+
             $arrCamData = $request->all();
+
             $userId = Auth::user()->user_id;
             if(!isset($arrCamData['rating_no'])){
                     $arrCamData['rating_no'] = NULL;
@@ -167,32 +188,41 @@ class CamController extends Controller
                     'is_active' => '1',
                     'created_by'=>Auth::user()->user_id
                 );
+                   
                 $arrMstGroup = Group::updateOrcreate($masterGroupData)->toArray();
+                $arrCamData['group_company'] = $arrMstGroup['id'];
+
+                
+                
+                // dd($arrCamData);
                 if(isset($arrCamData['group_company_name']))
                 {
-                  GroupCompanyExposure::where([
-                                                ['biz_id', $arrCamData['biz_id']],
-                                                ['app_id', $arrCamData['app_id']]
-                                              ])->delete();
+
+                  //GroupCompanyExposure::where('group_Id', $arrMstGroup['id'])->delete();
                     foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
                        $inputArr= array(
                           'biz_id'=> $arrCamData['biz_id'] ,
                           'app_id'=> $arrCamData['app_id'],
                           'group_Id'=> $arrMstGroup['id'],
                           'group_company_name'=> $groupCompanyName ?? null,
-                          'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? str_replace(',', '',$arrCamData['sanction_limit'][$key]) : null ,
-                          'outstanding_exposure'=> $arrCamData['outstanding_exposure'][$key] ? str_replace(',', '',$arrCamData['outstanding_exposure'][$key]) : null,
+                          'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? $arrCamData['sanction_limit'][$key] : null ,
+                          'outstanding_exposure'=> isset($arrCamData['outstanding_exposure'][$key]) ? $arrCamData['outstanding_exposure'][$key] : null,
+                          
                           'created_by'=>$userId
                       );  
-                       GroupCompanyExposure::saveGroupCompany($inputArr);
+                        if(isset($arrCamData['proposed_exposure'][$key])){
+                           $inputArr['proposed_exposure'] = $arrCamData['proposed_exposure'][$key];
+                        }
+                      
+                       GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $arrCamData['group_company_expo_id'][$key]], $inputArr);
                     }
                 }
             }
-            
+            $arrCamData['proposed_exposure'] = $arrCamData['proposed_exposure']['0'] ?? '';
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
-                        Session::flash('message',trans('CAM information updated sauccessfully'));
+                        Session::flash('message',trans('CAM information updated successfully'));
                  }else{
                        Session::flash('message',trans('CAM information not updated successfully'));
                  }
