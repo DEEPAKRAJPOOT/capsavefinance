@@ -124,7 +124,7 @@ class InterestAccrual extends BaseModel {
         if (isset($whereCond['interest_date_gte'])) {
            $query = self::where('interest_date', '>=', $whereCond['interest_date_gte']);  
         }
-        
+        self::whereNotNull('overdue_interest_rate');
         $result = $query->sum('accrued_interest');
         return $result;
     }
@@ -143,6 +143,7 @@ class InterestAccrual extends BaseModel {
             $query = self::where('interest_date', '>=', $whereCond['interest_date_gte']);  
          }
          
+         self::whereNotNull('overdue_interest_rate');
          $result = $query->count();
          return $result;
     }

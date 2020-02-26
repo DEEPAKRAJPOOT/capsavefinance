@@ -650,7 +650,7 @@ trait LmsTrait
         
         $monthlyIntCond = [];
         $monthlyIntCond['disbursal_id'] = $disbursalId;
-        $monthlyIntCond['interest_date_gte'] = $invDueDate;   //date('Y-m-d', strtotime($invDueDate));
+       // $monthlyIntCond['interest_date_gte'] = $invDueDate;   //date('Y-m-d', strtotime($invDueDate));
         $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
         $accuredInterestCount =  $this->lmsRepo->countAccruedInterest($monthlyIntCond);
         return array('penal_amount' => $accuredInterest, 'penal_days'=>$accuredInterestCount);
