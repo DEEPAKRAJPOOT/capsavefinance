@@ -49,7 +49,7 @@ class TransType extends BaseModel {
         'is_taxable',
         'is_tds',
         'is_payment',
-        'is_charge',
+        'chrg_master_id	',
         'priority',        
         'created_at',
         'created_by',
@@ -80,7 +80,7 @@ class TransType extends BaseModel {
 
     function charge()
     {
-       return $this->hasOne('App\Inv\Repositories\Models\Master\Charges', 'id', 'is_charge');
+       return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'chrg_master_id','id');
     }  
 
     /** 
