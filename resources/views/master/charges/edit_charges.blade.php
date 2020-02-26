@@ -69,7 +69,7 @@
       </div>
                <div class="row">
                <div class="form-group col-md-6">
-             <label for="chrg_type">  {{$charge_data->chrg_type}}</label><br />
+             <label for="chrg_type"> {{$charge_data->chrg_type}}</label><br />
              <div class="form-check-inline ">
                <label class="form-check-label fnt">
                <input type="radio" class="form-check-input" {{$charge_data->chrg_type == 1 ? 'checked' : ($charge_data->chrg_type == 1 ? 'checked' : '' )}} name="chrg_type" value="1">Auto
