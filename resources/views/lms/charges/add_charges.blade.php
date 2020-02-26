@@ -139,8 +139,8 @@
         if($("#charge_type").val()==1)
         {
          var limitAmount =  $("#amount").val().replace(",", ""); 
-         var fixedamount = parseFloat(limitAmount*18/100);
-         var finalTotalAmount  = parseFloat(fixedamount)+ parseFloat(limitAmount);
+         var fixedamount = parseInt(limitAmount*18/100);
+         var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
          $("#charge_amount_gst_new").val(finalTotalAmount);
          $(".chargeTypeGstCal").css({"display":"inline"});
        }
@@ -148,8 +148,8 @@
        {
             $(".chargeTypeGstCal").css("display","inline");
             var limitAmount =  $("#charge_amount_new").val();  
-            var fixedamount = parseFloat(limitAmount*18/100);
-            var finalTotalAmount  = parseFloat(fixedamount)+ parseFloat(limitAmount);
+            var fixedamount = parseInt(limitAmount*18/100);
+            var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
             $("#charge_amount_gst_new").val(finalTotalAmount);
        }
          
@@ -166,17 +166,17 @@
         {
        
          var fixedamount = parseFloat(limitAmount*18/100);
-         var finalTotalAmount  = parseFloat(fixedamount)+ parseFloat(limitAmount);
+         var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
          $("#charge_amount_gst_new").val(finalTotalAmount);
         
        }
        else
        {
             var limit_amount_new  =  $("#limit_amount_new").val();
-            var afterPercent = parseFloat(limit_amount_new*limitAmount/100);
+            var afterPercent = parseInt(limit_amount_new*limitAmount/100);
             $("#charge_amount_new").val(afterPercent);
-           var fixedamount = parseFloat(afterPercent*18/100);
-           var finalTotalAmount  = parseFloat(fixedamount)+ parseFloat(afterPercent);
+           var fixedamount = parseInt(afterPercent*18/100);
+           var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(afterPercent);
             $("#charge_amount_gst_new").val(finalTotalAmount);
        }
   });
@@ -270,7 +270,7 @@
                 success: function (res) {
                       if(res.status==1)
                       {
-                          $("#limit_amount_new").val(res.limit);  
+                          $("#limit_amount_new").val(parseInt(res.limit));  
                           var  applicable  = res.applicable;  
                           $("#chrg_applicable_id").html(applicable);
                           $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
@@ -289,8 +289,8 @@
                             if(res.is_gst_applicable==1)
                            { 
                              var limitAmount =  $("#amount").val();  
-                             var fixedamount = parseFloat(limitAmount*18/100);
-                             var finalTotalAmount  = parseFloat(fixedamount)+ parseFloat(limitAmount);
+                             var fixedamount = parseInt(limitAmount*18/100);
+                             var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
                              $("#charge_amount_gst_new").val(finalTotalAmount);
                            }
                              
@@ -302,7 +302,7 @@
                              $("#chrg_calculation_type2").attr('checked',true);
                              $("#chrg_calculation_type1").attr('disabled','disabled');
                              var limit_amount_new  =  $("#limit_amount_new").val();
-                             var afterPercent = parseFloat(limit_amount_new*res.amount/100);
+                             var afterPercent = parseInt(limit_amount_new*res.amount/100);
                              $("#charge_amount_new").val(afterPercent);
                          } 
                           if(res.is_gst_applicable==1)
@@ -313,8 +313,8 @@
                             $(".chargeTypeGstCal").css({"display":"inline"});
                             if(res.type==2)
                             {
-                            var afterPercentGst = parseFloat(afterPercent*18/100);
-                            finalTotalAmount  = parseFloat(afterPercentGst+afterPercent);
+                            var afterPercentGst = parseInt(afterPercent*18/100);
+                            finalTotalAmount  = parseInt(afterPercentGst+afterPercent);
                             $("#charge_amount_gst_new").val(finalTotalAmount);
                             }
                          }  
