@@ -112,19 +112,21 @@ class InterestAccrual extends BaseModel {
      * @throws InvalidDataTypeExceptions
      */
     public static function sumAccruedInterest($whereCond)
-    {                
+    {           
         if (isset($whereCond['disbursal_id'])) {
-           $query = self::where('disbursal_id', $whereCond['disbursal_id']); 
+            $query = self::where('disbursal_id', $whereCond['disbursal_id']); 
         } 
         
         if (isset($whereCond['interest_date_lte'])) {
-           $query = self::where('interest_date', '<=', $whereCond['interest_date_lte']);  
+            $query->where('interest_date', '<=', $whereCond['interest_date_lte']);  
         }
         
         if (isset($whereCond['interest_date_gte'])) {
-           $query = self::where('interest_date', '>=', $whereCond['interest_date_gte']);  
+            $query->where('interest_date', '>=', $whereCond['interest_date_gte']);  
         }
-        self::whereNotNull('overdue_interest_rate');
+        if(isset($whereCond['overdue_interest_rate_not_null'])){
+            $query->whereNotNull('overdue_interest_rate');
+        }
         $result = $query->sum('accrued_interest');
         return $result;
     }
@@ -133,17 +135,18 @@ class InterestAccrual extends BaseModel {
     {
         if (isset($whereCond['disbursal_id'])) {
             $query = self::where('disbursal_id', $whereCond['disbursal_id']); 
-         } 
-         
-         if (isset($whereCond['interest_date_lte'])) {
-            $query = self::where('interest_date', '<=', $whereCond['interest_date_lte']);  
-         }
-         
-         if (isset($whereCond['interest_date_gte'])) {
-            $query = self::where('interest_date', '>=', $whereCond['interest_date_gte']);  
-         }
-         
-         self::whereNotNull('overdue_interest_rate');
+        } 
+        
+        if (isset($whereCond['interest_date_lte'])) {
+            $query->where('interest_date', '<=', $whereCond['interest_date_lte']);  
+        }
+        
+        if (isset($whereCond['interest_date_gte'])) {
+            $query->where('interest_date', '>=', $whereCond['interest_date_gte']);  
+        }
+        if(isset($whereCond['overdue_interest_rate_not_null'])){
+            $query->whereNotNull('overdue_interest_rate');
+        }
          $result = $query->count();
          return $result;
     }
