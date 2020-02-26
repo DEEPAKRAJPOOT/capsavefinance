@@ -57,7 +57,7 @@
                         <select name="variable[]" id="variable" class="multi-select-demo form-control form-control-sm" multiple="multiple">
                         @if(isset($variables) && !empty($variables))
                             @foreach($variables as $key=>$val)
-                            <option value="{{$val->id}}"> {{$val->name}} </option>                            
+                            <option value="{{$val->id}}" {{(old('variable') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
                             @endforeach
                         @endif
                         </select>
