@@ -27,6 +27,7 @@ class ChargeController extends Controller
 	protected $docRepo;
 	protected $lmsRepo;
 	protected $masterRepo;
+                  
 
 	/**
 	 * The pdf instance.
@@ -56,90 +57,65 @@ class ChargeController extends Controller
         }
 
     
-     public function editLmsCharges(){
-        return view('lms.charges.edit_charges');
-      }
-    
-     public function listLmsCharges(Request $request){
+     public function editLmsCharges(Request $request){
+         
           $user_id =  $request->get('user_id');
+          if($user_id)
+          {
+              $app =  $this->lmsRepo->getUserDetails($user_id);
+            
+          }
           $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
           $result  =  $this->invRepo->getCustomerId($user_id);
           $program  =  $this->lmsRepo->getProgramUser($user_id);
-          return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program]);
+         return view('lms.charges.edit_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program,'user' => $app]);
+    }
+    
+     public function listLmsCharges(Request $request){
+          $user_id =  $request->get('user_id');
+          if($user_id)
+          {
+              $app =  $this->lmsRepo->getUserDetails($user_id);
+            
+          }
+          $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
+          $result  =  $this->invRepo->getCustomerId($user_id);
+          $program  =  $this->lmsRepo->getProgramUser($user_id);
+          return view('lms.charges.add_charges')->with(['transtype' => $res,'customer' =>$result,'program' => $program,'user' => $app]);
       }
       
-      public function  getChrgAmount(Request $request)
-      {
-          $res =  $request->all();
-          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
-          if($getamount)
-          {
-               $app = "";
-               $sel ="";
-                $res =   [  1 => "Limit Amount",
-                            2 => "Outstanding Amount",
-                            3 => "Outstanding Principal",
-                            4 => "Outstanding Interest",
-                            5 => "Overdue Amount"];
-             if($getamount->chrg_applicable_id > 0)
-             {
-                
-                 foreach($res as $key=>$val)
-                 {
-                     if($getamount->chrg_applicable_id==$key)
-                     {
-                         $sel = "selected";
-                     }
-                     $app.= "<option value=".$key." $sel>".$val."</option>";
-                 }
-             }
-             
-             if($getamount->chrg_calculation_type==1)
-             {
-                $amount =  number_format($getamount->chrg_calculation_amt);
-             }
-             else
-             {
-                $amount =  $getamount->chrg_calculation_amt; 
-             }
-             
-             return response()->json(['status' => 1,'chrg_applicable_id' => $getamount->chrg_applicable_id,'amount' => number_format($amount),'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
-          }
-          else
-          {
-              return response()->json(['status' => 0]); 
-          }
-          
-      }
+  
       
        public function saveManualCharges(Request $request)
        {  
            $getAmount =  str_replace(',', '', $request->amount);
-           $getTransType  =  DB::table('mst_trans_type')->where(['is_charge' => $request->chrg_name])->first();
-        
+           $getTransType  =  DB::table('mst_trans_type')->where(['chrg_master_id' => $request->chrg_name])->first();
+          $totalSumAmount = 0;
            if($getTransType)
            {
-                 $static_amount =  200000;
+                 $static_amount = $request->programamount;
                  if($request->chrg_calculation_type==1)
                  {
                      $percent = NULL;
                      $amount =  $getAmount;
                      $chrg_applicable_id = NULL;
+                     $totalSumAmount ="";
                  }
                  else
                  {
                      $percent  =  $getAmount;
-                     $amount = $static_amount*$getAmount/100;
+                     $amount = $static_amount*$percent/100;
+                     $amountPercent = $amount*18/100;
+                     $totalSumAmount = ($amount + $amountPercent);
                      $chrg_applicable_id  = $request->chrg_applicable_id;
                  }
-                   /// 
                     $id  = Auth::user()->user_id;
                     $mytime = Carbon::now(); 
                     $arr  = [   "prgm_id" => $request->program_id,
                                 "chrg_master_id" =>$request->chrg_name,
                                 "percent" => $percent,
                                 "chrg_applicable_id" =>  $chrg_applicable_id,
-                                "amount" =>   $amount,
+                                "amount" =>   $totalSumAmount,
                                 'created_by' =>  $id,
                                 'created_at' =>  $mytime ];
                   $chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);  
@@ -148,12 +124,13 @@ class ChargeController extends Controller
                         $arr  = [ "user_id" =>  $request->user_id,
                                   "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
                                   "chrg_trans_id" =>  $chrgTransId,
-                                 "amount" =>   $amount,
-                                 'entry_type' =>0,
-                                 "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
+                                  "amount" =>   $totalSumAmount,
+                                  'entry_type' =>0,
+                                  "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                                   "trans_type" => $getTransType->id,
-                                 'created_by' =>  $id, 
-                                 'created_at' =>  $mytime ];
+                                  "pay_from" => $request['pay_from'],
+                                  'created_by' =>  $id, 
+                                  'created_at' =>  $mytime ];
                         
                          $res =   $this->lmsRepo->saveCharge($arr);
                           if($res)

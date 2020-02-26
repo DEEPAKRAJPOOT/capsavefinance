@@ -85,7 +85,6 @@
          <p align="right"><b>{{ $date->isoFormat('MMMM D, Y')}}</b></p>
 
       </header>
-
       <footer>
           <span class="pagenum"></span><b> |</b> CFPL
       </footer>

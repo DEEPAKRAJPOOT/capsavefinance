@@ -1050,11 +1050,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                      if ($request->front) {         
-                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                        return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="420px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      }
                      else
                      {
-                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="670px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                         return '<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="430px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      
                      }
                 })
@@ -1219,7 +1219,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'customer_id',
                     function ($trans) {                        
-                       return $trans->disburse ? $trans->disburse->customer_id : '';
+                      // return $trans->disburse ? $trans->disburse->customer_id : '';
+                        return $trans->lmsUser ? $trans->lmsUser->customer_id : '';
                 })
                 ->addColumn(
                     'virtual_account_no',
@@ -2619,7 +2620,7 @@ class DataRenderer implements DataProviderInterface
 	                        }
 	                    }
 
-                        return ($this->overDueFlag == 0) ? "<input type='checkbox' class='user_id' value=".$customer->user_id.">" : '';
+                        return ($this->overDueFlag == 0) ? "<input type='checkbox' class='user_id' value=".$customer->user_id.">" : '-';
                     }
                 )
                 ->addColumn(
@@ -2999,7 +3000,7 @@ class DataRenderer implements DataProviderInterface
                         ->addColumn(
                                 'settlement_amount',
                                 function ($data) {
-                            return isset($data->settlement_amount) ? $data->settlement_amount : '-';
+                            return isset($data->total_repaid_amt) ? $data->total_repaid_amt : '-';
                         })
                         ->editColumn(
                                 'accured_interest',

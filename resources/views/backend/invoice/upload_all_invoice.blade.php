@@ -91,7 +91,7 @@
 									<div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span> </label>
-                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-pdate" placeholder="Invoice Due Date">
+                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth" placeholder="Invoice Due Date">
                                       </div>
                                     </div>
 									
@@ -137,7 +137,8 @@
                                         <div class="text-right mt-2">
                                             <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                                              <input type="hidden" value="" id="tenor" name="tenor">
-                                            <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
+                                              <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
+                                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                                             <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
                                         </div>
                                     </div>
@@ -383,8 +384,14 @@ var messages = {
         var first  = $('#invoice_due_date').val();
         var second = $('#invoice_date').val();
         var getDays  = findDaysWithDate(first,second);
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //As January is 0.
+        var yyyy = today.getFullYear();
+        var cDate  = dd+"/"+mm+"/"+yyyy;
+        var getOldDays  = findDaysWithDate(cDate,second);
         var tenor  = $('#tenor').val();
-     
+        var tenor_old_invoice  = $('#tenor_old_invoice').val();
      if ($('form#signupForm').validate().form()) {  
        $("#anchor_id" ).rules( "add", {
         required: true,
@@ -439,13 +446,18 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-         if(getDays < tenor)
+         if(getDays > tenor)
         {
            $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor); 
+           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
            e.preventDefault();
         }
-      
+       else if(getOldDays > tenor_old_invoice)
+        {
+           $("#tenorMsg").show(); 
+           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
+           e.preventDefault();
+        }
          
         } else {
         /// alert();
@@ -496,9 +508,11 @@ var messages = {
                         $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
                            $("#program_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
-                           
+                             if(v.program!=null)
+                             {
                                    $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
-                            });
+                              }                   
+                             });
                            
                         
                        
@@ -549,7 +563,9 @@ var messages = {
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
                         var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#prgm_offer_id").val(offer_id);
+                        $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  

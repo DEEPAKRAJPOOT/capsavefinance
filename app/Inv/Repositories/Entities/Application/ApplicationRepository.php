@@ -1110,18 +1110,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	 */
 	public function getCustomerPrgmAnchors($user_id) 
 	{
-		return AppProgramLimit::whereHas('appLimit.app.user', function ($query) use ($user_id) {
-			        $query->where(function ($q) use ($user_id) {
-			            $q->where('user_id', $user_id);
-			        });
-			    })
-				->with('offer')
-				->with('anchor')
-				->with('program')
-				->whereHas('appLimit.app.acceptedOffer')
-				->whereHas('offer')
-                ->where('product_id', 1)
-				->get();
+
+        return AppProgramOffer::whereHas('programLimit.appLimit.app.user', function ($query) use ($user_id) {
+                    $query->where(function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    });
+                })
+                ->with('anchor')
+                ->with('program')
+                ->whereHas('programLimit.appLimit.app.acceptedOffer')
+                ->whereHas('programLimit', function ($query) {
+                        $query->where('product_id', 1);
+                })
+                ->get();
 	}   
 
     
@@ -1184,10 +1185,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getAppProducts($app_id)
     {
+        return AppProgramOffer::with('programLimit')
+                ->where(['app_id' => $app_id,
+                    'is_active' => 1]
+                )
+                ->get();
+    }
+    public function getApplicationProduct($app_id)
+    {
         return Application::with('products')
                 ->where('app_id', $app_id)
                 ->first();
-    }/**
+    }
+    /**
      * get Bank account 
      * 
      * @param type $where array

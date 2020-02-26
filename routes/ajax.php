@@ -717,7 +717,18 @@ Route::group(
         'as' => 'set_default_address',
         'uses' => 'AjaxController@setDefaultAddress'
     ]);
+    Route::get('get-field-val', [
+        'as' => 'get_field_val',
+        'uses' => 'AjaxController@getTableValByField'
+    ]);
 
+
+    Route::post('lms-get-refund-customer', [
+        'as' => 'lms_get_refund_customer',
+        'uses' => 'AjaxController@lmsGetDisbursalCustomer'
+    ]);
+    
+    
     /*lms route*/
 
 
@@ -765,4 +776,9 @@ Route::group(
         'uses' => 'AjaxController@getTransName'
     ]);   
 
+     Route::post('get_chrg_amount', [
+                'as' => 'get_chrg_amount',
+                'uses' => 'AjaxController@getChrgAmount'
+            ]);
+    
 });

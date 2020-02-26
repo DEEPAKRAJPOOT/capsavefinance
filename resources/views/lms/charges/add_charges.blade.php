@@ -36,11 +36,8 @@
      <div class="row">
         <div class="form-group col-md-12">
           <label for="chrg_name">Charge</label>
-          <select class="form-control" id="chrg_name" name="chrg_name">
-          <option value="">Please Select</option>
-          @foreach($transtype as $key)    
-          <option value="{{$key->id}}">{{$key->chrg_name}}</option>
-          @endforeach
+          <select class="form-control chrg_name" id="chrg_name" name="chrg_name">
+         
          </select>
           <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
         </div>
@@ -83,7 +80,9 @@
          <div class="form-group col-md-6 text-right">
              <span  id="submitMsg" class="error"></span>
               <input type="hidden"   id="id" name="id" >
-              <input type="hidden"   id="chrg_applicable_hidden_id" name="chrg_applicable_id" >
+              <input type="hidden"   id="app_id" name="app_id"  value="{{$user->app->app_id}}">
+              <input type="hidden"   id="pay_from" name="pay_from"  value="{{$user->is_buyer}}">
+              <input type="hidden"   id="programamount" name="programamount" >
               <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit"/>
         </div>
       </div>
@@ -100,18 +99,31 @@
  };
  
     $(document).on('change','#program_id',function(){
+        $(".chrg_name").empty();
         $("#msgprogram").html('');
-        var postData =  ({'prog_id':$("#program_id").val(),'_token':messages.token});
+        var postData =  ({'app_id':$("#app_id").val(),'prog_id':$("#program_id").val(),'_token':messages.token});
         jQuery.ajax({
-        url: messages.get_chrg_amount,
+        url: messages.get_trans_name,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
                 error: function (xhr, status, errorThrown) {
                 alert(errorThrown);
                 },
-                success: function (res) {
-                    
+                success: function (data) {
+                    if(data.status==1)
+                    {  
+                        $("#programamount").val(data.amount);
+                        $(".chrg_name").append('<option value="">Please select</option>'); 
+                        $(data.res).each(function(i,v){
+                            $(".chrg_name").append('<option value="'+v.charge.id+'">'+v.charge.chrg_name+'</option>'); 
+                        });
+                    }
+                    else
+                    {
+                             $(".chrg_name").append('<option value="">No charge found</option>'); 
+                       
+                    }
                 }
         });         
     });
@@ -133,6 +145,7 @@
              $("#chrg_calculation_type1").attr('checked',false);
              $("#chrg_calculation_type2").attr('checked',false);
              $("#amount").empty();
+              return false;
       }
       var postData =  ({'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
        jQuery.ajax({
@@ -177,7 +190,7 @@
     }); 
         
     $(document).on('change','#program_id_old',function(){
-       var postData =  ({'prog_id':$("#program_id").val(),'_token':messages.token});
+       var postData =  ({'app_id':$("#app_id").val(),'prog_id':$("#program_id").val(),'_token':messages.token});
        jQuery.ajax({
         url: messages.get_trans_name,
                 method: 'post',
@@ -194,6 +207,7 @@
         
         
     $(document).ready(function () {
+       $("#chrg_name").html('<option value="">No data found</option>'); 
        document.getElementById('amount').addEventListener('input', event =>
         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
        /////////////// validation the time of final submit/////////////// 

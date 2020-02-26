@@ -53,13 +53,23 @@ trait ApplicationTrait
         return $finalDocs ;
     }
     
-    protected function getAppProductIds($app_id)
+    protected function getAppProductIds($app_id, $prgmDocsWhere=[])
     {
-        $appProductIds = [];
-        $appProducts = $this->appRepo->getAppProducts($app_id);
-        foreach($appProducts->products as $product){
-            array_push($appProductIds, $product->pivot->product_id);
+        $ProductIds = [];
+        if (isset($prgmDocsWhere['stage_code']) && $prgmDocsWhere['stage_code'] == 'doc_upload') {
+            $appProducts = $this->appRepo->getApplicationProduct($app_id);
+            foreach($appProducts->products as $product){
+                array_push($ProductIds, $product->id);
+            }
+        } else {
+            $appProducts = $this->appRepo->getAppProducts($app_id);
+            foreach($appProducts as $product){
+                array_push($ProductIds, $product->programLimit->product_id);
+            }
         }
+        // dd($ProductIds);
+        
+        $appProductIds = array_unique($ProductIds);
         return $appProductIds;       
     }
     
@@ -83,8 +93,8 @@ trait ApplicationTrait
         //    array_push($appProductIds, $product->pivot->product_id);
         //}
         
-        $appProductIds = $this->getAppProductIds($app_id);
-
+        $appProductIds = $this->getAppProductIds($app_id, $prgmDocsWhere);
+        // dd($appProductIds);
         $reqDocs = $this->getProgramDocs($prgmDocsWhere, $appProductIds);
         if($reqDocs && count($reqDocs) == 0) {
             return;

@@ -3168,10 +3168,73 @@ if ($err) {
    //////* get program charge master  *?
      public function getTransName(Request $request)
      {
-       $res  =  $this->lmsRepo->getTransName($attr);
-       dd($res);
+       $res  =  $this->lmsRepo->getTransName($request);
+       if(count($res) > 0)
+       {
+               $amountSum  =  $this->lmsRepo->getLimitAmount($request);
+               if($amountSum)
+               {
+                  return response()->json(['status' => 1,'res' => $res,'amount' =>$amountSum]);
+               }
+               else
+               {
+                 return response()->json(['status' => 0]);  
+               }
+    
+       }
+       else
+       {
+             return response()->json(['status' => 0]);
+       }
      }
     
+         public function  getChrgAmount(Request $request)
+      {
+          $res =  $request->all();
+          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
+          if($getamount)
+          {
+               $app = "";
+               $sel ="";
+                $res =   [  1 => "Limit Amount",
+                            2 => "Outstanding Amount",
+                            3 => "Outstanding Principal",
+                            4 => "Outstanding Interest",
+                            5 => "Overdue Amount"];
+             if($getamount->chrg_applicable_id > 0)
+             {
+                
+                 foreach($res as $key=>$val)
+                 {
+                     if($getamount->chrg_applicable_id==$key)
+                     {
+                         $sel = "selected";
+                     }
+                     else
+                     {
+                          $sel = "";
+                     }
+                     $app.= "<option value=".$key." $sel>".$val."</option>";
+                 }
+             }
+             
+             if($getamount->chrg_calculation_type==1)
+             {
+                $amount =  number_format($getamount->chrg_calculation_amt);
+             }
+             else
+             {
+                $amount =  $getamount->chrg_calculation_amt; 
+             }
+             
+             return response()->json(['status' => 1,'chrg_applicable_id' => $getamount->chrg_applicable_id,'amount' => number_format($amount),'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
+          }
+          else
+          {
+              return response()->json(['status' => 0]); 
+          }
+          
+      }
     /**
      * get charges  html
      * 
@@ -3325,7 +3388,7 @@ if ($err) {
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
      }
            
 
@@ -3694,4 +3757,19 @@ if ($err) {
         return $data;
     }
 
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-02-18 10:49:29 
+     * @Desc:  
+     */    
+    public function getTableValByField(Request $request)
+    {
+        $tableName = $request->get('tableName');
+        $whereId = $request->get('whereId');
+        $fieldVal = $request->get('fieldVal');
+        $column = $request->get('column');
+        $getFieldVal= Helpers::getTableVal($tableName, $whereId, $fieldVal); 
+        $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
+        echo $columnVal;
+    }
 }

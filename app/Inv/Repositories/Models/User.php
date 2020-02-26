@@ -632,6 +632,17 @@ class User extends Authenticatable
          return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->pluck('app_id');
     }
     
+     public static function getUserDetails($uid)
+     {
+       
+         return self::with('app')->where(['user_id' =>$uid])->first();
+         
+     }
+     
+         public  function app()
+    {
+         return $this->belongsTo('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->where(['status' =>1]);
+    }
     /**
      * Get Backend Users
      * 

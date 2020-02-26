@@ -87,10 +87,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'
             ]);
-           Route::post('get_chrg_amount', [
-                'as' => 'get_chrg_amount',
-                'uses' => 'Lms\ChargeController@getChrgAmount'
-            ]);
+          
            
             Route::post('save_manual_charges', [
                 'as' => 'save_manual_charges',
@@ -112,10 +109,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@viewInterestAccrual'
             ]);
              
+            Route::get('get-lms-charges-edit', [
+                'as' => 'get_lms_charges_edit',
+                'uses' => 'Lms\ChargeController@editLmsCharges'
+            ]);  
+        
             Route::get('payment-settlement',[
                 'as' => 'lms-payment-settlement',
                 'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
             ]);
+            
+            // manage refund routes 
+
+            Route::get('/refund/refund-list', [
+                'as' => 'lms_refund_list',
+                'uses' => 'Lms\RefundController@refundList'
+            ]);
+
         });//end of application
 
         // Business address

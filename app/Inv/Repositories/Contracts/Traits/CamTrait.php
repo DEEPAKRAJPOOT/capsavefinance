@@ -102,28 +102,29 @@ trait CamTrait
                     }
                 } 
                 
-                return [
-                    'arrCamData' =>$arrCamData,
-                    'arrBizData' => $arrBizData, 
-                    'reviewerSummaryData' => $reviewerSummaryData,
-                    'arrHygieneData' => $arrHygieneData,
-                    'finacialDetails' => $finacialDetails,
-                    'arrOwnerData' => $arrOwnerData,
-                    'arrEntityData' => $arrEntityData,
-                    'financeData' => $financeData,
-                    'FinanceColumns' => $FinanceColumns,
-                    'audited_years' => $audited_years,
-                    'leaseOfferData' => $leaseOfferData,
-                    'arrBankDetails' => $arrBankDetails,
-                    'arrApproverData' => $arrApproverData,
-                    'arrReviewer' => $arrReviewer,
-                    'arrStaticData' => $arrStaticData,
-                    'approveStatus' => $approveStatus,
-                    'currStageCode' => $currStageCode,
-                    'preCondArr' => $preCondArr,
-                    'postCondArr' => $postCondArr,
-                    'facilityTypeList'=>$facilityTypeList
-                ];
+			return [
+					'arrCamData' =>$arrCamData,
+					'arrBizData' => $arrBizData, 
+					'reviewerSummaryData' => $reviewerSummaryData,
+					'arrHygieneData' => $arrHygieneData,
+					'finacialDetails' => $finacialDetails,
+					'arrOwnerData' => $arrOwnerData,
+					'arrEntityData' => $arrEntityData,
+					'financeData' => $financeData,
+					'FinanceColumns' => $FinanceColumns,
+					'audited_years' => $audited_years,
+					'leaseOfferData' => $leaseOfferData,
+					'arrBankDetails' => $arrBankDetails,
+					'arrApproverData' => $arrApproverData,
+					'arrReviewer' => $arrReviewer,
+					'arrStaticData' => $arrStaticData,
+					'approveStatus' => $approveStatus,
+					'currStageCode' => $currStageCode,
+					'facilityTypeList'=>$facilityTypeList,                            
+                                        'preCondArr' => $preCondArr,
+                                        'postCondArr' => $postCondArr
+		];
+	
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }

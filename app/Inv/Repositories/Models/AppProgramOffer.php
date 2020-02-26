@@ -332,4 +332,25 @@ class AppProgramOffer extends BaseModel {
         return $tot_offered_limit;
     }
     
+    
+    public static function getLimitAmount($arr)
+    {
+     
+         if(empty($arr->app_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+       //////* get   app_prgm_limit_id behalf of app_id  ********//////////////
+       $app_prgm_limit_id  = AppProgramLimit::where(['app_id' => $arr->app_id,'product_id' =>1])->pluck('app_prgm_limit_id');
+       $result = self::whereIn('app_prgm_limit_id',$app_prgm_limit_id)->where(['prgm_id'=>(int) $arr->prog_id, 'is_active'=>1])->sum('prgm_limit_amt');
+       return ($result ? $result : false);
+    }
+    
+    public function anchor(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
+    }
+
+    public function program(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+    }
+    
 }

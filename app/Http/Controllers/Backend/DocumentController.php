@@ -39,36 +39,36 @@ class DocumentController extends Controller
             $userData = User::getUserByAppId($appId);
             $allProductDoc = [];
             $docData = [];
-            $noDocFlag = 0;
+            $requiredDocs = [];
+            $docFlag = 0;
             $appProduct = $this->appRepo->getAppProducts($appId);
-
+            // dd($appProduct);
             if ($appId > 0) {
-                foreach ($appProduct->products as $key => $value) {
-                    $requiredDocs[$key]['productInfo'] = $value;
-                    $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->id);
-                    // dd($requiredDocs);
+                foreach ($appProduct as $key => $value) {
+                    $requiredDocs[$key]['productInfo'] = $value->programLimit->product;
+                    $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->programLimit->product_id);
                     if($requiredDocs[$key]['documents']->count() != 0){
-                        $docData = $this->docRepo->appPPDocuments($requiredDocs[$key]['documents'], $appId);
+                        $docData += $this->docRepo->appPPDocuments($requiredDocs[$key]['documents'], $appId);
                     }
                 }
             }
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-
+            
             foreach($requiredDocs as $key => $product) {
-                if($product['documents']->count() == 0) {
-                    $noDocFlag = 1;
+                if($product['documents']->count() > 0 ) {
+                    $docFlag ++;
                 }
             }
-            // dd($docData);
+                
             return view('backend.document.list', [
                 'requiredDocs' => $requiredDocs,
                 'documentData' => $docData,
                 'user_id' => $userData->user_id,
                 'app_id' => $appId,
                 'biz_id' => $bizId,
-                'noDocFlag' => $noDocFlag,
+                'docFlag' => $docFlag,
             ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

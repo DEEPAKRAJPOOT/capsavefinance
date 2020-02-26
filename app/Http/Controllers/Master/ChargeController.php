@@ -51,7 +51,7 @@ class ChargeController extends Controller {
             }
             if($status){
                 
-                DB::table('mst_trans_type')->insert(['is_charge' => $status]);
+                DB::table('mst_trans_type')->insert(['chrg_master_id' => $status]);
                 Session::flash('message', $charge_id ? trans('master_messages.charges_edit_success') :trans('master_messages.charges_add_success'));
                 return redirect()->route('get_charges_list');
             }else{

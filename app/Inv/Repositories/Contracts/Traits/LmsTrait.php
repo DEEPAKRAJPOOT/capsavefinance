@@ -551,22 +551,21 @@ trait LmsTrait
         $now = strtotime($invoice['invoice_due_date']); // or your date as well
         $your_date = strtotime($invoice['invoice_date']);
         $datediff = abs($now - $your_date);
-
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
         //$interest = (($fundedAmount * ($invoice['program_offer']['interest_rate']/100) * $tenor)/360);
         $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
         $disburseAmount = round($fundedAmount - $interest, 2);
-        // dd($disburseAmount);
+        // dd($invoice);
         $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
         $disbursalData['prgm_offer_id'] = $invoice['prgm_offer_id'] ?? null;
-        $disbursalData['bank_account_id'] = $invoice['supplier_bank_detail']['bank_account_id'] ?? 0;
-        $disbursalData['disburse_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-        $disbursalData['bank_name'] = $invoice['supplier_bank_detail']['bank']['bank_name'] ?? null;
-        $disbursalData['ifsc_code'] = $invoice['supplier_bank_detail']['ifsc_code'] ?? null;
-        $disbursalData['acc_no'] = $invoice['supplier_bank_detail']['acc_no'] ?? null;            
+        $disbursalData['bank_account_id'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank_account_id'] : $invoice['supplier_bank_detail']['bank_account_id'];
+        $disbursalData['disburse_date'] = (!empty($invoice['disburse_date'])) ? date("Y-m-d h:i:s", strtotime($invoice['disburse_date'])) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $disbursalData['bank_name'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank']['bank_name'] : $invoice['supplier_bank_detail']['bank']['bank_name'] ;
+        $disbursalData['ifsc_code'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['ifsc_code'] : $invoice['supplier_bank_detail']['ifsc_code'];
+        $disbursalData['acc_no'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['acc_no'] : $invoice['supplier_bank_detail']['acc_no'];            
         $disbursalData['virtual_acc_id'] = $invoice['lms_user']['virtual_acc_id'] ?? null;
         $disbursalData['customer_id'] = $invoice['lms_user']['customer_id'] ?? null;
         $disbursalData['principal_amount'] = $fundedAmount ?? null;
@@ -583,7 +582,7 @@ trait LmsTrait
         $disbursalData['accured_interest'] = null;
         $disbursalData['interest_refund'] = null;
         $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
-        $disbursalData['int_accrual_start_dt'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d') : null;
+        $disbursalData['int_accrual_start_dt'] = ($disburseType == 2 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime($invoice['disburse_date'])) : null;
         $disbursalData['processing_fee'] = $invoice['program_offer']['processing_fee'] ?? null;
         $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
         $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;

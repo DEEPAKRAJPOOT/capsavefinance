@@ -22,6 +22,7 @@
              <div class="row">
                    <div class="col-md-2">
                         <label>Type</label>
+                       
                         <select class="form-control form-control-sm" name="type">                        
                             <option value="">Select Customer</option>
                             @foreach($trans as $val)
@@ -66,7 +67,7 @@
                                     <th>Applicability</th>
                                     <th>Description</th>
                                     <th>Date Time</th>
-                                  
+                                   
                                 </tr>
                             </thead>
                             <tbody>
@@ -87,7 +88,8 @@
 <script>
 
 var messages = {
-    get_lms_charges_list: "{{ URL::route('get_lms_charges_list') }}",   
+    get_lms_charges_list: "{{ URL::route('get_lms_charges_list') }}", 
+    get_lms_charges_edit: "{{ URL::route('get_lms_charges_edit') }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };

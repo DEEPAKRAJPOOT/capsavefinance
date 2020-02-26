@@ -77,7 +77,6 @@ class ChargesTransactions extends BaseModel
         return ($res) ? $res->chrg_trans_id : false;
     }
     
-    
     public static function getAllTransCharges()
     {
         
