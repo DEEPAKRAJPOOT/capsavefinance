@@ -3258,9 +3258,7 @@ if ($err) {
                $sel ="";
                 $res =   [  1 => "Limit Amount",
                             2 => "Outstanding Amount",
-                            3 => "Outstanding Principal",
-                            4 => "Not Found",
-                            5 => "Not Found" ];
+                            3 => "Outstanding Principal"];
            
                 
                  foreach($res as $key=>$val)
@@ -3281,7 +3279,7 @@ if ($err) {
                    
                      $limitAmount  =  $this->lmsRepo->getLimitAmount($request);
                      $limitAmount  = $limitAmount[0];
-                     dd($limitAmount);
+                   
                  }
                  else if($getamount->chrg_applicable_id==2)
                  {
