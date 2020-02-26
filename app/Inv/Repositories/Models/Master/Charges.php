@@ -6,7 +6,10 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
-
+use Session;
+use Auth;
+use DB;
+ 
 
 class Charges extends BaseModel
 {
@@ -106,4 +109,28 @@ class Charges extends BaseModel
     public function userDetail(){
         return $this->belongsTo(User::class, 'created_by');
     }
+    
+      public static function saveCharge($attributes)
+     {
+        $created_at = \carbon\Carbon::now();
+        $uid = Auth::user()->user_id;
+        $arr  =  [   "chrg_name" => $attributes['chrg_name'],
+                     "chrg_desc" => $attributes['chrg_desc'],
+                     "credit_desc" => $attributes['credit_desc'],
+                     "debit_desc" => $attributes['debit_desc'],
+                     "chrg_calculation_type" => $attributes['chrg_calculation_type'],
+                     "chrg_calculation_amt" => $attributes['chrg_calculation_amt'],
+                     "chrg_applicable_id" => $attributes['chrg_applicable_id'],
+                     "chrg_type" => $attributes['chrg_type'],
+                     "is_gst_applicable" => $attributes['is_gst_applicable'],
+                     "gst_percentage" => $attributes['gst_percentage'],
+                     "chrg_tiger_id" => $attributes['chrg_tiger_id'],
+                     "is_active" => $attributes['is_active'],
+                     "created_at"    =>$created_at,
+                     "created_by" => $uid ];
+          return  Charges::create($arr)->id;
+
+      }
+    
+    
 }
