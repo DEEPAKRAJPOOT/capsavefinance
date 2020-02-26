@@ -44,6 +44,7 @@ class SubIndustry extends BaseModel {
     protected $fillable = [
         'industry_id',
         'name',
+        'segment_id',
         'is_active',
         'created_by',
         'created_at',

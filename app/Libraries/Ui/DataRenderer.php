@@ -1923,11 +1923,6 @@ class DataRenderer implements DataProviderInterface
                       return $program->prgm_name;
                     })
                 ->editColumn(
-                    'prgm_type',
-                    function ($program) {                   
-                      return ($program->prgm_type==1) ? 'Vendor Finance' : 'Channel Finance';
-                    })
-                ->editColumn(
                     'anchor_limit',
                     function ($program) {                   
                       return  \Helpers::formatCurreny($program->anchor_limit);
