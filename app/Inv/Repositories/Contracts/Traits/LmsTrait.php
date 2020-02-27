@@ -80,7 +80,7 @@ trait LmsTrait
             $prgmOffer = $this->lmsRepo->getProgramOffer($whereProgramOffer);
             $overdueIntRate = $prgmOffer->overdue_interest_rate;
             $gracePeriod = $prgmOffer->grace_period ? $prgmOffer->grace_period : 0;
-            
+            $int_type_config = $prgmOffer->payment_frequency ? $prgmOffer->payment_frequency : 1;
             $gracePeriodDate = $this->addDays($invoiceDueDate, $gracePeriod);
             $overDueInterestDate = $this->addDays($invoiceDueDate, 1);
             $reculateInterest = false;
@@ -182,6 +182,7 @@ trait LmsTrait
             }
         }
         //$insertTrans = [];
+        /*
         foreach($allTrans as $key => $trans) {
             //$insertTrans[] = $trans;
             $transData = $this->lmsRepo->getTransactions(['user_id' => $trans['user_id'], 'trans_type' => 19]);
@@ -195,7 +196,7 @@ trait LmsTrait
                 $this->lmsRepo->updateTransaction(['user_id' => $trans['user_id'], 'trans_type' => 19], $data);
             }
         }
-                        
+        */                
         return $returnData;
     }
     
