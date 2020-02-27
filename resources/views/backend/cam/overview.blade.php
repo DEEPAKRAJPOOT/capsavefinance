@@ -37,7 +37,7 @@
 
         <div class="card mt-4">
             <div class="card-body ">
-             <form method="POST" action="{{route('cam_information_save')}}"> 
+             <form method="POST" id="camForm" action="{{route('cam_information_save')}}"> 
              @csrf
 
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
@@ -504,5 +504,17 @@ return false;
 });
 
 
+$(document).on('submit', '#camForm', function(e) {
+   $filledInput = 0;
+   $('#ptpq-block input').each(function () {
+      if ($(this).val()) $filledInput++;
+   })
+   if ($filledInput > 1 && !$('input[name="group_company"]').val()) {
+       $('input[name="group_company"]').closest('div').after('<span style="color:red"> Group Name is required.</span>');
+       $('input[name="group_company"]').focus();
+       return false;
+   }
+   return true;
+});
 </script>
 @endsection
