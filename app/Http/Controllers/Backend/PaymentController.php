@@ -15,14 +15,16 @@ use Helpers;
 use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
+use App\Inv\Repositories\Contracts\ApplicationInterface;
 
 class PaymentController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo) {
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, ApplicationInterface $appRepo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
+        $this->appRepo = $appRepo;
         $this->middleware('auth');
     }
 
