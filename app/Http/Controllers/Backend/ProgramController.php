@@ -332,7 +332,7 @@ class ProgramController extends Controller {
     public function saveSubProgram(SubProgramRequest $request)
     {
         try {
-//            dd($request->all());
+            dd($request->all());
             $user_id = \Auth::user()->user_id;
             $dataForProgram = $this->prepareSubProgramData($request);
             $pkeys = $request->get('program_id');

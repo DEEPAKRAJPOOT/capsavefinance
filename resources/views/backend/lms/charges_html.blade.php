@@ -14,12 +14,12 @@
                 <label for="chrg_type">Charge Type</label><br />
                 <div class="form-check-inline ">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->chrg_type == 1 ? 'checked' : ($data->chrg_type != 2 ? 'checked' : '' )}} name="chrg_type" value="1">Auto
+                        <input type="radio" class="form-check-input" {{$data->chrg_type == 1 ? 'checked' : ($data->chrg_type != 2 ? 'checked' : '' )}} name="chrg_type['.$len.']" value="1">Auto
                     </label>
                 </div>
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->chrg_type == 2 ? 'checked' : ''}} name="chrg_type" value="2">Manual
+                        <input type="radio" class="form-check-input" {{$data->chrg_type == 2 ? 'checked' : ''}} name="chrg_type['.$len.']" value="2">Manual
                     </label>
                 </div>
             </div>
@@ -27,12 +27,12 @@
                 <label for="chrg_type">Charge Calculation</label><br />
                 <div class="form-check-inline ">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type" value="1">Fixed
+                        <input type="radio" class="form-check-input" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type['.$len.']" value="1">Fixed
                     </label>
                 </div>
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type" value="2">Percentage
+                        <input type="radio" class="form-check-input" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type['.$len.']" value="2">Percentage
                     </label>
                 </div>
             </div>
@@ -40,12 +40,12 @@
                 <label for="is_gst_applicable">GST Applicable</label><br />
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->is_gst_applicable == 1 ? 'checked' : ($data->is_gst_applicable != 2 ? 'checked' : '' )}} name="is_gst_applicable" value="1">Yes
+                        <input type="radio" class="form-check-input" {{$data->is_gst_applicable == 1 ? 'checked' : ($data->is_gst_applicable != 2 ? 'checked' : '' )}} name="is_gst_applicable['.$len.']" value="1">Yes
                     </label>
                 </div>
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->is_gst_applicable == 2 ? 'checked' : ''}} name="is_gst_applicable" value="2">No
+                        <input type="radio" class="form-check-input" {{$data->is_gst_applicable == 2 ? 'checked' : ''}} name="is_gst_applicable['.$len.']" value="2">No
                     </label>
                 </div>
             </div>
@@ -53,21 +53,33 @@
 
 
         <div class="row">
+            @if(isset($data->chrg_calculation_type))
             <div class="form-group col-md-6">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
-                <input type="text" class="form-control" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$data->chrg_calculation_amt}}" maxlength="10">
+                {!! Form::text('chrg_calculation_amt['.$len.']', 
+                isset($data->chrg_calculation_amt)  ?  number_format($data->chrg_calculation_amt) : null, 
+                ['class'=>'form-control  number_format clsRequired col-md-6','placeholder'=>"Enter  Amount" ,'required'=>'required']) 
+                !!}
             </div>
+            @endif 
+            @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 2)
             <div class="form-group col-md-6" id="approved_limit_div">
                 <label for="chrg_type">Charge Applicable On</label>
-                <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
-                    <option value="" selected>Select</option>
-                    <option {{$data->chrg_applicable_id == 1 ? 'selected' : ''}} value="1">Limit Amount</option>
-                    <option {{$data->chrg_applicable_id == 2 ? 'selected' : ''}} value="2">Outstanding Amount</option>
-                    <option {{$data->chrg_applicable_id == 3 ? 'selected' : ''}} value="3">Outstanding Principal</option>
-                    <option {{$data->chrg_applicable_id == 4 ? 'selected' : ''}} value="4">Outstanding Interest</option>
-                    <option {{$data->chrg_applicable_id == 5 ? 'selected' : ''}} value="5">Overdue Amount</option>
-                </select>
+                {!!
+                Form::select('chrg_tiger_id['.$len.']',
+                [''=>'Please select' ,  1 => 'Limit Amount', 
+                2 => ' Outstanding Amount',
+                3 => 'Oustanding Principal',
+                4 => 'Outstanding Interest',
+                5 => 'Overdue Amount'],
+                isset($data->chrg_applicable_id)  ?   $data->chrg_applicable_id  : null,
+                ['id' => 'chrg_tiger_id_'.$len,
+                'class'=>'form-control clsRequired ',
+                'required'=>'required'
+                ])
+                !!}
             </div>
+            @endif
         </div>
 
         <div class="row">
