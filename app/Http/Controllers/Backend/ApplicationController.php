@@ -681,9 +681,11 @@ class ApplicationController extends Controller
                 }
             } else {
                 $roleDropDown = $this->userRepo->getAllRole()->toArray();
-            }            
+            }
+            $appData = $this->appRepo->getAppData($app_id);
             return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
+                ->with('biz_id', $appData->biz_id)
                 ->with('roles', $roleDropDown)
                 ->with('user_id', $user_id)
                 ->with('assign_case', $assign_case)    
@@ -701,7 +703,6 @@ class ApplicationController extends Controller
      */    
     public function AcceptNextStage(Request $request) {
         try{
-           // dd($request);
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $sel_assign_role = $request->get('sel_assign_role');

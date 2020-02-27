@@ -13,7 +13,9 @@
          </div>
       </div>
       <!--Start-->
+      @if($is_editable)
       <form method="post" action="{{ route('save_reviewer_summary') }}">
+      @endif
       @csrf
       <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}"> 
       <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}"> 
@@ -449,14 +451,18 @@
                      </table>
                </div>
                <div class="col-md-12 mt-2">
+               @if($is_editable)
                @can('save_reviewer_summary')
                   <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
                @endcan
+               @endif
                </div>
             </div>
          </div>
       </div>
+      @if($is_editable)
       </form>
+      @endif
       <!--End-->
    </div>
 </div>   
