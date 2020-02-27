@@ -213,7 +213,11 @@ class CamController extends Controller
                         if(isset($arrCamData['proposed_exposure'][$key])){
                            $inputArr['proposed_exposure'] = $arrCamData['proposed_exposure'][$key];
                         }
-                      
+                        if(isset($arrCamData['group_company_expo_id'][$key])){
+                           $inputArr['group_company_expo_id'] = $arrCamData['group_company_expo_id'][$key];
+                        }else{
+                           $inputArr['group_company_expo_id'] = null;
+                        }
                        GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $arrCamData['group_company_expo_id'][$key]], $inputArr);
                     }
                 }
