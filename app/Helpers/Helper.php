@@ -24,6 +24,7 @@ use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\CamReviewerSummary;
+use App\Inv\Repositories\Models\Business;
 use Illuminate\Http\File;
 
 class Helper extends PaypalHelper
@@ -330,7 +331,8 @@ class Helper extends PaypalHelper
             if(!Storage::exists('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'))) {
                 Storage::makeDirectory('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'), 0777, true);
             }
-            $fileName = 'CamReport_'.$appId."_".time().".pdf";
+            $businessDetails = Business::find($bizId);
+            $fileName ='CAM_'.$appId.'_'.$businessDetails->biz_entity_name.'.pdf'; // 'CamReport_'.$appId."_".time().".pdf";
             $path = "/cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;            
             $tempPath = Storage::disk('public')->put($path, $pdfContent);
             $dbpath = "cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;

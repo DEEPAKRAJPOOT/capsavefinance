@@ -678,9 +678,11 @@ class ApplicationController extends Controller
                 }
             } else {
                 $roleDropDown = $this->userRepo->getAllRole()->toArray();
-            }            
+            }
+            $appData = $this->appRepo->getAppData($app_id);
             return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
+                ->with('biz_id', $appData->biz_id)
                 ->with('roles', $roleDropDown)
                 ->with('user_id', $user_id)
                 ->with('assign_case', $assign_case)    
@@ -698,7 +700,7 @@ class ApplicationController extends Controller
      */    
     public function AcceptNextStage(Request $request) {
         try{
-            
+
             $user_id = $request->get('user_id');
             $app_id = $request->get('app_id');
             $sel_assign_role = $request->get('sel_assign_role');
@@ -709,7 +711,7 @@ class ApplicationController extends Controller
                         
             $addl_data = [];
             $addl_data['sharing_comment'] = $sharing_comment;
-            
+
             if ($curr_role_id && $assign_case) {
                 $selData = explode('-', $sel_assign_role);
                 $selRoleId = $selData[0];
@@ -717,7 +719,7 @@ class ApplicationController extends Controller
                 $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-            } else {                
+            } else {
                 $currStage = Helpers::getCurrentWfStage($app_id);
                 //Validate the stage
                 if ($currStage->stage_code == 'credit_mgr') {
