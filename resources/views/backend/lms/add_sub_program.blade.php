@@ -67,7 +67,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="txtCreditPeriod">
-                                                                {{ trans('backend.add_program.program_detail') }}
+                                                                {{ trans('backend.add_program.sub_program_detail') }}
                                                                 <span class="error_message_label">*</span>
                                                             </label>
                                                             <div class="block-div clearfix ">
@@ -123,7 +123,7 @@
                                                             <label for="txtCreditPeriod">Loan Size<span class="error_message_label">*</span> </label>
                                                             <div class="row">
                                                                 <div class="col-md-6">
-                                                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:12px;">
+                                                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:0px;">
                                                                         <i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('min_loan_size',
                                                                     isset($subProgramData->min_loan_size) ?  number_format($subProgramData->min_loan_size) : null,
@@ -131,7 +131,7 @@
 
                                                                 </div>
                                                                 <div class="col-md-6">
-                                                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:12px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:0px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('max_loan_size',
                                                                     isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : null,
                                                                     ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max'])   !!}
@@ -246,7 +246,7 @@
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
                                                                     <label for="is_adhoc_facility">Adhoc Facility<span class="error_message_label">*</span</label>
-                                                                    <div class="">
+                                                                    <div class="" style="color:black;">
                                                                         <div class="form-check-inline">
                                                                             <label class="form-check-label fnt">
                                                                                 {!! Form::radio('is_adhoc_facility',
@@ -272,7 +272,7 @@
                                                                     </div>
                                                                     <label id="prgm_type-error" class="error mb-0" for="is_adhoc_facility"></label>
                                                                     <div class="mt-3">
-                                                                        <div id="facility1" class="desc" style="display:none;">
+                                                                        <div id="facility1" class="desc" style="display:none; color:black;">
                                                                             <label for="txtCreditPeriod">Max. Interset Rate (%) <span class="error_message_label">*</span></label>
 
                                                                             {!! Form::text('adhoc_interest_rate',
