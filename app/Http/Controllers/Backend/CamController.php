@@ -219,7 +219,7 @@ class CamController extends Controller
                         }else{
                            $group_company_expo_id = null;
                         }
-                       GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $group_company_expo_id, $inputArr);
+                       GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $group_company_expo_id], $inputArr);
                     }
                 }
             }
