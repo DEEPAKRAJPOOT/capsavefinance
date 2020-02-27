@@ -9,6 +9,7 @@ use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Models\FinanceModel;
 use Storage;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Mail\ReviewerSummary;
 
 class UserEventsListener extends BaseEvent
 {
@@ -534,11 +535,11 @@ class UserEventsListener extends BaseEvent
                     'body' => $mail_body,
                 ];
                 FinanceModel::logEmail($mailContent);
+            });
 
             Mail::to($user["receiver_email"], $user["receiver_user_name"])
             ->cc(explode(',', env('SEND_MAIL_CC')))
             ->send(new ReviewerSummary($this->mstRepo));
-            });
         }
     }
 

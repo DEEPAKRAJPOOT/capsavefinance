@@ -1,18 +1,13 @@
 @extends('layouts.email')
 @section('email_content')
-
 <table width="700" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
     <tr>
-        <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
-            <h2 style="font-size:16px; margin:0px 0px 0;">Cover Note</h2></td>
+        <td style="padding:8px 10px;font-size: 13px;" align="left">{!!isset($reviewerSummaryData->cover_note) ? ($reviewerSummaryData->cover_note) : ''!!}</td>
     </tr>
-    <tr>
-        <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
-            <tr>
-                <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" align="left">{!!isset($reviewerSummaryData->cover_note) ? ($reviewerSummaryData->cover_note) : ''!!}</td>
-            </tr>
-        </table>
-    </tr>
+</table>
+<table width="700" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
+    
+
     <tr>
         <td align="left" style="background:#8a8989; color:#fff;padding:10px;">
             <h3 style="font-size:16px; margin:0px 0px 0;">Deal Structure</h3></td>
