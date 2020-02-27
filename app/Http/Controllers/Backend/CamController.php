@@ -281,7 +281,8 @@ class CamController extends Controller
         }
       } 
 
-
+      $roleData =  Helpers::getUserRole()->first();
+      $is_editable = ($roleData->id == config('common.user_role.APPROVER'))?0:1;
       return view('backend.cam.reviewer_summary', [
         'bizId' => $bizId, 
         'appId'=> $appId,
@@ -291,7 +292,8 @@ class CamController extends Controller
         'preCondArr' => $preCondArr,
         'postCondArr' => $postCondArr,
         'arrStaticData' => $arrStaticData,
-        'facilityTypeList' => $facilityTypeList
+        'facilityTypeList' => $facilityTypeList,
+        'is_editable' => $is_editable
       ]);
     }
 

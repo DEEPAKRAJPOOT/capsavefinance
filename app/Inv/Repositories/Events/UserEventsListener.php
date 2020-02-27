@@ -538,7 +538,7 @@ class UserEventsListener extends BaseEvent
             });
 
             Mail::to($user["receiver_email"], $user["receiver_user_name"])
-            ->cc(explode(',', env('SEND_MAIL_CC')))
+            ->cc(explode(',', env('SEND_APPROVER_MAIL_CC')))
             ->send(new ReviewerSummary($this->mstRepo));
         }
     }
