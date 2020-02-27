@@ -60,7 +60,7 @@ class FinancialJeConfig extends BaseModel {
         JOIN rta_financial_trans_config ON (rta_financial_trans_config.trans_config_id=rta_financial_je_config.trans_config_id)
         JOIN rta_financial_journals ON (rta_financial_journals.id=rta_financial_je_config.journal_id)
         JOIN 
-        (SELECT rfvtc.trans_config_id,GROUP_CONCAT(rfv.name) AS variable_name FROM rta_financial_variables_trans_config
+        (SELECT rfvtc.trans_config_id,GROUP_CONCAT(distinct(rfv.name)) AS variable_name FROM rta_financial_variables_trans_config
          as rfvtc JOIN rta_financial_variables as rfv ON (rfv.id=rfvtc.variable_id)
         GROUP BY rfvtc.trans_config_id) AS A ON (A.trans_config_id=rta_financial_je_config.trans_config_id)
         ORDER BY rta_financial_je_config.je_config_id DESC");
