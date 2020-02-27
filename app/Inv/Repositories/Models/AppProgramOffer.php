@@ -74,6 +74,7 @@ class AppProgramOffer extends BaseModel {
         'addl_security',
         'comment',
         'is_approve',
+        'payment_frequency',
         'status',
         'is_active',
         'created_at',
