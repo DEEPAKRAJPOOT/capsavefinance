@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Business;
 
 class ReviewerSummary extends Mailable
 {
@@ -39,11 +40,13 @@ class ReviewerSummary extends Mailable
      */
     public function build(Request $request)
     {
-        
+        $preCondArr = [];
+        $postCondArr = [];
         $this->func_name = __FUNCTION__;
         $offerPTPQ = '';
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
+        $businessDetails = Business::find($bizId);
         $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
         $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
         if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
@@ -87,7 +90,7 @@ class ReviewerSummary extends Mailable
         //         'body' => $email,
         // ];
 
-        $email->subject('Reviewer Summary Detail');
+        $email->subject('New Application For Approver - '.$businessDetails->biz_entity_name);
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {
