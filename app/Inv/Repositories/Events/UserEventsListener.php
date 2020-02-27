@@ -8,6 +8,7 @@ use App\Inv\Repositories\Factory\Events\BaseEvent;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Models\FinanceModel;
 use Storage;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 class UserEventsListener extends BaseEvent
 {
@@ -19,9 +20,9 @@ class UserEventsListener extends BaseEvent
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(InvMasterRepoInterface $mstRepo)
     {
-        //
+        $this->mstRepo = $mstRepo;
     }
 
     /**
@@ -533,6 +534,10 @@ class UserEventsListener extends BaseEvent
                     'body' => $mail_body,
                 ];
                 FinanceModel::logEmail($mailContent);
+
+            Mail::to($user["receiver_email"], $user["receiver_user_name"])
+            ->cc(explode(',', env('SEND_MAIL_CC')))
+            ->send(new ReviewerSummary($this->mstRepo));
             });
         }
     }
