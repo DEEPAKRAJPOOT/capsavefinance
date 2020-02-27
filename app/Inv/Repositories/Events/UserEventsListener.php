@@ -630,6 +630,35 @@ class UserEventsListener extends BaseEvent
         }
     } 
 
+    public function onApplicationMoveToApprover($userData){
+        $user = unserialize($userData);
+        $this->func_name = __FUNCTION__;
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%receiver_user_name','%receiver_role_name','%app_id','%cover_note','%url'],
+                [$user['receiver_user_name'],$user['receiver_role_name'],$user['app_id'],$user['cover_note'],url('/')],
+                $email_content->message
+            );
+            $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+                function ($message) use ($user, $mail_subject, $mail_body) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["receiver_email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['receiver_user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+
     /**
      * Event subscribers
      *
@@ -726,5 +755,9 @@ class UserEventsListener extends BaseEvent
             'App\Inv\Repositories\Events\UserEventsListener@onApplicationMoveBack'
         );
 
+        $events->listen(
+            'APPLICATION_APPROVER_MAIL', 
+            'App\Inv\Repositories\Events\UserEventsListener@onApplicationMoveToApprover'
+        );
     }
 }

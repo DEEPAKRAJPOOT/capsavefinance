@@ -39,6 +39,7 @@ class DocumentController extends Controller
             $userData = User::getUserByAppId($appId);
             $allProductDoc = [];
             $docData = [];
+            $requiredDocs = [];
             $docFlag = 0;
             $appProduct = $this->appRepo->getAppProducts($appId);
             // dd($appProduct);
@@ -54,12 +55,13 @@ class DocumentController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-
+            
             foreach($requiredDocs as $key => $product) {
                 if($product['documents']->count() > 0 ) {
                     $docFlag ++;
                 }
             }
+                
             return view('backend.document.list', [
                 'requiredDocs' => $requiredDocs,
                 'documentData' => $docData,

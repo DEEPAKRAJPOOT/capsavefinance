@@ -48,7 +48,6 @@
 								<th>Anchor Name </th>
 								<th>Program </th>
 								<th>Program Limit</th>
-								<th>Avialable Limit</th>
 						  	</tr>
 					   </thead>
 					   
@@ -60,8 +59,8 @@
 								<td class="sorting_1">{{ $anchor->anchor->anchor_id }}</td>
 								<td>{{ $anchor->anchor->comp_name }}</td>
 								<td>{{ $anchor->program->prgm_name }}</td>
-								<td><i class="fa fa-inr"></i> {{ $anchor->limit_amt }}</td>
-								<td><i class="fa fa-inr"></i> {{ (isset($anchor->offer->prgm_limit_amt)) ?? $anchor->offer->prgm_limit_amt - (isset($anchor->offer->loan_amount)) ?? $anchor->offer->loan_amount }}</td>
+								<td><i class="fa fa-inr"></i> {{ $anchor->program->anchor_limit }}</td>
+								
 							</tr>
 							@endif
 						   	@endforeach
@@ -111,7 +110,6 @@
 											   </div>	           
 											</td>  
 										</tr>	
-
 										@endforeach
 										@else
 										<tr>

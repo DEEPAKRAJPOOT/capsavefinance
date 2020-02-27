@@ -23,6 +23,7 @@ use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Models\UserBankAccount;
+use App\Inv\Repositories\Models\CamReviewerSummary;
 use Illuminate\Http\File;
 
 class Helper extends PaypalHelper
@@ -919,6 +920,20 @@ class Helper extends PaypalHelper
             ];
         }
         AppApprover::insert($data);
+
+        $application = Application::find($app_id);
+        $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$application->business->biz_id)->where('app_id','=',$application->app_id)->first();
+
+        foreach ($approvers as $approver) {
+
+            $user = UserModel::getfullUserDetail((int)$approver->user_id);
+            $emailData['app_id'] = 'CAPS000'.$application->app_id;
+            $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
+            $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
+            $emailData['receiver_email'] =  $user->email;
+            $emailData['cover_note'] = $reviewerSummaryData->cover_note;
+            \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($emailData));
+        }
         return $approvers;
     }
 
