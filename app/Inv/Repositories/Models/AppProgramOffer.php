@@ -352,6 +352,12 @@ class AppProgramOffer extends BaseModel {
     }
 
 
+    public static function getSingleLimit($aid)
+    {
+         return self::where('anchor_id',$aid)->first();  
+    }
+
+    
        function anchorOne()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  

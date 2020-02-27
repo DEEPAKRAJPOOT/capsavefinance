@@ -58,7 +58,7 @@
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
-                                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
+                                           
                                 
                                         </div>
                                     </div>
@@ -130,6 +130,7 @@
                                             <label class="error" id="tenorMsg"></label>
                                         </div>
                                         <div class="text-right mt-2">
+                                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                                             <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                                              <input type="hidden" value="" id="tenor" name="tenor">
                                               <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
@@ -326,13 +327,11 @@ var messages = {
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
    };
    
-   $('[name="invoice_approve_amount"]').on('change keyup', function() {
+   $(document).on('change keyup','#invoice_approve_amount', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
-     var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
-    // var invoice_approve_amount = invoice_approve_amount.replace(',', '');
-    /// var invoice_approve_amount = parseInt(invoice_approve_amount);
-   ///  alert(invoice_approve_amount); return false;
-     if(invoice_approve_amount  > pro_limit)
+     var invoice_approve_amount = $("#invoice_approve_amount").val();
+     var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+      if(invoice_approve_amount  > pro_limit)
      {
          $("#msgProLimit").text('Invoice amount should not more than program limit');
          $("#submit").css("pointer-events","none");

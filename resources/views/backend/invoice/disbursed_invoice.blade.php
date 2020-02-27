@@ -276,7 +276,7 @@
  
   $(document).ready(function () {
        $("#program_bulk_id").append("<option value=''>No data found</option>");  
-        $("#program_bulk_id").append("<option value=''>No data found</option>");                         
+                              
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
      
