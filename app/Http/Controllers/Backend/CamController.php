@@ -118,9 +118,9 @@ class CamController extends Controller
               $checkDisburseBtn='';
             }
             $arrGroupCompany = array();
-            if(isset($arrCamData['group_company'])){
+            if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
               $arrGroupCompany = GroupCompanyExposure::where('group_Id', $arrCamData['group_company'])->get()->toArray();
-              $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
+              $arrMstGroup =  Group::where('id', (int)$arrCamData['group_company'])->first()->toArray();
               if(!empty($arrMstGroup)){
                 $arrCamData['group_company'] = $arrMstGroup['name'];
               }

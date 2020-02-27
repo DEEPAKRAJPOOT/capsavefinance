@@ -160,13 +160,12 @@ class CibilController extends Controller
         }
         
         if(isset($acknowledgementResult['response-type']) && $acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
-            sleep(10);
+            sleep(25);
             $arrRequest['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrRequest['report_id'] = $acknowledgementResult['report-id'];
             $arrRequest['resFormat'] = 'XML';
-              //dd($arrOwnerData);
+              
             $responseData =  $CibilApi->getCommercialCibilData($arrRequest);
-             //dd($responseData);
             $q = xml_parser_create('utf-8');
             xml_parse_into_struct($q, $responseData, $cibilRes);
             xml_parser_free($q);
@@ -178,7 +177,7 @@ class CibilController extends Controller
             }
             if(isset($resultData['status'])){
                     $arrRequest['resFormat'] = 'HTML';
-                    sleep(5);
+                    sleep(10);
                     $resInHTMLFormate =  $CibilApi->getCommercialCibilData($arrRequest);
                    // dd($resInHTMLFormate);
                     $cibilData = base64_encode($resInHTMLFormate);
