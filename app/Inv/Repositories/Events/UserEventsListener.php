@@ -645,7 +645,10 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $message->to($user["receiver_email"], $user["receiver_user_name"]);
+                $message->bcc('gaurav.agarwal@prolitus.com');
+                $message->bcc('sudesh.kumar@prolitus.com');
+                $message->subject($mail_subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => array($user["receiver_email"]),
