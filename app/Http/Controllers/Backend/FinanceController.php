@@ -80,4 +80,12 @@ class FinanceController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    public function addJiConfig() {
+        try {            
+            return view('backend.finance.ji_config');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }       
+    }
 }

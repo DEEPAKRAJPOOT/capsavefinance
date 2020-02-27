@@ -1140,6 +1140,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_je_config',
                 'uses' => 'Backend\FinanceController@saveJeConfig'
             ]);
+            Route::get('add-ji-config', [
+                'as' => 'add_ji_config',
+                'uses' => 'Backend\FinanceController@addJiConfig'
+            ]);
         });
 
     });

@@ -123,7 +123,8 @@ try {
                     {data: 'journal_name'},
                     {data: 'journal_type'},
                     {data: 'trans_type'},
-                    {data: 'variable_name'}
+                    {data: 'variable_name'},
+                    {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

@@ -3170,6 +3170,12 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                         return $dataRecords->variable_name;
                     })
+                    ->addColumn(
+                        'action',
+                        function ($dataRecords) {
+                            return '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#addJiConfig" title="Add Ji Config" data-url ="'.route('add_ji_config', ['trans_config_id' => $dataRecords->trans_config_id,'journal_id' => $dataRecords->journal_id,'je_config_id' => $dataRecords->je_config_id]).'" data-height="600px" data-width="100%" data-placement="top"><i class="fa fa-edit">Add Ji Item</a>';
+                        }
+                    )
                     ->make(true);
         }
 }

@@ -107,6 +107,7 @@
                                     <th>Journal Type</th>
                                     <th>Transaction Type</th>
                                     <th>Variables</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -120,6 +121,7 @@
 </div>
 </div>
 </div>
+{!!Helpers::makeIframePopup('addJiConfig','Journal Items', 'modal-md')!!}
 @endsection
 
 @section('jscript')
