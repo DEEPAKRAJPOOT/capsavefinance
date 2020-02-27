@@ -62,12 +62,12 @@
             }
             return c.concat(d, e)
         },
-        highlighter: function(b) {
+        highlighter: function(b, z) {
             var c, d, e, f, g, h = a("<div></div>"),
                 i = this.query,
                 j = b.toLowerCase().indexOf(i.toLowerCase());
             if (c = i.length, 0 === c) return h.text(b).html();
-            for (; j > -1;) d = b.substr(0, j), e = b.substr(j, c), f = b.substr(j + c), g = a("<strong></strong>").text(e), h.append(document.createTextNode(d)).append(g), b = f, j = b.toLowerCase().indexOf(i.toLowerCase());
+            for (; j > -1;) d = b.substr(0, j), e = b.substr(j, c), f = b.substr(j + c), g = a("<strong class='groupid' groupid='"+z.id+"'></strong>").text(e), h.append(document.createTextNode(d)).append(g), b = f, j = b.toLowerCase().indexOf(i.toLowerCase());
             return h.append(document.createTextNode(b)).html()
         },
         render: function(b) {
@@ -185,7 +185,7 @@
     }, a.fn.typeahead.defaults = {
         source: [],
         items: 8,
-        menu: '<ul class=" dropdown-menu" role="listbox"></ul>',
+        menu: '<ul class="dropdown-menu" role="listbox"></ul>',
         item: '<li><a class="dropdown-item" href="#" role="option"></a></li>',
         minLength: 1,
         scrollHeight: 0,

@@ -49,6 +49,7 @@ class TransType extends BaseModel {
         'is_taxable',
         'is_tds',
         'is_payment',
+        'is_charge',
         'priority',        
         'created_at',
         'created_by',
@@ -75,5 +76,23 @@ class TransType extends BaseModel {
         } else {
             return self::create($data);
         }
+    }
+
+    function charge()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Master\Charges', 'id', 'is_charge');
+    }  
+
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-02-17 14:41:47 
+     * @Desc:  
+     */
+    public static function getManualTranType(){
+       $result=self::select('*')
+        ->where("is_visible","=", 1)
+        ->where("is_active","=", 1)
+        ->get();
+        return $result?$result:'';
     }
 }

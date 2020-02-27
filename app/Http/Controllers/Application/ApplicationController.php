@@ -86,6 +86,10 @@ class ApplicationController extends Controller
         try {
             $arrFileData = $request->all();
 
+            if(request()->is_gst_manual == 1){
+              $arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
+            }
+            
             if($request->has('__signature') && $request->has('biz_id')){
                 $bizId = $request->biz_id;
                 $business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);

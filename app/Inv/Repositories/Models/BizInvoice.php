@@ -285,6 +285,15 @@ public static function updateInvoice($invoiceId,$status)
             ->where('status_id', 9)
             ->get();
     }
+
+    public static function getAllUserInvoiceIds($userIds)
+    {
+        return self::whereHas('app.user', function($query) use ($userIds) {
+                    $query->whereIn('user_id', $userIds);
+                })
+            ->where('status_id', 9)
+            ->pluck('invoice_id');
+    }
      
      /**
      * get Invoice Data

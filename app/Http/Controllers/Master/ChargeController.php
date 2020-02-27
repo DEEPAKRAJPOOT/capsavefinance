@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Session;
 use Auth;
+use DB;
  
 class ChargeController extends Controller {
 
@@ -49,6 +50,8 @@ class ChargeController extends Controller {
                $status = $this->masterRepo->saveCharges($arrChargesData); 
             }
             if($status){
+                
+                DB::table('mst_trans_type')->insert(['chrg_master_id' => $status]);
                 Session::flash('message', $charge_id ? trans('master_messages.charges_edit_success') :trans('master_messages.charges_add_success'));
                 return redirect()->route('get_charges_list');
             }else{

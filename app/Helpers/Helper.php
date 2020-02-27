@@ -40,7 +40,7 @@ class Helper extends PaypalHelper
         $request                 = request();
         $data['page_url']        = $request->url();
         $data['loggedin_userid'] = (auth()->guest() ? 0 : auth()->user()->id);
-        
+
         $data['ip_address']      = $request->getClientIp();
         $data['method']          = $request->method();
         $data['message']         = $exception->getMessage();
@@ -49,25 +49,26 @@ class Helper extends PaypalHelper
         if (config('app.env') == "production") {
             $data['request'] = $request->except('password');
         }
-        
+
         $data['file']  = $exception->getFile();
         $data['line']  = $exception->getLine();
         $data['trace'] = $exception->getTraceAsString();
 
-        $subject = 'RentAlpha ('.app()->environment().') '.($handler ?
-            '' : 'EXCEPTION').' Error at '.date('Y-m-d D H:i:s T');
+        $subject = 'RentAlpha (' . app()->environment() . ') ' . ($handler ?
+            '' : 'EXCEPTION') . ' Error at ' . date('Y-m-d D H:i:s T');
 
         //config(['mail.driver' => 'mail']);                
         Mail::raw(
             print_r($data, true),
-            function ($message) use ($subject) {            
-            $message->to(config('errorgroup.error_notification_group'))
-                ->from(
-                    config('errorgroup.error_notification_email'),
-                    config('errorgroup.error_notification_from')
-                )
-                ->subject($subject);
-        });
+            function ($message) use ($subject) {
+                $message->to(config('errorgroup.error_notification_group'))
+                    ->from(
+                        config('errorgroup.error_notification_email'),
+                        config('errorgroup.error_notification_from')
+                    )
+                    ->subject($subject);
+            }
+        );
     }
 
     /**
@@ -80,8 +81,8 @@ class Helper extends PaypalHelper
     {
         $exMessage = trans('error_messages.generic.failure');
 
-        $actualException = 'Error: '.$exception->getMessage().
-            ' . File: '.$exception->getFile().' . Line#: '.$exception->getLine();
+        $actualException = 'Error: ' . $exception->getMessage() .
+            ' . File: ' . $exception->getFile() . ' . Line#: ' . $exception->getLine();
 
         if (config('app.debug') === false) {
             self::shootDebugEmail($exception);
@@ -91,16 +92,16 @@ class Helper extends PaypalHelper
         }
     }
 
-    
+
     /*
      * make model popup with Iframe
      * 
      */
-    public static function makeIframePopup($modelId, $title, $model){
+    public static function makeIframePopup($modelId, $title, $model)
+    {
 
-     //return \App\Inv\Repositories\Models\CorpStatus::all(); 
-    
-        return "<div  class=\"modal\" id=\"$modelId\">
+        //return \App\Inv\Repositories\Models\CorpStatus::all(); 
+        return "<div  class=\"modal\" id=\"$modelId\" data-keyboard=\"false\" data-backdrop=\"static\">
         <div class=\"modal-dialog $model\">
           <div class=\"modal-content\">
               <div class=\"modal-header\">
@@ -114,7 +115,7 @@ class Helper extends PaypalHelper
         </div>
     </div>";
     }
-  
+
     /**
      * customIsset
      * 
@@ -122,16 +123,17 @@ class Helper extends PaypalHelper
      * @param type $key
      * @return string
      */
-    public static function customIsset($obj, $key){
-        if(is_null($obj)){
+    public static function customIsset($obj, $key)
+    {
+        if (is_null($obj)) {
             return '';
-        }else if(isset($obj->$key)){
+        } else if (isset($obj->$key)) {
             return $obj->$key;
-        }else{
+        } else {
             return '';
         }
-    }    
-    
+    }
+
     /**
      * Update workflow app stage
      * 
@@ -140,29 +142,29 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = false, $addl_data=[])
+    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = false, $addl_data = [])
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
             $wf_stage_id = $wfData->wf_stage_id;
             $wf_order_no = $wfData->order_no;
             $assignedRoleId = $wfData->role_id;
-            $updateData = [                
+            $updateData = [
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
-            $appData = Application::getAppData((int)$app_id);
+            $appData = Application::getAppData((int) $app_id);
             $user_id = $appData->user_id;
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
-            }                        
+            }
             if ($wf_status == 1) {
                 $nextWfData = WfStage::getNextWfStage($wf_order_no);
                 $wfAppStageData = WfAppStage::getAppWfStage($nextWfData->stage_code, $user_id, $app_id);
-                if ( !$wfAppStageData ) {
+                if (!$wfAppStageData) {
                     // $wf_disb_status = $nextWfData->stage_code == 'disbursed' ? 1 : 0;
                     $wf_disb_status = 0;
                     $insertData = [
@@ -176,13 +178,13 @@ class Helper extends PaypalHelper
                 } else {
                     $result = $wfAppStageData;
                 }
-                                                
+
                 if ($assign_role) {
                     //get role id by wf_stage_id
-                    $data = WfStage::find($result->wf_stage_id);                        
-                    AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+                    $data = WfStage::find($result->wf_stage_id);
+                    AppAssignment::updateAppAssignById((int) $app_id, ['is_owner' => 0]);
                     //update assign table
-                    $dataArr = []; 
+                    $dataArr = [];
                     $dataArr['from_id'] = \Auth::user()->user_id;
                     if ($data->role_id == 4) {
                         //$toUserId = User::getLeadSalesManager($user_id);
@@ -191,13 +193,13 @@ class Helper extends PaypalHelper
                             $toUserId = User::getLeadSalesManager($user_id);
                         } else {
                             $toUserId = LeadAssign::getAssignedSalesManager($user_id);
-                        }                        
+                        }
                         $dataArr['to_id'] = $toUserId;
-                        $dataArr['role_id'] = null;                        
+                        $dataArr['role_id'] = null;
                     } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
                         $toUserId = $addl_data['to_id'];
                         $dataArr['to_id'] = $toUserId;
-                        $dataArr['role_id'] = null;                        
+                        $dataArr['role_id'] = null;
                     } else {
                         $dataArr['to_id'] = null;
                         $dataArr['role_id'] = $data->role_id;
@@ -221,34 +223,36 @@ class Helper extends PaypalHelper
             return false;
         }
     }
-   
-    
+
+
     /**
      * Get current workflow stage
      * 
      * @param integer $app_id
      */
-    public static function getCurrentWfStage($app_id){
+    public static function getCurrentWfStage($app_id)
+    {
         return WfAppStage::getCurrentWfStage($app_id);
     }
-    
+
     /**
      * Add workflow stage
      * 
      * @param integer $app_id
      */
-    public static function addWfAppStage($wf_stage_code, $user_id, $app_id=0, $wf_status = 0){
-        $wfData = WfStage::getWfDetailById($wf_stage_code);        
+    public static function addWfAppStage($wf_stage_code, $user_id, $app_id = 0, $wf_status = 0)
+    {
+        $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
             $wfAppStageData = WfAppStage::getAppWfStage($wf_stage_code, $user_id, $app_id);
-            if ( !$wfAppStageData ) {            
+            if (!$wfAppStageData) {
                 $arrData = [
                     'wf_stage_id' => $wfData->wf_stage_id,
                     'user_id' => $user_id,
                     'biz_app_id' => $app_id,
                     'app_wf_status' => $wf_status,
                     'is_complete' => $wf_status
-                ];        
+                ];
                 return WfAppStage::saveWfDetail($arrData);
             }
         } else {
@@ -256,60 +260,60 @@ class Helper extends PaypalHelper
         }
     }
 
-     /**
+    /**
      * uploading document data
      *
      * @param Exception $exception
      * @param string    $exMessage
      * @param boolean   $handler
      */
-    public static function uploadAppFile($attributes, $appId) 
+    public static function uploadAppFile($attributes, $appId)
     {
-        $userId = Application::where('app_id',$appId)->pluck('user_id')->first();
+        $userId = Application::where('app_id', $appId)->pluck('user_id')->first();
         $inputArr = [];
-        if($attributes['doc_file']) {
-            if(!Storage::exists('/public/user/' .$userId. '/' .$appId)) {
-                Storage::makeDirectory('/public/user/' .$userId. '/' .$appId, 0777, true);
+        if ($attributes['doc_file']) {
+            if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
+                Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
             }
-            $path = Storage::disk('public')->put('/user/' .$userId. '/' .$appId, $attributes['doc_file'], null);
+            $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
             $inputArr['file_path'] = $path;
         }
-             
+
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-        
+
         return $inputArr;
     }
-    
-     /**
+
+    /**
      * uploading document data
      *
      * @param Exception $exception
      * @param string    $exMessage
      * @param boolean   $handler
      */
-    public static function uploadAnchorFile($attributes, $anchorId) 
+    public static function uploadAnchorFile($attributes, $anchorId)
     {
         $inputArr = [];
-        if($attributes['doc_file']) {
-            if(!Storage::exists('/public/anchor/' .$anchorId)) {
-                Storage::makeDirectory('/public/anchor/' .$anchorId, 0777, true);
+        if ($attributes['doc_file']) {
+            if (!Storage::exists('/public/anchor/' . $anchorId)) {
+                Storage::makeDirectory('/public/anchor/' . $anchorId, 0777, true);
             }
-            $path = Storage::disk('public')->put('/anchor/' .$anchorId, $attributes['doc_file'], null);
+            $path = Storage::disk('public')->put('/anchor/' . $anchorId, $attributes['doc_file'], null);
             $inputArr['file_path'] = $path;
         }
-             
+
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-        
+
         return $inputArr;
     }
 
@@ -323,27 +327,27 @@ class Helper extends PaypalHelper
     public static function generateCamPdf($appId, $bizId, $pdfContent)
     {
         $inputArr = [];
-        if($pdfContent) {
-            if(!Storage::exists('/public/cam/' .$appId)) {
-                Storage::makeDirectory('/public/cam/' .$appId, 0777, true);
+        if ($pdfContent) {
+            if (!Storage::exists('/public/cam/' . $appId)) {
+                Storage::makeDirectory('/public/cam/' . $appId, 0777, true);
             }
-            if(!Storage::exists('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'))) {
-                Storage::makeDirectory('/public/cam/'.$appId."/".config('common.PRODUCT.LEASE_LOAN'), 0777, true);
+            if (!Storage::exists('/public/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN'))) {
+                Storage::makeDirectory('/public/cam/' . $appId . "/" . config('common.PRODUCT.LEASE_LOAN'), 0777, true);
             }
-            $fileName = 'CamReport_'.$appId."_".time().".pdf";
-            $path = "/cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;            
+            $fileName = 'CamReport_' . $appId . "_" . time() . ".pdf";
+            $path = "/cam/" . $appId . "/" . config('common.PRODUCT.LEASE_LOAN') . "/" . $fileName;
             $tempPath = Storage::disk('public')->put($path, $pdfContent);
-            $dbpath = "cam/" .$appId."/".config('common.PRODUCT.LEASE_LOAN')."/".$fileName;
+            $dbpath = "cam/" . $appId . "/" . config('common.PRODUCT.LEASE_LOAN') . "/" . $fileName;
             $inputArr['file_path'] = $dbpath;
         }
-             
+
         $inputArr['file_type'] = Storage::disk('public')->mimeType($path);
         $inputArr['file_name'] = $fileName;
         $inputArr['file_size'] = Storage::disk('public')->size($path);
         $inputArr['file_encp_key'] =  md5(time());
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-        
+
         return $inputArr;
     }
 
@@ -354,26 +358,26 @@ class Helper extends PaypalHelper
      * @param string    $exMessage
      * @param boolean   $handler
      */
-    public static function uploadAwsBucket($attributes, $appId) 
+    public static function uploadAwsBucket($attributes, $appId)
     {
         $userId = Auth::user()->user_id;
         $inputArr = [];
 
-        if($attributes['doc_file']) {
-            if(!Storage::disk('s3')->exists('/Development/user/' .$userId. '/' .$appId)) {
-                Storage::disk('s3')->makeDirectory('/Development/user/' .$userId. '/' .$appId, 0775, true);
+        if ($attributes['doc_file']) {
+            if (!Storage::disk('s3')->exists('/Development/user/' . $userId . '/' . $appId)) {
+                Storage::disk('s3')->makeDirectory('/Development/user/' . $userId . '/' . $appId, 0775, true);
             }
-            $path = Storage::disk('s3')->put('/Development/user/' .$userId. '/' .$appId, $attributes['doc_file'], null);
+            $path = Storage::disk('s3')->put('/Development/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
             $inputArr['file_path'] = $path;
         }
-             
+
         $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
         $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-        
+
         return $inputArr;
     }
     /**
@@ -383,21 +387,20 @@ class Helper extends PaypalHelper
      * @param string    $exMessage
      * @param boolean   $handler
      */
-    public static function uploadAppFiles($attributes) 
+    public static function uploadAppFiles($attributes)
     {
         $userId = Auth::user()->user_id;
         $inputArr = [];
         $count = count($attributes['doc_file']);
-        for ( $i=0; $i < $count; $i++) 
-        {   
-            if($attributes['doc_file'][$i]) {
-                if(!Storage::exists('/public/user/' .$userId. '/' .$attributes['appId'])) {
-                    Storage::makeDirectory('/public/user/' .$userId. '/' .$attributes['appId'], 0775, true);
+        for ($i = 0; $i < $count; $i++) {
+            if ($attributes['doc_file'][$i]) {
+                if (!Storage::exists('/public/user/' . $userId . '/' . $attributes['appId'])) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/' . $attributes['appId'], 0775, true);
                 }
-                $path = Storage::disk('public')->put('/user/' .$userId. '/' .$attributes['appId'], $attributes['doc_file'][$i], null);
+                $path = Storage::disk('public')->put('/user/' . $userId . '/' . $attributes['appId'], $attributes['doc_file'][$i], null);
                 $inputArr[$i]['file_path'] = $path;
             }
-             
+
             $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
             $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
             $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
@@ -405,10 +408,10 @@ class Helper extends PaypalHelper
             $inputArr[$i]['created_by'] = 1;
             $inputArr[$i]['updated_by'] = 1;
         }
-        
+
         return $inputArr;
     }
-    
+
     /**
      * app_doc table data
      *
@@ -416,35 +419,36 @@ class Helper extends PaypalHelper
      * @param string    $exMessage
      * @param boolean   $handler
      */
-    public static function appDocData($attributes, $fileId) 
+    public static function appDocData($attributes, $fileId)
     {
-        
+
         $inputArr = [];
 
-        $inputArr['app_id']  = (isset($attributes['app_id'])) ? $attributes['app_id'] : 0;   
-        $inputArr['doc_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0   ;  
-        $inputArr['biz_owner_id']  = (isset($attributes['owner_id'])) ? $attributes['owner_id'] : 0   ;  
-        $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : ''; 
-        $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : ''; 
-        $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : ''; 
-        $inputArr['gst_year']  = (isset($attributes['gst_year'])) ? $attributes['gst_year'] : ''; 
-        $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : ''; 
-        $inputArr['file_id']  = $fileId; 
+        $inputArr['app_id']  = (isset($attributes['app_id'])) ? $attributes['app_id'] : 0;
+        $inputArr['doc_id']  = (isset($attributes['doc_id'])) ? $attributes['doc_id'] : 0;
+        $inputArr['biz_owner_id']  = (isset($attributes['owner_id'])) ? $attributes['owner_id'] : 0;
+        $inputArr['doc_name']  = (isset($attributes['doc_name'])) ? $attributes['doc_name'] : '';
+        $inputArr['finc_year']  = (isset($attributes['finc_year'])) ? $attributes['finc_year'] : '';
+        $inputArr['gst_month']  = (isset($attributes['gst_month'])) ? $attributes['gst_month'] : '';
+        $inputArr['gst_year']  = (isset($attributes['gst_year'])) ? $attributes['gst_year'] : '';
+        $inputArr['doc_id_no']  = (isset($attributes['doc_id_no'])) ? $attributes['doc_id_no'] : '';
+        $inputArr['file_id']  = $fileId;
         $inputArr['is_upload'] = 1;
         $inputArr['created_by'] = 1;
-        
+
         return $inputArr;
     }
-    
+
     /**
      * Get current workflow stage by Role id
      * 
      * @param integer $app_id
      */
-    public static function getCurrentWfStagebyRole($roleId){
+    public static function getCurrentWfStagebyRole($roleId)
+    {
         return WfStage::getCurrentWfStagebyRole($roleId);
-    }    
-    
+    }
+
     /**
      * Update workflow stages to move the stages back
      * 
@@ -457,12 +461,12 @@ class Helper extends PaypalHelper
      * 
      * @return boolean
      */
-    public static function updateWfStageManual($app_id, $from_wf_stage_order_no, $to_wf_stage_order_no, $wf_status = 2, $assign_role_uid=null, $addl_data=[])
+    public static function updateWfStageManual($app_id, $from_wf_stage_order_no, $to_wf_stage_order_no, $wf_status = 2, $assign_role_uid = null, $addl_data = [])
     {
-        $appData = Application::getAppData((int)$app_id);
-        $user_id = $appData->user_id;        
+        $appData = Application::getAppData((int) $app_id);
+        $user_id = $appData->user_id;
         if ($from_wf_stage_order_no < $to_wf_stage_order_no) {
-            for($wf_order_no=$from_wf_stage_order_no;$wf_order_no <= $to_wf_stage_order_no;$wf_order_no++) {
+            for ($wf_order_no = $from_wf_stage_order_no; $wf_order_no <= $to_wf_stage_order_no; $wf_order_no++) {
                 $wfData = WfStage::getWfDetailByOrderNo($wf_order_no);
                 $wf_stage_id = $wfData->wf_stage_id;
                 $updateData = [
@@ -471,11 +475,11 @@ class Helper extends PaypalHelper
                 ];
                 WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
-                    
+
             if ($assign_role_uid) {
-                AppAssignment:: updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+                AppAssignment::updateAppAssignById((int) $app_id, ['is_owner' => 0]);
                 //update assign table
-                $dataArr = []; 
+                $dataArr = [];
                 $dataArr['from_id'] = \Auth::user()->user_id;
                 $dataArr['to_id'] = $assign_role_uid;
                 $dataArr['role_id'] = null; //$assign_role;
@@ -488,27 +492,29 @@ class Helper extends PaypalHelper
 
                 AppAssignment::saveData($dataArr);
             }
-        } 
+        }
         return true;
     }
-    
-     /**
+
+    /**
      * Get permission by Role id
      * 
      * @param integer $app_id
      */
-    public static function getByParent($parentId,$isDisplay){
+    public static function getByParent($parentId, $isDisplay)
+    {
         return Permission::getByParent($parentId, $isDisplay);
     }
-     /**
+    /**
      * Get permission by Role id
      * 
      * @param integer $app_id
      */
-    public static function checkRole($parentId,$role_id){
-        return PermissionRole::checkRole($parentId,$role_id);
+    public static function checkRole($parentId, $role_id)
+    {
+        return PermissionRole::checkRole($parentId, $role_id);
     }
-    
+
     /**
      * Redirect workflow stage next to completed stage
      * 
@@ -518,11 +524,11 @@ class Helper extends PaypalHelper
     public static function getWfRedirectRoute($user_id)
     {
         $user = \Auth::user();
-        
-        $apps = Application::getAllAppsByUserId($user_id);        
+
+        $apps = Application::getAllAppsByUserId($user_id);
         if (count($apps) > 1) {
             $appData = Application::getLatestApp($user_id);
-        } else if (count($apps) == 1){
+        } else if (count($apps) == 1) {
             $appData = $apps[0];
         } else {
             $appData = null;
@@ -535,31 +541,30 @@ class Helper extends PaypalHelper
             $app_id = $appData ? $appData->app_id : 0;
             $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
             $wf_order_no = $last_completed_wf_stage->order_no;
-            $wf_data = WfStage::getNextWfStage($wf_order_no);            
+            $wf_data = WfStage::getNextWfStage($wf_order_no);
             if ($user && $user->user_type == '1' && in_array($wf_data['stage_code'], $wf_stages)) {
                 $redirectUrl = route($wf_data['route_name'], ['app_id' =>  $appData->app_id, 'user_id' =>  $appData->user_id, 'biz_id' => $appData->biz_id]);
             }
-            
         } else {
             if (count($apps) == 0) {
-                $wfAppStageData = WfAppStage::getAppWfStage('biz_info', $user_id, $app_id);                
-                if ( !$wfAppStageData ) {
-                    $wf_data = WfStage::getNextWfStage($wf_order_no);                
+                $wfAppStageData = WfAppStage::getAppWfStage('biz_info', $user_id, $app_id);
+                if (!$wfAppStageData) {
+                    $wf_data = WfStage::getNextWfStage($wf_order_no);
                     if ($user && $user->user_type == '1' && in_array($wf_data['stage_code'], $wf_stages)) {
                         $redirectUrl = route($wf_data['route_name'], ['user_id' => $user_id]);
                     }
                 }
             }
         }
-        
+
         $wfRedirectData = [
             'wf_order_no' => $wf_order_no,
             'redirect_url'  => $redirectUrl
         ];
-                
+
         return $wfRedirectData;
     }
-    
+
     /**
      * Get Latest Application Data
      * 
@@ -568,23 +573,23 @@ class Helper extends PaypalHelper
      */
     public static function getLatestAppData($user_id)
     {
-        $appData = Application::getLatestApp($user_id);        
+        $appData = Application::getLatestApp($user_id);
         return $appData ? $appData : null;
     }
-    
+
     /**
      * Assign Application to User
      * 
      * @param integer $to_userid
      * @param integer $app_id
      */
-    public static function assignAppToUser($to_userid, $app_id, $app_user_id=null)
+    public static function assignAppToUser($to_userid, $app_id, $app_user_id = null)
     {
         if (is_null($app_user_id)) {
-            $appData = Application::getAppData((int)$app_id);
+            $appData = Application::getAppData((int) $app_id);
             $app_user_id = $appData->user_id;
         }
-        AppAssignment::updateAppAssignById((int)$app_id, ['is_owner'=>0]);
+        AppAssignment::updateAppAssignById((int) $app_id, ['is_owner' => 0]);
         //update assign table
         $dataArr = [];
         $dataArr['from_id'] = \Auth::user()->user_id;
@@ -592,30 +597,31 @@ class Helper extends PaypalHelper
         $dataArr['role_id'] = null;
         $dataArr['assigned_user_id'] = $app_user_id;
         $dataArr['app_id'] = $app_id;
-        
+
         $whereCondition = $dataArr;
-        
+
         $dataArr['assign_status'] = '0';
         $dataArr['sharing_comment'] = "";
         $dataArr['is_owner'] = 1;
-                        
-        $assignData = AppAssignment::getAppAssignmentData ($whereCondition);
-        
+
+        $assignData = AppAssignment::getAppAssignmentData($whereCondition);
+
         if (!$assignData) {
             AppAssignment::saveData($dataArr);
-        } else {            
+        } else {
             AppAssignment::updateData(['is_owner' => 1], $assignData->app_assign_id);
         }
-        
-        $application = Application::updateAppDetails($app_id, ['is_assigned'=>1]); 
+
+        $application = Application::updateAppDetails($app_id, ['is_assigned' => 1]);
     }
-    
+
     /**
      * Get User Role
      * 
      * @param integer $user_id | default
      */
-    public static function getUserRole($user_id = null) {
+    public static function getUserRole($user_id = null)
+    {
         if (is_null($user_id)) {
             $user_id = \Auth::user()->user_id;
         }
@@ -627,9 +633,10 @@ class Helper extends PaypalHelper
      * 
      * @param integer $user_id | default
      */
-    public static function getUserInfo($user_id = null) {        
+    public static function getUserInfo($user_id = null)
+    {
         $getUserInfo = User::getfullUserDetail($user_id);
-        return $getUserInfo; 
+        return $getUserInfo;
     }
 
 
@@ -638,10 +645,11 @@ class Helper extends PaypalHelper
      *      * 
      * @param integer $user_id | default
      */
-    public static function checkPermission($routePerm) {
-       
+    public static function checkPermission($routePerm)
+    {
 
-        $user_id = \Auth::user()->user_id;        
+
+        $user_id = \Auth::user()->user_id;
         $roleData = User::getBackendUser($user_id);
 
         if ($roleData[0]->is_superadmin == 1) {
@@ -652,25 +660,25 @@ class Helper extends PaypalHelper
         $routes = Permission::getPermissionByArr($prData)->toArray();
         $check = in_array($routePerm, $routes);
         return $check;
-       
     }
 
 
-    
+
     /**
      * 
      * @param type $wf_stage_code
      * @param type $app_id
      * @return int
      */
-    public static function isWfStageCompleted($wf_stage_code, $app_id) {
+    public static function isWfStageCompleted($wf_stage_code, $app_id)
+    {
         $isWfStageCompleted = 0;
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
             //$wf_stage_id = $wfData->wf_stage_id;
             $wf_order_no = $wfData->order_no;
             //$assignedRoleId = $wfData->role_id;
-            
+
             $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
             $app_wf_order_no = $last_completed_wf_stage ? $last_completed_wf_stage->order_no : 0;
             if ($app_wf_order_no >= $wf_order_no) {
@@ -679,29 +687,30 @@ class Helper extends PaypalHelper
         }
         return $isWfStageCompleted;
     }
-    
+
     /**
      * Get Next Workflow stage by workflow order no
      * 
      * @param integer $wf_order_no
      * @return mixed
      */
-    public static function getNextWfStage ($wf_order_no) {
-        return WfStage::getNextWfStage($wf_order_no);        
+    public static function getNextWfStage($wf_order_no)
+    {
+        return WfStage::getNextWfStage($wf_order_no);
     }
-  
-    
+
+
     /**
      * Get aal role
      *      * 
      * @param integer $user_id | default
      */
-    public static function getAllRole() {        
-        $data = Role::getAllRole();        
-                return $data;
-                
+    public static function getAllRole()
+    {
+        $data = Role::getAllRole();
+        return $data;
     }
-    
+
     /**
      * Format Currency
      * 
@@ -709,41 +718,41 @@ class Helper extends PaypalHelper
      * @param string $locale | optional
      * @return string
      */
-    public static function formatCurreny($amount, $locale='en_IN', $decimal=false, $prefixCurrency=true)
-    {        
+    public static function formatCurreny($amount, $locale = 'en_IN', $decimal = false, $prefixCurrency = true)
+    {
         //setlocale(LC_MONETARY, $locale);
         //$formattedAmount = money_format('%!i', $amount);
         $currency = '&#8377;';
-        $amount = !$decimal ? (int) $amount : $amount;        
+        $amount = !$decimal ? (int) $amount : $amount;
         $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
         if ($prefixCurrency) {
             $formattedAmount = "$currency $formattedAmount";
         }
         return $formattedAmount;
     }
-    
 
 
-     /**
+
+    /**
      * Format Currency
      * 
      * @param decimal $amount
      * @param string $locale | optional
      * @return string
      */
-    public static function roundFormatCurreny($amount, $locale='en_IN', $decimal=false, $prefixCurrency=true)
-    {        
+    public static function roundFormatCurreny($amount, $locale = 'en_IN', $decimal = false, $prefixCurrency = true)
+    {
         //setlocale(LC_MONETARY, $locale);
         //$formattedAmount = money_format('%!i', $amount);
         $currency = '&#8377;';
-        $amount = !$decimal ? round($amount) : $amount;        
+        $amount = !$decimal ? round($amount) : $amount;
         $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
         if ($prefixCurrency) {
-            $formattedAmount = $currency.$formattedAmount;
+            $formattedAmount = $currency . $formattedAmount;
         }
         return $formattedAmount;
     }
-    
+
     /**
      * Workflow stage to process
      * 
@@ -759,24 +768,24 @@ class Helper extends PaypalHelper
         $currStage = self::getNextWfStage($wf_order_no);
         return $currStage;
     }
-    
+
     /**
      * Get aal role
      *      * 
      * @param integer $user_id | default
      */
-    public static function getAllUsersByRoleId($role_id) {
+    public static function getAllUsersByRoleId($role_id)
+    {
         //$data = RoleUser::getAllUsersByRoleId($role_id);
         $users = RoleUser::getBackendUsersByRoleId($role_id);
         $data = [];
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $data[$user->user_id] = $user->f_name . ' ' . $user->l_name;
         }
-                return $data;
-                
+        return $data;
     }
-    
-    
+
+
     /**
      *
      * get program type
@@ -788,13 +797,19 @@ class Helper extends PaypalHelper
     {
         $out = null;
         switch ($type) {
-            case 1: $out = 'Vendor Finance';  break;               
-            case 2: $out = 'Channel Finance';break;
-            default:$out = null;  break;               
+            case 1:
+                $out = 'Vendor Finance';
+                break;
+            case 2:
+                $out = 'Channel Finance';
+                break;
+            default:
+                $out = null;
+                break;
         }
         return $out;
     }
-         /**
+    /**
      * Create bootstrap alert box
      *
      * @param  string $languageKey
@@ -807,11 +822,10 @@ class Helper extends PaypalHelper
         $type = trim(strtolower($type));
         $type = in_array($type, $allowedTypes) ? $type : 'info';
         $html = '<div class=" alert-' . $type . ' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>' .
-                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>' .
-                e(trans($languageKey)) .
-                '</div>';
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>' .
+            e(trans($languageKey)) .
+            '</div>';
         return $html;
-
     }
 
     /**
@@ -820,11 +834,12 @@ class Helper extends PaypalHelper
      * @param integer $app_id
      * @return mixed
      */
-    public static function getAppCurrentAssignee($app_id) {
+    public static function getAppCurrentAssignee($app_id)
+    {
         $assigneeData = AppAssignment::getAppCurrentAssignee($app_id);
         return $assigneeData;
     }
-    
+
     /**
      * Check access of application is view only or not
      * 
@@ -833,38 +848,38 @@ class Helper extends PaypalHelper
      * 
      * @return mixed
      */
-    public static function isAccessViewOnly($app_id, $to_id=null)
+    public static function isAccessViewOnly($app_id, $to_id = null)
     {
         try {
             if (is_null($to_id)) {
-                $to_id = \Auth::user()->user_id;            
+                $to_id = \Auth::user()->user_id;
             }
             $roleData = self::getUserRole();
-            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;        
-            $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);        
+            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;
+            $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);
             if (!$isWfStageCompleted) {
                 $isViewOnly = 1;
-            } else {                
-                $userArr = self::getChildUsersWithParent($to_id);                
-                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);            
+            } else {
+                $userArr = self::getChildUsersWithParent($to_id);
+                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);
             }
             return $isViewOnly ? 1 : 0;
-        } catch (Exception $e) {            
+        } catch (Exception $e) {
             return 0;
         }
     }
-    
+
     /**
      * Get Roles By role_type
      *      
      * @param integer $role_type
      */
-    public static function getRolesByType($role_type) 
-    {        
-        $data = Role::getRolesByType($role_type);        
-        return $data;                
-    } 
-    
+    public static function getRolesByType($role_type)
+    {
+        $data = Role::getRolesByType($role_type);
+        return $data;
+    }
+
     /**
      * Get Child Users with Parent User
      * 
@@ -873,7 +888,7 @@ class Helper extends PaypalHelper
      */
     public static function getChildUsersWithParent($parentId)
     {
-        $userRepo = \App::make('App\Inv\Repositories\Contracts\UserInterface');   
+        $userRepo = \App::make('App\Inv\Repositories\Contracts\UserInterface');
         $childs = $userRepo->getChildUsers($parentId);
         $childs = array_unique($childs);
         return array_merge($childs, array($parentId));
@@ -885,28 +900,28 @@ class Helper extends PaypalHelper
      * @param integer $app_id
      * @return mixed
      */
-    public static function saveApprAuthorityUsers($app_id=null)
+    public static function saveApprAuthorityUsers($app_id = null)
     {
         //$approvers = User::getApprAuthorityUsers();
         $approvers = Application::getDoAUsersByAppId($app_id);
         $data = [];
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-        
+
         AppApprover::updateAppApprActiveFlag($app_id); //update rows with is_active => 0
-        foreach($approvers as $approver) {
+        foreach ($approvers as $approver) {
             $data[] = [
                 'app_id' => $app_id,
                 'approver_user_id' => $approver->user_id,
                 'created_by' => Auth::user()->user_id,
                 'created_at' => $curData,
-                'updated_by' => Auth::user()->user_id,                   
-                'updated_at' => $curData,                 
+                'updated_by' => Auth::user()->user_id,
+                'updated_at' => $curData,
             ];
         }
         AppApprover::insert($data);
         return $approvers;
     }
-    
+
     /**
      * Check Approval Authority Users against application
      * 
@@ -918,7 +933,7 @@ class Helper extends PaypalHelper
         $appApprData = AppApprover::getAppApprovers($app_id);
         $totalApprover = count($appApprData);
         $apprCount = 0;
-        foreach($appApprData as $data) {
+        foreach ($appApprData as $data) {
             if ($data->status == 1) {
                 $apprCount++;
             }
@@ -929,17 +944,17 @@ class Helper extends PaypalHelper
             return false;
         }
     }
-    
+
     /**
      * Assign application user
      * 
      * @param array $data
      */
-    public static function assignAppUser ($data) 
-    {                        
-        AppAssignment:: updateAppAssignById((int)$data['app_id'], ['is_owner' => 0]);
+    public static function assignAppUser($data)
+    {
+        AppAssignment::updateAppAssignById((int) $data['app_id'], ['is_owner' => 0]);
         //update assign table
-        $dataArr = []; 
+        $dataArr = [];
         $dataArr['from_id'] = \Auth::user()->user_id;
         $dataArr['to_id'] = $data['to_id'];
         $dataArr['role_id'] = null;
@@ -948,11 +963,11 @@ class Helper extends PaypalHelper
         $dataArr['assign_status'] = '0';
         $dataArr['sharing_comment'] = isset($data['sharing_comment']) ? $data['sharing_comment'] : '';
         $dataArr['is_owner'] = 1;
-        AppAssignment::saveData($dataArr);            
+        AppAssignment::saveData($dataArr);
     }
-    
-    
-    
+
+
+
     /**
      * get Doa Level
      * 
@@ -961,16 +976,15 @@ class Helper extends PaypalHelper
      */
     public static  function getDoaLevelCity($request)
     {
-        
-     $city_name =    $request->doaLevelStates->map(function($elem){
-           return $elem->name;
+
+        $city_name =    $request->doaLevelStates->map(function ($elem) {
+            return $elem->name;
         });
-        
+
         return implode(',', $city_name->toArray());
-       
     }
-    
-    
+
+
     /**
      * check permission 
      * 
@@ -988,29 +1002,29 @@ class Helper extends PaypalHelper
      *      
      * @param integer $id
      */
-    public static function getEquipmentTypeById($id) 
-    {        
-        return Equipment::getEquipmentTypeById($id);                      
+    public static function getEquipmentTypeById($id)
+    {
+        return Equipment::getEquipmentTypeById($id);
     }
 
-    
+
     public static function getBankAccListByCompId($id)
     {
-//        dd($id);
-       $bank_acc = UserBankAccount::getAllCompanyBankAcc($id);
-        
+        //        dd($id);
+        $bank_acc = UserBankAccount::getAllCompanyBankAcc($id);
+
         return  $bank_acc;
-    }  
+    }
 
     /**
      * Get User detail by user_id
      *      
      * @param integer $user_id
      */
-    public static function getUserName($user_id) 
-    {        
+    public static function getUserName($user_id)
+    {
         $user =  User::findOrFail($user_id);
-        return ucwords($user->f_name.' '. $user->l_name);                    
+        return ucwords($user->f_name . ' ' . $user->l_name);
     }
 
     /**
@@ -1027,11 +1041,11 @@ class Helper extends PaypalHelper
         if ($wfData) {
             $wf_stage_id = $wfData->wf_stage_id;
             $wf_order_no = $wfData->order_no;
-            $updateData = [                
+            $updateData = [
                 'app_wf_status' => $wf_status,
                 'is_complete' => $wf_status
             ];
-            $appData = Application::getAppData((int)$app_id);
+            $appData = Application::getAppData((int) $app_id);
             $user_id = $appData->user_id;
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
@@ -1041,5 +1055,16 @@ class Helper extends PaypalHelper
             }
         }
         return $wfData;
+    }
+
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-02-18 10:51:28 
+     * @Desc:  comman function for get table record.
+     */    
+    public static function getTableVal($tableName, $whereField, $colVal)
+    {
+        $result = DB::table($tableName)->where($whereField, '=', $colVal)->first();
+        return  $result ? $result : false;
     }
 }

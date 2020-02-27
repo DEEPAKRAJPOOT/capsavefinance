@@ -306,10 +306,10 @@
                 <input type="hidden" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" /> 
                      
                      <div class="data mt-4">
-                        <h2 class="sub-title bg">Risk Comments on the Management</h2>
-                        <div class="pl-4 pr-4 pb-4 pt-2">
-                           <textarea class="form-control" id="profile_of_company" name="promoter_cmnt" rows="3" spellcheck="false">{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</textarea>
-                        </div>
+                        <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments on the Management</h2>
+                        <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
+                           <textarea class="form-control" id="promoter_cmnt" name="promoter_cmnt" rows="3" spellcheck="false">{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</textarea>
+                        <!-- </div> -->
                      </div>
                      <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
                 </form>
@@ -337,5 +337,7 @@
     
 @endsection
 @section('jscript')
-
+<script>
+CKEDITOR.replace('promoter_cmnt');
+</script>
 @endsection

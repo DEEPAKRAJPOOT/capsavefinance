@@ -44,6 +44,7 @@ class UserBankAccount extends BaseModel {
     protected $fillable = [
         'user_id',
         'company_id',
+        'anchor_id',
         'acc_name',
         'bank_id',
         'is_default',
@@ -168,7 +169,7 @@ class UserBankAccount extends BaseModel {
     }
     
     /**
-     * get Bank account data
+     * get Bank account data by company id
      * 
      * @param type $where array
      * @return type mixed
@@ -180,6 +181,23 @@ class UserBankAccount extends BaseModel {
 
         $res = self::where('bank_account_id','=',(int)$acc_id)
                 ->where('company_id','=',(int)$comp_id)
+                ->get();
+        
+        return $res ?: false;
+    }
+    
+    /**
+     * get Bank account data by anchor id
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function getBankAccountDataByAnchorId($anchor_id)
+    {
+
+        $res = self::where('anchor_id','=',(int)$anchor_id)
                 ->get();
         
         return $res ?: false;

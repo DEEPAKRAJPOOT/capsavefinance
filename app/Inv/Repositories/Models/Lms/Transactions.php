@@ -3,6 +3,8 @@
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
@@ -13,6 +15,7 @@ class Transactions extends BaseModel {
      * @var string
      */
 
+    private static $balacnce = 0;
     protected $table = 'transactions';
 
     /**
@@ -45,9 +48,11 @@ class Transactions extends BaseModel {
         'gl_flag',
         'soa_flag',
         'user_id',
+        'chrg_trans_id',
         'virtual_acc_id',
         'trans_date',
         'trans_type',
+        'trans_by',
         'pay_from',
         'amount',
         'gst',
@@ -60,7 +65,6 @@ class Transactions extends BaseModel {
         'comment',
         'utr_no',
         'cheque_no',
-        'unr_no',
         'txn_id',        
         'created_at',
         'created_by',
@@ -73,7 +77,7 @@ class Transactions extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveTransaction($transactions)
+    public static function saveTransaction($transactions,$whereCondition=[])
     {
         if (!is_array($transactions)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
@@ -86,12 +90,17 @@ class Transactions extends BaseModel {
             $transactions['created_at'] = \Auth::user()->user_id;
         }        
         
-        if (!isset($transactions[0])) {
+        if (!empty($whereCondition)) {
+            return self::where($whereCondition)->update($transactions);
+        } else if (!isset($transactions[0])) {
             return self::create($transactions);
-        } else {
+        } else {            
             return self::insert($transactions);
         }
     }
+
+
+    
     
     /**
      * Get Transactions
@@ -124,16 +133,80 @@ class Transactions extends BaseModel {
     }
     
     
+    /*** save repayment transaction details for invoice  **/
+    public static function saveCharge($attr)
+    {
+        return self::insert($attr);
+          
+    } 
+    
     /*** get all transaction  **/
     public static function getAllManualTransaction()
     {
           return self::with('disburse')->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
     }
     
-    function disburse()
+    public function disburse()
     {
-       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
+       return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
     }      
-   
+    
+    public function trans_detail()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
+    }   
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
+
+    public static function get_balance($trans_code,$user_id){
+        $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+                    ->where('user_id','=',$user_id)
+                   ->where('entry_type','=','0')->sum('amount');
+
+        $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+        ->where('user_id','=',$user_id)
+                   ->where('entry_type','=','1')->sum('amount');
+        return abs($dr - $cr);
+    }
+    
+    public  function getBalanceAttribute()
+    {
+        return self::get_balance($this->user_id.Carbon::parse($this->trans_date)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
+    }
+
+    public static function getUserBalance($user_id){
+
+        $trans = self::select(DB::raw('max(concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)))as trans_code'))->where('user_id','=',$user_id)->get();
+        return self::get_balance($trans[0]->trans_code, $user_id);
+    }
+
+     /*** get all transaction  **/
+    public static function getAllUserChargeTransaction()
+    {
+          return self::with('user')->where('chrg_trans_id','!=',NULL)->groupBy('user_id')->get();
+    }   
      
+    /**
+     * Update Transaction
+     * 
+     * @param array $whereCondition
+     * @param array $data
+     * @return mixed
+     */
+    public static function updateTransaction($whereCondition, $data)
+    {
+        return self::where($whereCondition)->update($data);
+    }
+
+    /** 
+       * @Author: Rent Alpha
+       * @Date: 2020-02-20 10:53:40 
+       * @Desc:  function for get user details from lms user table using user id 
+       */      
+    public function lmsUser()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
+    }
 }

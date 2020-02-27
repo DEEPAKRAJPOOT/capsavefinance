@@ -129,7 +129,7 @@ public static function saveBulkTempInvoice($arrInvoice)
                          'tenor' => $attributes['tenor'],
                 'invoice_due_date' => ($attributes['invoice_due_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'][$i])->format('Y-m-d') : '',
                 'invoice_date' => ( $attributes['invoice_date'][$i]) ? Carbon::createFromFormat('d/m/Y',  $attributes['invoice_date'][$i])->format('Y-m-d') : '',
-                'invoice_approve_amount' => $attributes['invoice_approve_amount'][$i]]
+                'invoice_approve_amount' => str_replace(',', '',$attributes['invoice_approve_amount'][$i])]
             );
             
             if($updateTemp)

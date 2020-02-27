@@ -55,11 +55,12 @@ trait ApplicationTrait
     
     protected function getAppProductIds($app_id)
     {
-        $appProductIds = [];
+        $ProductIds = [];
         $appProducts = $this->appRepo->getAppProducts($app_id);
-        foreach($appProducts->products as $product){
-            array_push($appProductIds, $product->pivot->product_id);
+        foreach($appProducts as $product){
+            array_push($ProductIds, $product->programLimit->product_id);
         }
+        $appProductIds = array_unique($ProductIds);
         return $appProductIds;       
     }
     

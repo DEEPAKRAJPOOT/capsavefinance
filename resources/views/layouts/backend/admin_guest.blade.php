@@ -16,6 +16,12 @@
         <link rel="stylesheet" href="{{ asset('backend/theme/assets/plugins/animate/animate.min.css')}}" type="text/css" />
         <link rel="stylesheet" type="text/css" href="{{ asset('backend/theme/assets/css/pratham.min.css')}}">        
         @yield('addtional_css')
+        <style>
+            .error
+            {
+                color:red !important;
+            }
+        </style>
     </head>
     <body>
         @if (Session::has('message'))
@@ -55,6 +61,17 @@
         {{-- Custom JS --}}
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         @yield('jscript')
-
     </body>
+
+    <script>
+        function unsetError(ele){
+            $(ele+' +span').remove();
+        }
+
+        function setError(ele, msg){
+            $(ele).after('<span class="error">'+msg+'</span>');
+        }
+    </script>
+
+    @yield('jscript')
 </html>

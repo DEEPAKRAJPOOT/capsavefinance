@@ -3,6 +3,20 @@
 @endsection
 @section('content')
 <div class="content-wrapper">
+      <section class="content-header">
+   <div class="header-icon">
+      <i class="fa fa-clipboard" aria-hidden="true"></i>
+   </div>
+   <div class="header-title">
+      <h3 class="mt-2">Repayment List</h3>
+     
+      <ol class="breadcrumb">
+         <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
+         <li class="active"> Repayment List</li>
+      </ol>
+   </div>
+   <div class="clearfix"></div>
+</section>
 <div class="row grid-margin mt-3">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
         <div class="card">

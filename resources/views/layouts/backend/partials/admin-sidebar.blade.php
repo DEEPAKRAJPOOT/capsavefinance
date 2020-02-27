@@ -119,12 +119,12 @@
     
     @can('lms_get_customer_list')
         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="true" aria-controls="collapseExample">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false" aria-controls="collapseExample">
               <i class="fa fa-user-plus" aria-hidden="true"></i>
                 <span class="menu-title">Manage Customer</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-            <div class="collapse show" id="layoutsSubmenu6" style="">
+            <div class="collapse" id="layoutsSubmenu6" style="">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lms_get_customer_list') }}">Manage Sanction Cases</a>
@@ -183,7 +183,41 @@
             </div>
         </li>
     @endcan
-    
+      
+    @canany(['lms_refund_list'])
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-undo" aria-hidden="true"></i>
+                <span class="menu-title">Manage Refund</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu8">
+                <ul class="nav flex-column sub-menu">
+                    @can('lms_refund_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lms_refund_list') }}">Manage Refund</a>
+
+                    </li>
+                    @endcan
+                </ul>
+            </div>
+        </li>
+    @endcan
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-file-text" aria-hidden="true"></i>
+                <span class="menu-title">LMS Report</span>
+               <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu8">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lms_get_transaction') }}">Supplier SOA</a>
+
+                    </li>               
+                </ul>
+            </div>
+        </li>
     
      @canany(['payment_list','payment_list'])
         <li class="nav-item">

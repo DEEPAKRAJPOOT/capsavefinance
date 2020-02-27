@@ -61,6 +61,19 @@ class LmsUser extends Authenticatable
         'created_by'
     ];
 
+    public static function getCustomers($search){
+        return $data = self::select('customer_id', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.m_name, rta_users.l_name) AS customer") )
+            ->join('users', 'lms_users.user_id', '=', 'users.user_id')
+            ->where(DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.m_name, rta_users.l_name)"), 'like', '%'.$search.'%')
+            ->orwhere("customer_id","LIKE","%{$search}%")->get();
+    }
+      /////////////* get customer id   */////////////////
+      public static function  getLmsUser()
+      {
+           $result= self::with('user')->groupBy('user_id')->get();
+           return $result?$result:false;
+      }
+
     public function user()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id');
@@ -74,17 +87,17 @@ class LmsUser extends Authenticatable
 
     public static function lmsGetDisbursalCustomer()
     {
-        return self::with(['bank_details.bank', 'app.invoices'])
-                ->whereHas('app.invoices');
+        return self::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank'])
+                ->whereHas('app');
     }
 
     public function bank_details()
     {
-        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1]);
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1, 'is_default' => 1]);
     }
 
     public function app()
     {
-        return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+        return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->whereHas('invoices');
     }
 }

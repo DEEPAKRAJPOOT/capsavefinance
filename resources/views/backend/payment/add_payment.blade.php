@@ -6,7 +6,20 @@
 
 
 <div class="content-wrapper">
-
+<section class="content-header">
+        <div class="header-icon">
+            <i class="fa  fa-list"></i>
+        </div>
+        <div class="header-title">
+            <h3>Add Manual Payment</h3>
+            <!-- <small>Application List</small> -->
+            <ol class="breadcrumb">
+                <li style="color:#374767;"> Home </li>
+                <li style="color:#374767;">Payment</li>
+                <li class="active">Add Manual Payment</li>
+            </ol>
+        </div>
+    </section>
     <div class="row grid-margin mt-3">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
@@ -14,94 +27,159 @@
                     <div class="form-fields">
                         <div class="active" id="details">
                             <div class="form-sections">
-                                <form action="{{route('save_payment')}}" method="post">
+                            {!!
+                                Form::open(
+                                array(
+                                'route' => 'save_payment',
+                                'name' => 'savePayFrm',
+                                'autocomplete' => 'off',
+                                'id' => 'savePayFrm',
+                                'method'=> 'POST'
+                                )
+                                )
+                                !!}
                                     <div class="row">
-                                    @csrf
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
-                                              @php 
-                                               $get = Config::get('payment.type');
-                                              @endphp
-                                                
-                                                <select class="form-control amountRepay" name="payment_type" id="payment_type">
-                                                    <option value=""> Select Payment Type </option>
-                                                     @foreach($get as $key=>$val)
-                                                    <option value="{{$key}}"> {{$val}}</option>
-                                                     @endforeach  
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                    <label for="txtCreditPeriod">Customer id <span class="error_message_label">*</span> </label>
-                                         <select class="form-control getCustomer" name="customer_id">
-                                               <option> Please Select</option>
+                                                <label for="txtCreditPeriod">Select Customer Name <span class="error_message_label">*</span> </label>
+                                                <select class="form-control getCustomer" name="customer_id" id="customer_id">
+                                                    <option value=""> Please Select</option>
                                                     @foreach($customer as $row)
-                                                    <option value="{{$row->user_id}}">{{$row->user->f_name}}/{{$row->customer_id}}</option>
-                                                 @endforeach   
+                                                    <option value="{{$row->user_id}}">{{$row->user->f_name}} {{$row->user->l_name}}/{{$row->customer_id}}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
-
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">Bank Name <span class="error_message_label">*</span> </label>
-                                                
-                                                <select class="form-control" name="bank_name">
-                                               <option> Select</option>
+                                                <label for="txtCreditPeriod">Transation Type <span class="error_message_label">*</span></label>
+                                                <select class="form-control trans_type" name="trans_type" id="trans_type">
+                                                    <option value="">Select Transation Type</option>
+                                                    @foreach($tranType as $key => $value)
+                                                    <option value="{{$value->id}}"> {{$value->trans_name}} </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+
+                                                <label for="txtCreditPeriod">Virtual Account No.<span class="error_message_label">*</span> </label>
+
+                                                <!-- <select class="form-control" name="bank_name">
+                                                    <option> Select</option>
                                                     @foreach($bank as $row)
                                                     <option value="{{$row->id}}">{{$row->bank_name}}</option>
-                                                 @endforeach   
-                                                </select>
+                                                    @endforeach
+                                                </select> -->
+                                                <input type="text" name="virtual_acc" id="virtual_acc" readonly="readonly" class="form-control">
+                                                
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class="col-md-4">
                                             <div class="form-group ">
-                                                <label for="txtCreditPeriod">Date of Payment <span class="error_message_label">*</span> </label>
-
-                                                <input type="text" name="date_of_payment" readonly="readonly" class="form-control datepicker-dis-fdate">
+                                                <label for="txtCreditPeriod">Transaction Date<span class="error_message_label">*</span> </label>
+                                                <input type="text" name="date_of_payment" id="date_of_payment" readonly="readonly" class="form-control datepicker-dis-fdate">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group INR">
-                                                <label for="txtCreditPeriod">Amount <span class="error_message_label">*</span> </label>
-                                                <a href="javascript:void(0);" class="verify-owner-no" style="top:42px;"><i class="fa fa-inr" aria-hidden="true"></i></a>  
+                                                <label for="txtCreditPeriod">Transaction Amount <span class="error_message_label">*</span> </label>
+                                                <a href="javascript:void(0);" class="verify-owner-no" style="top:29px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                 <input type="text" id="amount" name="amount" class="form-control">
                                             </div>
                                         </div>
-
+                                      
+                                        <!--start processing fees code-->
+                                        <div class="col-md-4 processFeeElmnt">
+                                            <div class="form-group INR ">
+                                                <label for="txtCreditPeriod">Transaction Amount inclusive GST ? <span class="error_message_label">*</span> </label>
+                                                <br>
+                                                <input type="radio" id="incl_gst" name="incl_gst" value="1">Yes &nbsp;&nbsp;  <input type="radio" id="incl_gst" name="incl_gst" value="0" checked>No
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 processFeeElmnt noGstShow">
+                                            <div class="form-group INR">
+                                                <label for="txtCreditPeriod">Select GST Option <span class="error_message_label">*</span> </label>
+                                                <select id="gst" name="gst" class="form-control valid" aria-invalid="false">
+                                                    <option value="">Select GST Option</option>
+                                                    @foreach($getGstDropVal as $key=>$val)
+                                                    @if($val->tax_name=='GST')             
+                                                    <option value="{{$val->tax_id}}" data-name="{{$val->tax_name}}" data-cgst="{{$val->cgst}}" data-sgst="{{$val->sgst}}" data-igst="{{$val->igst}}">{{$val->tax_name}}- {{$val->tax_value}} % (SGST: {{$val->sgst}}% / CGST: {{$val->cgst}}%);</option>
+                                                    @else
+                                                    <option value="{{$val->tax_id}}" data-name="{{$val->tax_name}}" data-cgst="{{$val->cgst}}" data-sgst="{{$val->sgst}}" data-igst="{{$val->igst}}">{{$val->tax_name}}-{{$val->tax_value}}% (IGST: {{$val->igst}}%)</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 processFeeElmnt noGstShow showGSTVal">
+                                            <div class="form-group ">
+                                                <label for="txtCreditPeriod">SGST Amount <span class="error_message_label">*</span> </label>
+                                                <input type="text" name="sgst_amt" id="sgst_amt" readonly="readonly" class="form-control" value="">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 processFeeElmnt noGstShow showGSTVal">
+                                            <div class="form-group ">
+                                                <label for="txtCreditPeriod">CGST Amount<span class="error_message_label">*</span> </label>
+                                                <input type="text" name="cgst_amt" id="cgst_amt" readonly="readonly" class="form-control" value="">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 processFeeElmnt noGstShow showIGSTVal">
+                                            <div class="form-group ">
+                                                <label for="txtCreditPeriod">IGST Amount<span class="error_message_label">*</span> </label>
+                                                <input type="text" name="igst_amt" id="igst_amt" readonly="readonly" class="form-control" value="">
+                                            </div>
+                                        </div>
+                                        
+                                        <!--end processing fees code-->
+                                        
                                         <div class="col-md-4">
-                                            <div class="form-group ">
-                                                <label for="txtCreditPeriod">Payment Refrence No. <span class="error_message_label">*</span> </label>
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
+                                                @php
+                                                $get = Config::get('payment.type');
+                                                @endphp
 
-                                                <input type="text" name="refrence_no" class="form-control">
+                                                <select class="form-control amountRepay" name="payment_type" id="payment_type">
+                                                    <option value=""> Select Payment Mode </option>
+                                                    @foreach($get as $key=>$val)
+                                                    <option value="{{$key}}"> {{$val}}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
-
-
-                                        <div class="col-md-8">
+                                        <!-- <div class="col-md-4">
                                             <div class="form-group ">
-                                                <label for="txtCreditPeriod">Description <span class="error_message_label">*</span> </label>
+                                                <label for="txtCreditPeriod">Payment Reference No. <span class="error_message_label">*</span> </label>
 
-                                                <textarea name="description" class="form-control" rows="3" cols="3"></textarea>
+                                                <input type="text" name="refrence_no" id="refrence_no" class="form-control">
                                             </div>
-                                        </div>
-                                         <div class="col-md-4">
+                                        </div> -->
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group ">
+                                                <label for="txtCreditPeriod">Comment <span class="error_message_label">*</span> </label>
+
+                                                <textarea name="description" id="description" class="form-control" rows="3" cols="3"></textarea>
+                                            </div>
+                                        </div>
+                                      
                                         <div class="col-md-12">
                                             <div class="text-right ">
-                                                <input  type="reset" id="pre3" class="btn btn-secondary btn-sm" value="Cancel">
-                                                <input type="submit" class="btn btn-primary ml-2 btn-sm"  value="Submit">
+                                                <input type="reset" id="pre3" class="btn btn-secondary btn-sm" value="Cancel">
+                                                <input type="submit" id="savePayBtn" class="btn btn-success ml-2 btn-sm" value="Submit">
                                             </div>
                                         </div>
 
-                                    </div> 
-                                </form>
+                                    </div>
+                                    {!! Form::close() !!}
                             </div>
                         </div>
 
@@ -123,7 +201,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Submit</button>
                 </div>
             </div>
         </div>
@@ -133,35 +211,196 @@
 @section('jscript')
 <script>
     var messages = {
-      
+        get_val: "{{URL::route('get_field_val')}}",
         token: "{{ csrf_token() }}",
     };
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         document.getElementById('amount').addEventListener('input', event =>
             event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-    });
-;
+    });;
 
-    $(document).on('change', '#payment_type', function () {
+    $(document).on('change', '#payment_type', function() {
         $('#appendInput').empty();
         var status = $(this).val();
-      
-            if (status == 1)
-            {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+        if (status == 1) {
+            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
-            } else if (status == 2)
-            {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+        } else if (status == 2) {
+            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
-            } else if (status == 3)
-            {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+        } else if (status == 3) {
+            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
-            }
+        }
+    });
+    $(document).ready(function(){
+        $(".processFeeElmnt").hide();
+        $(".noGstShow").hide();
+        $(".showGSTVal").hide();
+        $(".showIGSTVal").hide();
+       var gstRadio= $("#incl_gst").val();
+        
+        $("#trans_type").on('change',function(){
+        // ($(this).find(':selected').data('ip') == '1')? $('#paytodiv').show():$('#paytodiv').hide();
+        // if($(this).find(':selected').data('it') == '1'){ $('#taxdiv').show();  }else { $('#taxdiv').hide(); }
+        $('#cgst, #sgst, #gst').val('');
+        var tranTp=$("#trans_type").val();
+        if(tranTp==5 || tranTp==9 || tranTp==11){
+            $("#checkTranType").show();
+            $("#checkTDSPer").hide();
+        }else if(tranTp==7){
+            $("#checkTDSPer").show();
+            $("#checkTranType").hide();
+        }else{
+            $("#checkTranType").hide();
+            $("#checkTDSPer").hide();
+        }
+
+        var tranTypeVal=$("#trans_type").val();
+        if(tranTypeVal==4 || tranTypeVal==5){
+            $("#trans_amt").attr('readonly', true);
+            $(".processFeeElmnt").show();
+            $(".noGstShow").hide();
+            $(".showGSTVal").hide();
+          $(".showIGSTVal").hide();
+        }else{
+            $("#trans_amt").val("");
+            $("#trans_amt").attr('readonly', false); 
+        }
     });
 
+    $("input[name='incl_gst']").on('change', function () {
+    if( $("input[name='incl_gst']:checked").val() == '1'){
+        $(".noGstShow").show();
+        $(".showGSTVal").hide();
+        $(".showIGSTVal").hide();
+    }else{
+        $('#gst').prop('selectedIndex',0);
+        $(".noGstShow").hide();
+        $(".showGSTVal").hide();
+        $(".showIGSTVal").hide();
+    }
+    });
+    $("#gst").change(function(){
+        var chkAmt=$("#amount").val();
+        chkAmt=  chkAmt.replace(/,/g, '')
+        if(chkAmt!='' && chkAmt>0){      
+        if($(this).find(':selected').data('name').trim() == 'GST'){
+            $(".noGstShow").show(); 
+            $('.showGSTVal').show()
+            $('.showIGSTVal').hide(); 
+        }else {
+            $(".noGstShow").show();
+             $('.showIGSTVal').show();
+             $('.showGSTVal').hide(); 
+      }
+    }else{
+        $('#gst').prop('selectedIndex',0);
+        alert("Please enter transaction amount.");
+    }
+    
+    });
 
+    $("#gst, #amount, input[name='incl_gst']").on('change', function () {
+
+var getGstTxt=$("#gst option:selected").text();
+getGstTxt=getGstTxt.split("-");
+getGstTxt=getGstTxt[0].toLowerCase();
+
+if ($("#amount").valid()) {
+    let cgst = $("#gst option:selected").data('cgst');
+    let sgst = $("#gst option:selected").data('sgst');
+    let igst = $("#gst option:selected").data('igst');
+    let trans_amt = $('#amount').val();
+    trans_amt=trans_amt.replace(/,/g, '');
+    var gstval=$("#gst").val();
+    if( $("input[name='incl_gst']:checked").val() == '1'){
+        if(getGstTxt=='gst'){ 
+        var cgstval=((cgst * trans_amt / 100).toFixed(2));
+        var sgstVal=((sgst * trans_amt / 100).toFixed(2));
+        cgstval =(cgstval && !isNaN(cgstval))?cgstval:'';
+        sgstVal =(sgstVal && !isNaN(sgstVal))?sgstVal:'';
+        $('#cgst_amt').val(cgstval);
+        $('#sgst_amt').val(sgstVal);
+        $('#igst_amt').val('');
+    }else if(getGstTxt=='igst'){ 
+        var igstval=((igst * trans_amt / 100).toFixed(2));                
+        igstval =(igstval && !isNaN(igstval))?igstval:'';              
+        $('#igst_amt').val(igstval);
+        $('#cgst_amt').val('');
+        $('#sgst_amt').val('');
+    }
+        $("#notAddGST").show();
+    }else
+    {  
+        $("#notAddGST").hide();
+        $(".showGSTVal").hide();
+        $(".showIGSTVal").hide();                
+        $('#gst').val('');
+        $('#cgst').val('');
+        $('#sgst').val('');
+        $('#igst').val(''); 
+    }
+    
+}
+});
+
+    $(".getCustomer").change(function(){
+               $.ajax({
+                     type: 'GET',
+                     async: false,
+                     url: messages.get_val,
+                    data: {tableName:'lms_users',whereId:'user_id',fieldVal:$('#customer_id').val(),column:'virtual_acc_id', token: messages.token},
+                     success: function(resultData) {
+                     if(resultData!=""){
+                    $("#virtual_acc").val(resultData);
+                   $("#virtual_acc-error").css("display","none");
+                     }else{
+                        $("#virtual_acc").val("");
+                        $("#virtual_acc-error").css("display","block");
+                     }
+                     }      
+               });
+            });        
+});
+$(document).ready(function () {  
+            $('#savePayFrm').validate( {
+                  rules: {
+                    customer_id: {
+                        required: true,
+                     },
+                     trans_type: {
+                        required: true,
+                     },
+                     virtual_acc: {
+                        required: true,
+                     },
+                     date_of_payment:{
+                         required:true,
+                     },
+                     amount:{
+                         required:true,
+                     },
+                     payment_type:{
+                         required:true,
+                     },
+                     description:{
+                         required:true,
+                     },
+                     incl_gst:{
+                         required:$("#trans_type").val()>0?false:true,
+                     },
+                     gst:{
+                          required:$("#incl_gst:checked").val()>0?false:true,
+                          }
+                  },
+                  messages: {
+                    customer_id: {
+                        //required: "Please select file",
+                     }
+                  }
+               });
+        });
 </script>
 @endsection

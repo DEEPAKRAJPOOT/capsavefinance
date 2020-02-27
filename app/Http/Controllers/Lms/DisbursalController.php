@@ -37,7 +37,7 @@ class DisbursalController extends Controller
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
-                $this->masterRepo = $master;
+        $this->masterRepo = $master;
 		$this->middleware('checkBackendLeadAccess');
 	}
 	
@@ -59,11 +59,13 @@ class DisbursalController extends Controller
 	public function viewInvoice(Request $request)
 	{
 		$userId = $request->get('user_id');
+		$status = $request->get('status');
 		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
 		
 		return view('lms.disbursal.view_invoice')
 				->with([
 					'userIvoices'=>$userIvoices, 
+					'status'=>$status, 
 				]);              
 	}
 
@@ -84,31 +86,61 @@ class DisbursalController extends Controller
 	public function sendToBank(Request $request)
 	{
 		$invoiceIds = $request->invoiceids;
+		$customerRecords = $request->user_ids;
 		$disburseType = $request->disburse_type;
 		$transId = $request->trans_id;
+		$disburseDate = $request->disburse_date;
 		// $utrNo = $request->utr_no;
 		$remarks = $request->remarks;
+
+		// --- UAT code 
+
+		// $allrecords = [1,2];
+		// $requestData = $this->_apiData();
+		// --- UAT code end 
+
+		// --- production code 
+
 		$record = array_filter(explode(",",$invoiceIds));
-		
-		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
-		$supplierIds = $this->lmsRepo->getInvoiceSupplier($record)->toArray();
-		
+		$userIds = array_filter(explode(",",$customerRecords));
+
+		$userIvoices = $this->lmsRepo->getAllUserInvoiceIds($userIds)->toArray();
+		$allrecords = array_unique(array_merge($record, $userIvoices));
+		$allrecords = array_map('intval', $allrecords);
+
+		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
+		
 		$fundedAmount = 0;
 		$interest = 0;
 		$disburseAmount = 0;
+		$totalInterest = 0;
+		$totalFunded = 0;
+
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
+				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
+				// dd($disburseRequestData);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
+				if($invoice['supplier_id'] = $userid) {
+					$now = strtotime($invoice['invoice_due_date']); // or your date as well
+			        $your_date = strtotime($invoice['invoice_date']);
+			        $datediff = abs($now - $your_date);
+
+			        $tenor = round($datediff / (60 * 60 * 24));
+			        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+			        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+			        $totalInterest += $interest;
+			        $totalFunded += $fundedAmount;
+    				$disburseAmount += round($fundedAmount - $interest, 2);
+
+				}
+
 				if($disburseType == 1) {
 					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-					if($invoice['supplier_id'] = $userid) {
-						$fundedAmount += $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-						$interest += (($fundedAmount*$invoice['program_offer']['interest_rate']*$invoice['program_offer']['tenor'])/360);
-						$disburseAmount += round($fundedAmount - $interest);
-					}			
 					$requestData[$userid]['RefNo'] = $refId;
 					$requestData[$userid]['Amount'] = $disburseAmount;
 					$requestData[$userid]['Debit_Acct_No'] = '123344455';
@@ -140,9 +172,34 @@ class DisbursalController extends Controller
 						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
 					}
 				}
+
+
+			}
+			
+			// dd($disburseAmount);		
+			if ($disburseAmount) {
+				if($disburseType == 2) {
+					// dd($disburseRequestData);
+					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
+					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $totalFunded], $transId, 16);
+					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
+
+					
+					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
+					$intrstAmt = round($totalInterest,2);
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt], $transId, 9);
+					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+
+					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt], $transId, 9, 1);
+					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+
+				}
 			}
 		}
-		if($disburseType == 1 && !empty($record)) {
+		// dd($allrecords);
+		// --- production code end 
+
+		if($disburseType == 1 && !empty($allrecords)) {
 			
 			$http_header = [
 				'timestamp' => date('Y-m-d H:i:s'),
@@ -150,9 +207,9 @@ class DisbursalController extends Controller
 				];
 
 			$header = [
-				'Maker_ID' => 10,
-				'Checker_ID' => 11,
-				'Approver_ID' => 12
+				'Maker_ID' => "CAPSAVE.M",
+				'Checker_ID' => "CAPSAVE.C1",
+				'Approver_ID' => "CAPSAVE.C2"
 				];
 
 			$params = [
@@ -163,8 +220,12 @@ class DisbursalController extends Controller
 
 			$idfcObj= new Idfc_lib();
 			$result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+			if ($result) {
+				//save transaction here
+				// for disburse type online idfc bank i.e $disburseType == 1
+			}
 			return redirect()->route('lms_disbursal_request_list')->withErrors($result);      
-		} elseif (empty($record)) {
+		} elseif (empty($allrecords)) {
 			return redirect()->route('lms_disbursal_request_list')->withErrors(trans('backend_messages.noSelectedInvoice'));
 		}
         
@@ -196,4 +257,78 @@ class DisbursalController extends Controller
         return view('lms.disbursal.disbursed_list')->with(['getAppStatus'=> $getAppStatus]);
     }
 
+    function _apiData($id = 1) {
+    	$requestData[$id]['RefNo'] = "CAP1000";
+		$requestData[$id]['Amount'] = 120000;
+		$requestData[$id]['Debit_Acct_No'] = '123344455';
+		$requestData[$id]['Debit_Acct_Name'] = 'testing name';
+		$requestData[$id]['Debit_Mobile'] = '9876543210';
+		$requestData[$id]['Ben_IFSC'] = "ICICI00001";
+		$requestData[$id]['Ben_Acct_No'] = "111111111111";
+		$requestData[$id]['Ben_Name'] = "Beni Name";
+		$requestData[$id]['Ben_BankName'] = "icici bank";
+		$requestData[$id]['Ben_Email'] = "beni@capsave.in";
+		$requestData[$id]['Ben_Mobile'] = "8744037213";
+		$requestData[$id]['Mode_of_Pay'] = 'IFT';
+		$requestData[$id]['Nature_of_Pay'] = 'MPYMT';
+		$requestData[$id]['Remarks'] = 'test remarks';
+		$requestData[$id]['Value_Date'] = date('Y-m-d');
+
+		return $requestData;
+    }
+
+	public function uploadPfDf($user_id, $appId) {
+	    $prcsAmt = $this->appRepo->getPrgmLimitByAppId($appId);
+	    // dd($prcsAmt);
+	    if(isset($prcsAmt->offer)){
+
+			foreach ($prcsAmt->offer as $key => $offer) {
+					// $tranType = 4 for processing acc. to mst_trans_type table
+				$pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+				$pfWGst = round((($pf*18)/100),2);
+
+				$pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+				$pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
+
+				$pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+				$pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
+
+				// $tranType = 20 for document fee acc. to mst_trans_type table
+				$df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+				$dfWGst = round((($df*18)/100),2);
+
+				$dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+				$createTransaction = $this->appRepo->saveTransaction($dfDebitData);
+
+				$dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
+				$createTransaction = $this->appRepo->saveTransaction($dfCreditData);
+			}
+	    } else {
+	    	die("No offer");
+	    }
+		die("Done !!!");
+	}
+
+	// public function processInvoiceSettlement()
+	// {
+	// 	$returnData = $this->paySettlement('315');
+
+	// 	echo "Invoice Settled 315";
+	// }
+        
+        /**
+         * View Interest Accrual Data
+         * 
+         * @return type
+         */
+        public function viewInterestAccrual(Request $request)
+        {
+            $disbursalId = $request->get('disbursal_id');            
+            $whereCond = [];
+            $whereCond['disbursal_id'] = $disbursalId;
+            //$whereCond['interest_date_eq'] = $intAccrualDt;                
+            $intAccrualData = $this->lmsRepo->getAccruedInterestData($whereCond);    
+            //dd('rrrrrr', $intAccrualData);
+            return view('lms.disbursal.view_interest_accrual')->with('data', $intAccrualData);
+        }
 }

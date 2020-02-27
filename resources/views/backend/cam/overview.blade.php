@@ -104,60 +104,108 @@
                             <td>{{$arrBizData->prgm_name}}</td>
                             <td><b>External Rating ( If any )</b></td>
                             <td style="text-align: center;">
-                                {{-- <fieldset class="rating" id="goof" name="goof">
-                                    <input type="radio" id="star5" name="rating_no" value="5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 5 ? 'checked' : ''}}>
-                                    <label class="full" for="star5" title="Awesome - 5 stars"></label>
-                                    <input type="radio" id="star4half" name="rating_no" value="4.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 4.5 ? 'checked' : ''}}>
-                                    <label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
-                                    <input type="radio" id="star4" name="rating_no" value="4" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 4 ? 'checked' : ''}}> 
-                                    <label class="full" for="star4" title="Pretty good - 4 stars"></label>
-                                    <input type="radio" id="star3half" name="rating_no" value="3.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 3.5 ? 'checked' : ''}}>
-                                    <label class="half" for="star3half" title="Meh - 3.5 stars"></label>
-                                    <input type="radio" id="star3" name="rating_no" value="3" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 3 ? 'checked' : ''}}>
-                                    <label class="full" for="star3" title="Meh - 3 stars"></label>
-                                    <input type="radio" id="star2half" name="rating_no" value="2.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 2.5 ? 'checked' : ''}}>
-                                    <label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
-                                    <input type="radio" id="star2" name="rating_no" value="2" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 2 ? 'checked' : ''}}>
-                                    <label class="full" for="star2" title="Kinda bad - 2 stars"></label>
-                                    <input type="radio" id="star1half" name="rating_no" value="1.5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 1.5 ? 'checked' : ''}}>
-                                    <label class="half" for="star1half" title="Meh - 1.5 stars"></label>
-                                    <input type="radio" id="star1" name="rating_no" value="1" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == 1 ? 'checked' : ''}}>
-                                    <label class="full" for="star1" title="Sucks big time - 1 star"></label>
-                                    <input type="radio" id="starhalf" name="rating_no" value=".5" {{isset($arrCamData->rating_no) && $arrCamData->rating_no == .5 ? 'checked' : ''}}>
-                                    <label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
-                                </fieldset> --}}
                                 <textarea class="form-control" id="external_rating_comments" rows="2" name="rating_comment"> {{isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : ''}}</textarea>
                             </td>
-                        </tr>
-                        <tr>
-                            <td width="25%"><b>Group Company</b></td>
-                            <td width="25%">
-                                <div class="p-relative">
-                                    <input type="text" class="form-control group-company" name="group_company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}"  autocomplete="off" >
-                                </div> 
-                            </td>
-                            <td width="25%"><b>Existing Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format calTotalExposure" maxlength="20" name="existing_exposure"  value="{{isset($arrCamData->existing_exposure) ? number_format($arrCamData->existing_exposure) : ''}}"></td>
-                        </tr>
-                        <tr>
-                            <td width="25%"><b>Proposed Group Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="proposed_exposure" maxlength="20" class="form-control number_format calTotalExposure"  value="{{isset($arrCamData->proposed_exposure) ? number_format($arrCamData->proposed_exposure) : (isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '')}}" ></td>
-                            <td width="25%"><b>Total Exposure</b></td>
-                            <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" class="form-control number_format" name="total_exposure" value="{{isset($arrCamData->total_exposure) ? number_format($arrCamData->total_exposure) : ''}}" ></td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Rating Rationale</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
-                        <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
+                    <h2 class="sub-title bg">Group Company Exposure
+                      <span class="pull-right" style="font-size: 11px;">
+                                        @if(isset($arrCamData->By_updated))  
+                                            Updated By: {{$arrCamData->By_updated}} ({!! isset($arrGroupCompany['0']['updated_at']) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$arrGroupCompany['0']['updated_at'])->format('j F, Y') : '' !!})
+                                        @endif
+                                    </span>   </h2>                    
+                    <div class="col-md-12 mt-4 ">
+                         <div class="row">
+                            <div class="col-md-2">
+                                <label for="txtPassword"><b>Group Name</b></label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/ style="padding: -;position:absolute; right: 17px;" >
+                            </div>
+                            
+                        </div>
+                     </div>   
+
+                    <div class="col-md-12 mb-3">    
+                        <div class="row">
+                            <div class="col-md-4 mt-4">
+                                 <label for="txtPassword"><b>Borrower</b></label>
+                                <input type="text" class="form-control" value="{{$arrBizData->biz_entity_name}}" readonly/>
+                                
+                            </div>
+                            <div class="col-md-3 mt-4 INR">
+                                <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
+                                <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
+                                 <input type="text" name="sanction_limit_cam" class="form-control float_format" value="{{($arrCamData && $arrCamData->sanction_limit_cam > 0) ? $arrCamData->sanction_limit_cam : ''}}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                            </div>
+                            <div class="col-md-3 mt-4 INR">
+                                 <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
+                                 <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                 <input type="text" name="outstanding_exposure_cam" class="form-control  calTotalExposure float_format" value="{{($arrCamData && $arrCamData->outstanding_exposure_cam > 0) ? $arrCamData->outstanding_exposure_cam : ''}}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                            </div>
+                            <div class="col-md-2 mt-4 INR">
+                                 <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
+                                 <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                 <div class="d-flex">
+                                  <input type="text" name="proposed_exposure" maxlength="20" class="form-control  calTotalExposure float_format"  value="{{($arrCamData && $arrCamData->proposed_exposure > 0) ? $arrCamData->proposed_exposure : ''}}" placeholder="Proposed Limit (In Mn)" />
+                                   <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
+                                   </div>
+                            </div>
+                            
+                        </div>
+
+                        
                     </div>
+
+                    <div class="col-md-12" id="ptpq-block">
+                        @if(!empty($arrGroupCompany))
+                            @foreach($arrGroupCompany as $key=>$arr)
+                            <div class="row   {{($loop->first)? '': 'mt10'}}">
+                                <div class="col-md-4">
+                                    <input type="text" name="group_company_name[]" class="form-control" value="{{$arr['group_company_name'] ?? ''}}" placeholder="Group Company" />
+                                </div>
+                                <div class="col-md-3 INR">
+                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure float_format" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                </div>
+                                <div class="col-md-3 INR">
+                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']:'' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                </div>
+                                <div class="col-md-2 center">
+                                    <i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>
+                                </div>
+                            </div>
+                            @endforeach
+                        @endif
+                    </div>
+
+                    <div class="col-md-12 mt-4 mb-2" style="background: #e1f0eb; padding: 5px;">
+                        <div class="row">
+                            <div class="col-md-3 mt-2">
+                                <label for="txtPassword"><b>Total Exposure (In Mn)</b></label>
+                            </div>
+                            <div class="col-md-6 "></div>
+                             <div class="col-md-3 ">
+                                  <input type="text" class="form-control " name="total_exposure" value="{{($arrCamData &&  $arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}" readonly />
+                            </div>
+                        </div>
+                    </div>    
+                </div>  
+
+                <div class="data mt-4">
+                    <h2 class="sub-title bg"  style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Rating Rationale</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
+                        <textarea class="form-control" id="rating_rational" name="rating_rational" rows="3" spellcheck="false" >{{isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : ''}}</textarea>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Terms Of Facility</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Terms Of Facility</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <table class="table overview-table table-bordered" cellpadding="0" cellspacing="0" border="1">
                             <tbody>
                                 <tr>
@@ -223,26 +271,26 @@
                                  
                             </tbody>
                         </table>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Brief Profile of the Company</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Brief Profile of the Company</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false" >{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}</textarea>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Risk Comments</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <textarea class="form-control" id="risk_comments" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <div class="data mt-4">
-                    <h2 class="sub-title bg">Recommendation and Comments of Credit Manager</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Recommendation and Comments of Credit Manager</h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         @php 
                         $role_id=Helpers::getUserRole(Auth::user()->user_id);
                         @endphp
@@ -250,22 +298,25 @@
                         <textarea @if (in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])) disabled="true" @endif class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{ isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
 
                         <div class="clearfix"></div>
-                    </div>
+                    <!-- </div> -->
 
                 </div>
                  <div class="data mt-4">
-                    <h2 class="sub-title bg">Contigent Liabilities & Auditors Observations</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
+                    <h2 class="sub-title bg" style="border: 1px solid #d1d1d1;">Contigent Liabilities & Auditors Observations </h2>
+                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                         <div class="form-group row">
                          <label for="debt_on" class="col-sm-2 col-form-label">Date As On</label>
                          <div class="col-sm-4">
                            <input type="text" class="form-control" value="{{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('d/m/Y') : '' }}" name="debt_on" id="debt_on" placeholder="Select Date">
                          </div>
                        </div>
+                       <div class="form-group row">
+                       <div class="col-sm-12">
                         <textarea class="form-control" id="contigent_observations" rows="3" spellcheck="false" name="contigent_observations">{{isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations : ''}}</textarea>
-
+                       </div>
+                        </div>
                         <div class="clearfix"></div>
-                    </div>
+                    <!-- </div> -->
 
                 </div>
                 @if(request()->get('view_only'))
@@ -306,6 +357,7 @@
 
     var path = "{{ route('get_group_company') }}";
     
+
     $('input.group-company').typeahead({
         source:  function (query, process) {
             return $.get(path, { query: query }, function (data) {
@@ -314,14 +366,116 @@
         },
         minLength: '3'
     });
-    $('input.calTotalExposure').on('change keyup blur', function(){
-        var existing =  parseInt($("input[name='existing_exposure']").val().replace(/,/g, '')); 
-        var proposed =  parseInt($("input[name='proposed_exposure']").val().replace(/,/g, ''));
 
-        existing = (!isNaN(existing))?existing:0;
+    function calTotalExposure(){
+       var outstandingExposure = 0;
+            $('input[name*=outstanding_exposure]').each(function(){
+                if($.isNumeric($(this).val())){
+                    outstandingExposure  = parseFloat(outstandingExposure) + parseFloat($(this).val());
+    
+                }      
+            });
+        var proposed =  parseFloat($("input[name='proposed_exposure']").val());
+        var outstandingExposureCam =  parseFloat($("input[name='outstanding_exposure_cam']").val());
+        var outstandingExposure = (!isNaN(outstandingExposure))?outstandingExposure:0;
+        outstandingExposureCam = (!isNaN(outstandingExposureCam))?outstandingExposureCam:0;
         proposed = (!isNaN(proposed))?proposed:0;
-        $("input[name='total_exposure']").val(proposed+existing);
+        
+        $("input[name='total_exposure']").val((proposed+outstandingExposure).toFixed(2));
+
+    }
+
+    $(document).on('input', 'input.calTotalExposure', function(){
+           calTotalExposure();
     })
     
+    $(document).on('click', '.add-ptpq-block', function(){
+    let ptpq_block = '<div class="row mt10">'+
+            '<div class="col-md-4">'+
+                '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required>'+
+            '</div>'+
+            '<div class="col-md-3 INR">'+
+                '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<input type="text" name="sanction_limit[]" class="form-control " value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
+            '</div>'+
+            '<div class="col-md-3 INR">'+
+                '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
+            '</div>'+
+            '<div class="col-md-2 center">'+
+                '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
+            '</div>'+
+        '</div>';
+    $('#ptpq-block').append(ptpq_block);
+  });
+
+  $(document).on('click', '.remove-ptpq-block', function(){
+    $(this).parent('div').parent('div').remove();
+        calTotalExposure();
+  });
+
+
+  $(document).on('click', '.dropdown-menu .dropdown-item .groupid', function(argument) {
+      
+       var messages = {
+              get_group_company_exposure: "{{ URL::route('get_group_company_exposure') }}",
+              data_not_found: "{{ trans('error_messages.data_not_found') }}",
+              token: "{{ csrf_token() }}",
+         };
+         var groupid = $(this).attr('groupid');
+         var dataStore = {'groupid': groupid,'_token': messages.token };
+      jQuery.ajax({
+             url: messages.get_group_company_exposure,
+             method: 'post',
+             dataType: 'json',
+             data: dataStore,
+             error: function (xhr, status, errorThrown) {
+                               // alert(errorThrown);
+             },
+             success: function (data) {  
+              $.each(data, function(i, arr) {
+                    let ptpq_block = '<div class="row mt10">'+
+                                '<div class="col-md-4">'+
+                                    '<input type="text" name="group_company_name[]" class="form-control" value="'+arr.group_company_name+'" placeholder="Group Company" required>'+
+                                '</div>'+
+                                '<div class="col-md-3 INR">'+
+                                    '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                    '<input type="text" name="sanction_limit[]" class="form-control " value="'+arr.sanction_limit+'" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
+                                '</div>'+
+                                '<div class="col-md-3 INR">'+
+                                    '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                    '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="'+arr.outstanding_exposure+'" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
+                                '</div>'+
+                                '<div class="col-md-2 center">'+
+                                    '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
+                                '</div>'+
+                            '</div>';
+                    $('#ptpq-block').append(ptpq_block);
+              }); 
+               calTotalExposure();    
+            }
+      });
+   })
+
+
+$(document).on('keypress','.float_format', function(event) {
+let num = $(this).val();
+num.split('.')[1]
+    if(event.which == 8 || event.which == 0){
+        return true;
+    }
+    if(event.which < 46 || event.which > 59) {
+        return false;
+    }
+   
+    if(event.which == 46 && $(this).val().indexOf('.') != -1) {
+        return false;
+    }
+if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
+return false;
+}
+});
+
+
 </script>
 @endsection

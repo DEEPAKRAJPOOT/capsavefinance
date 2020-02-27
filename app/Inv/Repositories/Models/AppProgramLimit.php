@@ -7,6 +7,7 @@ use Auth;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use Illuminate\Database\Eloquent\Builder;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -148,7 +149,7 @@ class AppProgramLimit extends BaseModel {
       public static function getLimitProgram($aid)
      {
      
-         return AppProgramLimit::whereHas('supplyOffers')->with('program')->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
+        return AppProgramLimit::whereHas('supplyOffers')->with(['program' => function($query) { $query->where('status', 1 ); }])->where(['product_id' =>1,'anchor_id' =>$aid])->groupBy('prgm_id')->get();
      }
      
     public static function getLimitAnchor($aid){
@@ -185,6 +186,11 @@ class AppProgramLimit extends BaseModel {
         return self::where('anchor_id',$aid)->first();  
     }
 
+   public static function getSingleApp($uid){
+        return Application::where(['user_id' => $uid,'status' =>1])->first();  
+    } 
+    
+    
     public static function getProgramBalanceLimit($program_id){
         if(empty($program_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
@@ -193,12 +199,7 @@ class AppProgramLimit extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $aplids = AppProgramLimit::where('prgm_id', $program_id)->pluck('app_prgm_limit_id');
-        if($aplids->count() == 0){
-            return 0;
-        }else{
-            return AppProgramOffer::where('app_prgm_limit_id', $aplids)->sum('prgm_limit_amt');
-        }
+        return AppProgramOffer::where('prgm_id', $program_id)->sum('prgm_limit_amt');
      }
 
     public function appLimit(){
@@ -209,12 +210,11 @@ class AppProgramLimit extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
     }  
 
+    function supplyOffers()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id','app_prgm_limit_id')->where(['is_approve' =>1,'is_active' =>1,'status' => 1]);  
     
-     function supplyOffers()
-     {
-          return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id','app_prgm_limit_id')->where(['is_approve' =>1,'is_active' =>1,'status' => 1]);  
-     
-     }
+    }
 
     public static function getLimitWithOffer($appId, $bizId, $productId){
         return self::select('app_prgm_limit.limit_amt', 
@@ -226,7 +226,8 @@ class AppProgramLimit extends BaseModel {
                 'app_prgm_offer.ruby_sheet_xirr',
                 'app_prgm_offer.cash_flow_xirr',
                 'app_prgm_offer.addl_security',
-                'app_prgm_offer.comment'
+                'app_prgm_offer.comment',
+                'app_prgm_offer.facility_type_id'
                 )
                 ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
                 ->where('app_prgm_limit.app_id',$appId)
@@ -234,5 +235,13 @@ class AppProgramLimit extends BaseModel {
                 ->where('app_prgm_limit.product_id',$productId)
                 ->where('app_prgm_offer.is_active', config('common.active.yes'))
                 ->first();  
+    }
+
+    public function getTotalByPrgmLimitId(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id', 'app_prgm_limit_id')->where(['is_active'=>1])->sum('prgm_limit_amt');
+    }
+
+    public static function getTotalPrgmLimitByAppId($appId){
+        return AppProgramLimit::where(['app_id'=>$appId])->sum('limit_amt');
     }
 }

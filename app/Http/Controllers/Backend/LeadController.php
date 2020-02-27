@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
 use App\Http\Requests\AnchorRegistrationFormRequest;
+use App\Http\Requests\Lms\BankAccountRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
@@ -491,6 +492,73 @@ class LeadController extends Controller {
                             ->with('anchorData', $anchorVal);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    /**
+     * function for add anchor bank
+     * @param Request $request
+     * @return type
+     */
+    public function addAnchorBank(Request $request) {
+        try {
+           
+            $bankAccount = [];
+            $anchor_id = $request->get('anchor_id');
+            $bank_acc_id = false;
+            $bankAccount['is_default'] = 0;
+            
+//            if (!empty($request->get('bank_account_id'))) {
+//                $bank_acc_id = preg_replace('#[^0-9]#', '', $request->get('bank_account_id'));
+//                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($bank_acc_id,$anchor_id)->first();
+//            }
+            if ($anchor_id != null) {
+                $bank_acc_id = preg_replace('#[^0-9]#', '', $request->get('bank_account_id'));
+                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($anchor_id)->first();
+            }
+            
+            
+            $bank_list = ['' => 'Please Select'] + $this->appRepo->getBankList()->toArray();
+            return view('backend.anchor.anchor_bank_account')
+                            ->with(['bank_list' => $bank_list, 'anchorId' => $anchor_id, 'bankAccount' => $bankAccount]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+    
+    /**
+     * Save Anchor bank account
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function saveAnchorBankAccount(BankAccountRequest $request)
+    {
+        try {
+//            dd($request->all());
+            $by_default = ($request->get('by_default')) ? ((int)$request->get('by_default')) : 0;
+            $bank_acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
+            $anchorId = ($request->get('anchor_id')) ? \Crypt::decrypt($request->get('anchor_id')) : null;
+//            dd($compId);
+            $prepareData = [
+                'acc_name' => $request->get('acc_name'),
+                'acc_no' => $request->get('acc_no'),
+                'bank_id' => $request->get('bank_id'),
+                'ifsc_code' => $request->get('ifsc_code'),
+                'branch_name' => $request->get('branch_name'),
+                'is_active' => $request->get('is_active'),
+                'user_id' => auth()->user()->user_id,
+                'anchor_id' => $anchorId,
+                'is_default' => $by_default,
+            ];
+
+            $this->appRepo->saveBankAccount($prepareData, $bank_acc_id);
+            $messges = $bank_acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');
+            Session::flash('message', $messges);
+            Session::flash('operation_status', 1);
+            return redirect()->back();
+        } catch (\Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 

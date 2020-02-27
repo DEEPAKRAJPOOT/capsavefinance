@@ -24,6 +24,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\UserReqDoc;
@@ -31,6 +32,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
 
 
 class AjaxController extends Controller {
@@ -45,9 +48,9 @@ class AjaxController extends Controller {
     protected $application;
    protected $invRepo;
    protected $docRepo;
-   
+   protected $lms_repo;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
 
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
@@ -59,6 +62,7 @@ class AjaxController extends Controller {
         $this->masterRepo = $master;
         $this->invRepo   =    $invRepo;
         $this->docRepo          = $docRepo;
+        $this->lmsRepo = $lms_repo;
 
     }
 
@@ -3134,6 +3138,13 @@ if ($err) {
      return $charges;
     }
 
+     public function getLmsChargeLists(DataProviderInterface $dataProvider) { 
+     $chargesTransList = $this->lmsRepo->getAllTransCharges();
+     $chargesTransList = $dataProvider->getLmsChargeLists($this->request, $chargesTransList);
+     return $chargesTransList;
+    }
+    
+    
 
     public function getDocLists(DataProviderInterface $dataProvider) { 
      $documentsList = $this->masterRepo->getAllDocuments();
@@ -3155,8 +3166,76 @@ if ($err) {
         return $data;
      }
     
-
+   //////* get program charge master  *?
+     public function getTransName(Request $request)
+     {
+       $res  =  $this->lmsRepo->getTransName($request);
+       if(count($res) > 0)
+       {
+               $amountSum  =  $this->lmsRepo->getLimitAmount($request);
+               if($amountSum)
+               {
+                  return response()->json(['status' => 1,'res' => $res,'amount' =>$amountSum]);
+               }
+               else
+               {
+                 return response()->json(['status' => 0]);  
+               }
     
+       }
+       else
+       {
+             return response()->json(['status' => 0]);
+       }
+     }
+    
+         public function  getChrgAmount(Request $request)
+      {
+          $res =  $request->all();
+          $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
+          if($getamount)
+          {
+               $app = "";
+               $sel ="";
+                $res =   [  1 => "Limit Amount",
+                            2 => "Outstanding Amount",
+                            3 => "Outstanding Principal",
+                            4 => "Outstanding Interest",
+                            5 => "Overdue Amount"];
+             if($getamount->chrg_applicable_id > 0)
+             {
+                
+                 foreach($res as $key=>$val)
+                 {
+                     if($getamount->chrg_applicable_id==$key)
+                     {
+                         $sel = "selected";
+                     }
+                     else
+                     {
+                          $sel = "";
+                     }
+                     $app.= "<option value=".$key." $sel>".$val."</option>";
+                 }
+             }
+             
+             if($getamount->chrg_calculation_type==1)
+             {
+                $amount =  number_format($getamount->chrg_calculation_amt);
+             }
+             else
+             {
+                $amount =  $getamount->chrg_calculation_amt; 
+             }
+             
+             return response()->json(['status' => 1,'chrg_applicable_id' => $getamount->chrg_applicable_id,'amount' => number_format($amount),'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
+          }
+          else
+          {
+              return response()->json(['status' => 0]); 
+          }
+          
+      }
     /**
      * get charges  html
      * 
@@ -3239,6 +3318,11 @@ if ($err) {
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
     return $users;
   }   
+  
+  public function getCustomer(Request $request){
+    $data = LmsUser::getCustomers($request->input('query'));
+    return response()->json($data);
+  }
 
   /**
    * Get all customer list
@@ -3247,16 +3331,6 @@ if ($err) {
    */
   public function lmsGetDisbursalCustomer(DataProviderInterface $dataProvider) {
     $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer();
-    $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
-    return $users;
-  }
-  /**
-   * Get all customer list
-   *
-   * @return json customer data
-   */
-  public function lmsGetDisbursalList(DataProviderInterface $dataProvider) {
-    $customersDisbursalList = $this->userRepo->lmsGetDisbursalList();
     $users = $dataProvider->lmsGetDisbursalCustomers($this->request, $customersDisbursalList);
     return $users;
   }
@@ -3315,7 +3389,7 @@ if ($err) {
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
      }
            
 
@@ -3595,6 +3669,7 @@ if ($err) {
     public function getDisbursalList(DataProviderInterface $dataProvider)
     {
      $getDisList = $this->userRepo->getDisbursalList();
+     //dd($getDisList->get());
      return $dataProvider->getDisbursalList($this->request , $getDisList);   
     }
 
@@ -3606,7 +3681,7 @@ if ($err) {
      */
     public function getGroupCompany(Request $request ){
       
-        $data = Group::select("name")
+        $data = Group::select(['id','name'])
                 ->where("name","LIKE","%{$request->input('query')}%")
                 ->get();
     
@@ -3660,6 +3735,17 @@ if ($err) {
         return \response()->json(['success' => $res]);
     }
 
+    /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
+  public function lmsGetSoaList(DataProviderInterface $dataProvider) {
+
+    $transactionList = $this->application->lmsGetTransactions();
+    $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
+    return $users;
+  }
         /**
      * Get all Equipment
      *
@@ -3670,6 +3756,30 @@ if ($err) {
         $equipment = $this->masterRepo->getEquipments();
         $data = $dataProvider->getEquipments($this->request, $equipment);
         return $data;
+    }
+
+
+    /** 
+     * @Author: Rent Alpha
+     * @Date: 2020-02-18 10:49:29 
+     * @Desc:  
+     */    
+    public function getTableValByField(Request $request)
+    {
+        $tableName = $request->get('tableName');
+        $whereId = $request->get('whereId');
+        $fieldVal = $request->get('fieldVal');
+        $column = $request->get('column');
+        $getFieldVal= Helpers::getTableVal($tableName, $whereId, $fieldVal); 
+        $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
+        echo $columnVal;
+    }
+
+
+    public function getGroupCompanyExposure(Request $request ){
+        $groupId = $request->get('groupid');
+        $arrData = GroupCompanyExposure::where("group_Id", $groupId)->groupBy('group_company_name')->get();
+        return response()->json($arrData);
     }
 
 }

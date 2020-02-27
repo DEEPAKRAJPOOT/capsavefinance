@@ -12,6 +12,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
         Route::group(['prefix' => 'lms'], function () {
         	
+            Route::get('/upload-pf-df/{userId}/{appId}', [
+                'as' => 'lms_get_customer_list',
+                'uses' => 'Lms\DisbursalController@uploadPfDf'
+            ]);
+
             Route::get('/', [
                 'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list'
@@ -73,6 +78,53 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_disbursed_list',
                 'uses' => 'Lms\DisbursalController@disbursedList'
             ]);
+
+            Route::get('/soa/list', [
+                'as' => 'lms_get_transaction',
+                'uses' => 'Lms\SoaController@list'
+            ]);
+           Route::get('/charges/manage_charge', [
+                'as' => 'manage_charge',
+                'uses' => 'Lms\ChargeController@manageCharge'
+            ]);
+          
+           
+            Route::post('save_manual_charges', [
+                'as' => 'save_manual_charges',
+                'uses' => 'Lms\ChargeController@saveManualCharges'
+            ]); 
+           
+            Route::get('/edit-lms-charges', [
+                'as' => 'edit_lms_charges',
+                'uses' => 'Lms\ChargeController@editLmsCharges'
+            ]);
+             Route::get('/list-lms-charges', [
+                'as' => 'list_lms_charges',
+                'uses' => 'Lms\ChargeController@listLmsCharges'
+            ]);
+
+            Route::get('get-lms-charges-edit', [
+                'as' => 'get_lms_charges_edit',
+                'uses' => 'Lms\ChargeController@editLmsCharges'
+            ]);  
+        
+            Route::get('payment-settlement',[
+                'as' => 'lms-payment-settlement',
+                'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
+            ]);
+            
+            // manage refund routes 
+
+            Route::get('/refund/refund-list', [
+                'as' => 'lms_refund_list',
+                'uses' => 'Lms\RefundController@refundList'
+            ]);
+                          
+            Route::get('view-interest-accrual', [
+                'as' => 'view_interest_accrual',
+                'uses' => 'Lms\DisbursalController@viewInterestAccrual'
+            ]);
+             
         });//end of application
 
         // Business address

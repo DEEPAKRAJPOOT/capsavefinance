@@ -40,6 +40,8 @@ var iframe_ids = [
         'editAgencyUserFrame',
         'addChargesFrame',
         'editChargesFrame',
+        'editChargesLmsFrame',
+        'addChargesLmsFrame',
         'addDocumentsFrame',
         'editDocumentsFrame',
         'addIndustriesFrame',
@@ -81,6 +83,9 @@ var iframe_ids = [
         'changeAppDisbursStatus',
         'addEquipmentFrame',
         'editEquipmentFrame',
+        'shareColenderFrame',
+        'viewSharedColenderFrame',
+        'viewInterestAccrual'
     ];
 
 iframe_ids.forEach(function(id) {

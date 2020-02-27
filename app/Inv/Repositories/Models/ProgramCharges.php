@@ -46,7 +46,10 @@ class ProgramCharges extends BaseModel {
     ];
     
     
-    
+    public static function getProgram()
+    {
+        return self::with('program')->where(['is_active' => 1])->get();
+    }
     
     public function program()
     {
@@ -67,6 +70,8 @@ class ProgramCharges extends BaseModel {
         $res = self::where('is_active', '1')->pluck('chrg_name', 'id');
         return $res ?: false;
     }
+    
+    
 
     /**
      * get charge Data
@@ -130,5 +135,24 @@ class ProgramCharges extends BaseModel {
         $res = self::where($where)->delete();
         return $res ?: false;
     }
+    
+     public static function getSingleChargeAmount($attr)
+    {
+        $res = self::where(['charge_id' => $attr['id'],'prgm_id' => $attr['prog_id']])->first();
+        return $res ?: false;
+    }
+    
+    
+    public static function getTransName($attr)
+    {
+       
+        return self::with('charge')->where(['prgm_id'=>$attr->prog_id,'chrg_type' =>2,'is_active' =>1])->get();
+    }
+    
+    public function charge()
+    {
+       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Charges', 'charge_id', 'id'); 
+    }
 
+   
 }

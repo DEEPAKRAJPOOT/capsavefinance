@@ -1537,5 +1537,15 @@ class UserRepository extends BaseRepositories implements UserInterface
             ->where('user_id', $userId)
             ->get();
     }
-       
+    
+    /**
+     * Get  Users details
+     * 
+     * @return type
+     */
+    public function getSingleUserDetails($user_id){
+        $user_id=(int)$user_id;
+        $result= UserModel::getSingleUserDetails($user_id);
+        return $result?$result:'';
+    } 
 }

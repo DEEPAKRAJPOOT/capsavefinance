@@ -180,20 +180,22 @@ class InvoiceController extends Controller {
         $attributes = $request->all();
         $date = Carbon::now();
         $id = Auth::user()->user_id;
-        
         if(isset($attributes['app_id']))
         {
             $appId = $attributes['app_id']; 
             $biz_id  = $attributes['biz_id'];
         }
         else {
-           $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
+          /// $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
+           $res =  $this->invRepo->getSingleApp($attributes['supplier_id']);
            $appId = $res->app_id; 
            $biz_id  = $res->biz_id;
+         
         }
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
-       
+        $invoice_approve_amount  = str_replace(",","",$attributes['invoice_approve_amount']);
+        $invoice_amount = str_replace(',', '',$attributes['invoice_approve_amount']);
         $arr = array('anchor_id' => $attributes['anchor_id'],
             'supplier_id' => $attributes['supplier_id'],
             'program_id' => $attributes['program_id'],
@@ -203,8 +205,8 @@ class InvoiceController extends Controller {
             'tenor' => $attributes['tenor'],
             'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
-            'invoice_approve_amount' => $attributes['invoice_approve_amount'],
-            'invoice_amount' => $attributes['invoice_approve_amount'],
+            'invoice_approve_amount' => $invoice_approve_amount,
+            'invoice_amount' =>  $invoice_amount,
             'prgm_offer_id' => $attributes['prgm_offer_id'],
             'remark' => $attributes['remark'],
             'file_id'  =>$userFile->file_id,

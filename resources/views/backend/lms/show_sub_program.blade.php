@@ -50,7 +50,7 @@
                                     <th>{{ trans('backend.mange_program.sub_program_id') }}</th>
                                     <th>{{ trans('backend.mange_program.anchor_name') }}</th>
                                     <th>{{ trans('backend.mange_program.sub_program_name') }}</th>
-                                 
+                                    <th>{{ trans('backend.mange_program.program_type') }}</th>
                                     <th>{{ trans('backend.mange_program.total_anchor_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.sub_anchor_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.loan_size') }}</th>

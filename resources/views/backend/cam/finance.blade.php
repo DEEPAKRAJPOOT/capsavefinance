@@ -38,12 +38,12 @@
                          @endif
                          <div class="clearfix"></div>
                          <div style="text-align: right;">
-                         @if(!empty($active_json_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
+                         @if(!empty($active_json_filename) && !empty($active_xlsx_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
                                <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
-                               @can('upload_xlsx_document')
-                               <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
-                               @endcan
                          @endif 
+                         @can('upload_xlsx_document')
+                               <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
+                         @endcan
                          @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
                                <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
@@ -95,7 +95,7 @@
                                             <tbody>
                                                <tr>
                                                   <td><b>Name of the Borrower</b></td>
-                                                  <td colspan="4">{{$borrower_name}}</td>
+                                                  <td colspan="4"><input type="text" class="form-control form-control-sm" value="{{$borrower_name}}" name="borrower_name"></td>
                                                </tr>
                                                <tr>
                                                   <td width="25%"><b>Latest Audited Financial Year</b></td>
@@ -148,7 +148,10 @@
                                                   <td style="vertical-align:top; padding:0px !important; border-right:none;">
                                                      <table class="table-border-none" width="100%">
                                                         <tbody>
-                                                          @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
+                                                          @php 
+                                                          $finance_data_prev = !empty($finance_data[$year-1]) ? $finance_data[$year-1] : array();
+                                                          $yearly_fin_data = getTotalFinanceData($fin_data, $finance_data_prev);
+                                                          @endphp
                                                           @foreach($performance_analysis_cols as $key => $cols)
                                                             <tr>
                                                               <td height="46" align="right"><input type="text" class="form-control form-control-sm" disabled value="{{sprintf('%.2f', $yearly_fin_data[$key])}}"></td>
@@ -952,11 +955,11 @@
                                 </tbody>
                              </table>
                              <div class="data mt-4">
-                                <h2 class="sub-title bg">Risk Comments on Financials</h2>
-                                <div class="pl-4 pr-4 pb-4 pt-2">
+                                <h2 class="sub-title bg"  style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments on Financials</h2>
+                                <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
                                    <textarea class="form-control form-control-sm" id="financial_risk_comments" name="financial_risk_comments" rows="3" value="" spellcheck="false">{{isset($finDetailData->financial_risk_comments) ? $finDetailData->financial_risk_comments : ''}}</textarea>
                                    <div class="clearfix"></div>
-                                </div>
+                                <!-- </div> -->
                              </div>
                              <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
                             </div>

@@ -10,6 +10,8 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Role as Role;
 use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppProgramLimit;
 
 
 
@@ -617,6 +619,36 @@ class User extends Authenticatable
         return $this->hasOne('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
 
+
+     public static function getProgramUser($user_id)
+    {
+         $appIds = Application::where('user_id', $user_id)->pluck('app_id');
+         $proId =  AppProgramLimit::whereHas('supplyOffers')->whereIn('app_id', $appIds)->pluck('prgm_id');
+         return Program::whereIn('prgm_id', $proId)->get();
+      }
+    
+    
+      public  function userApps()
+    {
+         return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->pluck('app_id');
+    }
+    
+     public static function getUserDetails($uid)
+     {
+       
+         return self::with('app')->where(['user_id' =>$uid])->first();
+         
+     }
+     
+         public  function app()
+    {
+         return $this->belongsTo('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->where(['status' =>1]);
+    }
+
+    public function anchors(){
+        return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
+    }
+
     /**
      * Get Backend Users
      * 
@@ -673,4 +705,13 @@ class User extends Authenticatable
         return self::where(['user_id' => $uid])->first();
     }
     
+    public function bank_details()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1, 'is_default' => 1]);
+    }
+
+    public function anchor_bank_details()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where(['is_active' => 1]);
+    }
 }

@@ -66,10 +66,11 @@ class Business extends BaseModel
         'biz_segment',
         'is_pan_verified',
         'is_gst_verified',
+        'is_gst_manual',
         'panno_pan_gst_id',
         'gstno_pan_gst_id',
         'share_holding_date',
-        'org_id',
+        'org_id',        
         'created_by',
         'created_at',
         'updated_at',
@@ -90,10 +91,11 @@ class Business extends BaseModel
         'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
         'org_id'=>1,
         'created_by'=>$userId,
+        'is_gst_manual'=>$attributes['is_gst_manual']
         ]);
 
         $bpga = BizPanGstApi::create([
-                'file_name'=>'file name goes here',
+                'file_name'=>md5(time()),
                 'status'=>1,
                 'created_by'=>$userId
             ]);
@@ -125,20 +127,21 @@ class Business extends BaseModel
             ]);
 
         //entry for all GST against the PAN
-        $pan_api_res = explode(',', rtrim($attributes['pan_api_res'],','));
-        $data = [];
-        foreach ($pan_api_res as $key=>$value) {
-            $data[$key]['user_id']=$userId;
-            $data[$key]['biz_id']=$business->biz_id;
-            $data[$key]['type']=2;
-            $data[$key]['pan_gst_hash']=$value;
-            $data[$key]['status']=1;
-            $data[$key]['parent_pan_gst_id']=$bpg->biz_pan_gst_id;
-            $data[$key]['created_by']=$userId;
-            $data[$key]['biz_pan_gst_api_id']=0;
+        if($attributes['pan_api_res']) {
+            $pan_api_res = explode(',', rtrim($attributes['pan_api_res'],','));
+            $data = [];
+            foreach ($pan_api_res as $key=>$value) {
+                $data[$key]['user_id']=$userId;
+                $data[$key]['biz_id']=$business->biz_id;
+                $data[$key]['type']=2;
+                $data[$key]['pan_gst_hash']=$value;
+                $data[$key]['status']=1;
+                $data[$key]['parent_pan_gst_id']=$bpg->biz_pan_gst_id;
+                $data[$key]['created_by']=$userId;
+                $data[$key]['biz_pan_gst_api_id']=0;
+            }
+            BizPanGst::insert($data);
         }
-        BizPanGst::insert($data);
-
         // insert into rta_app table
         $app = Application::create([
             'user_id'=>$userId,
@@ -242,10 +245,17 @@ class Business extends BaseModel
         'updated_by'=>$userId,
         ]);
 
+        if(isset($attributes['is_gst_manual']) && $attributes['is_gst_manual']=='1'){
+            if(isset($attributes['biz_gst_number']) && !empty($attributes['biz_gst_number'])){
+                $bizpangst = BizPanGst::where(['biz_id'=>$bizId,'type'=>'2', 'parent_pan_gst_id'=>'0']);
+                $bizpangst ->update(['pan_gst_hash'=>$attributes['biz_gst_number']]);                
+            }            
+        }
+
         if(!empty($attributes->pan_api_res)){
             BizPanGst::where(['biz_id'=>$bizId,'biz_owner_id'=>null])->delete();
             $bpga = BizPanGstApi::create([
-                    'file_name'=>'file name goes here',
+                    'file_name'=>md5(time()),
                     'status'=>1,
                     'created_by'=>$userId
                 ]);

@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -57,6 +58,7 @@ class Disbursal extends BaseModel {
         'inv_due_date',
         'tenor_days',
         'interest_rate',
+        'total_repaid_amt',
         'total_interest',
         'margin',
         'disburse_amount',
@@ -68,11 +70,35 @@ class Disbursal extends BaseModel {
         'interest_refund',
         'funded_date',
         'int_accrual_start_dt',
+        'processing_fee',
+        'grace_period',
+        'overdue_interest_rate',
+        'repayment_amount',
+        'total_repaid_amount',
+        'penalty_amount',
         'created_at',
         'created_by',
         'updated_at',
         'updated_by',
     ];
+
+    /**
+     * Get Interest Accrual 
+     * 
+     * @return type
+     */
+    public function interests() { 
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'disbursal_id', 'disbursal_id'); 
+    }
+
+    /**
+     * Get App Program Offer 
+     * 
+     * @return type
+     */
+    public function offer() { 
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id'); 
+    }
 
     /**
      * Save or Update Disbursal Request
@@ -115,14 +141,20 @@ class Disbursal extends BaseModel {
         if (!empty($whereCondition)) {
             if (isset($whereCondition['int_accrual_start_dt'])) {
                 $query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
-            } else {
-                $query->where($whereCondition);
+                unset($whereCondition['int_accrual_start_dt']);
+            } 
+
+            if (isset($whereCondition['status_id'])) {
+                $query->whereIn('status_id', $whereCondition['status_id']);
+                unset($whereCondition['status_id']);
             }
+                        
+            $query->where($whereCondition);
         }
         $query->orderBy('disburse_date', 'ASC');
         $query->orderBy('disbursal_id', 'ASC');
-        $result = $query->get();
-        return $result;
+        $result = $query->get();        
+        return $result ? $result : [];
     }
     
     /**
@@ -169,7 +201,13 @@ class Disbursal extends BaseModel {
         return $res?: false;
     }
     /////////////* get customer id   */////////////////
-    public static function  getCustomerId()
+    public static function  getCustomerId($uid)
+    {
+        return User::where(['user_id' => $uid])->first();
+    }
+    
+      /////////////* get customer id   */////////////////
+    public static function  getDisburseCustomerId()
     {
         return self::with('user')->where(['disburse_type' => 2])->groupBy('user_id')->get();
     }
