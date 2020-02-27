@@ -134,9 +134,15 @@ class Disbursal extends BaseModel {
         if (!empty($whereCondition)) {
             if (isset($whereCondition['int_accrual_start_dt'])) {
                 $query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
-            } else {
-                $query->where($whereCondition);
+                unset($whereCondition['int_accrual_start_dt']);
+            } 
+
+            if (isset($whereCondition['status_id'])) {
+                $query->whereIn('status_id', $whereCondition['status_id']);
+                unset($whereCondition['status_id']);
             }
+                        
+            $query->where($whereCondition);
         }
         $query->orderBy('disburse_date', 'ASC');
         $query->orderBy('disbursal_id', 'ASC');
