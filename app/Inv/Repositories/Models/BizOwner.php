@@ -139,6 +139,7 @@ class BizOwner extends BaseModel
         $userData  =  User::getUserByAppId($attributes['app_id']);
         $uid =  $userData->user_id;
         $i =0;
+        $getOwnerId=[];
        foreach($attributes['data'] as $key=>$val)
        {    ///// insert data onload promoter page/////////////////////
                 $ownerInputArr =  BizOwner::create( ['biz_id' => $attributes['biz_id'],   
