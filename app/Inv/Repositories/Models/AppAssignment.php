@@ -92,7 +92,7 @@ class AppAssignment extends BaseModel
         }
 
         $status =  self::create($attributes);
-        dispatch(new ProcessMails($status));
+       // dispatch(new ProcessMails($status));
         return true;
     }
     
