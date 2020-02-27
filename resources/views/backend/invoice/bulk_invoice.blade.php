@@ -36,16 +36,16 @@
                      
 		 <div class="col-md-6">
 		<div class="form-group">
-        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
+        <label for="txtCreditPeriod">Anchor Namebbbbb  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
-                                             
-                <option value="">Select Anchor  </option>
-                @foreach($anchor_list as $row)
-                <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+             <option value="">Select Anchor  </option>
+              @foreach($anchor_list as $row)
+                 @php if(isset($row->anchor->anchor_id)) { @endphp
+                <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}</option>
+                @php } @endphp
                 @endforeach
-                                             </select>
-        
-                                               <span id="anchor_bulk_id_msg" class="error"></span>
+              </select>
+             <span id="anchor_bulk_id_msg" class="error"></span>
                 
                 </div></div>
 		

@@ -359,10 +359,8 @@
       $(document).on('click','#add_charge',function(e){
       
        if ($('form#chargesForm').validate().form()) {
-           
         $("#user_id" ).rules( "add", {
         required: true,
-    
         messages: {
         required: "Please select user",
         }

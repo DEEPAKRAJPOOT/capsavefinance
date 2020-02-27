@@ -19,14 +19,7 @@
    <div class="clearfix"></div>
 </section>
 <div class="row grid-margin ">
-
-
-
-   
-   
-   
-   
-   <div class="col-md-12  mb-4">
+ <div class="col-md-12  mb-4">
       <div class="card">
          <div class="card-body">
            <div class="form-fields">
@@ -45,8 +38,10 @@
                                              
                                             @if(count($get_anchor) > 0)
                                                 <option value="">Please Select</option>
-                                                @foreach($get_anchor as $row)  
+                                                @foreach($get_anchor as $row) 
+                                                @php if(isset($row->anchorList->anchor_id)) { @endphp
                                                 <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
+                                                @php } @endphp
                                                 @endforeach
                                                
                                                 @endif
@@ -331,17 +326,17 @@ var messages = {
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
    };
    
-   $('[name="invoice_approve_amount"]').on('change blur keyup', function() {
+   $('[name="invoice_approve_amount"]').on('change keyup', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
      var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
-   
+    // var invoice_approve_amount = invoice_approve_amount.replace(',', '');
+    /// var invoice_approve_amount = parseInt(invoice_approve_amount);
+   ///  alert(invoice_approve_amount); return false;
      if(invoice_approve_amount  > pro_limit)
      {
-       
          $("#msgProLimit").text('Invoice amount should not more than program limit');
          $("#submit").css("pointer-events","none");
          return false;
-         
      }
      else
      {
