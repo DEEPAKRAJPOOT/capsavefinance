@@ -258,7 +258,13 @@ trait LmsTrait
                     'disburse_date' => \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $UIDetail->disburse_date)->format('Y-m-d'),
                     'int_accrual_type'=>$UIDetail->offer->int_accrual_type,
                     'inv_due_date' => $UIDetail->inv_due_date,
+                    'disbursal'=>[
+                        'total_repaid_amt'=>$UIDetail->total_repaid_amt,
+                        'interest_refund'=>$UIDetail->interest_refund,
+                        'settlement_date'=>$UIDetail->settlement_date
+                    ]
                 ]; 
+
             }
 
             $invoiceLoop = 0;
@@ -288,9 +294,9 @@ trait LmsTrait
                         // Over Due Interest Settlement Step 1
                         
                         if($totalRepaidAmount >= $overDueInterest){
-                            $invoice[$key]['disbursal']['total_repaid_amt'] = $overDueInterest;
+                            $invoice[$key]['disbursal']['total_repaid_amt'] += $overDueInterest;
                         }else{
-                            $invoice[$key]['disbursal']['total_repaid_amt'] = $totalRepaidAmount;
+                            $invoice[$key]['disbursal']['total_repaid_amt'] += $totalRepaidAmount;
                         }
                         
                         $invoice[$key]['disbursal']['status_id'] = 13;
@@ -341,7 +347,7 @@ trait LmsTrait
 
                         $lastTransaction = end($invoice[$key]['trans']);
 
-                        $invoice[$key]['disbursal']['settlement_date'] = $lastTransaction['trans_date'];
+                        $invoice[$key]['disbursal']['settlement_date'] += $lastTransaction['trans_date'];
 
                         $is_settled = ($lastTransaction['pipedAmt']>=$balancePrincipalAmt)?1:2;
 
