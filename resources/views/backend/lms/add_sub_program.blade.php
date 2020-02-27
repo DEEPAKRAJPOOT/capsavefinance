@@ -24,9 +24,6 @@
                     <div class="form-fields">
                         <div class="active" id="details">
                             <div class="form-sections">
-                                <div class="col-md-8 col-md-offset-2">
-                                </div>
-                                <div class="ima"></div>
                                 <div class="documents-detail inner-subform" id="terms">
                                     <div class="form-sections parent_div">
                                         <div class=" ">
@@ -594,8 +591,7 @@
 
                                                 @foreach($programCharges as $keys =>$programChrg)
 
-                                                <div class="charge_parent_div editpart">
-                                                    <div class="toduplicate">
+                                                <div class="charge_parent_div">
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-group password-input">
@@ -627,7 +623,6 @@
                                                                 @include('backend/lms/charges_html', ['data'=> (object) $programChrg , 'len'=>$keys ]) 
                                                             </div>
                                                         </div>
-                                                    </div>
 
                                                 </div>
 
@@ -667,30 +662,29 @@
                                                 </div>
                                                 @endif
                                                 <!--@include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])-->
-
-
                                             </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group password-input">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <label for="txtCreditPeriod">Status <span class="error_message_label">*</span> </label>
-                                                            {!! Form::select('status', [''=>trans('backend.please_select') ,1=>'Active',0 =>'In Active'],
-                                                            isset($subProgramData->status) ? $subProgramData->status : null, ['class'=>'form-control']) !!}
-                                                        </div>
+
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group password-input">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label for="txtCreditPeriod">Status <span class="error_message_label">*</span> </label>
+                                                        {!! Form::select('status', [''=>trans('backend.please_select') ,1=>'Active',0 =>'In Active'],
+                                                        isset($subProgramData->status) ? $subProgramData->status : null, ['class'=>'form-control']) !!}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
-                                                <div class="text-right mt-3">
-
-                                                    <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
-                                                    <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
-                                                </div>
-                                            </div>
-
-                                            {{ Form::close()}}
                                         </div>
+                                        <div class="col-md-12">
+                                            <div class="text-right mt-3">
+
+                                                <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
+                                                <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
+                                            </div>
+                                        </div>
+
+                                        {{ Form::close()}}
                                     </div>
                                 </div>
                             </div>
@@ -700,29 +694,30 @@
             </div>
         </div>
     </div>
-    @endsection
-    @section('additional_css')
-    <link rel="stylesheet" href="{{ url('backend/assets/css/bootstrap-multiselect.css') }}" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-    @endsection
-    @section('jscript')
+</div>
+@endsection
+@section('additional_css')
+<link rel="stylesheet" href="{{ url('backend/assets/css/bootstrap-multiselect.css') }}" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+@endsection
+@section('jscript')
 
-    <script>
+<script>
 
-        var messages = {
-            get_charges_html: "{{ URL::route('get_charges_html') }}",
-            data_not_found: "{{ trans('error_messages.data_not_found') }}",
-            token: "{{ csrf_token() }}",
-            please_select: "{{ trans('backend.please_select') }}",
-            invoiceDataCount: "{{ ($invoiceDataCount > 0) ? 'true' : 'false' }}"
-        };
+    var messages = {
+        get_charges_html: "{{ URL::route('get_charges_html') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+        please_select: "{{ trans('backend.please_select') }}",
+        invoiceDataCount: "{{ ($invoiceDataCount > 0) ? 'true' : 'false' }}"
+    };
 
 
 
-    </script>
-    <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
-    <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-    <script src="{{ asset('backend/js/common.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
-    @endsection
+</script>
+<script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+<script src="{{ asset('backend/js/common.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/lms/program.js') }}" type="text/javascript"></script>
+@endsection
