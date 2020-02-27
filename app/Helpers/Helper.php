@@ -926,11 +926,11 @@ class Helper extends PaypalHelper
 
         foreach ($approvers as $approver) {
 
-            $user = UserModel::getfullUserDetail((int)$approver->user_id);
+            $user = User::getfullUserDetail((int)$approver->user_id);
             $emailData['app_id'] = 'CAPS000'.$application->app_id;
             $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
             $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-            $emailData['receiver_email'] =  $user->email;
+            $emailData['receiver_email'] = 'sudesh.kumar@prolitus.com'; //$user->email;
             $emailData['cover_note'] = $reviewerSummaryData->cover_note;
             \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($emailData));
         }

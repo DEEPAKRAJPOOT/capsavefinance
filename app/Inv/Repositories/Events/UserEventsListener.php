@@ -638,7 +638,7 @@ class UserEventsListener extends BaseEvent
         if ($email_content) {
             $mail_body = str_replace(
                 ['%receiver_user_name','%receiver_role_name','%app_id','%cover_note','%url'],
-                [$user['receiver_user_name'],$user['receiver_role_name'],$user['app_id'],$user['cover_note'],url('/')],
+                [$user['receiver_user_name'],$user['receiver_role_name'],$user['app_id'],$user['cover_note'],config('proin.backend_uri')],
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
