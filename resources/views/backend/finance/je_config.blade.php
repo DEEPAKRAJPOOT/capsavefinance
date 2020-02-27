@@ -100,11 +100,13 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">
-                        <table id="accountList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                        <table id="jeConfigList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Code</th>
-                                    <th>Name</th>
+                                    <th>Journal Name</th>
+                                    <th>Journal Type</th>
+                                    <th>Transaction Type</th>
+                                    <th>Variables</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -126,7 +128,7 @@
 <script>
 $('.multi-select-demo').multiselect();
 var messages = {
-    get_ajax_account_list: "{{ URL::route('get_ajax_account_list') }}",       
+    get_ajax_jeconfig_list: "{{ URL::route('get_ajax_jeconfig_list') }}",       
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };

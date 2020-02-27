@@ -3697,4 +3697,10 @@ if ($err) {
         $this->providerResult = $dataProvider->getVariableByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
+    public function getJeConfigList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllJeConfig();
+        $this->providerResult = $dataProvider->getJeConfigByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
 }

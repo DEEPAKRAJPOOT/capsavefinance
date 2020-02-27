@@ -100,6 +100,34 @@ try {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
 
+
+        oTableVariable = $('#jeConfigList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: false,
+            bSort: true,
+            ajax: {
+               "url": messages.get_ajax_jeconfig_list, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_name = $('input[name=search_keyword]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling                   
+                    $("#jeConfigList").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+           columns: [
+                    {data: 'journal_name'},
+                    {data: 'journal_type'},
+                    {data: 'trans_type'},
+                    {data: 'variable_name'}
+                ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+        });
+
         // //Search
         // $('#searchbtn').on('click', function (e) {
         //     oTable.draw();

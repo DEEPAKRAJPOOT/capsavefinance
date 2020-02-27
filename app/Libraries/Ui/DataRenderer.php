@@ -3145,4 +3145,31 @@ class DataRenderer implements DataProviderInterface
                     })
                     ->make(true);
         }
+
+        public function getJeConfigByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'journal_name',
+                        function ($dataRecords) {
+                        return $dataRecords->journal_name;
+                    })
+                    ->editColumn(
+                        'journal_type',
+                        function ($dataRecords) {
+                        return $dataRecords->journal_type;
+                    })
+                    ->editColumn(
+                        'trans_type',
+                        function ($dataRecords) {
+                        return $dataRecords->trans_type;
+                    })
+                    ->editColumn(
+                        'variable_name',
+                        function ($dataRecords) {
+                        return $dataRecords->variable_name;
+                    })
+                    ->make(true);
+        }
 }

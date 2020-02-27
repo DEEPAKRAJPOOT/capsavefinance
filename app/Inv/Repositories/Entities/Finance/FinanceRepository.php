@@ -67,4 +67,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     public function saveTransVarData($arrData){
         return FinancialVariablesTransConfig::saveTransVarData($arrData);
     }
+
+    public function getAllJeConfig()
+    {
+        return FinancialJeConfig::getAllJeConfig();         
+    }
 }

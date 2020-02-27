@@ -777,4 +777,11 @@ Route::group(
         'uses' => 'AjaxController@getVariableList'
         ]
     );
+    Route::post(
+        'get-jeconfig-list',
+        [
+        'as' => 'get_ajax_jeconfig_list',
+        'uses' => 'AjaxController@getJeConfigList'
+        ]
+    );
 });
