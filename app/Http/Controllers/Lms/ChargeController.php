@@ -88,26 +88,41 @@ class ChargeController extends Controller
       
        public function saveManualCharges(Request $request)
        {  
+           
            $getAmount =  str_replace(',', '', $request->amount);
            $getTransType  =  DB::table('mst_trans_type')->where(['chrg_master_id' => $request->chrg_name])->first();
-          $totalSumAmount = 0;
+           $totalSumAmount = 0;
            if($getTransType)
            {
-                 $static_amount = $request->programamount;
                  if($request->chrg_calculation_type==1)
                  {
-                     $percent = NULL;
-                     $amount =  $getAmount;
-                     $chrg_applicable_id = NULL;
-                     $totalSumAmount ="";
+                    $percent  = 0; 
+                    if($request->is_gst_applicable==1)
+                   {
+                       $totalSumAmount  =  $request->charge_amount_gst_new;  
+                       $is_gst   = 1; 
+                   }
+                   else
+                   {
+                        $totalSumAmount  =  $request->amount; 
+                         $is_gst   = 0; 
+                   }
+                   $chrg_applicable_id = null;
                  }
                  else
                  {
-                     $percent  =  $getAmount;
-                     $amount = $static_amount*$percent/100;
-                     $amountPercent = $amount*18/100;
-                     $totalSumAmount = ($amount + $amountPercent);
-                     $chrg_applicable_id  = $request->chrg_applicable_id;
+                    $chrg_applicable_id = $request->chrg_applicable_id; 
+                    $percent  = $request->amount;
+                   if($request->is_gst_applicable==1)
+                   {
+                       $totalSumAmount  =  $request->charge_amount_gst_new;  
+                       $is_gst   = 1; 
+                   }
+                   else
+                   {
+                        $totalSumAmount  =  $request->charge_amount_new; 
+                        $is_gst   = 0; 
+                   }
                  }
                     $id  = Auth::user()->user_id;
                     $mytime = Carbon::now(); 
@@ -125,6 +140,7 @@ class ChargeController extends Controller
                                   "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
                                   "chrg_trans_id" =>  $chrgTransId,
                                   "amount" =>   $totalSumAmount,
+                                  "gst"   => $is_gst,
                                   'entry_type' =>0,
                                   "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                                   "trans_type" => $getTransType->id,
@@ -147,13 +163,13 @@ class ChargeController extends Controller
                   }
                    else
                         {
-                                Session::flash('message', 'Something went wrong, Please try again');
+                                Session::flash('message', 'Something went wrong1, Please try again');
                                 return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                         }
                  
                  }
                         else {
-                               Session::flash('message', 'Something went wrong, Please try again');
+                               Session::flash('message', 'Something went wrong2, Please try again');
                               return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                       }
         

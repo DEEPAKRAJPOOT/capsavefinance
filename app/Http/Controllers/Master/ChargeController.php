@@ -1,7 +1,6 @@
 <?php
  
 namespace App\Http\Controllers\Master;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
@@ -34,6 +33,7 @@ class ChargeController extends Controller {
 
 
     public function saveCharges(Request $request) {
+       
         try {
             $arrChargesData = $request->all();
             $arrChargesData['created_at'] = \carbon\Carbon::now();
@@ -45,13 +45,28 @@ class ChargeController extends Controller {
                 $charge_data = $this->masterRepo->findChargeById($charge_id);
                 if (!empty($charge_data)) {
                     $status = $this->masterRepo->updateCharges($arrChargesData, $charge_id);
+                     $transUpdateData  =    (['trans_name' =>$request->chrg_name,
+                                'credit_desc' => $request->credit_desc,
+                                'debit_desc'  => $request->debit_desc,
+                                'is_visible'  => 1,
+                                'is_active'  => $request->is_active,
+                                'created_at' => $arrChargesData['created_at'],
+                                'created_by' => $arrChargesData['created_by']]);
+                DB::table('mst_trans_type')->where('chrg_master_id',$charge_id)->update($transUpdateData);
                 }
             }else{
                $status = $this->masterRepo->saveCharges($arrChargesData); 
             }
             if($status){
-                
-                DB::table('mst_trans_type')->insert(['chrg_master_id' => $status]);
+             $transData  =    (['trans_name' =>$request->chrg_name,
+                                'credit_desc' => $request->credit_desc,
+                                'debit_desc'  => $request->debit_desc,
+                                'chrg_master_id' => $status,
+                                'is_visible'  => 1,
+                                'is_active'  => $request->is_active,
+                                'created_at' => $arrChargesData['created_at'],
+                                'created_by' => $arrChargesData['created_by']]);
+                DB::table('mst_trans_type')->insert( $transData);
                 Session::flash('message', $charge_id ? trans('master_messages.charges_edit_success') :trans('master_messages.charges_add_success'));
                 return redirect()->route('get_charges_list');
             }else{

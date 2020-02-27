@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models\Master;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Factory\Models\Master\State;
 use App\Inv\Repositories\Entities\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\Exceptions\InvalidDataTypeExceptions;
 
@@ -48,6 +49,8 @@ class Company extends BaseModel {
         'pan_no',
         'cin_no',
         'is_active',
+        'state',
+        'city',
         'created_by',
         'updated_by'
     ];
@@ -93,10 +96,17 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        $res = self::find($id);
+        $res = self::with('state')->where(['company_id'=>$id])->first();
 
         return $res ?: false;
     }
+    
+    function state()
+    {
+        
+     return $this->belongsTo('App\Inv\Repositories\Models\Master\State', 'state','id')->where(['is_active' => 1]);  
+       
+   }
 
     public static function updateCompanies($compArr, $companyId) {
 
