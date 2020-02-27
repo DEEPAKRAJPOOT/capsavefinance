@@ -9,11 +9,11 @@
       <i class="fa fa-clipboard" aria-hidden="true"></i>
    </div>
    <div class="header-title">
-      <h3 class="mt-2">Manage Invoice</h3>
+      <h3 class="mt-2">Upload Bulk Invoice</h3>
      
       <ol class="breadcrumb">
          <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-         <li class="active">Manage Invoice</li>
+         <li class="active">Upload Bulk Invoice</li>
       </ol>
    </div>
    <div class="clearfix"></div>
@@ -36,12 +36,12 @@
                      
 		 <div class="col-md-6">
 		<div class="form-group">
-        <label for="txtCreditPeriod">Anchor Namebbbbb  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
+        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
-             <option value="">Select Anchor  </option>
+            <option value="">Select Anchor  </option>
               @foreach($anchor_list as $row)
-                 @php if(isset($row->anchor->anchor_id)) { @endphp
-                <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}</option>
+                 @php if(isset($row->anchorOne->anchor_id)) { @endphp
+                <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}</option>
                 @php } @endphp
                 @endforeach
               </select>
@@ -168,7 +168,7 @@
         $(".finalButton").hide();
         $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
         $("#program_bulk_id").append("<option value=''>No data found</option>");  
-        $("#program_bulk_id").append("<option value=''>No data found</option>");                         
+                               
    
   }); 
   

@@ -656,7 +656,7 @@ use CommonRepositoryTraits;
      
         try
         {
-          return AppProgramLimit::getSingleLimit($aid);
+          return AppProgramOffer::getSingleLimit($aid);
         } catch (Exception $ex) {
            return $ex;
         } 

@@ -3500,8 +3500,8 @@ if ($err) {
        {
             return response()->json(['status' => 2]); 
        }
-       $date = Carbon::now();
-       $data = array();
+        $date = Carbon::now();
+        $data = array();
         $userId =  $request['supplier_bulk_id'];
         $id = Auth::user()->user_id;
         if ($request['doc_file']) {
@@ -3513,14 +3513,14 @@ if ($err) {
         }
         $batch_id =  $this->invRepo->saveBatchNo($path); 
         $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
-         $file = fopen($csvFilePath, "r");
-     
+        $file = fopen($csvFilePath, "r");
         while (!feof($file)) {
           
             $rowData[] = explode(",",fgets($file));
           }
        
         $i=0;
+      
         $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
         $appId = $res->app_id; 
         $biz_id  = $res->biz_id;
@@ -3539,8 +3539,6 @@ if ($err) {
                 $invoice_amount  = str_replace("\n","",$invoice_amount);
                 $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
                 $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
-               
-               
                  if(strlen($invoice_date) < 10)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It Should be "dd/mm/yy" format']); 
@@ -3561,6 +3559,7 @@ if ($err) {
                {
                     return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
+               
                 if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
                {
                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It should be greater than current date']); 
