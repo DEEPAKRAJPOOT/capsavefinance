@@ -1544,6 +1544,7 @@ class CamController extends Controller
           $request['cash_flow_xirr'] = null;
           $request['security_deposit'] = null;
           $request['security_deposit_type'] = null;
+          $request['security_deposit_of'] = null;
         } 
       
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
@@ -1558,7 +1559,9 @@ class CamController extends Controller
           $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
           $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
         }
-        $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
+        if($request->facility_type_id != 3){
+          $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
+        }
         /*End add offer PTPQ block*/
 
         if($offerData){
