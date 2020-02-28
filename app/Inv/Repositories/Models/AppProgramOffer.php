@@ -347,9 +347,7 @@ class AppProgramOffer extends BaseModel {
        return AppProgramOffer::where(['app_id' => $arr->app_id,'is_approve'=> 1,'status' =>1,'is_approve' =>1])->sum('prgm_limit_amt');
       
     }
-      public function anchor(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
-    }
+
     
     public function anchor(){
         return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
