@@ -61,6 +61,7 @@ class AppProgramOffer extends BaseModel {
         'grace_period',        
         'processing_fee',
         'document_fee',
+        'discounting',
         'check_bounce_fee',
         'equipment_type_id',
         'facility_type_id',
