@@ -473,8 +473,8 @@
          };
          var groupid = $(this).find('.groupid').attr('groupid');
          var dataStore = {'groupid': groupid,'_token': messages.token };
-         var openIf = "if(arr.proposed_exposure > 0){";
-         var closeIf = "}";
+         //var openIf = if(arr.proposed_exposure > 0){;
+        // var closeIf = };
       jQuery.ajax({
              url: messages.get_group_company_exposure,
              method: 'post',
@@ -485,6 +485,12 @@
              },
              success: function (data) {  
               $.each(data, function(i, arr) {
+                let symbol_rs = '';
+                let proposed_exposure_html = '';
+                if(arr.proposed_exposure > 0){
+                    symbol_rs ='<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>';
+                    proposed_exposure_html = '<input type="text" name="proposed_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.proposed_exposure+'" placeholder="Proposed Exposure (In Mn)" required autocomplete="off">';
+                }
                     let ptpq_block ='<div class="row mt10 toRemoveDiv">'+
                                         '<input type="hidden" name="group_company_expo_id[]" class="form-control" value="'+arr.group_company_expo_id+'" placeholder="Group Company group_company_expo_id" /><div class="col-md-4">'+
                                             '<input type="text" name="group_company_name[]" class="form-control" value="'+arr.group_company_name+'" placeholder="Group Company" required>'+
@@ -499,14 +505,10 @@
                                         '</div>'+
 
                                         '<div class="col-md-2 center INR">'
-                                            +openIf+
-                                                '<a href="javascript:void(0);" class="verify-owner-no" style="9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'
-                                             +closeIf+ 
+                                             +symbol_rs+ 
                                              '<div class="d-flex">' 
-                                              +openIf+
-                                                '<input type="text" name="proposed_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.proposed_exposure+'" placeholder="Proposed Exposure (In Mn)" required autocomplete="off">'
-                                            +closeIf+ 
-                                            '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i></div>'+
+                                              +proposed_exposure_html+
+                                             '<i class="fa fa-2x fa-times-circle remove-ptpq-block ml-2" style="color: red;"></i></div>'+
                                         '</div>'+
                                     '</div>';
                     $('#ptpq-block').append(ptpq_block);
