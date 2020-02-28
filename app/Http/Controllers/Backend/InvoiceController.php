@@ -111,6 +111,13 @@ class InvoiceController extends Controller {
         return view('backend.invoice.reject_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
+       public function exceptionCases() {
+        $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $get_bus = $this->invRepo->getBusinessName();
+        return view('backend.invoice.exception_cases')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+                
+      }
+      
        
     
     /* get suplier & program b behalf of anchor id */
@@ -210,6 +217,7 @@ class InvoiceController extends Controller {
             'invoice_approve_amount' => $invoice_approve_amount,
             'invoice_amount' =>  $invoice_amount,
             'prgm_offer_id' => $attributes['prgm_offer_id'],
+            'status_id' => $attributes['exception'],
             'remark' => $attributes['remark'],
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,

@@ -4,7 +4,6 @@
 @section('content')
 
 
-
 <div class="content-wrapper">
 				
 				
@@ -58,13 +57,12 @@
       <a class="nav-link @if(Route::currentRouteName()=='backend_get_reject_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
 
     </li>
-  
-   <li class="nav-item">
+  <li class="nav-item">
                                 <a class="nav-link @if(Route::currentRouteName()=='backend_get_exception_cases') active @endif" href="{{Route('backend_get_exception_cases')}}">Exception Cases</a>
 
                             </li>
+   
   </ul>
-
 
   <div class="tab-content">
     
@@ -73,7 +71,7 @@
        
     <div class="card">
         <div class="card-body">
-                     <div class="row"><div class="col-md-4"></div>
+                     <div class="row"><div class="col-md-6"></div>
                  <div class="col-md-2">				 
                      <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                      <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
@@ -90,12 +88,13 @@
                <div class="col-md-2">				 
                                                               
                     <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                            <option value="">Select Anchor  </option>
+                           <option value="">Select Anchor  </option>
                            @foreach($anchor_list as $row)
                             @php if(isset($row->anchorOne->anchor_id)) { @endphp
                            <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
                           @php } @endphp
                            @endforeach
+                          
                         
                   </select>
                  
@@ -106,12 +105,7 @@
                          
                     </select>
                      </div>    
-                      <div class="col-md-2">	
-                          <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-
-                   
-            </div>
-              
+                 
             </div>
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -119,7 +113,7 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="invoiceListBank" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="invoiceListDisbursedQue" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th>Invoice No</th> 
@@ -181,6 +175,7 @@
 		<div class="form-group">
         <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span></label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id"  name="anchor_bulk_id">
+                                             
               <option value="">Select Anchor  </option>
                            @foreach($anchor_list as $row)
                             @php if(isset($row->anchorOne->anchor_id)) { @endphp
@@ -273,7 +268,7 @@
 <script>
 
     var messages = {
-            backend_get_invoice_list_bank: "{{ URL::route('backend_get_invoice_list_bank') }}",
+            backend_get_ep_list_approve: "{{ URL::route('backend_get_ep_list_approve') }}",
             upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
             get_program_supplier: "{{ URL::route('get_program_supplier') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -288,7 +283,7 @@
  
   $(document).ready(function () {
        $("#program_bulk_id").append("<option value=''>No data found</option>");  
-        $("#program_bulk_id").append("<option value=''>No data found</option>");                         
+                              
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
      
@@ -652,7 +647,7 @@ $(document).on('click','#UpdateInvoiceAmount',function(){
      }
  });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list_send_to_bank.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/exception_cases.js') }}"></script>
 
 @endsection
  

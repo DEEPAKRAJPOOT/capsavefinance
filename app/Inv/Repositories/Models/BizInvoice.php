@@ -73,6 +73,7 @@ class BizInvoice extends BaseModel
         'invoice_approve_amount',
         'prgm_offer_id',
         'file_id',
+        'status_id',
         'remark',
         'created_by',
         'created_at',
