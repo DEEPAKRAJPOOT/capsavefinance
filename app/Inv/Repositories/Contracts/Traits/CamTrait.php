@@ -82,39 +82,29 @@ trait CamTrait
                 if(isset($arrCamData['t_o_f_security_check'])){
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
-
-                 $arrGroupCompany = GroupCompanyExposure::where([
-                                                           ['biz_id','=',$arrRequest['biz_id']], 
-                                                           ['app_id','=',$arrRequest['app_id']]
-                                                           ])->get()->toArray();
-
-
-
-                 $arrGroupCompany = array();
-                  if(isset($arrCamData['group_company'])){
-                    $arrGroupCompany = GroupCompanyExposure::where('group_Id', $arrCamData['group_company'])->get()->toArray();
-                    $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
-                    if(!empty($arrMstGroup)){
-                      $arrCamData['group_company'] = $arrMstGroup['name'];
-                    }
-                  } 
-
-     
-                  if(!empty($arrGroupCompany)){
-                      $temp = array();
-                      $total = 0;
-                      foreach ($arrGroupCompany as $key => $value) {
-                        $total = $total + $value['proposed_exposure'] + $value['outstanding_exposure'];
-                        if($arrBizData->biz_entity_name == $value['group_company_name']){
-                            $temp[] = $value;
-                            unset($arrGroupCompany[$key]);
-                        }
-                      }
-                      if(!empty($temp)){
-                        $arrGroupCompany = array_merge($temp, $arrGroupCompany);
-                      }
-                      $arrCamData['total_exposure'] = round($total,2);
+                $arrGroupCompany = array();
+                if(isset($arrCamData['group_company'])){
+                  $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'is_active'=>1])->get()->toArray();
+                  $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
+                  if(!empty($arrMstGroup)){
+                    $arrCamData['group_company'] = $arrMstGroup['name'];
                   }
+                } 
+                if(!empty($arrGroupCompany)){
+                    $temp = array();
+                    $total = 0;
+                    foreach ($arrGroupCompany as $key => $value) {
+                      $total = $total + $value['proposed_exposure'] + $value['outstanding_exposure'];
+                      if($arrBizData->biz_entity_name == $value['group_company_name']){
+                          $temp[] = $value;
+                          unset($arrGroupCompany[$key]);
+                      }
+                    }
+                    if(!empty($temp)){
+                      $arrGroupCompany = array_merge($temp, $arrGroupCompany);
+                    }
+                    $arrCamData['total_exposure_amount'] = round($total,2);
+                }
 
 
 

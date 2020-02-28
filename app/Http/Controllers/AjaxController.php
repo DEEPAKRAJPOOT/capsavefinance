@@ -3682,4 +3682,17 @@ if ($err) {
         return response()->json($arrData);
     }
 
+
+
+    public function updateGroupCompanyExposure(Request $request ){
+        $group_company_expo_id = $request->get('group_company_expo_id');
+        $arrData = GroupCompanyExposure::where("group_company_expo_id", $group_company_expo_id)->update(['is_active' => 2]);
+        if($arrData){
+            $status = true; 
+        }else{
+          $status = false;
+        }
+        return response()->json($status);
+    }
+
 }

@@ -1,4 +1,4 @@
-Start PDF Section -->
+<!-- Start PDF Section -->
    <div class="data mt-4">
        
 
@@ -38,12 +38,9 @@ Start PDF Section -->
                            @endif
                            <td class="">{{isset($arr['group_company_name']) ? $arr['group_company_name'] : ''}}</td>
                            <td class="">{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] : ''}}</td>
-                           <td class="">{{ (($arr['outstanding_exposure'] > 0) && $loop->first) ? $arr['outstanding_exposure']: $arr['outstanding_exposure'] + $arr['proposed_exposure'] }}</td>
-
-
-
-                           <td class="">{{ (($arr['proposed_exposure'] > 0) && $loop->first) ? $arr['proposed_exposure'] : '--' }}</td>
-                           <td class="">{{ (($arr['outstanding_exposure'] > 0) && $loop->first) ? $arr['outstanding_exposure']: $arr['outstanding_exposure'] + $arr['proposed_exposure'] }}</td>
+                           <td class="">{{ ($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']: '' }}</td>
+                           <td class="">{{ (($arr['proposed_exposure'] > 0)) ? $arr['proposed_exposure'] : '--' }}</td>
+                           <td class="">{{ (($arr['outstanding_exposure'] > 0) || ($arr['proposed_exposure'] > 0)) ?  $arr['outstanding_exposure'] + $arr['proposed_exposure'] : '' }}</td>
                           
                         </tr>
                      @endforeach
@@ -51,7 +48,7 @@ Start PDF Section -->
                      
                      <tr>
                            <td class="" colspan="5"><b>Total Exposure (In Mn)</b></td>
-                           <td class=""><b>{{($arrCamData && $arrCamData->total_exposure > 0) ? $arrCamData->total_exposure : ''}}</b></td>   
+                           <td class=""><b>{{($arrCamData && $arrCamData->total_exposure_amount > 0) ? $arrCamData->total_exposure_amount : ''}}</b></td>   
                      </tr>
             </tbody>
          </table>
