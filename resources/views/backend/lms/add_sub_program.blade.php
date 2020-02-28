@@ -630,7 +630,7 @@
                                                 @else 
 
                                                 <div class="charge_parent_div">
-                                                    <div class="row">
+                                                    <div class="row" style="background-color: #0077b3;">
                                                         <div class="col-md-6">
                                                             <div class="form-group password-input">
                                                                 <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
