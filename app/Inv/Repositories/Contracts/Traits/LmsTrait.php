@@ -52,7 +52,7 @@ trait LmsTrait
     protected function calAccrualInterest($transDate=null){
         
         $disbursalData = Disbursal::whereIn('status_id',[12,13])->get();
-        $currentDate = date('Y-m-d');
+        $currentDate = $this->subDays(date('Y-m-d'),1);
         $interest = 0;
         $returnData = [];
 
@@ -223,7 +223,7 @@ trait LmsTrait
                     if($lastInterest>0){
                         $interestDue = $this->createTransactionData($disburse->user_id, [
                             'amount' => $lastInterest,
-                            'trans_date'=>$intAccrualDt,
+                            'trans_date'=>$this->subDays($intAccrualDt,1),
                             'disbursal_id'=>$disburse->disbursal_id,
                         ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
                         $this->lmsRepo->saveTransaction($interestDue);
@@ -295,6 +295,13 @@ trait LmsTrait
         $calDate = date('Y-m-d', strtotime($currentDate . "+ $noOfDays days"));
         return $calDate;
     }
+
+    protected function subDays($currentDate, $noOfDays)
+    {
+        $calDate = date('Y-m-d', strtotime($currentDate . "- $noOfDays days"));
+        return $calDate;
+    }
+    
     
     protected function invoiceKnockOff($transId){
         $transDetail = Transactions::whereIn('is_settled',[0,1])->where(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->get()->first();
@@ -346,18 +353,18 @@ trait LmsTrait
               
                     $accured_interest = $disbursalData[$key]
                                         ->interests
-                                        ->where('interest_date', '<=', DB::raw(DATE($trans['trans_date'])))
+                                        ->where('interest_date', '<', DB::raw(DATE($trans['trans_date'])))
                                         ->sum('accrued_interest');
             
                     $penalDays = $disbursalData[$key]
                                     ->interests
-                                    ->where('interest_date', '<=', DB::raw(DATE($trans['trans_date'])))
+                                    ->where('interest_date', '<', DB::raw(DATE($trans['trans_date'])))
                                     ->where('overdue_interest_rate','!=', NULL)
                                     ->count();
                     
                     $penalAmount = $disbursalData[$key]
                                     ->interests
-                                    ->where('interest_date', '<=', DB::raw(DATE($trans['trans_date'])))
+                                    ->where('interest_date', '<', DB::raw(DATE($trans['trans_date'])))
                                     ->where('overdue_interest_rate','!=', NULL)
                                     ->sum('accrued_interest');
                     
