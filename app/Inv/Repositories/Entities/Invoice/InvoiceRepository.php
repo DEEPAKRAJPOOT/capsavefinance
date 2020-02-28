@@ -685,5 +685,11 @@ use CommonRepositoryTraits;
     {
         return InvoiceModel::getInvoiceData($where, $select);
     }
+    
+    public function checkDuplicateInvoice($invoiceNo)
+    {
+        
+          return BizInvoice::checkDuplicateInvoice($invoiceNo);
+    }
 
 }

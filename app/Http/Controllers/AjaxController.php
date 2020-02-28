@@ -3543,43 +3543,48 @@ if ($err) {
                 $invoice_amount  = str_replace("\n","",$invoice_amount);
                 $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
                 $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
-                 if(strlen($invoice_date) < 10)
+                $res =  $this->invRepo->checkDuplicateInvoice($invoice_no);
+                if(strlen($invoice_date) < 10)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It Should be "dd/mm/yy" format']); 
                } 
-               if(strlen($invoice_due_date) < 10)
+               else if(strlen($invoice_due_date) < 10)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
-                if($invoice_no=='')
+               else if($invoice_no=='')
                {
                     return response()->json(['status' => 0,'message' => 'Please check invoice , Invoice should not be null']); 
                } 
-                if( $invoice_due_date_validate==false)
+               else if( $invoice_due_date_validate==false)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the invoice date, It should be "dd/mm/yy" format']); 
                }
-               if( $invoice_date_validate==false)
+              else if( $invoice_date_validate==false)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
                
-                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
+               else if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
                {
                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It should be greater than current date']); 
                }
-                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_date)) > strtotime(Carbon::parse($date)->format('d-m-Y')))
+               else if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_date)) > strtotime(Carbon::parse($date)->format('d-m-Y')))
                {
                    return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It should be less than current date']); 
                }
-                if($invoice_amount=='')
+               else if($invoice_amount=='')
                {
                     return response()->json(['status' => 0,'message' => 'Please check invoice amount, Amount should not be null']); 
                } 
-                if(!is_numeric($invoice_amount))
+               else if(!is_numeric($invoice_amount))
                {
                     return response()->json(['status' => 0,'message' => 'Please check invoice amount, string value not allowed']); 
                } 
+               else if($res)
+               {
+                   return response()->json(['status' => 0,'message' => 'Please check invoice no, some one Invoice No already exists']); 
+               }
                 $invoice_amount =  $invoice_amount;
                 $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
                 $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
@@ -3590,6 +3595,7 @@ if ($err) {
                 $data[$i]['tenor'] =  $request['tenor']; 
                 $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
+                $data[$i]['pay_calculation_on'] = $request['pay_calculation_on'];
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
                 $data[$i]['is_bulk_upload'] = 1;
                 $data[$i]['batch_id'] = $batch_id;
@@ -3857,4 +3863,19 @@ if ($err) {
         return response()->json($arrData);
     }
 
+    ///* check duplicate invoice  ***///////
+    function  checkDuplicateInvoice(Request $request)
+    {
+        $invoice_no  =  $request->invoice;
+        $res =  $this->invRepo->checkDuplicateInvoice($invoice_no);
+        if($res)
+        {
+            return response()->json(['status' => 1]); 
+        }
+        else
+        {
+            return response()->json(['status' => 0]); 
+        }
+    }
+    
 }

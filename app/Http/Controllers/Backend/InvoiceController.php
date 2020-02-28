@@ -49,10 +49,10 @@ class InvoiceController extends Controller {
          ->with(['get_anchor' => $get_anchor]);
   
     }
-
-      public function viewInvoice() {
+   
+    public function viewInvoice() {
        
-         $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $getAllInvoice  =   $this->invRepo->getAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();
          return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
@@ -206,6 +206,7 @@ class InvoiceController extends Controller {
             'tenor' => $attributes['tenor'],
             'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
+            'pay_calculation_on' => $attributes['pay_calculation_on'],
             'invoice_approve_amount' => $invoice_approve_amount,
             'invoice_amount' =>  $invoice_amount,
             'prgm_offer_id' => $attributes['prgm_offer_id'],

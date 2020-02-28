@@ -34,7 +34,7 @@
                     
                      
                      
-		 <div class="col-md-6">
+		 <div class="col-md-4">
 		<div class="form-group">
         <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
@@ -49,7 +49,7 @@
                 
                 </div></div>
 		
-		 <div class="col-md-6">
+		 <div class="col-md-4">
                     <div class="form-group">
                         <label for="txtCreditPeriod">Product Program Name
                             <span class="error_message_label">*</span>  <!-- <span id="pro_limit" class="error"></span> -->
@@ -61,7 +61,7 @@
                                     <span id="program_bulk_id_msg" class="error"></span>
                </div>
 		</div>
-            <div class="col-md-6">
+                       <div class="col-md-4">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
            <select readonly="readonly" class="form-control" id="supplier_bulk_id" >
@@ -70,6 +70,17 @@
             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
             </div>
             </div>
+           <div class="col-md-4">
+    <div class="form-group">
+                            <label for="txtCreditPeriod">Payment Date Calculation  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
+                            <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
+                              <option value="">Please Select</option>
+                              <option value="1">Invoice Date</option>
+                              <option value="2">Invoice Due Date </option>
+                             </select>
+                          <span id="pay_calculation_on_msg" class="error"></span>                                        <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
+                        </div>
+               </div> 
 										
             <div class="col-md-4">
             <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
@@ -336,6 +347,13 @@
         }
       });
       
+       $(document).on('change','#pay_calculation_on',function(){
+           
+       if($("#pay_calculation_on").val() > 0)
+        {
+           $("#pay_calculation_on_msg" ).hide();
+        }
+      });
       
         $(document).on('change','.fileUpload',function(){
        
@@ -481,6 +499,12 @@
              $("#supplier_bulk_id_msg" ).text("Please Select Supplier Name");
              return false;
         }
+         if($("#pay_calculation_on").val()=='')
+        {
+             $("#pay_calculation_on_msg" ).show();
+             $("#pay_calculation_on_msg" ).text("Please Select Payment Calculation");
+             return false;
+        } 
         if($("#customFile").val()=='')
         {
              $("#customFile_msg" ).show();
@@ -497,12 +521,14 @@
         var program_bulk_id  = $("#program_bulk_id").val();
         var supplier_bulk_id  = $("#supplier_bulk_id").val();
         var pro_limit_hide  =  $("#pro_limit_hide").val();
+        var pay_calculation_on  =  $("#pay_calculation_on").val();
         datafile.append('_token', messages.token );
         datafile.append('doc_file', file);
         datafile.append('anchor_bulk_id', anchor_bulk_id);
         datafile.append('program_bulk_id', program_bulk_id);
         datafile.append('supplier_bulk_id', supplier_bulk_id);
         datafile.append('pro_limit_hide', pro_limit_hide);
+        datafile.append('pay_calculation_on', pay_calculation_on);
         $('.isloader').show();
         $.ajax({
             headers: {'X-CSRF-TOKEN':  messages.token  },

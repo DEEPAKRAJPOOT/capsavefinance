@@ -384,6 +384,74 @@
         });
     });
 
+    function uploadInvoice()
+    {
+       $('.isloader').show();
+       $("#submitInvoiceMsg").empty();
+        var file  = $("#customFile")[0].files[0];
+        var datafile = new FormData();
+        var anchor_bulk_id  = $("#anchor_bulk_id").val();
+        var program_bulk_id  = $("#program_bulk_id").val();
+        var supplier_bulk_id  = $("#supplier_bulk_id").val();
+        var pro_limit_hide  =  $("#pro_limit_hide").val();
+        datafile.append('_token', messages.token );
+        datafile.append('doc_file', file);
+        datafile.append('anchor_bulk_id', anchor_bulk_id);
+        datafile.append('program_bulk_id', program_bulk_id);
+        datafile.append('supplier_bulk_id', supplier_bulk_id);
+        datafile.append('pro_limit_hide', pro_limit_hide);
+        $.ajax({
+            headers: {'X-CSRF-TOKEN':  messages.token  },
+            url : messages.upload_invoice_csv,
+            type: "POST",
+            data: datafile,
+            processData: false,
+            contentType: false,
+            cache: false, // To unable request pages to be cached
+            enctype: 'multipart/form-data',
+
+            success: function(r){
+                $(".isloader").hide();
+
+                if(r.status==1)
+                {
+                     $("#submitInvoiceMsg").show();
+                     $("#submitInvoiceMsg").text('Invoice Successfully uploaded');
+                }
+                else
+                {
+                     $("#submitInvoiceMsg").show();
+                     $("#submitInvoiceMsg").text('Total Amount if invoice should not greater Program Limit');
+                 } 
+            }
+        });
+    }
+ //////////////////// for upload invoice//////////////////////////////   
+function uploadFile(app_id,id)
+{
+   $(".isloader").show(); 
+   var file  = $("#file"+id)[0].files[0];
+   var extension = file.name.split('.').pop().toLowerCase();
+   var datafile = new FormData();
+   datafile.append('_token', messages.token );
+   datafile.append('app_id', app_id);
+   datafile.append('doc_file', file);
+   datafile.append('invoice_id', id);
+    $.ajax({
+        headers: {'X-CSRF-TOKEN':  messages.token  },
+        url : messages.invoice_document_save,
+        type: "POST",
+        data: datafile,
+        processData: false,
+        contentType: false,
+        cache: false, // To unable request pages to be cached
+        enctype: 'multipart/form-data',
+         success: function(r){
+            $(".isloader").hide();
+            location.reload();
+        }
+    });
+}
 
     /////////// for pop up//////////////////
 
