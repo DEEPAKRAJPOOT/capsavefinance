@@ -1536,7 +1536,16 @@ class CamController extends Controller
         }       
         if ($request->has('sub_limit')) {
             $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
-        }        
+        }
+        if($request->facility_type_id != 3){
+          $request['discounting'] = null;
+        }else{
+          $request['ruby_sheet_xirr'] = null;
+          $request['cash_flow_xirr'] = null;
+          $request['security_deposit'] = null;
+          $request['security_deposit_type'] = null;
+        } 
+      
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         /*Start add offer PTPQ block*/

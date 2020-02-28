@@ -58,6 +58,7 @@ class AppProgramOffer extends BaseModel {
         'adhoc_interest_rate',        
         'grace_period',        
         'processing_fee',
+        'discounting',
         'check_bounce_fee',
         'equipment_type_id',
         'facility_type_id',

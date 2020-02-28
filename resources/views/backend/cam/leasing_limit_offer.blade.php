@@ -70,7 +70,7 @@
           </div>
         </div>
     
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group ">
                 <label for="txtPassword" ><b>Security Deposit</b></label> 
                 <br/>
@@ -81,12 +81,19 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group INR">
                 <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label>
                 <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa-change fa {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}" aria-hidden="true"></i></a> 
                 <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}" maxlength="5">
             </div>
+        </div>
+
+        <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id == 3)? 'block': 'none')}};">
+          <div class="form-group">
+            <label for="txtPassword"><b>Discounting (%)</b></label>
+            <input type="text" name="discounting" class="form-control" value="{{isset($offerData->discounting)? $offerData->discounting: ''}}" placeholder="Discounting" maxlength="6">
+          </div>
         </div>
 
         <div class="col-md-6">
@@ -185,7 +192,7 @@
           </div>
         </div>
 
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>XIRR (%)</b></label> 
             <div class="col-md-6">
@@ -203,13 +210,6 @@
           <div class="form-group">
             <label for="txtPassword"><b>Processing Fee (%)</b></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
-          </div>
-        </div>
-
-        <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id == 3)? 'block': 'none')}};">
-          <div class="form-group">
-            <label for="txtPassword"><b>Discounting (%)</b></label>
-            <input type="text" name="discounting" class="form-control" value="{{isset($offerData->discounting)? $offerData->discounting: ''}}" placeholder="Discounting" maxlength="6">
           </div>
         </div>
     
@@ -530,16 +530,14 @@
     let ftid = $('select[name=facility_type_id] option:selected').val();
     if(ftid == 3){
         $('input[name=discounting]').parent().parent().show();
-        $('input[name=ruby_sheet_xirr]').attr('disabled', true);
-        $('input[name=cash_flow_xirr]').attr('disabled', true);
-        $('input[name=security_deposit_type]').attr('disabled', true);
-        $('input[name=security_deposit]').attr('disabled', true);
+        $('input[name=ruby_sheet_xirr]').parent().parent().parent().hide();
+        $('input[name=security_deposit]').parent().parent().hide();
+        $('#radio_block').parent().parent().hide();
     }else{
         $('input[name=discounting]').parent().parent().hide();
-        $('input[name=ruby_sheet_xirr]').attr('disabled', false);
-        $('input[name=cash_flow_xirr]').attr('disabled', false);
-        $('input[name=security_deposit_type]').attr('disabled', false);
-        $('input[name=security_deposit]').attr('disabled', false);
+        $('input[name=ruby_sheet_xirr]').parent().parent().parent().show();
+        $('input[name=security_deposit]').parent().parent().show();
+        $('#radio_block').parent().parent().show();
     }
   });
 
