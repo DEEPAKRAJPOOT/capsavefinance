@@ -206,6 +206,7 @@ class InvoiceController extends Controller {
             'tenor' => $attributes['tenor'],
             'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
+            'pay_calculation_on' => $attributes['pay_calculation_on'],
             'invoice_approve_amount' => $invoice_approve_amount,
             'invoice_amount' =>  $invoice_amount,
             'prgm_offer_id' => $attributes['prgm_offer_id'],
