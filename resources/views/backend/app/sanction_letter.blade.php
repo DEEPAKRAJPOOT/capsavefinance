@@ -10,6 +10,742 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
+                    @if($enabled ?? false)
+                        <style>
+                          h5{ 
+                            margin:0px;
+                            font-size: 14px;
+                            margin-bottom:15px;
+                          }
+                          .table{
+                            width:100%; 
+                            font-family:Arial;font-size: 14px; 
+                            margin-bottom:20px;
+                          }
+                          .table > thead > tr > th,.table > tbody > tr > td{
+                            padding:5px 10px;
+                            text-align:left;
+                          }
+                          .table-border{
+                             border:#ccc solid 1px;
+                          }
+                          .table-border>thead>tr>th,.table-border>tbody>tr>td {
+                              -webkit-print-color-adjust: exact;
+                              color: #000000;
+                              border-right: 1px solid #cccccc;
+                              border-bottom: 1px solid #cccccc;
+                              vertical-align: top;
+                              font-size: 14px;
+                              text-align:left;
+                          }
+                          .table-border>thead>tr>th:last-child,.table-border>tbody>tr>td:last-child{ 
+                            border-right:none;
+                          }
+                          .table-border>tbody>tr:last-child>td{
+                            border-bottom:none;
+                          }
+                          .blank{
+                            background-color:#cccccc !important;
+                           -webkit-print-color-adjust: exact;
+                          }
+                          .table-border.table-inner{
+                            border:none; margin:0px;
+                          }
+                          .pd-0{
+                            padding:0px !important;
+                          }
+                          .select{
+                            width: 150px;
+                            height: 27px;
+                            padding: 0 5px;
+                            border: #ccc solid 1px;
+                            border-radius: 2px;
+                            margin-top: 5px;
+                        }
+                       </style>
+                        <style media="print">
+                           .height{
+                                height:48px;
+                            }
+                        </style>
+                        <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
+                        <table class="table" cellpadding="0" cellspacing="0">
+                           <tr>
+                              <td><b>To</b></td>
+                           </tr>
+                           <tr>
+                              <td>XYZ</td>
+                           </tr>
+                           <tr>
+                              <td>RentAlpha</td>
+                           </tr>
+                           <tr>
+                              <td>Delhi</td>
+                           </tr>
+                           <tr><tdxyz@gmail.comtd></tr>
+                           <tr>
+                              <td>8569589856</td>
+                           </tr>
+                        </table>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="33.33%">Facility (Product)</th>
+                                 <th width="33.33%">Amount (Rs. In Mn)</th>
+                                 <th width="33.33%">Sub-Limit of</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td class="">Facility Type</td>
+                                 <td class="">Rental facility</td>
+                                 <td class="">Rental facility</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <tbody>
+                              <tr>
+                                 <td width="33.33%">Facility No</td>
+                                 <td width="6.66%">1</td>
+                                 <td width="30%">Facility Name</td>
+                                 <td width="30%">Vendor Finance Facility</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Facility Amount</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Purpose</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Expiry of Limit</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Investment Payment Frequency</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%" class="pd-0">
+                                    <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                       <thead>
+                                          <tr>
+                                             <th width="70%">Apprv. Debtor Name</th>
+                                             <th width="30%" class="height">Sub Limit</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </td>
+                                 <td width="66.66%" colspan="3" class="pd-0">
+                                    <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                       <thead>
+                                          <tr>
+                                             <th width="25%">Max. Discounting Period</th>
+                                             <th width="25%">Grace Period</th>
+                                             <th width="25%">ROI</th>
+                                             <th width="25%">Margin</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Methodology for calculating for Drawing Power</td>
+                                 <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Specific Condition</td>
+                                 <td width="66.66%" colspan="3">
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Invoices should not be older than 30 days from .On the date of Discounting.</li>
+                                       <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Specific Pre-disbursement Condition</td>
+                                 <td width="66.66%" colspan="3">
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%"> Specific Post-disbursement Condition</td>
+                                 <td width="66.66%" colspan="3">
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <tbody>
+                              <tr>
+                                 <td width="33.33%">Facility No</td>
+                                 <td width="6.66%">2</td>
+                                 <td width="30%">Facility Name</td>
+                                 <td width="30%">Purchase Finance Facility</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Facility Amount</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Purpose</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Expiry of Limit</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Investment Payment Frequency</td>
+                                 <td width="66.66%" colspan="3">..</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%" class="pd-0">
+                                    <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                       <thead>
+                                          <tr>
+                                             <th width="70%">Apprv. Debtor Name</th>
+                                             <th width="30%" class="height">Sub Limit</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Click here to enter text</td>
+                                             <td></td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </td>
+                                 <td width="66.66%" colspan="3" class="pd-0">
+                                    <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                       <thead>
+                                          <tr>
+                                             <th width="25%">Max. Discounting Period</th>
+                                             <th width="25%">Grace Period</th>
+                                             <th width="25%">ROI</th>
+                                             <th width="25%">Margin</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                          <tr>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td>Choose an item</td>
+                                             <td></td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Methodology for calculating for Drawing Power</td>
+                                 <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Specific Condition</td>
+                                 <td width="66.66%" colspan="3">
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Invoices should not be older than 30 days from .On the date of Discounting.</li>
+                                       <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Specific Pre-disbursement Condition</td>
+                                 <td width="66.66%" colspan="3">
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%"> Specific Post-disbursement Condition</td>
+                                 <td width="66.66%" colspan="3">
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <tbody>
+                              <tr>
+                                 <td width="33.33%">Penal Interest</td>
+                                 <td width="66.66%">
+                                    Choose an item.<b> % </b>Choose an item.entire principal / payable interest on delay in repayment of principal / Interest / charges.<br/>
+                                    <select class="select">
+                                       <option>Select</option>
+                                       <option>test</option>
+                                       <option>test</option>
+                                       <option>test</option>
+                                    </select>
+                                    <br/><br/>
+                                    The rate of interest will be __ % higher than the rate stipulated under each of the facilities till the security is created.
+                                    <br/>
+                                    <select class="select">
+                                       <option>Select</option>
+                                       <option>test</option>
+                                       <option>test</option>
+                                       <option>test</option>
+                                    </select>
+                                    <br/><br/>
+                                    If security is not created within the stipulated timeframe then a penal interest of 18%p.a. on entire principle.
+                                    <br/>
+                                    <select class="select">
+                                       <option>Select</option>
+                                       <option>test</option>
+                                       <option>test</option>
+                                       <option>test</option>
+                                    </select>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Prepayment</td>
+                                 <td width="66.66%">
+                                    In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided
+                                    by CFPL for time to time.
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Payment Mechanism of Interest</td>
+                                 <td width="66.66%">
+                                    Choose an item
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td width="33.33%">Payment Mechanism of Pricipal</td>
+                                 <td width="66.66%">
+                                    Choose an item
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
+                        <h5>Primary Security:- Choose an item.</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Security</th>
+                                 <th width="20%">Type of security</th>
+                                 <th width="20%">Status of security</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Description of security</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td colspan="5">
+                                    <b>Specific Primary Securities Conditions:-</b>
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Click here to enter text</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Primary Security:- Choose an item.</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Security</th>
+                                 <th width="20%">Type of security</th>
+                                 <th width="20%">Status of security</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Description of security</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Current Assests</td>
+                                 <td>Hypothecation</td>
+                                 <td>First Pari-pasu</td>
+                                 <td>Before Disbursement</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td colspan="5">
+                                    <b>Specific Collatereral security condition/s :-</b> Click here to enter text.
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Primary Guarantee:- Choose an item.</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Name of the Guarantor<br/>< Selection from Management Section ></th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Residential Address</th>
+                                 <th width="20%">Net worth as per IT return/CA Certificate</th>
+                                 <th width="20%">Comment if any</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Corporate Guarantee/Letter of Comfort/Put Option :- Choose an item.</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Type</th>
+                                 <th width="20%">Name of Guarantor</th>
+                                 <th width="20%">Time of perfecting security</th>
+                                 <th width="20%">Registered Address</th>
+                                 <th width="20%">Comment if any</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Escrow Mechanism :- Choose an item.</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Name of Debtor</th>
+                                 <th width="20%">Expected cash flow per month</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Mechanism</th>
+                                 <th width="20%">Comment if any</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                              <tr>
+                                 <td>Click here to enter text</td>
+                                 <td>Click here to enter text</td>
+                                 <td>Choose an Item</td>
+                                 <td>Choose an Item</td>
+                                 <td>Click here to enter text</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Section 3:Specific Security :- Choose an item</h5>
+                        <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
+                        <p style="text-decoration:underline;">PDC:-</p>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <tbody>
+                              <tr>
+                                 <td width="20%">Facility No</td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                              </tr>
+                              <tr>
+                                 <td>Facility Name</td>
+                                 <td></td>
+                                 <td></td>
+                                 <td></td>
+                                 <td></td>
+                                 <td></td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5><< This will be unlimited >></h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th>Cheque for</th>
+                                 <th>No of Cheque </th>
+                                 <th>Not Above </th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td >Principal</td>
+                                 <td ></td>
+                                 <td ></td>
+                              </tr>
+                              <tr>
+                                 <td >Interest</td>
+                                 <td ></td>
+                                 <td ></td>
+                              </tr>
+                              <tr>
+                                 <td >Repayment</td>
+                                 <td ></td>
+                                 <td ></td>
+                              </tr>
+                              <tr>
+                                 <td >Other</td>
+                                 <td ></td>
+                                 <td ></td>
+                              </tr>
+                              <tr>
+                                 <td >security</td>
+                                 <td ></td>
+                                 <td ></td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <p style="text-decoration:underline;">NACH Mandate with undertaking:-</p>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <tbody>
+                              <tr>
+                                 <td width="20%">Facility No</td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                                 <td width="16%"></td>
+                              </tr>
+                              <tr>
+                                 <td>Facility Name</td>
+                                 <td></td>
+                                 <td></td>
+                                 <td></td>
+                                 <td></td>
+                                 <td></td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>DSRA:- Choose an item.</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th>Amount</th>
+                                 <th>Tenure</th>
+                                 <th>Comment if any</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td >444 lacs in Inr</td>
+                                 <td >44months</td>
+                                 <td >Click here to enter text</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Any other security:Choose an item</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <tbody>
+                              <tr>
+                                 <td >Click here to enter text</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <h5>Section 5:- Financial Covenants.</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="75%">Covenants < Multiple option don't limit to 3 ></th>
+                                 <th width="25%">Minimum/Maximum ratio</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td >Click here to enter text</td>
+                                 <td >max.1.24</td>
+                              </tr>
+                              <tr>
+                                 <td >Click here to enter text</td>
+                                 <td >max.1.24</td>
+                              </tr>
+                              <tr>
+                                 <td >Click here to enter text</td>
+                                 <td >max.1.24</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <p>The financial covenants shall be tested on a choose an item.basis and shall be reported in the monitoring report to be submitted by choose an item.</p>                        
+                    @endif
                     @if( is_array($offerData)?count($offerData):$offerData->count())
                     <div class=" form-fields">
                         <div class="col-md-12">
