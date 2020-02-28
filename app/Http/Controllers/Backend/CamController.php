@@ -119,7 +119,7 @@ class CamController extends Controller
             }
             $arrGroupCompany = array();
             if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
-              $arrGroupCompany = GroupCompanyExposure::where('group_Id', $arrCamData['group_company'])->get()->toArray();
+              $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'is_active'=>1] )->get()->toArray();
               $arrMstGroup =  Group::where('id', (int)$arrCamData['group_company'])->first()->toArray();
               if(!empty($arrMstGroup)){
                 $arrCamData['group_company'] = $arrMstGroup['name'];
@@ -142,7 +142,7 @@ class CamController extends Controller
                 if(!empty($temp)){
                   $arrGroupCompany = array_merge($temp, $arrGroupCompany);
                 }
-                $arrCamData['total_exposure'] = round($total,2);
+                $arrCamData['total_exposure_amount'] = round($total,2);
             }
            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';

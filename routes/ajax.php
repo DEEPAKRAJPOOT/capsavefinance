@@ -782,7 +782,12 @@ Route::group(
     Route::post('get-group-company-exposure', [
         'as' => 'get_group_company_exposure',
         'uses' => 'AjaxController@getGroupCompanyExposure'
-    ]);       
+    ]);      
+
+    Route::post('update-group-company-exposure', [
+        'as' => 'update_group_company_exposure',
+        'uses' => 'AjaxController@updateGroupCompanyExposure'
+    ]); 
 
      Route::post('get_chrg_amount', [
                 'as' => 'get_chrg_amount',
