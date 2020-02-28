@@ -85,7 +85,8 @@ var iframe_ids = [
         'editEquipmentFrame',
         'shareColenderFrame',
         'viewSharedColenderFrame',
-        'viewInterestAccrual'
+        'viewInterestAccrual',
+        'manageUserRolePassword',
     ];
 
 iframe_ids.forEach(function(id) {

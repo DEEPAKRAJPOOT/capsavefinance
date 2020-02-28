@@ -29,6 +29,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use DB;
 use App\Inv\Repositories\Models\CoLenderUsers;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\User;
 
 class UserRepository extends BaseRepositories implements UserInterface
 {
@@ -1548,4 +1549,18 @@ class UserRepository extends BaseRepositories implements UserInterface
         $result= UserModel::getSingleUserDetails($user_id);
         return $result?$result:'';
     } 
+
+    /**
+     * Get Backend User
+     *
+     *
+     *
+     * @since 0.1
+     */
+    public function updateUserRolePassword($arrData, $userId)
+    {
+        $status = User::updateUserRolePassword($arrData, $userId);
+        return $status ?: false;
+    }
+       
 }

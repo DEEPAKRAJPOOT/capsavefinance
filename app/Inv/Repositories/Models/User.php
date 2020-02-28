@@ -704,6 +704,15 @@ class User extends Authenticatable
         
         return self::where(['user_id' => $uid])->first();
     }
+
+    public static function updateUserRolePassword($arrData, $userId)
+    {
+
+        if (!is_array($arrData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        return self::where('user_id', $userId)->first()->update($arrData);
+    }
     
     public function bank_details()
     {

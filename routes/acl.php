@@ -81,9 +81,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     ]
             );
             
-            
-            
-            
+            Route::get(
+                'change_user_role_password', [
+            'as' => 'change_user_role_password',
+            'uses' => 'Backend\AclController@changeUserRolePassword'
+                ]
+            );
+
+            Route::post(
+                    'save_user_role_password', [
+                'as' => 'save_user_role_password',
+                'uses' => 'Backend\AclController@saveUserRolePassword'
+                    ]
+            );
+                        
         });
 
 

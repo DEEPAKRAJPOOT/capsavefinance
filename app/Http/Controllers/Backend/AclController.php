@@ -353,4 +353,43 @@ class AclController extends Controller {
         }
     }
 
+    // changeUserRolePassword
+    public function changeUserRolePassword(Request $request) 
+    {
+        $data = $request->all();
+        $userDataArray = $this->userRepo->find($data['user_id']);
+        
+            
+        return view('backend.acl.change_user_password')
+                    ->with('userData', $userDataArray);
+    }
+
+    // changeUserRolePassword
+    public function saveUserRolePassword(Request $request) 
+    {
+        try {
+
+            $data = $request->all();
+            $arrData = [];
+
+            // $arrData['email'] = $data['email'];
+            // $arrData['password'] = $data['password'];  
+            $arrData['password'] = bcrypt($data['password']);
+            $userId = $data['user_id'];
+
+            $existData = $this->userRepo->getUserByemail($data['email']);
+            
+            if(!empty($userId)) {
+
+                $rr = $this->userRepo->updateUserRolePassword($arrData, $userId);
+                Session::flash('message', 'User password change successfully!');
+                return redirect()->route('get_role_user');
+            } else {
+                Session::flash('message', 'SomeThings went wrong!!!!');
+                return redirect()->route('get_role_user');
+            }
+        } catch (Exception $ex) {
+            
+        }
+    }
 }
