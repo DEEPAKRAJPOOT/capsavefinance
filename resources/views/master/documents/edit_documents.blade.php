@@ -47,6 +47,7 @@
 					<option {{$document_data->doc_type_id == 1 ? 'selected' : ''}} value="1">On-boarding</option>
 					<option {{$document_data->doc_type_id == 2 ? 'selected' : ''}} value="2">Pre-Sanction</option>
 					<option {{$document_data->doc_type_id == 3 ? 'selected' : ''}} value="3">Post-Sanction</option>
+                                        <option {{$document_data->doc_type_id == 4 ? 'selected' : ''}} value="4">Pre-Offer</option>
 				</select>
 			</div>
 			<div class="form-group col-6">
