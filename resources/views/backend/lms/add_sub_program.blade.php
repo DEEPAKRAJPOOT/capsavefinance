@@ -592,7 +592,7 @@
                                                 @foreach($programCharges as $keys =>$programChrg)
 
                                                 <div class="charge_parent_div">
-                                                        <div class="row">
+                                                        <div class="row" style="background-color: #e1f0eb;">
                                                             <div class="col-md-6">
                                                                 <div class="form-group password-input">
                                                                     <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
@@ -614,8 +614,8 @@
                                                             <div class="col-6 col-sm-6">
                                                                 <label for="txtPassword">&nbsp;
                                                                 </label> <br/>
-                                                                <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"> Delete</button>
-                                                                <button  style="display: none"  type="button" class="btn btn-primary  btn-sm add_more"> Add More</button>
+                                                                <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"><i class="fa  fa-times-circle"></i></button>
+                                                                <button  style="display: none"  type="button" class="btn btn-primary  btn-sm add_more"> <i class="fa  fa-plus-circle"></i></button>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-12 col-sm-12">
@@ -630,7 +630,7 @@
                                                 @else 
 
                                                 <div class="charge_parent_div">
-                                                    <div class="row">
+                                                    <div class="row" style="background-color: #e1f0eb;">
                                                         <div class="col-md-6">
                                                             <div class="form-group password-input">
                                                                 <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
@@ -652,8 +652,10 @@
                                                         <div class="col-6 col-sm-6">
                                                             <label for="txtPassword">&nbsp;
                                                             </label> <br/>
-                                                            <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"> Delete</button>
-                                                            <button  style="display: none"  type="button" class="btn btn-primary  btn-sm add_more"> Add More</button>
+                                                            <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"><i class="fa  fa-times-circle"></i></button>
+                                                            <button  style="display: none"  type="" class="btn btn-primary  btn-sm add_more"> <i class="fa  fa-plus-circle"></i></button>
+                                                            
+                                                            
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12 col-sm-12">
