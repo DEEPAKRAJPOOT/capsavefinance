@@ -1777,7 +1777,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($role) {
-                    return  "<a title=\"Edit User\"  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a> ";
+                    $user_edit =  "<a title=\"Edit User\"  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>"; 
+                    $user_email = "<a title=\"Change User Password\"  data-toggle=\"modal\" data-target=\"#manageUserRolePassword\" data-url =\"" . route('change_user_role_password', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"195px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-expeditedssl\"></i></a>";
+                    return '<div class="btn-group"><label>'. $user_edit .'</label> <label>'. $user_email .'</label></div>';;
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {

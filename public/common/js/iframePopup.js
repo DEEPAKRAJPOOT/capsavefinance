@@ -81,6 +81,7 @@ var iframe_ids = [
         'changeAppDisbursStatus',
         'addEquipmentFrame',
         'editEquipmentFrame',
+        'manageUserRolePassword',
     ];
 
 iframe_ids.forEach(function(id) {
