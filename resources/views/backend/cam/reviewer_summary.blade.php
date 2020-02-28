@@ -61,7 +61,13 @@
                                     </tr>
                                     <tr role="row" class="odd">
                                        <td class=""><b>Security Deposit</b></td>
-                                       <td class="">  {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
+                                       <td class="">  
+                                          @if($leaseOffer->facility_type_id == 3)
+                                             NILL
+                                          @else
+                                             {{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
+                                          @endif
+                                       </td>
                                     </tr>
                                     <tr role="row" class="odd">
                                        <td class=""><b>Rental Frequency</b></td>
@@ -94,8 +100,13 @@
                                        </td>
                                     </tr>
                                     <tr role="row" class="odd">
-                                       <td class="" valign="top"><b>XIRR</b></td>
-                                       <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
+                                       <td class="" valign="top"><b>{{($leaseOffer->facility_type_id == 3)? 'Rental Discounting' : 'XIRR'}} (%)</b></td>
+                                       <td class="" valign="top">
+                                          @if($leaseOffer->facility_type_id == 3)
+                                             {{$leaseOffer->discounting}}%
+                                          @else
+                                             <b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%
+                                          @endif
                                        </td>
                                     </tr>
                                     
