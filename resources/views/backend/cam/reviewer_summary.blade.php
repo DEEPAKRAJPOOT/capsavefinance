@@ -63,7 +63,7 @@
                                       <tr role="row" class="odd">
                                          <td class=""><b>Security Deposit</b></td>
                                          <td class="">  
-                                                {{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
+                                                {{(($leaseOffer->security_deposit_type == 1)?'INR ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
                                          </td>
                                       </tr>
                                     @endif
@@ -71,6 +71,7 @@
                                        <td class=""><b>Rental Frequency</b></td>
                                        <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
                                     </tr>
+
                                     @if($leaseOffer->facility_type_id != 3)
                                         <tr role="row" class="odd">
                                            <td class=""><b>Pricing Per Thousand</b></td>
@@ -109,7 +110,10 @@
                                           @endif
                                        </td>
                                     </tr>
-                                    
+                                    <tr role="row" class="odd">
+                                      <td class=""><b>Processing Fee (%)</b></td>
+                                      <td class="">{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee : ''}}</td>
+                                   </tr>
                                     <tr role="row" class="odd">
                                        <td class=""><b>Additional Security</b></td>
                                        <td class="">
