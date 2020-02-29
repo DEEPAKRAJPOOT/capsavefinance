@@ -83,7 +83,7 @@ trait CamTrait
                     $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
                 }
                 $arrGroupCompany = array();
-                if(isset($arrCamData['group_company'])){
+                if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
                   $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'is_active'=>1])->get()->toArray();
                   $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
                   if(!empty($arrMstGroup)){
