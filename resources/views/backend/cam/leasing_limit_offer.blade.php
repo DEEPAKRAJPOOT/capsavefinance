@@ -90,7 +90,7 @@
           </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group">
                 <label for="txtPassword"><b>Deposit Type</b></label> 
                 <select name="security_deposit_of" class="form-control">
@@ -127,11 +127,11 @@
             </div>
         </div>
     
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>PTP Frequency</b></label>
             <div class="col-md-12" id="ptpq-block">
-                @if(isset($offerData->offerPtpq))
+                @if(isset($offerData->offerPtpq) && count($offerData->offerPtpq))
                 @foreach($offerData->offerPtpq as $key=>$ptpq)
                 <div class="row {{($loop->first)? '': 'mt10'}}">
                     <div class="col-md-3">
@@ -334,7 +334,7 @@
     }
     let data = [];
 
-    if(tenor != '' && rental_frequency != ''){
+    if(tenor != '' && rental_frequency != '' && facility_type_id != 3){
         $('input[name*=ptpq_from]').each(function(i,val){
             let ttlcount = $('input[name*=ptpq_from]').length;
             let rf = {1:12, 2:6, 3:3, 4:1};
@@ -510,6 +510,10 @@
     unsetError('input[name=security_deposit_type]');
     unsetError('input[name=ruby_sheet_xirr]');
     unsetError('input[name=cash_flow_xirr]');
+    unsetError('select[name=security_deposit_of]');
+    unsetError('input[name*=ptpq_from]');
+    unsetError('input[name*=ptpq_to]');
+    unsetError('input[name*=ptpq_rate]');
     unsetError('input[name=discounting]');
     unsetError('#radio_block');
 
@@ -517,13 +521,17 @@
     if(ftid == 3){
         $('input[name=discounting]').parent().parent().show();
         $('input[name=ruby_sheet_xirr]').parent().parent().parent().hide();
+        $('select[name=security_deposit_of]').parent().parent().hide();
         $('input[name=security_deposit]').parent().parent().hide();
         $('#radio_block').parent().parent().hide();
+        $('#ptpq-block').parent().parent().hide();
     }else{
         $('input[name=discounting]').parent().parent().hide();
         $('input[name=ruby_sheet_xirr]').parent().parent().parent().show();
+        $('select[name=security_deposit_of]').parent().parent().show();
         $('input[name=security_deposit]').parent().parent().show();
         $('#radio_block').parent().parent().show();
+        $('#ptpq-block').parent().parent().show();
     }
   });
 
