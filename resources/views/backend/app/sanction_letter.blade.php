@@ -106,13 +106,15 @@
                            </tbody>
                         </table>
                         <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
+                        <!-- Vender Program -->
+                        @if($supplyChaindata['prgm_type'] == 2) 
                         <table  class="table table-border"  cellpadding="0" cellspacing="0">
                            <tbody>
                               <tr>
                                  <td width="33.33%">Facility No</td>
-                                 <td width="6.66%">1</td>
+                                 <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
                                  <td width="30%">Facility Name</td>
-                                 <td width="30%">Vendor Finance Facility</td>
+                                 <td width="30%">{{$supplyChaindata['product_name']}}</td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Facility Amount</td>
@@ -229,21 +231,24 @@
                               </tr>
                            </tbody>
                         </table>
+                        @endif
+                        <!-- Channle Program -->
+                        @if($supplyChaindata['prgm_type'] == 1) 
                         <table  class="table table-border"  cellpadding="0" cellspacing="0">
                            <tbody>
                               <tr>
                                  <td width="33.33%">Facility No</td>
-                                 <td width="6.66%">2</td>
+                                 <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
                                  <td width="30%">Facility Name</td>
-                                 <td width="30%">Purchase Finance Facility</td>
+                                 <td width="30%">{{$supplyChaindata['product_name']}}</td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Facility Amount</td>
-                                 <td width="66.66%" colspan="3">..</td>
+                                 <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Purpose</td>
-                                 <td width="66.66%" colspan="3">..</td>
+                                 <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Expiry of Limit</td>
@@ -346,6 +351,7 @@
                               </tr>
                            </tbody>
                         </table>
+                        @endif
                         <table  class="table table-border"  cellpadding="0" cellspacing="0">
                            <tbody>
                               <tr>
