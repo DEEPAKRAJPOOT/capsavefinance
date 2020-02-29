@@ -44,11 +44,12 @@ class DocumentController extends Controller
             $appProduct = $this->appRepo->getApplicationProduct($appId);
             
             $docTypes = config('common.doc_type');            
-                      
+                                  
             if ($appId > 0) {
-                foreach ($appProduct as $key => $value) {
-                    $requiredDocs[$key]['productInfo'] = $value->programLimit->product;
-                    $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->programLimit->product_id);
+                foreach ($appProduct->products as $key => $value) {
+                    $requiredDocs[$key]['productInfo'] = $value;
+                    $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->id);
+                    // dd($requiredDocs);
                     if($requiredDocs[$key]['documents']->count() != 0){
                         $docData += $this->docRepo->appPPDocuments($requiredDocs[$key]['documents'], $appId);
                     }
@@ -57,7 +58,8 @@ class DocumentController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-            dd($requiredDocs);
+
+                        
             foreach($requiredDocs as $key => $product) {
                 if($product['documents']->count() > 0 ) {
                     $docFlag ++;
