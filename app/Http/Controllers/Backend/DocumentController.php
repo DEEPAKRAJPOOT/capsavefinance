@@ -43,7 +43,7 @@ class DocumentController extends Controller
             $appProduct = $this->appRepo->getAppProducts($appId);
             
             $docTypes = config('common.doc_type');            
-            
+                        
             if ($appId > 0) {
                 foreach ($appProduct->products as $key => $value) {
                     $requiredDocs[$key]['productInfo'] = $value;
@@ -57,12 +57,14 @@ class DocumentController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-
+            
+            
+            $noDocFlag = 1;
             foreach($requiredDocs as $key => $product) {
-                if($product['documents']->count() == 0) {
-                    $noDocFlag = 1;
+                if($product['documents']->count() != 0) {
+                    $noDocFlag = 0;
                 }
-            }
+            }            
             // dd($docData);
             return view('backend.document.list', [
                 'requiredDocs' => $requiredDocs,

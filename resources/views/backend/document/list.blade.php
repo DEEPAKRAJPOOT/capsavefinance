@@ -37,7 +37,7 @@
                  <div class="card card-color mb-0">
                     <div class="card-header">
                         <a class="card-title ">
-                            No pre/post stage document found.
+                            No pre-offer or pre/post stage document found.
                         </a>
 
                     </div>
@@ -84,6 +84,7 @@
                                         <td width="20%">Download</td>
                                         <td align="center" width="20%">Action</td>
                                     </tr>
+                                    @if (isset($documentData[$data->ppDocument->doc_name]))
                                     @foreach($documentData[$data->ppDocument->doc_name] as $value)
                                     <tr>
                                         <td width="20%"> {{ (isset($value->userFile->file_name)) ? $value->userFile->file_name : ''}} </td>
@@ -91,12 +92,13 @@
                                         <td width="20%"> {{ (isset($value->comment)) ? $value->comment : ''}} </td>
                                         <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download="{{ $value->userFile->file_name }}"><i class="fa fa-download"></i></a></td>
                                         <td align="center" width="20%">
-                                            @if(request()->get('view_only'))
+                                            @if( (request()->get('view_only') && in_array($data->ppDocument->doc_type_id, [2,3])) || ($data->ppDocument->doc_type_id == 4) )
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ Route('document_delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
                                             @endif
                                         </td>
                                     </tr>
                                     @endforeach
+                                    @endif
                                 </tbody>
                             </table>
 
