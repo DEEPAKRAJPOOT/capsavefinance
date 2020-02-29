@@ -140,7 +140,7 @@
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Borrower</b></label>
                                     @endif
-                                    <input type="text" name="group_company_name[]" class="form-control" value="{{$arr['group_company_name'] ?? ''}}" placeholder="Group Company" />
+                                    <input type="text" name="group_company_name[]" class="form-control" value="{{$arr['group_company_name'] ?? ''}}" placeholder="Group Company" {{($loop->first)? 'readonly': ''}} />
                                 </div>
                                 <div class="col-md-3 INR">
                                     @if($loop->first)
@@ -354,8 +354,8 @@
         </div>
     </div>
 </div>
-@endsection
 {!!Helpers::makeIframePopup('changeAppDisbursStatus','Change App Status', 'modal-md')!!}
+@endsection
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
 
