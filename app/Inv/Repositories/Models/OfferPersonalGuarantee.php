@@ -65,7 +65,7 @@ class OfferPersonalGuarantee extends BaseModel
      * @return array
      */
 
-    public static function getOfferPG($offer_id)
+    public static function getOfferPersonalGuarantee($offer_id)
     {
         $res =   self::where('prgm_offer_id',$offer_id)->get();
         return $res ?: false;
@@ -78,12 +78,12 @@ class OfferPersonalGuarantee extends BaseModel
      * @return boolean
      */
 
-    public static function addOfferPG($data){
+    public static function addOfferPersonalGuarantee($data){
         if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            $offerPtpq =  self::insert($data);
-            return $offerPtpq ? true : false;
+            $offerPg =  self::insert($data);
+            return $offerPg ? true : false;
         }
     }
 

@@ -65,7 +65,7 @@ class OfferEscrowMechanism extends BaseModel
      * @return array
      */
 
-    public static function getOfferEM($offer_id)
+    public static function getOfferEscrowMechanism($offer_id)
     {
         $res =   self::where('prgm_offer_id',$offer_id)->get();
         return $res ?: false;
@@ -78,12 +78,12 @@ class OfferEscrowMechanism extends BaseModel
      * @return boolean
      */
 
-    public static function addOfferEM($data){
+    public static function addOfferEscrowMechanism($data){
         if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            $offerPtpq =  self::insert($data);
-            return $offerPtpq ? true : false;
+            $offerEm =  self::insert($data);
+            return $offerEm ? true : false;
         }
     }
 

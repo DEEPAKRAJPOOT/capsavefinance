@@ -65,7 +65,7 @@ class OfferPrimarySecurity extends BaseModel
      * @return array
      */
 
-    public static function getOfferPS($offer_id)
+    public static function getOfferPrimarySecurity($offer_id)
     {
         $res =   self::where('prgm_offer_id',$offer_id)->get();
         return $res ?: false;
@@ -78,12 +78,12 @@ class OfferPrimarySecurity extends BaseModel
      * @return boolean
      */
 
-    public static function addOfferPS($data){
+    public static function addOfferPrimarySecurity($data){
         if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            $offerPtpq =  self::insert($data);
-            return $offerPtpq ? true : false;
+            $offerPs =  self::insert($data);
+            return $offerPs ? true : false;
         }
     }
 

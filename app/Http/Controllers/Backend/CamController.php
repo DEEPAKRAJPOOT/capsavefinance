@@ -1486,7 +1486,6 @@ class CamController extends Controller
 
     /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
-      dd($request->all());
       try{
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
@@ -1507,7 +1506,11 @@ class CamController extends Controller
 
         $limitData = $this->appRepo->getLimit($aplid);
         if($limitData->product_id == 1){
-          //sadfghjk
+            $this->addOfferPrimarySecurity($request, $offerData->prgm_offer_id);
+            $this->addOfferCollateralSecurity($request, $offerData->prgm_offer_id);
+            $this->addOfferPersonalGuarantee($request, $offerData->prgm_offer_id);
+            $this->addOfferCorporateGuarantee($request, $offerData->prgm_offer_id);
+            $this->addOfferEscrowMechanism($request, $offerData->prgm_offer_id);
         }elseif($limitData->product_id == 2 || $limitData->product_id == 3){
           /*Add offer PTPQ block*/
           $ptpqArr =[];
@@ -1519,7 +1522,7 @@ class CamController extends Controller
             $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
             $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
           }
-          $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
+          $this->appRepo->addOfferPTPQ($ptpqArr);
         }
 
         if($offerData){
@@ -1861,5 +1864,92 @@ class CamController extends Controller
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+    public function addOfferPrimarySecurity($request, $prgm_offer_id){
+      if($request->primary_security == 1){
+        $psArr =[];
+        foreach($request->ps['ps_security_id'] as $key=>$ps){
+          $psArr[$key]['prgm_offer_id'] = $prgm_offer_id;
+          $psArr[$key]['ps_security_id'] = $request->ps['ps_security_id'][$key];
+          $psArr[$key]['ps_type_of_security_id'] = $request->ps['ps_type_of_security_id'][$key];
+          $psArr[$key]['ps_status_of_security_id'] = $request->ps['ps_status_of_security_id'][$key];
+          $psArr[$key]['ps_time_for_perfecting_security_id'] = $request->ps['ps_time_for_perfecting_security_id'][$key];
+          $psArr[$key]['ps_desc_of_security'] = $request->ps['ps_desc_of_security'][$key];
+          $psArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $psArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $this->appRepo->addOfferPrimarySecurity($psArr);
+      }
+    }
+
+    public function addOfferCollateralSecurity($request, $prgm_offer_id){
+      if($request->collateral_security == 1){
+        $csArr =[];
+        foreach($request->cs['cs_desc_security_id'] as $key=>$cs){
+          $csArr[$key]['prgm_offer_id'] = $prgm_offer_id;
+          $csArr[$key]['cs_desc_security_id'] = $request->cs['cs_desc_security_id'][$key];
+          $csArr[$key]['cs_type_of_security_id'] = $request->cs['cs_type_of_security_id'][$key];
+
+
+          $csArr[$key]['cs_status_of_security_id'] = $request->cs['cs_status_of_security_id'][$key];
+          $csArr[$key]['cs_time_for_perfecting_security_id'] = $request->cs['cs_time_for_perfecting_security_id'][$key];
+          $csArr[$key]['cs_desc_of_security'] = $request->cs['cs_desc_of_security'][$key];
+          $csArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $csArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $this->appRepo->addOfferCollateralSecurity($csArr);
+      }
+    }
+
+    public function addOfferPersonalGuarantee($request, $prgm_offer_id){
+      if($request->personal_guarantee == 1){
+        $pgArr =[];
+        foreach($request->pg['pg_name_of_guarantor_id'] as $key=>$pg){
+          $pgArr[$key]['prgm_offer_id'] = $prgm_offer_id;
+          $pgArr[$key]['pg_name_of_guarantor_id'] = $request->pg['pg_name_of_guarantor_id'][$key];
+          $pgArr[$key]['pg_time_for_perfecting_security_id'] = $request->pg['pg_time_for_perfecting_security_id'][$key];
+          $pgArr[$key]['pg_residential_address'] = $request->pg['pg_residential_address'][$key];
+          $pgArr[$key]['pg_net_worth'] = $request->pg['pg_net_worth'][$key];
+          $pgArr[$key]['pg_comments'] = $request->pg['pg_comments'][$key];
+          $pgArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $pgArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $this->appRepo->addOfferPersonalGuarantee($pgArr);
+      }
+    }
+
+    public function addOfferCorporateGuarantee($request, $prgm_offer_id){
+      if($request->corporate_guarantee == 1){
+        $cgArr =[];
+        foreach($request->cg['cg_type_id'] as $key=>$cg){
+          $cgArr[$key]['prgm_offer_id'] = $prgm_offer_id;
+          $cgArr[$key]['cg_type_id'] = $request->cg['cg_type_id'][$key];
+          $cgArr[$key]['cg_name_of_guarantor_id'] = $request->cg['cg_name_of_guarantor_id'][$key];
+          $cgArr[$key]['cg_time_for_perfecting_security_id'] = $request->cg['cg_time_for_perfecting_security_id'][$key];
+          $cgArr[$key]['cg_residential_address'] = $request->cg['cg_residential_address'][$key];
+          $cgArr[$key]['cg_comments'] = $request->cg['cg_comments'][$key];
+          $cgArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $cgArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $this->appRepo->addOfferCorporateGuarantee($cgArr);
+      }
+    }
+
+    public function addOfferEscrowMechanism($request, $prgm_offer_id){
+      if($request->escrow_mechanism == 1){
+        $emArr =[];
+        foreach($request->em['em_debtor_id'] as $key=>$em){
+          $emArr[$key]['prgm_offer_id'] = $prgm_offer_id;
+          $emArr[$key]['em_debtor_id'] = $request->em['em_debtor_id'][$key];
+          $emArr[$key]['em_expected_cash_flow'] = $request->em['em_expected_cash_flow'][$key];
+          $emArr[$key]['em_time_for_perfecting_security_id'] = $request->em['em_time_for_perfecting_security_id'][$key];
+          $emArr[$key]['em_mechanism_id'] = $request->em['em_mechanism_id'][$key];
+          $emArr[$key]['em_comments'] = $request->em['em_comments'][$key];
+          $emArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $emArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $this->appRepo->addOfferEscrowMechanism($emArr);
+      }
     }
 }

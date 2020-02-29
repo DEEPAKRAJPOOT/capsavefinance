@@ -65,7 +65,7 @@ class OfferCollateralSecurity extends BaseModel
      * @return array
      */
 
-    public static function getOfferCS($offer_id)
+    public static function getOfferCollateralSecurity($offer_id)
     {
         $res =   self::where('prgm_offer_id',$offer_id)->get();
         return $res ?: false;
@@ -78,7 +78,7 @@ class OfferCollateralSecurity extends BaseModel
      * @return boolean
      */
 
-    public static function addOfferCS($data){
+    public static function addOfferCollateralSecurity($data){
         if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{

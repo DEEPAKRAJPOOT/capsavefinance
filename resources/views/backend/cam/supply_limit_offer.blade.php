@@ -99,11 +99,95 @@
             <div class="col-md-6">
                 <select name="primary_security" class="form-control show-hide" data-block_id="#primary-security-block">
                     <option value="">Select Primary Security</option>
-                    <option value="1">Applicable</option>
-                    <option value="2">Not Applicable</option>
+                    <option value="1" {{(isset($offerData->offerPs) && count($offerData->offerPs) > 0)? 'selected': ''}}>Applicable</option>
+                    <option value="2" {{(isset($offerData->offerPs) && count($offerData->offerPs) == 0)? 'selected': ''}}>Not Applicable</option>
                 </select>
             </div>
-            <div class="col-md-12" id="primary-security-block" style="display: none;">
+            <div class="col-md-12" id="primary-security-block" style="display: {{(isset($offerData->offerPs) && count($offerData->offerPs) > 0)? 'block': 'none'}};">
+            @if(isset($offerData->offerPs) && count($offerData->offerPs) > 0)
+                @foreach($offerData->offerPs as $key=>$ps)
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Security</b></label>
+                        @endif
+                        <select name="ps[ps_security_id][]" class="form-control">
+                            <option value="">Select Security</option>
+                            <option value="1" {{($ps->ps_security_id == 1)? 'selected': ''}}>Current assets</option>
+                            <option value="2" {{($ps->ps_security_id == 2)? 'selected': ''}}>Plant and Machinery</option>
+                            <option value="3" {{($ps->ps_security_id == 3)? 'selected': ''}}>Land & Building</option>
+                            <option value="4" {{($ps->ps_security_id == 4)? 'selected': ''}}>Commercial Property</option>
+                            <option value="5" {{($ps->ps_security_id == 5)? 'selected': ''}}>Land</option>
+                            <option value="6" {{($ps->ps_security_id == 6)? 'selected': ''}}>Industrial Premises</option>
+                            <option value="7" {{($ps->ps_security_id == 7)? 'selected': ''}}>Residential Property</option>
+                            <option value="8" {{($ps->ps_security_id == 8)? 'selected': ''}}>Farm House & Land</option>
+                            <option value="9" {{($ps->ps_security_id == 9)? 'selected': ''}}>Listed Share</option>
+                            <option value="10" {{($ps->ps_security_id == 10)? 'selected': ''}}>Unlisted Share</option>
+                            <option value="11" {{($ps->ps_security_id == 11)? 'selected': ''}}>Mutual Funds</option>
+                            <option value="12" {{($ps->ps_security_id == 12)? 'selected': ''}}>Intercorporate Deposits</option>
+                            <option value="13" {{($ps->ps_security_id == 13)? 'selected': ''}}>Bank Guarantee</option>
+                            <option value="14" {{($ps->ps_security_id == 14)? 'selected': ''}}>SBLC</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
+                        @endif
+                        <select name="ps[ps_type_of_security_id][]" class="form-control">
+                            <option value="">Select type of Security</option>
+                            <option value="1" {{($ps->ps_type_of_security_id == 1)? 'selected': ''}}>Registered Mortgage</option>
+                            <option value="2" {{($ps->ps_type_of_security_id == 2)? 'selected': ''}}>Equitable Mortgage</option>
+                            <option value="3" {{($ps->ps_type_of_security_id == 3)? 'selected': ''}}>Hypothecation</option>
+                            <option value="4" {{($ps->ps_type_of_security_id == 4)? 'selected': ''}}>Pledge</option>
+                            <option value="5" {{($ps->ps_type_of_security_id == 5)? 'selected': ''}}>Lien</option>
+                            <option value="6" {{($ps->ps_type_of_security_id == 6)? 'selected': ''}}>Negative Lien</option>
+                            <option value="7" {{($ps->ps_type_of_security_id == 7)? 'selected': ''}}>Deposit of Title deeds</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword"><b>Status of Security</b></label>
+                        @endif
+                        <select name="ps[ps_status_of_security_id][]" class="form-control">
+                            <option value="">Select status of Security</option>
+                            <option value="1" {{($ps->ps_status_of_security_id == 1)? 'selected': ''}}>First Pari-pasu</option>
+                            <option value="2" {{($ps->ps_status_of_security_id == 2)? 'selected': ''}}>Exclusive</option>
+                            <option value="3" {{($ps->ps_status_of_security_id == 3)? 'selected': ''}}>Third Pari-pasu</option>
+                            <option value="4" {{($ps->ps_status_of_security_id == 4)? 'selected': ''}}>Second Pari-pasu</option>
+                            <option value="5" {{($ps->ps_status_of_security_id == 5)? 'selected': ''}}>Sub-Servient</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        @endif
+                        <select name="ps[ps_time_for_perfecting_security_id][]" class="form-control">
+                            <option value="">Select time for perfecting security</option>
+                            <option value="1" {{($ps->ps_time_for_perfecting_security_id == 1)? 'selected': ''}}>Before Disbusrement</option>
+                            <option value="2" {{($ps->ps_time_for_perfecting_security_id == 2)? 'selected': ''}}>With in 30 days from date of first disbusrement</option>
+                            <option value="3" {{($ps->ps_time_for_perfecting_security_id == 3)? 'selected': ''}}>With in 60 days from date of first disbsurement</option>
+                            <option value="4" {{($ps->ps_time_for_perfecting_security_id == 4)? 'selected': ''}}>With in 90 days from date of first disbursement </option>
+                            <option value="5" {{($ps->ps_time_for_perfecting_security_id == 5)? 'selected': ''}}>With in 120 days from date of first disbursement</option>
+                            <option value="6" {{($ps->ps_time_for_perfecting_security_id == 6)? 'selected': ''}}>with in 180 days from date of first disbursement</option>
+                            <option value="7" {{($ps->ps_time_for_perfecting_security_id == 7)? 'selected': ''}}>with in 360 days from date of first disbsurement</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
+                        @endif
+                        <input name="ps[ps_desc_of_security][]" class="form-control" value="{{$ps->ps_desc_of_security}}">
+                    </div>
+                    <div class="col-md-2 center">
+                        @if($loop->first)
+                        <i class="fa fa-2x fa-plus-circle add-primary-security-block mt-4"></i>
+                        @else
+                        <i class="fa fa-2x fa-times-circle remove-primary-security-block" style="color: red;"></i>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+                @else
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Security</b></label>
@@ -168,10 +252,9 @@
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-primary-security-block mt-4"></i>
-                        <!-- <i class="fa fa-2x fa-times-circle remove-primary-security-block" style="color: red;"></i> -->
                     </div>
                 </div>
-                
+                @endif
             </div>
           </div>
         </div>
@@ -184,11 +267,95 @@
             <div class="col-md-6">
                 <select name="collateral_security" class="form-control show-hide" data-block_id="#collateral-security-block">
                     <option value="">Select Collateral Security</option>
-                    <option value="1">Applicable</option>
-                    <option value="2">Not Applicable</option>
+                    <option value="1" {{(isset($offerData->offerCs) && count($offerData->offerCs) > 0)? 'selected': ''}}>Applicable</option>
+                    <option value="2" {{(isset($offerData->offerCs) && count($offerData->offerCs) == 0)? 'selected': ''}}>Not Applicable</option>
                 </select>
             </div>
-            <div class="col-md-12" id="collateral-security-block" style="display: none;">
+            <div class="col-md-12" id="collateral-security-block" style="display: {{(isset($offerData->offerCs) && count($offerData->offerCs) > 0)? 'block': 'none'}};">
+            @if(isset($offerData->offerCs) && count($offerData->offerCs) > 0)
+                @foreach($offerData->offerCs as $key=>$cs)
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc Security</b></label>
+                        @endif
+                        <select name="cs[cs_desc_security_id][]" class="form-control">
+                            <option value="">Select Security</option>
+                            <option value="1">Current assets</option>
+                            <option value="2">Plant and Machinery</option>
+                            <option value="3">Land & Building</option>
+                            <option value="4">Commercial Property</option>
+                            <option value="5">Land</option>
+                            <option value="6">Industrial Premises</option>
+                            <option value="7">Residential Property</option>
+                            <option value="8">Farm House & Land</option>
+                            <option value="9">Listed Share</option>
+                            <option value="10">Unlisted Share</option>
+                            <option value="11">Mutual Funds</option>
+                            <option value="12">Intercorporate Deposits</option>
+                            <option value="13">Bank Guarantee</option>
+                            <option value="14">SBLC</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
+                        @endif
+                        <select name="cs[cs_type_of_security_id][]" class="form-control">
+                            <option value="">Select type of Security</option>
+                            <option value="1">Registered Mortgage</option>
+                            <option value="2">Equitable Mortgage</option>
+                            <option value="3">Hypothecation</option>
+                            <option value="4">Pledge</option>
+                            <option value="5">Lien</option>
+                            <option value="6">Negative Lien</option>
+                            <option value="7">Deposit of Title deeds</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword"><b>Status of Security</b></label>
+                        @endif
+                        <select name="cs[cs_status_of_security_id][]" class="form-control">
+                            <option value="">Select status of Security</option>
+                            <option value="1">First Pari-pasu</option>
+                            <option value="2">Exclusive</option>
+                            <option value="3">Third Pari-pasu</option>
+                            <option value="4">Second Pari-pasu</option>
+                            <option value="5">Sub-Servient</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        @endif
+                        <select name="cs[cs_time_for_perfecting_security_id][]" class="form-control">
+                            <option value="">Select time for perfecting security</option>
+                            <option value="1">Before Disbusrement</option>
+                            <option value="2">With in 30 days from date of first disbusrement</option>
+                            <option value="3">With in 60 days from date of first disbsurement</option>
+                            <option value="4">With in 90 days from date of first disbursement </option>
+                            <option value="5">With in 120 days from date of first disbursement</option>
+                            <option value="6">with in 180 days from date of first disbursement</option>
+                            <option value="7">with in 360 days from date of first disbsurement</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
+                        @endif
+                        <input name="cs[cs_desc_of_security][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2 center">
+                        @if($loop->first)
+                        <i class="fa fa-2x fa-plus-circle add-collateral-security-block mt-4"></i>
+                        @else
+                        <i class="fa fa-2x fa-times-circle remove-collateral-security-block" style="color: red;"></i>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+                @else
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc Security</b></label>
@@ -225,8 +392,8 @@
                     </div>
                     <div class="col-md-2">
                         <label for="txtPassword"><b>Status of Security</b></label>
-                        <select name="" class="form-control">
-                            <option value="cs[cs_status_of_security_id][]">Select status of Security</option>
+                        <select name="cs[cs_status_of_security_id][]" class="form-control">
+                            <option value="">Select status of Security</option>
                             <option value="1">First Pari-pasu</option>
                             <option value="2">Exclusive</option>
                             <option value="3">Third Pari-pasu</option>
@@ -253,10 +420,9 @@
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-collateral-security-block mt-4"></i>
-                        <!-- <i class="fa fa-2x fa-times-circle remove-collateral-security-block" style="color: red;"></i> -->
                     </div>
                 </div>
-                
+                @endif
             </div>
           </div>
         </div>
@@ -269,11 +435,67 @@
             <div class="col-md-6">
                 <select name="personal_guarantee" class="form-control show-hide" data-block_id="#personal-guarantee-block">
                     <option value="">Select Personal Guarantee</option>
-                    <option value="1">Applicable</option>
-                    <option value="2">Not Applicable</option>
+                    <option value="1" {{(isset($offerData->offerPg) && count($offerData->offerPg) > 0)? 'selected': ''}}>Applicable</option>
+                    <option value="2" {{(isset($offerData->offerPg) && count($offerData->offerPg) == 0)? 'selected': ''}}>Not Applicable</option>
                 </select>
             </div>
-            <div class="col-md-12" id="personal-guarantee-block" style="display: none;">
+            <div class="col-md-12" id="personal-guarantee-block" style="display: {{(isset($offerData->offerPg) && count($offerData->offerPg) > 0)? 'block': 'none'}};">
+            @if(isset($offerData->offerPg) && count($offerData->offerPg) > 0)
+                @foreach($offerData->offerPg as $key=>$pg)
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
+                        @endif
+                        <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
+                            <option value="">Select Guarantor</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        @endif
+                        <select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">
+                            <option value="">Select time for perfecting security</option>
+                            <option value="1">Before Disbusrement</option>
+                            <option value="2">With in 30 days from date of first disbusrement</option>
+                            <option value="3">With in 60 days from date of first disbsurement</option>
+                            <option value="4">With in 90 days from date of first disbursement </option>
+                            <option value="5">With in 120 days from date of first disbursement</option>
+                            <option value="6">with in 180 days from date of first disbursement</option>
+                            <option value="7">with in 360 days from date of first disbsurement</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword"><b>Residential Address </b></label>
+                        @endif
+                        <input name="pg[pg_residential_address][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Net worth</b></label>
+                        @endif
+                        <input name="pg[pg_net_worth][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        @endif
+                        <input name="pg[pg_comments][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2 center">
+                        @if($loop->first)
+                        <i class="fa fa-2x fa-plus-circle add-personal-guarantee-block mt-4"></i>
+                        @else
+                        <i class="fa fa-2x fa-times-circle remove-personal-guarantee-block" style="color: red;"></i>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+                @else
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
@@ -310,10 +532,9 @@
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-personal-guarantee-block mt-4"></i>
-                        <!-- <i class="fa fa-2x fa-times-circle remove-personal-guarantee-block" style="color: red;"></i> -->
                     </div>
                 </div>
-                
+                @endif
             </div>
           </div>
         </div>
@@ -326,11 +547,75 @@
             <div class="col-md-6">
                 <select name="corporate_guarantee" class="form-control show-hide" data-block_id="#corporate-guarantee-block">
                     <option value="">Select Corporate Guarantee</option>
-                    <option value="1">Applicable</option>
-                    <option value="2">Not Applicable</option>
+                    <option value="1" {{(isset($offerData->offerCg) && count($offerData->offerCg) > 0)? 'selected': ''}}>Applicable</option>
+                    <option value="2" {{(isset($offerData->offerCg) && count($offerData->offerCg) == 0)? 'selected': ''}}>Not Applicable</option>
                 </select>
             </div>
-            <div class="col-md-12" id="corporate-guarantee-block" style="display: none;">
+            <div class="col-md-12" id="corporate-guarantee-block" style="display: {{(isset($offerData->offerCg) && count($offerData->offerCg) > 0)? 'block': 'none'}};">
+            @if(isset($offerData->offerCg) && count($offerData->offerCg) > 0)
+                @foreach($offerData->offerCg as $key=>$cg)
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type</b></label>
+                        @endif
+                        <select name="cg[cg_type_id][]" class="form-control">
+                            <option value="">Select type</option>
+                            <option value="1">Corporate Guarante with BR</option>
+                            <option value="2">Letter of Comfort with BR</option>
+                            <option value="3">Corporate Guarantee w/o BR</option>
+                            <option value="4">Letter of Comfort w/o BR</option>
+                            <option value="5">Put option with BR</option>
+                            <option value="6">Put option w/o BR</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
+                        @endif
+                        <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
+                            <option value="">Select Guarantor</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        @endif
+                        <select name="cg[cg_time_for_perfecting_security_id][]" class="form-control">
+                            <option value="">Select time for perfecting security</option>
+                            <option value="1">Before Disbusrement</option>
+                            <option value="2">With in 30 days from date of first disbusrement</option>
+                            <option value="3">With in 60 days from date of first disbsurement</option>
+                            <option value="4">With in 90 days from date of first disbursement </option>
+                            <option value="5">With in 120 days from date of first disbursement</option>
+                            <option value="6">with in 180 days from date of first disbursement</option>
+                            <option value="7">with in 360 days from date of first disbsurement</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword"><b>Residential Address</b></label>
+                        @endif
+                        <input name="cg[cg_residential_address][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        @endif
+                        <input name="cg[cg_comments][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2 center">
+                        @if($loop->first)
+                        <i class="fa fa-2x fa-plus-circle add-corporate-guarantee-block mt-4"></i>
+                        @else
+                        <i class="fa fa-2x fa-times-circle remove-corporate-guarantee-block" style="color: red;"></i>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+                @else
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Type</b></label>
@@ -375,10 +660,9 @@
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-corporate-guarantee-block mt-4"></i>
-                        <!-- <i class="fa fa-2x fa-times-circle remove-corporate-guarantee-block" style="color: red;"></i> -->
                     </div>
                 </div>
-                
+                @endif
             </div>
           </div>
         </div>
@@ -391,11 +675,73 @@
             <div class="col-md-6">
                 <select name="escrow_mechanism" class="form-control show-hide" data-block_id="#escrow-mechanism-block">
                     <option value="">Select Escrow Mechanism</option>
-                    <option value="1">Applicable</option>
-                    <option value="2">Not Applicable</option>
+                    <option value="1" {{(isset($offerData->offerEm) && count($offerData->offerEm) > 0)? 'selected': ''}}>Applicable</option>
+                    <option value="2" {{(isset($offerData->offerEm) && count($offerData->offerEm) == 0)? 'selected': ''}}>Not Applicable</option>
                 </select>
             </div>
-            <div class="col-md-12" id="escrow-mechanism-block" style="display: none;">
+            <div class="col-md-12" id="escrow-mechanism-block" style="display: {{(isset($offerData->offerEm) && count($offerData->offerEm) > 0)? 'block': 'none'}};">
+            @if(isset($offerData->offerEm) && count($offerData->offerEm) > 0)
+                @foreach($offerData->offerEm as $key=>$em)
+                <div class="row mt10">
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Name of Debtor</b></label>
+                        @endif
+                        <select name="em[em_debtor_id][]" class="form-control">
+                            <option value="">Select Debtor</option>
+                            <option value="1">option one</option>
+                            <option value="2">option two</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword"><b>Expected cash flow per month</b></label>
+                        @endif
+                        <input name="em[em_expected_cash_flow][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        @endif
+                        <select name="em[em_time_for_perfecting_security_id][]" class="form-control">
+                            <option value="">Select time for perfecting security</option>
+                            <option value="1">Before Disbusrement</option>
+                            <option value="2">With in 30 days from date of first disbusrement</option>
+                            <option value="3">With in 60 days from date of first disbsurement</option>
+                            <option value="4">With in 90 days from date of first disbursement </option>
+                            <option value="5">With in 120 days from date of first disbursement</option>
+                            <option value="6">with in 180 days from date of first disbursement</option>
+                            <option value="7">with in 360 days from date of first disbsurement</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Mechanism</b></label>
+                        @endif
+                        <select name="em[em_mechanism_id][]" class="form-control">
+                            <option value="">Select Mechanism</option>
+                            <option value="1">With direct Payment confirmation</option>
+                            <option value="2">W/o direct payment confirmation</option>
+                            <option value="3">With payment confirmation with Escrow a/c</option>
+                            <option value="4">W/o payment confirmation w/o Escrow a/c</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        @if($loop->first)
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        @endif
+                        <input name="em[em_comments][]" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2 center">
+                        @if($loop->first)
+                        <i class="fa fa-2x fa-plus-circle add-escrow-mechanism-block mt-4"></i>
+                        @else
+                        <i class="fa fa-2x fa-times-circle remove-escrow-mechanism-block" style="color: red;"></i>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+                @else
                 <div class="row mt10">
                     <div class="col-md-2">
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Name of Debtor</b></label>
@@ -438,10 +784,9 @@
                     </div>
                     <div class="col-md-2 center">
                         <i class="fa fa-2x fa-plus-circle add-escrow-mechanism-block mt-4"></i>
-                        <!-- <i class="fa fa-2x fa-times-circle remove-escrow-mechanism-block" style="color: red;"></i> -->
                     </div>
                 </div>
-                
+                @endif
             </div>
           </div>
         </div>
@@ -731,7 +1076,7 @@
     if(flag){
         return true;
     }else{
-        return true;
+        return false;
     }
   }
 
@@ -803,35 +1148,60 @@
   $(document).on('click', '.add-collateral-security-block', function(){
     let primary_security_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="cs[cs_desc_security_id][]" class="form-control">'+
+                    '<option value="">Select Security</option>'+
+                    '<option value="1">Current assets</option>'+
+                    '<option value="2">Plant and Machinery</option>'+
+                    '<option value="3">Land & Building</option>'+
+                    '<option value="4">Commercial Property</option>'+
+                    '<option value="5">Land</option>'+
+                    '<option value="6">Industrial Premises</option>'+
+                    '<option value="7">Residential Property</option>'+
+                    '<option value="8">Farm House & Land</option>'+
+                    '<option value="9">Listed Share</option>'+
+                    '<option value="10">Unlisted Share</option>'+
+                    '<option value="11">Mutual Funds</option>'+
+                    '<option value="12">Intercorporate Deposits</option>'+
+                    '<option value="13">Bank Guarantee</option>'+
+                    '<option value="14">SBLC</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="cs[cs_type_of_security_id][]" class="form-control">'+
+                    '<option value="">Select type of Security</option>'+
+                    '<option value="1">Registered Mortgage</option>'+
+                    '<option value="2">Equitable Mortgage</option>'+
+                    '<option value="3">Hypothecation</option>'+
+                    '<option value="4">Pledge</option>'+
+                    '<option value="5">Lien</option>'+
+                    '<option value="6">Negative Lien</option>'+
+                    '<option value="7">Deposit of Title deeds</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="cs[cs_status_of_security_id][]" class="form-control">'+
+                    '<option value="">Select status of Security</option>'+
+                    '<option value="1">First Pari-pasu</option>'+
+                    '<option value="2">Exclusive</option>'+
+                    '<option value="3">Third Pari-pasu</option>'+
+                    '<option value="4">Second Pari-pasu</option>'+
+                    '<option value="5">Sub-Servient</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="cs[cs_time_for_perfecting_security_id][]" class="form-control">'+
+                    '<option value="">Select time for perfecting security</option>'+
+                    '<option value="1">Before Disbusrement</option>'+
+                    '<option value="2">With in 30 days from date of first disbusrement</option>'+
+                    '<option value="3">With in 60 days from date of first disbsurement</option>'+
+                    '<option value="4">With in 90 days from date of first disbursement </option>'+
+                    '<option value="5">With in 120 days from date of first disbursement</option>'+
+                    '<option value="6">with in 180 days from date of first disbursement</option>'+
+                    '<option value="7">with in 360 days from date of first disbsurement</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<input name="" class="form-control">'+
+                '<input name="cs[cs_desc_of_security][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-collateral-security-block" style="color: red;"></i>'+
@@ -843,35 +1213,32 @@
   $(document).on('click', '.add-personal-guarantee-block', function(){
     let personal_guarantee_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
+                '<select name="pg[pg_name_of_guarantor_id][]" class="form-control">'+
+                    '<option value="">Select Guarantor</option>'+
                     '<option value="1">option one</option>'+
                     '<option value="2">option two</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">'+
+                    '<option value="">Select time for perfecting security</option>'+
+                    '<option value="1">Before Disbusrement</option>'+
+                    '<option value="2">With in 30 days from date of first disbusrement</option>'+
+                    '<option value="3">With in 60 days from date of first disbsurement</option>'+
+                    '<option value="4">With in 90 days from date of first disbursement </option>'+
+                    '<option value="5">With in 120 days from date of first disbursement</option>'+
+                    '<option value="6">with in 180 days from date of first disbursement</option>'+
+                    '<option value="7">with in 360 days from date of first disbsurement</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
-                '</select>'+
+                '<input name="pg[pg_residential_address][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
-                '</select>'+
+                '<input name="pg[pg_net_worth][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<input name="" class="form-control">'+
+                '<input name="pg[pg_comments][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-personal-guarantee-block" style="color: red;"></i>'+
@@ -883,35 +1250,40 @@
   $(document).on('click', '.add-corporate-guarantee-block', function(){
     let corporate_guarantee_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
+                '<select name="cg[cg_type_id][]" class="form-control">'+
+                    '<option value="">Select type</option>'+
+                    '<option value="1">Corporate Guarante with BR</option>'+
+                    '<option value="2">Letter of Comfort with BR</option>'+
+                    '<option value="3">Corporate Guarantee w/o BR</option>'+
+                    '<option value="4">Letter of Comfort w/o BR</option>'+
+                    '<option value="5">Put option with BR</option>'+
+                    '<option value="6">Put option w/o BR</option>'+
+                '</select>'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="cg[cg_name_of_guarantor_id][]" class="form-control">'+
+                    '<option value="">Select Guarantor</option>'+
                     '<option value="1">option one</option>'+
                     '<option value="2">option two</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="cg[cg_time_for_perfecting_security_id][]" class="form-control">'+
+                    '<option value="">Select time for perfecting security</option>'+
+                    '<option value="1">Before Disbusrement</option>'+
+                    '<option value="2">With in 30 days from date of first disbusrement</option>'+
+                    '<option value="3">With in 60 days from date of first disbsurement</option>'+
+                    '<option value="4">With in 90 days from date of first disbursement </option>'+
+                    '<option value="5">With in 120 days from date of first disbursement</option>'+
+                    '<option value="6">with in 180 days from date of first disbursement</option>'+
+                    '<option value="7">with in 360 days from date of first disbsurement</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
-                '</select>'+
+                '<input name="cg[cg_residential_address][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
-                '</select>'+
-            '</div>'+
-            '<div class="col-md-2">'+
-                '<input name="" class="form-control">'+
+                '<input name="cg[cg_comments][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-corporate-guarantee-block" style="color: red;"></i>'+
@@ -923,35 +1295,38 @@
   $(document).on('click', '.add-escrow-mechanism-block', function(){
     let escrow_mechanism_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
+                '<select name="em[em_debtor_id][]" class="form-control">'+
+                    '<option value="">Select Debtor</option>'+
                     '<option value="1">option one</option>'+
                     '<option value="2">option two</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<input name="em[em_expected_cash_flow][]" class="form-control" value="">'+
+            '</div>'+
+            '<div class="col-md-2">'+
+                '<select name="em[em_time_for_perfecting_security_id][]" class="form-control">'+
+                    '<option value="">Select time for perfecting security</option>'+
+                    '<option value="1">Before Disbusrement</option>'+
+                    '<option value="2">With in 30 days from date of first disbusrement</option>'+
+                    '<option value="3">With in 60 days from date of first disbsurement</option>'+
+                    '<option value="4">With in 90 days from date of first disbursement </option>'+
+                    '<option value="5">With in 120 days from date of first disbursement</option>'+
+                    '<option value="6">with in 180 days from date of first disbursement</option>'+
+                    '<option value="7">with in 360 days from date of first disbsurement</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="em[em_mechanism_id][]" class="form-control">'+
+                    '<option value="">Select Mechanism</option>'+
+                    '<option value="1">With direct Payment confirmation</option>'+
+                    '<option value="2">W/o direct payment confirmation</option>'+
+                    '<option value="3">With payment confirmation with Escrow a/c</option>'+
+                    '<option value="4">W/o payment confirmation w/o Escrow a/c</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="" class="form-control">'+
-                    '<option value="">Select option</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
-                '</select>'+
-            '</div>'+
-            '<div class="col-md-2">'+
-                '<input name="" class="form-control">'+
+                '<input name="em[em_comments][]" class="form-control" value="">'+
             '</div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-escrow-mechanism-block" style="color: red;"></i>'+

@@ -55,7 +55,7 @@ class OfferCorporateGuarantee extends BaseModel
         'cg_name_of_guarantor_id',
         'cg_time_for_perfecting_security_id',
         'cg_residential_address',
-        'cg_comments'
+        'cg_comments',
         'created_at',
         'created_by',
     ];
@@ -65,7 +65,7 @@ class OfferCorporateGuarantee extends BaseModel
      * @return array
      */
 
-    public static function getOfferCG($offer_id)
+    public static function getOfferCorporateGuarantee($offer_id)
     {
         $res =   self::where('prgm_offer_id',$offer_id)->get();
         return $res ?: false;
@@ -78,12 +78,12 @@ class OfferCorporateGuarantee extends BaseModel
      * @return boolean
      */
 
-    public static function addOfferCG($data){
+    public static function addOfferCorporateGuarantee($data){
         if(!is_array($data)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            $offerPtpq =  self::insert($data);
-            return $offerPtpq ? true : false;
+            $offerCg =  self::insert($data);
+            return $offerCg ? true : false;
         }
     }
 
