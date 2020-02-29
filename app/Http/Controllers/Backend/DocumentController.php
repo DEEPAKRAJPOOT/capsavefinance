@@ -36,12 +36,14 @@ class DocumentController extends Controller
             $arrFileData = $request->all();
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
-            $userData = User::getUserByAppId($appId);
+            $userData = User::getUserByAppId($appId);                        
             $allProductDoc = [];
             $docData = [];
             $noDocFlag = 0;
             $appProduct = $this->appRepo->getAppProducts($appId);
-
+            
+            $docTypes = config('common.doc_type');            
+            
             if ($appId > 0) {
                 foreach ($appProduct->products as $key => $value) {
                     $requiredDocs[$key]['productInfo'] = $value;
@@ -69,6 +71,7 @@ class DocumentController extends Controller
                 'app_id' => $appId,
                 'biz_id' => $bizId,
                 'noDocFlag' => $noDocFlag,
+                'docTypes' => $docTypes
             ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

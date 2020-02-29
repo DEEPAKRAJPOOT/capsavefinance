@@ -61,13 +61,13 @@
                         <div class="card-header" data-toggle="collapse" href="#collapse{{ $data->app_doc_id }}">
                             <a class="card-title ">
                                 <b>{{ $data->ppDocument->doc_name }} </b>
-                                <span class="tag"> ( {{ ($data->ppDocument->doc_type_id == 2) ? 'Pre Sanction' : 'Post Sanction' }} ) </span>
+                                <span class="tag"> ( {{ $docTypes[$data->ppDocument->doc_type_id] }} ) </span>
                             </a>
 
                         </div>
                         <div class="action-btn">
                             <div class="upload-btn-wrapper setupload-btn pos">
-                                @if(request()->get('view_only'))
+                                @if( (request()->get('view_only') && in_array($data->ppDocument->doc_type_id, [2,3])) || ($data->ppDocument->doc_type_id == 4) )
                                 <button class="btn upload-btn openModal" data-id="{{ $data->doc_id }}">Upload</button>
                                 @endif
                                 
