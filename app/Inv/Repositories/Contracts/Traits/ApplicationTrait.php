@@ -203,13 +203,17 @@ trait ApplicationTrait
         $bizData = $this->appRepo->getApplicationById($bizId);
         $EntityData  = $this->appRepo->getEntityByBizId($bizId);
         $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
-
+        $AppLimitData  = $this->appRepo->getAppLimit($appId);
         $supplyChainOfferData = $this->appRepo->getAppProducts($appId);
         $ProgramData = $supplyChainOffer = [];
         if ($supplyChainOfferData->count()) {
             $supplyChainOfferData = $supplyChainOfferData[0];
             $supplyChainOffer = array_merge($supplyChainOfferData->programLimit->toArray(),$supplyChainOfferData->toArray());
             $ProgramData = $this->appRepo->getProgramData(['prgm_id' => $supplyChainOffer['prgm_id']]);
+        }
+        $tot_limit_amt = 0;
+        if ($AppLimitData->count()) {
+            $tot_limit_amt = $AppLimitData['tot_limit_amt'];
         }
         $CommunicationAddress = '';
         if (!empty($bizData->address[1])) {
@@ -227,8 +231,10 @@ trait ApplicationTrait
         $data['EmailId'] = $EntityData['email'];
         $data['MobileNumber'] = $EntityData['mobile_no'];
         $data['limit_amt'] = $supplyChainOffer['limit_amt'] ?? 0;
+        $data['product_id'] = $supplyChainOffer['product_id'] ?? 0;
         $data['prgm_type'] = $ProgramData['prgm_type'] ?? 0;
         $data['product_name'] = $ProgramData['product_name'] ?? 0;
+        $data['tot_limit_amt'] = $tot_limit_amt;
         return $data;
     }
 }

@@ -61,6 +61,7 @@
                             border: #ccc solid 1px;
                             border-radius: 2px;
                             margin-top: 5px;
+                            background-color: #FFF;
                         }
                        </style>
                         <style media="print">
@@ -99,9 +100,16 @@
                            </thead>
                            <tbody>
                               <tr>
-                                 <td class="">Facility Type</td>
-                                 <td class="">Rental facility</td>
-                                 <td class="">Rental facility</td>
+                                 <td class="">{{getProductType($supplyChaindata['product_id'])}}</td>
+                                 <td class="">{{$supplyChaindata['tot_limit_amt']}}</td>
+                                 <td class=""> 
+                                      <select class="select">
+                                           <option>Choose an Item</option>
+                                           <option>Term Loan</option>
+                                           <option>Purchase Finance Facility</option>
+                                           <option>Invoice Discounting Facility</option>
+                                           <option>Vendor Finance</option>
+                                      </select></td>
                               </tr>
                            </tbody>
                         </table>
@@ -115,7 +123,7 @@
                                  <td width="33.33%">Facility No</td>
                                  <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
                                  <td width="30%">Facility Name</td>
-                                 <td width="30%">{{$supplyChaindata['product_name']}}</td>
+                                 <td width="30%">Purchase Finance Facility  /  Channel Financing{{--$supplyChaindata['product_name']--}}</td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Facility Amount</td>
@@ -241,7 +249,7 @@
                                  <td width="33.33%">Facility No</td>
                                  <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
                                  <td width="30%">Facility Name</td>
-                                 <td width="30%">{{$supplyChaindata['product_name']}}</td>
+                                 <td width="30%">Vendor Finance Facility</td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Facility Amount</td>
