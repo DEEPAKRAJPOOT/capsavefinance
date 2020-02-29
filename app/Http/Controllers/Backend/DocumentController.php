@@ -36,17 +36,20 @@ class DocumentController extends Controller
             $arrFileData = $request->all();
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
-            $userData = User::getUserByAppId($appId);
+            $userData = User::getUserByAppId($appId);                        
             $allProductDoc = [];
             $docData = [];
             $requiredDocs = [];
             $docFlag = 0;
-            $appProduct = $this->appRepo->getAppProducts($appId);
-            // dd($appProduct);
+            $appProduct = $this->appRepo->getApplicationProduct($appId);
+            
+            $docTypes = config('common.doc_type');            
+                                  
             if ($appId > 0) {
-                foreach ($appProduct as $key => $value) {
-                    $requiredDocs[$key]['productInfo'] = $value->programLimit->product;
-                    $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->programLimit->product_id);
+                foreach ($appProduct->products as $key => $value) {
+                    $requiredDocs[$key]['productInfo'] = $value;
+                    $requiredDocs[$key]['documents'] = $this->docRepo->findPPRequiredDocs($userData->user_id, $appId, $value->id);
+                    // dd($requiredDocs);
                     if($requiredDocs[$key]['documents']->count() != 0){
                         $docData += $this->docRepo->appPPDocuments($requiredDocs[$key]['documents'], $appId);
                     }
@@ -55,13 +58,14 @@ class DocumentController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-            
+
+                        
             foreach($requiredDocs as $key => $product) {
                 if($product['documents']->count() > 0 ) {
                     $docFlag ++;
                 }
-            }
-                
+            }                
+
             return view('backend.document.list', [
                 'requiredDocs' => $requiredDocs,
                 'documentData' => $docData,
@@ -69,6 +73,7 @@ class DocumentController extends Controller
                 'app_id' => $appId,
                 'biz_id' => $bizId,
                 'docFlag' => $docFlag,
+                'docTypes' => $docTypes
             ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

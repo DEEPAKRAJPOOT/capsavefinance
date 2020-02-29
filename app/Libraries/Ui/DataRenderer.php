@@ -2204,6 +2204,7 @@ class DataRenderer implements DataProviderInterface
             '1' => 'Onboarding',
             '2' => 'Pre Sanction',
             '3' => 'Post Sanction',
+            '4' => 'Pre Offer',
         );
         return DataTables::of($documents)
                 ->rawColumns(['is_active'])

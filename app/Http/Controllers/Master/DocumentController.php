@@ -53,21 +53,22 @@ class DocumentController extends Controller {
             $filter['filter_product_type'] = $request->filter_product_type;
             $filter['filter_doc_type_id'] = $request->filter_doc_type_id;
             $filter['filter_search_keyword'] = $request->filter_search_keyword;
-            // dd($filter);
+             
             $status = false;
             $document_id = false;
+            $productsIds = isset($arrDocumentsData['product_ids']) ? $arrDocumentsData['product_ids'] : [];
             if(!empty($request->get('id'))){
                 $document_id = preg_replace('#[^0-9]#', '', $request->get('id'));
                 $document_data = $this->masterRepo->findDocumentById($document_id);
                 if (!empty($document_data)) {
                     $arrDocumentsData['updated_by'] = Auth::user()->user_id;
                     $status = $this->masterRepo->updateDocuments($arrDocumentsData, $document_id);
-                    $result = $this->masterRepo->updateProductDocuments($arrDocumentsData['product_ids'], $document_id);
+                    $result = $this->masterRepo->updateProductDocuments($productsIds, $document_id);
                 }
             }else{
                $arrDocumentsData['created_by'] = Auth::user()->user_id;
                $status = $this->masterRepo->saveDocuments($arrDocumentsData); 
-               $result = $this->masterRepo->updateProductDocuments($arrDocumentsData['product_ids'], $status->id);
+               $result = $this->masterRepo->updateProductDocuments($productsIds, $status->id);
             }
             if($result){
                 Session::flash('message', $document_id ? trans('master_messages.documents_edit_success') :trans('master_messages.documents_add_success'));

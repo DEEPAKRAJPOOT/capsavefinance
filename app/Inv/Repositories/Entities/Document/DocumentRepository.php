@@ -118,12 +118,15 @@ class DocumentRepository implements DocumentInterface
     
     public function findPPRequiredDocs($userId, $appId, $productId){
         $result = AppDocument::where('user_id', $userId)
+                ->join('product_doc', 'product_doc.doc_id', '=', 'app_doc.doc_id') 
                 ->where('app_id', $appId)
-                ->whereHas('app_doc_product', function ($query) use ($productId) {
-                    $query->where(function ($q) use ($productId) {
-                        $q->where('product_id', $productId);
-                    });
-                })
+                ->where('product_doc.is_active', 1)
+                ->where('product_doc.product_id', $productId)
+                //->whereHas('app_doc_product', function ($query) use ($productId) {
+                //    $query->where(function ($q) use ($productId) {
+                //        $q->where('product_id', $productId);
+                //    });
+                //})
                 ->with('ppDocument')
                 ->whereHas('ppDocument')
                 ->get();

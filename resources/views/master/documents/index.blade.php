@@ -61,7 +61,8 @@
 				[	''=>'Document Type', 
 					'1' => 'On Boarding', 
 					'2' => 'Pre Sanction', 
-					'3' => 'Post	 Sanction'
+					'3' => 'Post	 Sanction',
+                                        '4' => 'Pre Offer'
 				],
 				(isset($filter['filter_doc_type_id'])) ? $filter['filter_doc_type_id'] : null,
 				array('id' => 'doc_type_id',

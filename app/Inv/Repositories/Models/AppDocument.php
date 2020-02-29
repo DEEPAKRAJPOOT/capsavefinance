@@ -72,7 +72,7 @@ class AppDocument extends BaseModel
     public function ppDocument()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Documents', 'doc_id')
-            ->whereIn('doc_type_id', [2,3]);
+            ->whereIn('doc_type_id', [2,3,4]);
     }
     
     /**

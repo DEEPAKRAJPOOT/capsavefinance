@@ -113,5 +113,11 @@ return [
     ],
     /*'SEND_MAIL_ACTIVE'=>1,
     'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com", "dhriti.barman@capsavefinance.com", "vinay.agarwal@capsavefinance.com", "vilesh.modi@rentalpha.com"],*/
+    'doc_type' => [
+        '1' => 'On Boarding',
+        '2' => 'Pre Sanction',
+        '3' => 'Post Sanction',
+        '4' => 'Pre Offer'        
+    ]
 ];
  
