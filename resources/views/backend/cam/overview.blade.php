@@ -165,9 +165,9 @@
                                              <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                          @endif    
                                      <div class="d-flex">
-                                        @if($arr['proposed_exposure'] > 0)
-                                          <input type="text" name="proposed_exposure[]" maxlength="20" class="form-control  calTotalExposure float_format proposed_exposureInput"  value="{{($arr['proposed_exposure'] > 0) ? $arr['proposed_exposure'] : ''}}" placeholder="Proposed Limit (In Mn)" />
-                                        @endif  
+                                        
+                                          <input type="{{($arr['proposed_exposure'] > 0) ? 'text' : 'hidden' }}" name="proposed_exposure[]" maxlength="20" class="form-control  calTotalExposure float_format proposed_exposureInput"  value="{{($arr['proposed_exposure'] > 0) ? $arr['proposed_exposure'] : ''}}" placeholder="Proposed Limit (In Mn)" />
+                                        
                                            @if($loop->first)
                                                 <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
                                            @else
@@ -486,10 +486,10 @@
              success: function (data) {  
               $.each(data, function(i, arr) {
                 let symbol_rs = '';
-                let proposed_exposure_html = '';
+                let proposed_exposure_html = 'hidden';
                 if(arr.proposed_exposure > 0){
                     symbol_rs ='<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>';
-                    proposed_exposure_html = '<input type="text" name="proposed_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.proposed_exposure+'" placeholder="Proposed Exposure (In Mn)" required autocomplete="off">';
+                    proposed_exposure_html = 'text';
                 }
                     let ptpq_block ='<div class="row mt10 toRemoveDiv">'+
                                         '<input type="hidden" name="group_company_expo_id[]" class="form-control" value="'+arr.group_company_expo_id+'" placeholder="Group Company group_company_expo_id" /><div class="col-md-4">'+
@@ -507,8 +507,8 @@
                                         '<div class="col-md-2 center INR">'
                                              +symbol_rs+ 
                                              '<div class="d-flex">' 
-                                              +proposed_exposure_html+
-                                             '<i class="fa fa-2x fa-times-circle remove-ptpq-block ml-2" style="color: red;"></i></div>'+
+                                              +'<input type='+proposed_exposure_html+' name="proposed_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.proposed_exposure+'" placeholder="Proposed Exposure (In Mn)" required autocomplete="off">'
+                                             +'<i class="fa fa-2x fa-times-circle remove-ptpq-block ml-2" style="color: red;"></i></div>'+
                                         '</div>'+
                                     '</div>';
                     $('#ptpq-block').append(ptpq_block);
