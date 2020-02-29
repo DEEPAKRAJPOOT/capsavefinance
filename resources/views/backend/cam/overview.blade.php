@@ -146,14 +146,14 @@
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
                                     @endif
-                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '40px;': '9px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                      <input type="text" name="sanction_limit[]" class="form-control calTotalExposure float_format" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3 INR">
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
                                     @endif
-                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '40px;': '9px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                      <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']: '' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-2 center INR">
@@ -161,7 +161,7 @@
                                         <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
                                     @endif
                                          @if($arr['proposed_exposure'] > 0)
-                                             <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '40px;': '9px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                             <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                          @endif    
                                      <div class="d-flex">
                                         @if($arr['proposed_exposure'] > 0)
@@ -188,17 +188,17 @@
                                 </div>
                                 <div class="col-md-3 mt-4 INR">
                                         <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
-                                        <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
+                                        <a href="javascript:void(0);" class="verify-owner-no" style="top:28px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
                                          <input type="text" name="sanction_limit[]" class="form-control float_format" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3 mt-4 INR">
                                      <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
-                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:28px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                      <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
                                 </div>
                                 <div class="col-md-2 mt-4 INR">
                                      <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
-                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:39px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:28px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                      <div class="d-flex">
                                           <input type="text" name="proposed_exposure[]" maxlength="20" class="form-control  calTotalExposure float_format proposed_exposureInput"  value="" placeholder="Proposed Limit (In Mn)" />
                                            <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
@@ -216,7 +216,7 @@
                             </div>
                             <div class="col-md-6 "></div>
                              <div class="col-md-3 INR">
-                                <a href="javascript:void(0);" class="verify-owner-no" style="top:10px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                <a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                   <input type="text" class="form-control " name="total_exposure" value="{{($arrCamData &&  $arrCamData->total_exposure_amount > 0) ? $arrCamData->total_exposure_amount : ''}}" readonly />
                             </div>
                         </div>
@@ -424,11 +424,11 @@
                 '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required>'+
             '</div>'+
             '<div class="col-md-3 INR">'+
-                '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="sanction_limit[]" class="form-control " value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-3 INR">'+
-                '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-2 center">'+
@@ -487,7 +487,7 @@
                 let symbol_rs = '';
                 let proposed_exposure_html = '';
                 if(arr.proposed_exposure > 0){
-                    symbol_rs ='<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>';
+                    symbol_rs ='<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>';
                     proposed_exposure_html = '<input type="text" name="proposed_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.proposed_exposure+'" placeholder="Proposed Exposure (In Mn)" required autocomplete="off">';
                 }
                     let ptpq_block ='<div class="row mt10 toRemoveDiv">'+
@@ -495,11 +495,11 @@
                                             '<input type="text" name="group_company_name[]" class="form-control" value="'+arr.group_company_name+'" placeholder="Group Company" required>'+
                                         '</div>'+
                                         '<div class="col-md-3 INR">'+
-                                            '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                            '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                                             '<input type="text" name="sanction_limit[]" class="form-control float_format" value="'+arr.sanction_limit+'" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
                                         '</div>'+
                                         '<div class="col-md-3 INR">'+
-                                            '<a href="javascript:void(0);" class="verify-owner-no" style="top:9px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                            '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                                             '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.outstanding_exposure+'" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
                                         '</div>'+
 
