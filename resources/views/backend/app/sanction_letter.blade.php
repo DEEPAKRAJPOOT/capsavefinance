@@ -10,7 +10,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
-                    @if($enabled ?? false)
+                    @if($enabled ?? true)
                         <style>
                           h5{ 
                             margin:0px;
@@ -74,17 +74,19 @@
                               <td><b>To</b></td>
                            </tr>
                            <tr>
-                              <td>XYZ</td>
+                              <td>{{$supplyChaindata['ConcernedPersonName']}}</td>
                            </tr>
                            <tr>
-                              <td>RentAlpha</td>
+                              <td>{{$supplyChaindata['EntityName']}}</td>
                            </tr>
                            <tr>
-                              <td>Delhi</td>
+                              <td>{{$supplyChaindata['Address']}}</td>
                            </tr>
-                           <tr><tdxyz@gmail.comtd></tr>
                            <tr>
-                              <td>8569589856</td>
+                            <td>{{$supplyChaindata['EmailId']}}</td>
+                          </tr>
+                           <tr>
+                              <td>{{$supplyChaindata['MobileNumber']}}</td>
                            </tr>
                         </table>
                         <table  class="table table-border"  cellpadding="0" cellspacing="0">
@@ -118,11 +120,17 @@
                               </tr>
                               <tr>
                                  <td width="33.33%">Purpose</td>
-                                 <td width="66.66%" colspan="3">..</td>
+                                 <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
                               </tr>
                               <tr>
-                                 <td width="33.33%">Expiry of Limit</td>
-                                 <td width="66.66%" colspan="3">..</td>
+                                  <td width="33.33%">Expiry of Limit</td>
+                                  <td width="66.66%" colspan="3">Limit will be valid for 1 year from date of 
+                                  <select class="select">
+                                       <option>Choose an Item</option>
+                                       <option>date of sanction letter</option>
+                                       <option>date of first disbusrement</option>
+                                  </select>(Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
+                                  </td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Investment Payment Frequency</td>

@@ -188,4 +188,8 @@ class Cam extends BaseModel
         ]);
         return $updateCamData ? true : false;
     }
+
+    public static function getCamDataByBizAppId($bizId, $appId){
+        return Cam::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
+    }
 }
