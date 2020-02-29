@@ -106,6 +106,7 @@
                            </tbody>
                         </table>
                         <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
+                        
                         <!-- Vender Program -->
                         @if($supplyChaindata['prgm_type'] == 2) 
                         <table  class="table table-border"  cellpadding="0" cellspacing="0">
@@ -252,7 +253,13 @@
                               </tr>
                               <tr>
                                  <td width="33.33%">Expiry of Limit</td>
-                                 <td width="66.66%" colspan="3">..</td>
+                                 <td width="66.66%" colspan="3">Limit will be valid for 1 year from date of 
+                                      <select class="select">
+                                           <option>Choose an Item</option>
+                                           <option>date of sanction letter</option>
+                                           <option>date of first disbusrement</option>
+                                      </select>(Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
+                                  </td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Investment Payment Frequency</td>

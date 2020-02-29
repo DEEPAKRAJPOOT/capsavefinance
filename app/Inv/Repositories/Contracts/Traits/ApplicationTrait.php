@@ -205,10 +205,12 @@ trait ApplicationTrait
         $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
 
         $supplyChainOfferData = $this->appRepo->getAppProducts($appId);
-        if (!empty($supplyChainOfferData)) {
-           $supplyChainOfferData = $supplyChainOfferData[0];
+        $ProgramData = $supplyChainOffer = [];
+        if ($supplyChainOfferData->count()) {
+            $supplyChainOfferData = $supplyChainOfferData[0];
+            $supplyChainOffer = array_merge($supplyChainOfferData->programLimit->toArray(),$supplyChainOfferData->toArray());
+            $ProgramData = $this->appRepo->getProgramData(['prgm_id' => $supplyChainOffer['prgm_id']]);
         }
-        $supplyChainOffer = array_merge($supplyChainOfferData->programLimit->toArray(),$supplyChainOfferData->toArray());
         $CommunicationAddress = '';
         if (!empty($bizData->address[1])) {
             $AddressData = $bizData->address[1];
@@ -218,14 +220,13 @@ trait ApplicationTrait
             }
             $CommunicationAddress = $AddressData->addr_1 . ' '. $AddressData->city_name .' '.  $stateName   .' '. $AddressData->pin_code;
         }
-        $ProgramData = $this->appRepo->getProgramData(['prgm_id' => $supplyChainOffer['prgm_id']]);
         $data['ConcernedPersonName'] = $CamData['operational_person'];
         $data['purpose'] = $CamData['t_o_f_purpose'];
         $data['EntityName'] = $bizData['biz_entity_name'];
         $data['Address'] = $CommunicationAddress;
         $data['EmailId'] = $EntityData['email'];
         $data['MobileNumber'] = $EntityData['mobile_no'];
-        $data['limit_amt'] = $supplyChainOffer['limit_amt'];
+        $data['limit_amt'] = $supplyChainOffer['limit_amt'] ?? 0;
         $data['prgm_type'] = $ProgramData['prgm_type'] ?? 0;
         $data['product_name'] = $ProgramData['product_name'] ?? 0;
         return $data;
