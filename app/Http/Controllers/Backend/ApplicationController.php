@@ -1064,9 +1064,7 @@ class ApplicationController extends Controller
         } 
         $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
         $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
-        return view('backend.app.sanction_letter')->with($data)->with([
-                                                                        'supplyChaindata'=>$supplyChaindata
-                                                                      ]);   
+        return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata]);   
     }
 
    /* For Promoter pan verify iframe model    */

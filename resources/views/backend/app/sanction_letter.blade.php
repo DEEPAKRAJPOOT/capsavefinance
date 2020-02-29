@@ -116,7 +116,7 @@
                               </tr>
                               <tr>
                                  <td width="33.33%">Facility Amount</td>
-                                 <td width="66.66%" colspan="3">..</td>
+                                 <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
                               </tr>
                               <tr>
                                  <td width="33.33%">Purpose</td>
