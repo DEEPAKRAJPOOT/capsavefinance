@@ -31,114 +31,110 @@
                <div class="col-md-12 data mt-4 ">
                      <h2 class="sub-title bg">Deal Structure</h2>
                         @forelse($leaseOfferData as $key=>$leaseOffer)
-                           <div class="pl-4 pr-4 pb-4 pt-2">
-                              <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-                                 <thead>
-                                    <tr role="row">
-                                       <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
-                                       <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Particulars</th>
-                                    </tr>
-                                 </thead>
-                                 <tbody>
-                                   
-                                    
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Facility Type</b></td>
-                                       <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
-                                    </tr>
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Equipment Type</b></td>
-                                       <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
-                                    </tr>
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Limit Of The Equipment</b></td>
-                                       <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} 
-                                             </td>
-                                    </tr>
-                                 
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Tenor (Months)</b></td>
-                                       <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
-                                    </tr>
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Security Deposit</b></td>
-                                       <td class="">  
-                                          @if($leaseOffer->facility_type_id == 3)
-                                             NILL
-                                          @else
-                                             {{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
-                                          @endif
-                                       </td>
-                                    </tr>
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Rental Frequency</b></td>
-                                       <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
-                                    </tr>
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Pricing Per Thousand</b></td>
-                                       <td class="">
-                                          @php 
-                                             $i = 1;
-                                             if(!empty($leaseOffer->offerPtpq)){
-                                             $total = count($leaseOffer->offerPtpq);
-                                          @endphp   
-                                             @foreach($leaseOffer->offerPtpq as $key => $arr) 
-
-                                                   @if ($i > 1 && $i < $total)
-                                                   ,
-                                                   @elseif ($i > 1 && $i == $total)
-                                                      and
-                                                   @endif
-                                                   {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
-                                                   @php 
-                                                      $i++;
-                                                   @endphp     
-                                             @endforeach
+                             <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+                                <thead>
+                                   <tr role="row">
+                                      <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="30%">Criteria</th>
+                                      <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Particulars</th>
+                                   </tr>
+                                </thead>
+                                <tbody>
+                                   <tr role="row" class="odd">
+                                      <td class=""><b>Facility Type</b></td>
+                                      <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
+                                   </tr>
+                                   <tr role="row" class="odd">
+                                      <td class=""><b>Equipment Type</b></td>
+                                      <td class="">{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+                                   </tr>
+                                   <tr role="row" class="odd">
+                                      <td class=""><b>Limit Of The Equipment</b></td>
+                                      <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} 
+                                            </td>
+                                   </tr>
+                                
+                                   <tr role="row" class="odd">
+                                      <td class=""><b>Tenor (Months)</b></td>
+                                      <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
+                                   </tr>
+                                   @if($leaseOffer->facility_type_id != 3)
+                                     <tr role="row" class="odd">
+                                        <td class=""><b>Security Deposit</b></td>
+                                        <td class="">  
+                                               {{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
+                                        </td>
+                                     </tr>
+                                   @endif
+                                   <tr role="row" class="odd">
+                                      <td class=""><b>Rental Frequency</b></td>
+                                      <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
+                                   </tr>
+                                   @if($leaseOffer->facility_type_id != 3)
+                                       <tr role="row" class="odd">
+                                          <td class=""><b>Pricing Per Thousand</b></td>
+                                          <td class="">
                                              @php 
-                                                }
-                                             @endphp 
-                                       </td>
-                                    </tr>
-                                    <tr role="row" class="odd">
-                                       <td class="" valign="top"><b>{{($leaseOffer->facility_type_id == 3)? 'Rental Discounting' : 'XIRR'}} (%)</b></td>
-                                       <td class="" valign="top">
+                                                $i = 1;
+                                                if(!empty($leaseOffer->offerPtpq)){
+                                                $total = count($leaseOffer->offerPtpq);
+                                             @endphp   
+                                                @foreach($leaseOffer->offerPtpq as $key => $arr) 
+
+                                                      @if ($i > 1 && $i < $total)
+                                                      ,
+                                                      @elseif ($i > 1 && $i == $total)
+                                                         and
+                                                      @endif
+                                                      {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+
+                                                      @php 
+                                                         $i++;
+                                                      @endphp     
+                                                @endforeach
+                                                @php 
+                                                   }
+                                                @endphp 
+                                          </td>
+                                       </tr>
+                                   @endif
+                                   <tr role="row" class="odd">
+                                      <td class="" valign="top"><b>{{($leaseOffer->facility_type_id == 3)? 'Rental Discounting' : 'XIRR'}} (%)</b></td>
+                                      <td class="" valign="top">
                                           @if($leaseOffer->facility_type_id == 3)
                                              {{$leaseOffer->discounting}}%
                                           @else
                                              <b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%
                                           @endif
-                                       </td>
-                                    </tr>
-                                    
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Additional Security</b></td>
-                                       <td class="">
-                                          @php
-                                            $add_sec_arr = '';
-                                            if(isset($leaseOffer->addl_security) && $leaseOffer->addl_security !=''){
-                                                $addl_sec_arr = explode(',', $leaseOffer->addl_security);
-                                                foreach($addl_sec_arr as $k=>$v){
-                                                    $add_sec_arr .= config('common.addl_security')[$v].', ';
-                                                }
-                                            }
-                                            if($leaseOffer->comment != '' && $leaseOffer->addl_security !=''){
-                                                $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
-                                            }else{
-                                                $add_sec_arr .= $leaseOffer->comment;
-                                            }
-                                            @endphp 
-                                            {!! trim($add_sec_arr,', ') !!}
-                                       </td>
-                                    </tr>
-                                 </tbody>
-                              </table>
-                           </div>
-
-                           @empty
-                              <div class="pl-4 pr-4 pb-4 pt-2">
-                                  <p>No Offer Found</p>
-                              </div>
-                        @endforelse
+                                      </td>
+                                   </tr>
+                                   
+                                   <tr role="row" class="odd">
+                                      <td class=""><b>Additional Security</b></td>
+                                      <td class="">
+                                         @php
+                                           $add_sec_arr = '';
+                                           if(isset($leaseOffer->addl_security) && $leaseOffer->addl_security !=''){
+                                               $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                                               foreach($addl_sec_arr as $k=>$v){
+                                                   $add_sec_arr .= config('common.addl_security')[$v].', ';
+                                               }
+                                           }
+                                           if($leaseOffer->comment != '' && $leaseOffer->addl_security !=''){
+                                               $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                                           }else{
+                                               $add_sec_arr .= $leaseOffer->comment;
+                                           }
+                                           @endphp 
+                                           {!! trim($add_sec_arr,', ') !!}
+                                      </td>
+                                   </tr>
+                                </tbody>
+                             </table>
+                          @empty
+                             <div class="pl-4 pr-4 pb-4 pt-2">
+                                 <p>No Offer Found</p>
+                             </div>
+                       @endforelse
                </div>
 
                <div class="col-md-12 mt-4">
