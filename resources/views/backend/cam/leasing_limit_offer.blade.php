@@ -273,6 +273,7 @@
     unsetError('input[name=cash_flow_xirr]');
     unsetError('input[name=discounting]');
     unsetError('input[name=processing_fee]');
+    unsetError('textarea[name=comment]');
     unsetError('#check_block');
     unsetError('#radio_block');
 
@@ -332,11 +333,6 @@
         flag = false;
     }
 
-    if(security_deposit_of == ''){
-        setError('select[name=security_deposit_of]', 'Please select security deposit type');
-        flag = false;
-    }
-
     if(rental_frequency == ''){
         setError('select[name=rental_frequency]', 'Please select rental frequency');
         flag = false;
@@ -393,7 +389,6 @@
         });
     }
 
-//-------------
     if(facility_type_id != 3){
         if(typeof security_deposit_type == 'undefined'){
             setError('#radio_block', 'Please select security deposit type');
@@ -408,6 +403,11 @@
             flag = false;
         }else if((security_deposit_type == 1) && (parseInt(security_deposit) != security_deposit)){
             setError('input[name=security_deposit]', 'Please fill correct security deposit amount');
+            flag = false;
+        }
+
+        if(security_deposit_of == ''){
+            setError('select[name=security_deposit_of]', 'Please select security deposit type');
             flag = false;
         }
 
@@ -436,7 +436,6 @@
         }
 
     }
-//--------------
 
     if(processing_fee == '' || isNaN(processing_fee)){
         setError('input[name=processing_fee]', 'Please fill processing fee');
