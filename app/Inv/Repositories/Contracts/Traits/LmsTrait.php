@@ -85,8 +85,10 @@ trait LmsTrait
             $overDueInterestDate = $this->addDays($invoiceDueDate, 1);
             $reculateInterest = false;
             while (strtotime($intAccrualDt) <= strtotime($currentDate)) {
-                $interestRate = $disburse->interest_rate;
+
+
                 
+                $interestRate = $disburse->interest_rate;
                 if ($intAccrualDt > $gracePeriodDate && $balancePrincipalAmt > 0) {
                     $interestRate = $overdueIntRate;
                     $reculateInterest = true;
@@ -492,7 +494,7 @@ trait LmsTrait
         ->offset($offset)->limit(1)->first();
     }
 
-    protected function InvoiceKnockOff($transId){
+    protected function invoiceKnockOff($transId){
 
 
         $transDetail = Transactions::whereIn('is_settled',[0,1])->where(['trans_id'=>$transId,'trans_type'=>17])->get()->first();
@@ -613,15 +615,15 @@ trait LmsTrait
                         $disbursal['interest_refund'] = $interestRefund;
                     }
                     
-                    $invoiceRepayment['user_id'] = $transDetail['user_id'];
-                    $invoiceRepayment['invoice_id'] = $disbursalDetail->invoice_id;
-                    $invoiceRepayment['repaid_amount'] = round($disbursal['total_repaid_amt'],2);
-                    $invoiceRepayment['repaid_date'] = $transDetail['trans_date'];
-                    
                     $disbursal['settlement_amount'] = $disbursal['total_repaid_amt']-$interestOverdue;
                     $disbursal['accured_interest'] = $accured_interest;
                     $disbursal['penalty_amount'] = $penalAmount;
                     $disbursal['penal_days'] = $penalDays;
+
+                    $invoiceRepayment['user_id'] = $transDetail['user_id'];
+                    $invoiceRepayment['invoice_id'] = $disbursalDetail->invoice_id;
+                    $invoiceRepayment['repaid_amount'] = round($disbursal['settlement_amount'],2);
+                    $invoiceRepayment['repaid_date'] = $transDetail['trans_date'];
                     
                     $this->lmsRepo->saveRepayment($invoiceRepayment);
                     $this->lmsRepo->saveDisbursalRequest($disbursal, ['disbursal_id' => $disbursalDetail->disbursal_id]);
