@@ -201,7 +201,7 @@
                   @endforeach
                @else
                   <tr role="row" class="odd">
-                     <td class="">
+                     <td colspan="2">
                         <p>No Record Found.</p> 
                         
                      </td> 
@@ -238,7 +238,7 @@
                   @endforeach
                @else
                   <tr role="row" class="odd">
-                     <td class="">
+                     <td class="" colspan="2">
                         <p>No Record Found.</p> 
                         
                      </td> 
