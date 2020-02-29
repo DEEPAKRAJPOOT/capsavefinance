@@ -125,6 +125,7 @@
                             <div class="col-md-2">
                                 <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/ style="padding: -;position:absolute; right: 17px;" >
                             </div>
+                            <span  class="group_nameId" style="color:red;"></span>
                             
                         </div>
                      </div>   
@@ -140,7 +141,7 @@
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Borrower</b></label>
                                     @endif
-                                    <input type="text" name="group_company_name[]" class="form-control" value="{{$arr['group_company_name'] ?? ''}}" placeholder="Group Company" {{($loop->first)? 'readonly': ''}} />
+                                    <input type="text" name="group_company_name[]" class="form-control" value="{{$arr['group_company_name'] ?? ''}}" placeholder="Group Company" />
                                 </div>
                                 <div class="col-md-3 INR">
                                     @if($loop->first)
@@ -183,7 +184,7 @@
                                 <input type="hidden" name="group_company_expo_id[]" class="form-control" value="" placeholder="Group Company" />
                                 <div class="col-md-4 mt-4">
                                      <label for="txtPassword"><b>Borrower</b></label>
-                                    <input type="text" class="form-control" name="group_company_name[]" value="{{$arrBizData->biz_entity_name}}" readonly/>
+                                    <input type="text" class="form-control" name="group_company_name[]" value="{{$arrBizData->biz_entity_name}}" />
                                     
                                 </div>
                                 <div class="col-md-3 mt-4 INR">
@@ -539,12 +540,14 @@ return false;
 
 
 $(document).on('submit', '#camForm', function(e) {
+   $('.group_nameId').text(" ");
    $filledInput = 0;
    $('#ptpq-block input').each(function () {
       if ($(this).val()) $filledInput++;
    })
    if ($filledInput > 1 && !$('input[name="group_company"]').val()) {
-       $('input[name="group_company"]').closest('div').after('<span style="color:red"> Group Name is required.</span>');
+       $('.group_nameId').text("Group Name is required.");
+       
        $('input[name="group_company"]').focus();
        return false;
    }
