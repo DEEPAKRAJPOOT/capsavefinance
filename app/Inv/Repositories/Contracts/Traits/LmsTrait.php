@@ -488,11 +488,11 @@ trait LmsTrait
     
 
     protected function getInvoice($userId, $offset, $transDate){
-        $userInvoiceDetails = Disbursal::where(['user_id'=>$userId])
+        return Disbursal::where(['user_id'=>$userId])
         ->whereIn('status_id',[13,12])
         ->where('int_accrual_start_dt', '<=', DB::raw("DATE('".$transDate."')"))
         ->orderBy('inv_due_date','asc')
-        ->orderBy('	disbursal_id','asc')
+        ->orderBy('disbursal_id','asc')
         ->offset($offset)->limit(1)->first();
     }
 
@@ -515,10 +515,21 @@ trait LmsTrait
                 ->whereIn('status_id',[13,12])
                 ->count();
 
-            while ($trans['balance_amount']>0 && $disbursalCount>$offset)
-            {
+            
+            $disbursalData =  Disbursal::where(['user_id'=>$transDetail['user_id']])
+                ->whereIn('status_id',[13,12])
+                ->where('int_accrual_start_dt', '<=', DB::raw("DATE('".$transDetail['trans_date']."')"))
+                ->orderBy('inv_due_date','asc')
+                ->orderBy('disbursal_id','asc')
+                ->get();
 
-                $disbursalDetail = $this->getInvoice($transDetail['user_id'], $offset, $transDetail['trans_date']);
+
+            // while ($trans['balance_amount']>0 && $disbursalData->count()>$offset)
+            // {
+            //     $disbursalDetail = $this->getInvoice($transDetail['user_id'], $offset, $transDetail['trans_date']);
+                
+            foreach ($disbursalData as $key => $disbursalDetail) {
+                 
                 if($disbursalDetail->count()>0)
                 {
                     $offset++;
@@ -537,13 +548,13 @@ trait LmsTrait
                     $penalDays = $disbursalDetail
                                     ->interests
                                     ->where('interest_date', '<=', DB::raw("DATE('".$trans['trans_date']."')"))
-                                    ->whereNotNull('overdue_interest_rate')
+                                    ->where('overdue_interest_rate','!=', NULL)
                                     ->count();
                     
                     $penalAmount = $disbursalDetail
                                     ->interests
                                     ->where('interest_date', '<=', DB::raw("DATE('".$trans['trans_date']."')"))
-                                    ->whereNotNull('overdue_interest_rate')
+                                    ->where('overdue_interest_rate','!=', NULL)
                                     ->sum('accrued_interest');
                             
                     $disbursal = [
@@ -586,14 +597,14 @@ trait LmsTrait
                     {
                         if($trans['balance_amount']>=$balancePrincipalAmt)
                         {
-                            $trans['balance_amount'] -= $balancePrincipalAmt;
                             $disbursal['total_repaid_amt'] += $balancePrincipalAmt;
+                            $trans['balance_amount'] -= $balancePrincipalAmt;
                             $is_inv_settled = 2;
                             $disbursal['status_id'] = '15';
                         }else
                         {
-                            $trans['balance_amount'] -= $trans['balance_amount'];
                             $disbursal['total_repaid_amt'] += $trans['balance_amount'];
+                            $trans['balance_amount'] -= $trans['balance_amount'];
                             $is_inv_settled = 1;
                         }
                     }
@@ -632,27 +643,29 @@ trait LmsTrait
                     
                     if($disbursal['settlement_amount']>0)
                     {
-                        $knockOffData = $this->createTransactionData($transDetail['user_id'], ['amount' => $disbursal['settlement_amount']], null, 30, 0);
+                        $knockOffData = $this->createTransactionData($transDetail['user_id'], ['amount' => $disbursal['settlement_amount'],'trans_date'=>$transDetail['trans_date']], null, 30, 0);
                         $this->lmsRepo->saveTransaction($knockOffData);
                     }
 
                     if($interestOverdue>0)
                     {
-                        $overdueData = $this->createTransactionData($transDetail['user_id'], ['amount' => $interestOverdue], null, 19, 0);
+                        $overdueData = $this->createTransactionData($transDetail['user_id'], ['amount' => $interestOverdue,'trans_date'=>$transDetail['trans_date']], null, 19, 0);
                         $this->lmsRepo->saveTransaction($overdueData);
                     }
                     
                     if($interestRefund>0)
                     { 
-                        $refundData = $this->createTransactionData($transDetail['user_id'], ['amount' => $interestRefund], null, 9, 1);
+                        $refundData = $this->createTransactionData($transDetail['user_id'], ['amount' => $interestRefund,'trans_date'=>$transDetail['trans_date']], null, 9, 1);
                         $this->lmsRepo->saveTransaction($refundData);
                     }   
                 }
+
+                if($trans['balance_amount']<=0) break;
             }
 
             if($trans['balance_amount']>0)
             { 
-                $paymentReverseData = $this->createTransactionData($transDetail['user_id'], ['amount' => $trans['balance_amount']], null, 2, 1);
+                $paymentReverseData = $this->createTransactionData($transDetail['user_id'], ['amount' => $trans['balance_amount'],'trans_date'=>$transDetail['trans_date']], null, 2, 1);
                 $this->lmsRepo->saveTransaction($paymentReverseData);
             }
 
@@ -795,7 +808,7 @@ trait LmsTrait
         $transactionData['soa_flag'] = 1;
         $transactionData['user_id'] = $userId ?? null;
         $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
-        $transactionData['trans_date'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $transactionData['trans_date'] = ($data['trans_date'])?$data['trans_date']:\Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $transactionData['trans_type'] = $transType ?? 0;
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['amount'] = $data['amount'] ?? 0;
