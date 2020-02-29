@@ -3678,7 +3678,7 @@ if ($err) {
 
     public function getGroupCompanyExposure(Request $request ){
         $groupId = $request->get('groupid');
-        $arrData = GroupCompanyExposure::where("group_Id", $groupId)->groupBy('group_company_name')->get();
+        $arrData = GroupCompanyExposure::where(['group_Id'=>$groupId, 'is_active'=>1])->groupBy('group_company_name')->get();
         return response()->json($arrData);
     }
 
