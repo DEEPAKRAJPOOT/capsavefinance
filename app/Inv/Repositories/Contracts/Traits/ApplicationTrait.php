@@ -226,8 +226,8 @@ trait ApplicationTrait
         $data['EmailId'] = $EntityData['email'];
         $data['MobileNumber'] = $EntityData['mobile_no'];
         $data['limit_amt'] = $supplyChainOffer['limit_amt'];
-        $data['prgm_type'] = $ProgramData['prgm_type'];
-        $data['product_name'] = $ProgramData['product_name'];
+        $data['prgm_type'] = $ProgramData['prgm_type'] ?? 0;
+        $data['product_name'] = $ProgramData['product_name'] ?? 0;
         return $data;
     }
 }
