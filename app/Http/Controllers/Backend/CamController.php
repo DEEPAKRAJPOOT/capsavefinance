@@ -1644,7 +1644,6 @@ class CamController extends Controller
             $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
             $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
           }
-          $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
         }
 
         if($request->facility_type_id != 3){
