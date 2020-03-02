@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Http\Requests\Backend\CreateJeConfigRequest;
+use App\Http\Requests\Backend\CreateJiConfigRequest;
 
 class FinanceController extends Controller {
 
@@ -15,6 +16,7 @@ class FinanceController extends Controller {
     private $transType = [];
     private $variables = [];    
     private $journals = [];  
+    private $accounts = [];
     private $inputData = [];
 
     public function __construct(FinanceInterface $finRepo) {
@@ -81,11 +83,49 @@ class FinanceController extends Controller {
         }
     }
 
-    public function addJiConfig() {
-        try {            
-            return view('backend.finance.ji_config');
+    public function addJiConfig(Request $request) {
+        try {   
+            $transConfigId = $request->get('trans_config_id');
+            $journalId = $request->get('journal_id');
+            $jeConfigId = $request->get('je_config_id');       
+            $this->accounts = $this->finRepo->getAllAccount()->get();      
+            $jeConfigData = $this->finRepo->getJeConfigByjeConfigId($jeConfigId);       
+            //dd($this->accounts); 
+            if(isset($jeConfigData->je_config_id) && !empty($jeConfigData->je_config_id)) {
+                $this->variables = explode(',', $jeConfigData->variable_name);
+            }
+            return view('backend.finance.ji_config')
+                ->with([
+                'jeConfigId'=> $jeConfigId,
+                'variables'=> $this->variables,
+                'accounts' => $this->accounts
+                ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }       
+    }
+
+    public function saveJiConfig(CreateJiConfigRequest $request) {
+        try {
+            $this->inputData = [];
+            $this->inputData = [                
+                'account_id'=>$request->get('account'),
+                'is_partner'=>$request->get('is_partner'),
+                'label'=>$request->get('label'),                
+                'value_type'=>$request->get('value_type'),
+                'config_value'=>$request->get('config_value'),
+                'je_config_id'=>$request->get('je_config_id')
+            ];
+            $outputQryJi = $this->finRepo->saveJiData($this->inputData);
+            if(isset($outputQryJi->ji_config_id)) {
+                Session::flash('message','Journal item saved successfully');
+                return redirect()->back();
+            } else {
+                Session::flash('error','Journal item not saved, Please try later.');
+                return redirect()->back();
+            }            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 }

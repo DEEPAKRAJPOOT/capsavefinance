@@ -6,49 +6,104 @@
          Form::open(
          array(
          'method' => 'post',
-         'route' => 'save_je_config',
-         'id' => 'frmJeConfig',
+         'route' => 'save_ji_config',
+         'id' => 'frmJiConfig',
          )
          ) 
-   !!}   
+   !!}  
+   <input type="hidden" name="je_config_id" value="{{$jeConfigId}}" /> 
    <div class="row align-items-center">
          <div class="col-md-2">
             <div class="form-group">
-               <label class="mb-0">Transaction Type</label>
+               <label class="mb-0">Label</label>
                <span class="mandatory">*</span>
             </div>
          </div>
-         <div class="col-md-3">
+         <div class="col-md-4">
             <div class="form-group">
-               <select name="trans_type" id="trans_type"  class="form-control form-control-sm">
-                     <option value="">Select Transaction Type</option>
-                     @if(isset($transType) && !empty($transType))
-                        @foreach($transType as $key=>$val)
-                        <option value="{{$val->trans_config_id}}" {{(old('trans_type') == $val->trans_config_id)? 'selected': ''}}> {{$val->trans_type}} </option>                            
-                        @endforeach
-                     @endif
-               </select>
+               <input  class="form-control" type="text" name="label" id="label" placeholder="Enter Description" />
             </div>
-
          </div>
    </div>
 
    <div class="row align-items-center">
          <div class="col-md-2">
             <div class="form-group">
-               <label class="mb-0">Variables</label>
+               <label class="mb-0">Account</label>
+               <span class="mandatory">*</span>
+            </div>
+         </div>
+         <div class="col-md-4">
+            <div class="form-group">
+               <select name="account" id="account"  class="form-control form-control-sm">
+                     <option value="">Select Account Type</option>
+                     @if(isset($accounts) && !empty($accounts))
+                        @foreach($accounts as $key=>$val)
+                        <option value="{{$val->id}}" {{(old('account') == $val->id)? 'selected': ''}}> {{$val->account_name}} - {{$val->account_code}} </option>                            
+                        @endforeach
+                     @endif
+               </select>
+            </div>
+         </div>
+   </div>
+
+   <div class="row align-items-center">
+         <div class="col-md-2">
+            <div class="form-group">
+               <label class="mb-0">Is Partner</label>
                <span class="mandatory">*</span>
             </div>
          </div>
 
-         <div class="col-md-3">
+         <div class="col-md-4">
             <div class="form-group">
-               <select name="variable[]" id="variable" class="multi-select-demo form-control form-control-sm" multiple="multiple">
-               @if(isset($variables) && !empty($variables))
+               <select name="is_partner" id="is_partner" class="form-control form-control-sm">
+                  <option value="">Select Partner</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+               </select>
+            </div>
+         </div>
+   </div>
+
+   <div class="row align-items-center">
+         <div class="col-md-2">
+            <div class="form-group">
+               <label class="mb-0">Entry Type</label>
+               <span class="mandatory">*</span>
+            </div>
+         </div>
+
+         <div class="col-md-4">
+            <div class="form-group">
+               <select name="value_type" id="value_type" class="form-control form-control-sm">
+                  <option value="">Select Entry Type</option>
+                  <option value="0">Debit</option>
+                  <option value="1">Credit</option>                  
+               </select>
+            </div>
+         </div>
+   </div>
+
+   <div class="row align-items-center">
+         <div class="col-md-2">
+            <div class="form-group">
+               <label class="mb-0">Variables/Operators</label>
+            </div>
+         </div>
+
+         <div class="col-md-4">
+            <div class="form-group">
+               <select name="variable" id="variable" class="form-control form-control-sm">
+               <option value="">Select Variable/Operator</option>
+                  @foreach(config('common.OPERATORS') as $key=>$val)
+                     <option value="{{$val}}"> {{$val}} </option>
+                  @endforeach
+                  @if(isset($variables) && !empty($variables))
                      @foreach($variables as $key=>$val)
-                     <option value="{{$val->id}}" {{(old('variable') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
+                     <option value="{{$val}}"> {{$val}} </option>                            
                      @endforeach
-               @endif
+                  @endif
                </select>
             </div>
          </div>
@@ -57,22 +112,14 @@
    <div class="row align-items-center">
          <div class="col-md-2">
             <div class="form-group">
-               <label class="mb-0">Journal</label>
+               <label class="mb-0">Formula Configuration</label>
                <span class="mandatory">*</span>
             </div>
          </div>
-         <div class="col-md-3">
+         <div class="col-md-4">
             <div class="form-group">
-               <select name="journal" id="journal"  class="form-control form-control-sm">
-                     <option value="">Select Journal</option>
-                     @if(isset($journals) && !empty($journals))
-                        @foreach($journals as $key=>$val)
-                        <option value="{{$val->id}}" {{(old('journal') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
-                        @endforeach
-                     @endif
-               </select>
+               <textarea class="form-control" type="text" name="config_value" id="config_value" placeholder="Make formula here"></textarea>
             </div>
-
          </div>
    </div>
 
@@ -107,4 +154,42 @@
    </div>
 </div>
 
+@endsection
+
+@section('jscript')
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script>
+var messages = {
+    get_ajax_jiconfig_list: "{{ URL::route('get_ajax_jiconfig_list') }}",       
+    data_not_found: "{{ trans('error_messages.data_not_found') }}",
+    token: "{{ csrf_token() }}",
+    };
+
+    $(document).ready(function(){
+        $('#frmJiConfig').validate({
+            rules: {
+               label: {
+                    required: true
+                },
+                account: {
+                   required: true
+                },
+                is_partner: {
+                   required: true
+                },
+                value_type: {
+                   required: true
+                },
+                config_value: {
+                   required: true
+                }
+            }
+        });
+
+        $('#variable').change(function(){
+            $('#config_value').append($('#variable').val());
+        });
+    });
+</script>
+<script src="{{ asset('backend/js/ajax-js/finance.js') }}"></script>
 @endsection

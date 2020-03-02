@@ -121,7 +121,7 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addJiConfig','Journal Items', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addJiConfig','Journal Items', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

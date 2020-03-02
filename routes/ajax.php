@@ -784,4 +784,11 @@ Route::group(
         'uses' => 'AjaxController@getJeConfigList'
         ]
     );
+    Route::post(
+        'get-jiconfig-list',
+        [
+        'as' => 'get_ajax_jiconfig_list',
+        'uses' => 'AjaxController@getJiConfigList'
+        ]
+    );
 });
