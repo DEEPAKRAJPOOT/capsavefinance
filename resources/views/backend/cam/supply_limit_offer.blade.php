@@ -70,11 +70,11 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Interest Payment Frequency</b></label> 
-        <select name="interest_payment_frequency" class="form-control">
+        <select name="payment_frequency" class="form-control">
             <option value="">Select Interest Payment Frequency</option>
-            <option value="1">Monthly</option>
-            <option value="2">Upfront</option>
-            <option value="3">Rear Ended</option>
+            <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Monthly</option>
+            <option value="2" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 2)? 'selected': ''}}>Upfront</option>
+            <option value="3" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 3)? 'selected': ''}}>Rear Ended</option>
         </select>
       </div>
     </div>
@@ -82,12 +82,12 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Benchmark Date</b></label> 
-        <select name="interest_payment_frequency" class="form-control">
+        <select name="benchmark_date" class="form-control">
             <option value="">Select Benchmark Date</option>
-            <option value="1">Invoice Date</option>
-            <option value="2">BOE Date</option>
-            <option value="3">GRN Date</option>
-            <option value="4">Date of discounting</option>
+            <option value="1" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 1)? 'selected': ''}}>Invoice Date</option>
+            <option value="2" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 2)? 'selected': ''}}>BOE Date</option>
+            <option value="3" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 3)? 'selected': ''}}>GRN Date</option>
+            <option value="4" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 4)? 'selected': ''}}>Date of discounting</option>
         </select>
       </div>
     </div>
@@ -247,7 +247,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description of Security</b></label>
                         <input name="ps[ps_desc_of_security][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
@@ -277,7 +277,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc Security</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description Security</b></label>
                         @endif
                         <select name="cs[cs_desc_security_id][]" class="form-control">
                             <option value="">Select Security</option>
@@ -342,7 +342,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description of Security</b></label>
                         @endif
                         <input name="cs[cs_desc_of_security][]" class="form-control" value="{{$cs->cs_desc_of_security}}">
                     </div>
@@ -358,7 +358,7 @@
                 @else
                 <div class="row mt10">
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc Security</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description Security</b></label>
                         <select name="cs[cs_desc_security_id][]" class="form-control">
                             <option value="">Select Security</option>
                             <option value="1">Current assets</option>
@@ -476,13 +476,13 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Net worth</b></label>
+                        <label for="txtPassword"><b>Net worth as per ITR/CA Cert</b></label>
                         @endif
                         <input name="pg[pg_net_worth][]" class="form-control" value="{{$pg->pg_net_worth}}">
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
                         @endif
                         <input name="pg[pg_comments][]" class="form-control" value="{{$pg->pg_comments}}">
                     </div>
@@ -523,11 +523,11 @@
                         <input name="pg[pg_residential_address][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Net worth</b></label>
+                        <label for="txtPassword"><b>Net worth as ITR/CA Cert</b></label>
                         <input name="pg[pg_net_worth][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
                         <input name="pg[pg_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
@@ -602,7 +602,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
                         @endif
                         <input name="cg[cg_comments][]" class="form-control" value="{{$cg->cg_comments}}">
                     </div>
@@ -655,7 +655,7 @@
                         <input name="cg[cg_residential_address][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
                         <input name="cg[cg_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
@@ -728,7 +728,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
                         @endif
                         <input name="em[em_comments][]" class="form-control" value="{{$em->em_comments}}">
                     </div>
@@ -779,7 +779,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments</b></label>
+                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
                         <input name="em[em_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">

@@ -68,6 +68,8 @@ class AppProgramOffer extends BaseModel {
         'document_fee',
         'discounting',
         'check_bounce_fee',
+        'payment_frequency',
+        'benchmark_date',
         'equipment_type_id',
         'facility_type_id',
         'security_deposit_type',
