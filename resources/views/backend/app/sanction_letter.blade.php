@@ -487,7 +487,10 @@
                          </tbody>
                       </table>
                       <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
-                      <h5>Primary Security:- Choose an item.</h5>
+                      
+                      @foreach($supplyChaindata['offerData'] as $offerD)
+                      @if($offerD->offerPs->count())
+                      <h5> Primary Security </h5>
                       <table  class="table table-border"  cellpadding="0" cellspacing="0">
                          <thead>
                             <tr>
@@ -537,7 +540,11 @@
                             </tr>
                          </tbody>
                       </table>
-                      <h5>Primary Security:- Choose an item.</h5>
+                      @endif
+
+
+                      @if($offerD->offerCs->count())
+                      <h5> Collateral Security </h5>
                       <table  class="table table-border"  cellpadding="0" cellspacing="0">
                          <thead>
                             <tr>
@@ -579,137 +586,178 @@
                             </tr>
                             <tr>
                                <td colspan="5">
-                                  <b>Specific Collatereral security condition/s :-</b> Click here to enter text.
+                                  <b>Specific Collateral Security Conditions:-</b>
+                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                     <li>Click here to enter text</li>
+                                  </ul>
                                </td>
                             </tr>
                          </tbody>
                       </table>
-                      <h5>Primary Guarantee:- Choose an item.</h5>
+                      @endif
+                      
+
+                       @if($offerD->offerPg->count())
+                      <h5>Personal Guarantee</h5>
                       <table  class="table table-border"  cellpadding="0" cellspacing="0">
                          <thead>
                             <tr>
-                               <th width="20%">Name of the Guarantor<br/>< Selection from Management Section ></th>
+                               <th width="20%">Security</th>
+                               <th width="20%">Type of security</th>
+                               <th width="20%">Status of security</th>
                                <th width="20%">Time for perfecting security</th>
-                               <th width="20%">Residential Address</th>
-                               <th width="20%">Net worth as per IT return/CA Certificate</th>
-                               <th width="20%">Comment if any</th>
+                               <th width="20%">Description of security</th>
                             </tr>
                          </thead>
                          <tbody>
                             <tr>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
                             </tr>
                             <tr>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                         </tbody>
-                      </table>
-                      <h5>Corporate Guarantee/Letter of Comfort/Put Option :- Choose an item.</h5>
-                      <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                         <thead>
-                            <tr>
-                               <th width="20%">Type</th>
-                               <th width="20%">Name of Guarantor</th>
-                               <th width="20%">Time of perfecting security</th>
-                               <th width="20%">Registered Address</th>
-                               <th width="20%">Comment if any</th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            <tr>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
                             </tr>
                             <tr>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
                             </tr>
                             <tr>
-                               <td>Choose an Item</td>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
+                            </tr>
+                            <tr>
+                               <td colspan="5">
+                                  <b>Specific Personal Guarantee Conditions:-</b>
+                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                     <li>Click here to enter text</li>
+                                  </ul>
+                               </td>
                             </tr>
                          </tbody>
                       </table>
-                      <h5>Escrow Mechanism :- Choose an item.</h5>
+                      @endif
+
+                      @if($offerD->offerCg->count())
+                      <h5>Corporate Guarantee/ Letter of Comfort/ Put Option</h5>
                       <table  class="table table-border"  cellpadding="0" cellspacing="0">
                          <thead>
                             <tr>
-                               <th width="20%">Name of Debtor</th>
-                               <th width="20%">Expected cash flow per month</th>
+                               <th width="20%">Security</th>
+                               <th width="20%">Type of security</th>
+                               <th width="20%">Status of security</th>
                                <th width="20%">Time for perfecting security</th>
-                               <th width="20%">Mechanism</th>
-                               <th width="20%">Comment if any</th>
+                               <th width="20%">Description of security</th>
                             </tr>
                          </thead>
                          <tbody>
                             <tr>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Choose an Item</td>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
                             </tr>
                             <tr>
-                               <td>Click here to enter text</td>
-                               <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Choose an Item</td>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
                             </tr>
                             <tr>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
+                            </tr>
+                            <tr>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
                                <td>Click here to enter text</td>
-                               <td>Choose an Item</td>
-                               <td>Choose an Item</td>
-                               <td>Click here to enter text</td>
+                            </tr>
+                            <tr>
+                               <td colspan="5">
+                                  <b>Specific Corporate Guarantee Conditions:-</b>
+                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                     <li>Click here to enter text</li>
+                                  </ul>
+                               </td>
                             </tr>
                          </tbody>
                       </table>
+                      @endif
+
+
+                      @if($offerD->offerEm->count())
+                      <h5>Escrow Mechanism</h5>
+                      <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                         <thead>
+                            <tr>
+                               <th width="20%">Security</th>
+                               <th width="20%">Type of security</th>
+                               <th width="20%">Status of security</th>
+                               <th width="20%">Time for perfecting security</th>
+                               <th width="20%">Description of security</th>
+                            </tr>
+                         </thead>
+                         <tbody>
+                            <tr>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
+                               <td>Click here to enter text</td>
+                            </tr>
+                            <tr>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
+                               <td>Click here to enter text</td>
+                            </tr>
+                            <tr>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
+                               <td>Click here to enter text</td>
+                            </tr>
+                            <tr>
+                               <td>Current Assests</td>
+                               <td>Hypothecation</td>
+                               <td>First Pari-pasu</td>
+                               <td>Before Disbursement</td>
+                               <td>Click here to enter text</td>
+                            </tr>
+                            <tr>
+                               <td colspan="5">
+                                  <b>Specific Escrow Mechanism Conditions:-</b>
+                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                     <li>Click here to enter text</li>
+                                  </ul>
+                               </td>
+                            </tr>
+                         </tbody>
+                      </table>
+                      @endif
+                      @endforeach
+
                       <h5>Section 3:Specific Security :- Choose an item</h5>
                       <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
                       <p style="text-decoration:underline;">PDC:-</p>
