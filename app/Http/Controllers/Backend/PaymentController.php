@@ -170,8 +170,9 @@ class PaymentController extends Controller {
         if( $res)
         {
           if($request['trans_type']==17){
-            $this->paySettlement( $request['customer_id']);
-            }
+            //$this->paySettlement( $request['customer_id']);
+            $this->invoiceKnockOff($res->trans_id);
+          }
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');
              //Session::flash('message', 'Bulk amount has been saved');

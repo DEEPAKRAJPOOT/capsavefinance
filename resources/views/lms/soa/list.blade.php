@@ -71,13 +71,13 @@
 													<th>Tran Type</th>
 													<th>Batch No</th>
 													<th>Invoice No</th>
-													<th>Narration</th>
+                                                    <th>Narration</th>
+                                                    <th>Currency</th>
 													<th>Debit</th>
 													<th>Credit</th>
                                                     <th>Balance</th>
                                                     
-                                                    <!-- <th>Virtual Account Id</th>
-													<th>Currency</th> -->
+                                                    {{-- <th>Virtual Account Id</th> --}}
 												</tr>
 	                                        </thead>
 	                                        <tbody>
