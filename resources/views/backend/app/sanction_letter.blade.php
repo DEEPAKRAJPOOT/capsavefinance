@@ -425,14 +425,13 @@
                                                  <option>Applicable</option>
                                                  <option>Not applicable</option>
                                             </select>.<br/>
-                                  <br/><br/>
                                   The rate of interest will be <input type="text" class="input_sanc" name="debtor_name[]" placeholder="Type Here">% higher than the rate stipulated under each of the facilities till the security is created
                                             <select class="select">
                                                  <option>Choose an Item</option>
                                                  <option>Applicable</option>
                                                  <option>Not applicable</option>
                                             </select>.
-                                  <br/><br/><br/>
+                                  <br/>
                                   If security is not created within the stipulated timeframe then a penal interest of 
                                             <select class="select">
                                                  <option>Choose an Item</option>
@@ -452,7 +451,6 @@
                                                  <option>Applicable</option>
                                                  <option>Not applicable</option>
                                             </select>.
-                                  <br/>
                                </td>
                             </tr>
                             <tr>

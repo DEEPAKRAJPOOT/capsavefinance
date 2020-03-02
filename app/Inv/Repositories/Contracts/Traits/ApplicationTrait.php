@@ -230,6 +230,13 @@ trait ApplicationTrait
             }
             $CommunicationAddress = $AddressData->addr_1 . ' '. $AddressData->city_name .' '.  $stateName   .' '. $AddressData->pin_code;
         }
+
+
+        $app_prgm_limit_id = $supplyChainOffer['app_prgm_limit_id'] ?? 0;
+        if ($app_prgm_limit_id) {
+            $supplyChainOffers = $this->appRepo->getAllOffers($appId, 1);
+        }
+
         $data['ConcernedPersonName'] = $CamData['operational_person'];
         $data['purpose'] = $CamData['t_o_f_purpose'];
         $data['EntityName'] = $bizData['biz_entity_name'];
