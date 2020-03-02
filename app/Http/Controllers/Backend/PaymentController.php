@@ -216,6 +216,13 @@ class PaymentController extends Controller {
              return back(); 
         }
    }
+
+  /* Payment Advice List   */
+  public function  paymentAdviceList()
+  {
+    return view('backend.payment.payment_advice_list');
+
+  }
   
 }
 
