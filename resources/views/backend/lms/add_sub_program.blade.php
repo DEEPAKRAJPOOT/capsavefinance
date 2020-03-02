@@ -705,7 +705,7 @@
 @section('jscript')
 
 <script>
-
+//    let 
     var messages = {
         get_charges_html: "{{ URL::route('get_charges_html') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",

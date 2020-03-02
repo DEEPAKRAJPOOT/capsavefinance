@@ -9,7 +9,7 @@
     </div>-->
 
     <div class="col-md-12">
-        <div class="row">
+        <div class="row amtpercentrow">
             <div class="col-md-2">
                 <label for="chrg_type">Charge Type</label><br />
                 <div class="form-check-inline ">
@@ -40,21 +40,23 @@
                 <label for="chrg_type">Charge Calculation</label><br />
                 <div class="form-check-inline ">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type[{{$len}}]" value="1">Fixed
+                        <input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type[{{$len}}]" value="1">Fixed
                     </label>
                 </div>
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type[{{$len}}]" value="2">Percentage
+                        <input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type[{{$len}}]" value="2">Percentage
                     </label>
                 </div>
             </div>
             @if(isset($data->chrg_calculation_type))
-            <div class="form-group col-md-3">
-                <label for="chrg_calculation_amt">Amount/Percent</label>
+            <div class="form-group col-md-3 amtpercent">
+                <label for="chrg_calculation_amt"><span id="sdt" class="sdt">{{isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></label>
+                <a href="javascript:void(0);" class="verify-owner-no"><i class="fa-change fa {{isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}"
+                aria-hidden="true"></i></a>
                 {!! Form::text('chrg_calculation_amt['.$len.']', 
                     isset($data->chrg_calculation_amt)  ?  number_format($data->chrg_calculation_amt) : null, 
-                    ['class'=>'form-control  number_format clsRequired','placeholder'=>"Enter  Amount" ,'required'=>'required']) !!}
+                    ['class'=>'form-control  number_format clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
             </div>
              @endif
              @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 2)
@@ -77,6 +79,9 @@
              @endif
         </div>
     </div>
+<script>
+    
+    </script>
 
 
 
