@@ -534,6 +534,7 @@ trait LmsTrait
                     $is_inv_settled = 0;
                     $invoiceRepayment = [];
                     $disbursal = [];
+                    $repaidAmount = 0;
                     
                     $lastDisbursalId = $disbursalDetail->disbursal_id;
               
@@ -579,10 +580,12 @@ trait LmsTrait
                         {
                             $trans['balance_amount'] -= $interestOverdue;                 
                             $disbursal['total_repaid_amt'] += $interestOverdue; 
+                            $repaidAmount += $interestOverdue;
                         }else
                         {
-                            $trans['balance_amount'] -= $trans['balance_amount'];
                             $disbursal['total_repaid_amt'] += $trans['balance_amount'];
+                            $repaidAmount += $trans['balance_amount'];
+                            $trans['balance_amount'] -= $trans['balance_amount'];
                         }
                     }
 
@@ -595,12 +598,14 @@ trait LmsTrait
                         if($trans['balance_amount']>=$balancePrincipalAmt)
                         {
                             $disbursal['total_repaid_amt'] += $balancePrincipalAmt;
+                            $repaidAmount += $balancePrincipalAmt;
                             $trans['balance_amount'] -= $balancePrincipalAmt;
                             $is_inv_settled = 2;
                             $disbursal['status_id'] = '15';
                         }else
                         {
                             $disbursal['total_repaid_amt'] += $trans['balance_amount'];
+                            $repaidAmount += $trans['balance_amount'];
                             $trans['balance_amount'] -= $trans['balance_amount'];
                             $is_inv_settled = 1;
                         }
@@ -632,7 +637,7 @@ trait LmsTrait
 
                     $invoiceRepayment['user_id'] = $transDetail['user_id'];
                     $invoiceRepayment['invoice_id'] = $disbursalDetail->invoice_id;
-                    $invoiceRepayment['repaid_amount'] = round($disbursal['settlement_amount'],2);
+                    $invoiceRepayment['repaid_amount'] = round($repaidAmount,2);
                     $invoiceRepayment['repaid_date'] = $transDetail['trans_date'];
                     
                     //$this->lmsRepo->saveRepayment($invoiceRepayment);
@@ -644,7 +649,7 @@ trait LmsTrait
                     if($disbursal['settlement_amount']>0)
                     {
                         $knockOffData = $this->createTransactionData($transDetail['user_id'], [
-                            'amount' => $disbursal['settlement_amount'],
+                            'amount' => $repaidAmount,
                             'trans_date'=>$transDetail['trans_date'],
                             'disbursal_id'=>$disbursalDetail->disbursal_id,
                             'parent_trans_id'=>$transId
@@ -665,7 +670,7 @@ trait LmsTrait
                         //$this->lmsRepo->saveTransaction($overdueData);
                     }
                     
-                    if($interestRefund>0)
+                    if($interestRefund>0 && $is_inv_settled == 2)
                     { 
                         $refundData = $this->createTransactionData($transDetail['user_id'], [
                             'amount' => $interestRefund,
