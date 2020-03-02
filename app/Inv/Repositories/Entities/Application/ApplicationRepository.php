@@ -47,6 +47,11 @@ use App\Inv\Repositories\Models\Master\Segment;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\Master\Bank;
+use App\Inv\Repositories\Models\OfferPrimarySecurity;
+use App\Inv\Repositories\Models\OfferCollateralSecurity;
+use App\Inv\Repositories\Models\OfferPersonalGuarantee;
+use App\Inv\Repositories\Models\OfferCorporateGuarantee;
+use App\Inv\Repositories\Models\OfferEscrowMechanism;
 
 /**
  * Application repository class
@@ -1475,5 +1480,45 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getPrgmsByAnchor($anchor_ids, $uesr_type){
         return Program::getPrgmsByAnchor($anchor_ids, $uesr_type);
+    }
+
+    public function getOfferPrimarySecurity($offerId){
+        return OfferPrimarySecurity::getOfferPrimarySecurity($offerId);
+    }
+
+    public function addOfferPrimarySecurity($data){
+        return OfferPrimarySecurity::addOfferPrimarySecurity($data);
+    }
+
+    public function getOfferCollateralSecurity($offerId){
+        return OfferCollateralSecurity::getOfferCollateralSecurity($offerId);
+    }
+
+    public function addOfferCollateralSecurity($data){
+        return OfferCollateralSecurity::addOfferCollateralSecurity($data);
+    }
+
+    public function getOfferPersonalGuarantee($offerId){
+        return OfferPersonalGuarantee::getOfferPersonalGuarantee($offerId);
+    }
+
+    public function addOfferPersonalGuarantee($data){
+        return OfferPersonalGuarantee::addOfferPersonalGuarantee($data);
+    }
+
+    public function getOfferCorporateGuarantee($offerId){
+        return OfferCorporateGuarantee::getOfferCorporateGuarantee($offerId);
+    }
+
+    public function addOfferCorporateGuarantee($data){
+        return OfferCorporateGuarantee::addOfferCorporateGuarantee($data);
+    }
+
+    public function getOfferEscrowMechanism($offerId){
+        return OfferEscrowMechanism::getOfferEscrowMechanism($offerId);
+    }
+
+    public function addOfferEscrowMechanism($data){
+        return OfferEscrowMechanism::addOfferEscrowMechanism($data);
     }
 }
