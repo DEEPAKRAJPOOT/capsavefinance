@@ -230,7 +230,13 @@
                 <ul class="nav flex-column sub-menu">
                     @can('payment_list')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('payment_list')}}">Manage Payment</a>
+                        <a class="nav-link" href="{{route('payment_list')}}">Manage Repayment</a>
+                    </li>                     
+                    @endcan
+
+                    @can('payment_advice')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('payment_advice')}}">Payment Advice</a>
                     </li>                     
                     @endcan
                 </ul>

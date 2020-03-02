@@ -3227,6 +3227,19 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetTransactions(Request $request, $data)
     {
         return DataTables::of($data)
+            ->addColumn('invoice_no',function($trans){
+                $data = '';
+                if($trans->disburse && $trans->disburse->invoice && $trans->trans_type == '30'){
+                    $data = $trans->disburse->invoice->invoice_no; 
+                }
+                return $data;
+            })
+            ->addColumn('batch_no',function($trans){
+                return '';
+            })
+            ->addColumn('narration',function($trans){
+                return $trans->comment;;
+            })
             ->addColumn(
                 'virtual_acc_id',
                 function ($transaction) {

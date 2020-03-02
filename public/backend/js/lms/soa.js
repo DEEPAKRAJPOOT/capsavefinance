@@ -24,10 +24,12 @@ try {
                 }
             },
             columns: [
-                {data: 'virtual_acc_id'},
                 {data: 'trans_date'},
                 {data: 'value_date'},
                 {data: 'trans_type'},
+                {data: 'batch_no'},
+                {data: 'invoice_no'},
+                {data: 'narration'},
                 {data: 'currency'},
                 {data: 'debit'},
                 {data: 'credit'},
