@@ -20,7 +20,6 @@
                         .table{
                           width:100%; 
                           font-family:Arial;font-size: 14px; 
-                          margin-bottom:20px;
                         }
                         .table > thead > tr > th,.table > tbody > tr > td{
                           padding:5px 10px;
@@ -75,6 +74,15 @@
                         .input_sanc:focus{
                            border: #ccc solid 1px;
                       }
+                      .offerdiv{
+                          border: 2px solid #cccccc;
+                          margin-bottom: 20px;
+                      }
+
+                      .offerdiv h5{
+                        background-color: #ccc;
+                        padding: 10px;
+                      }
                      </style>
                       <style media="print">
                          .height{
@@ -125,6 +133,7 @@
                             </tr>
                          </tbody>
                       </table>
+                      <br />
                       <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
                       
                       <!-- Vender Program -->
@@ -164,27 +173,17 @@
                                   <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                      <thead>
                                         <tr>
-                                           <th width="70%">Apprv. <br />Debtor Name</th>
+                                           <th width="70%">Apprv. Debtor Name</th>
                                            <th width="30%" class="height">Sub Limit</th>
                                         </tr>
                                      </thead>
                                      <tbody>
-                                        <tr>
+                                      @foreach($supplyChaindata['offerData'] as $offerD)
+                                         <tr>
                                            <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                            <td></td>
                                         </tr>
-                                        <tr>
-                                           <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                           <td></td>
-                                        </tr>
-                                        <tr>
-                                           <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                           <td></td>
-                                        </tr>
-                                        <tr>
-                                           <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                           <td></td>
-                                        </tr>
+                                      @endforeach
                                      </tbody>
                                   </table>
                                </td>
@@ -192,15 +191,15 @@
                                   <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                      <thead>
                                         <tr>
-                                           <th width="25%">Max. Discounting Period</th>
+                                           <th width="35%">Max. Discounting Period</th>
                                            <th width="25%">Grace Period</th>
                                            <th width="25%">ROI</th>
                                            <th width="25%">Margin</th>
                                         </tr>
                                      </thead>
                                      <tbody>
-                                       @for($i = 1; $i <= 4 ;$i++)
-                                        <tr>
+                                         @foreach($supplyChaindata['offerData'] as $offerD)
+                                         <tr>
                                            <td>
                                             <select class="select">
                                                  <option>Choose an Item</option>
@@ -230,7 +229,7 @@
                                            </td>
                                            <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                         </tr>
-                                        @endfor
+                                      @endforeach
                                      </tbody>
                                   </table>
                                </td>
@@ -310,22 +309,12 @@
                                         </tr>
                                      </thead>
                                      <tbody>
+                                      @foreach($supplyChaindata['offerData'] as $offerD)
                                          <tr>
                                            <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                            <td></td>
                                         </tr>
-                                        <tr>
-                                           <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                           <td></td>
-                                        </tr>
-                                        <tr>
-                                           <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                           <td></td>
-                                        </tr>
-                                        <tr>
-                                           <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                           <td></td>
-                                        </tr>
+                                      @endforeach
                                      </tbody>
                                   </table>
                                </td>
@@ -333,15 +322,15 @@
                                   <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                      <thead>
                                         <tr>
-                                           <th width="25%">Max. Discounting Period</th>
+                                           <th width="35%">Max. Discounting Period</th>
                                            <th width="25%">Grace Period</th>
                                            <th width="25%">ROI</th>
                                            <th width="25%">Margin</th>
                                         </tr>
                                      </thead>
                                      <tbody>
-                                        @for($i = 0; $i <= 4 ;$i++)
-                                        <tr>
+                                         @foreach($supplyChaindata['offerData'] as $offerD)
+                                         <tr>
                                            <td>
                                             <select class="select">
                                                  <option>Choose an Item</option>
@@ -371,7 +360,7 @@
                                            </td>
                                            <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                         </tr>
-                                        @endfor
+                                      @endforeach
                                      </tbody>
                                   </table>
                                </td>
@@ -486,276 +475,184 @@
                             </tr>
                          </tbody>
                       </table>
+                      <br />
                       <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
                       
                       @foreach($supplyChaindata['offerData'] as $offerD)
-                      @if($offerD->offerPs->count())
-                      <h5> Primary Security </h5>
-                      <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                         <thead>
-                            <tr>
-                               <th width="20%">Security</th>
-                               <th width="20%">Type of security</th>
-                               <th width="20%">Status of security</th>
-                               <th width="20%">Time for perfecting security</th>
-                               <th width="20%">Description of security</th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td colspan="5">
-                                  <b>Specific Primary Securities Conditions:-</b>
-                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                                     <li>Click here to enter text</li>
-                                  </ul>
-                               </td>
-                            </tr>
-                         </tbody>
-                      </table>
-                      @endif
+                      <div class="offerdiv">
+                        @if($offerD->offerPs->count())
+                        <h5> Primary Security </h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Security</th>
+                                 <th width="20%">Type of security</th>
+                                 <th width="20%">Status of security</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Description of security</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                            @foreach($offerD->offerPs as $PrimarySecurity)
+                              <tr>
+                                 <td>{{$PrimarySecurity->ps_security_id}}</td>
+                                 <td>{{$PrimarySecurity->ps_type_of_security_id}}</td>
+                                 <td>{{$PrimarySecurity->ps_status_of_security_id}}</td>
+                                 <td>{{$PrimarySecurity->ps_time_for_perfecting_security_id}}</td>
+                                 <td>{{$PrimarySecurity->ps_desc_of_security}}</td>
+                              </tr>
+                            @endforeach
+                              <tr>
+                                 <td colspan="5">
+                                    <b>Specific Primary Securities Conditions:-</b>
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Click here to enter text</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        @endif
 
 
-                      @if($offerD->offerCs->count())
-                      <h5> Collateral Security </h5>
-                      <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                         <thead>
-                            <tr>
-                               <th width="20%">Security</th>
-                               <th width="20%">Type of security</th>
-                               <th width="20%">Status of security</th>
-                               <th width="20%">Time for perfecting security</th>
-                               <th width="20%">Description of security</th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td colspan="5">
-                                  <b>Specific Collateral Security Conditions:-</b>
-                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                                     <li>Click here to enter text</li>
-                                  </ul>
-                               </td>
-                            </tr>
-                         </tbody>
-                      </table>
-                      @endif
-                      
+                        @if($offerD->offerCs->count())
+                        <h5> Collateral Security </h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Security</th>
+                                 <th width="20%">Type of security</th>
+                                 <th width="20%">Status of security</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Description of security</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              @foreach($offerD->offerCs as $CollateralSecurity)
+                              <tr>
+                                 <td>{{$CollateralSecurity->cs_desc_security_id}}</td>
+                                 <td>{{$CollateralSecurity->cs_type_of_security_id}}</td>
+                                 <td>{{$CollateralSecurity->cs_status_of_security_id}}</td>
+                                 <td>{{$CollateralSecurity->cs_time_for_perfecting_security_id}}</td>
+                                 <td>{{$CollateralSecurity->cs_desc_of_security}}</td>
+                              </tr>
+                             @endforeach
+                              <tr>
+                                 <td colspan="5">
+                                    <b>Specific Collateral Security Conditions:-</b>
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Click here to enter text</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        @endif
+                        
 
-                       @if($offerD->offerPg->count())
-                      <h5>Personal Guarantee</h5>
-                      <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                         <thead>
-                            <tr>
-                               <th width="20%">Security</th>
-                               <th width="20%">Type of security</th>
-                               <th width="20%">Status of security</th>
-                               <th width="20%">Time for perfecting security</th>
-                               <th width="20%">Description of security</th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td colspan="5">
-                                  <b>Specific Personal Guarantee Conditions:-</b>
-                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                                     <li>Click here to enter text</li>
-                                  </ul>
-                               </td>
-                            </tr>
-                         </tbody>
-                      </table>
-                      @endif
+                         @if($offerD->offerPg->count())
+                        <h5>Personal Guarantee</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Name of Guarantor</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Residential Address </th>
+                                 <th width="20%">Net worth as per IT return/CA Certificate</th>
+                                 <th width="20%">Comment if any </th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              @foreach($offerD->offerPg as $PersonalGuarantee)
+                              <tr>
+                                 <td>{{$PersonalGuarantee->pg_name_of_guarantor_id}}</td>
+                                 <td>{{$PersonalGuarantee->pg_time_for_perfecting_security_id}}</td>
+                                 <td>{{$PersonalGuarantee->pg_residential_address}}</td>
+                                 <td>{{$PersonalGuarantee->pg_net_worth}}</td>
+                                 <td>{{$PersonalGuarantee->pg_comments}}</td>
+                              </tr>
+                             @endforeach
+                              <tr>
+                                 <td colspan="5">
+                                    <b>Specific Personal Guarantee Conditions:-</b>
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Click here to enter text</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        @endif
 
-                      @if($offerD->offerCg->count())
-                      <h5>Corporate Guarantee/ Letter of Comfort/ Put Option</h5>
-                      <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                         <thead>
-                            <tr>
-                               <th width="20%">Security</th>
-                               <th width="20%">Type of security</th>
-                               <th width="20%">Status of security</th>
-                               <th width="20%">Time for perfecting security</th>
-                               <th width="20%">Description of security</th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td colspan="5">
-                                  <b>Specific Corporate Guarantee Conditions:-</b>
-                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                                     <li>Click here to enter text</li>
-                                  </ul>
-                               </td>
-                            </tr>
-                         </tbody>
-                      </table>
-                      @endif
+                        @if($offerD->offerCg->count())
+                        <h5>Corporate Guarantee/ Letter of Comfort/ Put Option</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Type</th>
+                                 <th width="20%">Name of Guarantor</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Registered Address</th>
+                                 <th width="20%">Comment if any </th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              @foreach($offerD->offerCg as $CorporateGuarantee)
+                              <tr>
+                                 <td>{{$CorporateGuarantee->cg_type_id}}</td>
+                                 <td>{{$CorporateGuarantee->cg_name_of_guarantor_id}}</td>
+                                 <td>{{$CorporateGuarantee->cg_time_for_perfecting_security_id}}</td>
+                                 <td>{{$CorporateGuarantee->cg_residential_address}}</td>
+                                 <td>{{$CorporateGuarantee->cg_comments}}</td>
+                              </tr>
+                             @endforeach
+                              <tr>
+                                 <td colspan="5">
+                                    <b>Specific Corporate Guarantee Conditions:-</b>
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Click here to enter text</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        @endif
 
 
-                      @if($offerD->offerEm->count())
-                      <h5>Escrow Mechanism</h5>
-                      <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                         <thead>
-                            <tr>
-                               <th width="20%">Security</th>
-                               <th width="20%">Type of security</th>
-                               <th width="20%">Status of security</th>
-                               <th width="20%">Time for perfecting security</th>
-                               <th width="20%">Description of security</th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td>Current Assests</td>
-                               <td>Hypothecation</td>
-                               <td>First Pari-pasu</td>
-                               <td>Before Disbursement</td>
-                               <td>Click here to enter text</td>
-                            </tr>
-                            <tr>
-                               <td colspan="5">
-                                  <b>Specific Escrow Mechanism Conditions:-</b>
-                                  <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                                     <li>Click here to enter text</li>
-                                  </ul>
-                               </td>
-                            </tr>
-                         </tbody>
-                      </table>
-                      @endif
+                        @if($offerD->offerEm->count())
+                        <h5>Escrow Mechanism</h5>
+                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                           <thead>
+                              <tr>
+                                 <th width="20%">Name of Debtor</th>
+                                 <th width="20%">Expected cash flow per month</th>
+                                 <th width="20%">Time for perfecting security</th>
+                                 <th width="20%">Mechanism</th>
+                                 <th width="20%">Comment if any</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              @foreach($offerD->offerEm as $EscrowMechanism)
+                              <tr>
+                                 <td>{{$EscrowMechanism->em_debtor_id}}</td>
+                                 <td>{{$EscrowMechanism->em_expected_cash_flow}}</td>
+                                 <td>{{$EscrowMechanism->em_time_for_perfecting_security_id}}</td>
+                                 <td>{{$EscrowMechanism->em_mechanism_id}}</td>
+                                 <td>{{$EscrowMechanism->em_comments}}</td>
+                              </tr>
+                             @endforeach
+                              <tr>
+                                 <td colspan="5">
+                                    <b>Specific Escrow Mechanism Conditions:-</b>
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                       <li>Click here to enter text</li>
+                                    </ul>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        @endif
+                      </div> 
                       @endforeach
 
                       <h5>Section 3:Specific Security :- Choose an item</h5>
