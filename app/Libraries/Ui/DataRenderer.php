@@ -3178,4 +3178,36 @@ class DataRenderer implements DataProviderInterface
                     )
                     ->make(true);
         }
+
+        public function getJiConfigByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'account_name',
+                        function ($dataRecords) {
+                        return $dataRecords->account_name;
+                    })
+                    ->editColumn(
+                        'is_partner',
+                        function ($dataRecords) {
+                        return $dataRecords->is_partner;
+                    })
+                    ->editColumn(
+                        'label',
+                        function ($dataRecords) {
+                        return $dataRecords->label;
+                    })
+                    ->editColumn(
+                        'value_type',
+                        function ($dataRecords) {
+                        return $dataRecords->value_type;
+                    })
+                    ->editColumn(
+                        'config_value',
+                        function ($dataRecords) {
+                        return $dataRecords->config_value;
+                    })
+                    ->make(true);
+        }
 }

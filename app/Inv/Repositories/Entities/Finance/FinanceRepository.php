@@ -82,4 +82,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     public function saveJiData($arrData){
         return FinancialJiConfig::saveJiData($arrData);
     }
+
+    public function getAllJiConfig($jeConfigId)
+    {
+        return FinancialJiConfig::getAllJiConfig($jeConfigId);         
+    }
 }

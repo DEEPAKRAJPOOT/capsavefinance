@@ -136,14 +136,14 @@
    <div class="row">
          <div class="col-sm-12">
             <div class="table-responsive">
-               <table id="jeConfigList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+               <table id="jiConfigList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                      <thead>
                         <tr role="row">
-                           <th>Journal Name</th>
-                           <th>Journal Type</th>
-                           <th>Transaction Type</th>
-                           <th>Variables</th>
-                           <th>Action</th>
+                           <th>Account Name</th>
+                           <th>Is Partner</th>
+                           <th>Label</th>
+                           <th>Entry Type</th>
+                           <th>Formula</th>                           
                         </tr>
                      </thead>
                      <tbody>

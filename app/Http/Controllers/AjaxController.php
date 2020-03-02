@@ -3703,4 +3703,11 @@ if ($err) {
         $this->providerResult = $dataProvider->getJeConfigByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
+    public function getJiConfigList(DataProviderInterface $dataProvider) { 
+        $jeConfigId = request()->get('je_config_id');
+        $this->dataRecords = $this->finRepo->getAllJiConfig($jeConfigId);
+        $this->providerResult = $dataProvider->getJiConfigByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
 }

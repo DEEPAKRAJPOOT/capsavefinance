@@ -129,6 +129,36 @@ try {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
 
+
+        oTableVariable = $('#jiConfigList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: false,
+            bSort: true,
+            ajax: {
+                "url": messages.get_ajax_jiconfig_list, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_name = $('input[name=search_keyword]').val();
+                    d.je_config_id = $('input[name=je_config_id]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling                   
+                    $("#jiConfigList").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+           columns: [
+                    {data: 'account_name'},
+                    {data: 'is_partner'},
+                    {data: 'label'},
+                    {data: 'value_type'},
+                    {data: 'config_value'}
+                ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+        });
+
         // //Search
         // $('#searchbtn').on('click', function (e) {
         //     oTable.draw();

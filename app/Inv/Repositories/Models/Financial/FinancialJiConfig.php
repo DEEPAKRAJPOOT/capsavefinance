@@ -58,4 +58,11 @@ class FinancialJiConfig extends BaseModel {
         }        
         return self::create($data);       
     }
+
+    public static function getAllJiConfig($jeConfigId){
+        $result = \DB::select("SELECT rta_financial_ji_config.ji_config_id, rta_financial_ji_config.je_config_id, rta_financial_ji_config.label,rta_financial_ji_config.config_value, IF(rta_financial_ji_config.is_partner='1','Yes','No') as is_partner ,IF(rta_financial_ji_config.value_type='1','Credit','Debit') as value_type, CONCAT(rta_financial_accounts.account_name, '-', rta_financial_accounts.account_code) as account_name FROM rta_financial_ji_config
+        JOIN rta_financial_accounts ON (rta_financial_accounts.id=rta_financial_ji_config.account_id)
+        WHERE je_config_id = ?",[$jeConfigId]);
+        return $result;    
+    }
 }
