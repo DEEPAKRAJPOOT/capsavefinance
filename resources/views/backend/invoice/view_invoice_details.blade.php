@@ -55,9 +55,7 @@
      <div class="  col-sm-6 mb-4">
       <div class="card h-100">
          <div class="card-body ">
-            
-           
-					 <h4 class="sub-title mb-2">Customer/Supplier Details</h4>
+           <h4 class="sub-title mb-2">Customer/Supplier Details</h4>
 					 
 					 <ul class="p-0 m-0">
                         <li class="row mb-2">
@@ -157,7 +155,11 @@
                                  {{($invoice->invoice_amount) ? $invoice->invoice_amount : '' }}
                               </td>
                               <td id="invoice-amount">
-                                    {{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }} <a href="#" data-toggle="modal" data-target="#myModal2"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                    {{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }} <a href="#" data-toggle="modal" data-target="#myModal2">
+                                        @php if($invoice->status_id==7) { @endphp
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                         @php  } @endphp
+                                       </a>
 								 
                               </td>
                               
