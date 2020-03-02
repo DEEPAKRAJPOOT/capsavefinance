@@ -65,15 +65,19 @@
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
 	                              		<table id="lmsSoaList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
-	                                        	<tr role="row">
-                                                    <th>Virtual Account Id</th>
-													<th>Transaction Date</th>
+                                            <tr role="row">
+													<th>Tran Date</th>
 													<th>Value Date</th>
-													<th>Transaction Type</th>
-													<th>Currency</th>
+													<th>Tran Type</th>
+													<th>Batch No</th>
+													<th>Invoice No</th>
+													<th>Narration</th>
 													<th>Debit</th>
 													<th>Credit</th>
-													<th>Balance</th>
+                                                    <th>Balance</th>
+                                                    
+                                                    <!-- <th>Virtual Account Id</th>
+													<th>Currency</th> -->
 												</tr>
 	                                        </thead>
 	                                        <tbody>

@@ -234,9 +234,9 @@
                     </li>                     
                     @endcan
 
-                    @can('payment_list')
+                    @can('payment_advice')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('payment_list')}}">Payment Advice</a>
+                        <a class="nav-link" href="{{route('payment_advice')}}">Payment Advice</a>
                     </li>                     
                     @endcan
                 </ul>
