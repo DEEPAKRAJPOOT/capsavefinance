@@ -154,7 +154,8 @@ try {
                     {data: 'is_partner'},
                     {data: 'label'},
                     {data: 'value_type'},
-                    {data: 'config_value'}
+                    {data: 'config_value'},
+                    {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

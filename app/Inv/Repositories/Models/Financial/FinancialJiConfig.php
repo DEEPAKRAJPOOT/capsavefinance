@@ -65,4 +65,9 @@ class FinancialJiConfig extends BaseModel {
         WHERE je_config_id = ?",[$jeConfigId]);
         return $result;    
     }
+
+    public static function getJiConfigByjiConfigId($jiConfigId){
+        $result = \DB::select("select * from rta_financial_ji_config where ji_config_id=?",[$jiConfigId]);
+        return $result ? $result[0] : false; 
+    }
 }

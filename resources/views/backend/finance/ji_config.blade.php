@@ -39,7 +39,7 @@
                      <option value="">Select Account Type</option>
                      @if(isset($accounts) && !empty($accounts))
                         @foreach($accounts as $key=>$val)
-                        <option value="{{$val->id}}" {{(old('account') == $val->id)? 'selected': ''}}> {{$val->account_name}} - {{$val->account_code}} </option>                            
+                        <option value="{{$val->id}}" {{ (old('account') == $val->id)? 'selected': (isset($jiConfigData->account_id) && $jiConfigData->account_id==$val->id) ? 'selected' : ''}}> {{$val->account_name}} - {{$val->account_code}} </option>                            
                         @endforeach
                      @endif
                </select>
@@ -143,7 +143,8 @@
                            <th>Is Partner</th>
                            <th>Label</th>
                            <th>Entry Type</th>
-                           <th>Formula</th>                           
+                           <th>Formula</th>  
+                           <th>Action</th>                          
                         </tr>
                      </thead>
                      <tbody>

@@ -87,4 +87,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     {
         return FinancialJiConfig::getAllJiConfig($jeConfigId);         
     }
+
+    public function getJiConfigByjiConfigId($jiConfigId)
+    {
+        return FinancialJiConfig::getJiConfigByjiConfigId($jiConfigId);         
+    }    
 }

@@ -84,13 +84,16 @@ class FinanceController extends Controller {
     }
 
     public function addJiConfig(Request $request) {
-        try {   
-            $transConfigId = $request->get('trans_config_id');
-            $journalId = $request->get('journal_id');
+        try {
+            $jiConfigData = null;
+            $jiConfigId = $request->get('ji_config_id');
+            if(isset($jiConfigId) && !empty($jiConfigId)){
+                $jiConfigData = $this->finRepo->getJiConfigByjiConfigId($jiConfigId); 
+                //dd($jiConfigData);
+            }
             $jeConfigId = $request->get('je_config_id');       
             $this->accounts = $this->finRepo->getAllAccount()->get();      
             $jeConfigData = $this->finRepo->getJeConfigByjeConfigId($jeConfigId);       
-            //dd($this->accounts); 
             if(isset($jeConfigData->je_config_id) && !empty($jeConfigData->je_config_id)) {
                 $this->variables = explode(',', $jeConfigData->variable_name);
             }
@@ -98,7 +101,8 @@ class FinanceController extends Controller {
                 ->with([
                 'jeConfigId'=> $jeConfigId,
                 'variables'=> $this->variables,
-                'accounts' => $this->accounts
+                'accounts' => $this->accounts,
+                'jiConfigData' => $jiConfigData
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
