@@ -141,7 +141,7 @@
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Borrower</b></label>
                                     @endif
-                                    <input type="text" name="group_company_name[]" class="form-control" value="{{$arr['group_company_name'] ?? ''}}" placeholder="Group Company" />
+                                    <input type="text" name="group_company_name[]" class="form-control" value="{{$arr['group_company_name'] ?? ''}}" placeholder="Group Company"  autocomplete="off"/>
                                 </div>
                                 <div class="col-md-3 INR">
                                     @if($loop->first)
@@ -161,12 +161,12 @@
                                      @if($loop->first)
                                         <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
                                     @endif
-                                         @if($arr['proposed_exposure'] > 0)
+                                         @if($arr['proposed_exposure'] > 0 || ($loop->first))
                                              <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                          @endif    
                                      <div class="d-flex">
                                         
-                                          <input type="{{($arr['proposed_exposure'] > 0) ? 'text' : 'hidden' }}" name="proposed_exposure[]" maxlength="20" class="form-control  calTotalExposure float_format proposed_exposureInput"  value="{{($arr['proposed_exposure'] > 0) ? $arr['proposed_exposure'] : ''}}" placeholder="Proposed Limit (In Mn)" />
+                                          <input type="{{(($arr['proposed_exposure'] > 0) || ($loop->first)) ? 'text' : 'hidden' }}" name="proposed_exposure[]" maxlength="20" class="form-control  calTotalExposure float_format proposed_exposureInput"  value="{{($arr['proposed_exposure'] > 0) ? $arr['proposed_exposure'] : ''}}" placeholder="Proposed Limit (In Mn)" autocomplete="off"/>
                                         
                                            @if($loop->first)
                                                 <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
@@ -423,7 +423,7 @@
     $(document).on('click', '.add-ptpq-block', function(){
     let ptpq_block = '<div class="row mt10 toRemoveDiv">'+
             '<div class="col-md-4">'+
-                '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required>'+
+                '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-3 INR">'+
                 '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
@@ -494,7 +494,7 @@
                 }
                     let ptpq_block ='<div class="row mt10 toRemoveDiv">'+
                                         '<input type="hidden" name="group_company_expo_id[]" class="form-control" value="'+arr.group_company_expo_id+'" placeholder="Group Company group_company_expo_id" /><div class="col-md-4">'+
-                                            '<input type="text" name="group_company_name[]" class="form-control" value="'+arr.group_company_name+'" placeholder="Group Company" required>'+
+                                            '<input type="text" name="group_company_name[]" class="form-control" value="'+arr.group_company_name+'" placeholder="Group Company" required autocomplete="off">'+
                                         '</div>'+
                                         '<div class="col-md-3 INR">'+
                                             '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
