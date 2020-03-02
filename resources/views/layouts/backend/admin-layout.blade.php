@@ -135,7 +135,7 @@
             datepickerDisFdate();
             /* use for hide past date  */
             datepickerDisPdate();
-            $('.number_format').on('input', function(event) {
+            $(document).on('input','.number_format', function(event) {
                // skip for arrow keys
                if(event.which >= 37 && event.which <= 40) return;
 
