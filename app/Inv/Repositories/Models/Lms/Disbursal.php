@@ -56,6 +56,7 @@ class Disbursal extends BaseModel {
         'customer_id',
         'principal_amount',
         'inv_due_date',
+        'payment_due_date',
         'tenor_days',
         'interest_rate',
         'total_repaid_amt',

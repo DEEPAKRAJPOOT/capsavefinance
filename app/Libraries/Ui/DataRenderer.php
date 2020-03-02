@@ -2962,14 +2962,19 @@ class DataRenderer implements DataProviderInterface
                             return ($data->disburse_date) ? date('d-M-Y', strtotime($data->disburse_date)) : '---';
                         })
                         ->editColumn(
+                                'invoice_no',
+                                function ($data) {
+                            return $data->invoice_no;
+                        })
+                        ->editColumn(
                                 'inv_due_date',
                                 function ($data) {
                             return ($data->inv_due_date) ? date('d-M-Y', strtotime($data->inv_due_date)) : '---';
                         })
                         ->editColumn(
-                                'invoice_no',
+                                'payment_due_date',
                                 function ($data) {
-                            return $data->invoice_no;
+                            return ($data->payment_due_date) ? date('d-M-Y', strtotime($data->payment_due_date)) : '---';
                         })
                         ->editColumn(
                                 'invoice_approve_amount',
