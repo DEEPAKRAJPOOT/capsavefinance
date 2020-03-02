@@ -445,6 +445,7 @@
         }
          else if(getOldDays > tenor_old_invoice)
         {
+            alert();
            $("#tenorMsg").show(); 
            $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
            e.preventDefault();

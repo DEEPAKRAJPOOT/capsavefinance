@@ -1189,7 +1189,7 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($invoice) {
                     //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Exception </span></div>';
+                    return '<div class="d-flex inline-action-btn"><span class="badge badge-danger">Exception </span></div>';
 
                 })
               
