@@ -122,13 +122,28 @@ public static function saveBulkTempInvoice($arrInvoice)
      $count = count($attributes['id']); 
         for ($i=0;$i< $count;$i++)  
      {   
-          
+        $mytime = Carbon::now();
+        $cDate = Carbon::parse($mytime)->format('Y/m/d');
+        $invDate =  Carbon::createFromFormat('d/m/Y',  $attributes['invoice_date'][$i])->format('Y/m/d');
+        $now = strtotime($cDate); // or your date as well
+        $your_date = strtotime($invDate);
+        $datediff = abs($now - $your_date);
+        $tenor = $datediff / (60 * 60 * 24);
+        if($tenor > $attributes['tenor_old_invoice'])
+        {
+            $status_id =  28;
+        }
+        else
+        {
+            $status_id =  7;
+        }
+        
             $updateTemp =  self::where('invoice_id',$attributes['id'][$i])
                     ->update(['invoice_no' => $attributes['invoice_no'][$i],
                         'status' => 1,
                          'tenor' => $attributes['tenor'],
                 'invoice_due_date' => ($attributes['invoice_due_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'][$i])->format('Y-m-d') : '',
-                'invoice_date' => ( $attributes['invoice_date'][$i]) ? Carbon::createFromFormat('d/m/Y',  $attributes['invoice_date'][$i])->format('Y-m-d') : '',
+                'invoice_date' => ($attributes['invoice_date'][$i]) ? Carbon::createFromFormat('d/m/Y',  $attributes['invoice_date'][$i])->format('Y-m-d') : '',
                 'invoice_approve_amount' => str_replace(',', '',$attributes['invoice_approve_amount'][$i])]
             );
             
@@ -153,15 +168,31 @@ public static function saveBulkTempInvoice($arrInvoice)
                         $data->batch_id  =  $result->batch_id;
                         $data->prgm_offer_id =   $attributes['prgm_offer_id'];
                         $data->remark =  $result->remark;
+                        $data->status_id =  $status_id;	
                         $data->created_by =  $result->created_by;
                         $data->created_at =  $result->created_at;
                $insert = $data->save();
-               InvoiceActivityLog::saveInvoiceActivityLog($data->invoice_id,7,null,$id,null);
+               InvoiceActivityLog::saveInvoiceActivityLog($data->invoice_id,$status_id,null,$id,null);
             }
             
        }  
        return  $insert;
     }
-     
+                        
+    /* two date diffrence  *///////
+    function twoDateDiff($fdate,$tdate)
+    {
+            $curdate=strtotime($fdate);
+            $mydate=strtotime($tdate);
+
+            if($curdate > $mydate)
+            {
+               return 1;
+            }
+            else
+            {
+                return 0;
+            }
+    } 
      
 }

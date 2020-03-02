@@ -200,6 +200,7 @@ class InvoiceController extends Controller {
            $biz_id  = $res->biz_id;
          
         }
+       
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
         $invoice_approve_amount  = str_replace(",","",$attributes['invoice_approve_amount']);
@@ -234,5 +235,7 @@ class InvoiceController extends Controller {
             return back();
         }
     }
+    
+   
     
 }

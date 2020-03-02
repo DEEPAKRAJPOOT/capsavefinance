@@ -138,6 +138,7 @@
                    <div class="col-md-8">
                            <label class="error" id="tenorMsg"></label>
                    </div>
+                  <span class="exceptionAppend"></span>
                   <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
                   <input type="hidden" value="" id="tenor" name="tenor">
                   <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
@@ -436,20 +437,20 @@
         var getOldDays  = findDaysWithDate(cDate,second);
         var tenor  = $('#tenor').val();
         var tenor_old_invoice  = $('#tenor_old_invoice').val();
-       if(getDays > tenor)
+       /*if(getOldDays > tenor_old_invoice)
+        {
+           $("#tenorMsg").show(); 
+          $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
+           e.preventDefault();
+        }
+         else */
+        if(getDays > tenor)
         {
            $(".appendExcel"+count).css("background-color","#ea9292");
            $("#tenorMsg").show(); 
            $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
            e.preventDefault();
-        }
-         else if(getOldDays > tenor_old_invoice)
-        {
-            alert();
-           $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
-           e.preventDefault();
-        }
+        } 
          else if(getDays < 0)
         {
            
