@@ -45,16 +45,19 @@ class Transactions extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'parent_trans_id',
         'gl_flag',
         'soa_flag',
         'user_id',
         'chrg_trans_id',
         'virtual_acc_id',
+        'disbursal_id',
         'trans_date',
         'trans_type',
         'trans_by',
         'pay_from',
         'amount',
+        'settled_amount',
         'gst',
         'cgst',
         'sgst',
@@ -163,7 +166,8 @@ class Transactions extends BaseModel {
     public static function get_balance($trans_code,$user_id){
         $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
-                   ->where('entry_type','=','0')->sum('amount');
+                    ->where('trans_type','!=','30')
+                    ->where('entry_type','=','0')->sum('amount');
 
         $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
         ->where('user_id','=',$user_id)

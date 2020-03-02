@@ -643,21 +643,36 @@ trait LmsTrait
                     
                     if($disbursal['settlement_amount']>0)
                     {
-                        $knockOffData = $this->createTransactionData($transDetail['user_id'], ['amount' => $disbursal['settlement_amount'],'trans_date'=>$transDetail['trans_date'],'disbursal_id'=>$disbursalDetail->disbursal_id], null, 30, 0);
+                        $knockOffData = $this->createTransactionData($transDetail['user_id'], [
+                            'amount' => $disbursal['settlement_amount'],
+                            'trans_date'=>$transDetail['trans_date'],
+                            'disbursal_id'=>$disbursalDetail->disbursal_id,
+                            'parent_trans_id'=>$transId
+                        ], null, 30, 0);
                         $transactionData['knockOff'][] = $knockOffData;
                         //$this->lmsRepo->saveTransaction($knockOffData);
                     }
 
                     if($interestOverdue>0)
                     {
-                        $overdueData = $this->createTransactionData($transDetail['user_id'], ['amount' => $interestOverdue,'trans_date'=>$transDetail['trans_date'],'disbursal_id'=>$disbursalDetail->disbursal_id], null, 19, 0);
+                        $overdueData = $this->createTransactionData($transDetail['user_id'], [
+                            'amount' => $interestOverdue,
+                            'trans_date'=>$transDetail['trans_date'],
+                            'disbursal_id'=>$disbursalDetail->disbursal_id,
+                            'parent_trans_id'=>$transId
+                        ], null, 19, 0);
                         $transactionData['overdue'][] = $overdueData;
                         //$this->lmsRepo->saveTransaction($overdueData);
                     }
                     
                     if($interestRefund>0)
                     { 
-                        $refundData = $this->createTransactionData($transDetail['user_id'], ['amount' => $interestRefund,'trans_date'=>$transDetail['trans_date'],'disbursal_id'=>$disbursalDetail->disbursal_id], null, 9, 1);
+                        $refundData = $this->createTransactionData($transDetail['user_id'], [
+                            'amount' => $interestRefund,
+                            'trans_date'=>$transDetail['trans_date'],
+                            'disbursal_id'=>$disbursalDetail->disbursal_id,
+                            'parent_trans_id'=>$transId
+                        ], null, 9, 1);
                         $transactionData['interestRefund'][] = $refundData;
                         //$this->lmsRepo->saveTransaction($refundData);
                     }   
@@ -667,7 +682,11 @@ trait LmsTrait
 
             if($trans['balance_amount']>0)
             { 
-                $paymentReverseData = $this->createTransactionData($transDetail['user_id'], ['amount' => $trans['balance_amount'],'trans_date'=>$transDetail['trans_date']], null, 2, 1);
+                $paymentReverseData = $this->createTransactionData($transDetail['user_id'], [
+                    'amount' => $trans['balance_amount'],
+                    'trans_date'=>$transDetail['trans_date'],
+                    'parent_trans_id'=>$transId
+                ], null, 2, 1);
                 $transactionData['reversePayment'][] = $paymentReverseData;
                 //$this->lmsRepo->saveTransaction($paymentReverseData);
             }
@@ -837,6 +856,7 @@ trait LmsTrait
         */
         $transactionData = [];
         // dd($data);
+        $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['gl_flag'] = 1;
         $transactionData['soa_flag'] = 1;
         $transactionData['user_id'] = $userId ?? null;
