@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Contracts\Traits;
 use Auth;
 use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Equipment;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 trait ApplicationTrait
 {
@@ -181,6 +182,13 @@ trait ApplicationTrait
             $data['ptpqrData'] = $ptpqrData;
             $data['businessAddress'] = $businessAddress;
         }
+        $data['leaseOfferData'] = AppProgramOffer::getAllOffers($appId, '3');
+        $data['facilityTypeList']= $this->masterRepo->getFacilityTypeList()->toarray();
+        $data['arrStaticData']['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
+        $data['arrStaticData']['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+        $data['arrStaticData']['securityDepositType'] = array('1'=>'INR','2'=>'%');
+        $data['arrStaticData']['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
+        $data['arrStaticData']['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
 
         $data['offerData'] = $offerData;
         $data['appId'] = $appId;
