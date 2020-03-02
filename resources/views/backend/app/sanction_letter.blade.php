@@ -63,6 +63,18 @@
                             margin-top: 5px;
                             background-color: #FFF;
                         }
+                          .input_sanc{
+                            width: 150px;
+                            height: 27px;
+                            border: none;
+                            padding: 0 5px;
+                            border-radius: 2px;
+                            margin-top: 5px;
+                            background-color: #FFF;
+                        }
+                          .input_sanc:focus{
+                             border: #ccc solid 1px;
+                        }
                        </style>
                         <style media="print">
                            .height{
@@ -148,35 +160,35 @@
                                  <td width="66.66%" colspan="3">..</td>
                               </tr>
                               <tr>
-                                 <td width="33.33%" class="pd-0">
+                                 <td width="33.33%" class="pd-0" style="padding: 0px !important;">
                                     <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                        <thead>
                                           <tr>
-                                             <th width="70%">Apprv. Debtor Name</th>
+                                             <th width="70%">Apprv. <br />Debtor Name</th>
                                              <th width="30%" class="height">Sub Limit</th>
                                           </tr>
                                        </thead>
                                        <tbody>
                                           <tr>
-                                             <td>Click here to enter text</td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                           <tr>
-                                             <td>Click here to enter text</td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                           <tr>
-                                             <td>Click here to enter text</td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                           <tr>
-                                             <td>Click here to enter text</td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                        </tbody>
                                     </table>
                                  </td>
-                                 <td width="66.66%" colspan="3" class="pd-0">
+                                 <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
                                     <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                        <thead>
                                           <tr>
@@ -187,30 +199,38 @@
                                           </tr>
                                        </thead>
                                        <tbody>
+                                         @for($i = 1; $i <= 4 ;$i++)
                                           <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
+                                             <td>
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>30 Days</option>
+                                                   <option>45 Days</option>
+                                                   <option>60 Days</option>
+                                                   <option>90 Days</option>
+                                              </select>
+                                            </td>
+                                             <td>
+                                               <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>7 Days</option>
+                                                   <option>15 Days</option>
+                                                   <option>30 Days</option>
+                                                   <option>45 Days</option>
+                                              </select>
+                                             </td>
+                                             <td>
+                                               <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>Invoice Date</option>
+                                                   <option>BOE Date</option>
+                                                   <option>GRN Date</option>
+                                                   <option>Date of Discounting</option>
+                                                </select>
+                                             </td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                           </tr>
-                                          <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
-                                          </tr>
-                                          <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
-                                          </tr>
-                                          <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
-                                          </tr>
+                                          @endfor
                                        </tbody>
                                     </table>
                                  </td>
@@ -222,8 +242,15 @@
                               <tr>
                                  <td width="33.33%">Specific Condition</td>
                                  <td width="66.66%" colspan="3">
-                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                                       <li>Invoices should not be older than 30 days from .On the date of Discounting.</li>
+                                    <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
+                                       <li>Invoices should not be older than 30 days from 
+                                               <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>Invoice Date</option>
+                                                   <option>BOE Date</option>
+                                                   <option>GRN Date</option>
+                                                   <option>Date of Discounting</option>
+                                                </select> On the date of Discounting.</li>
                                        <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
                                     </ul>
                                  </td>
@@ -274,7 +301,7 @@
                                  <td width="66.66%" colspan="3">..</td>
                               </tr>
                               <tr>
-                                 <td width="33.33%" class="pd-0">
+                                 <td width="33.33%" class="pd-0" style="padding: 0px !important;">
                                     <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                        <thead>
                                           <tr>
@@ -283,26 +310,26 @@
                                           </tr>
                                        </thead>
                                        <tbody>
-                                          <tr>
-                                             <td>Click here to enter text</td>
+                                           <tr>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                           <tr>
-                                             <td>Click here to enter text</td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                           <tr>
-                                             <td>Click here to enter text</td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                           <tr>
-                                             <td>Click here to enter text</td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                              <td></td>
                                           </tr>
                                        </tbody>
                                     </table>
                                  </td>
-                                 <td width="66.66%" colspan="3" class="pd-0">
+                                 <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
                                     <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                        <thead>
                                           <tr>
@@ -313,30 +340,38 @@
                                           </tr>
                                        </thead>
                                        <tbody>
+                                          @for($i = 0; $i <= 4 ;$i++)
                                           <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
+                                             <td>
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>30 Days</option>
+                                                   <option>45 Days</option>
+                                                   <option>60 Days</option>
+                                                   <option>90 Days</option>
+                                              </select>
+                                            </td>
+                                             <td>
+                                               <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>7 Days</option>
+                                                   <option>15 Days</option>
+                                                   <option>30 Days</option>
+                                                   <option>45 Days</option>
+                                              </select>
+                                             </td>
+                                             <td>
+                                               <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>Invoice Date</option>
+                                                   <option>BOE Date</option>
+                                                   <option>GRN Date</option>
+                                                   <option>Date of Discounting</option>
+                                                </select>
+                                             </td>
+                                             <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
                                           </tr>
-                                          <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
-                                          </tr>
-                                          <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
-                                          </tr>
-                                          <tr>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td>Choose an item</td>
-                                             <td></td>
-                                          </tr>
+                                          @endfor
                                        </tbody>
                                     </table>
                                  </td>
@@ -372,31 +407,52 @@
                               <tr>
                                  <td width="33.33%">Penal Interest</td>
                                  <td width="66.66%">
-                                    Choose an item.<b> % </b>Choose an item.entire principal / payable interest on delay in repayment of principal / Interest / charges.<br/>
-                                    <select class="select">
-                                       <option>Select</option>
-                                       <option>test</option>
-                                       <option>test</option>
-                                       <option>test</option>
-                                    </select>
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>2 %</option>
+                                                   <option>3 %</option>
+                                                   <option>4 %</option>
+                                                   <option>5 %</option>
+                                                   <option>18 %</option>
+                                              </select>
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>over and above the rate for the last draw down  or Rollover of facility on</option>
+                                                   <option>On</option>
+                                              </select> entire principal / payable interest on delay in repayment of principal / Interest / charges 
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>Applicable</option>
+                                                   <option>Not applicable</option>
+                                              </select>.<br/>
                                     <br/><br/>
-                                    The rate of interest will be __ % higher than the rate stipulated under each of the facilities till the security is created.
+                                    The rate of interest will be <input type="text" class="input_sanc" name="debtor_name[]" placeholder="Type Here">% higher than the rate stipulated under each of the facilities till the security is created
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>Applicable</option>
+                                                   <option>Not applicable</option>
+                                              </select>.
+                                    <br/><br/><br/>
+                                    If security is not created within the stipulated timeframe then a penal interest of 
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>2 %</option>
+                                                   <option>3 %</option>
+                                                   <option>4 %</option>
+                                                   <option>5 %</option>
+                                                   <option>18 %</option>
+                                              </select>p.a.  
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>over and above the rate for the last draw down  or Rollover of facility on</option>
+                                                   <option>On</option>
+                                              </select>  entire principle
+                                              <select class="select">
+                                                   <option>Choose an Item</option>
+                                                   <option>Applicable</option>
+                                                   <option>Not applicable</option>
+                                              </select>.
                                     <br/>
-                                    <select class="select">
-                                       <option>Select</option>
-                                       <option>test</option>
-                                       <option>test</option>
-                                       <option>test</option>
-                                    </select>
-                                    <br/><br/>
-                                    If security is not created within the stipulated timeframe then a penal interest of 18%p.a. on entire principle.
-                                    <br/>
-                                    <select class="select">
-                                       <option>Select</option>
-                                       <option>test</option>
-                                       <option>test</option>
-                                       <option>test</option>
-                                    </select>
                                  </td>
                               </tr>
                               <tr>
