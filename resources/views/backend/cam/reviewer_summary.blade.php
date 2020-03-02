@@ -112,7 +112,7 @@
                                     </tr>
                                     <tr role="row" class="odd">
                                       <td class=""><b>Processing Fee (%)</b></td>
-                                      <td class="">{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee : ''}}</td>
+                                      <td class="">{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee.' %' : ''}}</td>
                                    </tr>
                                     <tr role="row" class="odd">
                                        <td class=""><b>Additional Security</b></td>
