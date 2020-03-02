@@ -151,7 +151,7 @@ class Transactions extends BaseModel {
     
     public function disburse()
     {
-       return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal','user_id','user_id');
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal','disbursal_id','disbursal_id');
     }      
     
     public function trans_detail()
