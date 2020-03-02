@@ -55,7 +55,7 @@
                                     <label>Enter Limit</label><span class="limit float-right"></span>
                                     <span class="float-right text-success">
                                     @if($balance != '')
-                                        Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}
+                                        Remaining Limit Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}
                                     @endif
                                     </span>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:30px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
@@ -81,9 +81,9 @@
                                             <tr role="row">
                                             <th width="5%">Sr. No.</th>
                                             <th width="16%">Product Type</th>
-                                            <th width="18%">Limit</th>
-                                            <th width="18%">Cosumed Limit</th>
-                                            <th width="18%">Balance Limit</th>
+                                            <th width="18%">Product Limit</th>
+                                            <th width="18%">Cosumed Product Limit</th>
+                                            <th width="18%">Remaining Product Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>
                                         </thead>
@@ -165,9 +165,9 @@
                                             <tr role="row">
                                             <th width="5%">Sr. No.</th>
                                             <th width="16%">Product Type</th>
-                                            <th width="18%">Limit</th>
-                                            <th width="18%">Cosumed Limit</th>
-                                            <th width="18%">Balance Limit</th>
+                                            <th width="18%">Product Limit</th>
+                                            <th width="18%">Cosumed Product Limit</th>
+                                            <th width="18%">Remaining Product Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>
                                         </thead>
@@ -268,9 +268,9 @@
                                             <tr role="row">
                                             <th width="5%">Sr. No.</th>
                                             <th width="16%">Product Type</th>
-                                            <th width="18%">Limit</th>
-                                            <th width="18%">Cosumed Limit</th>
-                                            <th width="18%">Balance Limit</th>
+                                            <th width="18%">Product Limit</th>
+                                            <th width="18%">Cosumed Product Limit</th>
+                                            <th width="18%">Remaining Product Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>
                                         </thead>
@@ -304,7 +304,7 @@
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
                                                 <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR (%)</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR/Discounting (%)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
                                                 <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
                                             </tr>
@@ -318,6 +318,9 @@
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
                                                 <td>
+                                                    @if($prgmOffer->facility_type_id == 3)
+                                                    NILL
+                                                    @else
                                                     @php 
                                                         $i = 1;
                                                         $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
@@ -338,8 +341,15 @@
                                                     @php 
                                                         }
                                                     @endphp
+                                                    @endif
                                                 </td>
-                                                <td><b>Ruby Sheet</b>: {{$prgmOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$prgmOffer->cash_flow_xirr}}%</td>
+                                                <td>
+                                                @if($prgmOffer->facility_type_id == 3)
+                                                <b>Rental Discounting</b>: {{$prgmOffer->discounting}}%
+                                                @else
+                                                <b>Ruby Sheet</b>: {{$prgmOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$prgmOffer->cash_flow_xirr}}%
+                                                @endif
+                                                </td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
                                                 <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
                                             </tr>
