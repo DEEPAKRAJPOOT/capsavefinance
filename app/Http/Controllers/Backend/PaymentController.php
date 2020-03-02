@@ -249,6 +249,13 @@ class PaymentController extends Controller {
     // Add some data
 
     $objPHPExcel->getActiveSheet()->getStyle("A1:F1")->getFont()->setBold(true);
+    // $objPHPExcel->getActiveSheet()->getColumnDimension("F")->setAutoSize(true);
+
+    foreach(range('A','F') as $columnID) {
+      $objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
+          ->setAutoSize(true);
+  }
+
     $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('A'.$counter, 'Tran Date')
     ->setCellValue('B'.$counter, 'Value DaTE!')
@@ -269,15 +276,13 @@ class PaymentController extends Controller {
                   ->setCellValue('D'.$counter, 'MOD-AHM-33090')
                   ->setCellValue('E'.$counter, '552,521,000')
                   ->setCellValue('F'.$counter, '521,000');
-        if($counter == 10) {
-          $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
-        }
-        if($counter == 11) {
-          $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
-          $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
-        }
+     
     }
-    
+    $counter +=2;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
     
     // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
     // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
