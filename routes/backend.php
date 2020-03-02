@@ -1122,6 +1122,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'payment_advice',
                'uses' => 'Backend\PaymentController@paymentAdviceList'
            ]); 
+           
+            // Payment Advice
+            Route::get('payment_advice_excel', [
+                'as' => 'payment_advice_excel',
+               'uses' => 'Backend\PaymentController@paymentAdviceExcel'
+           ]); 
 
          }); 
     });
