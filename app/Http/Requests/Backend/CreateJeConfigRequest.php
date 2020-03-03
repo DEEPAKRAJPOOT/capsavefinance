@@ -23,11 +23,18 @@ class CreateJeConfigRequest extends Request
      */
     public function rules()
     {
-        return [
-            'trans_type' => 'required',
-            'variable' => 'required',
-            'journal' => 'required'
-        ];
+        if(!empty(request()->get('jeConfigId'))) {
+            return [
+                'variable' => 'required'
+            ];
+        } else {
+            return [
+                'trans_type' => 'required',
+                'variable' => 'required',
+                'journal' => 'required'
+            ];
+        }
+        
     }
 
     public function messages()

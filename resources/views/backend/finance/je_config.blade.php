@@ -22,6 +22,7 @@
                 )
                 ) 
             !!}   
+            <input type="hidden" name="transConfigId" value="{{ isset($transConfigId) ? $transConfigId : ''}}" /> 
             <input type="hidden" name="jeConfigId" value="{{ isset($jeConfigId) ? $jeConfigId : ''}}" /> 
             <div class="row align-items-center">
                 <div class="col-md-2">
@@ -32,7 +33,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select name="trans_type" id="trans_type"  class="form-control form-control-sm">
+                        <select {{ isset($jeConfigId) ? 'disabled' : ''}} name="trans_type" id="trans_type"  class="form-control form-control-sm">
                             <option value="">Select Transaction Type</option>
                             @if(isset($transType) && !empty($transType))
                                 @foreach($transType as $key=>$val)
@@ -58,7 +59,7 @@
                         <select name="variable[]" id="variable" class="multi-select-demo form-control form-control-sm" multiple="multiple">
                         @if(isset($variables) && !empty($variables))
                             @foreach($variables as $key=>$val)
-                            <option value="{{$val->id}}" {{(old('variable') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
+                            <option value="{{$val->id}}" {{ in_array($val->id, $variablesIdArray) ? 'selected': ''}}> {{$val->name}} </option>                            
                             @endforeach
                         @endif
                         </select>
@@ -75,7 +76,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <select name="journal" id="journal"  class="form-control form-control-sm">
+                        <select  {{ isset($jeConfigId) ? 'disabled' : ''}} name="journal" id="journal"  class="form-control form-control-sm">
                             <option value="">Select Journal</option>
                             @if(isset($journals) && !empty($journals))
                                 @foreach($journals as $key=>$val)

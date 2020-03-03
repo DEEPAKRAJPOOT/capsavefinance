@@ -57,4 +57,9 @@ class FinancialTransConfig extends BaseModel {
     {
         return $this->hasMany('App\Inv\Repositories\Models\Financial\FinancialVariablesTransConfig','trans_config_id');
     }
+
+    public function variablesMany()
+    {
+        return $this->belongsToMany('App\Inv\Repositories\Models\Financial\FinancialVariablesTransConfig', 'financial_variables_trans_config', 'trans_config_id', 'variable_id');        
+    }
 }

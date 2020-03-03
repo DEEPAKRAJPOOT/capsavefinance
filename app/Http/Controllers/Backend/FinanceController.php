@@ -43,6 +43,7 @@ class FinanceController extends Controller {
     }  
 
     public function crateJeConfig(Request $request) {
+        $variablesIdArray = [];
         $jeConfigId = $request->get('je_config_id');
         $transConfigId = $request->get('trans_config_id');
         $journalId = $request->get('journal_id');
@@ -51,8 +52,11 @@ class FinanceController extends Controller {
         $this->journals = $this->finRepo->getAllJournal()->get();
         if(isset($jeConfigId) && !empty($jeConfigId)){
             $jeVariablesData = $this->finRepo->getVariablesByTransConfigId($transConfigId); 
-            print($jeVariablesData);
-            dd();
+            if($jeVariablesData[0]->variables->count()>0) {
+                foreach($jeVariablesData[0]->variables as $key=>$val){
+                    $variablesIdArray[] = $val->variable_id;
+                }
+            }          
         }
         return view('backend.finance.je_config')
             ->with([
@@ -61,31 +65,46 @@ class FinanceController extends Controller {
             'journals'=> $this->journals,
             'jeConfigId'=> $jeConfigId,
             'transConfigId'=> $transConfigId,
-            'journalId'=> $journalId
+            'journalId'=> $journalId,
+            'variablesIdArray'=>$variablesIdArray
             ]);
     }  
 
     public function saveJeConfig(CreateJeConfigRequest $request) {
         try {
+            $jeConfigId = $request->get('jeConfigId');
             $transTypeId = $request->get('trans_type');
             $variables = $request->get('variable');
             $journalId = $request->get('journal');
 
             $this->inputData = [];
-            $this->inputData = [
-                'trans_config_id'=>$transTypeId,
-                'journal_id'=>$journalId
-            ];
-            $outputQryJe = $this->finRepo->saveJeData($this->inputData);
-            if(isset($outputQryJe->je_config_id)) {
-                $this->inputData = [];
+            if(isset($jeConfigId) && !empty($jeConfigId)){
+                $transConfigId = $request->get('transConfigId');
                 foreach($variables as $key=>$val) {
-                    $this->inputData[] = [
-                        'trans_config_id'=>$transTypeId,
-                        'variable_id'=>$val
-                    ];
+                    $this->inputData[] = $val;
                 }
-                $outputQryTransVar = $this->finRepo->saveTransVarData($this->inputData);
+                $outputQryTransVar = $this->finRepo->syncTransVarData($this->inputData, $transConfigId);
+            } else {
+                $this->inputData = [];
+                $this->inputData = [
+                    'trans_config_id'=>$transTypeId,
+                    'journal_id'=>$journalId
+                ];
+                $outputQryJe = $this->finRepo->saveJeData($this->inputData);
+                if(isset($outputQryJe->je_config_id)) {
+                    $this->inputData = [];
+                    // foreach($variables as $key=>$val) {
+                    //     $this->inputData[] = [
+                    //         'trans_config_id'=>$transTypeId,
+                    //         'variable_id'=>$val
+                    //     ];
+                    // }
+                    // $outputQryTransVar = $this->finRepo->saveTransVarData($this->inputData);
+                    foreach($variables as $key=>$val) {
+                        $this->inputData[] = $val;
+                    }
+                    $outputQryTransVar = $this->finRepo->syncTransVarData($this->inputData, $transTypeId);                
+                }
             }
             Session::flash('message','Journal entry config saved successfully');
             return redirect()->back();

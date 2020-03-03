@@ -97,4 +97,11 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     {
         return FinancialTransConfig::where('trans_config_id', $transConfigId)->with('variables')->get(); 
     }
+
+    public function syncTransVarData($arrData, $transConfigId){
+        //dd($arrData);
+        $trans = FinancialTransConfig::find($transConfigId);
+        return $trans->variablesMany()->sync($arrData);
+    }
+    
 }
