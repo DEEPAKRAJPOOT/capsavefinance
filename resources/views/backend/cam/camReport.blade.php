@@ -1,4 +1,3 @@
-<!-- Start PDF Section -->
    <div class="data mt-4">
        
 
@@ -586,7 +585,7 @@
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
-              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Standalone Financials of {{$arrBizData->biz_entity_name}}</td>
+              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Standalone Financials of {{$arrBizData->biz_entity_name}} In INR (Mn)</td>
           </tr>
       </table>
       <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
@@ -770,7 +769,10 @@
                            @endphp
                            @while(!empty($arrReviewer[$i])) 
                               <tr>
-                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrReviewer[$i]->assignee}}</th>
+                                 <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrReviewer[$i]->assignee}}
+                                     <span style="font-size: 11px;"></br>Updated at </br>
+                                          {{ \Carbon\Carbon::parse($arrReviewer[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                 </th>
                                  @php $i++; @endphp
                               </tr>
                         @endwhile
@@ -820,4 +822,4 @@ if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0)
    document.getElementById("isApproved").textContent += "approved";
 }
 </script>         
- <!-- End PDF Section
+

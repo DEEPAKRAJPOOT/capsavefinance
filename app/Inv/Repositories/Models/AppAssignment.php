@@ -224,7 +224,7 @@ class AppAssignment extends BaseModel
     public static function getBackStageUsers($app_id, $roles=[])
     {
         $assignData = self::select('u.user_id', 'r.id', DB::raw("CONCAT_WS(' ', rta_u.f_name, rta_u.l_name) AS assignee"),
-                'r.name as assignee_role')
+                'r.name as assignee_role','app_assign.updated_at')
                 ->join('users as u', 'app_assign.from_id', '=', 'u.user_id')
                 ->join('role_user as ru', 'u.user_id', '=', 'ru.user_id')
                 ->join('roles as r', 'ru.role_id', '=', 'r.id')
