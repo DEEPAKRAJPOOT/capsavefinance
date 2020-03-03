@@ -243,12 +243,13 @@ class PaymentController extends Controller {
                                 ->pluck('disbursal_id')
                                 ->toArray();
 
-    $disbursalData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
+    $totalMarginAmount = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
+                        ->sum('invoice_approve_amount'); 
+    $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
                               ->groupBy('margin')
-                              ->select(DB::raw('sum(invoice_approve_amount)/margin as ffffffffff'),)->get();
-                              //->sum(function());
+                              ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
 
-    dd($repayment, $repaymentTrails, $disbursalIds, $disbursalData);
+    //dd($repayment, $repaymentTrails, $disbursalIds, $marginAmountData, $totalMarginAmount);
     $objPHPExcel->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -273,7 +274,19 @@ class PaymentController extends Controller {
                 ->setCellValue('D'.$counter, 'Invoice No')
                 ->setCellValue('E'.$counter, 'Debit')
                 ->setCellValue('F'.$counter, 'Credit');
+                
 
+    if($repayment->count()>0){
+      $counter++;
+      $objPHPExcel->setActiveSheetIndex(0)
+      ->setCellValue('A'.$counter, $repayment->trans_date)
+      ->setCellValue('B'.$counter, $repayment->created_date)
+      ->setCellValue('C'.$counter, 'Repayment')
+      ->setCellValue('D'.$counter, ($repayment->disburse && $repayment->disburse->invoice && $repayment->trans_type == '30')? $data = $trans->disburse->invoice->invoice_no:'')
+      ->setCellValue('E'.$counter, ($repayment->entry_type=='0')?$repayment->amount:'')
+      ->setCellValue('F'.$counter, ($repayment->entry_type=='1')?$repayment->amount:'');            
+     
+    }
     for($i = 0; $i <= 10; $i++) {
       $objPHPExcel->setActiveSheetIndex(0)
                   ->setCellValue('A'.$counter, '12/01/2020')
