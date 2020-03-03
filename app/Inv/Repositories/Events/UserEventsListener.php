@@ -510,7 +510,7 @@ class UserEventsListener extends BaseEvent
         }); 
     }
     public function onApplicationMoveToApprover($userData){
-        $user = unserialize($userData);
+        $user = unserialize($userData);        
         $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
@@ -536,7 +536,7 @@ class UserEventsListener extends BaseEvent
                 ];
                 FinanceModel::logEmail($mailContent);
             });
-
+            
             Mail::to($user["receiver_email"], $user["receiver_user_name"])
             ->cc(explode(',', env('SEND_APPROVER_MAIL_CC')))
             ->send(new ReviewerSummary($this->mstRepo));

@@ -49,6 +49,8 @@ class ReviewerSummary extends Mailable
         if(isset($limitOfferData->prgm_offer_id) && $limitOfferData->prgm_offer_id) {
             $offerPTPQ = OfferPTPQ::getOfferPTPQR($limitOfferData->prgm_offer_id);
         }
+        $preCondArr=[];
+        $postCondArr=[];
         if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
             $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
                             ->where('is_active', 1)->get();
@@ -60,20 +62,19 @@ class ReviewerSummary extends Mailable
         } 
         
         //Get PreOffer Docs
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');   
         $appProductIds = [];
-        $appProducts = $this->appRepo->getAppProducts($appId);
+        $appProducts = $appRepo->getAppProducts($appId);
         foreach($appProducts->products as $product){
             array_push($appProductIds, $product->pivot->product_id);
-        }
-        
-        $preOfferDocs=[];
-        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');   
+        }        
+        $preOfferDocs=[];        
         $prgmDocs = $appRepo->getRequiredDocs(['doc_type_id' => 4], $appProductIds);
         foreach ($prgmDocs as $key => $value) {
             $preOfferDocs[] = $value->doc_id;
         }
-                    
-        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, config('common.review_summ_mail_docs_id') + $preOfferDocs);
+        //config('common.review_summ_mail_docs_id') + 
+        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, $preOfferDocs);
         $leaseOfferData = $facilityTypeList = array();
         $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
         $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
@@ -107,7 +108,7 @@ class ReviewerSummary extends Mailable
         if($fileArray) {
             foreach($fileArray as $key=>$val) {
                 if(file_exists(storage_path('app/public/'.$val['file_path']))) {
-
+                    
                     $email->attach(storage_path('app/public/'.$val['file_path']),
                     [
                         'as' => $val['file_name']

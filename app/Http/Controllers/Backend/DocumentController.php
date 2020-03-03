@@ -32,7 +32,7 @@ class DocumentController extends Controller
      */
     public function listDocument(Request $request)
     {
-    	try {
+    	try {                                    
             $arrFileData = $request->all();
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
