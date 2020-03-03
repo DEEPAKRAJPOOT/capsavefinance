@@ -343,11 +343,7 @@ class AppProgramOffer extends BaseModel {
        //////* get   app_prgm_limit_id behalf of app_id  ********//////////////
        return AppProgramOffer::where(['app_id' => $arr->app_id,'is_approve'=> 1,'status' =>1,'is_approve' =>1])->sum('prgm_limit_amt');
       
-    }
-      public function anchor(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
-    }
-    
+    } 
     public static function getSingleLimit($aid)
     {
          return self::where('anchor_id',$aid)->first();  
@@ -361,9 +357,6 @@ class AppProgramOffer extends BaseModel {
      public  function anchorList(){   
         return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
     }   
-      public function program(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
-    }
      public function app(){
         return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
     }
