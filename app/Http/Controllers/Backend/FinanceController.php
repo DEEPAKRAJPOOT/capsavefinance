@@ -124,16 +124,20 @@ class FinanceController extends Controller {
 
             if(isset($jiConfigId) && !empty($jiConfigId)){
                 $outputQryJi = $this->finRepo->saveJiData($this->inputData, $jiConfigId);
+                if(isset($outputQryJi)) {
+                    Session::flash('message','Journal item updated successfully');
+                } else {
+                    Session::flash('error','Journal item not updated, Please try later.');
+                }   
             } else {
                 $outputQryJi = $this->finRepo->saveJiData($this->inputData, null);
+                if(isset($outputQryJi->ji_config_id)) {
+                    Session::flash('message','Journal item saved successfully');
+                } else {
+                    Session::flash('error','Journal item not saved, Please try later.');
+                }   
             }
-            if(isset($outputQryJi->ji_config_id)) {
-                Session::flash('message','Journal item saved successfully');
-                return redirect()->back();
-            } else {
-                Session::flash('error','Journal item not saved, Please try later.');
-                return redirect()->back();
-            }            
+            return redirect()->back();                      
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
