@@ -1270,9 +1270,6 @@ class ApplicationController extends Controller
             $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
             $date = \Carbon\Carbon::now();
             $data['date'] = $date;
-
-            return view('backend.app.send_sanction_letter')->with($data);
-
             $htmlContent = view('backend.app.send_sanction_letter')->with($data)->render();
             $userData =  $this->userRepo->getUserByAppId($appId);
 
