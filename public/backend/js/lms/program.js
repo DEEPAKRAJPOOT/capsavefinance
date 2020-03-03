@@ -674,15 +674,11 @@ try {
             sdt = $(this).val();
             if (sdt == 1) {
                 $(this).closest('.amtpercentrow').find('.sdt').text('Amount');
-                $('input[name=chrg_calculation_amt]').val('');
                 $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-percent').addClass('fa-inr')
-                $('input[name=chrg_calculation_amt]').attr('Placeholder', 'Deposit Amount');
                 $(this).closest('.amtpercentrow').find('#approved_limit_div').hide();
             } else {
                 $(this).closest('.amtpercentrow').find('.sdt').text('Percent');
-                $('input[name=chrg_calculation_amt]').val('');
                 $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-inr').addClass('fa-percent');
-                $('input[name=chrg_calculation_amt]').attr('Placeholder', 'Deposit Percent');
                 $(this).closest('.amtpercentrow').find('#approved_limit_div').show();
             }
         });
