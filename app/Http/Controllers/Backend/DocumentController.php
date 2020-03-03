@@ -40,7 +40,7 @@ class DocumentController extends Controller
             $allProductDoc = [];
             $docData = [];
             $noDocFlag = 0;
-            $appProduct = $this->appRepo->getAppProducts($appId);
+            $appProduct = $this->appRepo->getApplicationProduct($appId);
             
             $docTypes = config('common.doc_type');            
                         
