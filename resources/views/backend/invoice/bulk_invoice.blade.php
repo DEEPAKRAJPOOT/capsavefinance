@@ -9,11 +9,11 @@
       <i class="fa fa-clipboard" aria-hidden="true"></i>
    </div>
    <div class="header-title">
-      <h3 class="mt-2">Manage Invoice</h3>
+      <h3 class="mt-2">Upload Bulk Invoice</h3>
      
       <ol class="breadcrumb">
          <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-         <li class="active">Manage Invoice</li>
+         <li class="active">Upload Bulk Invoice</li>
       </ol>
    </div>
    <div class="clearfix"></div>
@@ -34,22 +34,22 @@
                     
                      
                      
-		 <div class="col-md-6">
+		 <div class="col-md-4">
 		<div class="form-group">
         <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
-                                             
-                <option value="">Select Anchor  </option>
-                @foreach($anchor_list as $row)
-                <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+            <option value="">Select Anchor  </option>
+              @foreach($anchor_list as $row)
+                 @php if(isset($row->anchorOne->anchor_id)) { @endphp
+                <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}</option>
+                @php } @endphp
                 @endforeach
-                                             </select>
-        
-                                               <span id="anchor_bulk_id_msg" class="error"></span>
+              </select>
+             <span id="anchor_bulk_id_msg" class="error"></span>
                 
                 </div></div>
 		
-		 <div class="col-md-6">
+		 <div class="col-md-4">
                     <div class="form-group">
                         <label for="txtCreditPeriod">Product Program Name
                             <span class="error_message_label">*</span>  <!-- <span id="pro_limit" class="error"></span> -->
@@ -61,7 +61,7 @@
                                     <span id="program_bulk_id_msg" class="error"></span>
                </div>
 		</div>
-            <div class="col-md-6">
+                       <div class="col-md-4">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
            <select readonly="readonly" class="form-control" id="supplier_bulk_id" >
@@ -70,6 +70,17 @@
             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
             </div>
             </div>
+           <div class="col-md-4">
+    <div class="form-group">
+                            <label for="txtCreditPeriod">Payment Date Calculation  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
+                            <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
+                              <option value="">Please Select</option>
+                              <option value="1">Invoice Date</option>
+                              <option value="2">Invoice Due Date </option>
+                             </select>
+                          <span id="pay_calculation_on_msg" class="error"></span>                                        <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
+                        </div>
+               </div> 
 										
             <div class="col-md-4">
             <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
@@ -127,6 +138,7 @@
                    <div class="col-md-8">
                            <label class="error" id="tenorMsg"></label>
                    </div>
+                  <span class="exceptionAppend"></span>
                   <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
                   <input type="hidden" value="" id="tenor" name="tenor">
                   <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
@@ -168,7 +180,7 @@
         $(".finalButton").hide();
         $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
         $("#program_bulk_id").append("<option value=''>No data found</option>");  
-        $("#program_bulk_id").append("<option value=''>No data found</option>");                         
+                               
    
   }); 
   
@@ -336,6 +348,13 @@
         }
       });
       
+       $(document).on('change','#pay_calculation_on',function(){
+           
+       if($("#pay_calculation_on").val() > 0)
+        {
+           $("#pay_calculation_on_msg" ).hide();
+        }
+      });
       
         $(document).on('change','.fileUpload',function(){
        
@@ -418,19 +437,20 @@
         var getOldDays  = findDaysWithDate(cDate,second);
         var tenor  = $('#tenor').val();
         var tenor_old_invoice  = $('#tenor_old_invoice').val();
-       if(getDays > tenor)
+       /*if(getOldDays > tenor_old_invoice)
+        {
+           $("#tenorMsg").show(); 
+          $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
+           e.preventDefault();
+        }
+         else */
+        if(getDays > tenor)
         {
            $(".appendExcel"+count).css("background-color","#ea9292");
            $("#tenorMsg").show(); 
            $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
            e.preventDefault();
-        }
-         else if(getOldDays > tenor_old_invoice)
-        {
-           $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
-           e.preventDefault();
-        }
+        } 
          else if(getDays < 0)
         {
            
@@ -481,6 +501,12 @@
              $("#supplier_bulk_id_msg" ).text("Please Select Supplier Name");
              return false;
         }
+         if($("#pay_calculation_on").val()=='')
+        {
+             $("#pay_calculation_on_msg" ).show();
+             $("#pay_calculation_on_msg" ).text("Please Select Payment Calculation");
+             return false;
+        } 
         if($("#customFile").val()=='')
         {
              $("#customFile_msg" ).show();
@@ -497,12 +523,14 @@
         var program_bulk_id  = $("#program_bulk_id").val();
         var supplier_bulk_id  = $("#supplier_bulk_id").val();
         var pro_limit_hide  =  $("#pro_limit_hide").val();
+        var pay_calculation_on  =  $("#pay_calculation_on").val();
         datafile.append('_token', messages.token );
         datafile.append('doc_file', file);
         datafile.append('anchor_bulk_id', anchor_bulk_id);
         datafile.append('program_bulk_id', program_bulk_id);
         datafile.append('supplier_bulk_id', supplier_bulk_id);
         datafile.append('pro_limit_hide', pro_limit_hide);
+        datafile.append('pay_calculation_on', pay_calculation_on);
         $('.isloader').show();
         $.ajax({
             headers: {'X-CSRF-TOKEN':  messages.token  },

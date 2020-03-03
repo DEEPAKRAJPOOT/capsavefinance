@@ -19,14 +19,7 @@
    <div class="clearfix"></div>
 </section>
 <div class="row grid-margin ">
-
-
-
-   
-   
-   
-   
-   <div class="col-md-12  mb-4">
+ <div class="col-md-12  mb-4">
       <div class="card">
          <div class="card-body">
            <div class="form-fields">
@@ -45,8 +38,10 @@
                                              
                                             @if(count($get_anchor) > 0)
                                                 <option value="">Please Select</option>
-                                                @foreach($get_anchor as $row)  
+                                                @foreach($get_anchor as $row) 
+                                                @php if(isset($row->anchorList->anchor_id)) { @endphp
                                                 <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
+                                                @php } @endphp
                                                 @endforeach
                                                
                                                 @endif
@@ -63,7 +58,7 @@
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
-                                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
+                                           
                                 
                                         </div>
                                     </div>
@@ -78,7 +73,8 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span> </label>
-                                             <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
+                                            <input type="text" maxlength="10" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
+                                            <span id="msgInvoiceDupli" class="error"></span>  
                                         </div>
                                     </div> 
 									<div class="col-md-4">
@@ -92,16 +88,30 @@
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span> </label>
                                               <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth" placeholder="Invoice Due Date">
-                                      </div>
+                                       
+                                        </div>
                                     </div>
-									
+                    <div class="col-md-4">
+                    <div class="form-group">
+                                            <label for="txtCreditPeriod">Payment Date Calculation  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
+                                            <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
+                                              <option value="">Please Select</option>
+                                              <option value="1">Invoice Date</option>
+                                              <option value="2">Invoice Due Date </option>
+                                             </select>
+                                             					 <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
+                                        </div>
+               </div> 
 									<div class="col-md-4">
-                                        <div class="form-group">
+                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
-										 <div class="form-group">
+                                    </div>
+									
+									<div class="col-md-4">
+                                       							 <div class="form-group">
                                             <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label">*</span></label>
 											
 		<div class="custom-file">
@@ -109,41 +119,33 @@
                <input type="file" class="custom-file-input" id="customFile" name="doc_file">
                <label class="custom-file-label" for="customFile">Choose file</label>
             </div>
-			
-			
-			
-                                            
-                                        </div>
-                                    </div>
-									<div class="col-md-8">
-                                        <div class="form-group">
-                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
-                                               <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
-                                    </div>
-                                    </div>
-									
-									
-									
-									
-									
-									
-                                    
-                                </div> 
-								   <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="col-md-8">
-                                            <label class="error" id="tenorMsg"></label>
-                                        </div>
-                                        <div class="text-right mt-2">
-                                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
-                                             <input type="hidden" value="" id="tenor" name="tenor">
-                                              <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
-                                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
-                                            <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
-                                        </div>
-                                    </div>
-                                </div> 
-                           
+			 </div>
+                  </div>				
+				
+                    <div class="col-md-8">
+                    <div class="form-group">
+                    <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
+                    <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
+                    </div>
+                    </div>
+		</div> 
+                <div class="row">
+                   <div class="col-md-12">
+                       <div class="col-md-8">
+                           <label class="error" id="tenorMsg"></label>
+                       </div>
+                       <div class="text-right mt-2">
+                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
+                           <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
+                            <input type="hidden" value="" id="tenor" name="tenor">
+                             <input type="hidden" value="" id="exception" name="exception">
+                             <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
+                            <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
+                           <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
+                       </div>
+                   </div>
+               </div> 
+
                            
                            
                           
@@ -329,19 +331,19 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     front_program_list: "{{ URL::route('front_program_list') }}",
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
+    check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
    };
    
-   $('[name="invoice_approve_amount"]').on('change blur keyup', function() {
+   ///////////////// invoice approve amount check here///////////
+   $(document).on('change blur keyup','#invoice_approve_amount', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
-     var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
-   
-     if(invoice_approve_amount  > pro_limit)
+     var invoice_approve_amount = $("#invoice_approve_amount").val();
+     var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+      if(invoice_approve_amount  > pro_limit)
      {
-       
-         $("#msgProLimit").text('Invoice amount should not more than program limit');
+         $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
          $("#submit").css("pointer-events","none");
          return false;
-         
      }
      else
      {
@@ -349,7 +351,40 @@ var messages = {
          $("#submit").css("pointer-events","auto");
          return true;
      }
+     
 });
+
+ //////////// check duplicate invoice ////////////////////
+ 
+  $(document).on('change blur keyup','#invoice_no', function() {
+     var invoice = $(this).val();
+      var postData =  ({'invoice':invoice,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.check_duplicate_invoice,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                      if(data.status==1)
+                        {
+                            $("#msgInvoiceDupli").text('Invoice No already exists');
+                            $("#submit").css("pointer-events","auto");
+                            $("#submit").css("pointer-events","none");
+                            return false;
+                        }
+                        else
+                        {
+                            $("#msgInvoiceDupli").empty();
+                           return true;
+                        }
+                }
+            });
+});
+
 
    function ChangeDateFormat(date)
    {
@@ -427,6 +462,12 @@ var messages = {
         required: "Please enter Invoice Due Date",
         }
         }); 
+        $("#pay_calculation_on" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please Select Payment Calculation",
+        }
+        });  
         $("#invoice_date" ).rules( "add", {
         required: true,
         messages: {
@@ -449,14 +490,15 @@ var messages = {
          if(getDays > tenor)
         {
            $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
+           $("#tenorMsg").html('Invoice date & invoice due date difference should not be more than '+tenor+' days'); 
            e.preventDefault();
         }
        else if(getOldDays > tenor_old_invoice)
         {
-           $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
-           e.preventDefault();
+          // $("#tenorMsg").show(); 
+          // $("#tenorMsg").html('Invoice date & current date difference should not be more than '+tenor_old_invoice+' days.'); 
+          /// e.preventDefault();
+          $("#exception").val(28);
         }
          
         } else {

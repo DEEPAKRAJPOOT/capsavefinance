@@ -19,6 +19,8 @@ use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
+use PHPExcel;
+use PHPExcel_IOFactory;
 
 class PaymentController extends Controller {
 
@@ -168,8 +170,9 @@ class PaymentController extends Controller {
         if( $res)
         {
           if($request['trans_type']==17){
-            $this->paySettlement( $request['customer_id']);
-            }
+            //$this->paySettlement( $request['customer_id']);
+            $this->invoiceKnockOff($res->trans_id);
+          }
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');
              //Session::flash('message', 'Bulk amount has been saved');
@@ -216,7 +219,103 @@ class PaymentController extends Controller {
              return back(); 
         }
    }
-  
+
+  /* Payment Advice List   */
+  public function  paymentAdviceList()
+  {
+    return view('backend.payment.payment_advice_list');
+
+  }
+
+  public function  paymentAdviceExcel()
+  {
+    $counter = 1;
+    $objPHPExcel =  new PHPExcel();
+
+    // $objPHPExcel->getActiveSheet('A1:F1')->getStyle()->getFont()->setBold(true);
+    // Setting font to Arial Black
+    // $objPHPExcel->getDefaultStyle()->getFont()->setName('Arial Black');
+   
+
+    // Set document properties
+    $objPHPExcel->getProperties()->setCreator("Prolitus")
+    ->setLastModifiedBy("Prolitus")
+    ->setTitle("Office 2007 XLSX Test Document")
+    ->setSubject("Office 2007 XLSX Test Document")
+    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+    ->setKeywords("office 2007 openxml php")
+    ->setCategory("Test result file");
+    
+    // Add some data
+
+    $objPHPExcel->getActiveSheet()->getStyle("A1:F1")->getFont()->setBold(true);
+    // $objPHPExcel->getActiveSheet()->getColumnDimension("F")->setAutoSize(true);
+
+    foreach(range('A','F') as $columnID) {
+      $objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
+          ->setAutoSize(true);
+  }
+
+    $objPHPExcel->setActiveSheetIndex(0)
+    ->setCellValue('A'.$counter, 'Tran Date')
+    ->setCellValue('B'.$counter, 'Value DaTE!')
+    ->setCellValue('C'.$counter, 'Tran Type')
+    ->setCellValue('D'.$counter, 'Invoice No')
+    ->setCellValue('E'.$counter, 'Debit')
+    ->setCellValue('F'.$counter, 'Credit');
+
+    $counter += 0;
+    // Data
+
+    for($i = 0; $i <= 10; $i++) {
+      $counter++;
+      $objPHPExcel->setActiveSheetIndex(0)
+                  ->setCellValue('A'.$counter, '12/01/2020')
+                  ->setCellValue('B'.$counter, '12/03/2020')
+                  ->setCellValue('C'.$counter, 'Repayment')
+                  ->setCellValue('D'.$counter, 'MOD-AHM-33090')
+                  ->setCellValue('E'.$counter, '552,521,000')
+                  ->setCellValue('F'.$counter, '521,000');
+     
+    }
+    $counter +=2;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
+    
+    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
+    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
+    // $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
+    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('E'.$counter, 'asdfsd');
+
+    $counter++;
+    
+    // Rename worksheet
+    $objPHPExcel->getActiveSheet()->setTitle('Simple');
+
+
+
+    // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+    $objPHPExcel->setActiveSheetIndex(0);
+
+    // Redirect output to a client’s web browser (Excel2007)
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="01simple.xlsx"');
+    header('Cache-Control: max-age=0');
+    // If you're serving to IE 9, then the following may be needed
+    header('Cache-Control: max-age=1');
+
+    // If you're serving to IE over SSL, then the following may be needed
+    header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+    header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header ('Pragma: public'); // HTTP/1.0
+
+    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+    $objWriter->save('php://output');
+    
+  }
 }
 
 

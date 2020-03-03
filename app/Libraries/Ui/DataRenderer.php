@@ -1129,6 +1129,73 @@ class DataRenderer implements DataProviderInterface
               ->make(true);
     }  
     
+      /*      
+     * Get execption list for backend
+     */
+    public function getBackendEpList(Request $request,$invoice)
+    { 
+    
+      return DataTables::of($invoice)
+               ->rawColumns(['status','anchor_id'])
+                ->addColumn(
+                    'anchor_id',
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+             })
+                ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {                        
+                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                })
+                 ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                })  
+                 ->addColumn(
+                    'invoice_due_date',
+                    function ($invoice) {                        
+                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
+                })
+                ->addColumn(
+                    'tenor',
+                    function ($invoice) {                        
+                         return $invoice->tenor ? $invoice->tenor : '';
+                })
+                ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
+                })
+                 ->addColumn(            
+                    'invoice_approve_amount',
+                    function ($invoice) {                        
+                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
+                })
+               ->addColumn(
+                    'status',
+                    function ($invoice) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<div class="d-flex inline-action-btn"><span class="badge badge-danger">Exception </span></div>';
+
+                })
+              
+              ->make(true);
+    }  
+    
     
       /*      
      * Get Invoice list for backend
@@ -1230,7 +1297,7 @@ class DataRenderer implements DataProviderInterface
                    ->addColumn(
                     'amount',
                     function ($trans) {                        
-                         return $trans->amount ? $trans->amount : '';
+                         return $trans->amount ? number_format($trans->amount) : '';
                 })  
                  ->addColumn(
                     'trans_by',
@@ -2135,7 +2202,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'is_gst_applicable',
                     function ($charges) {
-                     return ($charges->ChargeMaster->is_gst_applicable == 1) ? 'Yes' : 'No'; 
+                     return ($charges->transaction->gst == 1) ? 'Yes' : 'No'; 
                 })      
                  ->addColumn(
                     'charge_percent',
@@ -3232,6 +3299,19 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetTransactions(Request $request, $data)
     {
         return DataTables::of($data)
+            ->addColumn('invoice_no',function($trans){
+                $data = '';
+                if($trans->disburse && $trans->disburse->invoice && $trans->trans_type == '30'){
+                    $data = $trans->disburse->invoice->invoice_no; 
+                }
+                return $data;
+            })
+            ->addColumn('batch_no',function($trans){
+                return '';
+            })
+            ->addColumn('narration',function($trans){
+                return $trans->comment;;
+            })
             ->addColumn(
                 'virtual_acc_id',
                 function ($transaction) {

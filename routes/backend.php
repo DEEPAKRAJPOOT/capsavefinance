@@ -1019,7 +1019,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_get_failed_disbursment',
                 'uses' => 'Backend\InvoiceController@viewfailedDisbursment'
             ]); 
-               
+              
                 Route::get('backend_get_disbursed', [
                  'as' => 'backend_get_disbursed',
                 'uses' => 'Backend\InvoiceController@viewdisbursed'
@@ -1069,6 +1069,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'view_invoice_details',
                 'uses' => 'Backend\InvoiceController@viewInvoiceDetails'
             ]);  
+                Route::get('backend_get_exception_cases', [
+                 'as' => 'backend_get_exception_cases',
+                'uses' => 'Backend\InvoiceController@exceptionCases'
+            ]);  
             
          });
          
@@ -1116,6 +1120,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_save_excel_payment',
                 'uses' => 'Backend\PaymentController@saveExcelPayment'
             ]); 
+
+            // Payment Advice
+            Route::get('payment_advice', [
+                'as' => 'payment_advice',
+               'uses' => 'Backend\PaymentController@paymentAdviceList'
+           ]); 
+           
+            // Payment Advice
+            Route::get('payment_advice_excel', [
+                'as' => 'payment_advice_excel',
+               'uses' => 'Backend\PaymentController@paymentAdviceExcel'
+           ]); 
 
          }); 
     });

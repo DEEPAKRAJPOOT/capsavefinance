@@ -57,7 +57,10 @@
       <a class="nav-link @if(Route::currentRouteName()=='backend_get_reject_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
 
     </li>
-  
+  <li class="nav-item">
+                                <a class="nav-link @if(Route::currentRouteName()=='backend_get_exception_cases') active @endif" href="{{Route('backend_get_exception_cases')}}">Exception Cases</a>
+
+                            </li>
    
   </ul>
 
@@ -87,7 +90,9 @@
                     <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
                            <option value="">Select Anchor  </option>
                            @foreach($anchor_list as $row)
-                           <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                            @php if(isset($row->anchorOne->anchor_id)) { @endphp
+                           <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
+                          @php } @endphp
                            @endforeach
                           
                         
@@ -171,10 +176,12 @@
         <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span></label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id"  name="anchor_bulk_id">
                                              
-                <option value="">Select Anchor  </option>
-                @foreach($anchor_list as $row)
-                <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
-                @endforeach
+              <option value="">Select Anchor  </option>
+                           @foreach($anchor_list as $row)
+                            @php if(isset($row->anchorOne->anchor_id)) { @endphp
+                           <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
+                          @php } @endphp
+                           @endforeach
                                              </select>
                                              <span id="anc_limit"></span>
                 
@@ -276,7 +283,7 @@
  
   $(document).ready(function () {
        $("#program_bulk_id").append("<option value=''>No data found</option>");  
-        $("#program_bulk_id").append("<option value=''>No data found</option>");                         
+                              
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
      
