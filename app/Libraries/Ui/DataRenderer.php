@@ -3356,7 +3356,7 @@ class DataRenderer implements DataProviderInterface
         }
 
         /**
-     * get soa list
+     * get Payment Advice list
      * 
      * @param object $request
      * @param object $data
@@ -3375,10 +3375,7 @@ class DataRenderer implements DataProviderInterface
                 return $data;
             })
             ->addColumn('f_name',function($trans){
-                return $trans->f_name;
-            })
-            ->addColumn('narration',function($trans){
-                return $trans->comment;;
+                return $trans->f_name. ' '.$trans->l_name;
             })
             ->addColumn(
                 'trans_date',
@@ -3402,7 +3399,7 @@ class DataRenderer implements DataProviderInterface
                 'action',
                 function ($data) {
                 $act = $data->action;
-                $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" data-url =""><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" data-url ="'.route('payment_advice_excel', ['trans_id' => $data->trans_id]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                 return $download;
                 }
             )

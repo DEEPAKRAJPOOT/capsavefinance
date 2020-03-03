@@ -690,7 +690,7 @@ use CommonRepositoryTraits;
     {
        try
        {
-           return Transactions::select('transactions.*', 'users.f_name')
+           return Transactions::select('transactions.*', 'users.f_name', 'users.l_name')
                             ->join('users', 'transactions.user_id', '=', 'users.user_id')
                             ->where('trans_type','=', 17)
                             ->orderBy('trans_id', 'asc');  
@@ -698,14 +698,4 @@ use CommonRepositoryTraits;
           return $ex;
        }
     }
-// Transactions::select('transactions.*')
-// ->join('users', 'transactions.user_id', '=', 'users.user_id')
-// ->join('lms_users','users.user_id','lms_users.user_id')
-// ->orderBy('user_id', 'asc')
-// ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
-// ->orderBy('trans_id', 'asc');
-
-// Transactions::where('trans_type','=', 17);  
-// return Transactions::select('transactions.trans_id', 'transactions.trans_type', 'transactions.trans_date', 'transactions.created_at', 'transactions.amount', 'users.f_name', 'users.l_name')
-// 'CONCAT(users.f_name, " ", users.l_name) as full_name','users.f_name',
 }
