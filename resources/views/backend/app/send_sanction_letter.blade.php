@@ -17,12 +17,11 @@
 <div class="content-wrapper">
     <div class="row grid-margin mt-3 mb-2">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
-            <div class="card">
-                <div class="card-body">
+
                     <div class=" form-fields">
-                        <div class="col-md-12">
+                      
                             <h5 class="card-title form-head-h5 text-center">Sanction Letter</h5>                            
-                            <div class="col-md-12">
+                            
 
                             <p>Ref No: CFPL/{{$date->isoFormat('MMMYY') }}/{{$sanctionData->sanction_id}} <br><br>
                                     {{ $date->isoFormat('MMMM D, Y') }}<br><br>
@@ -75,13 +74,13 @@
                                 <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                         <thead>
                                         <tr>
-                                            <td width="10%" style="background: #e9ecef;"><b>Facility Type</b></td>
-                                            <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
-                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
-                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
-                                            <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
-                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>    XIRR/Discounting(%)</b></td>
-                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
+                                            <td  style="background: #e9ecef;"><b>Facility Type</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>    XIRR/Discounting(%)</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
                                             
                                         </tr>
                                         </thead>
@@ -143,7 +142,7 @@
                                 <table class="table table-bordered overview-table">
                                     <tbody>
                                         <tr>
-                                            <td>13.</td>
+                                            <td>1.</td>
                                             <td>Payment mechanism</td>
                                             <td>
                                                 @switch($sanctionData->payment_type)
@@ -156,47 +155,47 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>14.</td>
+                                            <td>2.</td>
                                             <td>Delayed payment charges</td>
                                             <td>{!! $delay_pymt_chrg !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>15.</td>
+                                            <td>3.</td>
                                             <td>Insurance</td>
                                             <td>{!! $insurance !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>16.</td>
+                                            <td>4.</td>
                                             <td>GST/Bank Charges</td>
                                             <td>{!! $bank_chrg !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>17.</td>
+                                            <td>5.</td>
                                             <td>Legal Costs</td>
                                             <td>{!! $legal_cost !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>18.</td>
+                                            <td>6.</td>
                                             <td>Purchase Orders</td>
                                             <td>{!! $po !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>19.</td>
+                                            <td>7.</td>
                                             <td>Pre-disbursement conditions</td>
                                             <td>{!! $pdp !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>20.</td>
+                                            <td>8.</td>
                                             <td>Disbursement Guidelines/Documentation</td>
                                             <td>{!! $disburs_guide !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>21.</td>
+                                            <td>9.</td>
                                             <td>Other Conditions </td>
                                             <td>{!! $other_cond !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>22.</td>
+                                            <td>10.</td>
                                             <td>Information and other covenants</td>
                                             <td>{!! $covenants !!}</td>
                                         </tr>
@@ -216,10 +215,8 @@
                                   Authorized Signatory
                                     @endif
                                 </b></p>
-                            </div>
-                        </div>	
-                    </div>	 
-                </div>
+                           
+                   
             </div>
         </div>
     </div>
