@@ -1019,7 +1019,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_get_failed_disbursment',
                 'uses' => 'Backend\InvoiceController@viewfailedDisbursment'
             ]); 
-               
+              
                 Route::get('backend_get_disbursed', [
                  'as' => 'backend_get_disbursed',
                 'uses' => 'Backend\InvoiceController@viewdisbursed'
@@ -1068,6 +1068,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
              Route::get('view_invoice_details', [
                  'as' => 'view_invoice_details',
                 'uses' => 'Backend\InvoiceController@viewInvoiceDetails'
+            ]);  
+                Route::get('backend_get_exception_cases', [
+                 'as' => 'backend_get_exception_cases',
+                'uses' => 'Backend\InvoiceController@exceptionCases'
             ]);  
             
          });

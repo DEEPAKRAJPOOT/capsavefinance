@@ -315,7 +315,7 @@ class AppProgramOffer extends BaseModel {
             return false;
         }
     }
-
+   
     public function offerPtpq(){
         return $this->hasMany('App\Inv\Repositories\Models\OfferPTPQ', 'prgm_offer_id', 'prgm_offer_id');
     }
@@ -341,9 +341,37 @@ class AppProgramOffer extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
        //////* get   app_prgm_limit_id behalf of app_id  ********//////////////
-       $app_prgm_limit_id  = AppProgramLimit::where(['app_id' => $arr->app_id,'product_id' =>1])->pluck('app_prgm_limit_id');
-       $result = self::whereIn('app_prgm_limit_id',$app_prgm_limit_id)->where(['prgm_id'=>(int) $arr->prog_id, 'is_active'=>1])->sum('prgm_limit_amt');
-       return ($result ? $result : false);
+       return AppProgramOffer::where(['app_id' => $arr->app_id,'is_approve'=> 1,'status' =>1,'is_approve' =>1])->sum('prgm_limit_amt');
+      
+    }
+      public function anchor(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
+    }
+    
+    public static function getSingleLimit($aid)
+    {
+         return self::where('anchor_id',$aid)->first();  
+    }
+
+     function anchorOne()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
+    
+     }
+     public  function anchorList(){   
+        return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
+    }   
+      public function program(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+    }
+     public function app(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
+    }
+    
+     function productHas()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id','app_prgm_limit_id')->where(['product_id' =>1]);  
+    
     }
     
     public function anchor(){

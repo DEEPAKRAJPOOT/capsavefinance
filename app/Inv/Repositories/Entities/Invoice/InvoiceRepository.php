@@ -656,7 +656,7 @@ use CommonRepositoryTraits;
      
         try
         {
-          return AppProgramLimit::getSingleLimit($aid);
+          return AppProgramOffer::getSingleLimit($aid);
         } catch (Exception $ex) {
            return $ex;
         } 
@@ -684,6 +684,12 @@ use CommonRepositoryTraits;
     public function getInvoiceData($where, $select)
     {
         return InvoiceModel::getInvoiceData($where, $select);
+    }
+    
+    public function checkDuplicateInvoice($invoiceNo)
+    {
+        
+          return BizInvoice::checkDuplicateInvoice($invoiceNo);
     }
 
     function  getPaymentAdvice()

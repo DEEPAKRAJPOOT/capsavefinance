@@ -2733,7 +2733,12 @@ if ($err) {
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
-    
+     //////////////////// use for exception case invoice list/////////////////
+     public function getBackendEpList(DataProviderInterface $dataProvider) {
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,28);
+        $invoice = $dataProvider->getBackendEpList($this->request, $invoice_data);
+        return $invoice;
+    } 
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
        
@@ -3188,21 +3193,74 @@ if ($err) {
        }
      }
     
-         public function  getChrgAmount(Request $request)
+         public function  getCalculationAmount(Request $request)
+      {
+          
+       if($request->chrg_applicable_id==1)
+       {
+         $amountSum  =  $this->lmsRepo->getLimitAmount($request);
+         $amountSum  = $amountSum[0];
+       }
+       else if($request->chrg_applicable_id==2 || $request->chrg_applicable_id==3)
+       {
+         $amountSum  =  $this->lmsRepo->getOutstandingAmount($request);
+       }
+       else
+       {
+            $amountSum =  0;
+       }
+     
+     
+        if($amountSum)
+        {
+          
+            if($request->is_gst_applicable==1)
+            {
+                /* apply percentage on amount  ****/
+                $getPercentAmount =   $amountSum*$request->percent/100;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount =  $getPercentAmount*18/100;
+                $final_amount = $getPercentAmount+$getAfterGstAmount; 
+            }
+            else
+            { /* apply percentage on amount  ****/
+                $getPercentAmount =  0;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount = 0;
+                $final_amount = 0; 
+                
+            }
+            return response()->json(['status' => 1,'limit_amount' =>$amountSum,'charge_amount' => $getPercentAmount,'gst_amount' => $final_amount]); 
+          }
+          else
+          {
+              /* apply percentage on amount  ****/
+                $getPercentAmount =  0;
+                  /* apply GST on percentage amount  ****/
+                $getAfterGstAmount = 0;
+                $final_amount = 0; 
+                     return response()->json(['status' => 0,'limit_amount' =>$amountSum,'charge_amount' => $getPercentAmount,'gst_amount' => $final_amount]); 
+        
+         
+          }
+          
+      }
+      
+        
+           public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
+          
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
+              $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
                $app = "";
                $sel ="";
                 $res =   [  1 => "Limit Amount",
                             2 => "Outstanding Amount",
-                            3 => "Outstanding Principal",
-                            4 => "Outstanding Interest",
-                            5 => "Overdue Amount"];
-             if($getamount->chrg_applicable_id > 0)
-             {
+                            3 => "Outstanding Principal"];
+           
                 
                  foreach($res as $key=>$val)
                  {
@@ -3216,18 +3274,38 @@ if ($err) {
                      }
                      $app.= "<option value=".$key." $sel>".$val."</option>";
                  }
-             }
              
-             if($getamount->chrg_calculation_type==1)
-             {
-                $amount =  number_format($getamount->chrg_calculation_amt);
-             }
-             else
-             {
-                $amount =  $getamount->chrg_calculation_amt; 
-             }
+                 if($getamount->chrg_applicable_id==1)
+                 {
+                   
+                     $limitAmount  =  $this->lmsRepo->getLimitAmount($request);
+                     $limitAmount  = $limitAmount[0];
+                   
+                 }
+                 else if($getamount->chrg_applicable_id==2)
+                 {
+                     
+                     $limitAmount  =  $this->lmsRepo->getOutstandingAmount($request);
+                    
+                 }
+                 else if($getamount->chrg_applicable_id==3)
+                 {
+                     $limitAmount  =  $this->lmsRepo->getOutstandingAmount($request);
+                 }
+                 else
+                 {
+                     $limitAmount  = 0;
+                 }
              
-             return response()->json(['status' => 1,'chrg_applicable_id' => $getamount->chrg_applicable_id,'amount' => number_format($amount),'id' => $getamount->id,'type' => $getamount->chrg_calculation_type,'applicable' =>$app]); 
+          
+             return response()->json(['status' => 1,
+                 'chrg_applicable_id' => $getamount->chrg_applicable_id,
+                 'amount' => number_format($getamount->chrg_calculation_amt),
+                 'id' => $getamount->id,
+                 'limit' => $limitAmount,
+                 'type' => $getamount->chrg_calculation_type,
+                 'is_gst_applicable' => $getamount->is_gst_applicable,
+                 'applicable' =>$app]); 
           }
           else
           {
@@ -3427,8 +3505,8 @@ if ($err) {
        {
             return response()->json(['status' => 2]); 
        }
-       $date = Carbon::now();
-       $data = array();
+        $date = Carbon::now();
+        $data = array();
         $userId =  $request['supplier_bulk_id'];
         $id = Auth::user()->user_id;
         if ($request['doc_file']) {
@@ -3440,14 +3518,14 @@ if ($err) {
         }
         $batch_id =  $this->invRepo->saveBatchNo($path); 
         $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
-         $file = fopen($csvFilePath, "r");
-     
+        $file = fopen($csvFilePath, "r");
         while (!feof($file)) {
           
             $rowData[] = explode(",",fgets($file));
           }
        
         $i=0;
+      
         $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
         $appId = $res->app_id; 
         $biz_id  = $res->biz_id;
@@ -3466,44 +3544,48 @@ if ($err) {
                 $invoice_amount  = str_replace("\n","",$invoice_amount);
                 $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
                 $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
-               
-               
-                 if(strlen($invoice_date) < 10)
+                $res =  $this->invRepo->checkDuplicateInvoice($invoice_no);
+                if(strlen($invoice_date) < 10)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It Should be "dd/mm/yy" format']); 
                } 
-               if(strlen($invoice_due_date) < 10)
+               else if(strlen($invoice_due_date) < 10)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
-                if($invoice_no=='')
+               else if($invoice_no=='')
                {
                     return response()->json(['status' => 0,'message' => 'Please check invoice , Invoice should not be null']); 
                } 
-                if( $invoice_due_date_validate==false)
+               else if( $invoice_due_date_validate==false)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the invoice date, It should be "dd/mm/yy" format']); 
                }
-               if( $invoice_date_validate==false)
+              else if( $invoice_date_validate==false)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
                } 
-                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
+               
+               else if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
                {
                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It should be greater than current date']); 
                }
-                if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_date)) > strtotime(Carbon::parse($date)->format('d-m-Y')))
+               else if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_date)) > strtotime(Carbon::parse($date)->format('d-m-Y')))
                {
                    return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It should be less than current date']); 
                }
-                if($invoice_amount=='')
+               else if($invoice_amount=='')
                {
                     return response()->json(['status' => 0,'message' => 'Please check invoice amount, Amount should not be null']); 
                } 
-                if(!is_numeric($invoice_amount))
+               else if(!is_numeric($invoice_amount))
                {
                     return response()->json(['status' => 0,'message' => 'Please check invoice amount, string value not allowed']); 
                } 
+               else if($res)
+               {
+                   return response()->json(['status' => 0,'message' => 'Please check invoice no, some one Invoice No already exists']); 
+               }
                 $invoice_amount =  $invoice_amount;
                 $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
                 $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
@@ -3514,6 +3596,7 @@ if ($err) {
                 $data[$i]['tenor'] =  $request['tenor']; 
                 $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
+                $data[$i]['pay_calculation_on'] = $request['pay_calculation_on'];
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
                 $data[$i]['is_bulk_upload'] = 1;
                 $data[$i]['batch_id'] = $batch_id;
@@ -3780,4 +3863,20 @@ if ($err) {
         $trans_data = $dataProvider->getPaymentAdvice($this->request, $trans_data); //getAllManualTransaction
         return   $trans_data;
     } 
+    
+    ///* check duplicate invoice  ***///////
+    function  checkDuplicateInvoice(Request $request)
+    {
+        $invoice_no  =  $request->invoice;
+        $res =  $this->invRepo->checkDuplicateInvoice($invoice_no);
+        if($res)
+        {
+            return response()->json(['status' => 1]); 
+        }
+        else
+        {
+            return response()->json(['status' => 0]); 
+        }
+    }
+    
 }
