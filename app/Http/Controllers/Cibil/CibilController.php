@@ -126,7 +126,7 @@ class CibilController extends Controller
                 $arrRequest['biz_name'] = $arrBizData->biz_entity_name;
                 $arrRequest['pan_gst_hash'] = $arrBizData->pan->pan_gst_hash;
                 $arrRequest['biz_cin'] = $arrBizData->pan->cin;
-                $arrRequest['biz_address'] = $arrBizData->address[1]->addr_1.' '.(isset($arrBizData->address[1]->city_name) ? $arrBizData->address[1]->city_name : '').' '. (isset($arrBizData->address[1]->state->name) ? $arrBizData->address[1]->state->name : '').' '. (isset($arrBizData->address[1]->pin_code) ? $arrBizData->address[1]->pin_code : '');
+                $arrRequest['biz_address'] = $arrBizData->address[0]->addr_1.' '.(isset($arrBizData->address[0]->city_name) ? $arrBizData->address[0]->city_name : '').' '. (isset($arrBizData->address[0]->state->name) ? $arrBizData->address[0]->state->name : '').' '. (isset($arrBizData->address[0]->pin_code) ? $arrBizData->address[0]->pin_code : '');
         }else{
                return response()->json(['message' =>'Something went wrong1','status' => 0]);
         }
@@ -160,13 +160,12 @@ class CibilController extends Controller
         }
         
         if(isset($acknowledgementResult['response-type']) && $acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
-            sleep(10);
+            sleep(25);
             $arrRequest['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrRequest['report_id'] = $acknowledgementResult['report-id'];
             $arrRequest['resFormat'] = 'XML';
-              //dd($arrOwnerData);
+              
             $responseData =  $CibilApi->getCommercialCibilData($arrRequest);
-             //dd($responseData);
             $q = xml_parser_create('utf-8');
             xml_parse_into_struct($q, $responseData, $cibilRes);
             xml_parser_free($q);
@@ -178,7 +177,7 @@ class CibilController extends Controller
             }
             if(isset($resultData['status'])){
                     $arrRequest['resFormat'] = 'HTML';
-                    sleep(5);
+                    sleep(10);
                     $resInHTMLFormate =  $CibilApi->getCommercialCibilData($arrRequest);
                    // dd($resInHTMLFormate);
                     $cibilData = base64_encode($resInHTMLFormate);
