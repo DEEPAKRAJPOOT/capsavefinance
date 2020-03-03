@@ -5,6 +5,7 @@ use Auth;
 use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\BizOwner;
 
 trait ApplicationTrait
 {
@@ -239,6 +240,13 @@ trait ApplicationTrait
             }
             $CommunicationAddress = $AddressData->addr_1 . ' '. $AddressData->city_name .' '.  $stateName   .' '. $AddressData->pin_code;
         }
+        $bizOwners = BizOwner::getCompanyOwnerByBizId($bizId);
+        $bizOwnerData = [];
+        if ($bizOwners->count()) {
+            foreach ($bizOwners as $key => $bizOwner) {
+                $bizOwnerData[$bizOwner['biz_owner_id']]  = $bizOwner->toArray();
+            }
+        }
         $app_prgm_limit_id = $supplyChainOffer['app_prgm_limit_id'] ?? 0;
         $data['ConcernedPersonName'] = $CamData['operational_person'];
         $data['purpose'] = $CamData['t_o_f_purpose'];
@@ -252,6 +260,7 @@ trait ApplicationTrait
         $data['product_name'] = $ProgramData['product_name'] ?? 0;
         $data['tot_limit_amt'] = $tot_limit_amt;
         $data['offerData'] = $offerData;
+        $data['bizOwnerData'] = $bizOwnerData;
         return $data;
     }
 }

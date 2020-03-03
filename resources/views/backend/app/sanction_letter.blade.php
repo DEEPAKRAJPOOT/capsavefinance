@@ -523,10 +523,10 @@
                            <tbody>
                               @foreach($offerD->offerPs as $PrimarySecurity)
                               <tr>
-                                 <td>{{$PrimarySecurity->ps_security_id}}</td>
-                                 <td>{{$PrimarySecurity->ps_type_of_security_id}}</td>
-                                 <td>{{$PrimarySecurity->ps_status_of_security_id}}</td>
-                                 <td>{{$PrimarySecurity->ps_time_for_perfecting_security_id}}</td>
+                                 <td>{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}}</td>
+                                 <td>{{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}}</td>
+                                 <td>{{config('common.ps_status_of_security_id.'.$PrimarySecurity->ps_status_of_security_id)}}</td>
+                                 <td>{{config('common.ps_time_for_perfecting_security_id.'.$PrimarySecurity->ps_time_for_perfecting_security_id)}}</td>
                                  <td>{{$PrimarySecurity->ps_desc_of_security}}</td>
                               </tr>
                               @endforeach
@@ -548,10 +548,10 @@
                            <tbody>
                               @foreach($offerD->offerCs as $CollateralSecurity)
                               <tr>
-                                 <td>{{$CollateralSecurity->cs_desc_security_id}}</td>
-                                 <td>{{$CollateralSecurity->cs_type_of_security_id}}</td>
-                                 <td>{{$CollateralSecurity->cs_status_of_security_id}}</td>
-                                 <td>{{$CollateralSecurity->cs_time_for_perfecting_security_id}}</td>
+                                 <td>{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}}</td>
+                                 <td>{{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}}</td>
+                                 <td>{{config('common.cs_status_of_security_id.'.$CollateralSecurity->cs_status_of_security_id)}}</td>
+                                 <td>{{config('common.cs_time_for_perfecting_security_id.'.$CollateralSecurity->cs_time_for_perfecting_security_id)}}</td>
                                  <td>{{$CollateralSecurity->cs_desc_of_security}}</td>
                               </tr>
                               @endforeach
@@ -573,8 +573,8 @@
                            <tbody>
                               @foreach($offerD->offerPg as $PersonalGuarantee)
                               <tr>
-                                 <td>{{$PersonalGuarantee->pg_name_of_guarantor_id}}</td>
-                                 <td>{{$PersonalGuarantee->pg_time_for_perfecting_security_id}}</td>
+                                 <td>{{$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
+                                 <td>{{config('common.pg_time_for_perfecting_security_id.'.$PersonalGuarantee->pg_time_for_perfecting_security_id)}}</td>
                                  <td>{{$PersonalGuarantee->pg_residential_address}}</td>
                                  <td>{{$PersonalGuarantee->pg_net_worth}}</td>
                                  <td>{{$PersonalGuarantee->pg_comments}}</td>
@@ -598,9 +598,9 @@
                            <tbody>
                               @foreach($offerD->offerCg as $CorporateGuarantee)
                               <tr>
-                                 <td>{{$CorporateGuarantee->cg_type_id}}</td>
-                                 <td>{{$CorporateGuarantee->cg_name_of_guarantor_id}}</td>
-                                 <td>{{$CorporateGuarantee->cg_time_for_perfecting_security_id}}</td>
+                                 <td>{{config('common.cg_type_id.'.$CorporateGuarantee->cg_type_id)}}</td>
+                                 <td>{{$supplyChaindata['bizOwnerData'][$CorporateGuarantee->cg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
+                                 <td>{{config('common.cg_time_for_perfecting_security_id.'.$CorporateGuarantee->cg_time_for_perfecting_security_id)}}</td>
                                  <td>{{$CorporateGuarantee->cg_residential_address}}</td>
                                  <td>{{$CorporateGuarantee->cg_comments}}</td>
                               </tr>
@@ -625,7 +625,7 @@
                               <tr>
                                  <td>{{$EscrowMechanism->em_debtor_id}}</td>
                                  <td>{{$EscrowMechanism->em_expected_cash_flow}}</td>
-                                 <td>{{$EscrowMechanism->em_time_for_perfecting_security_id}}</td>
+                                 <td>{{config('common.em_time_for_perfecting_security_id.'.$EscrowMechanism->em_time_for_perfecting_security_id)}}</td>
                                  <td>{{$EscrowMechanism->em_mechanism_id}}</td>
                                  <td>{{$EscrowMechanism->em_comments}}</td>
                               </tr>
