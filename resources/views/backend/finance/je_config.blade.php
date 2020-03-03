@@ -22,6 +22,7 @@
                 )
                 ) 
             !!}   
+            <input type="hidden" name="jeConfigId" value="{{ isset($jeConfigId) ? $jeConfigId : ''}}" /> 
             <div class="row align-items-center">
                 <div class="col-md-2">
                     <div class="form-group">
@@ -35,7 +36,7 @@
                             <option value="">Select Transaction Type</option>
                             @if(isset($transType) && !empty($transType))
                                 @foreach($transType as $key=>$val)
-                                <option value="{{$val->trans_config_id}}" {{(old('trans_type') == $val->trans_config_id)? 'selected': ''}}> {{$val->trans_type}} </option>                            
+                                <option value="{{$val->trans_config_id}}" {{ (old('trans_config_id') == $val->trans_config_id)? 'selected': (isset($transConfigId) && $transConfigId==$val->trans_config_id) ? 'selected' : ''}}> {{$val->trans_type}} </option>                            
                                 @endforeach
                             @endif
                         </select>
@@ -78,7 +79,7 @@
                             <option value="">Select Journal</option>
                             @if(isset($journals) && !empty($journals))
                                 @foreach($journals as $key=>$val)
-                                <option value="{{$val->id}}" {{(old('journal') == $val->id)? 'selected': ''}}> {{$val->name}} </option>                            
+                                <option value="{{$val->id}}" {{ (old('journal') == $val->id)? 'selected': (isset($journalId) && $journalId==$val->id) ? 'selected' : ''}}> {{$val->name}} </option>                            
                                 @endforeach
                             @endif
                         </select>

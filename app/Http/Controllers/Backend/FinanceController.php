@@ -42,7 +42,10 @@ class FinanceController extends Controller {
         return view('backend.finance.variable_list');
     }  
 
-    public function crateJeConfig() {
+    public function crateJeConfig(Request $request) {
+        $jeConfigId = $request->get('je_config_id');
+        $transConfigId = $request->get('trans_config_id');
+        $journalId = $request->get('journal_id');
         $this->transType = $this->finRepo->getAllTransType()->get();
         $this->variables = $this->finRepo->getAllVariable()->get();
         $this->journals = $this->finRepo->getAllJournal()->get();
@@ -50,7 +53,10 @@ class FinanceController extends Controller {
             ->with([
             'transType'=> $this->transType,
             'variables'=> $this->variables,
-            'journals'=> $this->journals
+            'journals'=> $this->journals,
+            'jeConfigId'=> $jeConfigId,
+            'transConfigId'=> $transConfigId,
+            'journalId'=> $journalId
             ]);
     }  
 
@@ -89,7 +95,6 @@ class FinanceController extends Controller {
             $jiConfigId = $request->get('ji_config_id');
             if(isset($jiConfigId) && !empty($jiConfigId)){
                 $jiConfigData = $this->finRepo->getJiConfigByjiConfigId($jiConfigId); 
-                //dd($jiConfigData);
             }
             $jeConfigId = $request->get('je_config_id');       
             $this->accounts = $this->finRepo->getAllAccount()->get();      
