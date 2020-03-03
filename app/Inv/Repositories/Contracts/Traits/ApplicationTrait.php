@@ -62,7 +62,7 @@ trait ApplicationTrait
     protected function getAppProductIds($app_id)
     {
         $appProductIds = [];
-        $appProducts = $this->appRepo->getAppProducts($app_id);
+        $appProducts = $this->appRepo->getApplicationProduct($app_id);
         foreach($appProducts->products as $product){
             array_push($appProductIds, $product->pivot->product_id);
         }
