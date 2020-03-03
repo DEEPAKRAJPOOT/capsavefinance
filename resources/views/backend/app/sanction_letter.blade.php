@@ -48,7 +48,7 @@
                                             </tr>
                                             <tr>
                                                 <td with="25%"><b>Sanction Amount</b></td>
-                                                <td with="25%"> {!! $offerData->prgm_limit_amt ? \Helpers::formatCurreny($offerData->prgm_limit_amt) : '' !!}</td>
+                                                <td with="25%"> {{ count($leasingLimitData) > 0 ? 'INR '. number_format($leasingLimitData['0']['limit_amt']) : '' }}</td>
                                             </tr>
                                         </tbody>
                                     </table> 
