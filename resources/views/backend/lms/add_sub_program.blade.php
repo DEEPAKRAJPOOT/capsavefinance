@@ -617,7 +617,7 @@
                                                 </div>
                                             </div>
 
-
+                                            <div class="col-md-12">
                                             @if(count($programCharges))
 
 
@@ -695,6 +695,7 @@
                                                 </div>
                                             </div>
                                             @endif
+                                            </div>
                                             <!--@include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])-->
                                         </div>
 
