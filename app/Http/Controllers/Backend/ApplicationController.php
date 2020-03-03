@@ -1446,6 +1446,7 @@ class ApplicationController extends Controller
             }
             $sanctionData = array(
                 'prgm_offer_id' => $offerId,
+                'lessor' => $request->lessor,
                 'validity_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_validity_date)->format('Y-m-d')  , 
                 'validity_comment' =>  $request->sanction_validity_comment, 
                 'payment_type' =>  $request->payment_type, 
