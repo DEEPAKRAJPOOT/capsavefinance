@@ -45,19 +45,19 @@
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Tenor (Months)</td>
                     <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                 </tr>
-
+                @if($leaseOffer->facility_type_id != 3)
                 <tr>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Security Deposit</td>
                     <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                    {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}}
+                        {{(($leaseOffer->security_deposit_type == 1)?'INR ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
                     </td>
-                </tr>
-
+                </tr>   
+                @endif
                 <tr>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Rental Frequency</td>
                     <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}</td>
                 </tr>
-
+                 @if($leaseOffer->facility_type_id != 3)
                 <tr>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Pricing Per Thousand</td>
                     <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">@php 
@@ -82,9 +82,15 @@
                                                 }
                                              @endphp </td>
                 </tr>
+                @endif
                 <tr>
-                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">XIRR</td>
-                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{($leaseOffer->facility_type_id == 3)? 'Rental Discounting' : 'XIRR'}}</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">@if($leaseOffer->facility_type_id == 3)
+                         {{$leaseOffer->discounting}}%
+                      @else
+                         <b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%
+                      @endif</td>
+
                 </tr>
                 <tr>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Processing Fee</td>
@@ -138,6 +144,10 @@
                         <td style="padding:8px 10px;font-size: 14px;border-bottom: #ccc solid 1px;">{{$preval['timeline']}}</td>
                     </tr>
                     @endforeach
+                @else
+                     <tr>   
+                            <td colspan="2">No Record Found</td>    
+                     </tr>   
                 @endif        
             </table>
         </td>
@@ -167,6 +177,10 @@
                             </td>
                         </tr>
                     @endforeach
+                @else
+                     <tr>   
+                            <td colspan="2">No Record Found</td>    
+                     </tr>      
                 @endif
             </table>
         </td>

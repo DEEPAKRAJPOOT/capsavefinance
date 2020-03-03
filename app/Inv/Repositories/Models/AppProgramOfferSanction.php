@@ -44,6 +44,7 @@ class AppProgramOfferSanction extends BaseModel {
     protected $fillable = [
         'sanction_id',
         'prgm_offer_id',
+        'lessor',
         'validity_date', 
         'validity_comment', 
         'payment_type', 

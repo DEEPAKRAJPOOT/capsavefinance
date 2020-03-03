@@ -9,12 +9,11 @@
 <div class="content-wrapper">
     <div class="row grid-margin mt-3 mb-2">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
-            <div class="card">
-                <div class="card-body">
+
                     <div class=" form-fields">
-                        <div class="col-md-12">
+                      
                             <h5 class="card-title form-head-h5 text-center">Sanction Letter</h5>                            
-                            <div class="col-md-12">
+                            
 
                             <p>Ref No: CFPL/{{$date->isoFormat('MMMYY') }}/{{$sanctionData->sanction_id}} <br><br>
                                     {{ $date->isoFormat('MMMM D, Y') }}<br><br>
@@ -41,7 +40,7 @@
                                         <tr>
                                             <td>2.</td>
                                             <td>Lessor</td>
-                                            <td>Capsave Finance Private Limited (CFPL)</td>
+                                            <td>{{ $lessor }}</td>
                                         </tr>
                                         <tr>
                                             <td>3.</td>
@@ -51,119 +50,91 @@
                                         <tr>
                                             <td>4.</td>
                                             <td>Sanction Amount</td>
-                                            <td>{!! $offerData->prgm_limit_amt ? \Helpers::formatCurreny($offerData->prgm_limit_amt) : '' !!}</td>
+                                            <td>{{ count($leasingLimitData) > 0 ? 'INR '. number_format($leasingLimitData['0']['limit_amt']) : '' }}</td>
                                         </tr>
                                         <tr>
                                             <td>5.</td>
                                             <td>Sanction validity</td>
                                             <td>{{ \Carbon\Carbon::parse($sanctionData->validity_date)->format('d/m/Y')}}</td>
                                         </tr>
+                                    </tbody>
+                                </table>        
+
+
+
+
+                                <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
+                                        <thead>
                                         <tr>
-                                            <td>6.</td>
-                                            <td>Equipment type</td>
-                                            <td> @if($equipmentData)
-                                                {{ $equipmentData->equipment_name }}
-                                                @endif
-                                            </td>
+                                            <td  style="background: #e9ecef;"><b>Facility Type</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR/</br>Discounting(%)</b></td>
+                                            <td  style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
+                                            
                                         </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($leaseOfferData as $key=>$leaseOffer)
+                                        
+                                                <tr>
+                                                    <td>{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
+                                                    <td>{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+                                                    <td>{!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!}</td>
+                                                    <td>{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
+                                                    <td>
+                                                        @php 
+                                                            $i = 1;
+                                                            if(!empty($leaseOffer->offerPtpq)){
+                                                            $total = count($leaseOffer->offerPtpq);
+                                                         @endphp   
+                                                            @foreach($leaseOffer->offerPtpq as $key => $arr) 
+
+                                                                  @if ($i > 1 && $i < $total)
+                                                                  ,
+                                                                  @elseif ($i > 1 && $i == $total)
+                                                                     and
+                                                                  @endif
+                                                                  {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+
+                                                                  @php 
+                                                                     $i++;
+                                                                  @endphp     
+                                                            @endforeach
+                                                            @php 
+                                                               }
+                                                            @endphp 
+
+                                                    </td>
+                                                    <td>
+                                                        @if($leaseOffer->facility_type_id == 3)
+                                                             {{$leaseOffer->discounting}}%
+                                                          @else
+                                                             <b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%
+                                                          @endif
+
+                                                    </td>
+                                                    <td>{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee.' %': ''}}</td>
+                                                </tr>
+
+                                              @empty
+                                                 <tr>
+
+                                                     <p>No Offer Found</p>
+                                                 </div>
+                                           @endforelse  
+                                            
+                                        </tbody>
+                                </table>
+
+
+
+                                <table class="table table-bordered overview-table">
+                                    <tbody>
                                         <tr>
-                                            <td>7.</td>
-                                            <td>Lease Tenor</td>
-                                            <td> 
-                                                @if($offerData->tenor)
-                                                    {{ $offerData->tenor }}
-                                                    @if($product_id == 1)
-                                                        @if($offerData->tenor>1)Days @else Day @endif 
-                                                    @else
-                                                        @if($offerData->tenor>1)Months @else Month @endif 
-                                                    @endif
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>8.</td>
-                                            <td>Rental Rate – @switch ($offerData->rental_frequency)
-                                                @case(4) PTPM  @break
-                                                @case(3) PTPQ  @break
-                                                @case(2) PTPBi-Y  @break
-                                                @case(1) PTPY  @break
-                                            @endswitch </td>
-                                            <td>
-                                                @if($ptpqrData->count())
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <td>From Period</td>
-                                                            <td>To Period</td>
-                                                            <td>Rate</td>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($ptpqrData as $ptpqr)
-                                                        <tr>
-                                                            <td>{{ $ptpqr->ptpq_from }}</td>
-                                                            <td>{{ $ptpqr->ptpq_to }}</td>
-                                                            <td>{{ $ptpqr->ptpq_rate }}</td>
-                                                        </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>9.</td>
-                                            <td>Refundable Security Deposit</td>
-                                            <td>
-                                                @if($offerData->security_deposit_type == 1 &&  $offerData->security_deposit >0)
-                                                    Flat {{ $offerData->security_deposit }} of the {{ $security_deposit_of }}
-                                                @elseif($offerData->security_deposit_type == 2 &&  $offerData->security_deposit >0)
-                                                    {{ $offerData->security_deposit }} % of the {{ $security_deposit_of }}
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>10.</td>
-                                            <td>Processing Fees</td>
-                                            <td>{!! $offerData->processing_fee ? $offerData->processing_fee. ' %' : '' !!}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>11.</td>
-                                            <td>Security</td>
-                                            <td>
-                                                @switch($offerData->addl_security)
-                                                    @case(1)
-                                                        BG
-                                                        @break
-                                                    @case(2)
-                                                        MF
-                                                        @break
-                                                    @case(3)
-                                                        {{ $offerData->comment }}
-                                                        @break
-                                                @endswitch
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>12.</td>
-                                            <td>Rental payment frequency</td>
-                                            <td>
-                                                Rentals are due 
-                                                @switch ($offerData->rental_frequency) 
-                                                    @case(4) Monthly  @break
-                                                    @case(3) Quaterly  @break
-                                                    @case(2) Bi-Yearly  @break
-                                                    @case(1) Yearly  @break
-                                                @endswitch 
-                                                in 
-                                                @switch($offerData->rental_frequency_type)
-                                                    @case(1) Advance @break
-                                                    @case(2) Arrears @break
-                                                @endswitch
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>13.</td>
+                                            <td>1.</td>
                                             <td>Payment mechanism</td>
                                             <td>
                                                 @switch($sanctionData->payment_type)
@@ -176,47 +147,47 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>14.</td>
+                                            <td>2.</td>
                                             <td>Delayed payment charges</td>
                                             <td>{!! $delay_pymt_chrg !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>15.</td>
+                                            <td>3.</td>
                                             <td>Insurance</td>
                                             <td>{!! $insurance !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>16.</td>
+                                            <td>4.</td>
                                             <td>GST/Bank Charges</td>
                                             <td>{!! $bank_chrg !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>17.</td>
+                                            <td>5.</td>
                                             <td>Legal Costs</td>
                                             <td>{!! $legal_cost !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>18.</td>
+                                            <td>6.</td>
                                             <td>Purchase Orders</td>
                                             <td>{!! $po !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>19.</td>
+                                            <td>7.</td>
                                             <td>Pre-disbursement conditions</td>
                                             <td>{!! $pdp !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>20.</td>
+                                            <td>8.</td>
                                             <td>Disbursement Guidelines/Documentation</td>
                                             <td>{!! $disburs_guide !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>21.</td>
+                                            <td>9.</td>
                                             <td>Other Conditions </td>
                                             <td>{!! $other_cond !!}</td>
                                         </tr>
                                         <tr>
-                                            <td>22.</td>
+                                            <td>10.</td>
                                             <td>Information and other covenants</td>
                                             <td>{!! $covenants !!}</td>
                                         </tr>
@@ -236,10 +207,8 @@
                                   Authorized Signatory
                                     @endif
                                 </b></p>
-                            </div>
-                        </div>	
-                    </div>	 
-                </div>
+                           
+                   
             </div>
         </div>
     </div>
