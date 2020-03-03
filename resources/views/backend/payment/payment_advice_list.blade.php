@@ -108,6 +108,8 @@
 </div>
     @endsection
     @section('jscript')
+    <script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>
+    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 <script>
 
     var messages = {
@@ -117,6 +119,40 @@
             token: "{{ csrf_token() }}",
  };
 
+ $('#from_date').datetimepicker({
+        format: 'dd/mm/yyyy',
+        //  startDate: new Date(),
+        autoclose: true,
+        minView: 2, });
+    $('#to_date').datetimepicker({
+        format: 'dd/mm/yyyy',
+        //  startDate: new Date(),
+        autoclose: true,
+        minView: 2, });
+
+        var path = "{{ route('get_customer') }}";
+
+    $(document).ready(function(){
+    var sample_data = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    prefetch:path,
+    remote:{
+        url:path+'?query=%QUERY',
+        wildcard:'%QUERY'
+    }
+    });
+    
+
+    $('#prefetch .form-control').typeahead(null, {
+    name: 'sample_data',
+    display: 'customer_id',
+    source:sample_data,
+    limit:10,
+    templates:{
+        suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{customer}} <small>( @{{customer_id}} )</small></div> </div>') }
+    });
+    });
  
 </script>
 <script src="{{ asset('backend/js/ajax-js/payment_advice.js') }}"></script>

@@ -223,8 +223,10 @@ class PaymentController extends Controller {
    }
 
   /* Payment Advice List   */
-  public function  paymentAdviceList()
+  public function  paymentAdviceList(Request $request)
   {
+    $trans_id = preg_replace('#[^0-9]#', '', $request->get('trans_id'));
+    // $trans_data = $this->invRepo->findTransById($trans_id);
     return view('backend.payment.payment_advice_list');
 
   }
