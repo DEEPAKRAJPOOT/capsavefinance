@@ -20,6 +20,19 @@
             <textarea class="form-control" id="chrg_desc" name="chrg_desc" placeholder="Charge Description" maxlength="500">{{$charge_data->chrg_desc}}</textarea>
         </div>
       </div>
+              
+        <div class="row">
+         <div class="form-group col-md-12">
+            <label for="chrg_type">Credit Description</label>
+            <textarea class="form-control" id="credit_desc" name="credit_desc" placeholder="Credit Description" maxlength="200">{{$charge_data->credit_desc}}</textarea>
+        </div>
+      </div>
+        <div class="row">
+         <div class="form-group col-md-12">
+            <label for="chrg_type">Debit Description</label>
+            <textarea class="form-control" id="debit_desc" name="debit_desc" placeholder="Debit Description" maxlength="200">{{$charge_data->debit_desc}}</textarea>
+        </div>
+      </div>               
 
       <div class="row">
         
@@ -56,7 +69,7 @@
       </div>
                <div class="row">
                <div class="form-group col-md-6">
-             <label for="chrg_type">  {{$charge_data->chrg_type}}</label><br />
+             <label for="chrg_type"> {{$charge_data->chrg_type}}</label><br />
              <div class="form-check-inline ">
                <label class="form-check-label fnt">
                <input type="radio" class="form-check-input" {{$charge_data->chrg_type == 1 ? 'checked' : ($charge_data->chrg_type == 1 ? 'checked' : '' )}} name="chrg_type" value="1">Auto

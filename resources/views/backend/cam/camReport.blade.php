@@ -1,27 +1,57 @@
-
-
+<!-- Start PDF Section -->
    <div class="data mt-4">
-      <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-         <thead>
-            <tr role="row">
-               <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Group</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Borrower</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Proposed Limit(Mn)</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Existing Exposure(Mn)</th>
-               <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="20%">Total Exposure(Mn)</th>
-            </tr>
-         </thead>
-         <tbody>
-            <tr role="row" class="odd">
-              <td class="">{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
-               <td class="">{{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</td>
-               <td class="">{{isset($arrCamData->proposed_exposure) ? $arrCamData->proposed_exposure : ''}}</td>
-               <td class="">{{isset($arrCamData->existing_exposure) ? $arrCamData->existing_exposure : ''}}</td>
-               <td class="">{{ isset($arrCamData->total_exposure) ? $arrCamData->total_exposure : '' }}</td>
-            </tr>
-         </tbody>
-      </table>
+         <table class="table" cellpadding="0" cellspacing="0">
+         <tr>
+            <td bgcolor="#8a8989" style="color:#fff;font-size: 15px;font-weight: bold;">Group Company Exposure</td>
+            <td bgcolor="#8a8989" align="right"><span  style="font-size: 11px; color: #ffffff;">
+                                        @if(isset($arrCamData->By_updated))  
+                                            Updated By: {{$arrCamData->By_updated}} ({!! isset($arrCamData->updated_at) ?  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$arrCamData->updated_at)->format('j F, Y') : '' !!})
+                                        @endif
+                                    </span> </td>
+
+         </tr>
+            
+         </table>                           
+      
+         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+            <thead>
+               <tr role="row">
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="12%">Group Name</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="18%">Borrower</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="18%">Sanction Limit (In Mn)</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="22%">Outstanding Exposure (In Mn)</th> 
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="18%">Proposed Limit (In Mn) </th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" width="12%">Total (In Mn)</th>
+                 
+               </tr>
+            </thead>
+            <tbody>
+                  @if(!empty($arrGroupCompany))
+                     @php $count = count($arrGroupCompany);
+                      @endphp
+                     @foreach($arrGroupCompany as $key=>$arr)
+                        <tr role="row" class="odd">
+                           @if($loop->first)
+                               <td class="" rowspan="{{$count}}"> {{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}</td>
+                           @endif
+                           <td class="">{{isset($arr['group_company_name']) ? $arr['group_company_name'] : ''}}</td>
+                           <td class="">{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] : ''}}</td>
+                           <td class="">{{ ($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']: '' }}</td>
+                           <td class="">{{ (($arr['proposed_exposure'] > 0)) ? $arr['proposed_exposure'] : '--' }}</td>
+                           <td class="">{{ (($arr['outstanding_exposure'] > 0) || ($arr['proposed_exposure'] > 0)) ?  $arr['outstanding_exposure'] + $arr['proposed_exposure'] : '' }}</td>
+                          
+                        </tr>
+                     @endforeach
+                  @endif   
+                     
+                     <tr>
+                           <td class="" colspan="5"><b>Total Exposure (In Mn)</b></td>
+                           <td class=""><b>{{($arrCamData && $arrCamData->total_exposure_amount > 0) ? $arrCamData->total_exposure_amount : ''}}</b></td>   
+                     </tr>
+            </tbody>
+         </table>
    </div>
+   
 
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
@@ -29,9 +59,8 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Deal Structure</td>
           </tr>
        </table>
-
       @forelse($leaseOfferData as $key=>$leaseOffer)
-      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
+     
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -40,8 +69,6 @@
                </tr>
             </thead>
             <tbody>
-              
-               
                <tr role="row" class="odd">
                   <td class=""><b>Facility Type</b></td>
                   <td class="">{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
@@ -104,25 +131,24 @@
                   <td class=""><b>Additional Security</b></td>
                   <td class="">
                      @php
-                      $add_sec_arr = '';
-                      if(isset($leaseOffer->addl_security)){
-                          $addl_sec_arr = explode(',', $leaseOffer->addl_security);
-                          foreach($addl_sec_arr as $k=>$v){
-                              $add_sec_arr .= config('common.addl_security')[$v].', ';
-                          }
-                          if(isset($leaseOffer->comment)) {
-                              $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
-                           }   
-                      }
-                      $add_sec_arr = trim($add_sec_arr, ', ');
-                      @endphp
-                      {!! $add_sec_arr !!}
+                       $add_sec_arr = '';
+                       if(isset($leaseOffer->addl_security) && $leaseOffer->addl_security !=''){
+                           $addl_sec_arr = explode(',', $leaseOffer->addl_security);
+                           foreach($addl_sec_arr as $k=>$v){
+                               $add_sec_arr .= config('common.addl_security')[$v].', ';
+                           }
+                       }
+                       if($leaseOffer->comment != '' && $leaseOffer->addl_security !=''){
+                           $add_sec_arr .= ' <b>Comment</b>:  '.$leaseOffer->comment;
+                       }else{
+                           $add_sec_arr .= $leaseOffer->comment;
+                       }
+                       @endphp 
+                       {!! trim($add_sec_arr,', ') !!}
                   </td>
                </tr>
             </tbody>
          </table>
-      <!-- </div> -->
-
       @empty
          <div class="pl-4 pr-4 pb-4 pt-2">
              <p>No Offer Found</p>
@@ -158,10 +184,16 @@
                      </td>
                   </tr>
                   @endforeach
+               @else
+                  <tr role="row" class="odd">
+                     <td colspan="2">
+                        <p>No Record Found.</p> 
+                        
+                     </td> 
+                  </tr>  
                @endif
             </tbody>
          </table>
-      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
@@ -170,7 +202,6 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Post Disbursement Conditions</td>
           </tr>
        </table>
-      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -190,10 +221,16 @@
                            </td>
                      </tr>
                   @endforeach
+               @else
+                  <tr role="row" class="odd">
+                     <td class="" colspan="2">
+                        <p>No Record Found.</p> 
+                        
+                     </td> 
+                  </tr> 
                @endif
             </tbody>
          </table>
-      <!-- </div> -->
    </div>
 
  
@@ -357,7 +394,6 @@
                </tr>
             </tbody>
          </table>
-      <!-- </div> -->
    </div>
 
    <div class="data mt-4">
@@ -366,7 +402,6 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Approval Criteria for IC</td>
           </tr>
        </table>
-      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
@@ -422,21 +457,23 @@
 
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
-          <tr>
-              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Purpose of Rental Facility</td>
-          </tr>
-       </table>
-      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
+        <tr>
+            <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Purpose of Rental Facility</td>
+        </tr>
+      </table>
+     
+      <div class="pl-4 pr-4 pb-4 pt-2">
+
          <p>{!! isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : '' !!}</p>
-      <!-- </div> -->
+      </div>
    </div>
 
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
-          <tr>
-              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">About the Company</td>
-          </tr>
-       </table>
+        <tr>
+            <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">About the Company</td>
+        </tr>
+      </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
       </div>
@@ -448,6 +485,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Brief Background of {{isset($arrCamData->contact_person) ? $arrCamData->contact_person : ''}} Managing Director</td>
           </tr>
        </table>
+
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p>{!! isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : '' !!}</p>
       </div>
@@ -459,6 +497,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Board of Directors as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</td>
           </tr>
        </table>
+
       <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
             <thead>
@@ -486,6 +525,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Shareholding Pattern as on {{isset($arrBizData->share_holding_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrBizData->share_holding_date)->format('j F, Y') : ''}}</td>
           </tr>
        </table>
+
          <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
             <thead>
                <tr>
@@ -515,6 +555,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">External Rating</td>
           </tr>
        </table>
+
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p>{!! isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : '' !!}</p>
       </div>
@@ -526,6 +567,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Rating Rationale of {{$arrBizData->biz_entity_name}}</td>
           </tr>
        </table>
+
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
       </div>
@@ -537,6 +579,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Standalone Financials of {{$arrBizData->biz_entity_name}}</td>
           </tr>
        </table>
+
       <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -586,6 +629,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Financial Comment</td>
           </tr>
        </table>
+
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p>{!! isset($finacialDetails->financial_risk_comments) ? $finacialDetails->financial_risk_comments : '' !!}</p>
       </div>
@@ -597,6 +641,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Debt Position as on {{isset($arrBankDetails->debt_on) ? \Carbon\Carbon::createFromFormat('d/m/Y', $arrBankDetails->debt_on)->format('j F, Y') : ''}}</td>
           </tr>
        </table>
+
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p> {!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
       </div>
@@ -608,6 +653,7 @@
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Contingent Liabilities and Auditors Observations as on {{isset($arrCamData->debt_on) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arrCamData->debt_on)->format('j F, Y') : ''}}</td>
           </tr>
        </table>
+
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
       </div>
@@ -626,8 +672,7 @@
               <tr>
                   <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#138864">Deal Positives</td>
               </tr>
-          </table>
-            <div class="pl-4 pr-4 pb-4 pt-2">
+            </table>
                <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
                   <tbody>
                      <tr>
@@ -653,7 +698,6 @@
                      </tr>
                   </tbody>
                </table>
-            </div>
          </div>  
 
          <div class="data mt-4">
@@ -663,6 +707,7 @@
                 </tr>
             </table>
             <div class="pl-4 pr-4 pb-4 pt-2">
+
                <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
                   <tbody>
                      <tr>
@@ -682,11 +727,12 @@
                      </tr>
                   </tbody>
                </table>
-            </div>
          </div>
 
       <!-- </div> -->
+       </div>
    </div>
+
 
    <div class="data mt-4">
     <table class="table" cellpadding="0" cellspacing="0">
@@ -694,17 +740,19 @@
                     <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Recommendation</td>
                 </tr>
             </table>
+
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p>{!! isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : '' !!} </p>
       </div>
    </div>
 
    <div class="data mt-4">
-    <table class="table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</td>
-                </tr>
-            </table>
+     <table class="table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">The proposed deal is <span id="isApproved"></span> subject to above conditions and any other conditions mentioned below.</td>
+        </tr>
+     </table>
+
       <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
          <table width="100%" id="invoice_history" class="table  no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
@@ -772,4 +820,4 @@ if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0)
    document.getElementById("isApproved").textContent += "approved";
 }
 </script>         
- <!-- End PDF Section -->
+ <!-- End PDF Section

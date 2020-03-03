@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This route have all backend guest and auth routes
  *
