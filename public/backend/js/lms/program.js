@@ -31,8 +31,8 @@ try {
             var j = parseInt(max);
             return i <= j;
         }, "Interest Rate Min  should not be greater than interest rate max");
-        
-         $.validator.addMethod('lessLoanSize', function (value, element, param) {
+
+        $.validator.addMethod('lessLoanSize', function (value, element, param) {
             var min = value.replace(/,/g, "");
             var max = $(param).val().replace(/,/g, "");
 
@@ -84,7 +84,7 @@ try {
 //        $(document).on('change', '.industry_change', function () {
 //            $(this).handleIndustryChange();
 //        });
-        $('.industry_change').on('change', function(){
+        $('.industry_change').on('change', function () {
             let country_id = $(this).val();
             $(this).handleIndustryChange(country_id);
         });
@@ -197,7 +197,7 @@ try {
             if ($(this).hasClass("minus")) {
 
                 $(this).removeClass("minus");
-                
+
             } else {
                 $(this).addClass("minus");
 
@@ -494,7 +494,7 @@ try {
                     max_loan_size: {
                         required: true,
                         // number: true
-                        lessLoanSize : 'input[name="anchor_sub_limit"]'
+                        lessLoanSize: 'input[name="anchor_sub_limit"]'
                     },
                     interest_rate: {
                         required: true
@@ -535,7 +535,7 @@ try {
                     'invoice_approval[]': {
                         required: true
                     },
-                    'charge[1]': {
+                    'charge[]': {
                         required: true
                     },
                     min_interest_rate: {
@@ -607,17 +607,17 @@ try {
                 return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             });
         });
-        
-         $(document).on('keyup', '.percentage', function () {
+
+        $(document).on('keyup', '.percentage', function () {
             var result = $(this).val();
             if (result == 0) {
                 $(this).val('');
             }
             if (result >= 0 && result <= 100) {
                 if (parseFloat(result)) {
-                      if ($.inArray(".",result) !== -1) {
+                    if ($.inArray(".", result) !== -1) {
                         if (result.split(".")[1].length > 2) {
-                            var array_conv = result.split(".")[1].substring(0,2);                           
+                            var array_conv = result.split(".")[1].substring(0, 2);
                             var output = result.split(".")[0] + '.' + array_conv;
                             this.value = this.value.replace(result, output);
                         }
@@ -669,6 +669,33 @@ try {
 
 
         setTabIndex();
+
+        $(document).on('click', '.charge_calculation_type', function () {
+            sdt = $(this).val();
+            if (sdt == 1) {
+                $(this).closest('.amtpercentrow').find('.sdt').text('Amount');
+                 $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtfixed').removeClass('amtpercnt');
+                $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-percent').addClass('fa-inr')
+                $(this).closest('.amtpercentrow').find('#approved_limit_div').hide();
+            } else {
+                $(this).closest('.amtpercentrow').find('.sdt').text('Percent');
+                $(this).closest('.amtpercentrow').find('.approved_limit_div').removeClass('hide');
+                $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtpercnt').removeClass('amtfixed');
+                $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-inr').addClass('fa-percent');
+                $(this).closest('.amtpercentrow').find('#approved_limit_div').show();
+            }
+        });
+        
+        $(document).on('keypress', '.chrg_calculation_amt', function(e) {
+            $numpad = e.code.replace(/[^0-9]/g,'');
+            $chrg_calculation_amt = $(this).val();
+            $oldval = $chrg_calculation_amt.replace(/[^0-9]/g,''); 
+            $realval = $oldval + $numpad;
+            if($(this).hasClass('amtpercnt') && parseInt($realval) > 100){
+                return false;
+            }
+            return true;
+        })
 
     });
 } catch (e) {
