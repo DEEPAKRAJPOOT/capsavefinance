@@ -49,6 +49,11 @@ class FinanceController extends Controller {
         $this->transType = $this->finRepo->getAllTransType()->get();
         $this->variables = $this->finRepo->getAllVariable()->get();
         $this->journals = $this->finRepo->getAllJournal()->get();
+        if(isset($jeConfigId) && !empty($jeConfigId)){
+            $jeVariablesData = $this->finRepo->getVariablesByTransConfigId($transConfigId); 
+            print($jeVariablesData);
+            dd();
+        }
         return view('backend.finance.je_config')
             ->with([
             'transType'=> $this->transType,

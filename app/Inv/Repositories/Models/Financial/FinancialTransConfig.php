@@ -52,4 +52,9 @@ class FinancialTransConfig extends BaseModel {
         $result = self::select('trans_config_id','trans_type')->orderBy('trans_config_id', 'DESC');
         return $result;
     }
+
+    public function variables()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Financial\FinancialVariablesTransConfig','trans_config_id');
+    }
 }

@@ -92,4 +92,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     {
         return FinancialJiConfig::getJiConfigByjiConfigId($jiConfigId);         
     }    
+
+    public function getVariablesByTransConfigId($transConfigId)
+    {
+        return FinancialTransConfig::where('trans_config_id', $transConfigId)->with('variables')->get(); 
+    }
 }
