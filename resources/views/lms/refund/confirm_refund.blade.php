@@ -3,7 +3,7 @@
 <div class="card card-color mb-0">
 	<div class="card-header">
 		<a class="card-title ">
-			Are you sure you want to disburse checked invoices?
+			Are you sure you want to refund?
 		</a>
 	</div>
 </div>
@@ -46,6 +46,7 @@
 @endsection
 
 @section('jscript')
+
 <script>
 $(document).ready(function(){
 	$('#invoiceids').val(parent.$('#invoice_ids').val());

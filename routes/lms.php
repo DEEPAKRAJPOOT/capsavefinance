@@ -126,6 +126,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@refundList'
             ]);
 
+            Route::get('/confirm-refund', [
+                'as' => 'confirm_refund',
+                'uses' => 'Lms\RefundController@confirmRefund'
+            ]);
+            
+
         });//end of application
 
         // Business address

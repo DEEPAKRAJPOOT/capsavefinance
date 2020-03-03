@@ -43,7 +43,7 @@ class RefundController extends Controller
 	 */
 	public function refundList()
 	{
-		return view('lms.refund.list');              
+		return view('lms.refund.refund_list');              
 	}
 
 	/**
@@ -51,9 +51,9 @@ class RefundController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function confirmDisburse(Request $request)
+	public function confirmRefund(Request $request)
 	{
-		return view('lms.disbursal.confirm_disburse');              
+		return view('lms.refund.confirm_refund');              
 	}
 
 	/**
