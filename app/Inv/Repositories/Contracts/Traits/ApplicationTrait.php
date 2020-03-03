@@ -69,7 +69,13 @@ trait ApplicationTrait
             foreach($appProducts->products as $product){
                 array_push($ProductIds, $product->id);
             }
-        } else {
+        } else if (isset($prgmDocsWhere['stage_code']) && $prgmDocsWhere['stage_code'] == 'pre_offer') {
+            $appProducts = $this->appRepo->getApplicationProduct($app_id);
+            foreach($appProducts->products as $product){
+                array_push($ProductIds, $product->pivot->product_id);
+            }            
+        }        
+        else {
             $appProducts = $this->appRepo->getAppProducts($app_id);
             foreach($appProducts as $product){
                 array_push($ProductIds, $product->programLimit->product_id);
