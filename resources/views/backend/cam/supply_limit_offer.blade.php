@@ -693,8 +693,9 @@
                         @endif
                         <select name="em[em_debtor_id][]" class="form-control">
                             <option value="">Select Debtor</option>
-                            <option value="1" {{($em->em_debtor_id == 1)? 'selected': ''}}>option one</option>
-                            <option value="2" {{($em->em_debtor_id == 2)? 'selected': ''}}>option two</option>
+                            @foreach($anchors as $key=>$anchor)
+                            <option value="{{$anchor->anchor_id}}" {{($em->em_debtor_id == $anchor->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -751,8 +752,9 @@
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Name of Debtor</b></label>
                         <select name="em[em_debtor_id][]" class="form-control">
                             <option value="">Select Debtor</option>
-                            <option value="1">option one</option>
-                            <option value="2">option two</option>
+                            @foreach($anchors as $key=>$anchor)
+                            <option value="{{$anchor->anchor_id}}">{{$anchor->comp_name}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -849,7 +851,7 @@
       <div class="form-group INR">
         <label for="txtPassword"><b>Documentation Fee (%)</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="document_fee" class="form-control number_format" value="{{isset($offerData->document_fee)? number_format($offerData->document_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
+        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? number_format($offerData->document_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
       </div>
     </div>
     
@@ -872,6 +874,16 @@
 @section('jscript')
 <script>
     var bizOwners = {!! json_encode($bizOwners) !!};
+    var anchors = {!! json_encode($anchors) !!};
+    
+    function anchorDropdown(anchors){
+        let $html='<option value="">Select Debtor</option>';
+        $.each(anchors,function(i,anchor){
+            $html += '<option value="'+anchor.anchor_id+'">'+anchor.comp_name+'</option>';
+        })
+        return $html;
+    }
+
     function guarantorDropdown(bizOwners){
         let $html='<option value="">Select Guarantor</option>';
         $.each(bizOwners,function(i,bizOwner){
@@ -879,7 +891,7 @@
         })
         return $html;
     }
-console.log(guarantorDropdown(bizOwners));
+
     var messages = {
         "get_program_balance_limit" : "{{route('ajax_get_program_balance_limit')}}",
         "token" : "{{ csrf_token() }}"  
@@ -1302,12 +1314,10 @@ console.log(guarantorDropdown(bizOwners));
   });
 
   $(document).on('click', '.add-escrow-mechanism-block', function(){
+    let anchorOption = anchorDropdown(anchors);
     let escrow_mechanism_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="em[em_debtor_id][]" class="form-control">'+
-                    '<option value="">Select Debtor</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="em[em_debtor_id][]" class="form-control">'+anchorOption+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+

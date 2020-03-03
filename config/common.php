@@ -111,7 +111,129 @@ return [
         '3' => 'Asset Base Value',
         '4' => 'Sanction'
     ],
-    /*'SEND_MAIL_ACTIVE'=>1,
-    'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com", "dhriti.barman@capsavefinance.com", "vinay.agarwal@capsavefinance.com", "vilesh.modi@rentalpha.com"],*/
+    'ps_security_id' => [
+        '1'=>'Current assets',
+        '2'=>'Plant and Machinery',
+        '3'=>'Land and Building',
+        '4'=>'Commercial Property',
+        '5'=>'Land',
+        '6'=>'Industrial Premises',
+        '7'=>'Residential Property',
+        '8'=>'Farm House and Land',
+        '9'=>'Listed Share',
+        '10'=>'Unlisted Share',
+        '11'=>'Mutual Funds',
+        '12'=>'Intercorporate Deposits',
+        '13'=>'Bank Guarantee',
+        '14'=>'SBLC'
+    ],
+    'ps_type_of_security_id'=>[
+        '1'=>'Registered Mortgage',
+        '2'=>'Equitable Mortgage',
+        '3'=>'Hypothecation',
+        '4'=>'Pledge',
+        '5'=>'Lien',
+        '6'=>'Negative Lien',
+        '7'=>'Deposit of Title deeds'
+    ],
+    'ps_status_of_security_id'=>[
+        '1'=>'First Pari-pasu',
+        '2'=>'Exclusive',
+        '3'=>'Third Pari-pasu',
+        '4'=>'Second Pari-pasu',
+        '5'=>'Sub-Servient'
+    ],
+    'ps_time_for_perfecting_security_id'=>[
+        '1'=>'Before Disbusrement',
+        '2'=>'With in 30 days from date of first disbusrement',
+        '3'=>'With in 60 days from date of first disbsurement',
+        '4'=>'With in 90 days from date of first disbursement ',
+        '5'=>'With in 120 days from date of first disbursement',
+        '6'=>'with in 180 days from date of first disbursement',
+        '7'=>'with in 360 days from date of first disbsurement'
+    ],
+    'cs_desc_security_id'=>[
+        '1'=>'Current assets',
+        '2'=>'Plant and Machinery',
+        '3'=>'Land &amp; Building',
+        '4'=>'Commercial Property',
+        '5'=>'Land',
+        '6'=>'Industrial Premises',
+        '7'=>'Residential Property',
+        '8'=>'Farm House &amp; Land',
+        '9'=>'Listed Share',
+        '10'=>'Unlisted Share',
+        '11'=>'Mutual Funds',
+        '12'=>'Intercorporate Deposits',
+        '13'=>'Bank Guarantee',
+        '14'=>'SBLC'
+    ],
+    'cs_type_of_security_id'=>[
+        '1'=>'Registered Mortgage',
+        '2'=>'Equitable Mortgage',
+        '3'=>'Hypothecation',
+        '4'=>'Pledge',
+        '5'=>'Lien',
+        '6'=>'Negative Lien',
+        '7'=>'Deposit of Title deeds'
+    ],
+    'cs_status_of_security_id'=>[
+        '1'=>'First Pari-pasu',
+        '2'=>'Exclusive',
+        '3'=>'Third Pari-pasu',
+        '4'=>'Second Pari-pasu',
+        '5'=>'Sub-Servient'
+    ],
+    'cs_status_of_security_id'=>[
+        '1'=>'First Pari-pasu',
+        '2'=>'Exclusive',
+        '3'=>'Third Pari-pasu',
+        '4'=>'Second Pari-pasu',
+        '5'=>'Sub-Servient'
+    ],
+    'cs_time_for_perfecting_security_id'=>[
+        '1'=>'Before Disbusrement',
+        '2'=>'With in 30 days from date of first disbusrement',
+        '3'=>'With in 60 days from date of first disbsurement',
+        '4'=>'With in 90 days from date of first disbursement ',
+        '5'=>'With in 120 days from date of first disbursement',
+        '6'=>'with in 180 days from date of first disbursement',
+        '7'=>'with in 360 days from date of first disbsurement'
+    ],
+    'pg_time_for_perfecting_security_id'=>[
+        '1'=>'Before Disbusrement',
+        '2'=>'With in 30 days from date of first disbusrement',
+        '3'=>'With in 60 days from date of first disbsurement',
+        '4'=>'With in 90 days from date of first disbursement ',
+        '5'=>'With in 120 days from date of first disbursement',
+        '6'=>'with in 180 days from date of first disbursement',
+        '7'=>'with in 360 days from date of first disbsurement'
+    ],
+    'cg_type_id'=>[
+        '1'=>'Corporate Guarante with BR',
+        '2'=>'Letter of Comfort with BR',
+        '3'=>'Corporate Guarantee w/o BR',
+        '4'=>'Letter of Comfort w/o BR',
+        '5'=>'Put option with BR',
+        '6'=>'Put option w/o BR'
+    ],
+    'cg_time_for_perfecting_security_id'=>[
+        '1'=>'Before Disbusrement',
+        '2'=>'With in 30 days from date of first disbusrement',
+        '3'=>'With in 60 days from date of first disbsurement',
+        '4'=>'With in 90 days from date of first disbursement ',
+        '5'=>'With in 120 days from date of first disbursement',
+        '6'=>'with in 180 days from date of first disbursement',
+        '7'=>'with in 360 days from date of first disbsurement'
+    ],
+    'em_time_for_perfecting_security_id'=>[
+        '1'=>'Before Disbusrement',
+        '2'=>'With in 30 days from date of first disbusrement',
+        '3'=>'With in 60 days from date of first disbsurement',
+        '4'=>'With in 90 days from date of first disbursement ',
+        '5'=>'With in 120 days from date of first disbursement',
+        '6'=>'with in 180 days from date of first disbursement',
+        '7'=>'with in 360 days from date of first disbsurement'
+    ]
 ];
  
