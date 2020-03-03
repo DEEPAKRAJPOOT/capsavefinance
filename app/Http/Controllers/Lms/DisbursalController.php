@@ -120,7 +120,7 @@ class DisbursalController extends Controller
 
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
-				$invoice['disburse_date'] = date('Y-m-d', strtotime($disburseDate));
+				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
