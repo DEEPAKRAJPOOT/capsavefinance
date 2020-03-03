@@ -57,8 +57,23 @@ class ReviewerSummary extends Mailable
               $preCondArr = array_filter($dataPrePostCond, array($this, "filterPreCond"));
               $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
             }
-        }         
-        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, config('common.review_summ_mail_docs_id'));
+        } 
+        
+        //Get PreOffer Docs
+        $appProductIds = [];
+        $appProducts = $this->appRepo->getAppProducts($appId);
+        foreach($appProducts->products as $product){
+            array_push($appProductIds, $product->pivot->product_id);
+        }
+        
+        $preOfferDocs=[];
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');   
+        $prgmDocs = $appRepo->getRequiredDocs(['doc_type_id' => 4], $appProductIds);
+        foreach ($prgmDocs as $key => $value) {
+            $preOfferDocs[] = $value->doc_id;
+        }
+                    
+        $fileArray = AppDocumentFile::getReviewerSummaryPreDocs($appId, config('common.review_summ_mail_docs_id') + $preOfferDocs);
         $leaseOfferData = $facilityTypeList = array();
         $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
         $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
