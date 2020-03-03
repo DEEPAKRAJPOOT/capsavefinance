@@ -670,31 +670,6 @@ try {
 
         setTabIndex();
 
-//        $(document).on('change', '.charge_calculation_type', function () {
-//            
-//            unsetError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'));
-//
-//
-//            let chrg_calculation_amt =  $(this).closest('.amtpercentrow').find('#chrg_calculation_amt').val();
-//            let security_deposit_type = $(this).val();
-//
-//            if (typeof charge_calculation_type == 'undefined') {
-//                setError('#radio_block', 'Please select charge calculation type');
-//                flag = false;
-//            }
-//
-//            if (chrg_calculation_amt == '' || isNaN(chrg_calculation_amt)) {
-//                setError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'), 'Please fill security deposit');
-//                flag = false;
-//            } else if (security_deposit_type == 2 && parseFloat(chrg_calculation_amt) > 100) {
-//                setError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'), 'Security deposit can not be greater than 100 percent');
-//                flag = false;
-//            } else if ((security_deposit_type == 1) && (parseInt(chrg_calculation_amt) != chrg_calculation_amt)) {
-//                setError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'), 'Please fill correct security deposit amount');
-//                flag = false;
-//            }
-//        });
-
         $(document).on('click', '.charge_calculation_type', function () {
             sdt = $(this).val();
             if (sdt == 1) {

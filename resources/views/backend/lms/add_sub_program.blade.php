@@ -64,33 +64,36 @@
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
                                             <div class="sub-form renew-form " id="subform">
                                                 <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="txtCreditPeriod">
-                                                                {{ trans('backend.add_program.sub_program_detail') }}
-                                                                <span class="error_message_label">*</span>
-                                                            </label>
-                                                            <div class="block-div clearfix ">
-                                                                <div class="form-check-inline float-left">
-                                                                    <label class="form-check-label fnt">
-                                                                        {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                        <strong>
-                                                                            {{ trans('backend.add_program.vendor_finance') }}   
-                                                                        </strong>
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label for="txtCreditPeriod">
+                                                                        {{ trans('backend.add_program.sub_program_detail') }}
+                                                                        <span class="error_message_label">*</span>
                                                                     </label>
-                                                                </div>
-                                                                <div class="form-check-inline float-left">
-                                                                    <label class="form-check-label fnt">
-                                                                        {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                        <strong>
-                                                                            {{ trans('backend.add_program.channel_finance') }}    
-                                                                        </strong>
-                                                                    </label>
+                                                                    <div class="block-div clearfix ">
+                                                                        <div class="form-check-inline float-left">
+                                                                            <label class="form-check-label fnt" for="prgm_type">
+                                                                                {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                <strong>
+                                                                                    {{ trans('backend.add_program.vendor_finance') }}   
+                                                                                </strong>
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check-inline float-left">
+                                                                            <label class="form-check-label fnt" for="prgm_type">
+                                                                                {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                <strong>
+                                                                                    {{ trans('backend.add_program.channel_finance') }}    
+                                                                                </strong>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <label id="prgm_type-error" class="error mb-0" for="prgm_type"></label>
                                                                 </div>
                                                             </div>
-                                                            <label id="prgm_type-error" class="error mb-0" for="prgm_type"></label>
                                                         </div>
-
                                                     </div>
 
                                                     <div class="col-md-12" style="margin-top: -50px;">
@@ -167,7 +170,7 @@
                                                                                 </label>
                                                                             </div>
                                                                         </div>
-                                                                        
+
                                                                         <div class="col-md-6 floating" style="display:none; margin-top: -30px;">
                                                                             <label for="txtCreditPeriod" >Select Linkage
                                                                                 <span class="error_message_label">*</span>
