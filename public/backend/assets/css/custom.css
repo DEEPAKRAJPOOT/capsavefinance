@@ -507,10 +507,15 @@ table.remove-tr-bg tbody tr{
    }
 .sub-title{    font-size: 15px;
    }	
-.sub-title.bg{ background: #efefef;
+.sub-title.bg{ background: #8a8989;
     padding:10px 15px;  
-    width: 100%;}	
-	.half-width {
+  
+    color: #fff;
+
+   
+}
+
+.half-width {
     width: 48%;
     float: left;
     margin: 0 1%;
@@ -828,4 +833,5 @@ ul.listing.listing1 li{float:left; width:33.33%;}
 .table tr td i {
     color: #138864;
 }
- .charge_parent_div {width:100%;}
+.charge_parent_div {width:100%;}
+
