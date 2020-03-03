@@ -48,7 +48,7 @@
                                         <tr>
                                             <td>2.</td>
                                             <td>Lessor</td>
-                                            <td>Capsave Finance Private Limited (CFPL)</td>
+                                            <td>{{ $lessor }}</td>
                                         </tr>
                                         <tr>
                                             <td>3.</td>

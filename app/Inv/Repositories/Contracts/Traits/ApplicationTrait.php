@@ -184,6 +184,7 @@ trait ApplicationTrait
             $data['contact_person'] = ($cam)?$cam->contact_person:'';
             $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
             $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
+            $data['lessor'] = ($sanctionData)?$sanctionData->lessor:'';
             $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
             $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
             $data['payment_type_other'] = ($sanctionData)?$sanctionData->payment_type_other:'';
