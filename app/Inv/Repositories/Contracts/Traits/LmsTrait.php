@@ -489,7 +489,7 @@ trait LmsTrait
 
     protected function getInvoice($userId, $offset, $transDate){
         return Disbursal::where(['user_id'=>$userId])
-        ->whereIn('status_id',[13,12])
+        ->whereIn('status_id',[config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED'),config('lms.STATUS_ID.DISBURSED')])
         ->where('int_accrual_start_dt', '<=', DB::raw(DATE($transDate)))
         ->orderBy('inv_due_date','asc')
         ->orderBy('disbursal_id','asc')
@@ -497,9 +497,7 @@ trait LmsTrait
     }
 
     protected function invoiceKnockOff($transId){
-
-
-        $transDetail = Transactions::whereIn('is_settled',[0,1])->where(['trans_id'=>$transId,'trans_type'=>17])->get()->first();
+        $transDetail = Transactions::whereIn('is_settled',[0,1])->where(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->get()->first();
        
         if($transDetail->count()>0)
         {
@@ -513,11 +511,11 @@ trait LmsTrait
 
             $disbursalCount = Disbursal::where(['user_id'=>$trans['user_id']])
                 ->where('int_accrual_start_dt', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
-                ->whereIn('status_id',[13,12])
+                ->whereIn('status_id',[config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED'),config('lms.STATUS_ID.DISBURSED')])
                 ->count();
             
             $disbursalData =  Disbursal::where(['user_id'=>$transDetail['user_id']])
-                ->whereIn('status_id',[13,12])
+                ->whereIn('status_id',[config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED'),config('lms.STATUS_ID.DISBURSED')])
                 ->where('int_accrual_start_dt', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
                 ->orderBy('inv_due_date','asc')
                 ->orderBy('disbursal_id','asc')
@@ -601,7 +599,7 @@ trait LmsTrait
                             $repaidAmount += $balancePrincipalAmt;
                             $trans['balance_amount'] -= $balancePrincipalAmt;
                             $is_inv_settled = 2;
-                            $disbursal['status_id'] = '15';
+                            $disbursal['status_id'] = config('lms.STATUS_ID.PAYMENT_SETTLED');
                         }else
                         {
                             $disbursal['total_repaid_amt'] += $trans['balance_amount'];
@@ -613,14 +611,14 @@ trait LmsTrait
 
                     if($is_inv_settled == 1)
                     {
-                        $invoiceRepayment['trans_type'] = '13';
-                        $disbursal['status_id'] = '13';
+                        $invoiceRepayment['trans_type'] = config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF');
+                        $disbursal['status_id'] = config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED');
                     }
                 
                     if($is_inv_settled == 2)
                     {
-                        $disbursal['status_id'] = '15';
-                        $invoiceRepayment['trans_type'] = '17';
+                        $disbursal['status_id'] = config('lms.STATUS_ID.PAYMENT_SETTLED');
+                        $invoiceRepayment['trans_type'] = config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF');
                     }
                     
                     /* Step 3 : Interest Refund  */
@@ -653,7 +651,7 @@ trait LmsTrait
                             'trans_date'=>$transDetail['trans_date'],
                             'disbursal_id'=>$disbursalDetail->disbursal_id,
                             'parent_trans_id'=>$transId
-                        ], null, 30, 0);
+                        ], null, config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'), 0);
                         $transactionData['knockOff'][] = $knockOffData;
                         //$this->lmsRepo->saveTransaction($knockOffData);
                     }
@@ -665,7 +663,7 @@ trait LmsTrait
                             'trans_date'=>$transDetail['trans_date'],
                             'disbursal_id'=>$disbursalDetail->disbursal_id,
                             'parent_trans_id'=>$transId
-                        ], null, 19, 0);
+                        ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
                         $transactionData['overdue'][] = $overdueData;
                         //$this->lmsRepo->saveTransaction($overdueData);
                     }
@@ -677,7 +675,7 @@ trait LmsTrait
                             'trans_date'=>$transDetail['trans_date'],
                             'disbursal_id'=>$disbursalDetail->disbursal_id,
                             'parent_trans_id'=>$transId
-                        ], null, 9, 1);
+                        ], null,config('lms.TRANS_TYPE.INTEREST_REFUND'), 1);
                         $transactionData['interestRefund'][] = $refundData;
                         //$this->lmsRepo->saveTransaction($refundData);
                     }   

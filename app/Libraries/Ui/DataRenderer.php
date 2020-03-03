@@ -3294,6 +3294,20 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetTransactions(Request $request, $data)
     {
         return DataTables::of($data)
+            ->addColumn('customer_id', function($trans){
+                $data = '';
+                if($trans->lmsUser){
+                    $data = $trans->lmsUser->customer_id;
+                }
+                return $data;
+            })
+            ->addColumn('customer_name', function($trans){
+                $data = '';
+                if($trans->user){
+                    $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
+                }
+                return $data;
+            })
             ->addColumn('invoice_no',function($trans){
                 $data = '';
                 if($trans->disburse && $trans->disburse->invoice && $trans->trans_type == '30'){
@@ -3480,12 +3494,11 @@ class DataRenderer implements DataProviderInterface
                     });
                 }
                 if($request->get('search_keyword')!= ''){
-                    $query->where(function ($query) use ($request) {
+                    $query->whereHas('lmsUser',function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('customer_id', 'like', "%$search_keyword%");
+                        $query->where('customer_id', 'like', "%$search_keyword%");                       
                     });
                 }
-              
             })
             ->make(true);
     }
