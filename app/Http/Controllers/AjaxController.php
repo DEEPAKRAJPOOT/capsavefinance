@@ -35,7 +35,6 @@ use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 
-
 class AjaxController extends Controller {
 
     /**
@@ -3867,6 +3866,15 @@ if ($err) {
         $arrData = GroupCompanyExposure::where(['group_Id'=>$groupId, 'is_active'=>1])->groupBy('group_company_name')->get();
         return response()->json($arrData);
     }
+
+    //////////////////// Use For Payment Advice List /////////////////
+    public function getPaymentAdvice(DataProviderInterface $dataProvider) 
+    {
+        $trans_data = $this->invRepo->getPaymentAdvice(); //getAllManualTransaction
+        $trans_data = $dataProvider->getPaymentAdvice($this->request, $trans_data); //getAllManualTransaction
+        return   $trans_data;
+    } 
+    
 
     ///* check duplicate invoice  ***///////
     function  checkDuplicateInvoice(Request $request)
