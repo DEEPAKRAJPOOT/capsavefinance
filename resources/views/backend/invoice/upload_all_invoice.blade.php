@@ -97,7 +97,7 @@
                                             <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
                                               <option value="">Please Select</option>
                                               <option value="1">Invoice Date</option>
-                                              <option value="2">Invoice Due Date </option>
+                                              <option value="2">Disburse Date </option>
                                              </select>
                                              					 <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
                                         </div>
@@ -138,6 +138,7 @@
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                             <input type="hidden" value="" id="tenor" name="tenor">
+                             <input type="hidden" value="" id="exception" name="exception">
                              <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
                             <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
                            <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
@@ -340,7 +341,7 @@ var messages = {
      var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
       if(invoice_approve_amount  > pro_limit)
      {
-         $("#msgProLimit").text('Invoice amount should not more than program limit');
+         $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
          $("#submit").css("pointer-events","none");
          return false;
      }
@@ -489,14 +490,15 @@ var messages = {
          if(getDays > tenor)
         {
            $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
+           $("#tenorMsg").html('Invoice date & invoice due date difference should not be more than '+tenor+' days'); 
            e.preventDefault();
         }
        else if(getOldDays > tenor_old_invoice)
         {
-           $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
-           e.preventDefault();
+          // $("#tenorMsg").show(); 
+          // $("#tenorMsg").html('Invoice date & current date difference should not be more than '+tenor_old_invoice+' days.'); 
+          /// e.preventDefault();
+          $("#exception").val(28);
         }
          
         } else {

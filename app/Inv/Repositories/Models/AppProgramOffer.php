@@ -395,9 +395,6 @@ class AppProgramOffer extends BaseModel {
      public  function anchorList(){   
         return $this->hasOne('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');  
     }   
-      public function program(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
-    }
      public function app(){
         return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
     }

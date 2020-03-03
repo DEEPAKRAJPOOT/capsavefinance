@@ -290,7 +290,13 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListApprove'
         ]
     );
-        
+       Route::post(
+        'backend_get_ep_list_approve',
+        [
+        'as' => 'backend_get_ep_list_approve',
+        'uses' => 'AjaxController@getBackendEpList'
+        ]
+    );   
        Route::post(
         'backend_get_invoice_list_disbursed_que',
         [
