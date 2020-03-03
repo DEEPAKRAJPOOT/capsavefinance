@@ -471,6 +471,13 @@ class ApplicationController extends Controller
                 //Add application workflow stages                
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);                
                 
+                //Insert Pre Offer Documents
+                $prgmDocsWhere = [];
+                $prgmDocsWhere['stage_code'] = 'pre_offer';
+                //$appData = $this->appRepo->getAppDataByAppId($appId);
+                //$userId = $appData ? $appData->user_id : null;
+                $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+                
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             // } else {
             //     //Add application workflow stages                

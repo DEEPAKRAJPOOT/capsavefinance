@@ -45,6 +45,7 @@
 					  <option value="1">On-boarding</option>
 					  <option value="2">Pre-Sanction</option>
 					  <option value="3">Post-Sanction</option>
+                                          <option value="4">Pre-Offer</option>
 				  </select>
 			</div>
 			<div class="form-group col-6">

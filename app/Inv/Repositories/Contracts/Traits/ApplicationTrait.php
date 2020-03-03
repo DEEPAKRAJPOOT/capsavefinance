@@ -27,6 +27,12 @@ trait ApplicationTrait
                 $finalDocs[$key]['doc_id'] = $value->doc_id;
                 $finalDocs[$key]['product_document'] = $this->appRepo->getDocumentProduct($value->doc_id);
             }
+        } else if ($prgmDocsWhere['stage_code'] == 'pre_offer') {  
+            $prgmDocs = $this->appRepo->getRequiredDocs(['doc_type_id' => 4], $appProductIds);
+            foreach ($prgmDocs as $key => $value) {
+                $finalDocs[$key]['doc_id'] = $value->doc_id;
+                $finalDocs[$key]['product_document'] = $this->appRepo->getDocumentProduct($value->doc_id);
+            }                    
         } else {
             $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();
             if($prgmDocsWhere['stage_code'] == 'upload_pre_sanction_doc'){
@@ -57,7 +63,7 @@ trait ApplicationTrait
     protected function getAppProductIds($app_id)
     {
         $appProductIds = [];
-        $appProducts = $this->appRepo->getAppProducts($app_id);
+        $appProducts = $this->appRepo->getApplicationProduct($app_id);
         foreach($appProducts->products as $product){
             array_push($appProductIds, $product->pivot->product_id);
         }

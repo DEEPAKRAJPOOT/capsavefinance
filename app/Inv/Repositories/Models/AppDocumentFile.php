@@ -260,7 +260,7 @@ class AppDocumentFile extends BaseModel
 
     public static function getReviewerSummaryPreDocs($appId, $docIdArray)
     {
-        $outQry = self::select('file.file_id','file.file_path','file.file_name')
+        $outQry = self::select('file.file_id','file.file_path','file.file_name','app_doc_file.doc_id')
                 ->join('file', 'file.file_id', '=', 'app_doc_file.file_id')                
                 ->where('app_doc_file.app_id', $appId)
                 ->where('app_doc_file.is_upload', 1)

@@ -5,6 +5,7 @@
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container mt-4">
+      <!-- 
       <div class="row">
          <div class="col-md-12">
          @can('mail_reviewer_summary')
@@ -12,6 +13,7 @@
          @endcan
          </div>
       </div>
+      -->
       <!--Start-->
       <form method="post" action="{{ route('save_reviewer_summary') }}">
       @csrf
