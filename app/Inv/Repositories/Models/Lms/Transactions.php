@@ -213,10 +213,4 @@ class Transactions extends BaseModel {
     {
        return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
     }
-
-    /*** get all transaction  **/
-    public static function getPaymentAdvice()
-    {       
-        return ;
-    }
 }
