@@ -206,6 +206,7 @@ trait ApplicationTrait
             $data['ptpqrData'] = $ptpqrData;
             $data['businessAddress'] = $businessAddress;
         }
+        $data['leasingLimitData'] = $this->appRepo->getProgramLimitData($appId, '3')->toArray();
         $data['leaseOfferData'] = AppProgramOffer::getAllOffers($appId, '3');
         $data['facilityTypeList']= $this->masterRepo->getFacilityTypeList()->toarray();
         $data['arrStaticData']['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
