@@ -3,8 +3,6 @@
 @endsection
 @section('content')
 
-
-
 <div class="content-wrapper">
 				
 				
@@ -37,10 +35,10 @@
                      </div> 
                     
                   <div class="col-md-6">
-                                     @php 
-                                   $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
+                                  @php 
+                                   $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger",'28' =>"badge badge-danger"];
                                    @endphp
-				   @foreach($status as $row)
+                                   @foreach($status as $row)
                                    @if($row->id==$invoice->status_id && $row->id!=7)
                                    <button type="button" class="{{$color[$row->id]}} btn-sm float-right" style="font-size: revert;">{{$row->status_name}}
                                     </button>
@@ -55,9 +53,7 @@
      <div class="  col-sm-6 mb-4">
       <div class="card h-100">
          <div class="card-body ">
-            
-           
-					 <h4 class="sub-title mb-2">Customer/Supplier Details</h4>
+           <h4 class="sub-title mb-2">Customer/Supplier Details</h4>
 					 
 					 <ul class="p-0 m-0">
                         <li class="row mb-2">
@@ -157,7 +153,11 @@
                                  {{($invoice->invoice_amount) ? $invoice->invoice_amount : '' }}
                               </td>
                               <td id="invoice-amount">
-                                    {{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }} <a href="#" data-toggle="modal" data-target="#myModal2"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                    {{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }} <a href="#" data-toggle="modal" data-target="#myModal2">
+                                        @php if($invoice->status_id==7) { @endphp
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                         @php  } @endphp
+                                       </a>
 								 
                               </td>
                               

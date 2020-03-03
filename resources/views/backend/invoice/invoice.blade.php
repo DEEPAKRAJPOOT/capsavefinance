@@ -58,7 +58,10 @@
 
                             </li>
 
+ <li class="nav-item">
+                                <a class="nav-link @if(Route::currentRouteName()=='backend_get_exception_cases') active @endif" href="{{Route('backend_get_exception_cases')}}">Exception Cases</a>
 
+                            </li>
                         </ul>
 
 
