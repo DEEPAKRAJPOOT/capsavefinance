@@ -68,10 +68,12 @@ class BizInvoice extends BaseModel
         'tenor',
         'invoice_due_date',
         'invoice_date',
+        'pay_calculation_on',
         'invoice_amount',
         'invoice_approve_amount',
         'prgm_offer_id',
         'file_id',
+        'status_id',
         'remark',
         'created_by',
         'created_at',
@@ -321,6 +323,12 @@ public static function updateInvoice($invoiceId,$status)
         }
         $res = self::select($select)->where($where)->get();
         return $res ?: false;
+    }
+    
+    public static function checkDuplicateInvoice($invNo)
+    {
+        
+        return self::where(['invoice_no' => $invNo])->first();
     }
 
 }
