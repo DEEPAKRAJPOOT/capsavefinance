@@ -449,8 +449,9 @@
                         @endif
                         <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1" {{($pg->pg_name_of_guarantor_id == 1)? 'selected': ''}}>option one</option>
-                            <option value="2" {{($pg->pg_name_of_guarantor_id == 2)? 'selected': ''}}>option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}" {{($pg->pg_name_of_guarantor_id == $bizOwner->biz_owner_id)? 'selected': ''}}>{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -501,8 +502,9 @@
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
                         <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1">option one</option>
-                            <option value="2">option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}">{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -575,8 +577,9 @@
                         @endif
                         <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1" {{($cg->cg_name_of_guarantor_id == 1)? 'selected': ''}}>option one</option>
-                            <option value="2" {{($cg->cg_name_of_guarantor_id == 2)? 'selected': ''}}>option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}" {{($cg->cg_name_of_guarantor_id == $bizOwner->biz_owner_id)? 'selected': ''}}>{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -633,8 +636,9 @@
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
                         <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1">option one</option>
-                            <option value="2">option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}">{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -689,8 +693,9 @@
                         @endif
                         <select name="em[em_debtor_id][]" class="form-control">
                             <option value="">Select Debtor</option>
-                            <option value="1" {{($em->em_debtor_id == 1)? 'selected': ''}}>option one</option>
-                            <option value="2" {{($em->em_debtor_id == 2)? 'selected': ''}}>option two</option>
+                            @foreach($anchors as $key=>$anchor)
+                            <option value="{{$anchor->anchor_id}}" {{($em->em_debtor_id == $anchor->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -747,8 +752,9 @@
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Name of Debtor</b></label>
                         <select name="em[em_debtor_id][]" class="form-control">
                             <option value="">Select Debtor</option>
-                            <option value="1">option one</option>
-                            <option value="2">option two</option>
+                            @foreach($anchors as $key=>$anchor)
+                            <option value="{{$anchor->anchor_id}}">{{$anchor->comp_name}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -845,7 +851,7 @@
       <div class="form-group INR">
         <label for="txtPassword"><b>Documentation Fee (%)</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="document_fee" class="form-control number_format" value="{{isset($offerData->document_fee)? number_format($offerData->document_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
+        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? number_format($offerData->document_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
       </div>
     </div>
     
@@ -867,6 +873,25 @@
 
 @section('jscript')
 <script>
+    var bizOwners = {!! json_encode($bizOwners) !!};
+    var anchors = {!! json_encode($anchors) !!};
+    
+    function anchorDropdown(anchors){
+        let $html='<option value="">Select Debtor</option>';
+        $.each(anchors,function(i,anchor){
+            $html += '<option value="'+anchor.anchor_id+'">'+anchor.comp_name+'</option>';
+        })
+        return $html;
+    }
+
+    function guarantorDropdown(bizOwners){
+        let $html='<option value="">Select Guarantor</option>';
+        $.each(bizOwners,function(i,bizOwner){
+            $html += '<option value="'+bizOwner.biz_owner_id+'">'+bizOwner.first_name+'</option>';
+        })
+        return $html;
+    }
+
     var messages = {
         "get_program_balance_limit" : "{{route('ajax_get_program_balance_limit')}}",
         "token" : "{{ csrf_token() }}"  
@@ -1211,12 +1236,10 @@
   });
 
   $(document).on('click', '.add-personal-guarantee-block', function(){
+    let guarantorOption = guarantorDropdown(bizOwners);
     let personal_guarantee_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="pg[pg_name_of_guarantor_id][]" class="form-control">'+
-                    '<option value="">Select Guarantor</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="pg[pg_name_of_guarantor_id][]" class="form-control">'+guarantorOption+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
@@ -1248,6 +1271,7 @@
   });
 
   $(document).on('click', '.add-corporate-guarantee-block', function(){
+    let guarantorOption = guarantorDropdown(bizOwners);
     let corporate_guarantee_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
                 '<select name="cg[cg_type_id][]" class="form-control">'+
@@ -1261,10 +1285,7 @@
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="cg[cg_name_of_guarantor_id][]" class="form-control">'+
-                    '<option value="">Select Guarantor</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="cg[cg_name_of_guarantor_id][]" class="form-control">'+guarantorOption+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
@@ -1293,12 +1314,10 @@
   });
 
   $(document).on('click', '.add-escrow-mechanism-block', function(){
+    let anchorOption = anchorDropdown(anchors);
     let escrow_mechanism_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="em[em_debtor_id][]" class="form-control">'+
-                    '<option value="">Select Debtor</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="em[em_debtor_id][]" class="form-control">'+anchorOption+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
