@@ -93,7 +93,7 @@
 
                                                     </div>
 
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-12" style="margin-top: -50px;">
                                                         <h5 class="card-title">Terms</h5>
                                                     </div>
 
@@ -142,11 +142,11 @@
                                                     </div>
                                                     <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txtCreditPeriod">Interest Rate (%)
-                                                                <span class="error_message_label">*</span>
-                                                            </label>
                                                             <div class="row">
                                                                 <div class="col-md-6">
+                                                                    <label for="txtCreditPeriod">Interest Rate (%)
+                                                                        <span class="error_message_label">*</span>
+                                                                    </label>
                                                                     <div class="row">
                                                                         <div class="col-md-6">
                                                                             <div class="form-check-inline">
@@ -167,15 +167,15 @@
                                                                                 </label>
                                                                             </div>
                                                                         </div>
-
-                                                                        <div class="col-md-6 floating" style="display:none;">
-                                                                            <label for="txtCreditPeriod">Linkage
+                                                                        
+                                                                        <div class="col-md-6 floating" style="display:none; margin-top: -30px;">
+                                                                            <label for="txtCreditPeriod" >Select Linkage
                                                                                 <span class="error_message_label">*</span>
                                                                             </label>
                                                                             {!!
                                                                             Form::select('interest_linkage',
                                                                             [
-                                                                            ''=>'Linkage', '12'=>'12%',   '15'=>'15%','20'=>'20%','25'=>'25%',
+                                                                            ''=>'Select Linkage', '12'=>'12%',   '15'=>'15%','20'=>'20%','25'=>'25%',
                                                                             ],
                                                                             isset($subProgramData->interest_linkage) ? $subProgramData->interest_linkage : null,
                                                                             ['id' => 'interest_linkage',
@@ -212,7 +212,7 @@
                                                             <label id="prgm_type-error" class="error mb-0" for="interest_rate"></label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-12" style="margin-top: -25px;">
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
@@ -359,7 +359,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
+                                                <div class="col-md-12" style="margin-top: -35px;">
                                                     <h5 class="card-title">Method</h5>
                                                 </div>
                                                 <div class="col-md-12">
@@ -580,7 +580,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
+                                                <div class="col-md-12" style="margin-top: -45px">
                                                     <h5 class="card-title">Document Type </h5>
                                                 </div>
                                                 <div class="col-md-12">
@@ -617,84 +617,84 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-12">
-                                            @if(count($programCharges))
+                                            <div class="col-md-12" style="margin-top: -20px">
+                                                @if(count($programCharges))
 
 
-                                            @foreach($programCharges as $keys =>$programChrg)
+                                                @foreach($programCharges as $keys =>$programChrg)
 
-                                            <div class="charge_parent_div">
-                                                <div class="row" style="background-color: #e1f0eb;">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group password-input">
-                                                            <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
-                                                            </label>
-                                                            {!!
-                                                            Form::select('charge['.$keys.']',
-                                                            [''=>'Please select']+$charges,
-                                                            $programChrg['charge_id'],
-                                                            ['id' => 'charge_'.$keys,
-                                                            'class'=>'form-control  charges',
-                                                            'required'=>'required',
-                                                            'data-rel'=>$keys
-                                                            ])
-                                                            !!}
+                                                <div class="charge_parent_div">
+                                                    <div class="row" style="background-color: #e1f0eb;">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group password-input">
+                                                                <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
+                                                                </label>
+                                                                {!!
+                                                                Form::select('charge['.$keys.']',
+                                                                [''=>'Please select']+$charges,
+                                                                $programChrg['charge_id'],
+                                                                ['id' => 'charge_'.$keys,
+                                                                'class'=>'form-control  charges',
+                                                                'required'=>'required',
+                                                                'data-rel'=>$keys
+                                                                ])
+                                                                !!}
+
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6 col-sm-6">
+                                                            <label for="txtPassword">&nbsp;
+                                                            </label> <br/>
+                                                            <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"><i class="fa  fa-times-circle"></i></button>
+                                                            <button  style="display: none"  type="button" class="btn btn-primary  btn-sm add_more"> <i class="fa  fa-plus-circle"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12">
+                                                        <div class="html_append">
+                                                            @include('backend/lms/charges_html', ['data'=> (object) $programChrg , 'len'=>$keys ]) 
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                @endforeach
+                                                @else 
+
+                                                <div class="charge_parent_div">
+                                                    <div class="row" style="background-color: #e1f0eb;">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group password-input">
+                                                                <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
+                                                                </label>
+                                                                {!!
+                                                                Form::select('charge[0]',
+                                                                [''=>'Please select']+$charges,
+                                                                null,
+                                                                ['id' => 'charge_0',
+                                                                'class'=>'form-control charges',
+                                                                'required'=>'required',
+                                                                'data-rel'=>0
+                                                                ])
+                                                                !!}
+
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6 col-sm-6">
+                                                            <label for="txtPassword">&nbsp;
+                                                            </label> <br/>
+                                                            <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"><i class="fa  fa-times-circle"></i></button>
+                                                            <button  style="display: none"  type="" class="btn btn-primary  btn-sm add_more"> <i class="fa  fa-plus-circle"></i></button>
 
 
                                                         </div>
                                                     </div>
-                                                    <div class="col-6 col-sm-6">
-                                                        <label for="txtPassword">&nbsp;
-                                                        </label> <br/>
-                                                        <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"><i class="fa  fa-times-circle"></i></button>
-                                                        <button  style="display: none"  type="button" class="btn btn-primary  btn-sm add_more"> <i class="fa  fa-plus-circle"></i></button>
+                                                    <div class="col-md-12 col-sm-12">
+                                                        <div class="html_append"></div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12 col-sm-12">
-                                                    <div class="html_append">
-                                                        @include('backend/lms/charges_html', ['data'=> (object) $programChrg , 'len'=>$keys ]) 
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                            @endforeach
-                                            @else 
-
-                                            <div class="charge_parent_div">
-                                                <div class="row" style="background-color: #e1f0eb;">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group password-input">
-                                                            <label for="txtPassword">Select Charge Type <span class="error_message_label">*</span>
-                                                            </label>
-                                                            {!!
-                                                            Form::select('charge[0]',
-                                                            [''=>'Please select']+$charges,
-                                                            null,
-                                                            ['id' => 'charge_0',
-                                                            'class'=>'form-control charges',
-                                                            'required'=>'required',
-                                                            'data-rel'=>0
-                                                            ])
-                                                            !!}
-
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-6 col-sm-6">
-                                                        <label for="txtPassword">&nbsp;
-                                                        </label> <br/>
-                                                        <button style="display: none" type="button" class="btn btn-danger mr-2 btn-sm delete_btn"><i class="fa  fa-times-circle"></i></button>
-                                                        <button  style="display: none"  type="" class="btn btn-primary  btn-sm add_more"> <i class="fa  fa-plus-circle"></i></button>
-
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12 col-sm-12">
-                                                    <div class="html_append"></div>
-                                                </div>
-                                            </div>
-                                            @endif
+                                                @endif
                                             </div>
                                             <!--@include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])-->
                                         </div>

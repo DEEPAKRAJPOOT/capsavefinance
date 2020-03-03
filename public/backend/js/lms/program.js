@@ -686,7 +686,7 @@ try {
                 $(this).closest('.amtpercentrow').find('#approved_limit_div').show();
             }
         });
-        
+
 
     });
 } catch (e) {
