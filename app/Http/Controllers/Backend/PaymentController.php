@@ -231,9 +231,9 @@ class PaymentController extends Controller {
 
   }
 
-  public function  paymentAdviceExcel()
+  public function  paymentAdviceExcel(Request $request)
   {
-    $transId = 174;
+    $transId = $request->get('trans_id');
     $counter = 1;
     $overdueInterest = 0;
     $interestRefund = 0;
@@ -404,6 +404,3 @@ class PaymentController extends Controller {
     
   }
 }
-
-
-

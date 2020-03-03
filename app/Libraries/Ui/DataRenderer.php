@@ -3459,14 +3459,14 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'amount',
                 function ($transaction) {
-                    return $transaction->amount.' INR';
+                    return $transaction->amount;
                 }
             )
             ->addColumn(
                 'action',
                 function ($data) {
                 $act = $data->action;
-                $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" data-url ="'.route('payment_advice_excel', ['trans_id' => $data->trans_id]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" href ="'.route('payment_advice_excel', ['trans_id' => $data->trans_id]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                 return $download;
                 }
             )

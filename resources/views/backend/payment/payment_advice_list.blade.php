@@ -58,11 +58,6 @@
                     !!}
                 </div>
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button><br>
-
-                <span id="upload_msg" class="error" style="display: none;"></span>
-                <a href="{{route('payment_advice_excel')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
-
-                
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
