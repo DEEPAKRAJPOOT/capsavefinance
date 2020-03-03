@@ -656,7 +656,7 @@ use CommonRepositoryTraits;
      
         try
         {
-          return AppProgramLimit::getSingleLimit($aid);
+          return AppProgramOffer::getSingleLimit($aid);
         } catch (Exception $ex) {
            return $ex;
         } 
@@ -685,17 +685,32 @@ use CommonRepositoryTraits;
     {
         return InvoiceModel::getInvoiceData($where, $select);
     }
+    
+    public function checkDuplicateInvoice($invoiceNo)
+    {
+        
+          return BizInvoice::checkDuplicateInvoice($invoiceNo);
+    }
 
-    function  getPaymentAdvice()
+    public function  getPaymentAdvice()
     {
        try
        {
-           return Transactions::select('transactions.*', 'users.f_name', 'users.l_name')
+           return Transactions::select('transactions.*', 'users.f_name','users.m_name','users.l_name')
                             ->join('users', 'transactions.user_id', '=', 'users.user_id')
                             ->where('trans_type','=', 17)
                             ->orderBy('trans_id', 'asc');  
        } catch (Exception $ex) {
           return $ex;
        }
+    }
+
+    public function findTransById($trans_id)
+    {
+        if (empty($trans_id) || !ctype_digit($trans_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Transactions::find($trans_id);
+        return $result ?: false;
     }
 }

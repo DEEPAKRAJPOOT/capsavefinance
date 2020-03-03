@@ -221,8 +221,10 @@ class PaymentController extends Controller {
    }
 
   /* Payment Advice List   */
-  public function  paymentAdviceList()
+  public function  paymentAdviceList(Request $request)
   {
+    $trans_id = preg_replace('#[^0-9]#', '', $request->get('trans_id'));
+    // $trans_data = $this->invRepo->findTransById($trans_id);
     return view('backend.payment.payment_advice_list');
 
   }
@@ -231,10 +233,6 @@ class PaymentController extends Controller {
   {
     $counter = 1;
     $objPHPExcel =  new PHPExcel();
-
-    // $objPHPExcel->getActiveSheet('A1:F1')->getStyle()->getFont()->setBold(true);
-    // Setting font to Arial Black
-    // $objPHPExcel->getDefaultStyle()->getFont()->setName('Arial Black');
    
 
     // Set document properties
@@ -258,7 +256,7 @@ class PaymentController extends Controller {
 
     $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('A'.$counter, 'Tran Date')
-    ->setCellValue('B'.$counter, 'Value DaTE!')
+    ->setCellValue('B'.$counter, 'Value Date')
     ->setCellValue('C'.$counter, 'Tran Type')
     ->setCellValue('D'.$counter, 'Invoice No')
     ->setCellValue('E'.$counter, 'Debit')
@@ -281,8 +279,35 @@ class PaymentController extends Controller {
     $counter +=2;
     $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
     $counter +=1;
+
     $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
     $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
+
+    $counter += 2;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total amt for Margin');
+
+    $counter += 1;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, '% Margin');
+
+    $counter += 1;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Overdue Interest');
+    
+    $counter += 1;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'INTEREST SEPT');
+
+    $counter += 2;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Margin Released');
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
+
+    $counter += 2;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Interest Refund');
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
+    
+    $counter += 2;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'OVERDUE');
+    
+    $counter += 1;
+    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'INT TYPE');
 
     $counter++;
     

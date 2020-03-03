@@ -290,7 +290,13 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListApprove'
         ]
     );
-        
+       Route::post(
+        'backend_get_ep_list_approve',
+        [
+        'as' => 'backend_get_ep_list_approve',
+        'uses' => 'AjaxController@getBackendEpList'
+        ]
+    );   
        Route::post(
         'backend_get_invoice_list_disbursed_que',
         [
@@ -743,9 +749,11 @@ Route::group(
             'as' => 'front_supplier_list',
             'uses' => 'AjaxController@getSupplierList'
     ]); 
-               
-
-    Route::POST('upload_invoice_csv', [
+       Route::POST('check_duplicate_invoice', [
+            'as' => 'check_duplicate_invoice',
+            'uses' => 'AjaxController@checkDuplicateInvoice'
+    ]);            
+   Route::POST('upload_invoice_csv', [
             'as' => 'upload_invoice_csv',
             'uses' => 'AjaxController@uploadInvoice'
     ]); 
@@ -775,6 +783,16 @@ Route::group(
         'as' => 'get_trans_name',
         'uses' => 'AjaxController@getTransName'
     ]);   
+       
+    Route::post('get-group-company-exposure', [
+        'as' => 'get_group_company_exposure',
+        'uses' => 'AjaxController@getGroupCompanyExposure'
+    ]);      
+
+    Route::post('update-group-company-exposure', [
+        'as' => 'update_group_company_exposure',
+        'uses' => 'AjaxController@updateGroupCompanyExposure'
+    ]); 
 
      Route::post('get_chrg_amount', [
                 'as' => 'get_chrg_amount',
@@ -785,4 +803,8 @@ Route::group(
         'uses' => 'AjaxController@getPaymentAdvice'
     ]);
     
+      Route::post('get_calculation_amount', [
+                'as' => 'get_calculation_amount',
+                'uses' => 'AjaxController@getCalculationAmount'
+            ]);
 });

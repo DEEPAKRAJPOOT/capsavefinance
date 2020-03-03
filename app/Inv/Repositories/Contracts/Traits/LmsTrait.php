@@ -686,7 +686,7 @@ trait LmsTrait
                     'amount' => $trans['balance_amount'],
                     'trans_date'=>$transDetail['trans_date'],
                     'parent_trans_id'=>$transId
-                ], null, 2, 1);
+                ], null, 2, 0);
                 $transactionData['reversePayment'][] = $paymentReverseData;
                 //$this->lmsRepo->saveTransaction($paymentReverseData);
             }

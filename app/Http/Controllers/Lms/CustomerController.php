@@ -57,22 +57,52 @@ class CustomerController extends Controller
 		try {
 			$totalLimit = 0;
 			$consumeLimit = 0;
+                        $transactions = 0;
 			$user_id = $request->get('user_id');
 			$userInfo = $this->userRepo->getCustomerDetail($user_id);
+                        
 			$application = $this->appRepo->getCustomerApplications($user_id);
-			$anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+                        //dd($application);
+                        $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 			foreach ($application as $key => $value) {
 				$totalLimit += (isset($value->appLimit->tot_limit_amt)) ? $value->appLimit->tot_limit_amt : 0;
 			}
-			foreach ($application as $key => $value) {
-				$consumeLimit += (isset($value->appPrgmOffer->loan_offer)) ? $value->appPrgmOffer->loan_offer : 0;
-			}
-
+                        
+			foreach ($application as  $value) {
+                          
+                             foreach ($value->disbursal as  $val) { 
+                             $consumeLimit += (isset($val->principal_amount)) ? $val->principal_amount : 0;
+			
+                             }
+                         }
+                       foreach ($application as  $value) {
+                          
+                             foreach ($value->transactions as  $val) { 
+                             $transactions += (isset($val->amount)) ? $val->amount : 0;
+			
+                             }
+                         }
+                      
+                        $consumeLimitTotal =  $totalLimit-$consumeLimit; 
+                        $final_consumer_limit = $consumeLimitTotal+$transactions;
 			$userInfo->total_limit = number_format($totalLimit);
-			$userInfo->consume_limit = number_format($consumeLimit);
-			$userInfo->avail_limit = number_format($totalLimit- $consumeLimit);
-
-			return view('lms.customer.list_applications')
+                        if($final_consumer_limit >=$totalLimit)
+                        {
+                            $userInfo->consume_limit = number_format($totalLimit-$final_consumer_limit);
+                        }
+                        else
+                        {
+                            $userInfo->consume_limit = number_format($final_consumer_limit);
+                        }
+			if($transactions >=$consumeLimit)
+                        {
+                            $userInfo->utilize_limit = 0;
+                        }
+                        else
+                        {
+                           $userInfo->utilize_limit = number_format($consumeLimit-$transactions);
+                        }
+                        return view('lms.customer.list_applications')
 				->with([
 					'userInfo' => $userInfo, 
 					'application' => $application,

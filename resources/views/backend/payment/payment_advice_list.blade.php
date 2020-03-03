@@ -108,6 +108,8 @@
 </div>
     @endsection
     @section('jscript')
+    <script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>
+    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 <script>
 
     var messages = {
