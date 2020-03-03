@@ -1225,6 +1225,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->where('app_id', $app_id)
                 ->first();
     }
+
     /**
      * get Bank account 
      * 

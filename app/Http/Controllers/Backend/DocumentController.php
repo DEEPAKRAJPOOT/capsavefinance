@@ -41,6 +41,8 @@ class DocumentController extends Controller
             $docData = [];
             $requiredDocs = [];
             $docFlag = 0;
+            $noDocFlag = 0;
+
             $appProduct = $this->appRepo->getApplicationProduct($appId);
             
             $docTypes = config('common.doc_type');            

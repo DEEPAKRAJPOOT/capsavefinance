@@ -68,7 +68,7 @@ class ReviewerSummary extends Mailable
         //Get PreOffer Docs
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');   
         $appProductIds = [];
-        $appProducts = $appRepo->getAppProducts($appId);
+        $appProducts = $appRepo->getApplicationProduct($appId);
         foreach($appProducts->products as $product){
             array_push($appProductIds, $product->pivot->product_id);
         }        
