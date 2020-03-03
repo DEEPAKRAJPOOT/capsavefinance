@@ -227,7 +227,7 @@ trait ApplicationTrait
         }
         $offerData = $this->appRepo->getAllOffers($appId, 1);
         $tot_limit_amt = 0;
-        if ($AppLimitData->count()) {
+        if (!empty($AppLimitData) && $AppLimitData->count()) {
             $tot_limit_amt = $AppLimitData['tot_limit_amt'];
         }
         $CommunicationAddress = '';
