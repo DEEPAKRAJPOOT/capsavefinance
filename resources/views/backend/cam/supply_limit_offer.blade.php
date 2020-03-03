@@ -449,8 +449,9 @@
                         @endif
                         <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1" {{($pg->pg_name_of_guarantor_id == 1)? 'selected': ''}}>option one</option>
-                            <option value="2" {{($pg->pg_name_of_guarantor_id == 2)? 'selected': ''}}>option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}" {{($pg->pg_name_of_guarantor_id == $bizOwner->biz_owner_id)? 'selected': ''}}>{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -501,8 +502,9 @@
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
                         <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1">option one</option>
-                            <option value="2">option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}">{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -575,8 +577,9 @@
                         @endif
                         <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1" {{($cg->cg_name_of_guarantor_id == 1)? 'selected': ''}}>option one</option>
-                            <option value="2" {{($cg->cg_name_of_guarantor_id == 2)? 'selected': ''}}>option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}" {{($cg->cg_name_of_guarantor_id == $bizOwner->biz_owner_id)? 'selected': ''}}>{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -633,8 +636,9 @@
                         <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
                         <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
-                            <option value="1">option one</option>
-                            <option value="2">option two</option>
+                            @foreach($bizOwners as $key=>$bizOwner)
+                            <option value="{{$bizOwner->biz_owner_id}}">{{ucwords($bizOwner->first_name)}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -867,6 +871,15 @@
 
 @section('jscript')
 <script>
+    var bizOwners = {!! json_encode($bizOwners) !!};
+    function guarantorDropdown(bizOwners){
+        let $html='<option value="">Select Guarantor</option>';
+        $.each(bizOwners,function(i,bizOwner){
+            $html += '<option value="'+bizOwner.biz_owner_id+'">'+bizOwner.first_name+'</option>';
+        })
+        return $html;
+    }
+console.log(guarantorDropdown(bizOwners));
     var messages = {
         "get_program_balance_limit" : "{{route('ajax_get_program_balance_limit')}}",
         "token" : "{{ csrf_token() }}"  
@@ -1211,12 +1224,10 @@
   });
 
   $(document).on('click', '.add-personal-guarantee-block', function(){
+    let guarantorOption = guarantorDropdown(bizOwners);
     let personal_guarantee_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
-                '<select name="pg[pg_name_of_guarantor_id][]" class="form-control">'+
-                    '<option value="">Select Guarantor</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="pg[pg_name_of_guarantor_id][]" class="form-control">'+guarantorOption+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
@@ -1248,6 +1259,7 @@
   });
 
   $(document).on('click', '.add-corporate-guarantee-block', function(){
+    let guarantorOption = guarantorDropdown(bizOwners);
     let corporate_guarantee_block = '<div class="row mt10">'+
             '<div class="col-md-2">'+
                 '<select name="cg[cg_type_id][]" class="form-control">'+
@@ -1261,10 +1273,7 @@
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
-                '<select name="cg[cg_name_of_guarantor_id][]" class="form-control">'+
-                    '<option value="">Select Guarantor</option>'+
-                    '<option value="1">option one</option>'+
-                    '<option value="2">option two</option>'+
+                '<select name="cg[cg_name_of_guarantor_id][]" class="form-control">'+guarantorOption+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+
