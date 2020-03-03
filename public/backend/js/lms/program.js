@@ -535,7 +535,7 @@ try {
                     'invoice_approval[]': {
                         required: true
                     },
-                    'charge[1]': {
+                    'charge[]': {
                         required: true
                     },
                     min_interest_rate: {
@@ -670,19 +670,57 @@ try {
 
         setTabIndex();
 
+//        $(document).on('change', '.charge_calculation_type', function () {
+//            
+//            unsetError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'));
+//
+//
+//            let chrg_calculation_amt =  $(this).closest('.amtpercentrow').find('#chrg_calculation_amt').val();
+//            let security_deposit_type = $(this).val();
+//
+//            if (typeof charge_calculation_type == 'undefined') {
+//                setError('#radio_block', 'Please select charge calculation type');
+//                flag = false;
+//            }
+//
+//            if (chrg_calculation_amt == '' || isNaN(chrg_calculation_amt)) {
+//                setError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'), 'Please fill security deposit');
+//                flag = false;
+//            } else if (security_deposit_type == 2 && parseFloat(chrg_calculation_amt) > 100) {
+//                setError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'), 'Security deposit can not be greater than 100 percent');
+//                flag = false;
+//            } else if ((security_deposit_type == 1) && (parseInt(chrg_calculation_amt) != chrg_calculation_amt)) {
+//                setError($(this).closest('.amtpercentrow').find('#chrg_calculation_amt').attr('name'), 'Please fill correct security deposit amount');
+//                flag = false;
+//            }
+//        });
+
         $(document).on('click', '.charge_calculation_type', function () {
             sdt = $(this).val();
             if (sdt == 1) {
                 $(this).closest('.amtpercentrow').find('.sdt').text('Amount');
+                 $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtfixed').removeClass('amtpercnt');
                 $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-percent').addClass('fa-inr')
                 $(this).closest('.amtpercentrow').find('#approved_limit_div').hide();
             } else {
                 $(this).closest('.amtpercentrow').find('.sdt').text('Percent');
+                $(this).closest('.amtpercentrow').find('.approved_limit_div').removeClass('hide');
+                $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtpercnt').removeClass('amtfixed');
                 $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-inr').addClass('fa-percent');
                 $(this).closest('.amtpercentrow').find('#approved_limit_div').show();
             }
         });
-
+        
+        $(document).on('keypress', '.chrg_calculation_amt', function(e) {
+            $numpad = e.code.replace(/[^0-9]/g,'');
+            $chrg_calculation_amt = $(this).val();
+            $oldval = $chrg_calculation_amt.replace(/[^0-9]/g,''); 
+            $realval = $oldval + $numpad;
+            if($(this).hasClass('amtpercnt') && parseInt($realval) > 100){
+                return false;
+            }
+            return true;
+        })
 
     });
 } catch (e) {

@@ -56,11 +56,10 @@
                 aria-hidden="true"></i></a>
                 {!! Form::text('chrg_calculation_amt['.$len.']', 
                     isset($data->chrg_calculation_amt)  ?  number_format($data->chrg_calculation_amt) : null, 
-                    ['class'=>'form-control  number_format clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
+                    ['id'=>'chrg_calculation_amt', 'class'=>'form-control chrg_calculation_amt '.(isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'amtfixed': 'amtpercnt') : 'amtfixed').' number_format clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
             </div>
              @endif
-             @if(isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type == 2)
-            <div class="form-group col-md-3" id="approved_limit_div">
+            <div class="form-group approved_limit_div col-md-3 {{isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type != 2 ? 'hide' : '' }}" id="approved_limit_div">
                 <label for="chrg_type">Charge Applicable On</label>
                 {!!
                 Form::select('chrg_tiger_id['.$len.']',
@@ -76,7 +75,6 @@
                 ])
                 !!}
             </div>
-             @endif
         </div>
     </div>
 <script>
