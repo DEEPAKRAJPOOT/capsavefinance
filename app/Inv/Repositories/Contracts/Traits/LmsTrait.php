@@ -692,7 +692,7 @@ trait LmsTrait
                     'trans_date'=>$transDetail['trans_date'],
                     'parent_trans_id'=>$transId
                 ], null, 2, 0);
-                $transactionData['reversePayment'][] = $paymentReverseData;
+                //$transactionData['reversePayment'][] = $paymentReverseData;
                 //$this->lmsRepo->saveTransaction($paymentReverseData);
             }
 
@@ -727,10 +727,10 @@ trait LmsTrait
             $this->lmsRepo->saveTransaction($interestRefundValue);
         }
 
-        if(!empty($transactionData['reversePayment']))
-        foreach ($transactionData['reversePayment'] as $interestRevPaymentValue){
-            $this->lmsRepo->saveTransaction($interestRevPaymentValue);
-        }
+        // if(!empty($transactionData['reversePayment']))
+        // foreach ($transactionData['reversePayment'] as $interestRevPaymentValue){
+        //     $this->lmsRepo->saveTransaction($interestRevPaymentValue);
+        // }
     }
     
     protected function calDisbursalAmount($principalAmount, $deductions)

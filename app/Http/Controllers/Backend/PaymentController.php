@@ -233,6 +233,11 @@ class PaymentController extends Controller {
   {
     $transId = 174;
     $counter = 1;
+    $overdueInterest = 0;
+    $interestRefund = 0;
+    $totalMarginAmount = 0;
+    $nonFactoredAmount = 0;
+    
     $objPHPExcel =  new PHPExcel();
     $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>'17'])->first();
     $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
@@ -243,7 +248,7 @@ class PaymentController extends Controller {
                                 ->pluck('disbursal_id')
                                 ->toArray();
 
-    $totalMarginAmount = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
+    $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
                         ->sum('invoice_approve_amount'); 
     $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
                               ->groupBy('margin')
@@ -259,7 +264,7 @@ class PaymentController extends Controller {
                 ->setKeywords("Payment Advice Excel")
                 ->setCategory("Payment Advice Excel");
     
-    $objPHPExcel->getActiveSheet()->getStyle("A1:F1")->getFont()->setBold(true);
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 
     foreach(range('A','F') as $columnID) {
       $objPHPExcel->getActiveSheet()
@@ -269,7 +274,7 @@ class PaymentController extends Controller {
 
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Tran Date')
-                ->setCellValue('B'.$counter, 'Value DaTE!')
+                ->setCellValue('B'.$counter, 'Value Date')
                 ->setCellValue('C'.$counter, 'Tran Type')
                 ->setCellValue('D'.$counter, 'Invoice No')
                 ->setCellValue('E'.$counter, 'Debit')
@@ -279,80 +284,88 @@ class PaymentController extends Controller {
     if($repayment->count()>0){
       $counter++;
       $objPHPExcel->setActiveSheetIndex(0)
-      ->setCellValue('A'.$counter, $repayment->trans_date)
-      ->setCellValue('B'.$counter, $repayment->created_date)
-      ->setCellValue('C'.$counter, 'Repayment')
-      ->setCellValue('D'.$counter, ($repayment->disburse && $repayment->disburse->invoice && $repayment->trans_type == '30')? $data = $trans->disburse->invoice->invoice_no:'')
+      ->setCellValue('A'.$counter, date('d-M-Y',strtotime($repayment->trans_date)))
+      ->setCellValue('B'.$counter, date('d-M-Y',strtotime($repayment->created_at)))
+      ->setCellValue('C'.$counter, ($repayment->trans_detail->chrg_master_id!='0')?$repayment->trans_detail->charge->chrg_name:$repayment->trans_detail->trans_name)
+      ->setCellValue('D'.$counter, ($repayment->disburse && $repayment->disburse->invoice && $repayment->trans_type == '30')? $repayment->disburse->invoice->invoice_no:'')
       ->setCellValue('E'.$counter, ($repayment->entry_type=='0')?$repayment->amount:'')
       ->setCellValue('F'.$counter, ($repayment->entry_type=='1')?$repayment->amount:'');            
-     
-    }
-    for($i = 0; $i <= 10; $i++) {
-      $objPHPExcel->setActiveSheetIndex(0)
-                  ->setCellValue('A'.$counter, '12/01/2020')
-                  ->setCellValue('B'.$counter, '12/03/2020')
-                  ->setCellValue('C'.$counter, 'Repayment')
-                  ->setCellValue('D'.$counter, 'MOD-AHM-33090')
-                  ->setCellValue('E'.$counter, '552,521,000')
-                  ->setCellValue('F'.$counter, '521,000');            
-      $counter++;
-    }
 
+      foreach($repaymentTrails as $rtrail){
+        $counter++;
+        $objPHPExcel->setActiveSheetIndex(0)
+        ->setCellValue('A'.$counter, date('d-M-Y',strtotime($rtrail->trans_date)))
+        ->setCellValue('B'.$counter, date('d-M-Y',strtotime($rtrail->created_at)))
+        ->setCellValue('C'.$counter, ($rtrail->trans_detail->chrg_master_id!='0')?$rtrail->trans_detail->charge->chrg_name:$rtrail->trans_detail->trans_name)
+        ->setCellValue('D'.$counter, ($rtrail->disburse && $rtrail->disburse->invoice && $rtrail->trans_type == '30')? $rtrail->disburse->invoice->invoice_no:'')
+        ->setCellValue('E'.$counter, ($rtrail->entry_type=='0')?$rtrail->amount:'')
+        ->setCellValue('F'.$counter, ($rtrail->entry_type=='1')?$rtrail->amount:'');  
+
+        if($rtrail->trans_type == 19){
+          $overdueInterest += $rtrail->amount;
+        }
+
+        if($rtrail->trans_type == 9){
+          $interestRefund += $rtrail->amount;
+        }
+      }
+    }
+ 
     $counter +=2;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Total Factored')
-                ->setCellValue('E'.$counter, '');
+                ->setCellValue('E'.$counter, $repayment->amount);
 
 
     $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Non Factored')
-                ->setCellValue('E'.$counter, '');
-
-    $objPHPExcel->getActiveSheet()
-                ->getStyle("A".$counter)
-                ->getFont()
-                ->setBold(true);
+                ->setCellValue('E'.$counter, $nonFactoredAmount);
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
     
     $counter +=2;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Total amt for Margin')
-                ->setCellValue('E'.$counter, '');
+                ->setCellValue('E'.$counter, $amountForMargin);
     
-    $counter +=1;
-    $objPHPExcel->setActiveSheetIndex(0)
-                ->setCellValue('A'.$counter, '% Margin')
-                ->setCellValue('E'.$counter, '');
+    foreach($marginAmountData as $margin){
+
+      $counter +=1;
+      $objPHPExcel->setActiveSheetIndex(0)
+      ->setCellValue('A'.$counter, '% Margin')
+      ->setCellValue('D'.$counter, $margin['margin'].' %')
+      ->setCellValue('E'.$counter, $margin['margin_amount']);
+      $totalMarginAmount += $margin['margin_amount'];
+    }
     
     $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Overdue Interest')
-                ->setCellValue('E'.$counter, '');
-
-    $counter +=1;
-    $objPHPExcel->setActiveSheetIndex(0)
-                ->setCellValue('A'.$counter, 'Interest Sept')
-                ->setCellValue('E'.$counter, '');
+                ->setCellValue('E'.$counter, $overdueInterest);
+    $totalMarginAmount -= $overdueInterest;
+    // $counter +=1;
+    // $objPHPExcel->setActiveSheetIndex(0)
+    //             ->setCellValue('A'.$counter, 'Interest Sept')
+    //             ->setCellValue('E'.$counter, '');
 
     $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Margin Relesed')
-                ->setCellValue('E'.$counter, '');
-    $objPHPExcel->getActiveSheet()
-                ->getStyle("A".$counter)
-                ->getFont()
-                ->setBold(true);
+                ->setCellValue('E'.$counter, $totalMarginAmount);
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 
     $counter +=2;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Interest Refund')
-                ->setCellValue('E'.$counter, '');
-    $objPHPExcel->getActiveSheet()
-                ->getStyle("A".$counter)
-                ->getFont()
-                ->setBold(true);
+                ->setCellValue('E'.$counter, $interestRefund);
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
+    $totalMarginAmount += $interestRefund;
 
-    $counter +=2;
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('F'.$counter, $totalMarginAmount);
+    
+    $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Overdue')
                 ->setCellValue('E'.$counter, '');

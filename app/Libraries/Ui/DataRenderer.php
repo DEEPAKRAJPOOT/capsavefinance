@@ -3422,4 +3422,75 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
-}
+        /**
+     * get soa list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    public function getPaymentAdvice(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+
+            ->addColumn('customer_id',function($trans){
+                $data = '';
+                if($trans->lmsUser->customer_id){
+                    $data = $trans->lmsUser->customer_id; 
+                }
+                return $data;
+            })
+            ->addColumn('f_name',function($trans){
+                return $trans->f_name.' '.$trans->m_name.' '.$trans->l_name;
+            })
+            ->addColumn('narration',function($trans){
+                return $trans->comment;;
+            })
+            ->addColumn(
+                'trans_date',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->trans_date));
+                }
+            )
+            ->editColumn(
+                'created_at',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->created_at));
+                }
+            )
+            ->editColumn(
+                'amount',
+                function ($transaction) {
+                    return $transaction->amount.' INR';
+                }
+            )
+            ->addColumn(
+                'action',
+                function ($data) {
+                $act = $data->action;
+                $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" data-url =""><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                return $download;
+                }
+            )
+            ->filter(function ($query) use ($request) {
+
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('search_keyword')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('customer_id', 'like', "%$search_keyword%");
+                    });
+                }
+              
+            })
+            ->make(true);
+    }
+
+} 
