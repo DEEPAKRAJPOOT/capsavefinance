@@ -140,13 +140,13 @@ var messages = {
     $(document).ready(function(){
         $('#frmJeConfig').validate({
             rules: {
-                trans_type: {
+                "trans_type": {
                     required: true
                 },
-                variable: {
+                "variable[]": {
                    required: true
                 },
-                journal: {
+                "journal": {
                    required: true
                 }
             }
