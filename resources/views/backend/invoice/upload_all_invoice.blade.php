@@ -97,7 +97,7 @@
                                             <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
                                               <option value="">Please Select</option>
                                               <option value="1">Invoice Date</option>
-                                              <option value="2">Invoice Due Date </option>
+                                              <option value="2">Disburse Date </option>
                                              </select>
                                              					 <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
                                         </div>

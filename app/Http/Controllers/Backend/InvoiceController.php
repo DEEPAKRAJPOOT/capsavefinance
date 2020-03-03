@@ -200,6 +200,14 @@ class InvoiceController extends Controller {
            $biz_id  = $res->biz_id;
          
         }
+        if($attributes['exception'])
+        {
+            $statusId = 28; 
+        }
+        else
+        {
+            $statusId = 7;
+        }
        
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
@@ -218,7 +226,7 @@ class InvoiceController extends Controller {
             'invoice_approve_amount' => $invoice_approve_amount,
             'invoice_amount' =>  $invoice_amount,
             'prgm_offer_id' => $attributes['prgm_offer_id'],
-            'status_id' => $attributes['exception'],
+            'status_id' =>  $statusId,
             'remark' => $attributes['remark'],
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,
