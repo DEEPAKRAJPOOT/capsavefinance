@@ -633,7 +633,7 @@ class UserEventsListener extends BaseEvent
     } 
 
     public function onApplicationMoveToApprover($userData){
-        $user = unserialize($userData);
+        $user = unserialize($userData);        
         $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
