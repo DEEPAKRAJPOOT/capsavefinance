@@ -1317,7 +1317,7 @@ class ApplicationController extends Controller
             $emailData['subject'] ="Sanction Letter for ".$data['biz_entity_name'];
 
             \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
-            Session::flash('message',trans('success_messages.send_sanction_letter_successfully'));
+           // Session::flash('message',trans('success_messages.send_sanction_letter_successfully'));
             return redirect()->back()->with('is_send',1);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
