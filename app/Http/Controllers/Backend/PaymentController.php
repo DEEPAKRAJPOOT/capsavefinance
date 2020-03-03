@@ -283,11 +283,6 @@ class PaymentController extends Controller {
     $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
     $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
-    
-    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
-    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
-    // $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
-    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('E'.$counter, 'asdfsd');
 
     $counter++;
     

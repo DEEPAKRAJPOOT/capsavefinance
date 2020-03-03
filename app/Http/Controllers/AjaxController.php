@@ -3772,4 +3772,12 @@ if ($err) {
         $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
         echo $columnVal;
     }
+
+    //////////////////// Use For Payment Advice List /////////////////
+    public function getPaymentAdvice(DataProviderInterface $dataProvider) 
+    {
+        $trans_data = $this->invRepo->getPaymentAdvice(); //getAllManualTransaction
+        $trans_data = $dataProvider->getPaymentAdvice($this->request, $trans_data); //getAllManualTransaction
+        return   $trans_data;
+    } 
 }

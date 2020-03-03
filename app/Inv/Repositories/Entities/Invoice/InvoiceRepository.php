@@ -686,4 +686,14 @@ use CommonRepositoryTraits;
         return InvoiceModel::getInvoiceData($where, $select);
     }
 
+    function  getPaymentAdvice()
+    {
+       try
+       {
+           return Transactions::getPaymentAdvice();  
+       } catch (Exception $ex) {
+          return $ex;
+       }
+    }
+
 }
