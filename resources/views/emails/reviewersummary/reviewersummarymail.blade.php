@@ -94,16 +94,16 @@
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Additional Security</td>
                     <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
                     @php
-                    $add_sec_arr = '';
+                    $add_sec_arr = '';                    
                     if(isset($leaseOffer->addl_security)){
                         $addl_sec_arr = explode(',', $leaseOffer->addl_security);
                         foreach($addl_sec_arr as $k=>$v){
                             $add_sec_arr .= config('common.addl_security')[$v].', ';
                         }
-                        if(isset($leaseOffer->comment)) {
-                            $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
-                        }   
                     }
+                    if(isset($leaseOffer->comment)) {
+                        $add_sec_arr .=  ' <b>Comment</b>:  '.$leaseOffer->comment; 
+                    }                       
                     $add_sec_arr = trim($add_sec_arr, ', ');
                     @endphp
                     {!! $add_sec_arr !!}   
