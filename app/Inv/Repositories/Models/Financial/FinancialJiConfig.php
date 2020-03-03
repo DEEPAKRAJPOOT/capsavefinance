@@ -52,11 +52,16 @@ class FinancialJiConfig extends BaseModel {
         'updated_by'
     ];
 
-    public static function saveJiData($data){
+    public static function saveJiData($data, $jiConfigId = null){
         if (!is_array($data)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }        
-        return self::create($data);       
+        }       
+        if(isset($jiConfigId) && !empty($jiConfigId)) {
+            $updObj = self::where('ji_config_id', $jiConfigId);
+            return $updObj->update($data);
+        } else {
+            return self::create($data); 
+        }      
     }
 
     public static function getAllJiConfig($jeConfigId){

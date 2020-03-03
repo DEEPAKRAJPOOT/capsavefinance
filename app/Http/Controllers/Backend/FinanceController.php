@@ -111,6 +111,7 @@ class FinanceController extends Controller {
 
     public function saveJiConfig(CreateJiConfigRequest $request) {
         try {
+            $jiConfigId = $request->get('ji_config_id');
             $this->inputData = [];
             $this->inputData = [                
                 'account_id'=>$request->get('account'),
@@ -120,7 +121,12 @@ class FinanceController extends Controller {
                 'config_value'=>$request->get('config_value'),
                 'je_config_id'=>$request->get('je_config_id')
             ];
-            $outputQryJi = $this->finRepo->saveJiData($this->inputData);
+
+            if(isset($jiConfigId) && !empty($jiConfigId)){
+                $outputQryJi = $this->finRepo->saveJiData($this->inputData, $jiConfigId);
+            } else {
+                $outputQryJi = $this->finRepo->saveJiData($this->inputData, null);
+            }
             if(isset($outputQryJi->ji_config_id)) {
                 Session::flash('message','Journal item saved successfully');
                 return redirect()->back();

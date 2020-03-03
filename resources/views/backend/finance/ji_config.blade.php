@@ -12,6 +12,7 @@
          ) 
    !!}  
    <input type="hidden" name="je_config_id" value="{{$jeConfigId}}" /> 
+   <input type="hidden" name="ji_config_id" value="{{ isset($jiConfigData->ji_config_id) ? $jiConfigData->ji_config_id : ''}}" /> 
    <div class="row align-items-center">
          <div class="col-md-2">
             <div class="form-group">
@@ -21,7 +22,7 @@
          </div>
          <div class="col-md-4">
             <div class="form-group">
-               <input  class="form-control" type="text" name="label" id="label" placeholder="Enter Description" />
+               <input  class="form-control" type="text" name="label" id="label" placeholder="Enter Description" value="{{ old('label') ? old('label') : isset($jiConfigData->label) ? $jiConfigData->label : ''}}" />
             </div>
          </div>
    </div>
@@ -59,8 +60,8 @@
             <div class="form-group">
                <select name="is_partner" id="is_partner" class="form-control form-control-sm">
                   <option value="">Select Partner</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
+                  <option value="1" {{ (old('is_partner') == '1')? 'selected': (isset($jiConfigData->is_partner) && $jiConfigData->is_partner=='1') ? 'selected' : ''}}>Yes</option>
+                  <option value="0" {{ (old('is_partner') == '0')? 'selected': (isset($jiConfigData->is_partner) && $jiConfigData->is_partner=='0') ? 'selected' : ''}}>No</option>
                </select>
             </div>
          </div>
@@ -78,8 +79,8 @@
             <div class="form-group">
                <select name="value_type" id="value_type" class="form-control form-control-sm">
                   <option value="">Select Entry Type</option>
-                  <option value="0">Debit</option>
-                  <option value="1">Credit</option>                  
+                  <option value="0" {{ (old('value_type') == '0')? 'selected': (isset($jiConfigData->value_type) && $jiConfigData->value_type=='0') ? 'selected' : ''}}>Debit</option>
+                  <option value="1" {{ (old('value_type') == '1')? 'selected': (isset($jiConfigData->value_type) && $jiConfigData->value_type=='1') ? 'selected' : ''}}>Credit</option>                  
                </select>
             </div>
          </div>
@@ -118,7 +119,7 @@
          </div>
          <div class="col-md-4">
             <div class="form-group">
-               <textarea class="form-control" type="text" name="config_value" id="config_value" placeholder="Make formula here"></textarea>
+               <textarea class="form-control" type="text" name="config_value" id="config_value" placeholder="Make formula here" value="{{ old('config_value') ? old('config_value') : isset($jiConfigData->config_value) ? $jiConfigData->config_value : ''}}">{{ old('config_value') ? old('config_value') : isset($jiConfigData->config_value) ? $jiConfigData->config_value : ''}}</textarea>
             </div>
          </div>
    </div>
