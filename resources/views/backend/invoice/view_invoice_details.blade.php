@@ -3,8 +3,6 @@
 @endsection
 @section('content')
 
-
-
 <div class="content-wrapper">
 				
 				
@@ -37,10 +35,10 @@
                      </div> 
                     
                   <div class="col-md-6">
-                                     @php 
+                                  @php 
                                    $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger",'28' =>"badge badge-danger"];
                                    @endphp
-				   @foreach($status as $row)
+                                   @foreach($status as $row)
                                    @if($row->id==$invoice->status_id && $row->id!=7)
                                    <button type="button" class="{{$color[$row->id]}} btn-sm float-right" style="font-size: revert;">{{$row->status_name}}
                                     </button>
