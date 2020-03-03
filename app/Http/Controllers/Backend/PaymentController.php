@@ -21,6 +21,8 @@ use Carbon\Carbon;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 use PHPExcel;
 use PHPExcel_IOFactory;
+use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class PaymentController extends Controller {
 
@@ -221,78 +223,163 @@ class PaymentController extends Controller {
    }
 
   /* Payment Advice List   */
-  public function  paymentAdviceList()
+  public function  paymentAdviceList(Request $request)
   {
+    $trans_id = preg_replace('#[^0-9]#', '', $request->get('trans_id'));
+    // $trans_data = $this->invRepo->findTransById($trans_id);
     return view('backend.payment.payment_advice_list');
 
   }
 
-  public function  paymentAdviceExcel()
+  public function  paymentAdviceExcel(Request $request)
   {
+    $transId = $request->get('trans_id');
     $counter = 1;
-    $objPHPExcel =  new PHPExcel();
-
-    // $objPHPExcel->getActiveSheet('A1:F1')->getStyle()->getFont()->setBold(true);
-    // Setting font to Arial Black
-    // $objPHPExcel->getDefaultStyle()->getFont()->setName('Arial Black');
-   
-
-    // Set document properties
-    $objPHPExcel->getProperties()->setCreator("Prolitus")
-    ->setLastModifiedBy("Prolitus")
-    ->setTitle("Office 2007 XLSX Test Document")
-    ->setSubject("Office 2007 XLSX Test Document")
-    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-    ->setKeywords("office 2007 openxml php")
-    ->setCategory("Test result file");
+    $overdueInterest = 0;
+    $interestRefund = 0;
+    $totalMarginAmount = 0;
+    $nonFactoredAmount = 0;
     
-    // Add some data
+    $objPHPExcel =  new PHPExcel();
+    $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>'17'])->first();
+    $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
 
-    $objPHPExcel->getActiveSheet()->getStyle("A1:F1")->getFont()->setBold(true);
-    // $objPHPExcel->getActiveSheet()->getColumnDimension("F")->setAutoSize(true);
+    $disbursalIds = Transactions::where('parent_trans_id','=',$transId)
+                                ->whereNotNull('disbursal_id')
+                                ->distinct('disbursd')
+                                ->pluck('disbursal_id')
+                                ->toArray();
+
+    $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
+                        ->sum('invoice_approve_amount'); 
+    $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
+                              ->groupBy('margin')
+                              ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
+
+    //dd($repayment, $repaymentTrails, $disbursalIds, $marginAmountData, $totalMarginAmount);
+    $objPHPExcel->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Payment Advice Excel")
+                ->setSubject("Payment Advice Excel")
+                ->setDescription("Payment Advice Excel")
+                ->setKeywords("Payment Advice Excel")
+                ->setCategory("Payment Advice Excel");
+    
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 
     foreach(range('A','F') as $columnID) {
-      $objPHPExcel->getActiveSheet()->getColumnDimension($columnID)
-          ->setAutoSize(true);
-  }
+      $objPHPExcel->getActiveSheet()
+                  ->getColumnDimension($columnID)
+                  ->setAutoSize(true);
+    }
 
     $objPHPExcel->setActiveSheetIndex(0)
-    ->setCellValue('A'.$counter, 'Tran Date')
-    ->setCellValue('B'.$counter, 'Value DaTE!')
-    ->setCellValue('C'.$counter, 'Tran Type')
-    ->setCellValue('D'.$counter, 'Invoice No')
-    ->setCellValue('E'.$counter, 'Debit')
-    ->setCellValue('F'.$counter, 'Credit');
+                ->setCellValue('A'.$counter, 'Tran Date')
+                ->setCellValue('B'.$counter, 'Value Date')
+                ->setCellValue('C'.$counter, 'Tran Type')
+                ->setCellValue('D'.$counter, 'Invoice No')
+                ->setCellValue('E'.$counter, 'Debit')
+                ->setCellValue('F'.$counter, 'Credit');
+                
 
-    $counter += 0;
-    // Data
-
-    for($i = 0; $i <= 10; $i++) {
+    if($repayment->count()>0){
       $counter++;
       $objPHPExcel->setActiveSheetIndex(0)
-                  ->setCellValue('A'.$counter, '12/01/2020')
-                  ->setCellValue('B'.$counter, '12/03/2020')
-                  ->setCellValue('C'.$counter, 'Repayment')
-                  ->setCellValue('D'.$counter, 'MOD-AHM-33090')
-                  ->setCellValue('E'.$counter, '552,521,000')
-                  ->setCellValue('F'.$counter, '521,000');
-     
-    }
-    $counter +=2;
-    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
-    $counter +=1;
-    $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
-    $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
-    
-    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Total Factored');
-    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$counter, 'Non Factored');
-    // $objPHPExcel->getActiveSheet()->getStyle("A".$counter)->getFont()->setBold(true);
-    // $objPHPExcel->setActiveSheetIndex(0)->setCellValue('E'.$counter, 'asdfsd');
+      ->setCellValue('A'.$counter, date('d-M-Y',strtotime($repayment->trans_date)))
+      ->setCellValue('B'.$counter, date('d-M-Y',strtotime($repayment->created_at)))
+      ->setCellValue('C'.$counter, ($repayment->trans_detail->chrg_master_id!='0')?$repayment->trans_detail->charge->chrg_name:$repayment->trans_detail->trans_name)
+      ->setCellValue('D'.$counter, ($repayment->disburse && $repayment->disburse->invoice && $repayment->trans_type == '30')? $repayment->disburse->invoice->invoice_no:'')
+      ->setCellValue('E'.$counter, ($repayment->entry_type=='0')?$repayment->amount:'')
+      ->setCellValue('F'.$counter, ($repayment->entry_type=='1')?$repayment->amount:'');            
 
-    $counter++;
+      foreach($repaymentTrails as $rtrail){
+        $counter++;
+        $objPHPExcel->setActiveSheetIndex(0)
+        ->setCellValue('A'.$counter, date('d-M-Y',strtotime($rtrail->trans_date)))
+        ->setCellValue('B'.$counter, date('d-M-Y',strtotime($rtrail->created_at)))
+        ->setCellValue('C'.$counter, ($rtrail->trans_detail->chrg_master_id!='0')?$rtrail->trans_detail->charge->chrg_name:$rtrail->trans_detail->trans_name)
+        ->setCellValue('D'.$counter, ($rtrail->disburse && $rtrail->disburse->invoice && $rtrail->trans_type == '30')? $rtrail->disburse->invoice->invoice_no:'')
+        ->setCellValue('E'.$counter, ($rtrail->entry_type=='0')?$rtrail->amount:'')
+        ->setCellValue('F'.$counter, ($rtrail->entry_type=='1')?$rtrail->amount:'');  
+
+        if($rtrail->trans_type == 19){
+          $overdueInterest += $rtrail->amount;
+        }
+
+        if($rtrail->trans_type == 9){
+          $interestRefund += $rtrail->amount;
+        }
+      }
+    }
+ 
+    $counter +=2;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Total Factored')
+                ->setCellValue('E'.$counter, $repayment->amount);
+
+
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Non Factored')
+                ->setCellValue('E'.$counter, $nonFactoredAmount);
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
     
+    $counter +=2;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Total amt for Margin')
+                ->setCellValue('E'.$counter, $amountForMargin);
+    
+    foreach($marginAmountData as $margin){
+
+      $counter +=1;
+      $objPHPExcel->setActiveSheetIndex(0)
+      ->setCellValue('A'.$counter, '% Margin')
+      ->setCellValue('D'.$counter, $margin['margin'].' %')
+      ->setCellValue('E'.$counter, $margin['margin_amount']);
+      $totalMarginAmount += $margin['margin_amount'];
+    }
+    
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Overdue Interest')
+                ->setCellValue('E'.$counter, $overdueInterest);
+    $totalMarginAmount -= $overdueInterest;
+    // $counter +=1;
+    // $objPHPExcel->setActiveSheetIndex(0)
+    //             ->setCellValue('A'.$counter, 'Interest Sept')
+    //             ->setCellValue('E'.$counter, '');
+
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Margin Relesed')
+                ->setCellValue('E'.$counter, $totalMarginAmount);
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
+
+    $counter +=2;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Interest Refund')
+                ->setCellValue('E'.$counter, $interestRefund);
+    $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
+    $totalMarginAmount += $interestRefund;
+
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('F'.$counter, $totalMarginAmount);
+    
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Overdue')
+                ->setCellValue('E'.$counter, '');
+    
+    $counter +=1;
+    $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A'.$counter, 'Int Type')
+                ->setCellValue('E'.$counter, '');
+   
     // Rename worksheet
-    $objPHPExcel->getActiveSheet()->setTitle('Simple');
+    $objPHPExcel->getActiveSheet()
+                ->setTitle('Payment Advice');
 
 
 
@@ -301,7 +388,7 @@ class PaymentController extends Controller {
 
     // Redirect output to a client’s web browser (Excel2007)
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment;filename="01simple.xlsx"');
+    header('Content-Disposition: attachment;filename="Payment Advice.xlsx"');
     header('Cache-Control: max-age=0');
     // If you're serving to IE 9, then the following may be needed
     header('Cache-Control: max-age=1');
@@ -317,6 +404,3 @@ class PaymentController extends Controller {
     
   }
 }
-
-
-
