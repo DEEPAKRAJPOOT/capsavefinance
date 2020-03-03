@@ -241,7 +241,7 @@ class PaymentController extends Controller {
     $nonFactoredAmount = 0;
     
     $objPHPExcel =  new PHPExcel();
-    $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>'17'])->first();
+    $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
     $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
 
     $disbursalIds = Transactions::where('parent_trans_id','=',$transId)
@@ -289,7 +289,7 @@ class PaymentController extends Controller {
       ->setCellValue('A'.$counter, date('d-M-Y',strtotime($repayment->trans_date)))
       ->setCellValue('B'.$counter, date('d-M-Y',strtotime($repayment->created_at)))
       ->setCellValue('C'.$counter, ($repayment->trans_detail->chrg_master_id!='0')?$repayment->trans_detail->charge->chrg_name:$repayment->trans_detail->trans_name)
-      ->setCellValue('D'.$counter, ($repayment->disburse && $repayment->disburse->invoice && $repayment->trans_type == '30')? $repayment->disburse->invoice->invoice_no:'')
+      ->setCellValue('D'.$counter, ($repayment->disburse && $repayment->disburse->invoice && $repayment->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))? $repayment->disburse->invoice->invoice_no:'')
       ->setCellValue('E'.$counter, ($repayment->entry_type=='0')?$repayment->amount:'')
       ->setCellValue('F'.$counter, ($repayment->entry_type=='1')?$repayment->amount:'');            
 
@@ -299,15 +299,15 @@ class PaymentController extends Controller {
         ->setCellValue('A'.$counter, date('d-M-Y',strtotime($rtrail->trans_date)))
         ->setCellValue('B'.$counter, date('d-M-Y',strtotime($rtrail->created_at)))
         ->setCellValue('C'.$counter, ($rtrail->trans_detail->chrg_master_id!='0')?$rtrail->trans_detail->charge->chrg_name:$rtrail->trans_detail->trans_name)
-        ->setCellValue('D'.$counter, ($rtrail->disburse && $rtrail->disburse->invoice && $rtrail->trans_type == '30')? $rtrail->disburse->invoice->invoice_no:'')
+        ->setCellValue('D'.$counter, ($rtrail->disburse && $rtrail->disburse->invoice && $rtrail->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))? $rtrail->disburse->invoice->invoice_no:'')
         ->setCellValue('E'.$counter, ($rtrail->entry_type=='0')?$rtrail->amount:'')
         ->setCellValue('F'.$counter, ($rtrail->entry_type=='1')?$rtrail->amount:'');  
 
-        if($rtrail->trans_type == 19){
+        if($rtrail->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
           $overdueInterest += $rtrail->amount;
         }
 
-        if($rtrail->trans_type == 9){
+        if($rtrail->trans_type == config('lms.TRANS_TYPE.INTEREST_REFUND')){
           $interestRefund += $rtrail->amount;
         }
       }
@@ -367,7 +367,7 @@ class PaymentController extends Controller {
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('F'.$counter, $totalMarginAmount);
     
-    $counter +=1;
+  /*   $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Overdue')
                 ->setCellValue('E'.$counter, '');
@@ -376,7 +376,7 @@ class PaymentController extends Controller {
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Int Type')
                 ->setCellValue('E'.$counter, '');
-   
+    */
     // Rename worksheet
     $objPHPExcel->getActiveSheet()
                 ->setTitle('Payment Advice');
