@@ -690,7 +690,7 @@ use CommonRepositoryTraits;
     {
        try
        {
-           return Transactions::select('transactions.*', 'users.f_name')
+           return Transactions::select('transactions.*', 'users.f_name','users.m_name','users.l_name')
                             ->join('users', 'transactions.user_id', '=', 'users.user_id')
                             ->where('trans_type','=', 17)
                             ->orderBy('trans_id', 'asc');  

@@ -3375,7 +3375,7 @@ class DataRenderer implements DataProviderInterface
                 return $data;
             })
             ->addColumn('f_name',function($trans){
-                return $trans->f_name;
+                return $trans->f_name.' '.$trans->m_name.' '.$trans->l_name;
             })
             ->addColumn('narration',function($trans){
                 return $trans->comment;;
