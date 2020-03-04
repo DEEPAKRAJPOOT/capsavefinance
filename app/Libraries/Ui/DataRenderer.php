@@ -3113,7 +3113,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'journal_type',
                         function ($dataRecords) {
-                        return $dataRecords->trans_type;
+                        return $dataRecords->journal_type;
                     }) 
                     ->make(true);
         }
