@@ -1629,8 +1629,8 @@ class CamController extends Controller
           $request['security_deposit'] = null;
           $request['security_deposit_type'] = null;
           $request['security_deposit_of'] = null;
-        } 
-      
+        }
+
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         $limitData = $this->appRepo->getLimit($aplid);

@@ -754,10 +754,11 @@
                         </tbody>
                      </table>
                      <p>The financial covenants shall be tested on a choose an item.basis and shall be reported in the monitoring report to be submitted by choose an item.</p>
-                  @else 
-                  <div class="card card-color mb-0">
-                     <div class="card-header">
-                        <a class="card-title ">Sanction letter for SupplyChain cannot be generated for this application.</a>
+                     @else 
+                     <div class="card card-color mb-0">
+                        <div class="card-header">
+                           <a class="card-title ">Sanction letter for Supply Chain cannot be generated for this application.</a>
+                        </div>
                      </div>
                   </div>
                   @endif

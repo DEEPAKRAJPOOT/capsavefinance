@@ -110,7 +110,7 @@ return [
         '2' => 'Asset Value',
         '3' => 'Asset Base Value',
         '4' => 'Sanction'
-    ], 
+    ],
     'doc_type' => [
         '1' => 'On Boarding',
         '2' => 'Pre Sanction',
