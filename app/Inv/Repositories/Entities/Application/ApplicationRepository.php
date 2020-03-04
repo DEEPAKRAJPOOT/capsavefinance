@@ -164,6 +164,22 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 		}
 		return Application::find($appId);
 	}
+    
+    /**
+     * Get Entity by biz id
+     */
+    public function getEntityByBizId($bizId) 
+    {
+        return Business::getEntityByBizId($bizId);
+    }
+
+    /**
+     * Get Entity by biz id
+     */
+    public function getCamDataByBizAppId($bizId, $appId) 
+    {
+        return Cam::getCamDataByBizAppId($bizId, $appId);
+    }
 
 	/**
 	 * Get Application by app id
