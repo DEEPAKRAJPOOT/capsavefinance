@@ -10,10 +10,17 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
+
+                        <div class="card card-color mb-0 {{empty($sanction_expire_msg) ? 'hide' : '' }}">
+                            <div class="card-header">
+                                <a class="card-title ">{{$sanction_expire_msg}}</a>
+                            </div>
+                        </div>
                     @if( is_array($offerData)?count($offerData):$offerData->count())
                     <div class=" form-fields">
                         <div class="col-md-12">
                             <h5 class="card-title form-head-h5">Sanction Letter
+
                             @if($sanctionData)
                                 <a data-toggle="modal" data-target="#previewSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'upload'=>1, 'sanction_id'=>$sanction_id ]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Preview/Send Mail</a>
                             @endif
@@ -32,7 +39,10 @@
                                                 <input type="text" name="lessor" value="{{ $lessor }}" class="form-control" />
                                                  </td>
                                             </tr>
-                                            
+                                            <tr>
+                                                <td with="25%"><b>Sanction Amount</b></td>
+                                                <td with="25%"> {{ count($leasingLimitData) > 0 ? 'INR '. number_format($leasingLimitData['0']['limit_amt']) : '' }}</td>
+                                            </tr>
                                             <tr>
                                                 <td with="25%"><b>Sanction Validity</b></td>
                                                 <td with="25%" colspan="3">
@@ -40,16 +50,20 @@
                                                         <div class="col-md-2">
                                                             <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" >
                                                         </div>
+
+                                                        <div class="col-md-2">
+                                                            <input type="text" name="sanction_expire_date" value="{{old('sanction_expire_date', 
+                                                               !empty($expire_date) ? \Carbon\Carbon::parse($expire_date)->format('d/m/Y') : '')}}" class="form-control" tabindex="5" placeholder="Enter Expire Date" autocomplete="off" >
+                                                        </div>
+
+
                                                         <div class="col">
                                                         <input type="text" class="form-control" placeholder="Enter Comment" name="sanction_validity_comment" value="{{ $validity_comment }}">
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td with="25%"><b>Sanction Amount</b></td>
-                                                <td with="25%"> {{ count($leasingLimitData) > 0 ? 'INR '. number_format($leasingLimitData['0']['limit_amt']) : '' }}</td>
-                                            </tr>
+                                            
                                         </tbody>
                                     </table> 
 
@@ -425,9 +439,51 @@
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
+                startDate: '-0m',
+
+        }).on('changeDate', function(e) {
+                $("input[name='sanction_expire_date']").val(ChangeDateFormat(e.date,'dmy','/', 30));
+
+        });
+
+        $("input[name='sanction_expire_date']").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
                 startDate: '+1m'
             });
     });
+
+
+    function ChangeDateFormat(dateObj,out_format='ymd', out_separator='/', dateAddMinus=0){
+            dateObj.setDate(dateObj.getDate() + dateAddMinus);
+            var twoDigitMonth = ((dateObj.getMonth().length+1) === 1)? (dateObj.getMonth()+1) : '0' + (dateObj.getMonth()+1);
+            var twoDigitDate = dateObj.getDate()+"";if(twoDigitDate.length==1) twoDigitDate= "0" + twoDigitDate;
+            var Digityear = dateObj.getFullYear();
+            switch(out_format) {
+              case 'myd':
+                outdate = twoDigitMonth + out_separator + Digityear + out_separator + twoDigitDate;
+                break;
+              case 'ydm':
+                outdate = Digityear + out_separator + twoDigitDate + out_separator + twoDigitMonth;
+                break;
+                case 'dmy':
+                outdate = twoDigitDate + out_separator + twoDigitMonth + out_separator + Digityear;
+                break;
+                case 'dym':
+                outdate = twoDigitDate + out_separator + Digityear + out_separator + twoDigitMonth;
+                break;
+                case 'mdy':
+                outdate = twoDigitMonth + out_separator + twoDigitDate + out_separator + Digityear;
+                break;
+                default:
+                outdate = Digityear + out_separator + twoDigitMonth + out_separator + twoDigitDate;
+                break;
+            }
+            return outdate;
+    }
+
+   
 
 </script>
 @endsection

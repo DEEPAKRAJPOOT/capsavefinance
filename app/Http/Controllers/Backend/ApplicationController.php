@@ -1448,6 +1448,7 @@ class ApplicationController extends Controller
                 'prgm_offer_id' => $offerId,
                 'lessor' => $request->lessor,
                 'validity_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_validity_date)->format('Y-m-d')  , 
+                'expire_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_expire_date)->format('Y-m-d')  , 
                 'validity_comment' =>  $request->sanction_validity_comment, 
                 'payment_type' =>  $request->payment_type, 
                 'payment_type_other' =>  $request->payment_type_comment,
