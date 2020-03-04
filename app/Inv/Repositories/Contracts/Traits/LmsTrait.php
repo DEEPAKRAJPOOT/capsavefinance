@@ -8,6 +8,9 @@ use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\BizPanGst;
 
 trait LmsTrait
 {
@@ -908,5 +911,70 @@ trait LmsTrait
         $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
         $accuredInterestCount =  $this->lmsRepo->countAccruedInterest($monthlyIntCond);
         return array('penal_amount' => $accuredInterest, 'penal_days'=>$accuredInterestCount);
+    }
+    
+    protected  function businessInformation($attr)
+    {
+      try
+        { 
+          $date = Carbon::now();
+          $id = Auth::user()->user_id;
+          $business = Business::find($attr->biz_id);
+          $obj =   $business->replicate();
+                $obj->biz_id = "";
+                $obj->created_by = $id;
+                $obj->created_at = $date;
+                $obj->save();
+        return $obj;
+      } catch (Exception $ex) {
+           return false;
+      }
+       
+    }
+    protected  function bizPanGst($biz_details)
+    {
+      try
+        { 
+          $date = Carbon::now();
+          $id = Auth::user()->user_id;
+          $business = BizPanGst::find($biz_details->biz_pan_gst_id);
+          dd($business);
+          $obj =   $business->replicate();
+                $obj->biz_pan_gst_id = "";
+                $obj->biz_id = $biz_details->biz_id;
+                $obj->created_by = $id;
+                $obj->created_at = $date;
+                $obj->save();
+        return $obj->biz_id;
+      } catch (Exception $ex) {
+           return false;
+      }
+       
+    }
+     protected  function applicationSave($app_id,$biz_id)
+    {
+       try
+       {   
+            $date = Carbon::now();
+            $id = Auth::user()->user_id;
+            $app = Application::find($app_id);
+            $obj =   $app->replicate();
+            $obj->app_id = "";
+            $obj->biz_id = $biz_id;
+            $obj->created_by = $id;
+            $obj->created_at = $date;
+            $obj->save(); 
+        return $obj->app_id;
+       } catch (Exception $ex) {
+
+       }
+    }
+     protected  function managementInformation($attr)
+    {
+       dd($attr);
+    }
+     protected  function document($attr)
+    {
+       dd($attr);
     }
 }

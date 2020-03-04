@@ -153,6 +153,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             'as' => 'edit_addr',
             'uses' => 'Lms\AddressController@editAddress'
         ]);
+          Route::post('/copy_app', [
+                'as' => 'copy_app',
+                'uses' => 'Lms\CopyController@duplicateApp'
+            ]); 
         // end address
 	});
 

@@ -91,27 +91,15 @@
                                        
                                         </div>
                                     </div>
-                    <div class="col-md-4">
-                    <div class="form-group">
-                                            <label for="txtCreditPeriod">Payment Date Calculation  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
-                                            <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
-                                              <option value="">Please Select</option>
-                                              <option value="1">Invoice Date</option>
-                                              <option value="2">Disburse Date </option>
-                                             </select>
-                                             					 <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
-                                        </div>
-               </div> 
-									<div class="col-md-4">
-                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
+                                    
+                                    				
+					<div class="col-md-4">
+                                        <div class="form-group">
+                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
-                                    </div>
-									
-									<div class="col-md-4">
-                                       							 <div class="form-group">
+										 <div class="form-group">
                                             <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label">*</span></label>
 											
 		<div class="custom-file">
@@ -119,15 +107,19 @@
                <input type="file" class="custom-file-input" id="customFile" name="doc_file">
                <label class="custom-file-label" for="customFile">Choose file</label>
             </div>
-			 </div>
-                  </div>				
-				
-                    <div class="col-md-8">
-                    <div class="form-group">
-                    <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
-                    <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
-                    </div>
-                    </div>
+			
+			
+			
+                                            
+                                        </div>
+                                    </div>
+					<div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
+                                               <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
+                                    </div>
+                                    </div>
+                
 		</div> 
                 <div class="row">
                    <div class="col-md-12">
@@ -449,10 +441,10 @@ var messages = {
         });
         $("#invoice_no" ).rules( "add", {
         required: true,
-        minlength: 6,
+        maxlength: 20,
         messages: {
         required: "Please enter Invoice No",
-        minlength: "Please, at least 6  characters are necessary",
+        maxlength: "Maximum 20  characters are necessary",
         }
         });
         
@@ -462,12 +454,6 @@ var messages = {
         required: "Please enter Invoice Due Date",
         }
         }); 
-        $("#pay_calculation_on" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Payment Calculation",
-        }
-        });  
         $("#invoice_date" ).rules( "add", {
         required: true,
         messages: {

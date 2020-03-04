@@ -104,6 +104,7 @@
 
 </div>
 
+{!!Helpers::makeIframePopup('addAppCopy','Add Copy', 'modal-md')!!}
 {!!Helpers::makeIframePopup('addCaseNote','Add Note', 'modal-md')!!}
 {!!Helpers::makeIframePopup('appStatusFrame','Change Status', 'modal-md')!!}
 {!!Helpers::makeIframePopup('assignCaseFrame','Move to Back Stage', 'modal-md')!!}

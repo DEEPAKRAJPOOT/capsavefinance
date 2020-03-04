@@ -3599,7 +3599,6 @@ if ($err) {
                 $data[$i]['tenor'] =  $request['tenor']; 
                 $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
-                $data[$i]['pay_calculation_on'] = $request['pay_calculation_on'];
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
                 $data[$i]['is_bulk_upload'] = 1;
                 $data[$i]['batch_id'] = $batch_id;
