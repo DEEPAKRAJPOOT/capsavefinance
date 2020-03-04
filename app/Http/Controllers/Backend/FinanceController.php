@@ -36,7 +36,6 @@ class FinanceController extends Controller {
         $journalId = $request->get('journal_id');
         if(isset($journalId) && !empty($journalId)){
             $journalData = $this->finRepo->getJournalByJournalId($journalId); 
-            //dd($journalData);
         }
         return view('backend.finance.journal_list')
             ->with([

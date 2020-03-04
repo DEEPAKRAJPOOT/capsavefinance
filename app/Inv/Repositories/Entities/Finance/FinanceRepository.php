@@ -109,7 +109,7 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
 
     public function getJournalByJournalId($journalId)
     {
-        return FinancialJournals::find($journalId)->first();         
+        return FinancialJournals::where('id', $journalId)->first();         
     } 
     
 }
