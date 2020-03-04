@@ -45,6 +45,7 @@ class ReviewerSummary extends Mailable
         $offerPTPQ = '';
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
+        $businessDetails = Business::find($bizId);
         $preCondArr = $postCondArr = array();
         $limitOfferData = AppProgramLimit::getLimitWithOffer($appId, $bizId, config('common.PRODUCT.LEASE_LOAN'));
         $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();        
