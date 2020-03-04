@@ -520,6 +520,7 @@ class UserEventsListener extends BaseEvent
             $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
         }else{
             $email = $user["receiver_email"];
+            $email_cc = '';
         }  
             
         /*
@@ -563,9 +564,11 @@ class UserEventsListener extends BaseEvent
             });
         }
         */
-            Mail::to($email, $user["receiver_user_name"])
-            ->cc($email_cc)
-            ->send(new ReviewerSummary($this->mstRepo, $user));
+           $mailObj = Mail::to($email, $user["receiver_user_name"]);
+           if (!empty($email_cc)) {
+               $mailObj->cc($email_cc);
+           }
+           $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
         
     }
 

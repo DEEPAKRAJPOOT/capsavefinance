@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Business;
 
 class ReviewerSummary extends Mailable
 {
