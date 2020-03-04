@@ -204,4 +204,54 @@ trait ApplicationTrait
 
         return $data;
     }
+
+    protected function getSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
+        $bizData = $this->appRepo->getApplicationById($bizId);
+        $EntityData  = $this->appRepo->getEntityByBizId($bizId);
+        $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
+        $AppLimitData  = $this->appRepo->getAppLimit($appId);
+        $supplyChainOfferData = $this->appRepo->getAppProducts($appId);
+        $ProgramData = $supplyChainOffer = [];
+        if ($supplyChainOfferData->count()) {
+            $supplyChainOfferData = $supplyChainOfferData[0];
+            $supplyChainOffer = array_merge($supplyChainOfferData->programLimit->toArray(),$supplyChainOfferData->toArray());
+            $ProgramData = $this->appRepo->getProgramData(['prgm_id' => $supplyChainOffer['prgm_id']]);
+        }
+        $offerData = $this->appRepo->getAllOffers($appId, 1);
+        $tot_limit_amt = 0;
+        if (!empty($AppLimitData) && $AppLimitData->count()) {
+            $tot_limit_amt = $AppLimitData['tot_limit_amt'];
+        }
+        $CommunicationAddress = '';
+        if (!empty($bizData->address[1])) {
+            $AddressData = $bizData->address[1];
+            $stateName = "";
+            if (!empty($AddressData->state)) {
+               $stateName = $AddressData->state->name ?? '';
+            }
+            $CommunicationAddress = $AddressData->addr_1 . ' '. $AddressData->city_name .' '.  $stateName   .' '. $AddressData->pin_code;
+        }
+        $bizOwners = BizOwner::getCompanyOwnerByBizId($bizId);
+        $bizOwnerData = [];
+        if ($bizOwners->count()) {
+            foreach ($bizOwners as $key => $bizOwner) {
+                $bizOwnerData[$bizOwner['biz_owner_id']]  = $bizOwner->toArray();
+            }
+        }
+        $app_prgm_limit_id = $supplyChainOffer['app_prgm_limit_id'] ?? 0;
+        $data['ConcernedPersonName'] = $CamData['operational_person'];
+        $data['purpose'] = $CamData['t_o_f_purpose'];
+        $data['EntityName'] = $bizData['biz_entity_name'];
+        $data['Address'] = $CommunicationAddress;
+        $data['EmailId'] = $EntityData['email'];
+        $data['MobileNumber'] = $EntityData['mobile_no'];
+        $data['limit_amt'] = $supplyChainOffer['limit_amt'] ?? 0;
+        $data['product_id'] = $supplyChainOffer['product_id'] ?? 0;
+        $data['prgm_type'] = $ProgramData['prgm_type'] ?? 0;
+        $data['product_name'] = $ProgramData['product_name'] ?? 0;
+        $data['tot_limit_amt'] = $tot_limit_amt;
+        $data['offerData'] = $offerData;
+        $data['bizOwnerData'] = $bizOwnerData;
+        return $data;
+    }
 }
