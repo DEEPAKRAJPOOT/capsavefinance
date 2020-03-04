@@ -133,7 +133,7 @@ trait ApplicationTrait
     }
 
 
-    protected function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
+     protected function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
         $offerWhereCond = [];
         
         if ($offerId) {
@@ -168,6 +168,7 @@ trait ApplicationTrait
             $data['contact_person'] = ($cam)?$cam->contact_person:'';
             $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
             $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
+            $data['expire_date'] = ($sanctionData)?$sanctionData->expire_date:'';
             $data['lessor'] = ($sanctionData)?$sanctionData->lessor:'';
             $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
             $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
@@ -189,6 +190,17 @@ trait ApplicationTrait
             $data['equipmentData'] = $equipmentData;
             $data['ptpqrData'] = $ptpqrData;
             $data['businessAddress'] = $businessAddress;
+            $data['sanction_expire_msg'] = '';
+            $currentDate = date("Y-m-d");
+            if(empty($data['expire_date'])){
+                 $data['expire_date'] = date('Y/m/d', strtotime($currentDate. ' + 30 days'));
+            } 
+            if(isset($data['expire_date'])){
+                if(strtotime($currentDate) > strtotime($data['expire_date'])){
+                    $data['sanction_expire_msg'] = "Sanction Letter Expired.";
+                }
+            }
+               
         }
         $data['leasingLimitData'] = $this->appRepo->getProgramLimitData($appId, '3')->toArray();
         $data['leaseOfferData'] = AppProgramOffer::getAllOffers($appId, '3');
