@@ -8,7 +8,7 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Financial Trans Config</h3>
+            <h3>JE Config</h3>
         </div>
     </section>
     <div class="card">
