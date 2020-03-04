@@ -919,6 +919,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\EquipmentController@saveEquipment'
             ]);
             
+            //Base Rate
+            Route::get('/base-rate', [
+                'as' => 'get_baserate_list',
+                'uses' => 'Master\BaseRateController@index'
+            ]);
+            
+            Route::get('/add-base-rate', [
+                'as' => 'add_base_rate',
+                'uses' => 'Master\BaseRateController@addBaseRate'
+            ]); 
+            Route::get('/edit-base-rate', [
+                'as' => 'edit_base_rate',
+                'uses' => 'Master\BaseRateController@editBaseRate'
+            ]);
+
+            Route::post('/save-base-rate', [
+                'as' => 'save_base_rate',
+                'uses' => 'Master\BaseRateController@saveBaseRate'
+            ]);
+            
+            
         });
 
         Route::group(['prefix' => 'agency'], function () {

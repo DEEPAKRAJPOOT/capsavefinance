@@ -756,5 +756,14 @@ Route::group(
         'as' => 'update_group_company_exposure',
         'uses' => 'AjaxController@updateGroupCompanyExposure'
     ]); 
+    
+    /*Master Base Rate route*/
+    Route::post(
+        'get-master-base-rate-list',
+        [
+        'as' => 'get_ajax_master_base_rate_list',
+        'uses' => 'AjaxController@getAllBaseRateList'
+        ]
+    );
 
 });
