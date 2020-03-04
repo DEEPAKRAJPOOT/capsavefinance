@@ -190,13 +190,6 @@ return [
         '4'=>'Second Pari-pasu',
         '5'=>'Sub-Servient'
     ],
-    'cs_status_of_security_id'=>[
-        '1'=>'First Pari-pasu',
-        '2'=>'Exclusive',
-        '3'=>'Third Pari-pasu',
-        '4'=>'Second Pari-pasu',
-        '5'=>'Sub-Servient'
-    ],
     'cs_time_for_perfecting_security_id'=>[
         '1'=>'Before Disbusrement',
         '2'=>'With in 30 days from date of first disbusrement',
@@ -240,6 +233,12 @@ return [
         '5'=>'With in 120 days from date of first disbursement',
         '6'=>'with in 180 days from date of first disbursement',
         '7'=>'with in 360 days from date of first disbsurement'
+    ],
+    'em_mechanism_id'=>[
+        '1'=>'With direct Payment confirmation',
+        '2'=>'W/o direct payment confirmation',
+        '3'=>'With payment confirmation with Escrow a/c',
+        '4'=>'W/o payment confirmation w/o Escrow a/c'
     ]
 ];
  

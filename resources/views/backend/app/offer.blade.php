@@ -93,6 +93,146 @@ tr.border_bottom td {
                                                     <td colspan="3">{{$supplyOffer->comment}}</td>
                                                     <td></td>
                                                 </tr>
+                                                @if($supplyOffer->offerPs->count() > 0)
+                                                <tr>
+                                                    <td></td>
+                                                    <td colspan="4">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td rowspan="3"><b>Primary Security</b></td>
+                                                                <td><b>Security</b></td>
+                                                                <td><b>Type of Security</b></td>
+                                                                <td><b>Status of Security</b></td>
+                                                                <td><b>Time for security</b></td>
+                                                                <td><b>Description of Security</b></td>
+                                                            </tr>
+                                                            @foreach($supplyOffer->offerPs as $key=>$ops)
+                                                            <tr>
+                                                                <td>{{($ops->ps_security_id != null)? config('common.ps_security_id')[$ops->ps_security_id]: 'NA'}}</td>
+                                                                <td>{{($ops->ps_type_of_security_id != null)? config('common.ps_type_of_security_id')[$ops->ps_type_of_security_id]: 'NA'}}</td>
+                                                                <td>{{($ops->ps_status_of_security_id != null)? config('common.ps_status_of_security_id')[$ops->ps_status_of_security_id]: 'NA'}}</td>
+                                                                <td>{{($ops->ps_time_for_perfecting_security_id != null)? config('common.ps_time_for_perfecting_security_id')[$ops->ps_time_for_perfecting_security_id]: 'NA'}}</td>
+                                                                <td>{{$ops->ps_desc_of_security}}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </table>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                @endif
+
+                                                @if($supplyOffer->offerCs->count() > 0)
+                                                <tr>
+                                                    <td></td>
+                                                    <td colspan="4">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td rowspan="3"><b>Collateral Security</b></td>
+                                                                <td><b>Description Security</b></td>
+                                                                <td><b>Type of Security</b></td>
+                                                                <td><b>Status of Security</b></td>
+                                                                <td><b>Time for security</b></td>
+                                                                <td><b>Description of Security</b></td>
+                                                            </tr>
+                                                            @foreach($supplyOffer->offerCs as $key=>$ocs)
+                                                            <tr>
+                                                                <td>{{($ocs->cs_desc_security_id != null)? config('common.cs_desc_security_id')[$ocs->cs_desc_security_id]: 'NA'}}</td>
+                                                                <td>{{($ocs->cs_type_of_security_id != null)? config('common.cs_type_of_security_id')[$ocs->cs_type_of_security_id]: 'NA'}}</td>
+                                                                <td>{{($ocs->cs_status_of_security_id != null)? config('common.cs_status_of_security_id')[$ocs->cs_status_of_security_id]: 'NA'}}</td>
+                                                                <td>{{($ocs->cs_time_for_perfecting_security_id != null)? config('common.cs_time_for_perfecting_security_id')[$ocs->cs_time_for_perfecting_security_id]: 'NA'}}</td>
+                                                                <td>{{$ocs->cs_desc_of_security}}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </table>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                @endif
+
+                                                @if($supplyOffer->offerPg->count() > 0)
+                                                <tr>
+                                                    <td></td>
+                                                    <td colspan="4">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td rowspan="3"><b>Personal Guarantee</b></td>
+                                                                <td><b>Guarantor</b></td>
+                                                                <td><b>Time for security</b></td>
+                                                                <td><b>Residential Address</b></td>
+                                                                <td><b>Net worth as per ITR/CA Cert</b></td>
+                                                                <td><b>Comments if any</b></td>
+                                                            </tr>
+                                                            @foreach($supplyOffer->offerPg as $key=>$opg)
+                                                            <tr>
+                                                                <td>{{($opg->owner)? $opg->owner->first_name: 'NA'}}</td>
+                                                                <td>{{($opg->pg_time_for_perfecting_security_id != null)? config('common.pg_time_for_perfecting_security_id')[$opg->pg_time_for_perfecting_security_id]: 'NA'}}</td>
+                                                                <td>{{$opg->pg_residential_address}}</td>
+                                                                <td>{{$opg->pg_net_worth}}</td>
+                                                                <td>{{$opg->pg_comments}}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </table>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                @endif
+
+                                                @if($supplyOffer->offerCg->count() > 0)
+                                                <tr>
+                                                    <td></td>
+                                                    <td colspan="4">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td rowspan="3"><b>Corporate Guarantee</b></td>
+                                                                <td><b>Type</b></td>
+                                                                <td><b>Guarantor</b></td>
+                                                                <td><b>Time for security</b></td>
+                                                                <td><b>Residential Address</b></td>
+                                                                <td><b>Comments if any</b></td>
+                                                            </tr>
+                                                            @foreach($supplyOffer->offerCg as $key=>$ocg)
+                                                            <tr>
+                                                                <td>{{($ocg->cg_type_id != null)? config('common.cg_type_id')[$ocg->cg_type_id]: 'NA'}}</td>
+                                                                <td>{{($ocg->owner)? $ocg->owner->first_name: 'NA'}}</td>
+                                                                <td>{{($ocg->cg_time_for_perfecting_security_id != null)? config('common.cg_time_for_perfecting_security_id')[$ocg->cg_time_for_perfecting_security_id]: 'NA'}}</td>
+                                                                <td>{{$ocg->cg_residential_address}}</td>
+                                                                <td>{{$ocg->cg_comments}}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </table>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                @endif
+
+                                                @if($supplyOffer->offerEm->count() > 0)
+                                                <tr>
+                                                    <td></td>
+                                                    <td colspan="4">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td rowspan="3"><b>Escrow Mechanism</b></td>
+                                                                <td><b>Debtor</b></td>
+                                                                <td><b>Expected cash flow per month</b></td>
+                                                                <td><b>Time for security</b></td>
+                                                                <td><b>Mechanism</b></td>
+                                                                <td><b>Comments if any</b></td>
+                                                            </tr>
+                                                            @foreach($supplyOffer->offerEm as $key=>$oem)
+                                                            <tr>
+                                                                <td>{{($oem->anchor)? $oem->anchor->comp_name: 'NA'}}</td>
+                                                                <td>{{$oem->em_expected_cash_flow}}</td>
+                                                                <td>{{($oem->em_time_for_perfecting_security_id != null)? config('common.em_time_for_perfecting_security_id')[$oem->em_time_for_perfecting_security_id]: 'NA'}}</td>
+                                                                <td>{{($oem->em_mechanism_id != null)? config('common.em_mechanism_id')[$oem->em_mechanism_id]: 'NA'}}</td>
+                                                                <td>{{$oem->em_comments}}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </table>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                @endif
+
                                                 @if($loop->last)
                                             </tbody>
                                         </table>
