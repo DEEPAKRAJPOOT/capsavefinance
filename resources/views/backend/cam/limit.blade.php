@@ -11,43 +11,21 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Product Type:</b></label> 
-        <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($limitData->product)? $limitData->product->product_name : ''}}" disabled>
+        <input type="text" name="prgm_limit_amt" class="form-control" value="{{isset($currentPrgmLimitData->product)? $currentPrgmLimitData->product->product_name : ''}}" disabled>
       </div>
     </div>
     
-    @if($limitData->product->id == 1)
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Anchor:</b></label> 
-        <input type="text" name="anchor_id" class="form-control" value="{{isset($limitData->anchor)? $limitData->anchor->comp_name : ''}}" disabled>
-      </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Program:</b></label> 
-        <input type="text" name="prgm_id" class="form-control" value="{{isset($limitData->prgm_id)? $limitData->program->prgm_name : ''}}" disabled>
-      </div>
-    </div>
-    @endif
-
     @php
-    $programBalanceLimit = $programLimit - $programOfferedAmount + $currentOfferAmount;
-    $balanceLimit = $totalLimit - $totalOfferedAmount + $currentOfferAmount;
-    $actualBalance = ($programBalanceLimit < $balanceLimit)? $programBalanceLimit: $balanceLimit;
-    if($limitData->product->id == 1){
-        $ab = $actualBalance;
-    }else{
-        $ab = $balanceLimit;
-    }
+    $currentPrgmLimit = isset($currentPrgmLimitData->limit_amt)? $currentPrgmLimitData->limit_amt: 0;
+    $balanceLimit = $totalLimit - $totalPrgmLimit + $currentPrgmLimit;
     @endphp
     
     <div class="col-md-6">
       <div class="form-group INR">
         <label for="txtPassword"><b>Limit:</b></label>
-        <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($ab > 0)? $ab: 0}}</span>
+        <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="limit_amt" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit amount" maxlength="15">
+        <input type="text" name="limit_amt" class="form-control number_format" value="{{isset($currentPrgmLimitData->limit_amt)? number_format($currentPrgmLimitData->limit_amt): ''}}" placeholder="Limit amount" maxlength="15">
       </div>
     </div>
 
@@ -64,25 +42,8 @@
 @section('jscript')
 <script>
   function checkLimitValidation(){
-    let pro_type = "{{$limitData->product->id}}";
-    let total_limit = "{{$totalLimit}}"; //total exposure limit amount
-    let program_limit = "{{$programLimit}}"; //program limit
-    let total_offered_amount = "{{$totalOfferedAmount}}"; //total offered amount including all product type from offer table
-    let program_offered_amount = "{{$programOfferedAmount}}"; //total offered amount related to program from offer table
-    let current_offer_amount = "{{$currentOfferAmount}}"; //current offered amount corresponding to app_prgm_limit_id
-    let program_min_limit = "{{isset($limitData->program->min_loan_size)? $limitData->program->min_loan_size: 0}}"; //program minimum limit
-    let program_max_limit = "{{isset($limitData->program->max_loan_size)? $limitData->program->max_loan_size: 0}}"; //program maximum limit
-
-    let program_balance_limit = program_limit - program_offered_amount + current_offer_amount;
-    let balance_limit = total_limit - total_offered_amount + current_offer_amount;
-    let actual_balance = (program_balance_limit < balance_limit)? program_balance_limit: balance_limit;
-    let ab;
-
-    if(pro_type == 1){
-        ab = actual_balance;
-    }else{
-        ab = balance_limit;
-    }
+    let balance_limit = "{{$balanceLimit}}";
+    let totalOfferedAmount = "{{$totalOfferedAmount}}";
 
     unsetError('input[name=limit_amt]');
 
@@ -92,14 +53,15 @@
     if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=limit_amt]', 'Please fill limit amount');
         flag = false;
-    }else if((parseInt(limit_amt.replace(/,/g, '')) > ab)){
+    }else if(balance_limit == 0){
+        setError('input[name=limit_amt]', 'Your limit has been expired');
+        flag = false;
+    }else if(parseInt(limit_amt.replace(/,/g, '')) > parseInt(balance_limit)){
         setError('input[name=limit_amt]', 'Limit amount can not exceed from balance amount');
         flag = false;
-    }else if(pro_type == 1){
-        if((parseInt(limit_amt.replace(/,/g, '')) < program_min_limit) || (parseInt(limit_amt.replace(/,/g, '')) > program_max_limit)){
-            setError('input[name=limit_amt]', , 'Limit amount should be ('+program_min_limit+' - '+program_max_limit+') range');
-            flag = false;
-        }
+    }else if(parseInt(limit_amt.replace(/,/g, '')) < parseInt(totalOfferedAmount)){
+        setError('input[name=limit_amt]', 'Limit amount can not be less than applied offer amount');
+        flag = false;
     }
 
     if(flag){
