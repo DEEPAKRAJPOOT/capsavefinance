@@ -781,14 +781,16 @@
                                                 <td with="25%">{{ $biz_entity_name }}</td>
                                                 
                                                 <td with="25%"><b>Lessor</b></td>
-                                                <td with="25%">Capsave Finance Private Limited (CFPL)</td>
+                                                <td with="25%">
+                                                <input type="text" name="lessor" value="{{ $lessor }}" class="form-control" />
+                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td with="25%"><b>Sanction Validity</b></td>
                                                 <td with="25%" colspan="3">
                                                     <div class="row">
-                                                        <div class="col">
+                                                        <div class="col-md-2">
                                                             <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" >
                                                         </div>
                                                         <div class="col">
@@ -796,6 +798,10 @@
                                                         </div>
                                                     </div>
                                                 </td>
+                                            </tr>
+                                            <tr>
+                                                <td with="25%"><b>Sanction Amount</b></td>
+                                                <td with="25%"> {{ count($leasingLimitData) > 0 ? 'INR '. number_format($leasingLimitData['0']['limit_amt']) : '' }}</td>
                                             </tr>
                                         </tbody>
                                     </table> 

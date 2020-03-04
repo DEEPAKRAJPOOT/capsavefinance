@@ -69,7 +69,13 @@ trait ApplicationTrait
             foreach($appProducts->products as $product){
                 array_push($ProductIds, $product->id);
             }
-        } else {
+        } else if (isset($prgmDocsWhere['stage_code']) && $prgmDocsWhere['stage_code'] == 'pre_offer') {
+            $appProducts = $this->appRepo->getApplicationProduct($app_id);
+            foreach($appProducts->products as $product){
+                array_push($ProductIds, $product->pivot->product_id);
+            }            
+        }        
+        else {
             $appProducts = $this->appRepo->getAppProducts($app_id);
             foreach($appProducts as $product){
                 array_push($ProductIds, $product->programLimit->product_id);
@@ -178,6 +184,7 @@ trait ApplicationTrait
             $data['contact_person'] = ($cam)?$cam->contact_person:'';
             $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
             $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
+            $data['lessor'] = ($sanctionData)?$sanctionData->lessor:'';
             $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
             $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
             $data['payment_type_other'] = ($sanctionData)?$sanctionData->payment_type_other:'';
@@ -199,6 +206,7 @@ trait ApplicationTrait
             $data['ptpqrData'] = $ptpqrData;
             $data['businessAddress'] = $businessAddress;
         }
+        $data['leasingLimitData'] = $this->appRepo->getProgramLimitData($appId, '3')->toArray();
         $data['leaseOfferData'] = AppProgramOffer::getAllOffers($appId, '3');
         $data['facilityTypeList']= $this->masterRepo->getFacilityTypeList()->toarray();
         $data['arrStaticData']['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');

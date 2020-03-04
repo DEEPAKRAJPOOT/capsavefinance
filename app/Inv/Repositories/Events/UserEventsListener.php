@@ -644,14 +644,29 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
+                //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
+                $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
+            }else{
+                $email = $user["receiver_email"];
+            }  
+                
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body) {
+                function ($message) use ($user, $mail_subject, $mail_body, $email, $email_cc) {
+                if( env('SEND_MAIL_ACTIVE') == 1){
+                    $email = $email;
+                    //$message->bcc($email_bcc);
+                    $message->cc($email_cc);
+                }else{
+                    $email = $user["receiver_email"];
+                }                
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"]);
+                $message->to($email, $user["receiver_user_name"]);
                 $message->subject($mail_subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["receiver_email"]),
+                    'email_to' => array($email),
                     'email_type' => $this->func_name,
                     'name' => $user['receiver_user_name'],
                     'subject' => $mail_subject,
@@ -660,8 +675,9 @@ class UserEventsListener extends BaseEvent
                 FinanceModel::logEmail($mailContent);
             });
 
-            Mail::to($user["receiver_email"], $user["receiver_user_name"])
-            ->cc(explode(',', env('SEND_APPROVER_MAIL_CC')))
+            
+            Mail::to($email, $user["receiver_user_name"])
+            ->cc($email_cc)
             ->send(new ReviewerSummary($this->mstRepo));
         }
     }

@@ -494,11 +494,11 @@
    </div>
 
    <div class="data mt-4">
-      <table class="table" cellpadding="0" cellspacing="0">
-        <tr>
-            <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Brief Background of {{isset($arrCamData->contact_person) ? $arrCamData->contact_person : ''}} Managing Director</td>
-        </tr>
-      </table>
+    <table class="table" cellpadding="0" cellspacing="0">
+          <tr>
+              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Brief Background of {{isset($arrCamData->contact_person) ? $arrCamData->contact_person : ''}} Management</td>
+          </tr>
+       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
          <p>{!! isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : '' !!}</p>
       </div>
