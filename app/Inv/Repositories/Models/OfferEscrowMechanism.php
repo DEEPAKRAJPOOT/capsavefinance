@@ -87,4 +87,8 @@ class OfferEscrowMechanism extends BaseModel
         }
     }
 
+    public function anchor(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'em_debtor_id', 'anchor_id');
+    }
+
 }

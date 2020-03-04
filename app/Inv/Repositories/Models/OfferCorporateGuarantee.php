@@ -87,4 +87,8 @@ class OfferCorporateGuarantee extends BaseModel
         }
     }
 
+    public function owner(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizOwner', 'cg_name_of_guarantor_id', 'biz_owner_id');
+    }
+
 }
