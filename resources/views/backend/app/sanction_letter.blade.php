@@ -757,7 +757,7 @@
                      @else 
                      <div class="card card-color mb-0">
                         <div class="card-header">
-                           <a class="card-title ">Sanction letter cannot be generated for this application as limit offer has not added.</a>
+                           <a class="card-title ">Sanction letter for Supply Chain cannot be generated for this application.</a>
                         </div>
                      </div>
                      @endif
