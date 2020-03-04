@@ -252,6 +252,7 @@ class PaymentController extends Controller {
     
     $principalSettled = Transactions::whereIn('disbursal_id',$disbursalIds)
     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
+    ->where('parent_trans_id','=',$transId)
     ->sum('amount');
     
     $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
