@@ -198,7 +198,9 @@ var messages = {
         });
 
         $('#variable').change(function(){
-            $('#config_value').append($('#variable').val());
+            var str = $('#config_value').val();
+            var optr = $('#variable').val();
+            $('#config_value').val(str + optr);
         });
     });
 </script>
