@@ -6,6 +6,7 @@ var iframe_ids = [
         'appStatusFrame',
         'assignCaseFrame',
         'addCaseNote',
+        'addAppCopy',
         'addAnchorFrm',
         'uploadAnchLead',
         'editAnchorFrm',

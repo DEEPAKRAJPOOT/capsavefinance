@@ -203,7 +203,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_app_note',
                 'uses' => 'Backend\ApplicationController@addAppNote'
             ]);
-            
+              Route::get('add-app-copy', [
+                'as' => 'add_app_copy',
+                'uses' => 'Backend\ApplicationController@addAppCopy'
+            ]);
             Route::post('save-app-note', [
                 'as' => 'save_app_note',
                 'uses' => 'Backend\ApplicationController@saveAppNote'
@@ -213,7 +216,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'send_case_confirmBox',
                 'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
             ]); 
-
+           
             Route::get('view-approvers', [
                 'as' => 'view_approvers',
                 'uses' => 'Backend\ApplicationController@viewApprovers'

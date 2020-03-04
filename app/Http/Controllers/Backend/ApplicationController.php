@@ -62,7 +62,16 @@ class ApplicationController extends Controller
     
        return view('backend.app.index');              
     }
+    
+    public function addAppCopy(Request $request)
+    {  
+        $data['user_id']  = $request->get('user_id');
+        $data['app_id']  = $request->get('app_id');
+        $data['biz_id']  = $request->get('biz_id');
+        return view('backend.app.app_copy')->with(['res' =>$data]);              
+    } 
 
+    
     /**
      * Render view for company detail page according to biz id
      * 
