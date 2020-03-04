@@ -13,7 +13,7 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <h3>{{ isset($jeConfigId) ? 'Edit' : 'Add'}} Config</h3>
+            <h4>{{ isset($jeConfigId) ? 'Edit' : 'Add'}} Config</h4>
             {!!
                 Form::open(
                 array(
@@ -96,19 +96,15 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <button class="btn  btn-success btn-sm">Submit</button>
+                        @if(isset($jeConfigId) && !empty($jeConfigId))
+                            <a class="btn  btn-success btn-sm" href="{{ route('create_je_config') }}">
+                                Cancel
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
             {!!  Form::close() !!} 
-            @if(isset($jeConfigId) && !empty($jeConfigId))
-            <div class="row">
-                <div class="col-sm-12">
-                    <a href="{{ route('create_je_config') }}">
-                        <button class="btn  btn-success btn-sm">Add Config</button>
-                    </a>
-                </div>
-            </div>
-            @endif
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">

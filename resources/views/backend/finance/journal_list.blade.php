@@ -13,7 +13,7 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <h3>{{ isset($journalId) ? 'Edit' : 'Add'}} Journal</h3>
+            <h4>{{ isset($journalId) ? 'Edit' : 'Add'}} Journal</h4>
             {!!
                 Form::open(
                 array(
@@ -65,19 +65,15 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <button class="btn  btn-success btn-sm">Submit</button>
+                        @if(isset($journalId) && !empty($journalId))
+                            <a class="btn  btn-success btn-sm" href="{{ route('get_fin_journal') }}">
+                                Cancel
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
             {!!  Form::close() !!} 
-            @if(isset($journalId) && !empty($journalId))
-            <div class="row">
-                <div class="col-sm-12">
-                    <a href="{{ route('get_fin_journal') }}">
-                        <button class="btn  btn-success btn-sm">Add Journal</button>
-                    </a>
-                </div>
-            </div>
-            @endif
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">

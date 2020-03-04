@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="modal-body text-left">
-   <h3>{{ isset($jiConfigData->ji_config_id) ? 'Edit' : 'Add'}} Journal Item</h3>
+   <h4>{{ isset($jiConfigData->ji_config_id) ? 'Edit' : 'Add'}} Journal Item</h4>
    {!!
          Form::open(
          array(
@@ -131,19 +131,15 @@
          <div class="col-md-3">
             <div class="form-group">
                <button class="btn  btn-success btn-sm">Submit</button>
+               @if(isset($jiConfigData->ji_config_id) && !empty($jiConfigData->ji_config_id))
+                  <a class="btn  btn-success btn-sm" href="{{ route('add_ji_config', ['je_config_id' => $jeConfigId]) }}">
+                     Cancel
+                  </a>
+               @endif
             </div>
          </div>
    </div>
    {!!  Form::close() !!} 
-   @if(isset($jiConfigData->ji_config_id) && !empty($jiConfigData->ji_config_id))
-   <div class="row">
-      <div class="col-sm-12">
-         <a href="{{ route('add_ji_config', ['je_config_id' => $jeConfigId]) }}">
-            <button class="btn  btn-success btn-sm">Add Journal Item</button>
-         </a>
-      </div>
-   </div>
-   @endif
    <div class="row">
          <div class="col-sm-12">
             <div class="table-responsive">
