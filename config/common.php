@@ -121,5 +121,11 @@ return [
         ' + ' => ' + ',
         ' - ' => ' - '
     ], 
+    'doc_type' => [
+        '1' => 'On Boarding',
+        '2' => 'Pre Sanction',
+        '3' => 'Post Sanction',
+        '4' => 'Pre Offer'        
+    ]
 ];
  

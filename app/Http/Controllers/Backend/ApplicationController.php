@@ -507,7 +507,13 @@ class ApplicationController extends Controller
                 //$curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
                 //Helpers::updateWfStage($curr_wf_stage_code, $appId, $wf_status = 1);
             
-                
+                //Insert Pre Offer Documents
+                $prgmDocsWhere = [];
+                $prgmDocsWhere['stage_code'] = 'pre_offer';
+                //$appData = $this->appRepo->getAppDataByAppId($appId);
+                //$userId = $appData ? $appData->user_id : null;
+                $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+            
                 return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
             // } else {
             //     //Add application workflow stages                
@@ -1446,6 +1452,7 @@ class ApplicationController extends Controller
             }
             $sanctionData = array(
                 'prgm_offer_id' => $offerId,
+                'lessor' => $request->lessor,
                 'validity_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_validity_date)->format('Y-m-d')  , 
                 'validity_comment' =>  $request->sanction_validity_comment, 
                 'payment_type' =>  $request->payment_type, 

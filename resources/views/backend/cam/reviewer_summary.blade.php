@@ -5,6 +5,7 @@
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container mt-4">
+      <!-- 
       <div class="row">
          <div class="col-md-12">
          @can('mail_reviewer_summary')
@@ -12,6 +13,7 @@
          @endcan
          </div>
       </div>
+      -->
       <!--Start-->
       <form method="post" action="{{ route('save_reviewer_summary') }}">
       @csrf
@@ -59,46 +61,61 @@
                                        <td class=""><b>Tenor (Months)</b></td>
                                        <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                                     </tr>
-                                    <tr role="row" class="odd">
-                                       <td class=""><b>Security Deposit</b></td>
-                                       <td class="">  {{isset($leaseOffer->security_deposit) ? $leaseOffer->security_deposit : ''}} {!! isset($leaseOffer->security_deposit_type) ? $arrStaticData['securityDepositType'][$leaseOffer->security_deposit_type] : '' !!} {{isset($leaseOffer->security_deposit_of) ? 'of '. $arrStaticData['securityDepositOf'][$leaseOffer->security_deposit_of] : ''}} </td>
-                                    </tr>
+                                    @if($leaseOffer->facility_type_id != 3)
+                                      <tr role="row" class="odd">
+                                         <td class=""><b>Security Deposit</b></td>
+                                         <td class="">  
+                                                {{(($leaseOffer->security_deposit_type == 1)?'INR ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
+                                         </td>
+                                      </tr>
+                                    @endif
                                     <tr role="row" class="odd">
                                        <td class=""><b>Rental Frequency</b></td>
                                        <td class="">{{isset($leaseOffer->rental_frequency) ? $arrStaticData['rentalFrequency'][$leaseOffer->rental_frequency] : ''}}   {{isset($leaseOffer->rental_frequency_type) ? 'in '.$arrStaticData['rentalFrequencyType'][$leaseOffer->rental_frequency_type] : ''}}   </td>
                                     </tr>
+
+                                    @if($leaseOffer->facility_type_id != 3)
+                                        <tr role="row" class="odd">
+                                           <td class=""><b>Pricing Per Thousand</b></td>
+                                           <td class="">
+                                              @php 
+                                                 $i = 1;
+                                                 if(!empty($leaseOffer->offerPtpq)){
+                                                 $total = count($leaseOffer->offerPtpq);
+                                              @endphp   
+                                                 @foreach($leaseOffer->offerPtpq as $key => $arr) 
+
+                                                       @if ($i > 1 && $i < $total)
+                                                       ,
+                                                       @elseif ($i > 1 && $i == $total)
+                                                          and
+                                                       @endif
+                                                       {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+
+                                                       @php 
+                                                          $i++;
+                                                       @endphp     
+                                                 @endforeach
+                                                 @php 
+                                                    }
+                                                 @endphp 
+                                           </td>
+                                        </tr>
+                                    @endif
                                     <tr role="row" class="odd">
-                                       <td class=""><b>Pricing Per Thousand</b></td>
-                                       <td class="">
-                                          @php 
-                                             $i = 1;
-                                             if(!empty($leaseOffer->offerPtpq)){
-                                             $total = count($leaseOffer->offerPtpq);
-                                          @endphp   
-                                             @foreach($leaseOffer->offerPtpq as $key => $arr) 
-
-                                                   @if ($i > 1 && $i < $total)
-                                                   ,
-                                                   @elseif ($i > 1 && $i == $total)
-                                                      and
-                                                   @endif
-                                                   {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
-
-                                                   @php 
-                                                      $i++;
-                                                   @endphp     
-                                             @endforeach
-                                             @php 
-                                                }
-                                             @endphp 
+                                       <td class="" valign="top"><b>{{($leaseOffer->facility_type_id == 3)? 'Rental Discounting' : 'XIRR'}} (%)</b></td>
+                                       <td class="" valign="top">
+                                          @if($leaseOffer->facility_type_id == 3)
+                                             {{$leaseOffer->discounting}}%
+                                          @else
+                                             <b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%
+                                          @endif
                                        </td>
                                     </tr>
                                     <tr role="row" class="odd">
-                                       <td class="" valign="top"><b>XIRR</b></td>
-                                       <td class="" valign="top"><b>Ruby Sheet:</b> {{isset($leaseOffer->ruby_sheet_xirr) ? $leaseOffer->ruby_sheet_xirr : ''}}%<br><b>Cash Flow:</b> {{isset($leaseOffer->cash_flow_xirr) ? $leaseOffer->cash_flow_xirr : ''}}%
-                                       </td>
-                                    </tr>
-                                    
+                                      <td class=""><b>Processing Fee (%)</b></td>
+                                      <td class="">{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee.' %' : ''}}</td>
+                                   </tr>
                                     <tr role="row" class="odd">
                                        <td class=""><b>Additional Security</b></td>
                                        <td class="">

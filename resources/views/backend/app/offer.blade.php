@@ -226,12 +226,19 @@ tr.border_bottom td {
                                                 </tr>
                                                 <tr>
                                                     <td></td>
-                                                    <td><b>Security Deposit: </b></td>
-                                                    <td>{{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}</td>
+                                                    <td><b>{{($leaseOffer->facility_type_id == 3)? 'Rental Discounting' : 'XIRR'}} (%): </b></td>
+                                                    <td>
+                                                    @if($leaseOffer->facility_type_id == 3)
+                                                    {{$leaseOffer->discounting}}%
+                                                    @else
+                                                    <b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%
+                                                    @endif
+                                                    </td>
                                                     <td><b>Rental Frequency: </b></td>
                                                     <td>{{(($leaseOffer->rental_frequency == 1)?'Yearly':(($leaseOffer->rental_frequency == 2)? 'Bi-Yearly':(($leaseOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}} in {{($leaseOffer->rental_frequency_type == 1)? 'Advance' : 'Arrears'}}</td>
                                                     <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($leaseOffer->created_at)->format('d-m-Y')}}</td>
                                                 </tr>
+                                                @if($leaseOffer->facility_type_id != 3)
                                                 <tr>
                                                 <td></td>
                                                     <td><b>PTP Frequency: </b></td>
@@ -257,10 +264,13 @@ tr.border_bottom td {
                                                         }
                                                     @endphp  
                                                     </td>
-                                                    <td><b>XIRR (%): </b></td>
-                                                    <td><b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%</td>
+                                                    <td><b>Security Deposit: </b></td>
+                                                    <td>
+                                                    {{(($leaseOffer->security_deposit_type == 1)?'₹ ':'').$leaseOffer->security_deposit.(($leaseOffer->security_deposit_type == 2)?' %':'')}} of {{config('common.deposit_type')[$leaseOffer->security_deposit_of]}}
+                                                    </td>
                                                     <td></td>
                                                 </tr>
+                                                @endif
                                                 <tr class="border_bottom">
                                                 <td></td>
                                                     <td><b>Processing Fee (%):</b></td>
