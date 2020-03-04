@@ -81,6 +81,8 @@ var iframe_ids = [
         'changeAppDisbursStatus',
         'addEquipmentFrame',
         'editEquipmentFrame',
+        'shareColenderFrame',
+        'viewSharedColenderFrame',
     ];
 
 iframe_ids.forEach(function(id) {

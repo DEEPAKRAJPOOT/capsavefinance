@@ -8,6 +8,11 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\AppApprover;
 use Illuminate\Database\Eloquent\Builder;
+use App\Inv\Repositories\Models\OfferPrimarySecurity;
+use App\Inv\Repositories\Models\OfferCollateralSecurity;
+use App\Inv\Repositories\Models\OfferPersonalGuarantee;
+use App\Inv\Repositories\Models\OfferCorporateGuarantee;
+use App\Inv\Repositories\Models\OfferEscrowMechanism;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -47,6 +52,8 @@ class AppProgramOffer extends BaseModel {
         'prgm_offer_id',
         'app_id',
         'app_prgm_limit_id',
+        'prgm_id',
+        'anchor_id',
         'prgm_limit_amt',
         'loan_amount',
         'loan_offer',        
@@ -59,7 +66,10 @@ class AppProgramOffer extends BaseModel {
         'grace_period',        
         'processing_fee',
         'discounting',
+        'document_fee',
         'check_bounce_fee',
+        'payment_frequency',
+        'benchmark_date',
         'equipment_type_id',
         'facility_type_id',
         'security_deposit_type',
@@ -327,6 +337,26 @@ class AppProgramOffer extends BaseModel {
         $tot_offered_limit = AppProgramOffer::where(['app_prgm_limit_id' => $appPrgmLimitId, 'is_active'=>1])->sum('prgm_limit_amt');
         
         return $tot_offered_limit;
+    }
+
+    public function offerPs(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferPrimarySecurity', 'prgm_offer_id', 'prgm_offer_id');
+    }
+
+    public function offerCs(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferCollateralSecurity', 'prgm_offer_id', 'prgm_offer_id');
+    }
+
+    public function offerPg(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferPersonalGuarantee', 'prgm_offer_id', 'prgm_offer_id');
+    }
+
+    public function offerCg(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferCorporateGuarantee', 'prgm_offer_id', 'prgm_offer_id');
+    }
+
+    public function offerEm(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferEscrowMechanism', 'prgm_offer_id', 'prgm_offer_id');
     }
     
 }

@@ -8,17 +8,19 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 class CoLenderControllers extends Controller {
 
     protected $userRepo;
 
-    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user)
+    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user, InvAppRepoInterface $app_repo)
     {
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->masterRepo = $master;
+        $this->appRepo = $app_repo;
         $this->userRepo = $user;
     }
 
@@ -134,6 +136,49 @@ class CoLenderControllers extends Controller {
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+    public function shareToColender(){
+        $coLenders = $this->userRepo->getCoLenderData(['co_lenders_user.is_active'=>1, 'u.is_active'=>1]);
+        return view('backend.coLenders.share_colender')->with('coLenders', $coLenders);
+    }
+
+    public function saveShareToColender(Request $request){
+        try {
+            $arrShareColenderData = $request->all();
+            $appId = $arrShareColenderData['app_id'];
+            $bizId = $arrShareColenderData['biz_id'];
+            $arrShareColenderData['created_at'] = \carbon\Carbon::now();
+            $arrShareColenderData['created_by'] = Auth::user()->user_id;
+            $data = $this->appRepo->getSharedColender([
+                    'app_id'=>$arrShareColenderData['app_id'],
+                    'app_prgm_limit_id' =>  $arrShareColenderData['app_prgm_limit_id'],
+                    'co_lender_id'      =>  $arrShareColenderData['co_lender_id'],
+                    'is_active'         =>  1
+                ]);
+            if($data->count()){
+                Session::flash('message', 'This colender is already associated with this offer.');
+                return redirect()->back()->withInput($request->input());
+            }else{
+                $status = $this->appRepo->saveShareToColender($arrShareColenderData);
+                if($status){
+                    Session::flash('message', 'Offer shared successfully');
+                    Session::flash('operation_status', 1); 
+                    return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
+                }else{
+                    Session::flash('message', trans('backend_messages.something_went_wrong'));
+                    Session::flash('operation_status', 1); 
+                    return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
+                }
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function viewSharedColender(Request $request){
+        $shared_colenders = $this->appRepo->getSharedColender(['app_id'=>$request->app_id, 'app_prgm_limit_id'=>$request->app_prgm_limit_id, 'is_active'=>1]);
+        return view('backend.coLenders.view_shared_colender')->with('sharedCoLenders', $shared_colenders);
     }
 
 }
