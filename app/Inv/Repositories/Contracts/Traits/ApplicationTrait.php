@@ -222,12 +222,13 @@ trait ApplicationTrait
         return $data;
     }
 
-     protected function getSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
+
+    protected function getSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
         $bizData = $this->appRepo->getApplicationById($bizId);
         $EntityData  = $this->appRepo->getEntityByBizId($bizId);
         $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
         $AppLimitData  = $this->appRepo->getAppLimit($appId);
-        $supplyChainOfferData = $this->appRepo->getAppProducts($appId);
+        $supplyChainOfferData = $this->appRepo->appOfferWithLimit($appId);
         $ProgramData = $supplyChainOffer = [];
         if ($supplyChainOfferData->count()) {
             $supplyChainOfferData = $supplyChainOfferData[0];

@@ -30,7 +30,6 @@ function _rand_str($length = 2){
 	 return $random_string;
 }
 
-
 function getProductType($product_id){
 	 $productType = ['1'=>'Supply Chain', 'Term Loan', 'Leasing'];
 	 return $productType[$product_id] ?? '';
