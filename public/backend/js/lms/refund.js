@@ -22,7 +22,7 @@ try {
                 }
             },
             columns: [
-                {data: 'customer_id'},
+                {data: 'invoice_id'},
                 {data: 'customer_code'},
                 {data: 'ben_name'},
                 {data: 'ben_bank_name'},

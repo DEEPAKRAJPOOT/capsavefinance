@@ -95,14 +95,14 @@
 
 <script>
 $(document).ready(function(){
-    $(document).on('change', '.user_id', function() {
+    $(document).on('change', '.invoice_id', function() {
 
-        let current_user_ids = $('#user_ids').val();
+        let current_invoice_ids = $('#invoice_ids').val();
         let current_id = $(this).val();
         if($(this).is(':checked')){
-            $('#user_ids').val(current_user_ids+','+current_id);
+            $('#invoice_ids').val(current_invoice_ids+','+current_id);
         }else{
-            $('#user_ids').val(current_user_ids.replace(new RegExp(current_id, 'g'), ''));
+            $('#invoice_ids').val(current_invoice_ids.replace(new RegExp(current_id, 'g'), ''));
         }
     });
     

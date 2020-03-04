@@ -23,13 +23,6 @@ class RefundController extends Controller
 	protected $appRepo;
 	protected $lmsRepo;
 
-	/**
-	 * The pdf instance.
-	 *
-	 * @var App\Libraries\Pdf
-	 */
-	protected $pdf;
-	
 	public function __construct(InvAppRepoInterface $app_repo,  InvLmsRepoInterface $lms_repo ){
 		$this->appRepo = $app_repo;
 		$this->lmsRepo = $lms_repo;
@@ -47,31 +40,13 @@ class RefundController extends Controller
 	}
 
 	/**
-	 * Display a listing of the customer.
+	 * Display confirm dialogue.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function confirmRefund(Request $request)
 	{
 		return view('lms.refund.confirm_refund');              
-	}
-
-	/**
-	 * Display a listing of the customer.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function viewInvoice(Request $request)
-	{
-		$userId = $request->get('user_id');
-		$status = $request->get('status');
-		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
-		
-		return view('lms.disbursal.view_invoice')
-				->with([
-					'userIvoices'=>$userIvoices, 
-					'status'=>$status, 
-				]);              
 	}
 
 }
