@@ -50,6 +50,7 @@ class PaymentController extends Controller {
        $bank = DB::table('mst_bank')->where(['is_active' => 1])->get();  
        //$result  =  $this->invRepo->getCustomerId();
        $tranType=$this->lmsRepo->getManualTranType();
+       //dd($tranType);
        $getGstDropVal=$this->lmsRepo->getActiveGST();
        $result= $this->lmsRepo->getAllLmsUser();     
       return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result, 'tranType'=>$tranType, 'getGstDropVal'=>$getGstDropVal]);
