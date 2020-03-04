@@ -114,7 +114,8 @@ class ReviewerSummary extends Mailable
         //$email->subject('New Application For Approver - '.$businessDetails->biz_entity_name);
 
         $dispAppId = 'CAPS' . sprintf('%06d', $appId);
-        $email_subject = 'Application ' . $dispAppId . ' is waiting for your approval - '.$businessDetails->biz_entity_name;
+        //$email_subject = 'Application ' . $dispAppId . ' is waiting for your approval - '.$businessDetails->biz_entity_name;
+        $email_subject = 'New Application is waiting for your approval ' . $businessDetails->biz_entity_name;
         $email->subject($email_subject);
 
         if($fileArray) {
