@@ -45,7 +45,11 @@ class CopyController extends Controller
             if($biz_details)
             {
                $biz_id = $this->bizPanGst($biz_details);  /* save pan gst data */ 
-               $app_id  = $this->applicationSave($app_id);
+               dd( $biz_id);
+               if( $biz_id)
+               {
+                   $app_id  = $this->applicationSave($app_id,$biz_id);
+               }
                dd( $app_id);
             }
         }

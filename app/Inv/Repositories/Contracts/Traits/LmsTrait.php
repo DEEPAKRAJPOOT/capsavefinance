@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\BizPanGst;
 
 trait LmsTrait
 {
@@ -934,6 +935,7 @@ trait LmsTrait
           $date = Carbon::now();
           $id = Auth::user()->user_id;
           $business = BizPanGst::find($biz_details->biz_pan_gst_id);
+          dd($business);
           $obj =   $business->replicate();
                 $obj->biz_pan_gst_id = "";
                 $obj->biz_id = $biz_details->biz_id;
@@ -946,7 +948,7 @@ trait LmsTrait
       }
        
     }
-     protected  function applicationSave($app_id)
+     protected  function applicationSave($app_id,$biz_id)
     {
        try
        {   
@@ -955,6 +957,7 @@ trait LmsTrait
             $app = Application::find($app_id);
             $obj =   $app->replicate();
             $obj->app_id = "";
+            $obj->biz_id = $biz_id;
             $obj->created_by = $id;
             $obj->created_at = $date;
             $obj->save(); 
