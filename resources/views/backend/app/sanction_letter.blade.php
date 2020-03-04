@@ -71,17 +71,6 @@
    border: 2px solid #cccccc;
    margin-bottom: 20px;
    }
-   .nav-tabs li{
-   background-color: #ccc;
-   padding: 5px;
-   margin: 5px;
-   border-radius: 5px;
-   }
-   .nav-tabs li a{
-    color: #fff;
-    text-decoration:none;
-    cursor: pointer;
-   }
    .offerdiv h5{
    background-color: #ccc;
    padding: 10px;
@@ -94,13 +83,13 @@
    }
 </style>
 <div class="content-wrapper">
+   <ul class="nav nav-tabs sub-menu-main pl-0 m-0">
+      <li class="active"><a data-toggle="tab" href="#sanctionSupplyChain">SupplyChain</a></li>
+      <li><a data-toggle="tab" href="#SanctionLeasing">Leasing</a></li>
+   </ul>
    <div class="row grid-margin mt-3 mb-2">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
          <div class="card">
-            <ul class="nav nav-tabs">
-               <li class="active"><a data-toggle="tab" href="#sanctionSupplyChain">SupplyChain</a></li>
-               <li><a data-toggle="tab" href="#SanctionLeasing">Leasing</a></li>
-            </ul>
             <div class="card-body">
                <div class="tab-content">
                   <div id="sanctionSupplyChain" class="tab-pane fadein active">
