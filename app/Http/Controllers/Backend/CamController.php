@@ -398,22 +398,22 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      if( env('SEND_MAIL_ACTIVE') == 1){
-        Mail::to(explode(',', env('SEND_MAIL')))
-          ->bcc(explode(',', env('SEND_MAIL_BCC')))
-          ->cc(explode(',', env('SEND_MAIL_CC')))
-          ->send(new ReviewerSummary($this->mstRepo));
+      // if( env('SEND_MAIL_ACTIVE') == 1){
+      //   Mail::to(explode(',', env('SEND_MAIL')))
+      //     ->bcc(explode(',', env('SEND_MAIL_BCC')))
+      //     ->cc(explode(',', env('SEND_MAIL_CC')))
+      //     ->send(new ReviewerSummary($this->mstRepo));
 
-        if(count(Mail::failures()) > 0 ) {
-          Session::flash('error',trans('Mail not sent, Please try again later..'));
-        } else {
-          Session::flash('message',trans('Mail sent successfully.'));        
-        }
-      } else {
-        Session::flash('message',trans('Mail not sent, Please try again later.')); 
-      }
-      return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-      //return new \App\Mail\ReviewerSummary($this->mstRepo);        
+      //   if(count(Mail::failures()) > 0 ) {
+      //     Session::flash('error',trans('Mail not sent, Please try again later..'));
+      //   } else {
+      //     Session::flash('message',trans('Mail sent successfully.'));        
+      //   }
+      // } else {
+      //   Session::flash('message',trans('Mail not sent, Please try again later.')); 
+      // }
+      // return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+      return new \App\Mail\ReviewerSummary($this->mstRepo);        
     }
 
      public function uploadFinanceXLSX(Request $request){
@@ -1608,12 +1608,23 @@ class CamController extends Controller
         if($request->has('addl_security')){
           $request['addl_security'] = implode(',', $request->addl_security);
         }       
-        if ($request->has('sub_limit')) {
+        if($request->has('sub_limit')) {
             $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
-        }        
+        }
+        if($request->has('facility_type_id') && $request->facility_type_id != 3){
+          $request['discounting'] = null;
+        }elseif($request->has('facility_type_id') && $request->facility_type_id == 3){
+          $request['ruby_sheet_xirr'] = null;
+          $request['cash_flow_xirr'] = null;
+          $request['security_deposit'] = null;
+          $request['security_deposit_type'] = null;
+          $request['security_deposit_of'] = null;
+        } 
+      
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         /*Start add offer PTPQ block*/
+        if($request->has('facility_type_id') && $request->facility_type_id != 3){
         $ptpqArr =[];
         foreach($request->ptpq_from as $key=>$val){
           $ptpqArr[$key]['prgm_offer_id'] = $offerData->prgm_offer_id;
@@ -1623,8 +1634,8 @@ class CamController extends Controller
           $ptpqArr[$key]['created_at'] = \Carbon\Carbon::now();
           $ptpqArr[$key]['created_by'] = Auth::user()->user_id;
         }
-        $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
-        /*End add offer PTPQ block*/
+          $offerPtpq= $this->appRepo->addOfferPTPQ($ptpqArr);
+        }
 
         if($offerData){
           Session::flash('message',trans('backend_messages.limit_offer_success'));

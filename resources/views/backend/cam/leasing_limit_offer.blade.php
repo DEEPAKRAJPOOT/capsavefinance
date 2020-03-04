@@ -70,7 +70,7 @@
           </div>
         </div>
     
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group ">
                 <label for="txtPassword" ><b>Security Deposit</b></label> 
                 <br/>
@@ -81,7 +81,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group INR">
                 <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label>
                 <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa-change fa {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}" aria-hidden="true"></i></a> 
@@ -89,7 +89,14 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id == 3)? 'block': 'none')}};">
+          <div class="form-group">
+            <label for="txtPassword"><b>Discounting (%)</b></label>
+            <input type="text" name="discounting" class="form-control" value="{{isset($offerData->discounting)? $offerData->discounting: ''}}" placeholder="Discounting" maxlength="6">
+          </div>
+        </div>
+
+        <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group">
                 <label for="txtPassword"><b>Deposit Type</b></label> 
                 <select name="security_deposit_of" class="form-control">
@@ -126,11 +133,11 @@
             </div>
         </div>
     
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>PTP Frequency</b></label>
             <div class="col-md-12" id="ptpq-block">
-                @if(isset($offerData->offerPtpq))
+                @if(isset($offerData->offerPtpq) && count($offerData->offerPtpq))
                 @foreach($offerData->offerPtpq as $key=>$ptpq)
                 <div class="row {{($loop->first)? '': 'mt10'}}">
                     <div class="col-md-3">
@@ -185,7 +192,7 @@
           </div>
         </div>
 
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>XIRR (%)</b></label> 
             <div class="col-md-6">
@@ -264,7 +271,9 @@
     unsetError('input[name*=ptpq_rate]');
     unsetError('input[name=ruby_sheet_xirr]');
     unsetError('input[name=cash_flow_xirr]');
+    unsetError('input[name=discounting]');
     unsetError('input[name=processing_fee]');
+    unsetError('textarea[name=comment]');
     unsetError('#check_block');
     unsetError('#radio_block');
 
@@ -284,6 +293,7 @@
     //let ptpq_rate = $('input[name=ptpq_rate]').val().trim();
     let ruby_sheet_xirr = $('input[name=ruby_sheet_xirr]').val().trim();
     let cash_flow_xirr = $('input[name=cash_flow_xirr]').val().trim();
+    let discounting = $('input[name=discounting]').val().trim();
     let processing_fee = $('input[name=processing_fee]').val().trim();
     let addl_security = $('input[name*=addl_security]').is(':checked');
     let comment = $('textarea[name=comment]').val().trim();
@@ -323,27 +333,6 @@
         flag = false;
     }
 
-    if(typeof security_deposit_type == 'undefined'){
-        setError('#radio_block', 'Please select security deposit type');
-        flag = false;
-    }
-
-    if(security_deposit == '' || isNaN(security_deposit)){
-        setError('input[name=security_deposit]', 'Please fill security deposit');
-        flag = false;
-    }else if(security_deposit_type == 2 && parseFloat(security_deposit) > 100){
-        setError('input[name=security_deposit]', 'Security deposit can not be greater than 100 percent');
-        flag = false;
-    }else if((security_deposit_type == 1) && (parseInt(security_deposit) != security_deposit)){
-        setError('input[name=security_deposit]', 'Please fill correct security deposit amount');
-        flag = false;
-    }
-
-    if(security_deposit_of == ''){
-        setError('select[name=security_deposit_of]', 'Please select security deposit type');
-        flag = false;
-    }
-
     if(rental_frequency == ''){
         setError('select[name=rental_frequency]', 'Please select rental frequency');
         flag = false;
@@ -355,7 +344,7 @@
     }
     let data = [];
 
-    if(tenor != '' && rental_frequency != ''){
+    if(tenor != '' && rental_frequency != '' && facility_type_id != 3){
         $('input[name*=ptpq_from]').each(function(i,val){
             let ttlcount = $('input[name*=ptpq_from]').length;
             let rf = {1:12, 2:6, 3:3, 4:1};
@@ -400,21 +389,52 @@
         });
     }
 
+    if(facility_type_id != 3){
+        if(typeof security_deposit_type == 'undefined'){
+            setError('#radio_block', 'Please select security deposit type');
+            flag = false;
+        }
 
-    if(ruby_sheet_xirr == '' || isNaN(ruby_sheet_xirr)){
-        setError('input[name=ruby_sheet_xirr]', 'Please fill Ruby Sheet XIRR');
-        flag = false;
-    }else if(parseFloat(ruby_sheet_xirr) > 100){
-        setError('input[name=ruby_sheet_xirr]', 'Ruby Sheet XIRR can not be greater than 100 percent');
-        flag = false;
-    }
+        if(security_deposit == '' || isNaN(security_deposit)){
+            setError('input[name=security_deposit]', 'Please fill security deposit');
+            flag = false;
+        }else if(security_deposit_type == 2 && parseFloat(security_deposit) > 100){
+            setError('input[name=security_deposit]', 'Security deposit can not be greater than 100 percent');
+            flag = false;
+        }else if((security_deposit_type == 1) && (parseInt(security_deposit) != security_deposit)){
+            setError('input[name=security_deposit]', 'Please fill correct security deposit amount');
+            flag = false;
+        }
 
-    if(cash_flow_xirr == '' || isNaN(cash_flow_xirr)){
-        setError('input[name=cash_flow_xirr]', 'Please fill Cash Flow XIRR');
-        flag = false;
-    }else if(parseFloat(cash_flow_xirr) > 100){
-        setError('input[name=cash_flow_xirr]', 'Cash Flow XIRR can not be greater than 100 percent');
-        flag = false;
+        if(security_deposit_of == ''){
+            setError('select[name=security_deposit_of]', 'Please select security deposit type');
+            flag = false;
+        }
+
+        if(ruby_sheet_xirr == '' || isNaN(ruby_sheet_xirr)){
+            setError('input[name=ruby_sheet_xirr]', 'Please fill Ruby Sheet XIRR');
+            flag = false;
+        }else if(parseFloat(ruby_sheet_xirr) > 100){
+            setError('input[name=ruby_sheet_xirr]', 'Ruby Sheet XIRR can not be greater than 100 percent');
+            flag = false;
+        }
+
+        if(cash_flow_xirr == '' || isNaN(cash_flow_xirr)){
+            setError('input[name=cash_flow_xirr]', 'Please fill Cash Flow XIRR');
+            flag = false;
+        }else if(parseFloat(cash_flow_xirr) > 100){
+            setError('input[name=cash_flow_xirr]', 'Cash Flow XIRR can not be greater than 100 percent');
+            flag = false;
+        }
+    }else{
+        if(discounting == '' || isNaN(discounting)){
+            setError('input[name=discounting]', 'Please fill Discounting');
+            flag = false;
+        }else if(parseFloat(discounting) > 100){
+            setError('input[name=discounting]', 'Discounting can not be greater than 100 percent');
+            flag = false;
+        }
+
     }
 
     if(processing_fee == '' || isNaN(processing_fee)){
@@ -496,6 +516,36 @@
 
   $(document).on('click', '.remove-ptpq-block', function(){
     $(this).parent('div').parent('div').remove();
+  });
+
+  $('select[name=facility_type_id]').on('change', function(){
+    unsetError('input[name=security_deposit]');
+    unsetError('input[name=security_deposit_type]');
+    unsetError('input[name=ruby_sheet_xirr]');
+    unsetError('input[name=cash_flow_xirr]');
+    unsetError('select[name=security_deposit_of]');
+    unsetError('input[name*=ptpq_from]');
+    unsetError('input[name*=ptpq_to]');
+    unsetError('input[name*=ptpq_rate]');
+    unsetError('input[name=discounting]');
+    unsetError('#radio_block');
+
+    let ftid = $('select[name=facility_type_id] option:selected').val();
+    if(ftid == 3){
+        $('input[name=discounting]').parent().parent().show();
+        $('input[name=ruby_sheet_xirr]').parent().parent().parent().hide();
+        $('select[name=security_deposit_of]').parent().parent().hide();
+        $('input[name=security_deposit]').parent().parent().hide();
+        $('#radio_block').parent().parent().hide();
+        $('#ptpq-block').parent().parent().hide();
+    }else{
+        $('input[name=discounting]').parent().parent().hide();
+        $('input[name=ruby_sheet_xirr]').parent().parent().parent().show();
+        $('select[name=security_deposit_of]').parent().parent().show();
+        $('input[name=security_deposit]').parent().parent().show();
+        $('#radio_block').parent().parent().show();
+        $('#ptpq-block').parent().parent().show();
+    }
   });
 
 </script>

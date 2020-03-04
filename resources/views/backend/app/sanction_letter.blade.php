@@ -24,23 +24,21 @@
                                     <table class="table table-bordered overview-table">
                                         <tbody>
                                             <tr>
-                                                <td with="25%"><b>Nature of Facility</b></td>
-                                                <td with="25%">Rental Facility </td>
-                                                <td with="25%"><b>Lessor</b></td>
-                                                <td with="25%">Capsave Finance Private Limited (CFPL)</td>
-                                            </tr>
-                                            <tr>
                                                 <td with="25%"><b>Lessee</b></td>
                                                 <td with="25%">{{ $biz_entity_name }}</td>
-                                                <td with="25%"><b>Sanction Amount</b></td>
-                                                <td with="25%"> {!! $offerData->prgm_limit_amt ? \Helpers::formatCurreny($offerData->prgm_limit_amt) : '' !!}</td>
+                                                
+                                                <td with="25%"><b>Lessor</b></td>
+                                                <td with="25%">
+                                                <input type="text" name="lessor" value="{{ $lessor }}" class="form-control" />
+                                                 </td>
                                             </tr>
+                                            
                                             <tr>
                                                 <td with="25%"><b>Sanction Validity</b></td>
                                                 <td with="25%" colspan="3">
                                                     <div class="row">
-                                                        <div class="col">
-                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" readonly >
+                                                        <div class="col-md-2">
+                                                            <input type="text" name="sanction_validity_date" value="{{old('sanction_validity_date', \Carbon\Carbon::parse($validity_date)->format('d/m/Y'))}}" class="form-control" tabindex="5" placeholder="Enter Validity Date" autocomplete="off" >
                                                         </div>
                                                         <div class="col">
                                                         <input type="text" class="form-control" placeholder="Enter Comment" name="sanction_validity_comment" value="{{ $validity_comment }}">
@@ -49,10 +47,94 @@
                                                 </td>
                                             </tr>
                                             <tr>
+                                                <td with="25%"><b>Sanction Amount</b></td>
+                                                <td with="25%"> {{ count($leasingLimitData) > 0 ? 'INR '. number_format($leasingLimitData['0']['limit_amt']) : '' }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table> 
+
+
+                                    <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
+                                        <thead>
+                                        <tr>
+                                            <td width="10%" style="background: #e9ecef;"><b>Facility Type</b></td>
+                                            <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
+                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
+                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
+                                            <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
+                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>    XIRR/ </br>Discounting(%)</b></td>
+                                            <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
+                                            
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($leaseOfferData as $key=>$leaseOffer)
+                                        
+                                                <tr>
+                                                    <td>{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
+                                                    <td>{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
+                                                    <td>{!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!}</td>
+                                                    <td>{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
+                                                    <td>
+                                                        @php 
+                                                            $i = 1;
+                                                            if(!empty($leaseOffer->offerPtpq)){
+                                                            $total = count($leaseOffer->offerPtpq);
+                                                         @endphp   
+                                                            @foreach($leaseOffer->offerPtpq as $key => $arr) 
+
+                                                                  @if ($i > 1 && $i < $total)
+                                                                  ,
+                                                                  @elseif ($i > 1 && $i == $total)
+                                                                     and
+                                                                  @endif
+                                                                  {!!  'INR' !!} {{$arr->ptpq_rate}}  for  {{floor($arr->ptpq_from)}}- {{floor($arr->ptpq_to)}} {{$arrStaticData['rentalFrequencyForPTPQ'][$leaseOffer->rental_frequency]}}
+
+                                                                  @php 
+                                                                     $i++;
+                                                                  @endphp     
+                                                            @endforeach
+                                                            @php 
+                                                               }
+                                                            @endphp 
+
+                                                    </td>
+                                                    <td>
+                                                        @if($leaseOffer->facility_type_id == 3)
+                                                             {{$leaseOffer->discounting}}%
+                                                          @else
+                                                             <b>Ruby Sheet</b>: {{$leaseOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$leaseOffer->cash_flow_xirr}}%
+                                                          @endif
+
+                                                    </td>
+                                                    <td>{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee.' %': ''}}</td>
+                                                </tr>
+
+                                              @empty
+                                                 <tr>
+
+                                                     <p>No Offer Found</p>
+                                                 </div>
+                                           @endforelse  
+                                            
+                                        </tbody>
+                                </table>
+
+
+                                    <table class="table table-bordered overview-table">
+                                       <tbody>
+
+                                           <!--  <tr>
+                                                <td with="25%"><b>Nature of Facility</b></td>
+                                                <td with="25%">Rental Facility </td>
+                                                <td with="25%"><b>Sanction Amount</b></td>
+                                                <td with="25%"> {!! $offerData->prgm_limit_amt ? \Helpers::formatCurreny($offerData->prgm_limit_amt) : '' !!}</td>
+                                            </tr> -->
+                                            <!-- <tr>
                                                 <td with="25%"><b>Equipment Type</b></td>
                                                 <td with="25%" colspan="3"> @if($equipmentData) {{ $equipmentData->equipment_name }}@endif </td>
-                                            </tr>
-                                            <tr>
+                                            </tr> -->
+                                            <!-- <tr>
                                                 <td with="25%"><b>Lease Tenor</b></td>
                                                 <td with="25%">
                                                     @if($offerData->tenor)
@@ -136,9 +218,9 @@
                                                         @case(2) Arrears @break
                                                     @endswitch
                                                 </td>
-                                            </tr>
+                                            </tr> -->
                                             <tr>
-                                                <td with="25%"><b>Payment Mechanism</b> <span class="mandatory">*</span></td>
+                                                <td with="25%"><b>Payment Mechanism</b> </td>
                                                 <td colspan="3">
                                                     <div class="row">
                                                         <div class="col">

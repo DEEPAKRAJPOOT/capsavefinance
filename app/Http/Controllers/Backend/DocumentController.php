@@ -32,16 +32,18 @@ class DocumentController extends Controller
      */
     public function listDocument(Request $request)
     {
-    	try {
+    	try {            
             $arrFileData = $request->all();
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
-            $userData = User::getUserByAppId($appId);
+            $userData = User::getUserByAppId($appId);                        
             $allProductDoc = [];
             $docData = [];
             $noDocFlag = 0;
-            $appProduct = $this->appRepo->getAppProducts($appId);
-
+            $appProduct = $this->appRepo->getApplicationProduct($appId);
+            
+            $docTypes = config('common.doc_type');            
+                        
             if ($appId > 0) {
                 foreach ($appProduct->products as $key => $value) {
                     $requiredDocs[$key]['productInfo'] = $value;
@@ -55,12 +57,14 @@ class DocumentController extends Controller
             else {
                 return redirect()->back()->withErrors(trans('error_messages.noAppDoucment'));
             }
-
+            
+            
+            $noDocFlag = 1;
             foreach($requiredDocs as $key => $product) {
-                if($product['documents']->count() == 0) {
-                    $noDocFlag = 1;
+                if($product['documents']->count() != 0) {
+                    $noDocFlag = 0;
                 }
-            }
+            }            
             // dd($docData);
             return view('backend.document.list', [
                 'requiredDocs' => $requiredDocs,
@@ -69,6 +73,7 @@ class DocumentController extends Controller
                 'app_id' => $appId,
                 'biz_id' => $bizId,
                 'noDocFlag' => $noDocFlag,
+                'docTypes' => $docTypes
             ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
