@@ -13,6 +13,7 @@
     </section>
     <div class="card">
         <div class="card-body">
+            <h3>{{ isset($jeConfigId) ? 'Edit' : 'Add'}} Config</h3>
             {!!
                 Form::open(
                 array(

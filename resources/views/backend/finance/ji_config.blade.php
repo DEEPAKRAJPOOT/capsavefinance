@@ -2,6 +2,7 @@
 @section('content')
 
 <div class="modal-body text-left">
+   <h3>{{ isset($jiConfigData->ji_config_id) ? 'Edit' : 'Add'}} Journal Item</h3>
    {!!
          Form::open(
          array(
