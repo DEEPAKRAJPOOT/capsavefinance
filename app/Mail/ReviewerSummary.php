@@ -28,9 +28,10 @@ class ReviewerSummary extends Mailable
      *
      * @return void
      */
-    public function __construct($mstRepo)
+    public function __construct($mstRepo, $user)
     {
         $this->mstRepo = $mstRepo;
+        $this->user = $user;
     }
 
     /**
@@ -96,8 +97,11 @@ class ReviewerSummary extends Mailable
             'postCondArr' => $postCondArr,
             'leaseOfferData'=> $leaseOfferData,
             'arrStaticData' => $arrStaticData,
-            'facilityTypeList' => $facilityTypeList
-        ]);
+            'facilityTypeList' => $facilityTypeList,
+            'receiverUserName' => $this->user['receiver_user_name'],
+            'appId' => $appId,
+            'url' => 'https://'. config('proin.backend_uri'),
+        ]);            
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
         //         'email_to' => config('common.review_summ_mails'),
@@ -107,7 +111,11 @@ class ReviewerSummary extends Mailable
         //         'body' => $email,
         // ];
 
-        $email->subject('New Application For Approver - '.$businessDetails->biz_entity_name);
+        //$email->subject('New Application For Approver - '.$businessDetails->biz_entity_name);
+
+        $dispAppId = 'CAPS' . sprintf('%06d', $appId);
+        $email_subject = 'Application ' . $dispAppId . ' is waiting for your approval - '.$businessDetails->biz_entity_name;        
+        $email->subject($email_subject);
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {

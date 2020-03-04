@@ -636,6 +636,16 @@ class UserEventsListener extends BaseEvent
         $user = unserialize($userData);        
         $this->func_name = __FUNCTION__;
         //Send mail to User
+        
+        if( env('SEND_MAIL_ACTIVE') == 1){
+            $email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
+            //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
+            $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
+        }else{
+            $email = $user["receiver_email"];
+        }  
+            
+        /*
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
@@ -674,12 +684,13 @@ class UserEventsListener extends BaseEvent
                 ];
                 FinanceModel::logEmail($mailContent);
             });
+        }
+        */
 
-            
             Mail::to($email, $user["receiver_user_name"])
             ->cc($email_cc)
-            ->send(new ReviewerSummary($this->mstRepo));
-        }
+            ->send(new ReviewerSummary($this->mstRepo, $user));
+        
     }
 
     /**
