@@ -3310,7 +3310,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('invoice_no',function($trans){
                 $data = '';
-                if($trans->disburse && $trans->disburse->invoice && $trans->trans_type == '30'){
+                if($trans->disburse && $trans->disburse->invoice && in_array($trans->trans_type, [config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')]) ){
                     $data = $trans->disburse->invoice->invoice_no; 
                 }
                 return $data;
