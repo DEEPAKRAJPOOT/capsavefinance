@@ -88,7 +88,7 @@
                     {!! Form::hidden('assign_case', $assign_case) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
-                <button type="submit" class="btn btn-success btn-sm">{{ $confirmBtn }}</button> &nbsp;
+                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>
@@ -110,10 +110,19 @@ var messages = {
      $(document).ready(function(){
         var assign_case = $("input[name=assign_case]").val(); 
         var targetModel = assign_case == '1' ? 'assignCaseFrame' : 'sendNextstage';
-        var parent =  window.parent;        
+        var parent =  window.parent;  
+        
+        $('.btn-move-next-stage').click(function() {
+            //$('.isloader').show();
+            if ($('#frmMoveStage').valid()) {
+                $(this).attr('disabled', 'disabled');
+            }
+        });
+        
         if(messages.is_accept == 1){
            parent.jQuery("#"+targetModel).modal('hide');  
            parent.oTable.draw();
+           //$('.isloader').hide();           
         }
 
         $('#close_btn').click(function() {
