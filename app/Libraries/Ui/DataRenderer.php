@@ -3115,6 +3115,12 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                         return $dataRecords->journal_type;
                     }) 
+                    ->addColumn(
+                        'action',
+                        function ($dataRecords) {
+                            return '<a class="btn btn-action-btn btn-sm" href ="'.route('get_fin_journal', ['journal_id' => $dataRecords->id]).'"><i class="fa fa-edit">Edit</a>';
+                        }
+                    )
                     ->make(true);
         }
 

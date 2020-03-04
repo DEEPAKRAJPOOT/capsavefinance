@@ -31,8 +31,18 @@ class FinanceController extends Controller {
         return view('backend.finance.trans_list');
     }    
 
-    public function getFinJournal() {
-        return view('backend.finance.journal_list');
+    public function getFinJournal(Request $request) {
+        $journalData = '';
+        $journalId = $request->get('journal_id');
+        if(isset($journalId) && !empty($journalId)){
+            $journalData = $this->finRepo->getJournalByJournalId($journalId); 
+            //dd($journalData);
+        }
+        return view('backend.finance.journal_list')
+            ->with([
+            'journalData'=> $journalData,
+            'journalId'=> $journalId
+            ]);;
     }  
 
     public function getFinAccount() {
@@ -175,7 +185,7 @@ class FinanceController extends Controller {
 
     public function saveJournal(CreateJournalRequest $request) {
         try {
-            $journalId = $request->get('journal_id');
+            $journalId = $request->get('journalId');
             $this->inputData = [];
             $this->inputData = [                
                 'name'=>$request->get('name'),               

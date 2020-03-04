@@ -13,6 +13,7 @@
     </section>
     <div class="card">
         <div class="card-body">
+            <h3>{{ isset($journalId) ? 'Edit' : 'Add'}} Journal</h3>
             {!!
                 Form::open(
                 array(
@@ -22,6 +23,7 @@
                 )
                 ) 
             !!}   
+            <input type="hidden" name="journalId" value="{{ isset($journalId) ? $journalId : ''}}" /> 
             <div class="row align-items-center">
                 <div class="col-md-2">
                     <div class="form-group">
@@ -49,7 +51,7 @@
                     <select name="journal_type" id="journal_type" class="form-control form-control-sm">
                     <option value="">Select Journal Type</option>
                         @foreach(config('common.JOURNAL_TYPE') as $key=>$val)
-                            <option value="{{$key}}"> {{$val}} </option>
+                            <option value="{{$key}}" {{ (old('journal_type') == $key)? 'selected': (isset($journalData->journal_type) && $journalData->journal_type==$key) ? 'selected' : ''}}> {{$val}} </option>
                         @endforeach
                     </select>
                     </div>
@@ -67,6 +69,15 @@
                 </div>
             </div>
             {!!  Form::close() !!} 
+            @if(isset($journalId) && !empty($journalId))
+            <div class="row">
+                <div class="col-sm-12">
+                    <a href="{{ route('get_fin_journal') }}">
+                        <button class="btn  btn-success btn-sm">Add Journal</button>
+                    </a>
+                </div>
+            </div>
+            @endif
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">
@@ -75,6 +86,7 @@
                                 <tr role="row">
                                     <th>Name</th>
                                     <th>Journal Type</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>

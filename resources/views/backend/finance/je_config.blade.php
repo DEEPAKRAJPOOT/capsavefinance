@@ -103,7 +103,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <a href="{{ route('create_je_config') }}">
-                        <button class="btn  btn-success btn-sm">Add Journal</button>
+                        <button class="btn  btn-success btn-sm">Add Config</button>
                     </a>
                 </div>
             </div>
