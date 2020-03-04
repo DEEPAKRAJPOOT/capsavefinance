@@ -87,4 +87,8 @@ class OfferPersonalGuarantee extends BaseModel
         }
     }
 
+    public function owner(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizOwner', 'pg_name_of_guarantor_id', 'biz_owner_id');
+    }
+
 }
