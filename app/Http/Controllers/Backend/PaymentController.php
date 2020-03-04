@@ -240,23 +240,32 @@ class PaymentController extends Controller {
     $totalMarginAmount = 0;
     $nonFactoredAmount = 0;
     
-    $objPHPExcel =  new PHPExcel();
     $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
     $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
-
+    
     $disbursalIds = Transactions::where('parent_trans_id','=',$transId)
-                                ->whereNotNull('disbursal_id')
-                                ->distinct('disbursd')
-                                ->pluck('disbursal_id')
-                                ->toArray();
-
+    ->whereNotNull('disbursal_id')
+    ->where('trans_type','=',config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
+    ->distinct('disbursd')
+    ->pluck('disbursal_id')
+    ->toArray();
+    
+    $principalSettled = Transactions::whereIn('disbursal_id',$disbursalIds)
+    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
+    ->sum('amount');
+    
     $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-                        ->sum('invoice_approve_amount'); 
+    ->sum('invoice_approve_amount'); 
     $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-                              ->groupBy('margin')
-                              ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
-
+    ->groupBy('margin')
+    ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
+    
+    if($principalSettled>0){
+      $nonFactoredAmount = $repayment->amount-$principalSettled;
+    }
+    
     //dd($repayment, $repaymentTrails, $disbursalIds, $marginAmountData, $totalMarginAmount);
+    $objPHPExcel =  new PHPExcel();
     $objPHPExcel->getProperties()
                 ->setCreator("Capsave")
                 ->setLastModifiedBy("Capsave")
@@ -344,7 +353,9 @@ class PaymentController extends Controller {
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Overdue Interest')
                 ->setCellValue('E'.$counter, $overdueInterest);
+    
     $totalMarginAmount -= $overdueInterest;
+    
     // $counter +=1;
     // $objPHPExcel->setActiveSheetIndex(0)
     //             ->setCellValue('A'.$counter, 'Interest Sept')
@@ -353,7 +364,7 @@ class PaymentController extends Controller {
     $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('A'.$counter, 'Margin Relesed')
-                ->setCellValue('E'.$counter, $totalMarginAmount);
+                ->setCellValue('E'.$counter, ($totalMarginAmount>0)?$totalMarginAmount:0);
     $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 
     $counter +=2;

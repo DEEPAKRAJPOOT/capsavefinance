@@ -33,7 +33,8 @@ return [
         'INTEREST'=>'9',
         'INTEREST_REFUND'=>'31',
         'INTEREST_PAID'=>'32',
-        'INTEREST_OVERDUE'=>'33'
+        'INTEREST_OVERDUE'=>'33',
+        'INVOICE_PARTIALLY_KNOCKED_OFF'=>'34',
     ],
     'STATUS_ID' => [
         'DISBURSED'=>'12',
