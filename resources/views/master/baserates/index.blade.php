@@ -27,7 +27,7 @@
                     <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
                 </div>
                 <div class="col-md-7 text-right">
-                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addBaseRateFrame" data-url ="{{route('add_base_rate')}}" data-height="250px" data-width="100%" data-placement="top" >
+                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addBaseRateFrame" data-url ="{{route('add_base_rate')}}" data-height="350px" data-width="100%" data-placement="top" >
                             <i class="fa fa-plus"></i>Add Base Rate
                     </a>
                 </div>

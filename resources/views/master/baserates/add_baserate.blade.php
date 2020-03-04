@@ -41,32 +41,34 @@
 @section('jscript')
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#baseRateForm').validate({// initialize the plugin
-            rules: {
-                'company_name': {
-                    required: true,
-                },
-                'base_rate': {
-                    required:true,
-                    number:true,
-                    maxlength: 3,
-                }
-                'is_active': {
-                    required: true,
-                },
+ 
+    $('#baseRateForm').validate({ // initialize the plugin
+        rules: {
+            company_name: {
+                required: true
             },
-            messages: {
-                'company_name': {
-                    required: "Please enter Company Name",
+            base_rate: {
+                required: true,
+                digits:true,
+                maxlength:3,
+            },
+            is_active: {
+                required: true,
+                digits: true
+            }
+        },
+         messages: {
+                company_name: {
+                    required: "Please Enter Company Name",
                 },
-                'base_rate': {
-                    required: "Please enter base rate",
+                base_rate: {
+                    required: "Please Enter Base Rate",
                 },
-                'is_active': {
-                    required: "Please Select Status of Industry",
+                is_active: {
+                    required: "Please Select Status of Base Rate",
                 },
             }
-        });
     });
+});
 </script>
 @endsection
