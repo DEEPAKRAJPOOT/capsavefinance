@@ -129,11 +129,20 @@
          </div>
          <div class="col-md-3">
             <div class="form-group">
-               <button class="mb-0">Submit</button>
+               <button class="btn  btn-success btn-sm">Submit</button>
             </div>
          </div>
    </div>
    {!!  Form::close() !!} 
+   @if(isset($jiConfigData->ji_config_id) && !empty($jiConfigData->ji_config_id))
+   <div class="row">
+      <div class="col-sm-12">
+         <a href="{{ route('add_ji_config', ['je_config_id' => $jeConfigId]) }}">
+            <button class="btn  btn-success btn-sm">Add Journal Item</button>
+         </a>
+      </div>
+   </div>
+   @endif
    <div class="row">
          <div class="col-sm-12">
             <div class="table-responsive">
