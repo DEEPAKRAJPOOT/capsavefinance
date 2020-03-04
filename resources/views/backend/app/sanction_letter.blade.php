@@ -94,274 +94,164 @@
                <div class="tab-content">
                   <div id="sanctionSupplyChain" class="tab-pane fadein active">
                      @if( is_array($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
-                     <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
-                     <table class="table" cellpadding="0" cellspacing="0">
-                        <tr>
-                           <td><b>To</b></td>
-                        </tr>
-                        <tr>
-                           <td>{{$supplyChaindata['ConcernedPersonName']}}</td>
-                        </tr>
-                        <tr>
-                           <td>{{$supplyChaindata['EntityName']}}</td>
-                        </tr>
-                        <tr>
-                           <td>{{$supplyChaindata['Address']}}</td>
-                        </tr>
-                        <tr>
-                           <td>{{$supplyChaindata['EmailId']}}</td>
-                        </tr>
-                        <tr>
-                           <td>{{$supplyChaindata['MobileNumber']}}</td>
-                        </tr>
-                     </table>
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <thead>
-                           <tr>
-                              <th width="33.33%">Facility (Product)</th>
-                              <th width="33.33%">Amount (Rs. In Mn)</th>
-                              <th width="33.33%">Sub-Limit of</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr>
-                              <td class="">{{getProductType($supplyChaindata['product_id'])}}</td>
-                              <td class="">{{$supplyChaindata['tot_limit_amt']}}</td>
-                              <td class="">
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>Term Loan</option>
-                                    <option>Purchase Finance Facility</option>
-                                    <option>Invoice Discounting Facility</option>
-                                    <option>Vendor Finance</option>
-                                 </select>
-                              </td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <br />
-                     <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
-                     <!-- Vender Program -->
-                     @if($supplyChaindata['prgm_type'] == 2) 
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr>
-                              <td width="33.33%">Facility No</td>
-                              <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
-                              <td width="30%">Facility Name</td>
-                              <td width="30%">Purchase Finance Facility  /  Channel Financing{{--$supplyChaindata['product_name']--}}</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Facility Amount</td>
-                              <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Purpose</td>
-                              <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Expiry of Limit</td>
-                              <td width="66.66%" colspan="3">
-                                 Limit will be valid for 1 year from date of 
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>date of sanction letter</option>
-                                    <option>date of first disbusrement</option>
-                                 </select>
-                                 (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Investment Payment Frequency</td>
-                              <td width="66.66%" colspan="3">..</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%" class="pd-0" style="padding: 0px !important;">
-                                 <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
-                                    <thead>
-                                       <tr>
-                                          <th width="70%">Apprv. Debtor Name</th>
-                                          <th width="30%" class="height">Sub Limit</th>
-                                       </tr>
-                                    </thead>
-                                    <tbody>
-                                       @foreach($supplyChaindata['offerData'] as $offerD)
-                                       <tr>
-                                          <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                          <td></td>
-                                       </tr>
-                                       @endforeach
-                                    </tbody>
-                                 </table>
-                              </td>
-                              <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
-                                 <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
-                                    <thead>
-                                       <tr>
-                                          <th width="35%">Max. Discounting Period</th>
-                                          <th width="25%">Grace Period</th>
-                                          <th width="25%">ROI</th>
-                                          <th width="25%">Margin</th>
-                                       </tr>
-                                    </thead>
-                                    <tbody>
-                                       @foreach($supplyChaindata['offerData'] as $offerD)
-                                       <tr>
-                                          <td>
-                                             <select class="select">
-                                                <option>Choose an Item</option>
-                                                <option>30 Days</option>
-                                                <option>45 Days</option>
-                                                <option>60 Days</option>
-                                                <option>90 Days</option>
-                                             </select>
-                                          </td>
-                                          <td>
-                                             <select class="select">
-                                                <option>Choose an Item</option>
-                                                <option>7 Days</option>
-                                                <option>15 Days</option>
-                                                <option>30 Days</option>
-                                                <option>45 Days</option>
-                                             </select>
-                                          </td>
-                                          <td>
-                                             <select class="select">
-                                                <option>Choose an Item</option>
-                                                <option>Invoice Date</option>
-                                                <option>BOE Date</option>
-                                                <option>GRN Date</option>
-                                                <option>Date of Discounting</option>
-                                             </select>
-                                          </td>
-                                          <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                       </tr>
-                                       @endforeach
-                                    </tbody>
-                                 </table>
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Methodology for calculating for Drawing Power</td>
-                              <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Specific Condition</td>
-                              <td width="66.66%" colspan="3">
-                                 <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
-                                    <li>
-                                       Invoices should not be older than 30 days from 
+                     <div class="form-fields">
+                           <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
+                           <table class="table" cellpadding="0" cellspacing="0">
+                              <tr>
+                                 <td><b>To</b></td>
+                              </tr>
+                              <tr>
+                                 <td>{{$supplyChaindata['ConcernedPersonName']}}</td>
+                              </tr>
+                              <tr>
+                                 <td>{{$supplyChaindata['EntityName']}}</td>
+                              </tr>
+                              <tr>
+                                 <td>{{$supplyChaindata['Address']}}</td>
+                              </tr>
+                              <tr>
+                                 <td>{{$supplyChaindata['EmailId']}}</td>
+                              </tr>
+                              <tr>
+                                 <td>{{$supplyChaindata['MobileNumber']}}</td>
+                              </tr>
+                           </table>
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <thead>
+                                 <tr>
+                                    <th width="33.33%">Facility (Product)</th>
+                                    <th width="33.33%">Amount (Rs. In Mn)</th>
+                                    <th width="33.33%">Sub-Limit of</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr>
+                                    <td class="">{{getProductType($supplyChaindata['product_id'])}}</td>
+                                    <td class="">{{$supplyChaindata['tot_limit_amt']}}</td>
+                                    <td class="">
                                        <select class="select">
                                           <option>Choose an Item</option>
-                                          <option>Invoice Date</option>
-                                          <option>BOE Date</option>
-                                          <option>GRN Date</option>
-                                          <option>Date of Discounting</option>
+                                          <option>Term Loan</option>
+                                          <option>Purchase Finance Facility</option>
+                                          <option>Invoice Discounting Facility</option>
+                                          <option>Vendor Finance</option>
                                        </select>
-                                       On the date of Discounting.
-                                    </li>
-                                    <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
-                                 </ul>
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Specific Pre-disbursement Condition</td>
-                              <td width="66.66%" colspan="3">
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%"> Specific Post-disbursement Condition</td>
-                              <td width="66.66%" colspan="3">
-                              </td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     @endif
-                     <!-- Channle Program -->
-                     @if($supplyChaindata['prgm_type'] == 1) 
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr>
-                              <td width="33.33%">Facility No</td>
-                              <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
-                              <td width="30%">Facility Name</td>
-                              <td width="30%">Vendor Finance Facility</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Facility Amount</td>
-                              <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Purpose</td>
-                              <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Expiry of Limit</td>
-                              <td width="66.66%" colspan="3">
-                                 Limit will be valid for 1 year from date of 
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>date of sanction letter</option>
-                                    <option>date of first disbusrement</option>
-                                 </select>
-                                 (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Investment Payment Frequency</td>
-                              <td width="66.66%" colspan="3">..</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%" class="pd-0" style="padding: 0px !important;">
-                                 <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
-                                    <thead>
-                                       <tr>
-                                          <th width="70%">Apprv. Debtor Name</th>
-                                          <th width="30%" class="height">Sub Limit</th>
-                                       </tr>
-                                    </thead>
-                                    <tbody>
-                                       @foreach($supplyChaindata['offerData'] as $offerD)
-                                       <tr>
-                                          <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                          <td></td>
-                                       </tr>
-                                       @endforeach
-                                    </tbody>
-                                 </table>
-                              </td>
-                              <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
-                                 <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
-                                    <thead>
-                                       <tr>
-                                          <th width="35%">Max. Discounting Period</th>
-                                          <th width="25%">Grace Period</th>
-                                          <th width="25%">ROI</th>
-                                          <th width="25%">Margin</th>
-                                       </tr>
-                                    </thead>
-                                    <tbody>
-                                       @foreach($supplyChaindata['offerData'] as $offerD)
-                                       <tr>
-                                          <td>
-                                             <select class="select">
-                                                <option>Choose an Item</option>
-                                                <option>30 Days</option>
-                                                <option>45 Days</option>
-                                                <option>60 Days</option>
-                                                <option>90 Days</option>
-                                             </select>
-                                          </td>
-                                          <td>
-                                             <select class="select">
-                                                <option>Choose an Item</option>
-                                                <option>7 Days</option>
-                                                <option>15 Days</option>
-                                                <option>30 Days</option>
-                                                <option>45 Days</option>
-                                             </select>
-                                          </td>
-                                          <td>
+                                    </td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <br />
+                           <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
+                           <!-- Vender Program -->
+                           @if($supplyChaindata['prgm_type'] == 2) 
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <tbody>
+                                 <tr>
+                                    <td width="33.33%">Facility No</td>
+                                    <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
+                                    <td width="30%">Facility Name</td>
+                                    <td width="30%">Purchase Finance Facility  /  Channel Financing{{--$supplyChaindata['product_name']--}}</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Facility Amount</td>
+                                    <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Purpose</td>
+                                    <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Expiry of Limit</td>
+                                    <td width="66.66%" colspan="3">
+                                       Limit will be valid for 1 year from date of 
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>date of sanction letter</option>
+                                          <option>date of first disbusrement</option>
+                                       </select>
+                                       (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Investment Payment Frequency</td>
+                                    <td width="66.66%" colspan="3">..</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%" class="pd-0" style="padding: 0px !important;">
+                                       <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                          <thead>
+                                             <tr>
+                                                <th width="70%">Apprv. Debtor Name</th>
+                                                <th width="30%" class="height">Sub Limit</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             @foreach($supplyChaindata['offerData'] as $offerD)
+                                             <tr>
+                                                <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
+                                                <td></td>
+                                             </tr>
+                                             @endforeach
+                                          </tbody>
+                                       </table>
+                                    </td>
+                                    <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
+                                       <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                          <thead>
+                                             <tr>
+                                                <th width="35%">Max. Discounting Period</th>
+                                                <th width="25%">Grace Period</th>
+                                                <th width="25%">ROI</th>
+                                                <th width="25%">Margin</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             @foreach($supplyChaindata['offerData'] as $offerD)
+                                             <tr>
+                                                <td>
+                                                   <select class="select">
+                                                      <option>Choose an Item</option>
+                                                      <option>30 Days</option>
+                                                      <option>45 Days</option>
+                                                      <option>60 Days</option>
+                                                      <option>90 Days</option>
+                                                   </select>
+                                                </td>
+                                                <td>
+                                                   <select class="select">
+                                                      <option>Choose an Item</option>
+                                                      <option>7 Days</option>
+                                                      <option>15 Days</option>
+                                                      <option>30 Days</option>
+                                                      <option>45 Days</option>
+                                                   </select>
+                                                </td>
+                                                <td>
+                                                   <select class="select">
+                                                      <option>Choose an Item</option>
+                                                      <option>Invoice Date</option>
+                                                      <option>BOE Date</option>
+                                                      <option>GRN Date</option>
+                                                      <option>Date of Discounting</option>
+                                                   </select>
+                                                </td>
+                                                <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
+                                             </tr>
+                                             @endforeach
+                                          </tbody>
+                                       </table>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Methodology for calculating for Drawing Power</td>
+                                    <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Specific Condition</td>
+                                    <td width="66.66%" colspan="3">
+                                       <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
+                                          <li>
+                                             Invoices should not be older than 30 days from 
                                              <select class="select">
                                                 <option>Choose an Item</option>
                                                 <option>Invoice Date</option>
@@ -369,391 +259,503 @@
                                                 <option>GRN Date</option>
                                                 <option>Date of Discounting</option>
                                              </select>
-                                          </td>
-                                          <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                                       </tr>
-                                       @endforeach
-                                    </tbody>
-                                 </table>
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Methodology for calculating for Drawing Power</td>
-                              <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Specific Condition</td>
-                              <td width="66.66%" colspan="3">
-                                 <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                                    <li>Invoices should not be older than 30 days from .On the date of Discounting.</li>
-                                    <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
-                                 </ul>
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Specific Pre-disbursement Condition</td>
-                              <td width="66.66%" colspan="3">
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%"> Specific Post-disbursement Condition</td>
-                              <td width="66.66%" colspan="3">
-                              </td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     @endif
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr>
-                              <td width="33.33%">Penal Interest</td>
-                              <td width="66.66%">
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>2 %</option>
-                                    <option>3 %</option>
-                                    <option>4 %</option>
-                                    <option>5 %</option>
-                                    <option>18 %</option>
-                                 </select>
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>over and above the rate for the last draw down  or Rollover of facility on</option>
-                                    <option>On</option>
-                                 </select>
-                                 entire principal / payable interest on delay in repayment of principal / Interest / charges 
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>Applicable</option>
-                                    <option>Not applicable</option>
-                                 </select>
-                                 .<br/>
-                                 The rate of interest will be <input type="text" class="input_sanc" name="debtor_name[]" placeholder="Type Here">% higher than the rate stipulated under each of the facilities till the security is created
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>Applicable</option>
-                                    <option>Not applicable</option>
-                                 </select>
-                                 .
-                                 <br/>
-                                 If security is not created within the stipulated timeframe then a penal interest of 
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>2 %</option>
-                                    <option>3 %</option>
-                                    <option>4 %</option>
-                                    <option>5 %</option>
-                                    <option>18 %</option>
-                                 </select>
-                                 p.a.  
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>over and above the rate for the last draw down  or Rollover of facility on</option>
-                                    <option>On</option>
-                                 </select>
-                                 entire principle
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>Applicable</option>
-                                    <option>Not applicable</option>
-                                 </select>
-                                 .
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Prepayment</td>
-                              <td width="66.66%">
-                                 In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided
-                                 by CFPL for time to time.
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Payment Mechanism of Interest</td>
-                              <td width="66.66%">
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>UDC</option>
-                                    <option>PDC</option>
-                                    <option>ECS Mandate</option>
-                                    <option>RTGS</option>
-                                 </select>
-                              </td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Payment Mechanism of Pricipal</td>
-                              <td width="66.66%">
-                                 <select class="select">
-                                    <option>Choose an Item</option>
-                                    <option>UDC</option>
-                                    <option>PDC</option>
-                                    <option>ECS Mandate</option>
-                                    <option>RTGS</option>
-                                 </select>
-                              </td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <br />
-                     <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
-                     @foreach($supplyChaindata['offerData'] as $offerD)
-                     <div class="offerdiv">
-                        @if($offerD->offerPs->count())
-                        <h5> Primary Security </h5>
-                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                           <thead>
-                              <tr>
-                                 <th width="20%">Security</th>
-                                 <th width="20%">Type of security</th>
-                                 <th width="20%">Status of security</th>
-                                 <th width="20%">Time for perfecting security</th>
-                                 <th width="20%">Description of security</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              @foreach($offerD->offerPs as $PrimarySecurity)
-                              <tr>
-                                 <td>{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}}</td>
-                                 <td>{{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}}</td>
-                                 <td>{{config('common.ps_status_of_security_id.'.$PrimarySecurity->ps_status_of_security_id)}}</td>
-                                 <td>{{config('common.ps_time_for_perfecting_security_id.'.$PrimarySecurity->ps_time_for_perfecting_security_id)}}</td>
-                                 <td>{{$PrimarySecurity->ps_desc_of_security}}</td>
-                              </tr>
-                              @endforeach
-                           </tbody>
-                        </table>
-                        @endif
-                        @if($offerD->offerCs->count())
-                        <h5> Collateral Security </h5>
-                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                           <thead>
-                              <tr>
-                                 <th width="20%">Security</th>
-                                 <th width="20%">Type of security</th>
-                                 <th width="20%">Status of security</th>
-                                 <th width="20%">Time for perfecting security</th>
-                                 <th width="20%">Description of security</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              @foreach($offerD->offerCs as $CollateralSecurity)
-                              <tr>
-                                 <td>{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}}</td>
-                                 <td>{{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}}</td>
-                                 <td>{{config('common.cs_status_of_security_id.'.$CollateralSecurity->cs_status_of_security_id)}}</td>
-                                 <td>{{config('common.cs_time_for_perfecting_security_id.'.$CollateralSecurity->cs_time_for_perfecting_security_id)}}</td>
-                                 <td>{{$CollateralSecurity->cs_desc_of_security}}</td>
-                              </tr>
-                              @endforeach
-                           </tbody>
-                        </table>
-                        @endif
-                        @if($offerD->offerPg->count())
-                        <h5>Personal Guarantee</h5>
-                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                           <thead>
-                              <tr>
-                                 <th width="20%">Name of Guarantor</th>
-                                 <th width="20%">Time for perfecting security</th>
-                                 <th width="20%">Residential Address </th>
-                                 <th width="20%">Net worth as per IT return/CA Certificate</th>
-                                 <th width="20%">Comment if any </th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              @foreach($offerD->offerPg as $PersonalGuarantee)
-                              <tr>
-                                 <td>{{$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
-                                 <td>{{config('common.pg_time_for_perfecting_security_id.'.$PersonalGuarantee->pg_time_for_perfecting_security_id)}}</td>
-                                 <td>{{$PersonalGuarantee->pg_residential_address}}</td>
-                                 <td>{{$PersonalGuarantee->pg_net_worth}}</td>
-                                 <td>{{$PersonalGuarantee->pg_comments}}</td>
-                              </tr>
-                              @endforeach
-                           </tbody>
-                        </table>
-                        @endif
-                        @if($offerD->offerCg->count())
-                        <h5>Corporate Guarantee/ Letter of Comfort/ Put Option</h5>
-                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                           <thead>
-                              <tr>
-                                 <th width="20%">Type</th>
-                                 <th width="20%">Name of Guarantor</th>
-                                 <th width="20%">Time for perfecting security</th>
-                                 <th width="20%">Registered Address</th>
-                                 <th width="20%">Comment if any </th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              @foreach($offerD->offerCg as $CorporateGuarantee)
-                              <tr>
-                                 <td>{{config('common.cg_type_id.'.$CorporateGuarantee->cg_type_id)}}</td>
-                                 <td>{{$supplyChaindata['bizOwnerData'][$CorporateGuarantee->cg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
-                                 <td>{{config('common.cg_time_for_perfecting_security_id.'.$CorporateGuarantee->cg_time_for_perfecting_security_id)}}</td>
-                                 <td>{{$CorporateGuarantee->cg_residential_address}}</td>
-                                 <td>{{$CorporateGuarantee->cg_comments}}</td>
-                              </tr>
-                              @endforeach
-                           </tbody>
-                        </table>
-                        @endif
-                        @if($offerD->offerEm->count())
-                        <h5>Escrow Mechanism</h5>
-                        <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                           <thead>
-                              <tr>
-                                 <th width="20%">Name of Debtor</th>
-                                 <th width="20%">Expected cash flow per month</th>
-                                 <th width="20%">Time for perfecting security</th>
-                                 <th width="20%">Mechanism</th>
-                                 <th width="20%">Comment if any</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              @foreach($offerD->offerEm as $EscrowMechanism)
-                              <tr>
-                                 <td>{{$EscrowMechanism->em_debtor_id}}</td>
-                                 <td>{{$EscrowMechanism->em_expected_cash_flow}}</td>
-                                 <td>{{config('common.em_time_for_perfecting_security_id.'.$EscrowMechanism->em_time_for_perfecting_security_id)}}</td>
-                                 <td>{{$EscrowMechanism->em_mechanism_id}}</td>
-                                 <td>{{$EscrowMechanism->em_comments}}</td>
-                              </tr>
-                              @endforeach
-                           </tbody>
-                        </table>
-                        @endif
+                                             On the date of Discounting.
+                                          </li>
+                                          <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
+                                       </ul>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Specific Pre-disbursement Condition</td>
+                                    <td width="66.66%" colspan="3">
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%"> Specific Post-disbursement Condition</td>
+                                    <td width="66.66%" colspan="3">
+                                    </td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           @endif
+                           <!-- Channle Program -->
+                           @if($supplyChaindata['prgm_type'] == 1) 
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <tbody>
+                                 <tr>
+                                    <td width="33.33%">Facility No</td>
+                                    <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
+                                    <td width="30%">Facility Name</td>
+                                    <td width="30%">Vendor Finance Facility</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Facility Amount</td>
+                                    <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Purpose</td>
+                                    <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Expiry of Limit</td>
+                                    <td width="66.66%" colspan="3">
+                                       Limit will be valid for 1 year from date of 
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>date of sanction letter</option>
+                                          <option>date of first disbusrement</option>
+                                       </select>
+                                       (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Investment Payment Frequency</td>
+                                    <td width="66.66%" colspan="3">..</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%" class="pd-0" style="padding: 0px !important;">
+                                       <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                          <thead>
+                                             <tr>
+                                                <th width="70%">Apprv. Debtor Name</th>
+                                                <th width="30%" class="height">Sub Limit</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             @foreach($supplyChaindata['offerData'] as $offerD)
+                                             <tr>
+                                                <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
+                                                <td></td>
+                                             </tr>
+                                             @endforeach
+                                          </tbody>
+                                       </table>
+                                    </td>
+                                    <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
+                                       <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                                          <thead>
+                                             <tr>
+                                                <th width="35%">Max. Discounting Period</th>
+                                                <th width="25%">Grace Period</th>
+                                                <th width="25%">ROI</th>
+                                                <th width="25%">Margin</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             @foreach($supplyChaindata['offerData'] as $offerD)
+                                             <tr>
+                                                <td>
+                                                   <select class="select">
+                                                      <option>Choose an Item</option>
+                                                      <option>30 Days</option>
+                                                      <option>45 Days</option>
+                                                      <option>60 Days</option>
+                                                      <option>90 Days</option>
+                                                   </select>
+                                                </td>
+                                                <td>
+                                                   <select class="select">
+                                                      <option>Choose an Item</option>
+                                                      <option>7 Days</option>
+                                                      <option>15 Days</option>
+                                                      <option>30 Days</option>
+                                                      <option>45 Days</option>
+                                                   </select>
+                                                </td>
+                                                <td>
+                                                   <select class="select">
+                                                      <option>Choose an Item</option>
+                                                      <option>Invoice Date</option>
+                                                      <option>BOE Date</option>
+                                                      <option>GRN Date</option>
+                                                      <option>Date of Discounting</option>
+                                                   </select>
+                                                </td>
+                                                <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
+                                             </tr>
+                                             @endforeach
+                                          </tbody>
+                                       </table>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Methodology for calculating for Drawing Power</td>
+                                    <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Specific Condition</td>
+                                    <td width="66.66%" colspan="3">
+                                       <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
+                                          <li>Invoices should not be older than 30 days from .On the date of Discounting.</li>
+                                          <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
+                                       </ul>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Specific Pre-disbursement Condition</td>
+                                    <td width="66.66%" colspan="3">
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%"> Specific Post-disbursement Condition</td>
+                                    <td width="66.66%" colspan="3">
+                                    </td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           @endif
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <tbody>
+                                 <tr>
+                                    <td width="33.33%">Penal Interest</td>
+                                    <td width="66.66%">
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>2 %</option>
+                                          <option>3 %</option>
+                                          <option>4 %</option>
+                                          <option>5 %</option>
+                                          <option>18 %</option>
+                                       </select>
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>over and above the rate for the last draw down  or Rollover of facility on</option>
+                                          <option>On</option>
+                                       </select>
+                                       entire principal / payable interest on delay in repayment of principal / Interest / charges 
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>Applicable</option>
+                                          <option>Not applicable</option>
+                                       </select>
+                                       .<br/>
+                                       The rate of interest will be <input type="text" class="input_sanc" name="debtor_name[]" placeholder="Type Here">% higher than the rate stipulated under each of the facilities till the security is created
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>Applicable</option>
+                                          <option>Not applicable</option>
+                                       </select>
+                                       .
+                                       <br/>
+                                       If security is not created within the stipulated timeframe then a penal interest of 
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>2 %</option>
+                                          <option>3 %</option>
+                                          <option>4 %</option>
+                                          <option>5 %</option>
+                                          <option>18 %</option>
+                                       </select>
+                                       p.a.  
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>over and above the rate for the last draw down  or Rollover of facility on</option>
+                                          <option>On</option>
+                                       </select>
+                                       entire principle
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>Applicable</option>
+                                          <option>Not applicable</option>
+                                       </select>
+                                       .
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Prepayment</td>
+                                    <td width="66.66%">
+                                       In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided
+                                       by CFPL for time to time.
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Payment Mechanism of Interest</td>
+                                    <td width="66.66%">
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>UDC</option>
+                                          <option>PDC</option>
+                                          <option>ECS Mandate</option>
+                                          <option>RTGS</option>
+                                       </select>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Payment Mechanism of Pricipal</td>
+                                    <td width="66.66%">
+                                       <select class="select">
+                                          <option>Choose an Item</option>
+                                          <option>UDC</option>
+                                          <option>PDC</option>
+                                          <option>ECS Mandate</option>
+                                          <option>RTGS</option>
+                                       </select>
+                                    </td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <br />
+                           <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
+                           @foreach($supplyChaindata['offerData'] as $offerD)
+                           <div class="offerdiv">
+                              @if($offerD->offerPs->count())
+                              <h5> Primary Security </h5>
+                              <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                                 <thead>
+                                    <tr>
+                                       <th width="20%">Security</th>
+                                       <th width="20%">Type of security</th>
+                                       <th width="20%">Status of security</th>
+                                       <th width="20%">Time for perfecting security</th>
+                                       <th width="20%">Description of security</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    @foreach($offerD->offerPs as $PrimarySecurity)
+                                    <tr>
+                                       <td>{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}}</td>
+                                       <td>{{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}}</td>
+                                       <td>{{config('common.ps_status_of_security_id.'.$PrimarySecurity->ps_status_of_security_id)}}</td>
+                                       <td>{{config('common.ps_time_for_perfecting_security_id.'.$PrimarySecurity->ps_time_for_perfecting_security_id)}}</td>
+                                       <td>{{$PrimarySecurity->ps_desc_of_security}}</td>
+                                    </tr>
+                                    @endforeach
+                                 </tbody>
+                              </table>
+                              @endif
+                              @if($offerD->offerCs->count())
+                              <h5> Collateral Security </h5>
+                              <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                                 <thead>
+                                    <tr>
+                                       <th width="20%">Security</th>
+                                       <th width="20%">Type of security</th>
+                                       <th width="20%">Status of security</th>
+                                       <th width="20%">Time for perfecting security</th>
+                                       <th width="20%">Description of security</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    @foreach($offerD->offerCs as $CollateralSecurity)
+                                    <tr>
+                                       <td>{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}}</td>
+                                       <td>{{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}}</td>
+                                       <td>{{config('common.cs_status_of_security_id.'.$CollateralSecurity->cs_status_of_security_id)}}</td>
+                                       <td>{{config('common.cs_time_for_perfecting_security_id.'.$CollateralSecurity->cs_time_for_perfecting_security_id)}}</td>
+                                       <td>{{$CollateralSecurity->cs_desc_of_security}}</td>
+                                    </tr>
+                                    @endforeach
+                                 </tbody>
+                              </table>
+                              @endif
+                              @if($offerD->offerPg->count())
+                              <h5>Personal Guarantee</h5>
+                              <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                                 <thead>
+                                    <tr>
+                                       <th width="20%">Name of Guarantor</th>
+                                       <th width="20%">Time for perfecting security</th>
+                                       <th width="20%">Residential Address </th>
+                                       <th width="20%">Net worth as per IT return/CA Certificate</th>
+                                       <th width="20%">Comment if any </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    @foreach($offerD->offerPg as $PersonalGuarantee)
+                                    <tr>
+                                       <td>{{$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
+                                       <td>{{config('common.pg_time_for_perfecting_security_id.'.$PersonalGuarantee->pg_time_for_perfecting_security_id)}}</td>
+                                       <td>{{$PersonalGuarantee->pg_residential_address}}</td>
+                                       <td>{{$PersonalGuarantee->pg_net_worth}}</td>
+                                       <td>{{$PersonalGuarantee->pg_comments}}</td>
+                                    </tr>
+                                    @endforeach
+                                 </tbody>
+                              </table>
+                              @endif
+                              @if($offerD->offerCg->count())
+                              <h5>Corporate Guarantee/ Letter of Comfort/ Put Option</h5>
+                              <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                                 <thead>
+                                    <tr>
+                                       <th width="20%">Type</th>
+                                       <th width="20%">Name of Guarantor</th>
+                                       <th width="20%">Time for perfecting security</th>
+                                       <th width="20%">Registered Address</th>
+                                       <th width="20%">Comment if any </th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    @foreach($offerD->offerCg as $CorporateGuarantee)
+                                    <tr>
+                                       <td>{{config('common.cg_type_id.'.$CorporateGuarantee->cg_type_id)}}</td>
+                                       <td>{{$supplyChaindata['bizOwnerData'][$CorporateGuarantee->cg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
+                                       <td>{{config('common.cg_time_for_perfecting_security_id.'.$CorporateGuarantee->cg_time_for_perfecting_security_id)}}</td>
+                                       <td>{{$CorporateGuarantee->cg_residential_address}}</td>
+                                       <td>{{$CorporateGuarantee->cg_comments}}</td>
+                                    </tr>
+                                    @endforeach
+                                 </tbody>
+                              </table>
+                              @endif
+                              @if($offerD->offerEm->count())
+                              <h5>Escrow Mechanism</h5>
+                              <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                                 <thead>
+                                    <tr>
+                                       <th width="20%">Name of Debtor</th>
+                                       <th width="20%">Expected cash flow per month</th>
+                                       <th width="20%">Time for perfecting security</th>
+                                       <th width="20%">Mechanism</th>
+                                       <th width="20%">Comment if any</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    @foreach($offerD->offerEm as $EscrowMechanism)
+                                    <tr>
+                                       <td>{{$EscrowMechanism->em_debtor_id}}</td>
+                                       <td>{{$EscrowMechanism->em_expected_cash_flow}}</td>
+                                       <td>{{config('common.em_time_for_perfecting_security_id.'.$EscrowMechanism->em_time_for_perfecting_security_id)}}</td>
+                                       <td>{{$EscrowMechanism->em_mechanism_id}}</td>
+                                       <td>{{$EscrowMechanism->em_comments}}</td>
+                                    </tr>
+                                    @endforeach
+                                 </tbody>
+                              </table>
+                              @endif
+                           </div>
+                           @endforeach
+                           <h5>Section 3:Specific Security :- Choose an item</h5>
+                           <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
+                           <h5>PDC</h5>
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <tbody>
+                                 <tr>
+                                    <td width="33.33%">Facility No</td>
+                                    <td width="6.66%"><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="30%">Facility Name</td>
+                                    <td width="30%"><input type="text" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Facility Amount</td>
+                                    <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Purpose</td>
+                                    <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_purpose" id="pdc_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <br />
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <thead>
+                                 <tr>
+                                    <th>Cheque for</th>
+                                    <th>No of Cheque </th>
+                                    <th>Not Above </th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr>
+                                    <td >Principal</td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td >Interest</td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Repayment</td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Other</td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td>security</td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <br />
+                           <h5>NACH Mandate with undertaking</h5>
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <tbody>
+                                 <tr>
+                                    <td width="33.33%">Facility No</td>
+                                    <td width="6.66%"><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc"></td>
+                                    <td width="30%">Facility Name</td>
+                                    <td width="30%"><input type="text" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc"></td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Facility Amount</td>
+                                    <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td width="33.33%">Purpose</td>
+                                    <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_purpose" id="pdc_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <br />
+                           <h5>DSRA</h5>
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <thead>
+                                 <tr>
+                                    <th>Amount</th>
+                                    <th>Tenure</th>
+                                    <th>Comment if any</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <br />
+                           <h5>Any other security:Choose an item</h5>
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <tbody>
+                                 <tr>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <br />
+                           <h5>Section 5:- Financial Covenants.</h5>
+                           <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                              <thead>
+                                 <tr>
+                                    <th width="75%">Covenants < Multiple option don't limit to 3 ></th>
+                                    <th width="25%">Minimum/Maximum ratio</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                                 <tr>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                           <p>The financial covenants shall be tested on a choose an item.basis and shall be reported in the monitoring report to be submitted by choose an item.</p>
                      </div>
-                     @endforeach
-                     <h5>Section 3:Specific Security :- Choose an item</h5>
-                     <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
-                     <h5>PDC</h5>
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr>
-                              <td width="33.33%">Facility No</td>
-                              <td width="6.66%"><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td width="30%">Facility Name</td>
-                              <td width="30%"><input type="text" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Facility Amount</td>
-                              <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Purpose</td>
-                              <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_purpose" id="pdc_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <br />
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <thead>
-                           <tr>
-                              <th>Cheque for</th>
-                              <th>No of Cheque </th>
-                              <th>Not Above </th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr>
-                              <td >Principal</td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td >Interest</td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td>Repayment</td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td>Other</td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td>security</td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <br />
-                     <h5>NACH Mandate with undertaking</h5>
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr>
-                              <td width="33.33%">Facility No</td>
-                              <td width="6.66%"><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc"></td>
-                              <td width="30%">Facility Name</td>
-                              <td width="30%"><input type="text" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc"></td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Facility Amount</td>
-                              <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td width="33.33%">Purpose</td>
-                              <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_purpose" id="pdc_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <br />
-                     <h5>DSRA</h5>
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <thead>
-                           <tr>
-                              <th>Amount</th>
-                              <th>Tenure</th>
-                              <th>Comment if any</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <br />
-                     <h5>Any other security:Choose an item</h5>
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <br />
-                     <h5>Section 5:- Financial Covenants.</h5>
-                     <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                        <thead>
-                           <tr>
-                              <th width="75%">Covenants < Multiple option don't limit to 3 ></th>
-                              <th width="25%">Minimum/Maximum ratio</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                           <tr>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                              <td><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                     <p>The financial covenants shall be tested on a choose an item.basis and shall be reported in the monitoring report to be submitted by choose an item.</p>
                      @else 
                      <div class="card card-color mb-0">
                         <div class="card-header">
@@ -945,20 +947,19 @@
                            </form>
                         </div>
                      </div>
-                  </div>
-                  @else 
-                  <div class="card card-color mb-0">
-                     <div class="card-header">
-                        <a class="card-title ">Sanction letter cannot be generated for this application as limit offer has not be added.</a>
+                     @else 
+                     <div class="card card-color mb-0">
+                           <div class="card-header">
+                              <a class="card-title ">Sanction letter cannot be generated for this application as limit offer has not be added.</a>
+                           </div>
                      </div>
+                     @endif
                   </div>
-                  @endif
                </div>
             </div>
          </div>
       </div>
    </div>
-</div>
 </div>
 {!!Helpers::makeIframePopup('previewSanctionLetter','Preview/Send Mail Sanction Letter', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
