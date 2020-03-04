@@ -30,6 +30,11 @@ function _rand_str($length = 2){
 	 return $random_string;
 }
 
+function getProductType($product_id){
+	 $productType = ['1'=>'Supply Chain', 'Term Loan', 'Leasing'];
+	 return $productType[$product_id] ?? '';
+}
+
 function _uuid_rand($strLen = 60){
 	$string = sprintf('%04x%04x%04x%05x%05x%04x%04x%04x%05x%05x%06x',
 		mt_rand(0, 0xffff), mt_rand(0, 0xffff),mt_rand(0, 0xffff),

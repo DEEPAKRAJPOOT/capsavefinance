@@ -104,7 +104,7 @@
             <div class="card-body">
                <div class="tab-content">
                   <div id="sanctionSupplyChain" class="tab-pane fadein active">
-                     @if( is_array($supplyChaindata['offerData'])?count($supplyChaindata['offerData']):$supplyChaindata['offerData']->count())
+                     @if( is_array($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                      <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
                      <table class="table" cellpadding="0" cellspacing="0">
                         <tr>

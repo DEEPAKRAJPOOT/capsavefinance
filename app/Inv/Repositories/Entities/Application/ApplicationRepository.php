@@ -1202,6 +1202,20 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->where('app_id', $app_id)
                 ->first();
     }
+
+
+
+    public function appOfferWithLimit($app_id)
+    {
+        return AppProgramOffer::with('programLimit')
+                ->where(['app_id' => $app_id,
+                    'is_active' => 1]
+                )
+                ->get();
+    }
+
+
+
     public function getApplicationProduct($app_id)
     {
         return Application::with('products')

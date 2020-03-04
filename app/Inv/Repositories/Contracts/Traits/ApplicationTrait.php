@@ -5,6 +5,7 @@ use Auth;
 use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\BizOwner;
 
 trait ApplicationTrait
 {
@@ -210,7 +211,7 @@ trait ApplicationTrait
         $EntityData  = $this->appRepo->getEntityByBizId($bizId);
         $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
         $AppLimitData  = $this->appRepo->getAppLimit($appId);
-        $supplyChainOfferData = $this->appRepo->getAppProducts($appId);
+        $supplyChainOfferData = $this->appRepo->appOfferWithLimit($appId);
         $ProgramData = $supplyChainOffer = [];
         if ($supplyChainOfferData->count()) {
             $supplyChainOfferData = $supplyChainOfferData[0];
