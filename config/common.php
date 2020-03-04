@@ -126,6 +126,13 @@ return [
         '2' => 'Pre Sanction',
         '3' => 'Post Sanction',
         '4' => 'Pre Offer'        
-    ]
+    ],
+    'JOURNAL_TYPE' => [
+        'Bank' => 'Bank',
+        'Cash' => 'Cash',
+        'Purchase' => 'Purchase',
+        'Sales' => 'Sales',        
+        'Miscellaneous' => 'Miscellaneous'
+    ], 
 ];
  

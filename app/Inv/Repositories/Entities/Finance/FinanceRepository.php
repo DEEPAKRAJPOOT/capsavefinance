@@ -99,9 +99,11 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     }
 
     public function syncTransVarData($arrData, $transConfigId){
-        //dd($arrData);
         $trans = FinancialTransConfig::find($transConfigId);
         return $trans->variablesMany()->sync($arrData);
     }
     
+    public function saveJournalData($arrData, $journalId){
+        return FinancialJournals::saveJournalData($arrData, $journalId);
+    }
 }

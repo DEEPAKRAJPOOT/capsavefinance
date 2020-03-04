@@ -1124,6 +1124,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_fin_journal',
                 'uses' => 'Backend\FinanceController@getFinJournal'
             ]);
+            Route::post('save-journal', [
+                'as' => 'save_journal',
+                'uses' => 'Backend\FinanceController@saveJournal'
+            ]);
             Route::get('fin-account', [
                 'as' => 'get_fin_account',
                 'uses' => 'Backend\FinanceController@getFinAccount'

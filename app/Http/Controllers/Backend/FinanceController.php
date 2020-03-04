@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Http\Requests\Backend\CreateJeConfigRequest;
 use App\Http\Requests\Backend\CreateJiConfigRequest;
+use App\Http\Requests\Backend\CreateJournalRequest;
 
 class FinanceController extends Controller {
 
@@ -164,6 +165,36 @@ class FinanceController extends Controller {
                     Session::flash('message','Journal item saved successfully');
                 } else {
                     Session::flash('error','Journal item not saved, Please try later.');
+                }   
+            }
+            return redirect()->back();                      
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function saveJournal(CreateJournalRequest $request) {
+        try {
+            $journalId = $request->get('journal_id');
+            $this->inputData = [];
+            $this->inputData = [                
+                'name'=>$request->get('name'),               
+                'journal_type'=>$request->get('journal_type')
+            ];
+
+            if(isset($journalId) && !empty($journalId)){
+                $outputQry = $this->finRepo->saveJournalData($this->inputData, $journalId);
+                if(isset($outputQry)) {
+                    Session::flash('message','Journal updated successfully');
+                } else {
+                    Session::flash('error','Journal not updated, Please try later.');
+                }   
+            } else {
+                $outputQry = $this->finRepo->saveJournalData($this->inputData, null);
+                if(isset($outputQry->id)) {
+                    Session::flash('message','Journal saved successfully');
+                } else {
+                    Session::flash('error','Journal not saved, Please try later.');
                 }   
             }
             return redirect()->back();                      

@@ -53,4 +53,16 @@ class FinancialJournals extends BaseModel {
         $result = self::select('id','name','journal_type')->orderBy('id', 'DESC');
         return $result;
     }
+
+    public static function saveJournalData($data, $journalId = null){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }       
+        if(isset($journalId) && !empty($journalId)) {
+            $updObj = self::where('id', $journalId);
+            return $updObj->update($data);
+        } else {
+            return self::create($data); 
+        }      
+    }
 }

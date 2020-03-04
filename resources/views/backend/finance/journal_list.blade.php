@@ -13,6 +13,60 @@
     </section>
     <div class="card">
         <div class="card-body">
+            {!!
+                Form::open(
+                array(
+                'method' => 'post',
+                'route' => 'save_journal',
+                'id' => 'frmJournal'
+                )
+                ) 
+            !!}   
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="mb-0">Journal Name</label>
+                        <span class="mandatory">*</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input  class="form-control" type="text" name="name" id="name" placeholder="Journal Name" value="{{ old('name') ? old('name') : isset($journalData->name) ? $journalData->name : ''}}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <div class="form-group">
+                    <label class="mb-0">Journal Type</label>
+                    <span class="mandatory">*</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                    <select name="journal_type" id="journal_type" class="form-control form-control-sm">
+                    <option value="">Select Journal Type</option>
+                        @foreach(config('common.JOURNAL_TYPE') as $key=>$val)
+                            <option value="{{$key}}"> {{$val}} </option>
+                        @endforeach
+                    </select>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <button class="btn  btn-success btn-sm">Submit</button>
+                    </div>
+                </div>
+            </div>
+            {!!  Form::close() !!} 
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">
@@ -37,12 +91,25 @@
 @endsection
 
 @section('jscript')
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script>
 var messages = {
     get_ajax_journal_list: "{{ URL::route('get_ajax_journal_list') }}",       
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };
+    $(document).ready(function(){
+        $('#frmJournal').validate({
+            rules: {
+                "name": {
+                   required: true
+                },
+                "journal_type": {
+                    required: true
+                }                
+            }
+        });
+    });
 </script>
 <script src="{{ asset('backend/js/ajax-js/finance.js') }}"></script>
 @endsection
