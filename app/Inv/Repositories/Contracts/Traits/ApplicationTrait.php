@@ -231,7 +231,6 @@ trait ApplicationTrait
         return $data;
     }
 
-
     protected function getSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
         $bizData = $this->appRepo->getApplicationById($bizId);
         $EntityData  = $this->appRepo->getEntityByBizId($bizId);
