@@ -370,16 +370,17 @@
                     </li>                 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_fin_trans_list') }}">Transaction Type List</a>
-                    </li>                    
+                    </li>      
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_variable') }}">Variables List</a>
+                    </li>               
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_fin_journal') }}">Journal List</a>
                     </li>  
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_fin_account') }}">Accounts List</a>
                     </li> 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('get_fin_variable') }}">Variables List</a>
-                    </li>                                         
+                                                            
                 </ul>
             </div>
         </li>   
