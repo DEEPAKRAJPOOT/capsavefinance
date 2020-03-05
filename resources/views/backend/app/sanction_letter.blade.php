@@ -970,6 +970,7 @@
     </div>
   </div>
 </div>
+</div>
 {!!Helpers::makeIframePopup('previewSanctionLetter','Preview/Send Mail Sanction Letter', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
 @endsection
