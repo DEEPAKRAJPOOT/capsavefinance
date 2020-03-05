@@ -112,13 +112,15 @@ var messages = {
         var targetModel = assign_case == '1' ? 'assignCaseFrame' : 'sendNextstage';
         var parent =  window.parent;  
         
+        /*
         $('.btn-move-next-stage').click(function() {
             //$('.isloader').show();
             if ($('#frmMoveStage').valid()) {
                 $(this).attr('disabled', 'disabled');
             }
         });
-        
+        */
+       
         if(messages.is_accept == 1){
            parent.jQuery("#"+targetModel).modal('hide');  
            parent.oTable.draw();

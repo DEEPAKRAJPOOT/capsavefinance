@@ -87,7 +87,8 @@ class ReviewerSummary extends Mailable
         $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
         $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
         $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
-        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');      
+        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');  
+        $dispAppId = 'CAPS' . sprintf('%06d', $appId);
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
@@ -100,7 +101,8 @@ class ReviewerSummary extends Mailable
             'receiverUserName' => $this->user['receiver_user_name'],
             'appId' => $appId,
             'url' => 'https://'. config('proin.backend_uri'),
-        ]);            
+            'dispAppId' => $dispAppId
+        ]);        
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
         //         'email_to' => config('common.review_summ_mails'),
@@ -109,7 +111,7 @@ class ReviewerSummary extends Mailable
         //         'subject' => 'Reviewer Summary Detail',
         //         'body' => $email,
         // ];
-        $dispAppId = 'CAPS' . sprintf('%06d', $appId);
+        
         //$email_subject = 'Application ' . $dispAppId . ' is waiting for your approval - '.$businessDetails->biz_entity_name;
         $email_subject = 'New Application is waiting for your approval ' . $businessDetails->biz_entity_name;
         $email->subject($email_subject);
