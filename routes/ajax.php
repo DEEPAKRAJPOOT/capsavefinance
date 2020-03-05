@@ -783,11 +783,26 @@ Route::group(
         'as' => 'get_trans_name',
         'uses' => 'AjaxController@getTransName'
     ]);   
+       
+    Route::post('get-group-company-exposure', [
+        'as' => 'get_group_company_exposure',
+        'uses' => 'AjaxController@getGroupCompanyExposure'
+    ]);      
+
+    Route::post('update-group-company-exposure', [
+        'as' => 'update_group_company_exposure',
+        'uses' => 'AjaxController@updateGroupCompanyExposure'
+    ]); 
 
      Route::post('get_chrg_amount', [
                 'as' => 'get_chrg_amount',
                 'uses' => 'AjaxController@getChrgAmount'
             ]);
+     Route::post('backend_get_payment_advice', [
+        'as' => 'backend_get_payment_advice',
+        'uses' => 'AjaxController@getPaymentAdvice'
+    ]);
+    
       Route::post('get_calculation_amount', [
                 'as' => 'get_calculation_amount',
                 'uses' => 'AjaxController@getCalculationAmount'

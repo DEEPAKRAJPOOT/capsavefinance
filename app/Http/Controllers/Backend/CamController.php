@@ -2,47 +2,50 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Auth;
+use Mail;
+use Helpers;
+use Session;
+use Storage;
+use PDF as DPDF;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use Carbon\Carbon;
+use App\Mail\ReviewerSummary;
+use App\Libraries\Pdf;
+use App\Libraries\Perfios_lib;
+use App\Libraries\Bsa_lib;
+use App\Libraries\MobileAuth_lib;
+use App\Libraries\Gupshup_lib;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
-use App\Http\Requests\AnchorInfoRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\AnchorInfoRequest;
+use App\Http\Requests\FinanceInformationRequest as FinanceRequest;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\Cam;
-use App\Libraries\Perfios_lib;
-use App\Libraries\Bsa_lib;
-use App\Libraries\MobileAuth_lib;
-use PHPExcel;
-use PHPExcel_IOFactory;
-use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
-use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\CamHygiene;
-use Auth;
-use Session;
-use Storage;
-use App\Libraries\Gupshup_lib;
-date_default_timezone_set('Asia/Kolkata');
-use Helpers;
-use Illuminate\Support\Facades\Hash;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\AppProgramLimit;
-use App\Mail\ReviewerSummary;
-use Mail;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
+use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\AppProgramOffer;
-use Carbon\Carbon;
 use App\Inv\Repositories\Models\OfferPTPQ;
 use App\Inv\Repositories\Models\AppApprover;
-use App\Libraries\Pdf;
 use App\Inv\Repositories\Models\UserAppDoc;
-use PDF as DPDF;
-use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
-use App\Inv\Repositories\Contracts\Traits\CommonTrait;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Contracts\Traits\CommonTrait;
+
+date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
 {
@@ -99,7 +102,7 @@ class CamController extends Controller
             $arrBizData['email']  = $arrEntityData['email'];
             $arrBizData['mobile_no']  = $arrEntityData['mobile_no'];
             $arrCamData = Cam::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
-           
+            
             if(isset($arrCamData['t_o_f_security_check'])){
                 $arrCamData['t_o_f_security_check'] = explode(',', $arrCamData['t_o_f_security_check']);
             }
@@ -114,9 +117,36 @@ class CamController extends Controller
             }else{
               $checkDisburseBtn='';
             }
-            //dd($product_ids,$checkDisburseBtn);
-            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
+            $arrGroupCompany = array();
+            if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
+              $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'is_active'=>1] )->get()->toArray();
+              $arrMstGroup =  Group::where('id', (int)$arrCamData['group_company'])->first()->toArray();
+              if(!empty($arrMstGroup)){
+                $arrCamData['group_company'] = $arrMstGroup['name'];
+              }
+            } 
+
+     
+            if(!empty($arrGroupCompany)){
+                $temp = array();
+                $arrUserData = $this->userRepo->find($arrGroupCompany['0']['updated_by'], '');
+                $arrCamData->By_updated = "$arrUserData->f_name $arrUserData->l_name";
+                $total = 0;
+                foreach ($arrGroupCompany as $key => $value) {
+                  $total = $total + $value['proposed_exposure'] + $value['outstanding_exposure'];
+                  if($arrBizData->biz_entity_name == $value['group_company_name']){
+                      $temp[] = $value;
+                      unset($arrGroupCompany[$key]);
+                  }
+                }
+                if(!empty($temp)){
+                  $arrGroupCompany = array_merge($temp, $arrGroupCompany);
+                }
+                $arrCamData['total_exposure_amount'] = round($total,2);
+            }
+           $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
+
             return view('backend.cam.overview')->with([
                 'arrCamData' =>$arrCamData ,
                 'arrRequest' =>$arrRequest, 
@@ -124,7 +154,8 @@ class CamController extends Controller
                 'arrOwner' =>$arrOwner,
                 'limitData' =>$limitData,
                 'current_status_id'=>$current_status,
-                'checkDisburseBtn'=>$checkDisburseBtn
+                'checkDisburseBtn'=>$checkDisburseBtn,
+                'arrGroupCompany'=>$arrGroupCompany,
                 ]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -134,7 +165,9 @@ class CamController extends Controller
 
     public function camInformationSave(Request $request){
        try{
+
             $arrCamData = $request->all();
+
             $userId = Auth::user()->user_id;
             if(!isset($arrCamData['rating_no'])){
                     $arrCamData['rating_no'] = NULL;
@@ -149,11 +182,52 @@ class CamController extends Controller
             }else{
                      $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
             }
-            $arrCamData['proposed_exposure'] = str_replace(',','', $arrCamData['proposed_exposure']);
+
+            if(isset($arrCamData['group_company'])){
+                $masterGroupData= array(
+                    'name'=> $arrCamData['group_company'],
+                    'is_active' => '1',
+                    'created_by'=>Auth::user()->user_id
+                );
+                   
+                $arrMstGroup = Group::updateOrcreate($masterGroupData)->toArray();
+                $arrCamData['group_company'] = $arrMstGroup['id'];
+
+                
+                
+                // dd($arrCamData);
+                if(isset($arrCamData['group_company_name']))
+                {
+
+                  //GroupCompanyExposure::where('group_Id', $arrMstGroup['id'])->delete();
+                    foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
+                       $inputArr= array(
+                          'biz_id'=> $arrCamData['biz_id'] ,
+                          'app_id'=> $arrCamData['app_id'],
+                          'group_Id'=> $arrMstGroup['id'],
+                          'group_company_name'=> $groupCompanyName ?? null,
+                          'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? $arrCamData['sanction_limit'][$key] : null ,
+                          'outstanding_exposure'=> isset($arrCamData['outstanding_exposure'][$key]) ? $arrCamData['outstanding_exposure'][$key] : null,
+                          
+                          'created_by'=>$userId
+                      );  
+                        if(isset($arrCamData['proposed_exposure'][$key])){
+                           $inputArr['proposed_exposure'] = $arrCamData['proposed_exposure'][$key];
+                        }
+                        if(isset($arrCamData['group_company_expo_id'][$key])){
+                           $group_company_expo_id = $arrCamData['group_company_expo_id'][$key];
+                        }else{
+                           $group_company_expo_id = null;
+                        }
+                       GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $group_company_expo_id], $inputArr);
+                    }
+                }
+            }
+            $arrCamData['proposed_exposure'] = $arrCamData['proposed_exposure']['0'] ?? '';
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
                  if($updateCamData){
-                        Session::flash('message',trans('CAM information updated sauccessfully'));
+                        Session::flash('message',trans('CAM information updated successfully'));
                  }else{
                        Session::flash('message',trans('CAM information not updated successfully'));
                  }

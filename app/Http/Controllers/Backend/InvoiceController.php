@@ -45,6 +45,7 @@ class InvoiceController extends Controller {
     {
     
         $get_anchor = $this->invRepo->getLimitAllAnchor();
+       /// dd($get_anchor);
         return view('backend.invoice.upload_all_invoice')
          ->with(['get_anchor' => $get_anchor]);
   
@@ -200,6 +201,14 @@ class InvoiceController extends Controller {
            $biz_id  = $res->biz_id;
          
         }
+        if($attributes['exception'])
+        {
+            $statusId = 28; 
+        }
+        else
+        {
+            $statusId = 7;
+        }
        
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
@@ -214,11 +223,10 @@ class InvoiceController extends Controller {
             'tenor' => $attributes['tenor'],
             'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
             'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
-            'pay_calculation_on' => $attributes['pay_calculation_on'],
             'invoice_approve_amount' => $invoice_approve_amount,
             'invoice_amount' =>  $invoice_amount,
             'prgm_offer_id' => $attributes['prgm_offer_id'],
-            'status_id' => $attributes['exception'],
+            'status_id' =>  $statusId,
             'remark' => $attributes['remark'],
             'file_id'  =>$userFile->file_id,
             'created_by' => $id,

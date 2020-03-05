@@ -62,7 +62,16 @@ class ApplicationController extends Controller
     
        return view('backend.app.index');              
     }
+    
+    public function addAppCopy(Request $request)
+    {  
+        $data['user_id']  = $request->get('user_id');
+        $data['app_id']  = $request->get('app_id');
+        $data['biz_id']  = $request->get('biz_id');
+        return view('backend.app.app_copy')->with(['res' =>$data]);              
+    } 
 
+    
     /**
      * Render view for company detail page according to biz id
      * 
@@ -153,13 +162,7 @@ class ApplicationController extends Controller
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
-       if($getCin==false)
-       {
-          return redirect()->back();
-       }
-      
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-      // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
             'cin_no' => $getCin->cin,
@@ -781,7 +784,6 @@ class ApplicationController extends Controller
                         return redirect()->back();                                            
                     }
                 } else if ($currStage->stage_code == 'opps_checker') {
-
                   	$capId = sprintf('%09d', $user_id);
                   	$customerId = 'CAP'.$capId;
                   	$lmsCustomerArray = array(
@@ -796,23 +798,65 @@ class ApplicationController extends Controller
               			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
 
               			$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+                    $userStateId = $this->appRepo->getUserAddress($app_id);
+                    $companyStateId = $this->appRepo->companyAdress();
+                    // dd($companyStateId);
 						        if(isset($prcsAmt->offer)) {
                         foreach ($prcsAmt->offer as $key => $offer) {
-                                  // $tranType = 4 for processing acc. to mst_trans_type table
+                          $pChargeId = config('lms')['TRANS_TYPE']['PROCESSING_FEE']; // 4
+                          $dChargeId = config('lms')['TRANS_TYPE']['DOCUMENT_FEE']; // 20
+
+                          $pChargeMasterId = $this->appRepo->getTransTypeData($pChargeId);
+                          $dChargeMasterId = $this->appRepo->getTransTypeData($dChargeId);
+
+                          $pPrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $pChargeMasterId->chrg_master_id);
+                          $dPrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $dChargeMasterId->chrg_master_id);
+
+                          // $tranType = 4 for processing acc. to mst_trans_type table
                           $pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
-                          $pfWGst = round((($pf*18)/100),2);
+                          $pfData = [];
+                          $pfData['amount'] = $pf;
 
-                          $pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+                          if($pPrgmChrg->is_gst_applicable == 1 ) {
+                              if($userStateId == $companyStateId) {
+                                $pfWGst = round((($pf*18)/100),2);
+                                $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
+                                $pfData['igst'] = $pfWGst;
+                                
+                              } else {
+                                $pfWGst = round((($pf*9)/100),2);
+                                $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
+                                $pfData['cgst'] = $pfWGst;
+                                $pfData['sgst'] = $pfWGst;
+                              }
+                          } 
+                          $pfDebitData = $this->createTransactionData($user_id, $pfData, null, $pChargeId);
                           $pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
-
-                          // $pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+                          
+                          // $pfCreditData = $this->createTransactionData($user_id, $pfData, null, 4, 1);
                           // $pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
 
                           // $tranType = 20 for document fee acc. to mst_trans_type table
                           $df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+                          $dfData = [];
+                          $dfData['amount'] = $df;
+
+                          if($dPrgmChrg->is_gst_applicable == 1 ) {
+                              if($userStateId == $companyStateId) {
+                                $dfWGst = round((($df*18)/100),2);
+                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
+                                $dfData['igst'] = $dfWGst;
+                                
+                              } else {
+                                $dfWGst = round((($df*9)/100),2);
+                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
+                                $dfData['cgst'] = $dfWGst;
+                                $dfData['sgst'] = $dfWGst;
+                              }
+                          } 
                           $dfWGst = round((($df*18)/100),2);
 
-                          $dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+                          $dfDebitData = $this->createTransactionData($user_id, $dfData, null, $dChargeId);
                           $createTransaction = $this->appRepo->saveTransaction($dfDebitData);
 
                           // $dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);

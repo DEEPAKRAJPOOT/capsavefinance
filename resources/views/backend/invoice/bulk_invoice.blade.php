@@ -34,7 +34,7 @@
                     
                      
                      
-		 <div class="col-md-4">
+		 <div class="col-md-6">
 		<div class="form-group">
         <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
@@ -49,7 +49,7 @@
                 
                 </div></div>
 		
-		 <div class="col-md-4">
+		 <div class="col-md-6">
                     <div class="form-group">
                         <label for="txtCreditPeriod">Product Program Name
                             <span class="error_message_label">*</span>  <!-- <span id="pro_limit" class="error"></span> -->
@@ -61,7 +61,7 @@
                                     <span id="program_bulk_id_msg" class="error"></span>
                </div>
 		</div>
-                       <div class="col-md-4">
+                       <div class="col-md-6">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
            <select readonly="readonly" class="form-control" id="supplier_bulk_id" >
@@ -70,18 +70,7 @@
             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
             </div>
             </div>
-           <div class="col-md-4">
-    <div class="form-group">
-                            <label for="txtCreditPeriod">Payment Date Calculation  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
-                            <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
-                              <option value="">Please Select</option>
-                              <option value="1">Invoice Date</option>
-                              <option value="2">Invoice Due Date </option>
-                             </select>
-                          <span id="pay_calculation_on_msg" class="error"></span>                                        <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
-                        </div>
-               </div> 
-										
+          							
             <div class="col-md-4">
             <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
             <div class="custom-file  ">
@@ -327,8 +316,7 @@
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                         $("#supplier_bulk_id").append("<option value=''>Please Select</option>");  
-                            $(obj1).each(function(i,v){
+                         $(obj1).each(function(i,v){
                             
                                    $("#supplier_bulk_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
                             });
@@ -347,16 +335,7 @@
            $("#supplier_bulk_id_msg" ).hide();
         }
       });
-      
-       $(document).on('change','#pay_calculation_on',function(){
-           
-       if($("#pay_calculation_on").val() > 0)
-        {
-           $("#pay_calculation_on_msg" ).hide();
-        }
-      });
-      
-        $(document).on('change','.fileUpload',function(){
+       $(document).on('change','.fileUpload',function(){
        
           $("#customFile_msg" ).hide();
        
@@ -584,7 +563,7 @@
                     }
                      var invoice_approve_amount =  invoice_approve_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     
-                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="20" minlength="2" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
                       
                     });
                       datepickerDisFdate();

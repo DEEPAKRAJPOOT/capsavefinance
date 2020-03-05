@@ -125,6 +125,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_refund_list',
                 'uses' => 'Lms\RefundController@refundList'
             ]);
+            
+             
 
             Route::get('/confirm-refund', [
                 'as' => 'confirm_refund',
@@ -158,6 +160,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             'as' => 'edit_addr',
             'uses' => 'Lms\AddressController@editAddress'
         ]);
+          Route::post('/copy_app', [
+                'as' => 'copy_app',
+                'uses' => 'Lms\CopyController@duplicateApp'
+            ]); 
         // end address
 	});
 

@@ -310,7 +310,8 @@ class DataRenderer implements DataProviderInterface
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
                         if ($view_only && $app->status == 1) {
-                            if(Helpers::checkPermission('add_app_note')){
+                          //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
+                           if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
                             if(Helpers::checkPermission('send_case_confirmBox')){
@@ -3299,9 +3300,23 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetTransactions(Request $request, $data)
     {
         return DataTables::of($data)
+            ->addColumn('customer_id', function($trans){
+                $data = '';
+                if($trans->lmsUser){
+                    $data = $trans->lmsUser->customer_id;
+                }
+                return $data;
+            })
+            ->addColumn('customer_name', function($trans){
+                $data = '';
+                if($trans->user){
+                    $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
+                }
+                return $data;
+            })
             ->addColumn('invoice_no',function($trans){
                 $data = '';
-                if($trans->disburse && $trans->disburse->invoice && $trans->trans_type == '30'){
+                if($trans->disburse && $trans->disburse->invoice && in_array($trans->trans_type, [config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')]) ){
                     $data = $trans->disburse->invoice->invoice_no; 
                 }
                 return $data;
@@ -3333,10 +3348,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_type',
                 function ($transaction) {
-                    if($transaction->trans_detail->chrg_master_id!='0'){
-                        return $transaction->trans_detail->charge->chrg_name;
-                    }
-                    return $transaction->trans_detail->trans_name;
+                    return $transaction->transname;
                 }
             )
             ->editColumn(
@@ -3511,4 +3523,71 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-}
+        /**
+     * get Payment Advice list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    public function getPaymentAdvice(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+
+            ->addColumn('customer_id',function($trans){
+                $data = '';
+                if($trans->lmsUser->customer_id){
+                    $data = $trans->lmsUser->customer_id; 
+                }
+                return $data;
+            })
+            ->addColumn('f_name',function($trans){
+                return $trans->f_name.' '.$trans->m_name.' '.$trans->l_name;
+            })
+            ->addColumn(
+                'trans_date',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->trans_date));
+                }
+            )
+            ->editColumn(
+                'created_at',
+                function ($transaction) {
+                    return date('d-M-Y',strtotime($transaction->created_at));
+                }
+            )
+            ->editColumn(
+                'amount',
+                function ($transaction) {
+                    return $transaction->amount;
+                }
+            )
+            ->addColumn(
+                'action',
+                function ($data) {
+                $act = $data->action;
+                $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" href ="'.route('payment_advice_excel', ['trans_id' => $data->trans_id]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                return $download;
+                }
+            )
+            ->filter(function ($query) use ($request) {
+
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('search_keyword')!= ''){
+                    $query->whereHas('lmsUser',function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('customer_id', 'like', "%$search_keyword%");                       
+                    });
+                }
+            })
+            ->make(true);
+    }
+
+} 

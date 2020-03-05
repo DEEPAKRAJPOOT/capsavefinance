@@ -146,82 +146,82 @@ class Disbursal extends BaseModel {
 				unset($whereCondition['int_accrual_start_dt']);
 			} 
 
-			if (isset($whereCondition['status_id'])) {
-				$query->whereIn('status_id', $whereCondition['status_id']);
-				unset($whereCondition['status_id']);
-			}
-						
-			$query->where($whereCondition);
-		}
-		$query->orderBy('disburse_date', 'ASC');
-		$query->orderBy('disbursal_id', 'ASC');
-		$result = $query->get();        
-		return $result ? $result : [];
-	}
-	
-	/**
-	 * Get Program Offer Data
-	 * 
-	 * @param array $whereCondition
-	 * @return mixed
-	 */
-	public static function getProgramOffer($whereCondition=[])
-	{
-		if (!is_array($whereCondition)) {
-			throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
-		}
-		
-		$result = self::select('app_prgm_offer.*')
-				//->join('invoice', 'invoice.invoice_id', '=', 'disbursal.invoice_id')
-				////->join('app_prgm_limit', 'invoice.program_id', '=', 'app_prgm_limit.prgm_id')
-				//->join('app_prgm_limit', function ($join) {
-				//    $join->on('invoice.program_id', '=', 'app_prgm_limit.prgm_id');
-				//    $join->on('invoice.app_id', '=', 'app_prgm_limit.app_id');
-				//})
-				//->join('app_prgm_offer', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
-				->join('app_prgm_offer', 'disbursal.prgm_offer_id', '=', 'app_prgm_offer.prgm_offer_id')
-				->where('disbursal_id', $whereCondition['disbursal_id'])
-				->where('app_prgm_offer.is_active', 1)
-				->where('app_prgm_offer.status', 1)
-				->first();
-		
-		return $result;
-	}
-	
-	
-	
-	/**
-	 * get getDisbursal list
-	 * 
-	 * @return mixed
-	 */
-	public static function getDisbursalList()
-	{
-		$res = self::select('disbursal.*','invoice.invoice_no' ,'invoice.invoice_approve_amount', 'mst_status.status_name')
-				->join('invoice','disbursal.invoice_id' ,'=','invoice.invoice_id')
-				->join('mst_status','disbursal.status_id' ,'=','mst_status.id');
-		return $res?: false;
-	}
-	/////////////* get customer id   */////////////////
-	public static function  getCustomerId($uid)
-	{
-		return User::where(['user_id' => $uid])->first();
-	}
-	
-	  /////////////* get customer id   */////////////////
-	public static function  getDisburseCustomerId()
-	{
-		return self::with('user')->where(['disburse_type' => 2])->groupBy('user_id')->get();
-	}
-	 /////////////* get customer id   */////////////////
-	public static function  getRepaymentAmount($uid)
-	{
-		return self::with('invoice')->where(['disburse_type' => 2,'user_id' => $uid])->get();
-	}
-	
-	function invoice()
-	{
-			  return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->orderBy('invoice_due_date','asc');
+            if (isset($whereCondition['status_id'])) {
+                $query->whereIn('status_id', $whereCondition['status_id']);
+                unset($whereCondition['status_id']);
+            }
+                        
+            $query->where($whereCondition);
+        }
+        $query->orderBy('disburse_date', 'ASC');
+        $query->orderBy('disbursal_id', 'ASC');
+        $result = $query->get();        
+        return $result ? $result : [];
+    }
+    
+    /**
+     * Get Program Offer Data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public static function getProgramOffer($whereCondition=[])
+    {
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        
+        $result = self::select('app_prgm_offer.*')
+                //->join('invoice', 'invoice.invoice_id', '=', 'disbursal.invoice_id')
+                ////->join('app_prgm_limit', 'invoice.program_id', '=', 'app_prgm_limit.prgm_id')
+                //->join('app_prgm_limit', function ($join) {
+                //    $join->on('invoice.program_id', '=', 'app_prgm_limit.prgm_id');
+                //    $join->on('invoice.app_id', '=', 'app_prgm_limit.app_id');
+                //})
+                //->join('app_prgm_offer', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ->join('app_prgm_offer', 'disbursal.prgm_offer_id', '=', 'app_prgm_offer.prgm_offer_id')
+                ->where('disbursal_id', $whereCondition['disbursal_id'])
+                ->where('app_prgm_offer.is_active', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->first();
+        
+        return $result;
+    }
+    
+    
+    
+    /**
+     * get getDisbursal list
+     * 
+     * @return mixed
+     */
+    public static function getDisbursalList()
+    {
+        $res = self::select('disbursal.*','invoice.invoice_no' ,'invoice.invoice_approve_amount', 'mst_status.status_name')
+                ->join('invoice','disbursal.invoice_id' ,'=','invoice.invoice_id')
+                ->join('mst_status','disbursal.status_id' ,'=','mst_status.id');
+        return $res;
+    }
+    /////////////* get customer id   */////////////////
+    public static function  getCustomerId($uid)
+    {
+        return User::where(['user_id' => $uid])->first();
+    }
+    
+      /////////////* get customer id   */////////////////
+    public static function  getDisburseCustomerId()
+    {
+        return self::with('user')->where(['disburse_type' => 2])->groupBy('user_id')->get();
+    }
+     /////////////* get customer id   */////////////////
+    public static function  getRepaymentAmount($uid)
+    {
+        return self::with('invoice')->where(['disburse_type' => 2,'user_id' => $uid])->get();
+    }
+    
+    function invoice()
+    {
+              return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->orderBy('invoice_due_date','asc');
    
 	}
 	

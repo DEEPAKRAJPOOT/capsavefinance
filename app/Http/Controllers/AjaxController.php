@@ -33,6 +33,8 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\GroupCompanyExposure;
+
 
 
 class AjaxController extends Controller {
@@ -3596,7 +3598,6 @@ if ($err) {
                 $data[$i]['tenor'] =  $request['tenor']; 
                 $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
-                $data[$i]['pay_calculation_on'] = $request['pay_calculation_on'];
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
                 $data[$i]['is_bulk_upload'] = 1;
                 $data[$i]['batch_id'] = $batch_id;
@@ -3763,7 +3764,7 @@ if ($err) {
      */
     public function getGroupCompany(Request $request ){
       
-        $data = Group::select("name")
+        $data = Group::select(['id','name'])
                 ->where("name","LIKE","%{$request->input('query')}%")
                 ->get();
     
@@ -3855,6 +3856,15 @@ if ($err) {
         $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
         echo $columnVal;
     }
+
+    //////////////////// Use For Payment Advice List /////////////////
+    public function getPaymentAdvice(DataProviderInterface $dataProvider) 
+    {
+        $trans_data = $this->invRepo->getPaymentAdvice(); //getAllManualTransaction
+        $trans_data = $dataProvider->getPaymentAdvice($this->request, $trans_data); //getAllManualTransaction
+        return   $trans_data;
+    } 
+    
     ///* check duplicate invoice  ***///////
     function  checkDuplicateInvoice(Request $request)
     {
@@ -3881,4 +3891,22 @@ if ($err) {
       return $data;
     }
     
+    public function getGroupCompanyExposure(Request $request ){
+        $groupId = $request->get('groupid');
+        $arrData = GroupCompanyExposure::where(['group_Id'=>$groupId, 'is_active'=>1])->groupBy('group_company_name')->get();
+        return response()->json($arrData);
+    }
+
+
+
+    public function updateGroupCompanyExposure(Request $request ){
+        $group_company_expo_id = $request->get('group_company_expo_id');
+        $arrData = GroupCompanyExposure::where("group_company_expo_id", $group_company_expo_id)->update(['is_active' => 2]);
+        if($arrData){
+            $status = true; 
+        }else{
+          $status = false;
+        }
+        return response()->json($status);
+    }
 }
