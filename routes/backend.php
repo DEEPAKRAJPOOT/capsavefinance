@@ -1132,6 +1132,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_fin_account',
                 'uses' => 'Backend\FinanceController@getFinAccount'
             ]);
+            Route::post('save-account', [
+                'as' => 'save_account',
+                'uses' => 'Backend\FinanceController@saveAccount'
+            ]);
             Route::get('fin-variable', [
                 'as' => 'get_fin_variable',
                 'uses' => 'Backend\FinanceController@getFinVariable'

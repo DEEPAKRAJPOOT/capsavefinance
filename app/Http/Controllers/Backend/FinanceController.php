@@ -10,6 +10,7 @@ use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Http\Requests\Backend\CreateJeConfigRequest;
 use App\Http\Requests\Backend\CreateJiConfigRequest;
 use App\Http\Requests\Backend\CreateJournalRequest;
+use App\Http\Requests\Backend\CreateAccountRequest;
 
 class FinanceController extends Controller {
 
@@ -211,6 +212,37 @@ class FinanceController extends Controller {
                     Session::flash('message','Journal saved successfully');
                 } else {
                     Session::flash('error','Journal not saved, Please try later.');
+                }   
+            }
+            return redirect()->back();                      
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function saveAccount(CreateAccountRequest $request) {
+        try {
+            $accountId = $request->get('accountId');
+            $this->inputData = [];
+            $this->inputData = [                
+                'account_code'=>$request->get('account_code'),               
+                'account_name'=>$request->get('account_name'),
+                'is_active'=>$request->get('is_active')
+            ];
+
+            if(isset($accountId) && !empty($accountId)){
+                $outputQry = $this->finRepo->saveAccountData($this->inputData, $accountId);
+                if(isset($outputQry)) {
+                    Session::flash('message','Account updated successfully');
+                } else {
+                    Session::flash('error','Account not updated, Please try later.');
+                }   
+            } else {
+                $outputQry = $this->finRepo->saveAccountData($this->inputData, null);
+                if(isset($outputQry->id)) {
+                    Session::flash('message','Account saved successfully');
+                } else {
+                    Session::flash('error','Account not saved, Please try later.');
                 }   
             }
             return redirect()->back();                      

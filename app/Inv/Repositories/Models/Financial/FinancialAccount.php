@@ -41,7 +41,8 @@ class FinancialAccount extends BaseModel {
      */
     protected $fillable = [
         'account_code',
-        'account_name',     
+        'account_name',  
+        'is_active',    
         'created_at',   
         'created_by',        
         'updated_at',
@@ -52,5 +53,17 @@ class FinancialAccount extends BaseModel {
     {
         $result = self::select('id','account_code','account_name')->orderBy('id', 'DESC');
         return $result;
+    }
+
+    public static function saveAccountData($data, $accountId = null){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }       
+        if(isset($accountId) && !empty($accountId)) {
+            $updObj = self::where('id', $accountId);
+            return $updObj->update($data);
+        } else {
+            return self::create($data); 
+        }      
     }
 }

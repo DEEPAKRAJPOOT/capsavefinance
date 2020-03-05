@@ -13,11 +13,12 @@
     </section>
     <div class="card">
         <div class="card-body">
-        <h4>{{ isset($accountId) ? 'Edit' : 'Add'}} Journal</h4>
+        <h4>{{ isset($accountId) ? 'Edit' : 'Add'}} Account</h4>
             {!!
                 Form::open(
                 array(
                 'method' => 'post',
+                'route' => 'save_account',
                 'id' => 'frmAccount'
                 )
                 ) 

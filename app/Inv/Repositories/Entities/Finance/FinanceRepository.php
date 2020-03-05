@@ -118,4 +118,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     {
         return FinancialJeConfig::where(['trans_config_id'=> $transTypeId, 'journal_id'=> $journalId])->count();
     }
+
+    public function saveAccountData($arrData, $accountId)
+    {
+        return FinancialAccount::saveAccountData($arrData, $accountId);
+    }
 }
