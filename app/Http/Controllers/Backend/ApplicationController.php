@@ -162,13 +162,7 @@ class ApplicationController extends Controller
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
-       if($getCin==false)
-       {
-          return redirect()->back();
-       }
-      
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-      // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
             'cin_no' => $getCin->cin,

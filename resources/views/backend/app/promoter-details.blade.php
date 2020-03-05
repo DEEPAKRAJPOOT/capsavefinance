@@ -1023,11 +1023,11 @@
          //////////CIN webservice for get promoter details start here//////////////////////////////////////        
         
         jQuery(document).ready(function () {
-        var countOwnerRow = $("#rowcount").val();
+       var countOwnerRow = $("#rowcount").val();
         if (countOwnerRow > 0)
         {
            return false;
-        }
+        } 
 
         $('.isloader').show();
         var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
