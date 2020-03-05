@@ -122,7 +122,6 @@ class DisbursalController extends Controller
 			foreach ($allinvoices as $invoice) {
 				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-				// dd($disburseRequestData);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
 				if($invoice['supplier_id'] = $userid) {
@@ -156,8 +155,8 @@ class DisbursalController extends Controller
 					$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
 					$requestData[$userid]['Remarks'] = 'test remarks';
 					$requestData[$userid]['Value_Date'] = date('Y-m-d');
-				}
-				else {
+
+				} else {
 
 					$apiLogData['refer_id'] = $refId;
 					$apiLogData['tran_id'] = $transId;

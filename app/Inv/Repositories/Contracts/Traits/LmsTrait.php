@@ -818,10 +818,10 @@ trait LmsTrait
         $datediff = abs($now - $your_date);
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-        //$interest = (($fundedAmount * ($invoice['program_offer']['interest_rate']/100) * $tenor)/360);
+
         $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
         $disburseAmount = round($fundedAmount - $interest, 2);
-        // dd($invoice);
+
         $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
@@ -835,6 +835,7 @@ trait LmsTrait
         $disbursalData['customer_id'] = $invoice['lms_user']['customer_id'] ?? null;
         $disbursalData['principal_amount'] = $fundedAmount ?? null;
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
+        $disbursalData['payment_due_date'] = ($invoice['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime($invoice['disburse_date']. "+ $tenor Days")) : $invoice['invoice_due_date'];
         $disbursalData['tenor_days'] =  $invoice['program_offer']['tenor'] ?? null;
         $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
         $disbursalData['total_interest'] = $interest;
