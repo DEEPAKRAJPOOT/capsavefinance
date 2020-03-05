@@ -73,7 +73,24 @@
                     </ul>
                 </div>
          </li>
-    @endcan  
+    @endcan
+
+    {{--@can('application_list')--}}  
+        <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-address-book-o" aria-hidden="true"></i>
+                    <span class="menu-title">Manage Co-lender Apps</span>
+                   <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="layoutsSubmenu12">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('colender_application_list') }}">Co-lender Applications</a>
+                        </li>
+                    </ul>
+                </div>
+         </li>
+    {{--@endcan--}}  
 
     @canany(['get_anchor_list','get_anchor_lead_list'])
         <li class="nav-item">

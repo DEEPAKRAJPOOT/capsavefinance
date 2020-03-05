@@ -3058,4 +3058,87 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
+    /*      
+     * Get application list for colenders
+     */
+    public function getColenderAppList(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id', 'action', 'status'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $link = route('colender_view_offer', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                })
+                ->addColumn(
+                    'user_name',
+                    function ($app) {                        
+                        return $app->f_name.' '.$app->m_name.' '.$app->l_name;
+                })
+                ->addColumn(
+                    'user_email',
+                    function ($app) {                        
+                        return $app->email;
+                })
+                ->addColumn(
+                    'user_phone',
+                    function ($app) {                        
+                        return $app->mobile_no;
+                })
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($app) {                        
+                     if($app->anchor_id){
+                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                    }else{
+                      $achorName='';  
+                    }                    
+                    return $achorName;
+                })
+                ->addColumn(
+                    'applied_loan_amount',
+                    function ($app) {
+                    return $app->loan_amt ? number_format($app->loan_amt) : '';
+                })                
+                ->addColumn(
+                    'created_at',
+                    function ($app) {                    
+                    return $app->created_at ? date('d/m/Y', strtotime($app->created_at)) : '';
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
+
+                })
+                /*->addColumn(
+                    'action',
+                    function ($app) use ($request) {
+                        return '<div class="d-flex inline-action-btn">
+                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
+                                <a href="'.route('front_gstin', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Pull GST Detail" class="btn btn-action-btn btn-sm">Pull Gst</a>
+                            </div>';
+                    }
+                )*/
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                })
+                ->make(true);
+    }
+
 }

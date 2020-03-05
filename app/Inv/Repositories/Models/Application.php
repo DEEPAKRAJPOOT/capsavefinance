@@ -596,5 +596,20 @@ class Application extends BaseModel
         $result = self::where($where)->orderBy('app_id', $orderBy)->get();
         return $result ?: false;
     }
+
+    protected static function getColenderApplications() 
+    {  
+        $appData = self::distinct()->whereHas('colender')->select('app.user_id','app.app_id','app.loan_amt', 'users.agency_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->join('users', 'app.user_id', '=', 'users.user_id');
+                //->where('users.agency_id', \Auth::user()->agency_id);
+        //$appData->groupBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC');
+        return $appData;
+    }
+
+    public function colender(){
+        return $this->hasOne('App\Inv\Repositories\Models\ColenderShare','app_id','app_id')->where(['is_active' => 1, 'co_lender_id' => \Auth::user()->co_lender_id]);
+    }
         
 }

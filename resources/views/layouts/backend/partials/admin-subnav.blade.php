@@ -58,7 +58,7 @@
     {{--@if ($currentStage->stage_code == 'sales_queue' && $isNavAccessible)--}}
     @can('view_offer')    
     <li>
-        <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/view-offer') ? 'active' : '' }}">View Offer</a>
+        <a href="{{ route('view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ (request()->is('application/view-offer') || request()->is('colender/application/view-offer')) ? 'active' : '' }}">View Offer</a>
     </li>
     @endcan
     {{--@endif--}}

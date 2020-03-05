@@ -745,7 +745,13 @@ Route::group(
     Route::get('get-group-company', [
         'as' => 'get_group_company',
         'uses' => 'AjaxController@getGroupCompany'
-    ]);   
+    ]); 
+
+    Route::post('get-app-colender',[
+         'as' => 'ajax_colender_app_list',
+         'uses' => 'AjaxController@getColenderAppList'
+         ]
+    );  
           
           
 

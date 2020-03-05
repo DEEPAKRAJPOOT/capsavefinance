@@ -3672,4 +3672,10 @@ if ($err) {
         return $data;
     }
 
+    public function getColenderAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getColenderApplications();
+        $applications = $dataProvider->getColenderAppList($this->request, $appList);
+        return $applications;
+    }
+
 }
