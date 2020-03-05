@@ -1029,7 +1029,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getAllOffers($appId, $product_id=null){
-        return AppProgramOffer::getAllOffers($appId, $product_id);
+        return AppProgramOffer::getAllOffers((int)$appId, $product_id);
     }    
     
     /**
@@ -1209,8 +1209,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->get();
     }
 
-    public function getOfferStatus($appId){
-        return AppProgramOffer::getOfferStatus($appId);
+    public function getOfferStatus($appId, $where_condition){
+        return AppProgramOffer::getOfferStatus((int)$appId, $where_condition);
     }
 
     public function changeOfferApprove($appId){

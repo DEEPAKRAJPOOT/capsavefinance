@@ -189,4 +189,55 @@ class CoLenderControllers extends Controller {
         return view('backend.coLenders.app_list');   
     }
 
+    public function showOffer(Request $request)
+    {
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+        //$appData = $this->appRepo->getAppDataByAppId($appId);        
+        //$loanAmount = $appData ? $appData->loan_amt : 0;
+        
+        $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
+        $offerStatus = $this->appRepo->getOfferStatus($appId, ['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        
+        $colenderShare = $this->appRepo->getAppDataByAppId($appId)->colender;
+
+        return view('backend.coLenders.offer')
+            ->with('appId', $appId)
+            ->with('bizId', $bizId)                
+            ->with('supplyOfferData', $supplyOfferData)
+            ->with('offerStatus', $offerStatus)
+            ->with('colenderShare', $colenderShare);
+    }
+
+    /**
+     * Accept Offer
+     * 
+     * @param Request $request
+     */
+    public function acceptOffer(Request $request)
+    {
+        $appId = $request->get('app_id');        
+        $bizId = $request->get('biz_id');        
+        $viewOnly = $request->get('view_only');        
+        $co_lenders_share_id = $request->get('co_lenders_share_id');
+        try {
+            if ($request->has('btn_accept_offer')) {
+                $message = trans('backend_messages.accept_offer_success');
+                $status = $this->appRepo->saveShareToColender(['co_lender_status'=> 1], $co_lenders_share_id);                
+            } else if($request->has('btn_reject_offer')) {
+                $addl_data['sharing_comment'] = 'Reject comment goes here';
+                $message = trans('backend_messages.reject_offer_success');
+                $status = $this->appRepo->saveShareToColender(['co_lender_status'=> 2], $co_lenders_share_id);
+            }
+            
+            if($status) {
+                Session::flash('message', $message);
+                return redirect()->route('colender_view_offer', ['app_id' => $appId, 'biz_id' => $bizId, 'view_only' => $viewOnly]);
+            }
+            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }        
+    }
+
 }
