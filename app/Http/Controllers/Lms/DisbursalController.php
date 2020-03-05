@@ -119,6 +119,7 @@ class DisbursalController extends Controller
 		$totalFunded = 0;
 
 		foreach ($supplierIds as $userid) {
+			$disburseAmount = 0;
 			foreach ($allinvoices as $invoice) {
 				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
@@ -181,7 +182,7 @@ class DisbursalController extends Controller
 					// dd($disburseRequestData);
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
 
-					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $totalFunded, 'trans_date' => $disburseDate], $transId, 16);
+					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
 					
@@ -190,8 +191,8 @@ class DisbursalController extends Controller
 					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
 					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
-					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					// $intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+					// $createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
 				}
 			}
