@@ -54,7 +54,7 @@ class PaymentController extends Controller {
        $tranType=$this->lmsRepo->getManualTranType();
        //dd($tranType);
        $getGstDropVal=$this->lmsRepo->getActiveGST();
-       $result= $this->lmsRepo->getAllLmsUser();     
+       $result= $this->lmsRepo->getAllLmsUser();  
       return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result, 'tranType'=>$tranType, 'getGstDropVal'=>$getGstDropVal]);
    
     }
