@@ -115,7 +115,7 @@ public static function updateInvoice($invoiceId,$status)
     public static function updateInvoiceAmount($attributes)
     {
         $invoiceId  =    $attributes['invoice_id'];
-        $amount     =    $attributes['approve_invoice_amount'];
+        $amount     =  str_replace(',','', $attributes['approve_invoice_amount']);  
         $comment    =    $attributes['comment'];
         $id = Auth::user()->user_id;
         $result =  User::getSingleUserDetails($id);
