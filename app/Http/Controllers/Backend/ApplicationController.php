@@ -699,7 +699,8 @@ class ApplicationController extends Controller
                 ->with('user_id', $user_id)
                 ->with('assign_case', $assign_case)    
                 ->with('curr_role_id', $curr_role_id)
-                ->with('next_role_id', $next_role_id);
+                ->with('next_role_id', $next_role_id)
+                ->with('biz_id', $appData->biz_id);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

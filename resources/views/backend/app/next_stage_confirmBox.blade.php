@@ -78,6 +78,7 @@
                     {!! Form::hidden('user_id', $user_id) !!}
                     {!! Form::hidden('curr_role_id', $curr_role_id) !!}
                     {!! Form::hidden('assign_case', $assign_case) !!}
+                    {!! Form::hidden('biz_id', $biz_id) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
                 <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
