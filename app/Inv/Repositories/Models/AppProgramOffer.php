@@ -94,7 +94,7 @@ class AppProgramOffer extends BaseModel {
     {
         //Check $whereCondition is not an array
         if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
@@ -133,15 +133,15 @@ class AppProgramOffer extends BaseModel {
          * Check id is not blank
          */
         if (empty($appId)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
 
         /**
          * Check id is not an integer
          */
-        if (!is_int($appId)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
+        //if (!is_int($appId)) {
+        //    throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        //}
 
         if(is_null($product_id) || $product_id == ''){
             $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
@@ -164,7 +164,7 @@ class AppProgramOffer extends BaseModel {
     {
         //Check $whereCondition is not an array
         if (!is_array($offerData)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
         
@@ -190,21 +190,21 @@ class AppProgramOffer extends BaseModel {
          * Check id is not blank
          */
         if (empty($app_id)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
 
         /**
          * Check id is not an integer
          */
         if (!is_int($app_id)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         /**
          * Check Data is Array
          */
         if (!is_array($arr)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
         $rowUpdate = self::where('app_id',(int) $app_id)->update($arr);
@@ -218,21 +218,21 @@ class AppProgramOffer extends BaseModel {
          * Check id is not blank
          */
         if (empty($app_id)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
 
         /**
          * Check id is not an integer
          */
         if (!is_int($app_id)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         /**
          * Check Data is Array
          */
         if (!is_array($arr)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
         $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])->update($arr);
@@ -244,7 +244,7 @@ class AppProgramOffer extends BaseModel {
         if(empty($app_prgm_limit_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }else if(!is_int($app_prgm_limit_id)){
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }else{
             return AppProgramOffer::with('programLimit.program')->where('app_prgm_limit_id', $app_prgm_limit_id)->where('is_active', 1)->first();
         }
@@ -254,9 +254,9 @@ class AppProgramOffer extends BaseModel {
         if(empty($app_prgm_limit_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }else if(!is_int($app_prgm_limit_id)){
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }else if(!is_array($data)){
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }else{
             $prgmOffer = AppProgramOffer::where('prgm_offer_id', $prgm_offer_id)->where('is_active', 1)->first();
             if($prgmOffer){
@@ -276,7 +276,7 @@ class AppProgramOffer extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         if(!is_int($app_id)){
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         $tot_offered_limit = AppProgramOffer::where(['app_id' => $app_id, 'is_active'=>1])->sum('prgm_limit_amt');
@@ -289,7 +289,7 @@ class AppProgramOffer extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         if(!is_int($appId)){
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         return AppProgramOffer::where(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL])->count();
@@ -300,7 +300,7 @@ class AppProgramOffer extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         if(!is_int($appId)){
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         $approverStatus = AppApprover::where(['app_id' => $appId, 'is_active'=>1])->where('status', '<>', 1)->count();
@@ -321,7 +321,7 @@ class AppProgramOffer extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         if(!is_int($appPrgmLimitId)){
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
         $tot_offered_limit = AppProgramOffer::where(['app_prgm_limit_id' => $appPrgmLimitId, 'is_active'=>1])->sum('prgm_limit_amt');
