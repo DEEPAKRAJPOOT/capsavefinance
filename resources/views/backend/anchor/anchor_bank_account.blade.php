@@ -3,7 +3,7 @@
 {!!
 Form::open(
 [
-'route' => 'save_company_bank_account',
+'route' => 'save_anchor_bank_account',
 'name' => 'bank_account',
 'autocomplete' => 'off', 
 'id' => 'bank_account'
@@ -12,7 +12,7 @@ Form::open(
 !!}
 
 {!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
-{!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null ) !!}
+{!! Form::hidden('anchor_id', isset($anchorId) ? \Crypt::encrypt($anchorId)  : null ) !!}
 
 <div class="modal-body text-left">
     <div class="row">
@@ -112,7 +112,6 @@ try {
     var p = window.parent;
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
     p.jQuery('#add_bank_account').modal('hide');
-    p.window.location.reload();
     p.reloadDataTable();
 } catch (e) {
     if (typeof console !== 'undefined') {
@@ -134,12 +133,12 @@ try {
                 'acc_no': {
                     required: true,
                     number: true,
-                    maxlength: 15,
+                    maxlength: 16,
                 },
                 'confim_acc_no': {
                     required: true,
                     equalTo: "#account_no",
-                    maxlength: 15,
+                    maxlength: 16,
                 },
                 
                 'bank_id': {
@@ -152,7 +151,6 @@ try {
                 },
                 'branch_name': {
                     required: true,
-                    lettersonly: true
 
                 },
                 'is_active': {

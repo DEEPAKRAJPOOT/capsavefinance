@@ -25,7 +25,7 @@
                             {{ Form::open(array('url' => route('save_program') ,'id'=>'addProgram')) }}
 
                             <div class="form-sections">
-                                <div class="col-md-8 col-md-offset-2">
+                                <div class="col-md-12">
 
                                     <h3 class="pull-left"><small>
                                  {{ trans('backend.add_program.add_program') }}
@@ -34,7 +34,7 @@
 
                                     <div class="clearfix"></div>
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="productList">
                                                    Product Type
@@ -43,7 +43,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.anchor_name') }}
@@ -51,33 +51,8 @@
                                                 {!! Form::select('anchor_id', $anchorList,'',['class'=>'form-control'])!!}
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="txtCreditPeriod">
-                                                    {{ trans('backend.add_program.program_detail') }}
-                                                    <span class="error_message_label">*</span></label>
-                                                <div class="block-div clearfix ">
-                                                    <div class="form-check-inline float-left">
-                                                        <label class="form-check-label fnt">
-                                                            {!! Form::radio('prgm_type','1','', ['class'=>'form-check-input']) !!}
-                                                            <strong>
-                                          {{ trans('backend.add_program.vendor_finance') }}   
-                                          </strong>
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check-inline float-left">
-                                                        <label class="form-check-label fnt">
-                                                            {!! Form::radio('prgm_type','2','', ['class'=>'form-check-input'])!!}<strong>
-                                          {{ trans('backend.add_program.channel_finance') }}    
-                                          </strong>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <label id="prgm_type-error" class="error mb-0" for="prgm_type"></label>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-md-12">
+                                        
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.program_name') }}
@@ -86,22 +61,7 @@
                                                 {!! Form::text('prgm_name','', ['class'=>'form-control','placeholder'=>"Enter Programe Name"])!!}
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="txtCreditPeriod"> {{ trans('backend.add_program.industry') }}
-                                                    <span class="error_message_label">*</span></label>
-                                                {!! Form::select('industry_id', [''=>trans('backend.please_select')] + $industryList, '', ['class'=>'form-control industry_change']) !!}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="txtCreditPeriod">
-                                                    {{ trans('backend.add_program.sub_industry') }}
-                                                    <span class="error_message_label">*</span> </label>
-                                                {!! Form::select('sub_industry_id', [''=>trans('backend.please_select')], '', ['class'=>'form-control sub_industry']) !!}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.anchor_limit') }}
@@ -109,7 +69,22 @@
                                                 <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a> {!! Form::text('anchor_limit','', ['class'=>'form-control number_format','placeholder'=>trans('backend.add_program.enter_anchor_limit')])!!}
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod"> {{ trans('backend.add_program.industry') }}
+                                                    <span class="error_message_label">*</span></label>
+                                                {!! Form::select('industry_id', [''=>trans('backend.please_select')] + $industryList, '', ['class'=>'form-control industry_change']) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">
+                                                    {{ trans('backend.add_program.sub_industry') }}
+                                                    <span class="error_message_label"></span> </label>
+                                                {!! Form::select('sub_industry_id', [''=>trans('backend.please_select')], '', ['class'=>'form-control sub_industry']) !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.fldf_applicable') }}
@@ -133,12 +108,12 @@
                                     </div>
                                 </div>
                                 <div class="ima"></div>
-                                <div class="col-md-8 col-md-offset-2">
+                                <div class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="text-right mt-3">
 
-                                                <a class="btn btn-secondary btn-sm" href='{{ $redirectUrl }}'> Cancel </a> {!! Form::submit('Save and Next', ['class'=>'btn btn-primary submit' ,'id'=>'pre3']) !!}
+                                                <a class="btn btn-secondary btn-sm" href='{{ $redirectUrl }}'> Cancel </a> {!! Form::submit('Save and Next', ['class'=>'btn btn-primary btn-sm submit' ,'id'=>'pre3']) !!}
 
                                             </div>
                                         </div>

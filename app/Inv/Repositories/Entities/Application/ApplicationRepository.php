@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Master\Bank;
 /**
  * Application repository class
  */
@@ -1240,6 +1241,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return UserBankAccount::getBankAccountDataByCompanyId($bank_acc_id,$comp_id);
     }
+    
+    /**
+     * get Bank account by Anchor ID 
+     * 
+     * @param type $where array
+     * @return type mixed
+     */
+    public function getBankAccountDataByAnchorId($anchorId)
+    {
+        return UserBankAccount::getBankAccountDataByAnchorId($anchorId);
+    }
 
 
     /**
@@ -1260,6 +1272,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getConstitutionDropDown()
     {
         return Constitution::getConstitutionDropDown();
+    }
+    
+    /**
+     * get Bank list
+     * 
+     * @return type mixed
+     */
+    public function getBankList()
+    {
+        return Bank::getBankList();
     }
 
 

@@ -107,7 +107,6 @@ class ProgramController extends Controller {
                 'anchor_id' => $anchor_id,
                 //   'anchor_user_id' => $request->get('anchor_user_id'),
                 'prgm_name' => $request->get('prgm_name'),
-                'prgm_type' => $request->get('prgm_type'),
                 'industry_id' => $request->get('industry_id'),
                 'sub_industry_id' => $request->get('sub_industry_id'),
                 'anchor_limit' => ($request->get('anchor_limit')) ? str_replace(',', '', $request->get('anchor_limit')) : null,
@@ -138,7 +137,7 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
-
+//            dd($anchor_id,$program_id);
             \Session::put('list_program_id', $program_id);
 
             $is_prg_list = $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
@@ -161,8 +160,11 @@ class ProgramController extends Controller {
             $program_id = (int) $request->get('program_id');
             $action = $request->get('action');
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
+//            dd($subProgramData);
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
+//          dd($program_id);
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
+//            dd($programData);
             $preSanction = $this->appRepo->getDocumentList(['doc_type_id' => 2, 'is_active' => 1])->toArray();
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
@@ -250,6 +252,7 @@ class ProgramController extends Controller {
             'anchor_user_id' => $request->get('anchor_user_id'),
             'product_name' => $request->get('product_name'),
             'prgm_name' => $request->get('product_name'),
+            'prgm_type' => $request->get('prgm_type'),
             'interest_rate' => $request->get('interest_rate'),
             'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : null,
             'anchor_limit' => $request->get('anchor_limit'),
@@ -329,6 +332,7 @@ class ProgramController extends Controller {
     public function saveSubProgram(SubProgramRequest $request)
     {
         try {
+//            dd($request->all());
             $user_id = \Auth::user()->user_id;
             $dataForProgram = $this->prepareSubProgramData($request);
             $pkeys = $request->get('program_id');

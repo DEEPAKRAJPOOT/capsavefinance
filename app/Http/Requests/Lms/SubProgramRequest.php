@@ -30,6 +30,7 @@ class SubProgramRequest extends FormRequest {
             'interest_borne_by' => "required",
             'anchor_limit' => "required",
             'margin' => "required",
+            'prgm_type' => 'required',
             'status' => "required",
             'min_loan_size' => 'required',
             'max_loan_size' => 'required',

@@ -47,6 +47,7 @@ return [
         'save_as_draft' => 'Save as Draft',
         'anchor_name'=>'Anchor Name',
         'program_detail'=>' Program Detail',
+        'sub_program_detail' => 'Sub Program Detail',
         'vendor_finance'=>'Vendor Finance',
         'channel_finance'=>'Channel Finance',
         'program_name'=>'Program Name',
