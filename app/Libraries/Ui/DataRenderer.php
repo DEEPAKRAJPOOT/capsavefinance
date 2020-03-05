@@ -3040,14 +3040,19 @@ class DataRenderer implements DataProviderInterface
                             return ($data->disburse_date) ? date('d-M-Y', strtotime($data->disburse_date)) : '---';
                         })
                         ->editColumn(
+                                'invoice_no',
+                                function ($data) {
+                            return $data->invoice_no;
+                        })
+                        ->editColumn(
                                 'inv_due_date',
                                 function ($data) {
                             return ($data->inv_due_date) ? date('d-M-Y', strtotime($data->inv_due_date)) : '---';
                         })
                         ->editColumn(
-                                'invoice_no',
+                                'payment_due_date',
                                 function ($data) {
-                            return $data->invoice_no;
+                            return ($data->payment_due_date) ? date('d-M-Y', strtotime($data->payment_due_date)) : '---';
                         })
                         ->editColumn(
                                 'invoice_approve_amount',
@@ -3305,6 +3310,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetTransactions(Request $request, $data)
     {
         return DataTables::of($data)
+        ->rawColumns(['balance'])
             ->addColumn('customer_id', function($trans){
                 $data = '';
                 if($trans->lmsUser){
@@ -3376,16 +3382,22 @@ class DataRenderer implements DataProviderInterface
                 'credit',
                 function ($transaction) {
                     if($transaction->entry_type=='1'){
-                        return $transaction->amount;
+                        return '('.$transaction->amount.')';
                     }else{
-                        return '0.00';
+                        return '(0.00)';
                     }
                 }
             )
             ->editColumn(
                 'balance',
                 function ($transaction) {
-                    return round($transaction->balance, 2);
+                    $data = '';
+                    if($transaction->balance<0){
+                        $data = '<span style="color:red">'.round(abs($transaction->balance), 2).'</span>';
+                    }else{
+                        $data = '<span style="color:green">'.round(abs($transaction->balance), 2).'</span>';
+                    }
+                    return $data;
                 }
             )
             ->filter(function ($query) use ($request) {
@@ -3443,6 +3455,91 @@ class DataRenderer implements DataProviderInterface
                     })
                     ->make(true);
         }
+
+    /**
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetRefundCustomers(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['invoice_id','status', 'action'])
+                ->addColumn(
+                    'invoice_id',
+                    function ($data) {
+                        return "<input type='checkbox' class='disbursal_id' value=".$data->disbursal_id.">";
+                    }
+                )
+                ->addColumn(
+                    'customer_code',
+                    function ($data) {
+                        return $link = $data->customer_id;
+                    }
+                )
+                ->addColumn(
+                    'ben_name',
+                    function ($data) {
+                        if ($data->user->is_buyer == 2) {
+                            return (isset($data->user->anchor_bank_details->acc_name)) ? $data->user->anchor_bank_details->acc_name : '';
+                        } else {
+                            return (isset($data->bank_details->acc_name)) ? $data->bank_details->acc_name : '';
+                        }
+                    }
+                )     
+                ->editColumn(
+                    'ben_bank_name',
+                        function ($data) {
+                        if ($data->user->is_buyer == 2) {
+                            return (isset($data->user->anchor_bank_details->bank->bank_name)) ? $data->user->anchor_bank_details->bank->bank_name : '';
+                        } else {
+                            return (isset($data->bank_details->bank->bank_name)) ? $data->bank_details->bank->bank_name : '';
+                        }
+                        
+                    }
+                )
+                ->editColumn(
+                    'ben_ifsc',
+                        function ($data) {
+                        if ($data->user->is_buyer == 2) {
+                            $ifsc_code = (isset($data->user->anchor_bank_details->ifsc_code)) ? $data->user->anchor_bank_details->ifsc_code : '';
+                        } else {
+                            $ifsc_code = (isset($data->bank_details->ifsc_code)) ? $data->bank_details->ifsc_code : '';
+                        }
+                        return $ifsc_code;
+                    
+                })
+                ->editColumn(
+                    'ben_account_no',
+                        function ($data) {
+                        if ($data->user->is_buyer == 2) {
+                            $benAcc = (isset($data->user->anchor_bank_details->acc_no)) ? $data->user->anchor_bank_details->acc_no : '';
+                        } else {
+                            $benAcc = (isset($data->bank_details->acc_no)) ? $data->bank_details->acc_no : '';
+                        }
+                        return $benAcc;
+                    
+                })
+                ->editColumn(
+                    'surplus_amount',
+                    function ($data) {
+                        return $data->surplus_amount;
+
+                })                      
+                ->addColumn(
+                    'status',
+                    function ($data) {
+                        return '<label class="badge badge-warning current-status">pending</label>';
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('customer_id', 'like',"%$search_keyword%");
+                        }
+                    }
+                })
+                ->make(true);
+    }
 
     /**
      * get Payment Advice list

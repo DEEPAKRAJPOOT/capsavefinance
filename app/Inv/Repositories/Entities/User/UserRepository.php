@@ -1548,6 +1548,17 @@ class UserRepository extends BaseRepositories implements UserInterface
         $user_id=(int)$user_id;
         $result= UserModel::getSingleUserDetails($user_id);
         return $result?$result:'';
+    }
+
+    /**
+     * Get all customer from lms_users
+     *
+     * @return query data
+     */
+    public function lmsGetRefundList()
+    {
+        $result = Disbursal::lmsGetRefundList();
+        return $result ?: false;
     } 
 
     /**

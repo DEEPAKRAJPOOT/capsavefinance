@@ -67,11 +67,11 @@
 	                              		<table id="payment_advice"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-													<th>Cust ID</th>
+													<th>Customer Id</th>
 													<th>Customer Name</th>
-													<th>Tran Date</th>
+													<th>Transaction Date</th>
 													<th>Value Date</th>
-													<th>Credite</th>
+													<th>Credit</th>
 													<th>Action</th>
                                                     
                                                     <!-- <th>Virtual Account Id</th>
