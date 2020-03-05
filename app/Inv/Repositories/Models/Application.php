@@ -610,5 +610,11 @@ class Application extends BaseModel
         $result = self::where($where)->orderBy('app_id', $orderBy)->get();
         return $result ?: false;
     }
+    
+    public static function getUserAddress($app_id)
+    {
+        $biz_id =  self::where(['app_id' => $app_id])->pluck('biz_id');
+        return  BusinessAddress::whereIn('biz_id',$biz_id)->where(['address_type' => 0])->pluck('state_id')->first();
+    }
         
 }

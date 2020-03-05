@@ -44,7 +44,9 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\TransType;
 /**
  * Application repository class
  */
@@ -1417,6 +1419,58 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return User::where('user_id', $userId)
                 ->pluck('is_buyer')->first();
-    } 
+    }
+
+    /**
+     * Get trans type
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getTransTypeData($transTypeId)
+    {
+        return TransType::where('id', $transTypeId)
+                ->first();
+    }
+    
+    /**
+     * Get prgm charge data
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getPrgmChrgeData($prgmId, $chargeId)
+    {
+        return ProgramCharges::where(['prgm_id' => $prgmId, 'charge_id' => $chargeId])
+                ->first();
+    }
+
+    /**
+     * Get user state id by appId
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getUserAddress($appId)
+    {
+        return Application::getUserAddress($appId);
+    }
+
+    /**
+     * Get company state id by appId
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function companyAdress()
+    {
+        return Company::companyAdress();
+    }
+
+
     
 }
