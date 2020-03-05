@@ -613,9 +613,8 @@ class Application extends BaseModel
         $result = self::where($where)->orderBy('app_id', $orderBy)->get();
         return $result ?: false;
     }
-    
+
     /* get address  */
-    
     public static function getUserAddress($app_id)
     {
         
@@ -629,6 +628,5 @@ class Application extends BaseModel
     {
         
         return  Company::where(['company_id' => 1,'is_active' =>1])->pluck('state')->first(); 
-        
     }   
 }

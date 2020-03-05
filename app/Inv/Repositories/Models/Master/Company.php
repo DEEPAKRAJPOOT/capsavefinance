@@ -123,7 +123,12 @@ class Company extends BaseModel {
         
         return $res ?: false;
     }
-    
+
+    public static  function companyAdress()
+    {
+        return  self::where(['company_id' => 1,'is_active' =>1])->pluck('state')->first();
+        
+    } 
     
 
 }
