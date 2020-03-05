@@ -3305,6 +3305,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetTransactions(Request $request, $data)
     {
         return DataTables::of($data)
+        ->rawColumns(['balance'])
             ->addColumn('customer_id', function($trans){
                 $data = '';
                 if($trans->lmsUser){
@@ -3376,16 +3377,22 @@ class DataRenderer implements DataProviderInterface
                 'credit',
                 function ($transaction) {
                     if($transaction->entry_type=='1'){
-                        return $transaction->amount;
+                        return '('.$transaction->amount.')';
                     }else{
-                        return '0.00';
+                        return '(0.00)';
                     }
                 }
             )
             ->editColumn(
                 'balance',
                 function ($transaction) {
-                    return round($transaction->balance, 2);
+                    $data = '';
+                    if($transaction->balance<0){
+                        $data = '<span style="color:red">'.round(abs($transaction->balance), 2).'</span>';
+                    }else{
+                        $data = '<span style="color:green">'.round(abs($transaction->balance), 2).'</span>';
+                    }
+                    return $data;
                 }
             )
             ->filter(function ($query) use ($request) {
