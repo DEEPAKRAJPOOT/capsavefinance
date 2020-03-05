@@ -203,7 +203,7 @@
             </div>
         </li>
         @endcan
-
+   
         @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu9" aria-expanded="false" aria-controls="collapseExample">
