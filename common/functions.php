@@ -52,6 +52,14 @@ function format_number($number) {
     return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
 }
 
+function calculate_formula($formula, $variables){
+	extract($variables);
+	foreach ($variables as $key => $value) {
+		$formula = str_replace($key, $$key, $formula);
+	}
+	return eval('return '. $formula .';');
+}
+
 function extra_char($string = ''){
 	 $i = 0;
 	 $extra_char = '';
