@@ -139,9 +139,9 @@ class AppProgramOffer extends BaseModel {
         /**
          * Check id is not an integer
          */
-        if (!is_int($appId)) {
-            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
-        }
+        //if (!is_int($appId)) {
+        //    throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        //}
 
         if(is_null($product_id) || $product_id == ''){
             $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
