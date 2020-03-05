@@ -5,7 +5,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: false,
+            searching: true,
             bSort: true,
             ajax: {
                "url": messages.get_trans_type_list, // json datasource
@@ -30,7 +30,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: false,
+            searching: true,
             bSort: true,
             ajax: {
                "url": messages.get_ajax_journal_list, // json datasource
@@ -57,7 +57,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: false,
+            searching: true,
             bSort: true,
             ajax: {
                "url": messages.get_ajax_account_list, // json datasource
@@ -84,7 +84,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: false,
+            searching: true,
             bSort: true,
             ajax: {
                "url": messages.get_ajax_variable_list, // json datasource
@@ -109,7 +109,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: false,
+            searching: true,
             bSort: true,
             ajax: {
                "url": messages.get_ajax_jeconfig_list, // json datasource
@@ -138,7 +138,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: false,
+            searching: true,
             bSort: true,
             ajax: {
                 "url": messages.get_ajax_jiconfig_list, // json datasource
