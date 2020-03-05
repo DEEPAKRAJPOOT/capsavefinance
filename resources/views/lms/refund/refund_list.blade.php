@@ -36,11 +36,10 @@
                 
                 <div class="col-md-3 ml-auto text-right">
 
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Send To Bank</a>
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_disburse', ['refund_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund Manually</a>
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund by Bank</a>
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund Manually</a>
                 </div>
-                <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
-                <input type="hidden" value="" name="user_ids" id="user_ids">  
+                <input type="hidden" value="" name="disbursal_ids" id="disbursal_ids">  
 
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -48,7 +47,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+	                              		<table id="refundCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
                                                     <th></th>
@@ -59,7 +58,6 @@
 													<th>Ben Account No.</th>
 													<th>Refund Amt.</th>
                                                     <th>Status</th>
-													<th>Action</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -67,7 +65,7 @@
 	                                        </tbody>
                                     	</table>
 							  		</div>
-                            		<div id="disbursalCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            		<div id="refundCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +75,6 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('disbueseInvoices','refund Invoices', 'modal-md')!!}
 
 @endsection
@@ -97,14 +94,14 @@
 
 <script>
 $(document).ready(function(){
-    $(document).on('change', '.user_id', function() {
+    $(document).on('change', '.disbursal_id', function() {
 
-        let current_user_ids = $('#user_ids').val();
+        let current_disbursal_ids = $('#disbursal_ids').val();
         let current_id = $(this).val();
         if($(this).is(':checked')){
-            $('#user_ids').val(current_user_ids+','+current_id);
+            $('#disbursal_ids').val(current_disbursal_ids+','+current_id);
         }else{
-            $('#user_ids').val(current_user_ids.replace(new RegExp(current_id, 'g'), ''));
+            $('#disbursal_ids').val(current_disbursal_ids.replace(new RegExp(current_id, 'g'), ''));
         }
     });
     

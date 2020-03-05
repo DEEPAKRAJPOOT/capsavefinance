@@ -82,7 +82,8 @@
 	                                        	<tr role="row">
 													<th>Disb. Date</th>
 													<th>Inv. Ref. No.</th>
-													<th>Due Date</th>
+                                                    <th>Due Date</th>
+													<th>Payment Due Date</th>
 													<th>Inv. Amount</th>
 													<th>disbursed Amount</th>
 													<th>Disb. Status</th>
@@ -91,7 +92,7 @@
 													<th>Collection Amount</th>
 													<th>Accured Intrest</th>
 													<th>Surplus Amount</th>
-                                                                                                        <th>Action</th>
+                                                    <th>Action</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>

@@ -69,6 +69,7 @@ try {
                 {data: 'disburse_date'},
                 {data: 'invoice_no'},
                 {data: 'inv_due_date'},
+                {data: 'payment_due_date'},
                 {data: 'invoice_approve_amount'},
                 {data: 'principal_amount'},
                 {data: 'status_name'},

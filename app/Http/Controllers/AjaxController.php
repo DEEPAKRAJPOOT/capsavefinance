@@ -3888,8 +3888,18 @@ if ($err) {
             return response()->json(['status' => 0]); 
         }
     }
-
-
+    
+    /**
+     * Get all customer list
+     *
+     * @return json customer data
+     */
+    public function lmsGetRefundList(DataProviderInterface $dataProvider) {
+      $refundList = $this->userRepo->lmsGetRefundList();
+      $data = $dataProvider->lmsGetRefundCustomers($this->request, $refundList);
+      return $data;
+    }
+    
     public function updateGroupCompanyExposure(Request $request ){
         $group_company_expo_id = $request->get('group_company_expo_id');
         $arrData = GroupCompanyExposure::where("group_company_expo_id", $group_company_expo_id)->update(['is_active' => 2]);
