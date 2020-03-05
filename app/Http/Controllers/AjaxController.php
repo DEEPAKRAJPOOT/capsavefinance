@@ -3842,7 +3842,6 @@ if ($err) {
         return $data;
     }
 
-
     /** 
      * @Author: Rent Alpha
      * @Date: 2020-02-18 10:49:29 
@@ -3900,6 +3899,12 @@ if ($err) {
           $status = false;
         }
         return response()->json($status);
+    }
+
+    public function getColenderAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getColenderApplications();
+        $applications = $dataProvider->getColenderAppList($this->request, $appList);
+        return $applications;
     }
 
 }

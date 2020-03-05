@@ -1160,7 +1160,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                'uses' => 'Backend\PaymentController@paymentAdviceExcel'
            ]); 
 
+         });
+
+        //colender route 
+         Route::group(['prefix' => 'colender'], function () {
+            Route::get('application', [
+                'as' => 'colender_application_list',
+                'uses' => 'Master\CoLenderControllers@appList'
+            ]); 
+            
+            Route::get('application/view-offer', [
+                'as' => 'colender_view_offer',
+                'uses' => 'Backend\ApplicationController@showOffer'
+            ]);
          }); 
+        //colender route 
     });
 
   });

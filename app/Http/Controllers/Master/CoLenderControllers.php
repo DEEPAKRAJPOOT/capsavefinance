@@ -181,4 +181,12 @@ class CoLenderControllers extends Controller {
         return view('backend.coLenders.view_shared_colender')->with('sharedCoLenders', $shared_colenders);
     }
 
+    /**
+     * Display a application for Colender
+     */
+    public function appList()
+    {
+        return view('backend.coLenders.app_list');   
+    }
+
 }

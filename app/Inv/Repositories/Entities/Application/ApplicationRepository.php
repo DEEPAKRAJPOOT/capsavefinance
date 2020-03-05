@@ -1589,4 +1589,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function addOfferEscrowMechanism($data){
         return OfferEscrowMechanism::addOfferEscrowMechanism($data);
     }
+
+    public function getColenderApplications() 
+    {
+        return Application::getColenderApplications();
+    }
 }

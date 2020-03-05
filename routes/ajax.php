@@ -775,8 +775,13 @@ Route::group(
     Route::get('get-group-company', [
         'as' => 'get_group_company',
         'uses' => 'AjaxController@getGroupCompany'
-    ]);   
-    
+    ]); 
+
+    Route::post('get-app-colender',[
+         'as' => 'ajax_colender_app_list',
+         'uses' => 'AjaxController@getColenderAppList'
+         ]
+    );  
           
    /////////// get transa name//////////
     
@@ -796,16 +801,16 @@ Route::group(
     ]); 
 
      Route::post('get_chrg_amount', [
-                'as' => 'get_chrg_amount',
-                'uses' => 'AjaxController@getChrgAmount'
-            ]);
+        'as' => 'get_chrg_amount',
+        'uses' => 'AjaxController@getChrgAmount'
+    ]);
      Route::post('backend_get_payment_advice', [
         'as' => 'backend_get_payment_advice',
         'uses' => 'AjaxController@getPaymentAdvice'
     ]);
     
-      Route::post('get_calculation_amount', [
-                'as' => 'get_calculation_amount',
-                'uses' => 'AjaxController@getCalculationAmount'
-            ]);
+    Route::post('get_calculation_amount', [
+        'as' => 'get_calculation_amount',
+        'uses' => 'AjaxController@getCalculationAmount'
+    ]);
 });
