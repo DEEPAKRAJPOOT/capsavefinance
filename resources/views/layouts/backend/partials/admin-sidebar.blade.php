@@ -75,7 +75,7 @@
          </li>
     @endcan
 
-    {{--@can('application_list')--}}  
+    @can('colender_application_list')  
         <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
                     <i class="fa fa-address-book-o" aria-hidden="true"></i>
@@ -90,7 +90,7 @@
                     </ul>
                 </div>
          </li>
-    {{--@endcan--}}  
+    @endcan 
 
     @canany(['get_anchor_list','get_anchor_lead_list'])
         <li class="nav-item">
