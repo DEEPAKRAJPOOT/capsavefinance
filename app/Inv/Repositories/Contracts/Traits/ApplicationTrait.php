@@ -149,7 +149,7 @@ trait ApplicationTrait
     }
 
 
-    protected function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
+     protected function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
         $offerWhereCond = [];
         
         if ($offerId) {
@@ -160,6 +160,7 @@ trait ApplicationTrait
         }
        
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
+
         if(!empty($offerData)){
             $sanctionData = $this->appRepo->getOfferSanction($offerData->prgm_offer_id);
             $businessData = $this->appRepo->getApplicationById($bizId); 
@@ -204,17 +205,18 @@ trait ApplicationTrait
             $data['offerId'] = $offerData->prgm_offer_id;
             $data['equipmentData'] = $equipmentData;
             $data['ptpqrData'] = $ptpqrData;
-            $data['businessAddress'] = $businessAddress;    
-        }
-        $data['sanction_expire_msg'] = '';
-        $currentDate = date("Y-m-d");
-        if(empty($data['expire_date'])){
-             $data['expire_date'] = date('Y/m/d', strtotime($currentDate. ' + 30 days'));
-        } 
-        if(isset($data['expire_date'])){
-            if(strtotime($currentDate) > strtotime($data['expire_date'])){
-                $data['sanction_expire_msg'] = "Sanction Letter Expired.";
+            $data['businessAddress'] = $businessAddress;
+            $data['sanction_expire_msg'] = '';
+            $currentDate = date("Y-m-d");
+            if(empty($data['expire_date'])){
+                 $data['expire_date'] = date('Y/m/d', strtotime($currentDate. ' + 30 days'));
+            } 
+            if(isset($data['expire_date'])){
+                if(strtotime($currentDate) > strtotime($data['expire_date'])){
+                    $data['sanction_expire_msg'] = "Sanction Letter Expired.";
+                }
             }
+               
         }
         $data['leasingLimitData'] = $this->appRepo->getProgramLimitData($appId, '3')->toArray();
         $data['leaseOfferData'] = AppProgramOffer::getAllOffers($appId, '3');
@@ -224,6 +226,7 @@ trait ApplicationTrait
         $data['arrStaticData']['securityDepositType'] = array('1'=>'INR','2'=>'%');
         $data['arrStaticData']['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
         $data['arrStaticData']['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
+
         $data['offerData'] = $offerData;
         $data['appId'] = $appId;
         $data['bizId'] = $bizId;
@@ -231,6 +234,7 @@ trait ApplicationTrait
         return $data;
     }
 
+    
     protected function getSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
         $bizData = $this->appRepo->getApplicationById($bizId);
         $EntityData  = $this->appRepo->getEntityByBizId($bizId);
