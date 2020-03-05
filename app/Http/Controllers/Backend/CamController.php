@@ -368,7 +368,7 @@ class CamController extends Controller
         'postCondArr' => $postCondArr,
         'arrStaticData' => $arrStaticData,
         'facilityTypeList' => $facilityTypeList,
-        'is_editable' => $is_editable
+        'is_editable' => $is_editable,
         'supplyOfferData' => $supplyOfferData
       ]);
     }
