@@ -236,7 +236,7 @@
             </div>
         </li>
     
-     @canany(['payment_list','payment_list'])
+        @canany(['payment_list','payment_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-credit-card" aria-hidden="true"></i>
@@ -259,9 +259,9 @@
                 </ul>
             </div>
         </li>
-    @endcan
-    
-    @canany(['get_agency_list','get_agency_user_list'])
+        @endcan
+   
+        @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu9" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-user-secret" aria-hidden="true"></i>
@@ -283,7 +283,7 @@
                 </ul>
             </div>
         </li>   
-    @endcan      
+        @endcan      
         
         @php $roleData = \Helpers::getUserRole() @endphp
         
@@ -387,10 +387,12 @@
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">SMS Master</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Base Rate Master</a>
-                 </li> -->
+                 </li>-->
+                 @can('get_baserate_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_baserate_list') }}">Manage Base Rate</a>
+                </li> 
+                @endcan
               </ul>
            </div>
         </li>
