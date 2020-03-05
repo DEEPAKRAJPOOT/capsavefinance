@@ -125,7 +125,7 @@ trait CamTrait
                       $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
                     }
                 } 
-                
+                $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
                 return [
                     'arrCamData' =>$arrCamData,
                     'arrBizData' => $arrBizData, 
@@ -147,7 +147,8 @@ trait CamTrait
                     'preCondArr' => $preCondArr,
                     'postCondArr' => $postCondArr,
                     'facilityTypeList'=>$facilityTypeList,
-                    'arrGroupCompany' => $arrGroupCompany
+                    'arrGroupCompany' => $arrGroupCompany,
+                    'supplyOfferData' => $supplyOfferData
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

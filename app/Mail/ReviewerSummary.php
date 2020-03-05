@@ -90,6 +90,7 @@ class ReviewerSummary extends Mailable
         $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
         $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');  
         $dispAppId = 'CAPS' . sprintf('%06d', $appId);
+        $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain  
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
@@ -102,7 +103,9 @@ class ReviewerSummary extends Mailable
             'receiverUserName' => $this->user['receiver_user_name'],
             'appId' => $appId,
             'url' => 'https://'. config('proin.backend_uri'),
-            'dispAppId' => $dispAppId
+            'dispAppId' => $dispAppId,
+            'supplyOfferData' => $supplyOfferData
+
         ]);        
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
