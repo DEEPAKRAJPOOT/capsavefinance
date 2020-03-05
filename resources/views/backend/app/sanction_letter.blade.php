@@ -76,6 +76,9 @@
     padding: 10px;
     margin-bottom: 0;
   }
+  .section6>ol>li{
+    padding: 2px;
+  }
 </style>
 <style media="print">
   .height{
@@ -93,7 +96,7 @@
         <div class="card-body">
           <div class="tab-content">
             <div id="sanctionSupplyChain" class="tab-pane fadein active">
-              @if( is_array($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
+              @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
               <div class="form-fields">
                 <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
                 <table class="table" cellpadding="0" cellspacing="0">
@@ -143,14 +146,13 @@
                 <br />
                 <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
                 <!-- Vender Program -->
-                @if($supplyChaindata['prgm_type'] == 2) 
                 <table  class="table table-border"  cellpadding="0" cellspacing="0">
                   <tbody>
                     <tr>
-                      <td width="33.33%">Facility No</td>
-                      <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
+                      <td width="20%">Facility No</td>
+                      <td width="20%">{{$supplyChaindata['prgm_type']}}</td>
                       <td width="30%">Facility Name</td>
-                      <td width="30%">Purchase Finance Facility  /  Channel Financing{{--$supplyChaindata['product_name']--}}</td>
+                      <td width="30%">{{$supplyChaindata['prgm_type'] == '2' ? 'Purchase Finance Facility  /  Channel Financing' : 'Vendor Finance Facility'}}</td>
                     </tr>
                     <tr>
                       <td width="33.33%">Facility Amount</td>
@@ -165,86 +167,11 @@
                       <td width="66.66%" colspan="3">
                         Limit will be valid for 1 year from date of 
                         <select class="select">
-                          <option>Choose an Item</option>
                           <option>date of sanction letter</option>
                           <option>date of first disbusrement</option>
                         </select>
                         (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
                       </td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%">Investment Payment Frequency</td>
-                      <td width="66.66%" colspan="3">..</td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%" class="pd-0" style="padding: 0px !important;">
-                        <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
-                          <thead>
-                            <tr>
-                              <th width="70%">Apprv. Debtor Name</th>
-                              <th width="30%" class="height">Sub Limit</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            @foreach($supplyChaindata['offerData'] as $offerD)
-                            <tr>
-                              <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                              <td></td>
-                            </tr>
-                            @endforeach
-                          </tbody>
-                        </table>
-                      </td>
-                      <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
-                        <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
-                          <thead>
-                            <tr>
-                              <th width="35%">Max. Discounting Period</th>
-                              <th width="25%">Grace Period</th>
-                              <th width="25%">ROI</th>
-                              <th width="25%">Margin</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            @foreach($supplyChaindata['offerData'] as $offerD)
-                            <tr>
-                              <td>
-                                <select class="select">
-                                  <option>Choose an Item</option>
-                                  <option>30 Days</option>
-                                  <option>45 Days</option>
-                                  <option>60 Days</option>
-                                  <option>90 Days</option>
-                                </select>
-                              </td>
-                              <td>
-                                <select class="select">
-                                  <option>Choose an Item</option>
-                                  <option>7 Days</option>
-                                  <option>15 Days</option>
-                                  <option>30 Days</option>
-                                  <option>45 Days</option>
-                                </select>
-                              </td>
-                              <td>
-                                <select class="select">
-                                  <option>Choose an Item</option>
-                                  <option>Invoice Date</option>
-                                  <option>BOE Date</option>
-                                  <option>GRN Date</option>
-                                  <option>Date of Discounting</option>
-                                </select>
-                              </td>
-                              <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                            </tr>
-                            @endforeach
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%">Methodology for calculating for Drawing Power</td>
-                      <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
                     </tr>
                     <tr>
                       <td width="33.33%">Specific Condition</td>
@@ -277,41 +204,10 @@
                     </tr>
                   </tbody>
                 </table>
-                @endif
-                <!-- Channle Program -->
-                @if($supplyChaindata['prgm_type'] == 1) 
+                <br />
+                @foreach($supplyChaindata['offerData'] as $offerD)
                 <table  class="table table-border"  cellpadding="0" cellspacing="0">
                   <tbody>
-                    <tr>
-                      <td width="33.33%">Facility No</td>
-                      <td width="6.66%">{{$supplyChaindata['prgm_type']}}</td>
-                      <td width="30%">Facility Name</td>
-                      <td width="30%">Vendor Finance Facility</td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%">Facility Amount</td>
-                      <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%">Purpose</td>
-                      <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%">Expiry of Limit</td>
-                      <td width="66.66%" colspan="3">
-                        Limit will be valid for 1 year from date of 
-                        <select class="select">
-                          <option>Choose an Item</option>
-                          <option>date of sanction letter</option>
-                          <option>date of first disbusrement</option>
-                        </select>
-                        (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%">Investment Payment Frequency</td>
-                      <td width="66.66%" colspan="3">..</td>
-                    </tr>
                     <tr>
                       <td width="33.33%" class="pd-0" style="padding: 0px !important;">
                         <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
@@ -322,12 +218,10 @@
                             </tr>
                           </thead>
                           <tbody>
-                            @foreach($supplyChaindata['offerData'] as $offerD)
                             <tr>
-                              <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
-                              <td></td>
+                              <td>{{$supplyChaindata['anchorData'][$offerD->anchor_id]['comp_name'] ?? ''}}</td>
+                              <td>{{$offerD->prgm_limit_amt}}</td>
                             </tr>
-                            @endforeach
                           </tbody>
                         </table>
                       </td>
@@ -342,125 +236,61 @@
                             </tr>
                           </thead>
                           <tbody>
-                            @foreach($supplyChaindata['offerData'] as $offerD)
                             <tr>
-                              <td>
-                                <select class="select">
-                                  <option>Choose an Item</option>
-                                  <option>30 Days</option>
-                                  <option>45 Days</option>
-                                  <option>60 Days</option>
-                                  <option>90 Days</option>
-                                </select>
-                              </td>
-                              <td>
-                                <select class="select">
-                                  <option>Choose an Item</option>
-                                  <option>7 Days</option>
-                                  <option>15 Days</option>
-                                  <option>30 Days</option>
-                                  <option>45 Days</option>
-                                </select>
-                              </td>
-                              <td>
-                                <select class="select">
-                                  <option>Choose an Item</option>
-                                  <option>Invoice Date</option>
-                                  <option>BOE Date</option>
-                                  <option>GRN Date</option>
-                                  <option>Date of Discounting</option>
-                                </select>
-                              </td>
-                              <td><input type="text" class="input_sanc" name="debtor_name[]" placeholder="Click here to enter text"></td>
+                              <td>{{$offerD->tenor}}</td>
+                              <td>{{$offerD->grace_period}}</td>
+                              <td>{{$offerD->interest_rate}}</td>
+                              <td>{{$offerD->margin}}</td>
                             </tr>
-                            @endforeach
                           </tbody>
                         </table>
                       </td>
                     </tr>
                     <tr>
-                      <td width="33.33%">Methodology for calculating for Drawing Power</td>
-                      <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
+                      <td width="33.33%">Investment Payment Frequency</td>
+                      <td width="66.66%" colspan="3">{{$offerD['payment_frequency']}}</td>
                     </tr>
-                    <tr>
-                      <td width="33.33%">Specific Condition</td>
-                      <td width="66.66%" colspan="3">
-                        <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;">
-                          <li>Invoices should not be older than 30 days from .On the date of Discounting.</li>
-                          <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
-                        </ul>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%">Specific Pre-disbursement Condition</td>
-                      <td width="66.66%" colspan="3">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td width="33.33%"> Specific Post-disbursement Condition</td>
-                      <td width="66.66%" colspan="3">
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                @endif
-                <table  class="table table-border"  cellpadding="0" cellspacing="0">
-                  <tbody>
                     <tr>
                       <td width="33.33%">Penal Interest</td>
                       <td width="66.66%">
+                        {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} 
                         <select class="select">
-                          <option>Choose an Item</option>
-                          <option>2 %</option>
-                          <option>3 %</option>
-                          <option>4 %</option>
-                          <option>5 %</option>
-                          <option>18 %</option>
-                        </select>
-                        <select class="select">
-                          <option>Choose an Item</option>
-                          <option>over and above the rate for the last draw down  or Rollover of facility on</option>
                           <option>On</option>
+                          <option>over and above the rate for the last draw down  or Rollover of facility on</option>
                         </select>
                         entire principal / payable interest on delay in repayment of principal / Interest / charges 
                         <select class="select">
-                          <option>Choose an Item</option>
                           <option>Applicable</option>
                           <option>Not applicable</option>
                         </select>
                         .<br/>
-                        The rate of interest will be <input type="text" class="input_sanc" name="debtor_name[]" placeholder="Type Here">% higher than the rate stipulated under each of the facilities till the security is created
+                        The rate of interest will be {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} higher than the rate stipulated under each of the facilities till the security is created
                         <select class="select">
-                          <option>Choose an Item</option>
                           <option>Applicable</option>
                           <option>Not applicable</option>
                         </select>
                         .
                         <br/>
                         If security is not created within the stipulated timeframe then a penal interest of 
+                       {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} p.a.  
                         <select class="select">
-                          <option>Choose an Item</option>
-                          <option>2 %</option>
-                          <option>3 %</option>
-                          <option>4 %</option>
-                          <option>5 %</option>
-                          <option>18 %</option>
-                        </select>
-                        p.a.  
-                        <select class="select">
-                          <option>Choose an Item</option>
-                          <option>over and above the rate for the last draw down  or Rollover of facility on</option>
                           <option>On</option>
+                          <option>over and above the rate for the last draw down  or Rollover of facility on</option>
                         </select>
                         entire principle
                         <select class="select">
-                          <option>Choose an Item</option>
                           <option>Applicable</option>
                           <option>Not applicable</option>
                         </select>
-                        .
                       </td>
                     </tr>
+                  </tbody>
+                </table>
+                @endforeach
+                <br />
+
+                <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                  <tbody>
                     <tr>
                       <td width="33.33%">Prepayment</td>
                       <td width="66.66%">
@@ -755,11 +585,69 @@
                   </tbody>
                 </table>
                 <p>The financial covenants shall be tested on a choose an item.basis and shall be reported in the monitoring report to be submitted by choose an item.</p>
+                <h5>Section 6:- General Pre-disbursement and Post Disbursement conditions</h5>
+                   <div class="section6">
+                    <ol>
+                        <li>Form CHG-1 to be filed with ROC within 30 days from the date of execution of Security Documents of the borrower/Corporate Guarantor</li>
+                        <li>CFPL shall, at its discretion, obtain a confidential credit report on the borrower from its other lenders.
+                        <select class="select">
+                          <option>Applicable</option>
+                          <option>Not applicable</option>
+                        </select></li>
+              <li>All the assets charged to the CFPL are to be insured for full value covering all risks with usual CFPL clause. A copy of the insurance policy(ies) to be furnished to the CFPL within 30 days of security perfection.</li>
+              <li>The obligation of the Lender to make disbursements out of the Facility shall be subject to the Borrower complying with the following conditions to the satisfaction of CFPL .The Borrower shall complete all documentation as stipulated, to the satisfaction of CFPL.The Borrower to furnish title investigation search and valuation of security ( being mortgaged to CFPL) prior to disbursement.
+                        <select class="select">
+                          <option>Applicable</option>
+                          <option>Not applicable</option>
+                        </select></li>  
+              <li>The borrower shall finalise its selling arrangements to the satisfaction of CFPL.
+                        <select class="select">
+                          <option>Applicable</option>
+                          <option>Not applicable</option>
+                        </select></li> 
+              <li>The borrower shall obtain necessary sanction of power, water, fuel, etc from the relevant authorities to the satisfaction of CFPL. 
+                        <select class="select">
+                          <option>Applicable</option>
+                          <option>Not applicable</option>
+                        </select></li>
+              <li>The borrower shall make adequate arrangements for treatment and disposal of effluents, solid waste and emissions from its project and shall furnish appropriate approvals from the authorities in this regard.
+                        <select class="select">
+                          <option>Applicable</option>
+                          <option>Not applicable</option>
+                        </select></li> 
+              <li>The borrower shall broadbase its Board of Directors and finalise and strengthen its management set-up to the satisfaction of CFPL, if necessary.
+                        <select class="select">
+                          <option>Applicable</option>
+                          <option>Not applicable</option>
+                        </select></li> 
+              <li>The borrower shall carry out safety/environment/energy audit of its project to the satisfaction of CFPL.
+                        <select class="select">
+                          <option>Applicable</option>
+                          <option>Not applicable</option>
+                        </select></li> 
+              <li>CFPL reserves the right to appoint qualified accountants / technical experts /management consultants of its choice to examine the books of accounts, factories and operations of the borrower or to carry out a full concurrent/statutory audit. The cost of such inspection shall be borne by the <select class="select"><option>Borrower</option><option>ABFL</option></select></li>
+              <li>In case any condition is stipulated by any other lender that is more favorable to them than the terms stipulated by CFPL, CFPL shall at its discretion, apply to this loan such equivalent conditions to bring its loan at par with those of the other lenders. </li>
+              <li>The borrower shall forward to CFPL, provisional balance sheet and Profit & Loss Account within <select class="select"><option>1</option><option>2</option><option>3</option><option>4</option></select>  months of year-end and audited accounts within 6 months of year end. Quarterly financial results shall be submitted within 60 days from the end of each quarter or with the filing with stock exchange for listed borrower.</li> 
+              <li>Inspection of assets charged to CFPL may be carried out once in <select class="select"><option>1</option><option>2</option><option>3</option><option>4</option></select>  months or at more frequent intervals as decided by CFPL by its own officials or through persons/firm appointed by CFPL. The cost of inspection is to be borne by the borrower.</li>
+              <li>During the currency of CFPL’s credit facility(s), the borrower will not without CFPL’s prior <select class="select"><option>Permission</option><option>Intimation</option></select> in writing: 
+                <ol>
+                  <li>conclude any fresh borrowing arrangement either secured or unsecured with any other Bank or Financial Institutions, borrower or otherwise, not create any further charge over their fixed assets without our prior approval in writing. </li>
+                  <li>undertake any expansion or fresh project or acquire fixed assets, while normal capital expenditure, e.g. replacement of parts, can be incurred. </li>
+                  <li>invest by way of share capital in or lend or advance to or place deposits with any other concern (normal trade credit or security deposit in the routine course of business or advances to employees can, however, be extended). </li>
+                  <li>formulate any scheme of amalgamation with any other borrower or reconstruction, acquire any borrower. </li>
+                  <li>undertake guarantee obligations on behalf of any other borrower or any third party. </li>
+                  <li>declare dividend for any year except out of profits relating to that year after making all the due and necessary provisions provided that no default had occurred in any repayment obligation and Bank’s permission is obtained. </li>
+                  <li>make any repayment of the loans and deposits and discharge other liabilities except those shown in the funds flow statement submitted from time to time. </li>
+                  <li>make any change in their management set-up. </li>
+                </ol>
+              </li>
+                    </ol>
+                  </div>
               </div>
               @else 
               <div class="card card-color mb-0">
                 <div class="card-header">
-                  <a class="card-title ">Sanction letter for Supply Chain cannot be generated.</a>
+                  <a class="card-title ">Sanction letter for Supply Chain cannot be generated as limit offer has not added yet.</a>
                 </div>
               </div>
               @endif
