@@ -8,14 +8,14 @@
         <div class="row">
             <div class="form-group col-md-12">
                 <label for="company_name">Company Name</label>
-                <input type="text" class="form-control" id="name" name="company_name" placeholder="Enter Company Name" maxlength="50">
+                <input type="text" class="form-control" name="company_name" placeholder="Enter Company Name">
                 {!! $errors->first('company_name', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-12">
                 <label for="base_rate">Base Rate(%)</label>
-                <input type="text" class="form-control" id="name" name="base_rate" placeholder="Enter Base Rate Percentage" maxlength="50">
+                <input type="text" class="form-control" name="base_rate" placeholder="Enter Base Rate Percentage">
                 {!! $errors->first('base_rate', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -45,12 +45,14 @@
     $('#baseRateForm').validate({ // initialize the plugin
         rules: {
             company_name: {
-                required: true
+                required: true,
+                maxlength:200
             },
             base_rate: {
                 required: true,
                 digits:true,
                 maxlength:3,
+                max: 100
             },
             is_active: {
                 required: true,

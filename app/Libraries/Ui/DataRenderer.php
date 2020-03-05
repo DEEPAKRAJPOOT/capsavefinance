@@ -3127,7 +3127,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('mst_base_rate.company_name', 'like',"%$search_keyword%");
+                            $query->where('company_name', 'like',"%$search_keyword%");
                         });
                     }
                 })

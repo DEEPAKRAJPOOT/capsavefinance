@@ -631,7 +631,7 @@ class MasterRepository extends BaseRepositories implements MasterInterface
      * return array
      */
     public function getAllBaseRateList(){
-      $result = BaseRate::orderBy('id', 'DESC')->get();
+      $result = BaseRate::orderBy('id', 'DESC');
       return $result ?: false;
     }
     
