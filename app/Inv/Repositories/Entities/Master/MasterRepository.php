@@ -653,5 +653,10 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return $status ?: false;
 
     }
+    
+    public function getBaseRateDropDown()
+    {
+        return BaseRate::getBaseRateDropDown();
+    }
 
 }

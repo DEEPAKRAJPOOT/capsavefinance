@@ -55,12 +55,12 @@ class BaseRate extends BaseModel {
      *
      * @return type
      */
-//    public static function getIndustryDropDown()
-//    {
-//        $res = self::where('is_active', 1)->pluck('name', 'id');
-//        return $res ?: [];
-//    }
-//
+    public static function getBaseRateDropDown()
+    {
+        $res = self::where('is_active', 1)->pluck('base_rate', 'id');
+        return $res ?: [];
+    }
+
     public function userDetail(){
         return $this->belongsTo(User::class, 'created_by');
     }

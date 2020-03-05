@@ -96,7 +96,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-12" style="margin-top: -50px;">
+                                                    <div class="col-md-12" style="margin-top: -40px;">
                                                         <h5 class="card-title">Terms</h5>
                                                     </div>
 
@@ -172,19 +172,18 @@
                                                                         </div>
 
                                                                         <div class="col-md-6 floating" style="display:none; margin-top: -30px;">
-                                                                            <label for="txtCreditPeriod" >Select Linkage
-                                                                                <span class="error_message_label">*</span>
+                                                                            <label for="interest_linkage" >Select Linkage(%)
+                                                                                <span class="error_message_label"></span>
                                                                             </label>
                                                                             {!!
                                                                             Form::select('interest_linkage',
-                                                                            [
-                                                                            ''=>'Select Linkage', '12'=>'12%',   '15'=>'15%','20'=>'20%','25'=>'25%',
-                                                                            ],
+                                                                            $baserate_list,
                                                                             isset($subProgramData->interest_linkage) ? $subProgramData->interest_linkage : null,
                                                                             ['id' => 'interest_linkage',
                                                                             'class'=>'form-control',
                                                                             ])
                                                                             !!}
+                                                                            {!! $errors->first('interest_linkage', '<span class="error">:message</span>') !!}
                                                                         </div>
                                                                     </div>
                                                                 </div>
