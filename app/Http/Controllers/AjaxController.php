@@ -3910,6 +3910,13 @@ if ($err) {
         }
         return response()->json($status);
     }
+    
+    
+    public function getAllBaseRateList(DataProviderInterface $dataProvider) { 
+     $baseRateList = $this->masterRepo->getAllBaseRateList();
+     $baserates = $dataProvider->getBaseRateList($this->request, $baseRateList);
+     return $baserates;
+    }
 
     public function getColenderAppList(DataProviderInterface $dataProvider) {
         $appList = $this->application->getColenderApplications();

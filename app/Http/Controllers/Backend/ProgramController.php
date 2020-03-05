@@ -170,6 +170,8 @@ class ProgramController extends Controller {
             $charges = $this->appRepo->getChargesList()->toArray();
 
             $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
+            
+            $baserate_list = ['' => 'Select Base Rate'] + $this->master->getBaseRateDropDown()->toArray();
 
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
@@ -230,7 +232,8 @@ class ProgramController extends Controller {
                             'subProgramData',
                             'action',
                             'doaResult',
-                            'invoiceDataCount'
+                            'invoiceDataCount',
+                            'baserate_list'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

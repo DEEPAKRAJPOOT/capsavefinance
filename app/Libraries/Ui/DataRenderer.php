@@ -37,7 +37,7 @@ class DataRenderer implements DataProviderInterface
     }
 
     /**
-     * Initializationcreated_at
+     * Initialization created_at
      *
      * @param  void
      * @return void
@@ -1956,6 +1956,7 @@ class DataRenderer implements DataProviderInterface
      * @param type $program
      * @return type
      * 
+<<<<<<< HEAD
      * 
      * 
      *  {data: 'program_id'},
@@ -1965,6 +1966,8 @@ class DataRenderer implements DataProviderInterface
                 {data: 'anchor_sub_limit'},
                 {data: 'status'},
                 {data: 'action'}
+=======
+>>>>>>> 9ede22aabe48a87bd258a120f90c2d5a57f166f2
      */
     
     
@@ -3696,6 +3699,47 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
+    }
+
+
+    //Base Rate
+    public function getBaseRateList(Request $request, $baserates) {
+
+        return DataTables::of($baserates)
+                        ->rawColumns(['is_active'])
+                        ->addColumn(
+                                'name', function ($baserates) {
+                            return $baserates->company_name;
+                        })
+                        ->addColumn(
+                                'base_rate', function ($baserates) {
+                            return $baserates->base_rate;
+                        })
+                        ->addColumn(
+                                'created_at', function ($baserates) {
+                            return ($baserates->created_at) ? date('d-M-Y', strtotime($baserates->created_at)) : '---';
+                        })
+                        ->addColumn(
+                                'created_by', function ($baserates) {
+                            return $baserates->userDetail->f_name . ' ' . $baserates->userDetail->l_name;
+                        })
+                        ->addColumn(
+                                'is_active', function ($baserates) {
+                            $act = $baserates->is_active;
+                            $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBaseRateFrame" title="Edit Base Rate Detail" data-url ="' . route('edit_base_rate', ['id' => $baserates->id]) . '" data-height="250px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                            $status = '<div class="btn-group"><label class="badge badge-' . ($act == 1 ? 'success' : 'danger') . ' current-status">' . ($act == 1 ? 'Active' : 'In-Active') . '&nbsp; &nbsp;</label> &nbsp;' . $edit . '</div>';
+                            return $status;
+                        }
+                        )
+                        ->filter(function ($query) use ($request) {
+                            if ($request->get('search_keyword') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $search_keyword = trim($request->get('search_keyword'));
+                                    $query->where('company_name', 'like', "%$search_keyword%");
+                                });
+                            }
+                        })
+                        ->make(true);
     }
 
 }

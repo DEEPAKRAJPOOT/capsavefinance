@@ -26,5 +26,7 @@ return [
     'segment_edit_success' => 'Segment updated successfully',
     'equipment_edit_success' => 'Equipment Added successfully',
     'equipment_add_success' => 'Equipment updated successfully',
+    'base_rate_add_success' => 'Base Rate added successfully',
+    'base_rate_update_success' => 'Base Rate updated successfully',
 ];
 

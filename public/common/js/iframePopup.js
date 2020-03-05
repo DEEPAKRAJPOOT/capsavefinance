@@ -88,6 +88,8 @@ var iframe_ids = [
         'viewSharedColenderFrame',
         'viewInterestAccrual',
         'manageUserRolePassword',
+        'addBaseRateFrame',
+        'editBaseRateFrame'
     ];
 
 iframe_ids.forEach(function(id) {
