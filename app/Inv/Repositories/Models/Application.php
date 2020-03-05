@@ -9,6 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\Master\State;
+    use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class Application extends BaseModel
@@ -610,5 +613,22 @@ class Application extends BaseModel
         $result = self::where($where)->orderBy('app_id', $orderBy)->get();
         return $result ?: false;
     }
+    
+    /* get address  */
+    
+    public static function getUserAddress($app_id)
+    {
         
+        $biz_id =  self::where(['app_id' => $app_id])->pluck('biz_id');
+        return  BusinessAddress::whereIn('biz_id',$biz_id)->where(['address_type' => 0])->pluck('state_id')->first(); 
+        
+    }
+    
+    
+      public static  function companyAdress()
+    {
+        
+        return  Company::where(['company_id' => 1,'is_active' =>1])->pluck('state')->first(); 
+        
+    }   
 }
