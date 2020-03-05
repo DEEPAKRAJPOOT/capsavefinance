@@ -799,7 +799,7 @@ class ApplicationController extends Controller
                     $companyStateId = $this->appRepo->companyAdress();
                     // dd($companyStateId);
 						        if(isset($prcsAmt->offer)) {
-                        foreach ($prcsAmt->offer as $key => $offer) {;
+                        foreach ($prcsAmt->offer as $key => $offer) {
                           $pChargeId = config('lms')['TRANS_TYPE']['PROCESSING_FEE']; // 4
                           $dChargeId = config('lms')['TRANS_TYPE']['DOCUMENT_FEE']; // 20
 
@@ -827,18 +827,33 @@ class ApplicationController extends Controller
                                 $pfData['sgst'] = $pfWGst;
                               }
                           } 
-                          $pfDebitData = $this->createTransactionData($user_id, $pfData, null, 4);
-                          // dd($pfDebitData);
+                          $pfDebitData = $this->createTransactionData($user_id, $pfData, null, $pChargeId);
                           $pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
-
+                          
                           // $pfCreditData = $this->createTransactionData($user_id, $pfData, null, 4, 1);
                           // $pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
 
                           // $tranType = 20 for document fee acc. to mst_trans_type table
                           $df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+                          $dfData = [];
+                          $dfData['amount'] = $df;
+
+                          if($dPrgmChrg->is_gst_applicable == 1 ) {
+                              if($userStateId == $companyStateId) {
+                                $dfWGst = round((($df*18)/100),2);
+                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
+                                $dfData['igst'] = $dfWGst;
+                                
+                              } else {
+                                $dfWGst = round((($df*9)/100),2);
+                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
+                                $dfData['cgst'] = $dfWGst;
+                                $dfData['sgst'] = $dfWGst;
+                              }
+                          } 
                           $dfWGst = round((($df*18)/100),2);
 
-                          $dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+                          $dfDebitData = $this->createTransactionData($user_id, $dfData, null, $dChargeId);
                           $createTransaction = $this->appRepo->saveTransaction($dfDebitData);
 
                           // $dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
@@ -848,7 +863,6 @@ class ApplicationController extends Controller
                     }
                   	}
                 }
-                // die("here");
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
                 $roleArr = [$nextStage->role_id];
