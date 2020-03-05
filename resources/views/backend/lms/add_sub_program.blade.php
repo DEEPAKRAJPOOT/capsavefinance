@@ -172,7 +172,7 @@
                                                                         </div>
 
                                                                         <div class="col-md-6 floating" style="display:none; margin-top: -30px;">
-                                                                            <label for="interest_linkage" >Select Linkage(%)
+                                                                            <label for="interest_linkage" >Base Rate(%)
                                                                                 <span class="error_message_label"></span>
                                                                             </label>
                                                                             {!!

@@ -171,7 +171,7 @@ class ProgramController extends Controller {
 
             $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
             
-            $baserate_list = ['' => 'Select Linkage'] + $this->master->getBaseRateDropDown()->toArray();
+            $baserate_list = ['' => 'Select Base Rate'] + $this->master->getBaseRateDropDown()->toArray();
 
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
