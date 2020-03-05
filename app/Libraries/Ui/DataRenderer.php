@@ -3065,6 +3065,11 @@ class DataRenderer implements DataProviderInterface
                                 function ($data) {
                             return $data->disburse_amount;
                         })
+                        ->editColumn(
+                                'total_interest',
+                                function ($data) {
+                            return $data->total_interest;
+                        })
                         ->addColumn(
                                 'settlement_date',
                                 function ($data) {

@@ -85,9 +85,10 @@
                                                     <th>Due Date</th>
 													<th>Payment Due Date</th>
 													<th>Inv. Amount</th>
-													<th>disbursed Amount</th>
+													<th>Disbursed Amount</th>
 													<th>Disb. Status</th>
-													<th>actual funded Amount</th>
+                                                    <th>Actual Funded Amount</th>
+													<th>Interest Amount</th>
 													<th>Collection Date</th>
 													<th>Collection Amount</th>
 													<th>Accured Intrest</th>
