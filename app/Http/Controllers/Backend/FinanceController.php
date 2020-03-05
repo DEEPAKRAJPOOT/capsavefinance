@@ -100,6 +100,12 @@ class FinanceController extends Controller {
                     'trans_config_id'=>$transTypeId,
                     'journal_id'=>$journalId
                 ];
+
+                $recCount = $this->finRepo->checkTransJeData($transTypeId, $journalId);
+                if($recCount >0){
+                    Session::flash('error','Journal entry already exist for this transaction type.');
+                    return redirect()->back();
+                }
                 $outputQryJe = $this->finRepo->saveJeData($this->inputData);
                 if(isset($outputQryJe->je_config_id)) {
                     $this->inputData = [];

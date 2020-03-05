@@ -98,18 +98,24 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
         return FinancialTransConfig::where('trans_config_id', $transConfigId)->with('variables')->get(); 
     }
 
-    public function syncTransVarData($arrData, $transConfigId){
+    public function syncTransVarData($arrData, $transConfigId)
+    {
         $trans = FinancialTransConfig::find($transConfigId);
         return $trans->variablesMany()->sync($arrData);
     }
     
-    public function saveJournalData($arrData, $journalId){
+    public function saveJournalData($arrData, $journalId)
+    {
         return FinancialJournals::saveJournalData($arrData, $journalId);
     }
 
-    public function getJournalByJournalId($journalId)
+    public function getJournalByJournalId($journalId)    
     {
         return FinancialJournals::where('id', $journalId)->first();         
     } 
     
+    public function checkTransJeData($transTypeId, $journalId) 
+    {
+        return FinancialJeConfig::where(['trans_config_id'=> $transTypeId, 'journal_id'=> $journalId])->count();
+    }
 }
