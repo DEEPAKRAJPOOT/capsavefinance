@@ -3438,7 +3438,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'invoice_id',
                     function ($data) {
-                        return "<input type='checkbox' class='invoice_id' value=".$data->invoice_id.">";
+                        return "<input type='checkbox' class='disbursal_id' value=".$data->disbursal_id.">";
                     }
                 )
                 ->addColumn(

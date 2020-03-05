@@ -3869,15 +3869,16 @@ if ($err) {
             return response()->json(['status' => 0]); 
         }
     }
+    
     /**
      * Get all customer list
      *
      * @return json customer data
      */
-    public function lmsGetRefundCustomer(DataProviderInterface $dataProvider) {
-      $customersRefundList = $this->userRepo->lmsGetRefundList();
-      $users = $dataProvider->lmsGetRefundCustomers($this->request, $customersRefundList);
-      return $users;
+    public function lmsGetRefundList(DataProviderInterface $dataProvider) {
+      $refundList = $this->userRepo->lmsGetRefundList();
+      $data = $dataProvider->lmsGetRefundCustomers($this->request, $refundList);
+      return $data;
     }
     
 }

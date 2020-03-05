@@ -466,5 +466,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        public function getAllLmsUser(){
         $result=LmsUser::getLmsUser();
         return  $result? $result:false;
-       }            
+       }
+
+    public function getDisbursals($disburseIds)
+    {
+        return Disbursal::whereIn('disbursal_id', $disburseIds)
+               ->get();
+    }            
 }

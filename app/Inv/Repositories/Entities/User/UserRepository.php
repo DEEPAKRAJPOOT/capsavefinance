@@ -1556,7 +1556,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetRefundList()
     {
-        $result = Disbursal::lmsGetRefundCustomer();
+        $result = Disbursal::lmsGetRefundList();
         return $result ?: false;
     } 
 }

@@ -37,10 +37,9 @@
                 <div class="col-md-3 ml-auto text-right">
 
                     <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund by Bank</a>
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 2]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund Manually</a>
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund Manually</a>
                 </div>
-                <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
-                <input type="hidden" value="" name="user_ids" id="user_ids">  
+                <input type="hidden" value="" name="disbursal_ids" id="disbursal_ids">  
 
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -95,14 +94,14 @@
 
 <script>
 $(document).ready(function(){
-    $(document).on('change', '.invoice_id', function() {
+    $(document).on('change', '.disbursal_id', function() {
 
-        let current_invoice_ids = $('#invoice_ids').val();
+        let current_disbursal_ids = $('#disbursal_ids').val();
         let current_id = $(this).val();
         if($(this).is(':checked')){
-            $('#invoice_ids').val(current_invoice_ids+','+current_id);
+            $('#disbursal_ids').val(current_disbursal_ids+','+current_id);
         }else{
-            $('#invoice_ids').val(current_invoice_ids.replace(new RegExp(current_id, 'g'), ''));
+            $('#disbursal_ids').val(current_disbursal_ids.replace(new RegExp(current_id, 'g'), ''));
         }
     });
     

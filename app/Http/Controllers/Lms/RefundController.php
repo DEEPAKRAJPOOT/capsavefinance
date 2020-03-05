@@ -49,4 +49,38 @@ class RefundController extends Controller
 		return view('lms.refund.confirm_refund');              
 	}
 
+
+	public function sendRefund(Request $request)
+	{
+		$transId = $request->trans_id;
+		$disburseIds = $request->disbursal_ids;
+
+		$record = array_filter(explode(",",$disburseIds));
+
+		$allrecords = array_unique($record);
+		$allrecords = array_map('intval', $allrecords);
+
+		$allDisburse = $this->lmsRepo->getDisbursals($allrecords)->toArray();
+		foreach ($allDisburse as $disbursal) {
+			$refundMstId = (config('lms')['TRANS_TYPE']['PAYMENT_REVERSE']) ?? 2;
+			$data = [];
+			$data['amount'] = $disbursal['surplus_amount'];
+			$data['disbursal_id'] = $disbursal['disbursal_id'];
+			$transactionData = $this->createTransactionData($disbursal['user_id'],  $data, $transId, $refundMstId);
+			$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
+
+			if (!empty($createTransaction)) {
+				$disburseData = [];
+				$disburseData['surplus_amount'] = 0;
+				$updateDisburse = $this->lmsRepo->updateDisburse($disburseData, $disbursal['disbursal_id']);
+			}
+		}
+		
+		if (empty($allrecords)) {
+			return redirect()->route('lms_refund_list')->withErrors(trans('backend_messages.noSelectedInvoice'));
+		}
+        
+        Session::flash('message',trans('backend_messages.refunded'));
+		return redirect()->route('lms_refund_list');
+	}
 }

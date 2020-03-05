@@ -863,7 +863,7 @@ trait LmsTrait
         $transactionData['user_id'] = $userId ?? null;
         $transactionData['disbursal_id'] = $data['disbursal_id'] ?? null;
         $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
-        $transactionData['trans_date'] = ($data['trans_date'])?$data['trans_date']:\Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $transactionData['trans_date'] = (isset($data['trans_date']))?$data['trans_date']:\Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $transactionData['trans_type'] = $transType ?? 0;
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['amount'] = $data['amount'] ?? 0;

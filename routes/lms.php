@@ -131,6 +131,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@confirmRefund'
             ]);
             
+            Route::post('/send-refund', [
+                'as' => 'lms_send_refund',
+                'uses' => 'Lms\RefundController@sendRefund'
+            ]);
 
         });//end of application
 
