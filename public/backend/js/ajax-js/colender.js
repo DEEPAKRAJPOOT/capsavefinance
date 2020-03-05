@@ -13,6 +13,7 @@ try {
                 "method": 'POST',
                 data: function (d) {
                     d.search_keyword = $('input[name=search_keyword]').val();
+                    d.is_status = $('select[name=is_assign]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling

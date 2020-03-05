@@ -47,6 +47,16 @@
                     ])
                     !!}
                 </div>
+                <div class="col-md-4">
+
+                    {!!
+                    Form::select('is_assign',
+                    [''=>'Status', '0'=>'Pending','1'=> 'Accept', '2'=> 'Reject'],
+                    null,
+                    array('id' => 'is_active',
+                    'class'=>'form-control'))
+                    !!}
+                </div>
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     

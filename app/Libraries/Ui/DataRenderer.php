@@ -3116,8 +3116,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
+                    $status = $app->colender->co_lender_status;
                     //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
+                    return '<label class="badge '.(($status == 0)? "badge-primary":(($status == 1)? "badge-success": "badge-warning")).'">'.(($status == 0)? "Pending":(($status == 1)? "Accepted": "Rejected")).'</label>';
 
                 })
                 /*->addColumn(
@@ -3135,6 +3136,12 @@ class DataRenderer implements DataProviderInterface
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_id', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_status') != '') {                        
+                        $query->whereHas('colender', function($query1) use ($request) {
+                        $is_status = trim($request->get('is_status'));
+                            $query1->where('co_lender_status', $is_status);
                         });                        
                     }
                 })

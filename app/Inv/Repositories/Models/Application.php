@@ -599,7 +599,7 @@ class Application extends BaseModel
 
     protected static function getColenderApplications() 
     {  
-        $appData = self::distinct()->whereHas('colender')->select('app.user_id','app.app_id','app.loan_amt', 'users.agency_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
+        $appData = self::distinct()->whereHas('colender')->select('app.user_id','app.app_id','app.loan_amt', 'users.co_lender_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id');
                 //->where('users.agency_id', \Auth::user()->agency_id);
