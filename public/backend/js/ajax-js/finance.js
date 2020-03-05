@@ -47,6 +47,7 @@ try {
            columns: [
                     {data: 'name'},
                     {data: 'journal_type'},
+                    {data: 'is_active'},
                     {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]

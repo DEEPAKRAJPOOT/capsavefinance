@@ -188,7 +188,8 @@ class FinanceController extends Controller {
             $this->inputData = [];
             $this->inputData = [                
                 'name'=>$request->get('name'),               
-                'journal_type'=>$request->get('journal_type')
+                'journal_type'=>$request->get('journal_type'),
+                'is_active'=>$request->get('is_active')
             ];
 
             if(isset($journalId) && !empty($journalId)){

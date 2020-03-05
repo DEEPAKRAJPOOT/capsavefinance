@@ -42,6 +42,7 @@ class FinancialJournals extends BaseModel {
     protected $fillable = [
         'name',
         'journal_type', 
+        'is_active',
         'created_at',   
         'created_by',        
         'updated_at',
@@ -50,7 +51,7 @@ class FinancialJournals extends BaseModel {
 
     public static function getAllJournal() 
     {
-        $result = self::select('id','name','journal_type')->orderBy('id', 'DESC');
+        $result = self::select('id','name','journal_type', 'is_active')->orderBy('id', 'DESC');
         return $result;
     }
 

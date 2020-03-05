@@ -3115,6 +3115,11 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                         return $dataRecords->journal_type;
                     }) 
+                    ->editColumn(
+                        'is_active',
+                        function ($dataRecords) {
+                        return ($dataRecords->is_active==1) ? 'Yes' : 'No';
+                    }) 
                     ->addColumn(
                         'action',
                         function ($dataRecords) {

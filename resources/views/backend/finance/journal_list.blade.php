@@ -58,6 +58,24 @@
                 </div>
             </div>
             
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <div class="form-group">
+                    <label class="mb-0">Active</label>
+                    <span class="mandatory">*</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                    <select name="is_active" id="is_active" class="form-control form-control-sm">
+                        <option value="">Is Active</option>
+                        <option value="1" {{ (old('is_active') == '1')? 'selected': (isset($journalData->is_active) && $journalData->is_active=='1') ? 'selected' : ''}}>Yes</option>
+                        <option value="0" {{ (old('is_active') == '0')? 'selected': (isset($journalData->is_active) && $journalData->is_active=='0') ? 'selected' : ''}}>No</option>                  
+                    </select>
+                    </div>
+                </div>
+        </div>
 
             <div class="row align-items-center">
                 <div class="col-md-2">
@@ -82,6 +100,7 @@
                                 <tr role="row">
                                     <th>Name</th>
                                     <th>Journal Type</th>
+                                    <th>Active</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -114,7 +133,10 @@ var messages = {
                 },
                 "journal_type": {
                     required: true
-                }                
+                },
+                "is_active": {
+                    required: true
+                }                 
             }
         });
     });
