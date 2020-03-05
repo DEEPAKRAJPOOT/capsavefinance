@@ -74,6 +74,7 @@ class CamController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request){
+      return new \App\Mail\ReviewerSummary($this->mstRepo);
         try{
             $arrRequest['biz_id'] = $request->get('biz_id');
             $arrRequest['app_id'] = $request->get('app_id');
