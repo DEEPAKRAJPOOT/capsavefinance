@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <input  class="form-control" type="text" name="account_code" id="account_code" placeholder="Account Code" value="{{ old('account_code') ? old('account_code') : isset($accountData->account_code) ? $journalData->account_code : ''}}" />
+                        <input  class="form-control" type="text" name="account_code" id="account_code" placeholder="Account Code" value="{{ old('account_code') ? old('account_code') : isset($accountData->account_code) ? $accountData->account_code : ''}}" />
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <input  class="form-control" type="text" name="account_name" id="account_name" placeholder="Account Name" value="{{ old('account_name') ? old('account_name') : isset($accountData->account_name) ? $journalData->account_name : ''}}" />
+                        <input  class="form-control" type="text" name="account_name" id="account_name" placeholder="Account Name" value="{{ old('account_name') ? old('account_name') : isset($accountData->account_name) ? $accountData->account_name : ''}}" />
                     </div>
                 </div>
             </div>
@@ -94,6 +94,8 @@
                                 <tr role="row">
                                     <th>Code</th>
                                     <th>Name</th>
+                                    <th>Active</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>

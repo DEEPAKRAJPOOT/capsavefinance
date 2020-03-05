@@ -42,11 +42,20 @@ class FinanceController extends Controller {
             ->with([
             'journalData'=> $journalData,
             'journalId'=> $journalId
-            ]);;
+            ]);
     }  
 
-    public function getFinAccount() {
-        return view('backend.finance.account_list');
+    public function getFinAccount(Request $request) {
+        $accountData = '';
+        $accountId = $request->get('account_id');
+        if(isset($accountId) && !empty($accountId)){
+            $accountData = $this->finRepo->getAccountByAccountId($accountId); 
+        }
+        return view('backend.finance.account_list')
+            ->with([
+            'accountData'=> $accountData,
+            'accountId'=> $accountId
+            ]);;;
     }    
 
     public function getFinVariable() {

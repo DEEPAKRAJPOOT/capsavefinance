@@ -123,4 +123,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     {
         return FinancialAccount::saveAccountData($arrData, $accountId);
     }
+
+    public function getAccountByAccountId($accountId)    
+    {
+        return FinancialAccount::where('id', $accountId)->first();         
+    } 
 }

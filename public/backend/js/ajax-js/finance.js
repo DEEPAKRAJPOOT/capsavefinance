@@ -73,7 +73,9 @@ try {
             },
            columns: [
                     {data: 'account_code'},
-                    {data: 'account_name'}
+                    {data: 'account_name'},
+                    {data: 'is_active'},
+                    {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

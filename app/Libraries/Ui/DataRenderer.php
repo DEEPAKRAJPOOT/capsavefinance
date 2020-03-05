@@ -3143,6 +3143,17 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                         return $dataRecords->account_name;
                     }) 
+                    ->editColumn(
+                        'is_active',
+                        function ($dataRecords) {
+                        return ($dataRecords->is_active==1) ? 'Yes' : 'No';
+                    }) 
+                    ->addColumn(
+                        'action',
+                        function ($dataRecords) {
+                            return '<a class="btn btn-action-btn btn-sm" href ="'.route('get_fin_account', ['account_id' => $dataRecords->id]).'"><i class="fa fa-edit">Edit</a>';
+                        }
+                    )
                     ->make(true);
         }
 
