@@ -81,7 +81,9 @@
                             <option value="">Select Journal</option>
                             @if(isset($journals) && !empty($journals))
                                 @foreach($journals as $key=>$val)
-                                <option value="{{$val->id}}" {{ (old('journal') == $val->id)? 'selected': (isset($journalId) && $journalId==$val->id) ? 'selected' : ''}}> {{$val->name}} </option>                            
+                                    @if($val->is_active==1)
+                                    <option value="{{$val->id}}" {{ (old('journal') == $val->id)? 'selected': (isset($journalId) && $journalId==$val->id) ? 'selected' : ''}}> {{$val->name}} </option>                            
+                                    @endif
                                 @endforeach
                             @endif
                         </select>

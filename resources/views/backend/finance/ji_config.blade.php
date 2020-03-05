@@ -41,7 +41,9 @@
                      <option value="">Select Account Type</option>
                      @if(isset($accounts) && !empty($accounts))
                         @foreach($accounts as $key=>$val)
-                        <option value="{{$val->id}}" {{ (old('account') == $val->id)? 'selected': (isset($jiConfigData->account_id) && $jiConfigData->account_id==$val->id) ? 'selected' : ''}}> {{$val->account_name}} - {{$val->account_code}} </option>                            
+                           @if($val->is_active==1)
+                           <option value="{{$val->id}}" {{ (old('account') == $val->id)? 'selected': (isset($jiConfigData->account_id) && $jiConfigData->account_id==$val->id) ? 'selected' : ''}}> {{$val->account_name}} - {{$val->account_code}} </option>                            
+                           @endif
                         @endforeach
                      @endif
                </select>
