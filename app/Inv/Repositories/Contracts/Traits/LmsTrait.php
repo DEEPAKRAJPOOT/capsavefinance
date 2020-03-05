@@ -91,8 +91,6 @@ trait LmsTrait
             $reculateInterest = false;
             while (strtotime($intAccrualDt) <= strtotime($currentDate)) {
 
-
-                
                 $interestRate = $disburse->interest_rate;
                 if ($intAccrualDt > $gracePeriodDate && $balancePrincipalAmt > 0) {
                     $interestRate = $overdueIntRate;
@@ -581,12 +579,10 @@ trait LmsTrait
                         if($trans['balance_amount']>=$interestOverdue)
                         {
                             $disbursal['total_repaid_amt'] += $interestOverdue; 
-                            $repaidAmount += $interestOverdue;
                             $trans['balance_amount'] -= $interestOverdue;                 
                         }else
                         {
                             $disbursal['total_repaid_amt'] += $trans['balance_amount'];
-                            $repaidAmount += $trans['balance_amount'];
                             $trans['balance_amount'] -= $trans['balance_amount'];
                         }
                         $settlementLevel = 1;
@@ -638,25 +634,12 @@ trait LmsTrait
 
                     $invoiceRepayment['user_id'] = $transDetail['user_id'];
                     $invoiceRepayment['invoice_id'] = $disbursalDetail->invoice_id;
-                    $invoiceRepayment['repaid_amount'] = round($disbursal['settlement_amount'],2);
+                    $invoiceRepayment['repaid_amount'] = round($repaidAmount,2);
                     $invoiceRepayment['repaid_date'] = $transDetail['trans_date'];
                     
                     $transactionData['repaymentTrail'][] = $invoiceRepayment;
                     $transactionData['disbursal'][$disbursalDetail->disbursal_id] = $disbursal;
                     
-                    if($disbursal['settlement_amount']>0)
-                    {   
-                        if($settlementLevel=='2'){
-                            $knockOffData = $this->createTransactionData($transDetail['user_id'], [
-                                'amount' => $disbursal['settlement_amount'],
-                                'trans_date'=>$transDetail['trans_date'],
-                                'disbursal_id'=>$disbursalDetail->disbursal_id,
-                                'parent_trans_id'=>$transId
-                            ], null, ($is_inv_settled==2)?config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'):config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF'), 0);
-                            $transactionData['knockOff'][] = $knockOffData;
-                        }
-                    }
-
                     if($interestOverdue>0)
                     {
                         if($settlementLevel=='2'){
@@ -670,12 +653,25 @@ trait LmsTrait
                         }
                         elseif($settlementLevel=='1'){
                             $interestPaid = $this->createTransactionData($transDetail['user_id'], [
-                                'amount' => $repaidAmount,
+                                'amount' => $interestOverdue,
                                 'trans_date'=>$transDetail['trans_date'],
                                 'disbursal_id'=>$disbursalDetail->disbursal_id,
                                 'parent_trans_id'=>$transId
                             ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
                             $transactionData['interestPaid'][] = $interestPaid;
+                        }
+                    }
+
+                    if($repaidAmount>0)
+                    {   
+                        if($settlementLevel=='2'){
+                            $knockOffData = $this->createTransactionData($transDetail['user_id'], [
+                                'amount' =>  $repaidAmount,
+                                'trans_date'=>$transDetail['trans_date'],
+                                'disbursal_id'=>$disbursalDetail->disbursal_id,
+                                'parent_trans_id'=>$transId
+                            ], null, ($is_inv_settled==2)?config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'):config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF'), 0);
+                            $transactionData['knockOff'][] = $knockOffData;
                         }
                     }
                     

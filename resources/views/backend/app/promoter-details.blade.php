@@ -1031,6 +1031,12 @@
 
         $('.isloader').show();
         var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
+        if(CIN=='')
+        {
+             $('.isloader').hide();
+             $('#btnAddMore').trigger('click'); 
+             return false;
+        }
         var consent = "Y";
         var dataStore = ({'consent': consent, 'entityId': CIN,'_token': messages.token});
         var postData = dataStore;

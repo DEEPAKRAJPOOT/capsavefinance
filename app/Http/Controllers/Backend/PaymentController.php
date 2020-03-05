@@ -52,6 +52,7 @@ class PaymentController extends Controller {
        $bank = DB::table('mst_bank')->where(['is_active' => 1])->get();  
        //$result  =  $this->invRepo->getCustomerId();
        $tranType=$this->lmsRepo->getManualTranType();
+       //dd($tranType);
        $getGstDropVal=$this->lmsRepo->getActiveGST();
        $result= $this->lmsRepo->getAllLmsUser();     
       return view('backend.payment.add_payment')->with(['bank' => $bank,'customer' => $result, 'tranType'=>$tranType, 'getGstDropVal'=>$getGstDropVal]);
@@ -252,6 +253,7 @@ class PaymentController extends Controller {
     
     $principalSettled = Transactions::whereIn('disbursal_id',$disbursalIds)
     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
+    ->where('parent_trans_id','=',$transId)
     ->sum('amount');
     
     $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)

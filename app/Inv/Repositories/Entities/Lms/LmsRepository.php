@@ -9,6 +9,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppProgramOffer;
@@ -312,7 +313,35 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        
                
     }  
+      /****
+     * get address
+     */
+      public static function getUserAddress($app_id)
+    {
+       try
+       {
+          return Application::getUserAddress($app_id); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    }
     
+     /****
+     * get address
+     */
+      public static function companyAdress()
+    {
+       try
+       {
+          return Application::companyAdress(); 
+       } catch (Exception $ex) {
+          return $ex;
+       }
+       
+               
+    } 
     public static function getUserDetails($uid)
     {
        try
