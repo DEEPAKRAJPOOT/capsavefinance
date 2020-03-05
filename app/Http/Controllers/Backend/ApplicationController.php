@@ -684,14 +684,16 @@ class ApplicationController extends Controller
                 }
             } else {
                 $roleDropDown = $this->userRepo->getAllRole()->toArray();
-            }            
+            }        
+            $appData = $this->appRepo->getAppData($app_id);            
             return view('backend.app.next_stage_confirmBox')
                 ->with('app_id', $app_id)
                 ->with('roles', $roleDropDown)
                 ->with('user_id', $user_id)
                 ->with('assign_case', $assign_case)    
                 ->with('curr_role_id', $curr_role_id)
-                ->with('next_role_id', $next_role_id);
+                ->with('next_role_id', $next_role_id)
+                ->with('biz_id', $appData->biz_id);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
