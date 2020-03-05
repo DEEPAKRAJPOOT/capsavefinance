@@ -354,6 +354,7 @@ class CamController extends Controller
           $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
         }
       } 
+      $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
 
 
       return view('backend.cam.reviewer_summary', [
@@ -365,7 +366,8 @@ class CamController extends Controller
         'preCondArr' => $preCondArr,
         'postCondArr' => $postCondArr,
         'arrStaticData' => $arrStaticData,
-        'facilityTypeList' => $facilityTypeList
+        'facilityTypeList' => $facilityTypeList,
+        'supplyOfferData' => $supplyOfferData
       ]);
     }
 
@@ -398,22 +400,22 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      // if( env('SEND_MAIL_ACTIVE') == 1){
-      //   Mail::to(explode(',', env('SEND_MAIL')))
-      //     ->bcc(explode(',', env('SEND_MAIL_BCC')))
-      //     ->cc(explode(',', env('SEND_MAIL_CC')))
-      //     ->send(new ReviewerSummary($this->mstRepo));
+      if( env('SEND_MAIL_ACTIVE') == 1){
+        Mail::to(explode(',', env('SEND_MAIL')))
+          ->bcc(explode(',', env('SEND_MAIL_BCC')))
+          ->cc(explode(',', env('SEND_MAIL_CC')))
+          ->send(new ReviewerSummary($this->mstRepo));
 
-      //   if(count(Mail::failures()) > 0 ) {
-      //     Session::flash('error',trans('Mail not sent, Please try again later..'));
-      //   } else {
-      //     Session::flash('message',trans('Mail sent successfully.'));        
-      //   }
-      // } else {
-      //   Session::flash('message',trans('Mail not sent, Please try again later.')); 
-      // }
-      // return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-      return new \App\Mail\ReviewerSummary($this->mstRepo);        
+        if(count(Mail::failures()) > 0 ) {
+          Session::flash('error',trans('Mail not sent, Please try again later..'));
+        } else {
+          Session::flash('message',trans('Mail sent successfully.'));        
+        }
+      } else {
+        Session::flash('message',trans('Mail not sent, Please try again later.')); 
+      }
+      return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+      //return new \App\Mail\ReviewerSummary($this->mstRepo);        
     }
 
      public function uploadFinanceXLSX(Request $request){

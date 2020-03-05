@@ -504,6 +504,7 @@ table.remove-tr-bg tbody tr{
     vertical-align: top;}
 .overview-table.table td{border-left: 1px solid #e9ecef; vertical-align:middle;   position: relative;  }
 	.data{    border: 1px solid #e9ecef;
+              padding: 0px;
    }
 .sub-title{    font-size: 15px;
    }	

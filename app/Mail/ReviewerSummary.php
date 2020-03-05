@@ -84,7 +84,8 @@ class ReviewerSummary extends Mailable
         $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
         $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
         $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
-        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');      
+        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');   
+        $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain   
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
@@ -93,7 +94,10 @@ class ReviewerSummary extends Mailable
             'postCondArr' => $postCondArr,
             'leaseOfferData'=> $leaseOfferData,
             'arrStaticData' => $arrStaticData,
-            'facilityTypeList' => $facilityTypeList
+            'facilityTypeList' => $facilityTypeList,
+            'supplyOfferData' => $supplyOfferData
+
+
         ]);
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
