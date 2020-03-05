@@ -10,4 +10,8 @@ class FinanceHelper {
     public function __construct(FinanceInterface $finRepo) {
         $this->finRepo = $finRepo;
     }
+
+    public static function test(){
+        dd('kkkk');
+    }
 }
