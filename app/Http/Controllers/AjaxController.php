@@ -3875,8 +3875,7 @@ if ($err) {
      * @return json customer data
      */
     public function lmsGetRefundCustomer(DataProviderInterface $dataProvider) {
-      $customersRefundList = $this->userRepo->lmsGetRefundCustomer();
-      // dd($customersRefundList);
+      $customersRefundList = $this->userRepo->lmsGetRefundList();
       $users = $dataProvider->lmsGetRefundCustomers($this->request, $customersRefundList);
       return $users;
     }

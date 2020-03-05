@@ -731,7 +731,7 @@ Route::group(
 
     Route::post('lms-get-refund-customer', [
         'as' => 'lms_get_refund_customer',
-        'uses' => 'AjaxController@lmsGetRefundCustomer'
+        'uses' => 'AjaxController@lmsGetRefundList'
     ]);
     
     

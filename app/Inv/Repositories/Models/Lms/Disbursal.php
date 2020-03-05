@@ -267,7 +267,7 @@ class Disbursal extends BaseModel {
 		return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1, 'is_default' => 1]);
 	}
 
-	public static function lmsGetRefundCustomer()
+	public static function lmsGetRefundList()
 	{
 		return self::with([])
 				->where('surplus_amount', '!=', [0])

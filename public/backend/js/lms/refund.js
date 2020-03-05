@@ -17,7 +17,7 @@ try {
                 },
                 "error": function () {  // error handling
 
-                    $("#refundCustomerList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#refundCustomerList").append('<tbody class="appList-error"><tr><th colspan="8">' + messages.data_not_found + '</th></tr></tbody>');
                     $("#refundCustomerList_processing").css("display", "none");
                 }
             },
