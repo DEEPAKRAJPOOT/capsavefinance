@@ -139,12 +139,12 @@
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Apply Loan Amount: </b> </td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->prgm_limit_amt}}</td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Documentation Fee (%): </b></td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->document_fee}}</td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->document_fee}} %</td>
                           </tr>
                           
                           <tr>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Interest Rate(%): </b></td>
-                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->interest_rate}}</td>
+                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->interest_rate}} %</td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Tenor (Days) : </b></td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->tenor}}</td>
                           </tr>
@@ -152,19 +152,19 @@
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Tenor for old invoice (Days): </b></td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->tenor_old_invoice}}</td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Margin (%): </b></td>
-                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->margin}}</td>
+                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->margin}} %</td>
                           </tr>
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Overdue Interest Rate (%): </b></td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->overdue_interest_rate}}</td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->overdue_interest_rate}} %</td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Adhoc Interest Rate (%): </b></td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->adhoc_interest_rate}}</td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->adhoc_interest_rate}} %</td>
                           </tr>
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Grace Period (Days): </b></td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->grace_period}}</td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Processing Fee (%): </b></td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->processing_fee}}</td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->processing_fee}} %</td>
                           </tr>
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comment: </b></td>

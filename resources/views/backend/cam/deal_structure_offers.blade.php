@@ -130,12 +130,12 @@
                   <td><b>Apply Loan Amount: </b> </td>
                   <td>{{$supplyOffer->prgm_limit_amt}}</td>
                   <td><b>Documentation Fee (%): </b></td>
-                  <td>{{$supplyOffer->document_fee}}</td>
+                  <td>{{$supplyOffer->document_fee}} %</td>
               </tr>
               
               <tr>
                  <td><b>Interest Rate(%): </b></td>
-                 <td>{{$supplyOffer->interest_rate}}</td>
+                 <td>{{$supplyOffer->interest_rate}} %</td>
                  <td><b>Tenor (Days) : </b></td>
                  <td>{{$supplyOffer->tenor}}</td>
               </tr>
@@ -143,19 +143,19 @@
                  <td><b>Tenor for old invoice (Days): </b></td>
                  <td>{{$supplyOffer->tenor_old_invoice}}</td>
                  <td><b>Margin (%): </b></td>
-                 <td>{{$supplyOffer->margin}}</td>
+                 <td>{{$supplyOffer->margin}} %</td>
               </tr>
               <tr>
                   <td><b>Overdue Interest Rate (%): </b></td>
-                  <td>{{$supplyOffer->overdue_interest_rate}}</td>
+                  <td>{{$supplyOffer->overdue_interest_rate}} %</td>
                   <td><b>Adhoc Interest Rate (%): </b></td>
-                  <td>{{$supplyOffer->adhoc_interest_rate}}</td>
+                  <td>{{$supplyOffer->adhoc_interest_rate}} %</td>
               </tr>
               <tr>
                   <td><b>Grace Period (Days): </b></td>
                   <td>{{$supplyOffer->grace_period}}</td>
                   <td><b>Processing Fee (%): </b></td>
-                  <td>{{$supplyOffer->processing_fee}}</td>
+                  <td>{{$supplyOffer->processing_fee}} %</td>
               </tr>
               <tr>
                   <td><b>Comment: </b></td>
