@@ -224,6 +224,14 @@ trait ApplicationTrait
         $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
         $AppLimitData  = $this->appRepo->getAppLimit($appId);
         $supplyChainOfferData = $this->appRepo->appOfferWithLimit($appId);
+
+        $user = $this->appRepo->getAppData($appId)->user;
+        $anchors = $user->anchors;
+        $anchorArr=[];
+        foreach($anchors as $anchor){
+          $anchorArr[$anchor->anchor_id]  = $anchor->toArray();
+        }
+
         $ProgramData = $supplyChainOffer = [];
         if ($supplyChainOfferData->count()) {
             $supplyChainOfferData = $supplyChainOfferData[0];
@@ -265,6 +273,7 @@ trait ApplicationTrait
         $data['tot_limit_amt'] = $tot_limit_amt;
         $data['offerData'] = $offerData;
         $data['bizOwnerData'] = $bizOwnerData;
+        $data['anchorData'] = $anchorArr;
         return $data;
     }
 }
