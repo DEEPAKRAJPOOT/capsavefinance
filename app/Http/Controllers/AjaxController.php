@@ -3880,8 +3880,17 @@ if ($err) {
         }
     }
     
-
-
+    /**
+     * Get all customer list
+     *
+     * @return json customer data
+     */
+    public function lmsGetRefundList(DataProviderInterface $dataProvider) {
+      $refundList = $this->userRepo->lmsGetRefundList();
+      $data = $dataProvider->lmsGetRefundCustomers($this->request, $refundList);
+      return $data;
+    }
+    
     public function getGroupCompanyExposure(Request $request ){
         $groupId = $request->get('groupid');
         $arrData = GroupCompanyExposure::where(['group_Id'=>$groupId, 'is_active'=>1])->groupBy('group_company_name')->get();
@@ -3900,5 +3909,4 @@ if ($err) {
         }
         return response()->json($status);
     }
-
 }
