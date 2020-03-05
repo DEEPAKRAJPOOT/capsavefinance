@@ -759,7 +759,7 @@
               @else 
               <div class="card card-color mb-0">
                 <div class="card-header">
-                  <a class="card-title ">Sanction letter for Supply Chain cannot be generated for this application.</a>
+                  <a class="card-title ">Sanction letter for Supply Chain cannot be generated.</a>
                 </div>
               </div>
               @endif
