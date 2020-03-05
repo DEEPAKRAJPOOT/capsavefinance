@@ -213,4 +213,23 @@ class Transactions extends BaseModel {
     {
        return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
     }
+
+    /**
+    * Get Transaction Type and Charge Name 
+    */
+    public function getTransNameAttribute(){
+        if($this->trans_detail->chrg_master_id!='0'){
+            if($this->entry_type == 0){
+                return $this->trans_detail->charge->debit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->charge->credit_desc;
+            }
+        }else{
+            if($this->entry_type == 0){
+                return $this->trans_detail->debit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->credit_desc;
+            }
+        }
+    }
 }
