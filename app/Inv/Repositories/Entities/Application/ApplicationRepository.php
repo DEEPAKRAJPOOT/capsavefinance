@@ -1258,8 +1258,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->get();
     }
 
-    public function getOfferStatus($appId){
-        return AppProgramOffer::getOfferStatus($appId);
+    public function getOfferStatus($appId, $where_condition){
+        return AppProgramOffer::getOfferStatus((int)$appId, $where_condition);
     }
 
     public function changeOfferApprove($appId){

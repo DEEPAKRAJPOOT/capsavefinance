@@ -299,7 +299,7 @@ class AppProgramOffer extends BaseModel {
         return $tot_offered_limit;
     }
 
-    public static function getOfferStatus($appId){
+    public static function getOfferStatus($appId, $where_condition){
         if(empty($appId)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
@@ -307,7 +307,7 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        return AppProgramOffer::where(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL])->count();
+        return AppProgramOffer::where($where_condition)->count();
     }
 
     public static function changeOfferApprove($appId){

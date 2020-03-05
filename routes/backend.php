@@ -1192,7 +1192,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             Route::get('application/view-offer', [
                 'as' => 'colender_view_offer',
-                'uses' => 'Backend\ApplicationController@showOffer'
+                'uses' => 'Master\CoLenderControllers@showOffer'
+            ]);
+
+            Route::post('accept-offer', [
+                'as' => 'accept_offer_by_colender',
+                'uses' => 'Master\CoLenderControllers@acceptOffer'
             ]);
          }); 
         //colender route 
