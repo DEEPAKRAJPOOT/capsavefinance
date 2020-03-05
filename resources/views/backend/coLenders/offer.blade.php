@@ -245,7 +245,7 @@ tr.border_bottom td {
                         </div>
                     </div>
                     @endif
-                    @if($offerStatus != 0 && $colenderShare->co_lender_status == 0)
+                    @if($offerStatus != 0 && ($colenderShare && $colenderShare->co_lender_status == 0))
                     <form method="POST" action="{{route('accept_offer_by_colender')}}">
                         <div class="row">
                         @csrf
