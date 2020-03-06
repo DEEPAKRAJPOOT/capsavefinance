@@ -128,4 +128,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     {
         return FinancialAccount::where('id', $accountId)->first();         
     } 
+
+    public function getAllJeConfigByTransConfigId($transConfigId)
+    {
+        return FinancialJeConfig::getAllJeConfigByTransConfigId($transConfigId);         
+    }
 }

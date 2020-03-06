@@ -79,4 +79,15 @@ class FinancialJeConfig extends BaseModel {
         return $result ? $result[0] : false;    
     }
 
+    public static function getAllJeConfigByTransConfigId($transConfigId){
+        $result = \DB::select("SELECT rta_financial_je_config.je_config_id,rta_financial_je_config.trans_config_id, rta_financial_je_config.journal_id, rta_financial_trans_config.trans_type, rta_financial_journals.name as journal_name, rta_financial_journals.journal_type,A.variable_name,A.sys_func_name FROM rta_financial_je_config
+        JOIN rta_financial_trans_config ON (rta_financial_trans_config.trans_config_id=rta_financial_je_config.trans_config_id)
+        JOIN rta_financial_journals ON (rta_financial_journals.id=rta_financial_je_config.journal_id)
+        JOIN 
+        (SELECT rfvtc.trans_config_id,GROUP_CONCAT(distinct(rfv.name)) AS variable_name,GROUP_CONCAT(distinct(rfv.sys_func_name)) AS sys_func_name FROM rta_financial_variables_trans_config
+         as rfvtc JOIN rta_financial_variables as rfv ON (rfv.id=rfvtc.variable_id)
+        GROUP BY rfvtc.trans_config_id) AS A ON (A.trans_config_id=rta_financial_je_config.trans_config_id)
+        WHERE rta_financial_je_config.trans_config_id = ?", [$transConfigId]);
+        return empty($result) ? false : $result;    
+    }
 }
