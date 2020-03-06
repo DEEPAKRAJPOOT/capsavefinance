@@ -13,7 +13,7 @@ use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
-
+use App\Inv\Repositories\Models\LmsUser;
 
 class User extends Authenticatable
 {
@@ -621,8 +621,8 @@ class User extends Authenticatable
 
      public static function getProgramUser($user_id)
     {
-         $appIds = Application::where('user_id', $user_id)->pluck('app_id');
-         $proId =  AppProgramOffer::whereHas('productHas')->whereIn('app_id', $appIds)->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->pluck('app_prgm_limit_id');
+         $appIds =    LmsUser::where('user_id',$user_id)->pluck('app_id');
+         $proId =  AppProgramOffer::whereHas('productHas')->whereIn('app_id', $appIds)->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->pluck('prgm_id');
          return Program::whereIn('prgm_id', $proId)->get();
       }
     
