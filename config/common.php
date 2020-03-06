@@ -134,7 +134,7 @@ return [
         'Sales' => 'Sales',        
         'Miscellaneous' => 'Miscellaneous'
     ], 
-    'TRANS_TYPE' => [
+    'TRANS_CONFIG_TYPE' => [
         'DISBURSAL' => 1,
         'PAYMENT' => 2,
         'REPAYMENT' => 3,
