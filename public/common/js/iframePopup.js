@@ -90,6 +90,7 @@ var iframe_ids = [
         'manageUserRolePassword',
         'addBaseRateFrame',
         'editBaseRateFrame'
+        'previewSupplyChainSanctionLetter',
     ];
 
 iframe_ids.forEach(function(id) {
