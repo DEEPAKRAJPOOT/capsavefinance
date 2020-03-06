@@ -2583,26 +2583,30 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'limit',
                     function ($customer) {
-                        // $limit = '';
-                        // if(isset($customer->prgmLimit)) {
-                        //     foreach ($documents->product_document as $value) {
-                        //         $productTypes .= $value->product->product_name.', ';
-                        //     }
-                        // }
-                        // return rtrim($productTypes, ', ');
-                    return 12;
-
+                        $this->totalLimit = 0;
+                        if(isset($customer->user->app->prgmLimits)) {
+                            foreach ($customer->user->app->prgmLimits as $value) {
+                                $this->totalLimit += $value->limit_amt;
+                            }
+                        }
+                    return $this->totalLimit;
                 })
                 ->editColumn(
                     'consume_limit',
                     function ($customer) {
-                    return 12;
+                        $this->totalCunsumeLimit = 0;
+                        if(isset($customer->user->app->acceptedOffers)) {
+                            foreach ($customer->user->app->acceptedOffers as $value) {
+                                $this->totalCunsumeLimit += $value->prgm_limit_amt;
+                            }
+                        }
+                    return $this->totalCunsumeLimit;
                 })
                 ->editColumn(
                     'available_limit',
                     function ($customer) {
                     
-                    return 12;
+                    return $this->totalLimit - $this->totalCunsumeLimit;
                 })
                 ->editColumn(
                     'anchor',
