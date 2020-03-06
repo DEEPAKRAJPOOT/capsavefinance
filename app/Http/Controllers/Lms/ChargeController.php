@@ -101,13 +101,19 @@ class ChargeController extends Controller
                     $percent  = 0; 
                     if($request->is_gst_applicable==1)
                    {
-                       $totalSumAmount  =  $request->charge_amount_gst_new;  
-                       $is_gst   = 1; 
+                        $totalSumAmount  =  $request->charge_amount_gst_new;  
+                        $cgst = 0;
+                        $sgst = 0; 
+                        $igst =  18;
+                        $is_gst   = 1;  
                    }
                    else
                    {
                         $totalSumAmount  =  $request->amount; 
-                         $is_gst   = 0; 
+                        $cgst = 9;
+                        $sgst = 9;
+                        $igst =  0;
+                        $is_gst   = 0;  
                    }
                    $chrg_applicable_id = null;
                  }
