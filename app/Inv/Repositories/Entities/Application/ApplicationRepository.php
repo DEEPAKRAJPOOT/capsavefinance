@@ -1258,8 +1258,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->get();
     }
 
-    public function getOfferStatus($appId, $where_condition){
-        return AppProgramOffer::getOfferStatus((int)$appId, $where_condition);
+    public function getOfferStatus($where_condition){
+        return AppProgramOffer::getOfferStatus($where_condition);
     }
 
     public function changeOfferApprove($appId){
@@ -1593,5 +1593,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getColenderApplications() 
     {
         return Application::getColenderApplications();
+    }
+
+    /**
+     * Get Approval status against appId
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */    
+    public function getAppApprovers($app_id)
+    {
+        return AppApprover::getAppApprovers($app_id);
     }
 }

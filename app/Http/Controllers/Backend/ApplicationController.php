@@ -162,10 +162,18 @@ class ApplicationController extends Controller
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
+        if($getCin)
+        {
+            $cin =    $getCin->cin; 
+        }
+        else
+        {
+            $cin =    ""; 
+        }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
-            'cin_no' => ($getCin->cin) ? $getCin->cin : '',
+            'cin_no' => $cin,
             'appId' => $appId, 
             'bizId' => $bizId,
             'edit' => $editFlag
@@ -997,7 +1005,7 @@ class ApplicationController extends Controller
         $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
         $termOfferData = $this->appRepo->getAllOffers($appId, 2);//for term loan
         $leaseOfferData = $this->appRepo->getAllOffers($appId, 3);//for lease loan
-        $offerStatus = $this->appRepo->getOfferStatus($appId, ['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL]);//to check the offer status
+        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL]);//to check the offer status
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
         $viewGenSancLettertBtn = ($currentStage && $currentStage->role_id == $roleData[0]->id) ? 1 : 0;
