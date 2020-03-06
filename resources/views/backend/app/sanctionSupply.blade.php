@@ -1,0 +1,649 @@
+@extends('layouts.backend.admin-layout')
+@section('additional_css')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysiwyg/0.3.3/bootstrap3-wysihtml5.min.css" />
+@endsection
+@section('content')
+@include('layouts.backend.partials.admin-subnav')
+<style>
+  h5{ 
+    margin:0px;
+    font-size: 14px;
+    margin-bottom:15px;
+  }
+  .table{
+    width:100%; 
+    font-family:Arial;font-size: 14px; 
+  }
+  .table > thead > tr > th,.table > tbody > tr > td{
+    padding:5px 10px;
+    text-align:left;
+  }
+  .table-border{
+    border:#ccc solid 1px;
+  }
+  .table-border>thead>tr>th,.table-border>tbody>tr>td {
+    -webkit-print-color-adjust: exact;
+    color: #000000;
+    border-right: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+    vertical-align: top;
+    font-size: 14px;
+    text-align:left;
+  }
+  .table-border>thead>tr>th:last-child,.table-border>tbody>tr>td:last-child{ 
+    border-right:none;
+  }
+  .table-border>tbody>tr:last-child>td{
+    border-bottom:none;
+  }
+  .blank{
+    background-color:#cccccc !important;
+    -webkit-print-color-adjust: exact;
+  }
+  .table-border.table-inner{
+    border:none; margin:0px;
+  }
+  .pd-0{
+    padding:0px !important;
+  }
+  .select{
+    width: 150px;
+    height: 27px;
+    padding: 0 5px;
+    border: #ccc solid 1px;
+    border-radius: 2px;
+    margin-top: 5px;
+    background-color: #FFF;
+  }
+  .input_sanc{
+    width: 100%;
+    height: 27px;
+    border: none;
+    padding: 0 5px;
+    border-radius: 2px;
+    margin-top: 2px;
+    background-color: #FFF;
+  }
+  .input_sanc:focus{
+    border: #ccc solid 1px;
+  }
+  .offerdiv{
+    border: 2px solid #cccccc;
+    margin-bottom: 20px;
+  }
+  .offerdiv h5{
+    background-color: #ccc;
+    padding: 10px;
+    margin-bottom: 0;
+  }
+  .section6>ol>li{
+    padding: 2px;
+  }
+</style>
+<style media="print">
+  .height{
+    height:48px;
+  }
+</style>
+<div class="content-wrapper">
+  <div class="row grid-margin mt-3 mb-2">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="tab-content">
+            <div id="sanctionSupplyChain" class="tab-pane fadein active">
+              <form action="{{route('save_sanction_letter_supplychain')}}" method="POST">
+                @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
+                <div class="form-fields">
+                  <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
+                  <table class="table" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td><b>To</b></td>
+                    </tr>
+                    <tr>
+                      <td>{{$supplyChaindata['ConcernedPersonName']}}</td>
+                    </tr>
+                    <tr>
+                      <td>{{$supplyChaindata['EntityName']}}</td>
+                    </tr>
+                    <tr>
+                      <td>{{$supplyChaindata['Address']}}</td>
+                    </tr>
+                    <tr>
+                      <td>{{$supplyChaindata['EmailId']}}</td>
+                    </tr>
+                    <tr>
+                      <td>{{$supplyChaindata['MobileNumber']}}</td>
+                    </tr>
+                  </table>
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <thead>
+                      <tr>
+                        <th width="33.33%">Facility (Product)</th>
+                        <th width="33.33%">Amount (Rs. In Mn)</th>
+                        <th width="33.33%">Sub-Limit of</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="">{{getProductType($supplyChaindata['product_id'])}}</td>
+                        <td class="">{{$supplyChaindata['tot_limit_amt']}}</td>
+                        <td class="">{{$postData['sublimit_of']}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                  <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
+                  <!-- Vender Program -->
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr>
+                        <td width="20%">Facility No</td>
+                        <td width="20%">{{$supplyChaindata['prgm_type']}}</td>
+                        <td width="30%">Facility Name</td>
+                        <td width="30%">{{$supplyChaindata['prgm_type'] == '2' ? 'Purchase Finance Facility  /  Channel Financing' : 'Vendor Finance Facility'}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Facility Amount</td>
+                        <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Purpose</td>
+                        <td width="66.66%" colspan="3">{{$supplyChaindata['purpose']}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Expiry of Limit</td>
+                        <td width="66.66%" colspan="3"> Limit will be valid for 1 year from {{$postData['expiry_of_limit']}} (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Specific Condition</td>
+                        <td width="66.66%" colspan="3">
+                          <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
+                            <li>Invoices should not be older than 30 days from {{$postData['specific_cond']}}.</li>
+                            <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
+                          </ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Specific Pre-disbursement Condition</td>
+                        <td width="66.66%" colspan="3"></td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%"> Specific Post-disbursement Condition</td>
+                        <td width="66.66%" colspan="3"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                  @foreach($supplyChaindata['offerData'] as $key =>  $offerD)
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr>
+                        <td width="33.33%" class="pd-0" style="padding: 0px !important;">
+                          <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                            <thead>
+                              <tr>
+                                <th width="70%">Apprv. Debtor Name</th>
+                                <th width="30%" class="height">Sub Limit</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{$supplyChaindata['anchorData'][$offerD->anchor_id]['comp_name'] ?? ''}}</td>
+                                <td>{{$offerD->prgm_limit_amt}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                        <td width="66.66%" colspan="3" class="pd-0" style="padding: 0px !important;">
+                          <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
+                            <thead>
+                              <tr>
+                                <th width="35%">Max. Discounting Period</th>
+                                <th width="25%">Grace Period</th>
+                                <th width="25%">ROI</th>
+                                <th width="25%">Margin</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{$offerD->tenor}}</td>
+                                <td>{{$offerD->grace_period}}</td>
+                                <td>{{$offerD->interest_rate}}</td>
+                                <td>{{$offerD->margin}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Investment Payment Frequency</td>
+                        <td width="66.66%" colspan="3">{{$offerD['payment_frequency']}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Penal Interest</td>
+                        <td width="66.66%">
+
+                          <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
+                            @if(!empty($postData['penal_applicable'][$key][0]) && strtolower($postData['penal_applicable'][$key][0]) == 'applicable')
+                            <li>{{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} {{$postData['penal_on'][$key][0]}} entire principal / payable interest on delay in repayment of principal / Interest / charges.</li>
+                            @endif
+                             @if(!empty($postData['penal_applicable'][$key][1]) && strtolower($postData['penal_applicable'][$key][1]) == 'applicable')
+                            <li>The rate of interest will be {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} higher than the rate stipulated under each of the facilities till the security is created.</li>
+                            @endif
+                             @if(!empty($postData['penal_applicable'][$key][2]) && strtolower($postData['penal_applicable'][$key][2]) == 'applicable')
+                            <li>If security is not created within the stipulated timeframe then a penal interest of 
+                            {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} p.a. {{$postData['penal_on'][$key][1]}} entire principle.</li>
+                            @endif
+                          </ul>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  @endforeach
+                  <br />
+
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr>
+                        <td width="33.33%">Prepayment</td>
+                        <td width="66.66%">In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided by CFPL for time to time.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Payment Mechanism of Interest</td>
+                        <td width="66.66%">{{$postData['payment_machanism_of_interest'] ?? ''}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Payment Mechanism of Principal</td>
+                        <td width="66.66%">{{$postData['payment_machanism_of_principal']}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                  <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
+                  @foreach($supplyChaindata['offerData'] as $offerD)
+                  <div class="offerdiv">
+                    @if($offerD->offerPs->count())
+                    <h5> Primary Security </h5>
+                    <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th width="20%">Security</th>
+                          <th width="20%">Type of security</th>
+                          <th width="20%">Status of security</th>
+                          <th width="20%">Time for perfecting security</th>
+                          <th width="20%">Description of security</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($offerD->offerPs as $PrimarySecurity)
+                        <tr>
+                          <td>{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}}</td>
+                          <td>{{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}}</td>
+                          <td>{{config('common.ps_status_of_security_id.'.$PrimarySecurity->ps_status_of_security_id)}}</td>
+                          <td>{{config('common.ps_time_for_perfecting_security_id.'.$PrimarySecurity->ps_time_for_perfecting_security_id)}}</td>
+                          <td>{{$PrimarySecurity->ps_desc_of_security}}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                    @endif
+                    @if($offerD->offerCs->count())
+                    <h5> Collateral Security </h5>
+                    <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th width="20%">Security</th>
+                          <th width="20%">Type of security</th>
+                          <th width="20%">Status of security</th>
+                          <th width="20%">Time for perfecting security</th>
+                          <th width="20%">Description of security</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($offerD->offerCs as $CollateralSecurity)
+                        <tr>
+                          <td>{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}}</td>
+                          <td>{{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}}</td>
+                          <td>{{config('common.cs_status_of_security_id.'.$CollateralSecurity->cs_status_of_security_id)}}</td>
+                          <td>{{config('common.cs_time_for_perfecting_security_id.'.$CollateralSecurity->cs_time_for_perfecting_security_id)}}</td>
+                          <td>{{$CollateralSecurity->cs_desc_of_security}}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                    @endif
+                    @if($offerD->offerPg->count())
+                    <h5>Personal Guarantee</h5>
+                    <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th width="20%">Name of Guarantor</th>
+                          <th width="20%">Time for perfecting security</th>
+                          <th width="20%">Residential Address </th>
+                          <th width="20%">Net worth as per IT return/CA Certificate</th>
+                          <th width="20%">Comment if any </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($offerD->offerPg as $PersonalGuarantee)
+                        <tr>
+                          <td>{{$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
+                          <td>{{config('common.pg_time_for_perfecting_security_id.'.$PersonalGuarantee->pg_time_for_perfecting_security_id)}}</td>
+                          <td>{{$PersonalGuarantee->pg_residential_address}}</td>
+                          <td>{{$PersonalGuarantee->pg_net_worth}}</td>
+                          <td>{{$PersonalGuarantee->pg_comments}}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                    @endif
+                    @if($offerD->offerCg->count())
+                    <h5>Corporate Guarantee/ Letter of Comfort/ Put Option</h5>
+                    <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th width="20%">Type</th>
+                          <th width="20%">Name of Guarantor</th>
+                          <th width="20%">Time for perfecting security</th>
+                          <th width="20%">Registered Address</th>
+                          <th width="20%">Comment if any </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($offerD->offerCg as $CorporateGuarantee)
+                        <tr>
+                          <td>{{config('common.cg_type_id.'.$CorporateGuarantee->cg_type_id)}}</td>
+                          <td>{{$supplyChaindata['bizOwnerData'][$CorporateGuarantee->cg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
+                          <td>{{config('common.cg_time_for_perfecting_security_id.'.$CorporateGuarantee->cg_time_for_perfecting_security_id)}}</td>
+                          <td>{{$CorporateGuarantee->cg_residential_address}}</td>
+                          <td>{{$CorporateGuarantee->cg_comments}}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                    @endif
+                    @if($offerD->offerEm->count())
+                    <h5>Escrow Mechanism</h5>
+                    <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th width="20%">Name of Debtor</th>
+                          <th width="20%">Expected cash flow per month</th>
+                          <th width="20%">Time for perfecting security</th>
+                          <th width="20%">Mechanism</th>
+                          <th width="20%">Comment if any</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($offerD->offerEm as $EscrowMechanism)
+                        <tr>
+                          <td>{{$EscrowMechanism->em_debtor_id}}</td>
+                          <td>{{$EscrowMechanism->em_expected_cash_flow}}</td>
+                          <td>{{config('common.em_time_for_perfecting_security_id.'.$EscrowMechanism->em_time_for_perfecting_security_id)}}</td>
+                          <td>{{$EscrowMechanism->em_mechanism_id}}</td>
+                          <td>{{$EscrowMechanism->em_comments}}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                    @endif
+                  </div>
+                  @endforeach
+                  <h5>Section 3:Specific Security<select class="select">
+                            <option>Applicable</option>
+                            <option>Not applicable</option>
+                   </select></h5>
+                  <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
+                  <h5>PDC</h5>
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr>
+                        <td width="20%">Facility No</td>
+                        <td width="20%">{{$postData['pdc_facility_no']}}</td>
+                        <td width="30%">Facility Name</td>
+                        <td width="30%">{{$postData['pdc_facility_name']}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Facility Amount</td>
+                        <td width="66.66%" colspan="3">{{$postData['pdc_facility_amt']}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Purpose</td>
+                        <td width="66.66%" colspan="3">{{$postData['pdc_facility_purpose']}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <thead>
+                      <tr>
+                        <th>Cheque for</th>
+                        <th>No of Cheque </th>
+                        <th>Not Above </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td >Principal</td>
+                        <td>{{$postData['pdc_no_of_cheque'][0]}}</td>
+                        <td>{{$postData['pdc_not_above'][0]}}</td>
+                      </tr>
+                      <tr>
+                        <td >Interest</td>
+                        <td>{{$postData['pdc_no_of_cheque'][1]}}</td>
+                        <td>{{$postData['pdc_not_above'][1]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Repayment</td>
+                        <td>{{$postData['pdc_no_of_cheque'][2]}}</td>
+                        <td>{{$postData['pdc_not_above'][2]}}</td>
+                      </tr>
+                      <tr>
+                        <td>Other</td>
+                        <td>{{$postData['pdc_no_of_cheque'][3]}}</td>
+                        <td>{{$postData['pdc_not_above'][3]}}</td>
+                      </tr>
+                      <tr>
+                        <td>security</td>
+                        <td>{{$postData['pdc_no_of_cheque'][4]}}</td>
+                        <td>{{$postData['pdc_not_above'][4]}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                  <h5>NACH Mandate with undertaking</h5>
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr>
+                        <td width="20%">Facility No</td>
+                        <td width="20%">{{$postData['nach_facility_no']}}</td>
+                        <td width="30%">Facility Name</td>
+                        <td width="30%">{{$postData['nach_facility_name']}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Facility Amount</td>
+                        <td width="66.66%" colspan="3">{{$postData['nach_facility_amt']}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Purpose</td>
+                        <td width="66.66%" colspan="3">{{$postData['nach_facility_purpose']}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br />
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <thead>
+                      <tr>
+                        <th>Cheque for</th>
+                        <th>No of Cheque </th>
+                        <th>Not Above </th>
+                      </tr>
+                    </thead>
+                     <tbody>
+                      <tr>
+                        <td >Principal</td>
+                        <td>{{$postData['nach_no_of_cheque']['0']}}</td>
+                        <td>{{$postData['nach_not_above']['0']}}</td>
+                      </tr>
+                      <tr>
+                        <td >Interest</td>
+                        <td>{{$postData['nach_no_of_cheque']['1']}}</td>
+                        <td>{{$postData['nach_not_above']['1']}}</td>
+                      </tr>
+                      <tr>
+                        <td>Repayment</td>
+                        <td>{{$postData['nach_no_of_cheque']['2']}}</td>
+                        <td>{{$postData['nach_not_above']['2']}}</td>
+                      </tr>
+                      <tr>
+                        <td>Other</td>
+                        <td>{{$postData['nach_no_of_cheque']['3']}}</td>
+                        <td>{{$postData['nach_not_above']['3']}}</td>
+                      </tr>
+                      <tr>
+                        <td>security</td>
+                        <td>{{$postData['nach_no_of_cheque']['4']}}</td>
+                        <td>{{$postData['nach_not_above']['4']}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  @if(!empty($postData['dsra_applicability']) && strtolower($postData['dsra_applicability']) == 'applicable')
+                  <br />
+                  <h5>DSRA</h5>
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <thead>
+                      <tr>
+                        <th>Amount(lacs in Inr )</th>
+                        <th>Tenure(in months)</th>
+                        <th>Comment if any</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{$postData['dsra_amt'] ?? NULL}}</td>
+                        <td>{{$postData['dsra_tenure'] ?? NULL}}</td>
+                        <td>{{$postData['dsra_comment'] ?? NULL}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  @endif
+
+                  @if(!empty($postData['dsra_applicability']) && strtolower($postData['dsra_applicability']) == 'applicable')
+                  <br />
+                  <h5>Any other security</h5>
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr>
+                        <td>{{$postData['other_sucurities'] ?? NULL}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                   @endif
+                  <br />
+                  <h5>Section 5:- Financial Covenants</h5>
+                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                    <thead>
+                      <tr>
+                        <th width="75%">Covenants</th>
+                        <th width="25%">Minimum/Maximum ratio</th>
+                      </tr>
+                    </thead>
+                    <tbody class="FinancialCovenantsTBody">
+                      @foreach($postData['covenants']['name'] as $k => $val)
+                      @if(!empty($postData['covenants']['ratio_applicability'][$k]) && strtolower($postData['covenants']['ratio_applicability'][$k]) == 'applicable')
+                      <tr class="covenants_clone_tr">
+                        <td>{{$postData['covenants']['name'][$k]}}</td>
+                        <td>{{$postData['covenants']['ratio'][$k]}}</td>
+                      </tr>
+                      @endif
+                      @endforeach
+                    </tbody>
+                  </table>
+                  <p>The financial covenants shall be tested on a choose an item.basis and shall be reported in the monitoring report to be submitted by choose an item.</p>
+
+                  <h5>Section 6:- General Pre-disbursement and Post Disbursement conditions</h5>
+                     <div class="section6">
+                <ol>
+                  @if(!empty($postData['pre_post_condition']['0']) && strtolower($postData['pre_post_condition']['0']) == 'applicable')       
+                  <li>Form CHG-1 to be filed with ROC within 30 days from the date of execution of Security Documents of the borrower/Corporate Guarantor</li>
+                  @endif
+
+                  @if(!empty($postData['pre_post_condition']['1']) && strtolower($postData['pre_post_condition']['1']) == 'applicable')
+                  <li>CFPL shall, at its discretion, obtain a confidential credit report on the borrower from its other lenders.</li>
+                  @endif
+
+                   @if(!empty($postData['pre_post_condition']['2']) && strtolower($postData['pre_post_condition']['2']) == 'applicable')
+                  <li>All the assets charged to the CFPL are to be insured for full value covering all risks with usual CFPL clause. A copy of the insurance policy(ies) to be furnished to the CFPL within 30 days of security perfection.</li>
+                  @endif
+
+                   @if(!empty($postData['pre_post_condition']['3']) && strtolower($postData['pre_post_condition']['3']) == 'applicable')
+                  <li>The obligation of the Lender to make disbursements out of the Facility shall be subject to the Borrower complying with the following conditions to the satisfaction of CFPL .The Borrower shall complete all documentation as stipulated, to the satisfaction of CFPL.The Borrower to furnish title investigation search and valuation of security ( being mortgaged to CFPL) prior to disbursement.</li>
+                  @endif  
+
+                  @if(!empty($postData['pre_post_condition']['4']) && strtolower($postData['pre_post_condition']['4']) == 'applicable')
+                  <li>The borrower shall finalise its selling arrangements to the satisfaction of CFPL.</li>
+                  @endif 
+
+                  @if(!empty($postData['pre_post_condition']['5']) && strtolower($postData['pre_post_condition']['5']) == 'applicable')
+                  <li>The borrower shall obtain necessary sanction of power, water, fuel, etc from the relevant authorities to the satisfaction of CFPL.</li>
+                  @endif
+
+                  @if(!empty($postData['pre_post_condition']['6']) && strtolower($postData['pre_post_condition']['6']) == 'applicable')
+                  <li>The borrower shall make adequate arrangements for treatment and disposal of effluents, solid waste and emissions from its project and shall furnish appropriate approvals from the authorities in this regard.</li>
+                  @endif 
+
+                  @if(!empty($postData['pre_post_condition']['7']) && strtolower($postData['pre_post_condition']['7']) == 'applicable')
+                  <li>The borrower shall broadbase its Board of Directors and finalise and strengthen its management set-up to the satisfaction of CFPL, if necessary.</li>
+                  @endif 
+
+                  @if(!empty($postData['pre_post_condition']['8']) && strtolower($postData['pre_post_condition']['8']) == 'applicable')
+                  <li>The borrower shall carry out safety/environment/energy audit of its project to the satisfaction of CFPL.</li>
+                  @endif 
+
+                 @if(!empty($postData['pre_post_condition']['9']) && strtolower($postData['pre_post_condition']['9']) == 'applicable')
+                <li>CFPL reserves the right to appoint qualified accountants / technical experts /management consultants of its choice to examine the books of accounts, factories and operations of the borrower or to carry out a full concurrent/statutory audit. The cost of such inspection shall be borne by the {{$postData['abfl_or_borrower'] ?? ''}}</li>
+                @endif
+
+                @if(!empty($postData['pre_post_condition']['10']) && strtolower($postData['pre_post_condition']['10']) == 'applicable')
+                <li>In case any condition is stipulated by any other lender that is more favorable to them than the terms stipulated by CFPL, CFPL shall at its discretion, apply to this loan such equivalent conditions to bring its loan at par with those of the other lenders.</li>
+                @endif
+
+                @if(!empty($postData['pre_post_condition']['11']) && strtolower($postData['pre_post_condition']['11']) == 'applicable')
+                <li>The borrower shall forward to CFPL, provisional balance sheet and Profit & Loss Account within {{$postData['profit_loss_account_within'] ?? '1'}}  months of year-end and audited accounts within 6 months of year end. Quarterly financial results shall be submitted within 60 days from the end of each quarter or with the filing with stock exchange for listed borrower.</li> 
+                @endif
+
+                @if(!empty($postData['pre_post_condition']['12']) && strtolower($postData['pre_post_condition']['12']) == 'applicable')
+                <li>Inspection of assets charged to CFPL may be carried out once in {{$postData['cfpl_carried_in'] ?? '1'}} months or at more frequent intervals as decided by CFPL by its own officials or through persons/firm appointed by CFPL. The cost of inspection is to be borne by the borrower.</li>
+                @endif
+
+                @if(!empty($postData['pre_post_condition']['13']) && strtolower($postData['pre_post_condition']['13']) == 'applicable')
+                <li>During the currency of CFPL’s credit facility(s), the borrower will not without CFPL’s prior {{$postData['cfpl_prior'] ?? ''}} in writing: 
+                  <ol>
+                    <li>conclude any fresh borrowing arrangement either secured or unsecured with any other Bank or Financial Institutions, borrower or otherwise, not create any further charge over their fixed assets without our prior approval in writing. </li>
+                    <li>undertake any expansion or fresh project or acquire fixed assets, while normal capital expenditure, e.g. replacement of parts, can be incurred. </li>
+                    <li>invest by way of share capital in or lend or advance to or place deposits with any other concern (normal trade credit or security deposit in the routine course of business or advances to employees can, however, be extended). </li>
+                    <li>formulate any scheme of amalgamation with any other borrower or reconstruction, acquire any borrower. </li>
+                    <li>undertake guarantee obligations on behalf of any other borrower or any third party. </li>
+                    <li>declare dividend for any year except out of profits relating to that year after making all the due and necessary provisions provided that no default had occurred in any repayment obligation and Bank’s permission is obtained. </li>
+                    <li>make any repayment of the loans and deposits and discharge other liabilities except those shown in the funds flow statement submitted from time to time. </li>
+                    <li>make any change in their management set-up. </li>
+                  </ol></li>
+                @endif
+              </ol>
+                    </div>
+                </div>
+                @endif
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+@endsection

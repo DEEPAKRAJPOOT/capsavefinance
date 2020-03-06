@@ -97,6 +97,7 @@
           <div class="tab-content">
             <div id="sanctionSupplyChain" class="tab-pane fadein active">
               <form action="{{route('save_sanction_letter_supplychain')}}" method="POST">
+                @csrf
                 @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                 <div class="form-fields">
                   <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
@@ -134,10 +135,10 @@
                         <td class="">{{$supplyChaindata['tot_limit_amt']}}</td>
                         <td class="">
                           <select class="select" name="sublimit_of" id="sublimit_of">
-                            <option>Term Loan</option>
-                            <option>Purchase Finance Facility</option>
-                            <option>Invoice Discounting Facility</option>
-                            <option>Vendor Finance</option>
+                            <option {{ !empty($supplyChainFormData['sublimit_of']) && $supplyChainFormData['sublimit_of'] == 'Term Loan' ? 'selected' : '' }}>Term Loan</option>
+                            <option {{ !empty($supplyChainFormData['sublimit_of']) && $supplyChainFormData['sublimit_of'] == 'Purchase Finance Facility' ? 'selected' : '' }}>Purchase Finance Facility</option>
+                            <option {{ !empty($supplyChainFormData['sublimit_of']) && $supplyChainFormData['sublimit_of'] == 'Invoice Discounting Facility' ? 'selected' : '' }}>Invoice Discounting Facility</option>
+                            <option {{ !empty($supplyChainFormData['sublimit_of']) && $supplyChainFormData['sublimit_of'] == 'Vendor Finance' ? 'selected' : '' }}>Vendor Finance</option>
                           </select>
                         </td>
                       </tr>
@@ -166,8 +167,8 @@
                         <td width="33.33%">Expiry of Limit</td>
                         <td width="66.66%" colspan="3"> Limit will be valid for 1 year from
                           <select class="select" name="expiry_of_limit">
-                            <option>date of sanction letter</option>
-                            <option>date of first disbusrement</option>
+                            <option {{ !empty($supplyChainFormData['expiry_of_limit']) && $supplyChainFormData['expiry_of_limit'] == 'date of sanction letter' ? 'selected' : '' }}>date of sanction letter</option>
+                            <option {{ !empty($supplyChainFormData['expiry_of_limit']) && $supplyChainFormData['expiry_of_limit'] == 'date of first disbusrement' ? 'selected' : '' }}>date of first disbusrement</option>
                           </select>
                           (Date will be selected from sanction letter itself) Documents required for renewal of facility to be submitted to Capsave Finance Pvt Limited at least 40 days prior to limit expiry.
                         </td>
@@ -178,10 +179,10 @@
                           <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
                             <li>Invoices should not be older than 30 days from 
                               <select class="select" name="specific_cond" id="specific_cond">
-                                <option>Invoice Date</option>
-                                <option>BOE Date</option>
-                                <option>GRN Date</option>
-                                <option>Date of Discounting</option>
+                                <option {{!empty($supplyChainFormData['specific_cond']) && $supplyChainFormData['specific_cond'] == 'Invoice Date' ? 'selected' : '' }}>Invoice Date</option>
+                                <option {{!empty($supplyChainFormData['specific_cond']) && $supplyChainFormData['specific_cond'] == 'BOE Date' ? 'selected' : '' }}>BOE Date</option>
+                                <option {{!empty($supplyChainFormData['specific_cond']) && $supplyChainFormData['specific_cond'] == 'GRN Date' ? 'selected' : '' }}>GRN Date</option>
+                                <option {{!empty($supplyChainFormData['specific_cond']) && $supplyChainFormData['specific_cond'] == 'Date of Discounting' ? 'selected' : '' }}>Date of Discounting</option>
                               </select> On the date of Discounting.
                             </li>
                             <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
@@ -199,7 +200,7 @@
                     </tbody>
                   </table>
                   <br />
-                  @foreach($supplyChaindata['offerData'] as $offerD)
+                  @foreach($supplyChaindata['offerData'] as $key =>  $offerD)
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -250,24 +251,25 @@
 
                           <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
                             <li>{{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}}
-                            <select class="select" name="penal_on[]">
-                            <option>On</option>
-                            <option>over and above the rate for the last draw down  or Rollover of facility on</option>
-                            </select> entire principal / payable interest on delay in repayment of principal / Interest / charges <select class="select" name="penal_applicable[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                            <select class="select" name="penal_on[{{$key}}][]">
+                            <option {{!empty($supplyChainFormData['penal_on'][$key][0]) && $supplyChainFormData['penal_on'][$key][0] == 'On' ? 'selected' : '' }}>On</option>
+                            <option {{!empty($supplyChainFormData['penal_on'][$key][0]) && $supplyChainFormData['penal_on'][$key][0] == 'over and above the rate for the last draw down or Rollover of facility on' ? 'selected' : '' }}>over and above the rate for the last draw down  or Rollover of facility on</option>
+                            </select> entire principal / payable interest on delay in repayment of principal / Interest / charges <select class="select" name="penal_applicable[{{$key}}][]">
+                            <option {{!empty($supplyChainFormData['penal_applicable'][$key][0]) && $supplyChainFormData['penal_applicable'][$key][0] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['penal_applicable'][$key][0]) && $supplyChainFormData['penal_applicable'][$key][0] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                             </select></li>
                             <li>The rate of interest will be {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} higher than the rate stipulated under each of the facilities till the security is created
-                            <select class="select" name="penal_applicable[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                            <select class="select" name="penal_applicable[{{$key}}][]">
+                            <option {{ !empty($supplyChainFormData['penal_applicable'][$key][1]) &&  $supplyChainFormData['penal_applicable'][$key][1] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{ !empty($supplyChainFormData['penal_applicable'][$key][1]) &&  $supplyChainFormData['penal_applicable'][$key][1] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                             </select></li>
                             <li>If security is not created within the stipulated timeframe then a penal interest of 
                             {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} p.a.  
-                            <select class="select" name="penal_applicable[]">
-                            <option>On</option>
-                            <option>over and above the rate for the last draw down  or Rollover of facility on</option>
-                            </select> entire principle <select class="select"><option>Applicable</option><option>Not applicable</option></select></li>
+                            <select class="select" name="penal_on[{{$key}}][]">
+                             <option {{!empty($supplyChainFormData['penal_on'][$key][1]) && $supplyChainFormData['penal_on'][$key][1] == 'On' ? 'selected' : '' }}>On</option>
+                            <option {{!empty($supplyChainFormData['penal_on'][$key][1]) && $supplyChainFormData['penal_on'][$key][1] == 'over and above the rate for the last draw down or Rollover of facility on' ? 'selected' : '' }}>over and above the rate for the last draw down  or Rollover of facility on</option>
+                            </select> entire principle <select class="select" name="penal_applicable[{{$key}}][]"><option {{!empty($supplyChainFormData['penal_applicable'][$key][2]) && $supplyChainFormData['penal_applicable'][$key][2] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['penal_applicable'][$key][2]) && $supplyChainFormData['penal_applicable'][$key][2] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option></select></li>
                           </ul>
                         </td>
                       </tr>
@@ -285,13 +287,12 @@
                       </tr>
                       <tr>
                         <td width="33.33%">Payment Mechanism of Interest</td>
-                        <td width="66.66%" name="payment_machanism_of_interest">
-                          <select class="select">
-                            <option>Choose an Item</option>
-                            <option>UDC</option>
-                            <option>PDC</option>
-                            <option>ECS Mandate</option>
-                            <option>RTGS</option>
+                        <td width="66.66%">
+                          <select class="select" name="payment_machanism_of_interest">
+                            <option {{ !empty($supplyChainFormData['payment_machanism_of_interest']) && $supplyChainFormData['payment_machanism_of_interest'] == 'UDC' ? 'selected' : '' }}>UDC</option>
+                            <option {{ !empty($supplyChainFormData['payment_machanism_of_interest']) && $supplyChainFormData['payment_machanism_of_interest'] == 'PDC' ? 'selected' : '' }}>PDC</option>
+                            <option {{ !empty($supplyChainFormData['payment_machanism_of_interest']) && $supplyChainFormData['payment_machanism_of_interest'] == 'ECS Mandate' ? 'selected' : '' }}>ECS Mandate</option>
+                            <option {{ !empty($supplyChainFormData['payment_machanism_of_interest']) && $supplyChainFormData['payment_machanism_of_interest'] == 'RTGS' ? 'selected' : '' }}>RTGS</option>
                           </select>
                         </td>
                       </tr>
@@ -299,11 +300,10 @@
                         <td width="33.33%">Payment Mechanism of Principal</td>
                         <td width="66.66%">
                           <select class="select" name="payment_machanism_of_principal">
-                            <option>Choose an Item</option>
-                            <option>UDC</option>
-                            <option>PDC</option>
-                            <option>ECS Mandate</option>
-                            <option>RTGS</option>
+                             <option {{ !empty($supplyChainFormData['payment_machanism_of_principal']) &&  $supplyChainFormData['payment_machanism_of_principal'] == 'UDC' ? 'selected' : '' }}>UDC</option>
+                            <option {{ !empty($supplyChainFormData['payment_machanism_of_principal']) &&  $supplyChainFormData['payment_machanism_of_principal'] == 'PDC' ? 'selected' : '' }}>PDC</option>
+                            <option {{ !empty($supplyChainFormData['payment_machanism_of_principal']) &&  $supplyChainFormData['payment_machanism_of_principal'] == 'ECS Mandate' ? 'selected' : '' }}>ECS Mandate</option>
+                            <option {{ !empty($supplyChainFormData['payment_machanism_of_principal']) &&  $supplyChainFormData['payment_machanism_of_principal'] == 'RTGS' ? 'selected' : '' }}>RTGS</option>
                           </select>
                         </td>
                       </tr>
@@ -440,27 +440,27 @@
                     @endif
                   </div>
                   @endforeach
-                  <h5>Section 3:Specific Security<select class="select">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                  <h5>Section 3:Specific Security<select class="select" name="specific_security">
+                            <option {{!empty($supplyChainFormData['specific_security']) && $supplyChainFormData['specific_security'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['specific_security']) && $supplyChainFormData['specific_security'] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                    </select></h5>
                   <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
                   <h5>PDC</h5>
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td width="33.33%">Facility No</td>
-                        <td width="6.66%"><input type="text" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                        <td width="20%">Facility No</td>
+                        <td width="20%"><input type="text" value="{{$supplyChainFormData['pdc_facility_no'] ?? ''}}" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
                         <td width="30%">Facility Name</td>
-                        <td width="30%"><input type="text" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc" placeholder="Click here to enter text"></td>
+                        <td width="30%"><input type="text" value="{{$supplyChainFormData['pdc_facility_name'] ?? ''}}" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc" placeholder="Click here to enter text"></td>
                       </tr>
                       <tr>
                         <td width="33.33%">Facility Amount</td>
-                        <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                        <td width="66.66%" colspan="3"><input type="text" value="{{$supplyChainFormData['pdc_facility_amt'] ?? ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
                       </tr>
                       <tr>
                         <td width="33.33%">Purpose</td>
-                        <td width="66.66%" colspan="3"><input type="text" name="pdc_facility_purpose" id="pdc_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
+                        <td width="66.66%" colspan="3"><input type="text" value="{{$supplyChainFormData['pdc_facility_purpose'] ?? ''}}" name="pdc_facility_purpose" id="pdc_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -476,28 +476,28 @@
                     <tbody>
                       <tr>
                         <td >Principal</td>
-                        <td><input type="text" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['0'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_not_above']['0'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td >Interest</td>
-                        <td><input type="text" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['1'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_not_above']['1'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td>Repayment</td>
-                        <td><input type="text" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['2'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_not_above']['2'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td>Other</td>
-                        <td><input type="text" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['3'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_not_above']['3'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td>security</td>
-                        <td><input type="text" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['4'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['pdc_not_above']['4'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -506,18 +506,18 @@
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td width="33.33%">Facility No</td>
-                        <td width="6.66%"><input type="text" name="nach_facility_no" id="nach_facility_no" class="input_sanc"></td>
+                        <td width="20%">Facility No</td>
+                        <td width="20%"><input type="text" value="{{$supplyChainFormData['nach_facility_no'] ?? ''}}" name="nach_facility_no" id="nach_facility_no" class="input_sanc"></td>
                         <td width="30%">Facility Name</td>
-                        <td width="30%"><input type="text" name="nach_facility_name" id="nach_facility_name" class="input_sanc"></td>
+                        <td width="30%"><input type="text" value="{{$supplyChainFormData['nach_facility_name'] ?? ''}}" name="nach_facility_name" id="nach_facility_name" class="input_sanc"></td>
                       </tr>
                       <tr>
                         <td width="33.33%">Facility Amount</td>
-                        <td width="66.66%" colspan="3"><input type="text" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                        <td width="66.66%" colspan="3"><input type="text" value="{{$supplyChainFormData['nach_facility_amt'] ?? ''}}" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
                       </tr>
                       <tr>
                         <td width="33.33%">Purpose</td>
-                        <td width="66.66%" colspan="3"><input type="text" name="nach_facility_purpose" id="nach_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
+                        <td width="66.66%" colspan="3"><input type="text" value="{{$supplyChainFormData['nach_facility_purpose'] ?? ''}}" name="nach_facility_purpose" id="nach_facility_purpose" class="input_sanc" placeholder="Click here to enter text"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -533,35 +533,35 @@
                      <tbody>
                       <tr>
                         <td >Principal</td>
-                        <td><input type="text" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_no_of_cheque']['0'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_not_above']['0'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td >Interest</td>
-                        <td><input type="text" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_no_of_cheque']['1'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_not_above']['1'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td>Repayment</td>
-                        <td><input type="text" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_no_of_cheque']['2'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_not_above']['2'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td>Other</td>
-                        <td><input type="text" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_no_of_cheque']['3'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_not_above']['3'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                       <tr>
                         <td>security</td>
-                        <td><input type="text" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
-                        <td><input type="text" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_no_of_cheque']['4'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                        <td><input type="text" value="{{$supplyChainFormData['nach_not_above']['4'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                       </tr>
                     </tbody>
                   </table>
                   <br />
                   <h5>DSRA <select class="select" name="dsra_applicability">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                            <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                    </select></h5>
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <thead>
@@ -573,21 +573,21 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td><input type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
-                        <td><input type="text" name="dsra_tenure" class="input_sanc" placeholder="Enter DSRA Tenure"></td>
-                        <td><input type="text" name="dsra_comment" class="input_sanc" placeholder="Comment if any"></td>
+                        <td><input value="{{$supplyChainFormData['dsra_amt'] ?? ''}}" type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
+                        <td><input value="{{$supplyChainFormData['dsra_tenure'] ?? ''}}" type="text" name="dsra_tenure" class="input_sanc" placeholder="Enter DSRA Tenure"></td>
+                        <td><input value="{{$supplyChainFormData['dsra_comment'] ?? ''}}" type="text" name="dsra_comment" class="input_sanc" placeholder="Comment if any"></td>
                       </tr>
                     </tbody>
                   </table>
                   <br />
                   <h5>Any other security <select class="select" name="dsra_applicability">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                            <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                    </select></h5>
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td><input type="text" name="other_sucurities" id="other_sucurities" class="input_sanc" placeholder="Click here to enter Securities"></td>
+                        <td><input value="{{$supplyChainFormData['other_sucurities'] ?? ''}}" type="text" name="other_sucurities" id="other_sucurities" class="input_sanc" placeholder="Click here to enter Securities"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -605,14 +605,18 @@
                       </tr>
                     </thead>
                     <tbody class="FinancialCovenantsTBody">
-                      <tr class="covenants_clone_tr">
-                        <td><input type="text" name="covenants_name[]" class="input_sanc" placeholder="Enter Covenants"></td>
-                        <td><input type="text" name="covenants_ratio[]" class="input_sanc" placeholder="Enter Minimum/Maximum ratio"></td>
-                        <td><select class="select" name="covenants_ratio_applicability[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
-                        </select></td>
-                      </tr>
+                       <?php
+                          $i = 0; 
+                          do { ?>
+                              <tr class="covenants_clone_tr">
+                                <td><input value="{{ $supplyChainFormData['covenants']['name'][$i] ?? ''}}" type="text" name="covenants[name][]" class="input_sanc" placeholder="Enter Covenants"></td>
+                                <td><input value="{{ $supplyChainFormData['covenants']['ratio'][$i] ?? ''}}" type="text" name="covenants[ratio][]" class="input_sanc" placeholder="Enter Minimum/Maximum ratio"></td>
+                                <td><select class="select" name="covenants[ratio_applicability][]">
+                                    <option>Applicable</option>
+                                    <option>Not applicable</option>
+                                </select></td>
+                              </tr>
+                         <?php $i++; } while(!empty($supplyChainFormData['covenants']['name'][$i])); ?>
                     </tbody>
                   </table>
                   <p>The financial covenants shall be tested on a choose an item.basis and shall be reported in the monitoring report to be submitted by choose an item.</p>
@@ -621,67 +625,66 @@
                      <div class="section6">
                       <ol>
                  <li>Form CHG-1 to be filed with ROC within 30 days from the date of execution of Security Documents of the borrower/Corporate Guarantor<select class="select hide" name="pre_post_condition[]">
-                            <option>Applicable</option></select>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][0]) && $supplyChainFormData['pre_post_condition'][0] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select>
                   </li>
                   <li>CFPL shall, at its discretion, obtain a confidential credit report on the borrower from its other lenders.
                           <select class="select" name="pre_post_condition[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][1]) && $supplyChainFormData['pre_post_condition'][1] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][1]) && $supplyChainFormData['pre_post_condition'][1] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                           </select>
                   </li>
-                  <li>All the assets charged to the CFPL are to be insured for full value covering all risks with usual CFPL clause. A copy of the insurance policy(ies) to be furnished to the CFPL within 30 days of security perfection.<select class="select hide" name="pre_post_condition[]"><option>Applicable</option></select>
+                  <li>All the assets charged to the CFPL are to be insured for full value covering all risks with usual CFPL clause. A copy of the insurance policy(ies) to be furnished to the CFPL within 30 days of security perfection.<select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][2]) && $supplyChainFormData['pre_post_condition'][2] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select>
                   </li>
 
                   <li>The obligation of the Lender to make disbursements out of the Facility shall be subject to the Borrower complying with the following conditions to the satisfaction of CFPL .The Borrower shall complete all documentation as stipulated, to the satisfaction of CFPL.The Borrower to furnish title investigation search and valuation of security ( being mortgaged to CFPL) prior to disbursement.<select class="select" name="pre_post_condition[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][3]) && $supplyChainFormData['pre_post_condition'][3] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][3]) && $supplyChainFormData['pre_post_condition'][3] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                           </select>
                   </li>  
 
                 <li>The borrower shall finalise its selling arrangements to the satisfaction of CFPL.
                           <select class="select" name="pre_post_condition[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                             <option {{!empty($supplyChainFormData['pre_post_condition'][4]) && $supplyChainFormData['pre_post_condition'][4] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][4]) && $supplyChainFormData['pre_post_condition'][4] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                           </select>
                 </li> 
 
                 <li>The borrower shall obtain necessary sanction of power, water, fuel, etc from the relevant authorities to the satisfaction of CFPL. 
                           <select class="select" name="pre_post_condition[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                             <option {{!empty($supplyChainFormData['pre_post_condition'][5]) && $supplyChainFormData['pre_post_condition'][5] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][5]) && $supplyChainFormData['pre_post_condition'][5] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                           </select>
                 </li>
 
                 <li>The borrower shall make adequate arrangements for treatment and disposal of effluents, solid waste and emissions from its project and shall furnish appropriate approvals from the authorities in this regard.
                           <select class="select" name="pre_post_condition[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                             <option {{!empty($supplyChainFormData['pre_post_condition'][6]) && $supplyChainFormData['pre_post_condition'][6] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][6]) && $supplyChainFormData['pre_post_condition'][6] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                           </select>
                 </li> 
 
                 <li>The borrower shall broadbase its Board of Directors and finalise and strengthen its management set-up to the satisfaction of CFPL, if necessary. <select class="select" name="pre_post_condition[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][7]) && $supplyChainFormData['pre_post_condition'][7] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][7]) && $supplyChainFormData['pre_post_condition'][7] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                           </select>
                 </li> 
 
                 <li>The borrower shall carry out safety/environment/energy audit of its project to the satisfaction of CFPL.
                           <select class="select" name="pre_post_condition[]">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
+                             <option {{!empty($supplyChainFormData['pre_post_condition'][8]) && $supplyChainFormData['pre_post_condition'][8] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['pre_post_condition'][8]) && $supplyChainFormData['pre_post_condition'][8] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                           </select>
                 </li> 
 
-                <li>CFPL reserves the right to appoint qualified accountants / technical experts /management consultants of its choice to examine the books of accounts, factories and operations of the borrower or to carry out a full concurrent/statutory audit. The cost of such inspection shall be borne by the <select class="select"><option>Borrower</option><option>ABFL</option></select><select class="select hide" name="pre_post_condition[]"><option>Applicable</option></select></li>
+                <li>CFPL reserves the right to appoint qualified accountants / technical experts /management consultants of its choice to examine the books of accounts, factories and operations of the borrower or to carry out a full concurrent/statutory audit. The cost of such inspection shall be borne by the <select class="select" name="abfl_or_borrower"><option {{!empty($supplyChainFormData['abfl_or_borrower']) && $supplyChainFormData['abfl_or_borrower'] == 'Borrower' ? 'selected' : ''}}>Borrower</option><option {{!empty($supplyChainFormData['abfl_or_borrower']) && $supplyChainFormData['abfl_or_borrower'] == 'ABFL' ? 'selected' : ''}}>ABFL</option></select><select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][9]) && $supplyChainFormData['pre_post_condition'][9] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select></li>
 
-                <li>In case any condition is stipulated by any other lender that is more favorable to them than the terms stipulated by CFPL, CFPL shall at its discretion, apply to this loan such equivalent conditions to bring its loan at par with those of the other lenders. <select class="select hide" name="pre_post_condition[]">
-                            <option>Applicable</option></select></li>
+                <li>In case any condition is stipulated by any other lender that is more favorable to them than the terms stipulated by CFPL, CFPL shall at its discretion, apply to this loan such equivalent conditions to bring its loan at par with those of the other lenders. <select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition']['10']) && $supplyChainFormData['pre_post_condition']['10'] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select></li>
 
-                <li>The borrower shall forward to CFPL, provisional balance sheet and Profit & Loss Account within <select class="select"><option>1</option><option>2</option><option>3</option><option>4</option></select>  months of year-end and audited accounts within 6 months of year end. Quarterly financial results shall be submitted within 60 days from the end of each quarter or with the filing with stock exchange for listed borrower.<select class="select hide" name="pre_post_condition[]"><option>Applicable</option></select></li> 
+                <li>The borrower shall forward to CFPL, provisional balance sheet and Profit & Loss Account within <select class="select" name="profit_loss_account_within"><option>1</option><option>2</option><option>3</option><option>4</option></select>  months of year-end and audited accounts within 6 months of year end. Quarterly financial results shall be submitted within 60 days from the end of each quarter or with the filing with stock exchange for listed borrower.<select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][11]) && $supplyChainFormData['pre_post_condition'][11] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select></li> 
 
-                <li>Inspection of assets charged to CFPL may be carried out once in <select class="select"><option>1</option><option>2</option><option>3</option><option>4</option></select>  months or at more frequent intervals as decided by CFPL by its own officials or through persons/firm appointed by CFPL. The cost of inspection is to be borne by the borrower.<select class="select hide" name="pre_post_condition[]"><option>Applicable</option></select></li>
+                <li>Inspection of assets charged to CFPL may be carried out once in <select class="select" name="cfpl_carried_in"><option>1</option><option>2</option><option>3</option><option>4</option></select>  months or at more frequent intervals as decided by CFPL by its own officials or through persons/firm appointed by CFPL. The cost of inspection is to be borne by the borrower.<select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][12]) && $supplyChainFormData['pre_post_condition'][12] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select></li>
 
-                <li>During the currency of CFPL’s credit facility(s), the borrower will not without CFPL’s prior <select class="select"><option>Permission</option><option>Intimation</option></select> in writing: 
+                <li>During the currency of CFPL’s credit facility(s), the borrower will not without CFPL’s prior <select class="select" name="cfpl_prior"><option {{!empty($supplyChainFormData['cfpl_prior']) && $supplyChainFormData['cfpl_prior'] == 'Permission' ? 'selected' : ''}}>Permission</option><option {{!empty($supplyChainFormData['cfpl_prior']) && $supplyChainFormData['cfpl_prior'] == 'Intimation' ? 'selected' : ''}}>Intimation</option></select> in writing: 
                   <ol>
                     <li>conclude any fresh borrowing arrangement either secured or unsecured with any other Bank or Financial Institutions, borrower or otherwise, not create any further charge over their fixed assets without our prior approval in writing. </li>
                     <li>undertake any expansion or fresh project or acquire fixed assets, while normal capital expenditure, e.g. replacement of parts, can be incurred. </li>
@@ -692,10 +695,14 @@
                     <li>make any repayment of the loans and deposits and discharge other liabilities except those shown in the funds flow statement submitted from time to time. </li>
                     <li>make any change in their management set-up. </li>
                   </ol>
-                <select class="select hide" name="pre_post_condition[]"><option>Applicable</option></select></li>
+                <select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][13]) && $supplyChainFormData['pre_post_condition'][13] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select></li>
                       </ol>
                     </div>
                 </div>
+                <input type="hidden" name="app_id" value="{{$appId ?? ''}}">
+                <input type="hidden" name="offer_id" value="{{$offerId ?? ''}}">
+                <input type="hidden" name="biz_id" value="{{$bizId ?? ''}}">
+                <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
                 @else 
                 <div class="card card-color mb-0">
                   <div class="card-header">
@@ -703,6 +710,7 @@
                   </div>
                 </div>
                 @endif
+
               </form>
             </div>
             <div id="SanctionLeasing" class="tab-pane fade">
