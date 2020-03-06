@@ -61,4 +61,10 @@ class FinancialJournalItems extends BaseModel {
         }     
         return self::create($data);            
     }
+
+    public static function getTransactions() 
+    {
+        $result = self::select('*')->orderBy('journal_item_id', 'DESC');
+        return $result;
+    }
 }

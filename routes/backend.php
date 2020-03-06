@@ -1156,6 +1156,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_ji_config',
                 'uses' => 'Backend\FinanceController@saveJiConfig'
             ]);
+            Route::get('fin-transactions', [
+                'as' => 'get_fin_transactions',
+                'uses' => 'Backend\FinanceController@getFinTransactions'
+            ]);
         });
 
     });

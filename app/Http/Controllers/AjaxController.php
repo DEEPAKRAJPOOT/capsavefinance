@@ -3733,4 +3733,9 @@ if ($err) {
         return response()->json($status);
     }
 
+    public function getTransactions(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getTransactions();
+        $this->providerResult = $dataProvider->getTransactionsByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
 }

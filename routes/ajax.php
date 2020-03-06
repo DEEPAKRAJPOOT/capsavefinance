@@ -791,7 +791,14 @@ Route::group(
         'uses' => 'AjaxController@getJiConfigList'
         ]
     );
-       
+    Route::post(
+        'get-transactions',
+        [
+        'as' => 'get_ajax_transactions',
+        'uses' => 'AjaxController@getTransactions'
+        ]
+    );   
+
     Route::post('get-group-company-exposure', [
         'as' => 'get_group_company_exposure',
         'uses' => 'AjaxController@getGroupCompanyExposure'

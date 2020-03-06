@@ -52,7 +52,7 @@ class FinanceHelper {
                                     }
 
                                     if($jival->is_partner_val==1) {     
-                                        $this->inputData['biz_id'] = $bizId;
+                                        $this->inputData['biz_id'] = '1'; //need to update
                                     }
                                    
                                     $outputQryJI = $this->finRepo->saveJournalItems($this->inputData);

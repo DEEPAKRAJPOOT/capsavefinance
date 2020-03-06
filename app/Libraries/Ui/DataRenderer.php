@@ -3240,4 +3240,41 @@ class DataRenderer implements DataProviderInterface
                     )
                     ->make(true);
         }
+
+        public function getTransactionsByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'date',
+                        function ($dataRecords) {
+                        return $dataRecords->date;
+                    }) 
+                    ->editColumn(
+                        'label',
+                        function ($dataRecords) {
+                        return $dataRecords->label;
+                    }) 
+                    ->editColumn(
+                        'account_id',
+                        function ($dataRecords) {
+                        return $dataRecords->account_id;
+                    }) 
+                    ->editColumn(
+                        'biz_id',
+                        function ($dataRecords) {
+                        return $dataRecords->biz_id;
+                    }) 
+                    ->editColumn(
+                        'debit_amount',
+                        function ($dataRecords) {
+                        return $dataRecords->debit_amount;
+                    }) 
+                    ->editColumn(
+                        'credit_amount',
+                        function ($dataRecords) {
+                        return $dataRecords->credit_amount;
+                    }) 
+                    ->make(true);
+        }
 }

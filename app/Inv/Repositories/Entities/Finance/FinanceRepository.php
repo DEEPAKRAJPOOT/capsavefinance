@@ -143,4 +143,10 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     public function saveJournalEntries($arrData){
         return FinancialJournalEntries::saveJournalEntries($arrData);
     }   
+
+    public function getTransactions()
+    {
+        $this->result = FinancialJournalItems::getTransactions();
+        return $this->result;
+    }
 }

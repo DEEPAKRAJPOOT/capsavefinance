@@ -364,7 +364,10 @@
                 <i class="fa fa-money" aria-hidden="true"></i>
             </a>
             <div class="collapse" id="layoutsSubmenuFinance">
-                <ul class="nav flex-column sub-menu">    
+                <ul class="nav flex-column sub-menu">  
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_transactions') }}">Transactions</a>
+                    </li>   
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('create_je_config') }}">JE Config</a>
                     </li>                 

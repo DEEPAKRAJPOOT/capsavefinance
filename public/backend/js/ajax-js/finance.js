@@ -105,7 +105,7 @@ try {
         });
 
 
-        oTableVariable = $('#jeConfigList').DataTable({
+        oTableJeConfigList = $('#jeConfigList').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 25,
@@ -134,7 +134,7 @@ try {
         });
 
 
-        oTableVariable = $('#jiConfigList').DataTable({
+        oTableJiConfigList = $('#jiConfigList').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 25,
@@ -160,6 +160,35 @@ try {
                     {data: 'value_type'},
                     {data: 'config_value'},
                     {data: 'action'}
+                ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+        });
+
+        oTableTransactions = $('#transactions').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: true,
+            bSort: true,
+            ajax: {
+               "url": messages.get_ajax_transactions, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_name = $('input[name=search_keyword]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling                   
+                    $("#transactions").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+           columns: [
+                    {data: 'date'},
+                    {data: 'label'},
+                    {data: 'account_id'},
+                    {data: 'biz_id'},
+                    {data: 'debit_amount'},
+                    {data: 'credit_amount'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
