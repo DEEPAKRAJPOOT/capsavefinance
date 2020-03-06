@@ -53,7 +53,7 @@
                                                 <select class="form-control trans_type" name="trans_type" id="trans_type">
                                                     <option value="">Select Transation Type</option>
                                                     @foreach($tranType as $key => $value)
-                                                    <option value="{{$value->id}}"> {{$value->trans_name}} </option>
+                                                    <option value="{{$value->id}}"> {{$value->credit_desc}} </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -128,9 +128,13 @@
                                                 <input type="text" name="igst_amt" id="igst_amt" readonly="readonly" class="form-control" value="">
                                             </div>
                                         </div>
-                                        
-                                        <!--end processing fees code-->
-                                        
+                                        <div class="col-md-4">
+                                            <div class="form-group ">
+                                                <label for="txtCreditPeriod">Transaction Id<span class="error_message_label">*</span> </label>
+
+                                                <input type="text" name="txn_id" id="txn_id" class="form-control">
+                                            </div>
+                                        </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
@@ -146,13 +150,6 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <!-- <div class="col-md-4">
-                                            <div class="form-group ">
-                                                <label for="txtCreditPeriod">Payment Reference No. <span class="error_message_label">*</span> </label>
-
-                                                <input type="text" name="refrence_no" id="refrence_no" class="form-control">
-                                            </div>
-                                        </div> -->
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>

@@ -3328,17 +3328,10 @@ class DataRenderer implements DataProviderInterface
                 return $data;
             })
             ->addColumn('batch_no',function($trans){
-                if(in_array($trans->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]))
-                return $trans->txn_id;
+                return $trans->batchNo;
             })
             ->addColumn('narration',function($trans){
-                $data = '';
-                if($trans->modeOfPaymentName && $trans->modeOfPaymentNo)
-                $data .= $trans->modeOfPaymentName.': '.$trans->modeOfPaymentNo.'<br>';
-
-                if($trans->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-                $data .= ' Repayment Allocated as -<br> Normal: '.$trans->amount . ' TDS:0.00'.'<br>';
-                return $data;
+                return $trans->narration;
             })
             ->addColumn(
                 'virtual_acc_id',
