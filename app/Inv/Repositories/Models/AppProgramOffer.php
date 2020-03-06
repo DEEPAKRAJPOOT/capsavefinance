@@ -293,11 +293,8 @@ class AppProgramOffer extends BaseModel {
         return $tot_offered_limit;
     }
 
-    public static function getOfferStatus($appId, $where_condition){
-        if(empty($appId)){
-            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
-        }
-        if(!is_int($appId)){
+    public static function getOfferStatus($where_condition){
+        if(!is_array($where_condition)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 

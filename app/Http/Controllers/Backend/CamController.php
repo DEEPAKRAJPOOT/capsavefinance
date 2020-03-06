@@ -1339,6 +1339,8 @@ class CamController extends Controller
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
+        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
@@ -1352,7 +1354,8 @@ class CamController extends Controller
                 ->with('supplyPrgmLimitData', $supplyPrgmLimitData)
                 ->with('termPrgmLimitData', $termPrgmLimitData)
                 ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
-                ->with('currStageCode', $currStageCode);
+                ->with('currStageCode', $currStageCode)
+                ->with('offerStatus', $offerStatus);
     }
     
     /**
@@ -1372,8 +1375,13 @@ class CamController extends Controller
               'product_id'=>$request->product_id
               ]);
 
+            $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+
             if($checkProgram->count()){
               Session::flash('message',trans('backend_messages.already_exist'));
+              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+            }elseif($checkApprovalStatus->count()){
+              Session::flash('message', trans('backend_messages.under_approval'));
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
 
@@ -1502,7 +1510,15 @@ class CamController extends Controller
         }       
         if ($request->has('sub_limit')) {
             $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
-        }        
+        }
+
+        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+
+        if($checkApprovalStatus->count()){
+          Session::flash('message', trans('backend_messages.under_approval'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }
+
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         $limitData = $this->appRepo->getLimit($aplid);
@@ -1558,6 +1574,14 @@ class CamController extends Controller
         $bizId = $request->get('biz_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
         $request['limit_amt'] = str_replace(',', '', $request->limit_amt);
+
+        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+
+        if($checkApprovalStatus->count()){
+          Session::flash('message', trans('backend_messages.under_approval'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }
+
         $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
 
         if($limitData){
