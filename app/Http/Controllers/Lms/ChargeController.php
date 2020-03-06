@@ -88,7 +88,7 @@ class ChargeController extends Controller
       
        public function saveManualCharges(Request $request)
        {  
-          
+         
            $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
            $comAddrState = $this->lmsRepo->companyAdress();
            $getAmount =  str_replace(',', '', $request->amount);
@@ -157,12 +157,14 @@ class ChargeController extends Controller
                                 "amount" =>   $totalSumAmount,
                                 'created_by' =>  $id,
                                 'created_at' =>  $mytime ];
+                
                   $chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);  
+              
                   if( $chrgTransId)
                   {
                         $arr  = [ "user_id" =>  $request->user_id,
                                   "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
-                                  "chrg_trans_id" =>  $chrgTransId,
+                                  "chrg_trans_id" =>  $chrgTransId->chrg_trans_id,
                                   "amount" =>   $totalSumAmount,
                                   "gst"   => $is_gst,
                                   "cgst"   => $cgst,
@@ -174,7 +176,7 @@ class ChargeController extends Controller
                                   "pay_from" => $request['pay_from'],
                                   'created_by' =>  $id, 
                                   'created_at' =>  $mytime ];
-                        
+                      
                          $res =   $this->lmsRepo->saveCharge($arr);
                           if($res)
                         {
