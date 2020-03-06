@@ -68,9 +68,8 @@
                         <div class="tab-content">
 
                             <div id="menu1" class=" active tab-pane "><br>
-
-
-                                <div class="card">
+                             <span id="moveCase" class="error"></span>
+                               <div class="card">
                                     <div class="card-body">
                                         <div class="row"><div class="col-md-3"></div>
                                             <div class="col-md-2">				 
@@ -152,8 +151,6 @@
                                 </div>
 
                             </div>
-
-
 
                         </div>
 
@@ -320,6 +317,7 @@
 
     ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.approveInv', function () {
+        $("#moveCase").html('');
         if (confirm('Are you sure? You want to approve it.'))
         {
             var invoice_id = $(this).attr('data-id');
@@ -334,6 +332,7 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
+                    $("#moveCase").html('Invoice successfully sent to  approve ');
                     $(th).parent('td').parent('tr').remove();
                 }
             });
@@ -558,6 +557,7 @@ function uploadFile(app_id,id)
 
 
     $(document).on('click', '#bulkApprove', function () {
+        $("#moveCase").html('');
         var arr = [];
         i = 0;
         th = this;
@@ -584,7 +584,7 @@ function uploadFile(app_id,id)
                 success: function (data) {
                     if (data == 1)
                     {
-
+                        
                         location.reload();
                     }
 
