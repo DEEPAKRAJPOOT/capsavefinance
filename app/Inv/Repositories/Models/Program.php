@@ -123,7 +123,7 @@ class Program extends BaseModel {
 
         $whereCondition['status'] = isset($whereCondition['status']) ? $whereCondition['status'] : 1;
 
-        $appNote = self::select('prgm.prgm_id', 'prgm.prgm_name', 'prgm.product_name',
+        $appNote = self::select('prgm.prgm_id', 'prgm.prgm_name', 'prgm.product_name', 'prgm.prgm_type',
                         'prgm.anchor_limit', 'prgm.min_loan_size',
                         'prgm.max_loan_size',
                         'prgm.min_interest_rate',
