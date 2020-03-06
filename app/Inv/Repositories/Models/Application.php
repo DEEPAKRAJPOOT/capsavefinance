@@ -630,7 +630,7 @@ class Application extends BaseModel
         return  Company::where(['company_id' => 1,'is_active' =>1])->pluck('state')->first(); 
     }
 
-    public function prgmLimit()
+    public function prgmLimits()
     {
         return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'app_id');
     }
