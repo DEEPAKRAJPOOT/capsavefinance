@@ -133,7 +133,6 @@
                       <td class="">{{$supplyChaindata['tot_limit_amt']}}</td>
                       <td class="">
                         <select class="select">
-                          <option>Choose an Item</option>
                           <option>Term Loan</option>
                           <option>Purchase Finance Facility</option>
                           <option>Invoice Discounting Facility</option>
@@ -180,7 +179,6 @@
                           <li>
                             Invoices should not be older than 30 days from 
                             <select class="select">
-                              <option>Choose an Item</option>
                               <option>Invoice Date</option>
                               <option>BOE Date</option>
                               <option>GRN Date</option>
