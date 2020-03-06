@@ -628,5 +628,15 @@ class Application extends BaseModel
     {
         
         return  Company::where(['company_id' => 1,'is_active' =>1])->pluck('state')->first(); 
+    }
+
+    public function prgmLimits()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'app_id');
+    }
+
+    public function acceptedOffers()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
     }   
 }
