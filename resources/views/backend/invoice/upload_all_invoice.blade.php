@@ -328,6 +328,7 @@ var messages = {
    };
    ///* upload image and get ,name  */
    $('input[type="file"]'). change(function(e){
+        $("#customFile-error").hide();
         var fileName = e. target. files[0]. name;
         $("#msgFile").html('The file "' + fileName + '" has been selected.' );
     });

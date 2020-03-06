@@ -62,7 +62,7 @@
   <div class="tab-content">
     
     <div id="menu1" class=" active tab-pane "><br>
-
+<span id="moveCase" class="error"></span>
        
     <div class="card">
         <div class="card-body">
@@ -303,6 +303,7 @@
    
  ///////////////////////For Invoice Approve////////////////////////
   $(document).on('click','.approveInv',function(){
+       $("#moveCase").html('');
     if(confirm('Are you sure? You want to disbursment queue.'))  
     {
      var invoice_id =  $(this).attr('data-id'); 
@@ -317,6 +318,7 @@
                         alert(errorThrown);
                  },
                 success: function (data) {
+                    $("#moveCase").html('Invoice successfully sent to disbursement queue'); 
                     $(th).parent('td').parent('tr').remove();
                 }
              });  
