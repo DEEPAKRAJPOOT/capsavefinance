@@ -1531,6 +1531,20 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Company::companyAdress();
     }
 
+    /**
+     * Get company state id by appId
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getUserIdByBankAccId($bankAccId)
+    {
+        return UserBankAccount::where('bank_account_id', $bankAccId)
+            ->pluck('user_id')
+            ->first();
+    }
+
 
     
 
