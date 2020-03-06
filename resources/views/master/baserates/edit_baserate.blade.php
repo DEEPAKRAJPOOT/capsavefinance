@@ -4,7 +4,7 @@
 <div class="modal-body text-left">
     <form id="baseRateForm" name="baseRateForm" method="POST" action="{{route('save_base_rate')}}" target="_top">
         @csrf
-
+        <input type="hidden" name="filter_search_keyword" id ="filter_search_keyword" value="">
         <div class="row">
             <div class="form-group col-md-12">
                 <label for="chrg_name">Company Name</label>
@@ -38,6 +38,12 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+    
+    $(document).ready(function(){
+        $('#filter_search_keyword').val(parent.$('#search_keyword').val());
+        console.log(parent.$('#search_keyword').val());
+    });
+    
      $(document).ready(function () {
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
