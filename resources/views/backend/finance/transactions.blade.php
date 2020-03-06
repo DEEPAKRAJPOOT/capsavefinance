@@ -21,7 +21,7 @@
                                 <tr role="row">
                                     <th>Date</th>
                                     <th>Label</th>                                    
-                                    <th>Account Id</th>
+                                    <th>Account Name</th>
                                     <th>Biz Id</th>
                                     <th>Debit Amount</th>
                                     <th>Credit Amount</th>

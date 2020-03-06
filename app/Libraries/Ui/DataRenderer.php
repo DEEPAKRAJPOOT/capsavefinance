@@ -3256,9 +3256,9 @@ class DataRenderer implements DataProviderInterface
                         return $dataRecords->label;
                     }) 
                     ->editColumn(
-                        'account_id',
+                        'account_name',
                         function ($dataRecords) {
-                        return $dataRecords->account_id;
+                        return $dataRecords->account_name.'-'.$dataRecords->account_code;
                     }) 
                     ->editColumn(
                         'biz_id',

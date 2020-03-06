@@ -41,10 +41,11 @@ class FinanceHelper {
                                         'journal_entry_id' => $outputQryJE->journal_entry_id 
                                     ]; 
 
+                                    $formula = $jival->config_value;
                                     $sysParameterStr = $val->variable_name;
                                     $sysFunctionStr = $val->sys_func_name;
                                     $amount = 0;
-                                    $amount = $this->getAmtByFormulaCal($sysParameterStr, $sysFunctionStr, $userId, $appId, $bizId);
+                                    $amount = $this->getAmtByFormulaCal($formula, $sysParameterStr, $sysFunctionStr, $userId, $appId, $bizId);
                                     if($jival->value_type_val==1) {     //credit
                                         $this->inputData['credit_amount'] = $amount;
                                     } else {                            //debit
@@ -87,8 +88,8 @@ class FinanceHelper {
         }        
     }
 
-    private function getAmtByFormulaCal($sysParameterStr=null, $sysFunctionStr=null, $userId = null, $appId = null, $bizId = null) {
-        //dd($sysParameterStr,$sysFunctionStr);
+    private function getAmtByFormulaCal($formula=null, $sysParameterStr=null, $sysFunctionStr=null, $userId = null, $appId = null, $bizId = null) {
+        //dd($formula,$sysParameterStr,$sysFunctionStr);
         return 0;
     }
 }

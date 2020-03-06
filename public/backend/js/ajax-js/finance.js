@@ -168,7 +168,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: true,
+            searching: false,
             bSort: true,
             ajax: {
                "url": messages.get_ajax_transactions, // json datasource
@@ -185,7 +185,7 @@ try {
            columns: [
                     {data: 'date'},
                     {data: 'label'},
-                    {data: 'account_id'},
+                    {data: 'account_name'},
                     {data: 'biz_id'},
                     {data: 'debit_amount'},
                     {data: 'credit_amount'}
