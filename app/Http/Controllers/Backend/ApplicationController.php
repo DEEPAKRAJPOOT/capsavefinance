@@ -1498,7 +1498,9 @@ class ApplicationController extends Controller
             $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
             $filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
             \File::put($filepath, base64_encode(json_encode($arrFileData)));
-            $abc = view('backend.app.sanctionSupply')->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]);
+            if ($arrFileData['view'] == 'ravi') {
+              return view('backend.app.sanctionSupply')->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]);
+            }
             Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
             return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
         } catch (Exception $ex) {

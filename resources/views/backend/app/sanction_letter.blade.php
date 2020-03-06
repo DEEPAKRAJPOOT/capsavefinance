@@ -612,8 +612,8 @@
                                 <td><input value="{{ $supplyChainFormData['covenants']['name'][$i] ?? ''}}" type="text" name="covenants[name][]" class="input_sanc" placeholder="Enter Covenants"></td>
                                 <td><input value="{{ $supplyChainFormData['covenants']['ratio'][$i] ?? ''}}" type="text" name="covenants[ratio][]" class="input_sanc" placeholder="Enter Minimum/Maximum ratio"></td>
                                 <td><select class="select" name="covenants[ratio_applicability][]">
-                                    <option>Applicable</option>
-                                    <option>Not applicable</option>
+                                    <option {{!empty($supplyChainFormData['covenants']['ratio_applicability'][$i]) && $supplyChainFormData['covenants']['ratio_applicability'][$i] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                            <option {{!empty($supplyChainFormData['covenants']['ratio_applicability'][$i]) && $supplyChainFormData['covenants']['ratio_applicability'][$i] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
                                 </select></td>
                               </tr>
                          <?php $i++; } while(!empty($supplyChainFormData['covenants']['name'][$i])); ?>
