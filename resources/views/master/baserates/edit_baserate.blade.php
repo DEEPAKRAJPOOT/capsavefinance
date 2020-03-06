@@ -45,7 +45,9 @@
                     required: true,
                 },
                 'base_rate': {
-                    required:true,
+                    required: true,
+                    number: true,
+                    range: [0,100]
                 }
                 'is_active': {
                     required: true,

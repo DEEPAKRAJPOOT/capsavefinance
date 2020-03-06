@@ -50,9 +50,8 @@
             },
             base_rate: {
                 required: true,
-                digits:true,
-                maxlength:3,
-                max: 100
+                number: true,
+                range: [0,100]
             },
             is_active: {
                 required: true,
