@@ -41,19 +41,22 @@ class FinanceHelper {
                                         'journal_entry_id' => $outputQryJE->journal_entry_id 
                                     ]; 
 
+                                    $sysParameterStr = $val->variable_name;
+                                    $sysFunctionStr = $val->sys_func_name;
+                                    $amount = 0;
+                                    $amount = $this->getAmtByFormulaCal($sysParameterStr, $sysFunctionStr, $userId, $appId, $bizId);
                                     if($jival->value_type_val==1) {     //credit
-                                        $this->inputData['credit_amount'] = '0';
+                                        $this->inputData['credit_amount'] = $amount;
                                     } else {                            //debit
-                                        $this->inputData['debit_amount'] = '0';
+                                        $this->inputData['debit_amount'] = $amount;
                                     }
 
                                     if($jival->is_partner_val==1) {     
                                         $this->inputData['biz_id'] = $bizId;
                                     }
-                                    //print_r($this->inputData);
+                                   
                                     $outputQryJI = $this->finRepo->saveJournalItems($this->inputData);
                                     if(isset($outputQryJI->journal_item_id) && !empty($outputQryJI->journal_item_id)) {
-                                        //dd($this->jeConfigData);
                                         $this->resp['success'] = true;
                                         $this->resp['errorMsg'] = 'Journal item saved';
                                     } else {
@@ -82,5 +85,10 @@ class FinanceHelper {
         } catch (Exception $ex) {
             throw new Error('Something wrong please try later');
         }        
+    }
+
+    private function getAmtByFormulaCal($sysParameterStr=null, $sysFunctionStr=null, $userId = null, $appId = null, $bizId = null) {
+        //dd($sysParameterStr,$sysFunctionStr);
+        return 0;
     }
 }
