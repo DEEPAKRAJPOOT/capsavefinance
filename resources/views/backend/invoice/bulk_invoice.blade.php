@@ -77,7 +77,8 @@
 
                <input type="file" accept=".csv"   class="custom-file-input fileUpload" id="customFile" name="file_id">
             <label class="custom-file-label" for="customFile">Choose file</label>
-            <span id="customFile_msg" class="error"></span>
+             <span id="customFile_msg" class="error"></span>
+             <span id="msgFile" class="text-success"></span>
             </div>
 
             </div>
@@ -164,7 +165,11 @@
             token: "{{ csrf_token() }}",
  };
  
- 
+  ///* upload image and get ,name  */
+   $('input[type="file"]'). change(function(e){
+        var fileName = e. target. files[0]. name;
+        $("#msgFile").html('The file "' + fileName + '" has been selected.' );
+    });
   $(document).ready(function () {
         $(".finalButton").hide();
         $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');

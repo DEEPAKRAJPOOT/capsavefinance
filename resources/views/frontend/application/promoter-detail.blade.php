@@ -821,7 +821,8 @@
                 success: function (res)
                 {
                  $('.isloader').hide();
-                window.location.href = "{{ route('promoter-detail', []) }}";
+               window.location.href = "{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
+                  
                if (res.status == 1)
                {
                     
@@ -830,7 +831,7 @@
                           window.location.href = "{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}"; }
                     else
                     {
-                         window.location.href = "{{ route('promoter-detail', []) }}";
+                         window.location.href = "{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                     }
                 }
                 else {

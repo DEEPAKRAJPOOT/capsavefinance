@@ -106,6 +106,7 @@
                <label for="email">Upload Document</label>
                <input type="file" class="custom-file-input" id="customFile" name="doc_file">
                <label class="custom-file-label" for="customFile">Choose file</label>
+                <span id="msgFile" class="text-success"></span>
             </div>
 			
 			
@@ -325,7 +326,12 @@ var messages = {
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
     check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
    };
-   
+   ///* upload image and get ,name  */
+   $('input[type="file"]'). change(function(e){
+        var fileName = e. target. files[0]. name;
+        $("#msgFile").html('The file "' + fileName + '" has been selected.' );
+    });
+
    ///////////////// invoice approve amount check here///////////
    $(document).on('change blur keyup','#invoice_approve_amount', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
