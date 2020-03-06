@@ -934,6 +934,7 @@
         let program_id = $('#program_id').val();
         setLimit('input[name=prgm_limit_amt]', '');
         setLimit('input[name=interest_rate]', '');
+        //fillProgramData(anchorPrgms);
 
         if(program_id == ''){
             unsetError('select[name=prgm_id]');
@@ -1369,5 +1370,32 @@
         $(selector+'>div:not(:first)').remove();
     }
   })
+
+  function fillProgramData(anchorPrgms){
+    let program_id = $('#program_id option:selected').val();
+    if(typeof program_id == 'undefined' || program_id == '' || program_id == null){
+        //$('input[name=tenor]').val();
+        //$('input[name=tenor_old_invoice]').val();
+        $('input[name=margin]').val('');
+        $('input[name=overdue_interest_rate]').val('');
+        $('input[name=adhoc_interest_rate]').val('');
+        $('input[name=grace_period]').val('');
+        $('input[name=processing_fee]').val('');
+        //$('input[name=document_fee]').val();
+        return;
+    }
+    $.each(anchorPrgms, function(i,program){
+        if(program.prgm_id == program_id){
+            //$('input[name=tenor]').val();
+            //$('input[name=tenor_old_invoice]').val();
+            $('input[name=margin]').val(program.margin);
+            $('input[name=overdue_interest_rate]').val(program.overdue_interest_rate);
+            $('input[name=adhoc_interest_rate]').val(program.adhoc_interest_rate);
+            $('input[name=grace_period]').val(program.grace_period);
+            $('input[name=processing_fee]').val(program.processing_fee);
+            //$('input[name=document_fee]').val();
+        }
+    });
+  }
 </script>
 @endsection
