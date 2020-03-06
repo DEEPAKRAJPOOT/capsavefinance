@@ -166,12 +166,15 @@ class Transactions extends BaseModel {
     public static function get_balance($trans_code,$user_id){
         $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
+                    ->where('soa_flag','=',1)
                     ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
                     ->where('entry_type','=','0')->sum('amount');
 
         $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-        ->where('user_id','=',$user_id)
-                   ->where('entry_type','=','1')->sum('amount');
+                    ->where('user_id','=',$user_id)
+                    ->where('soa_flag','=',1)
+                    ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
+                    ->where('entry_type','=','1')->sum('amount');
         return $dr - $cr;
     }
     

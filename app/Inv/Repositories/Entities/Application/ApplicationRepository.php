@@ -1363,6 +1363,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Transactions::select('transactions.*')
                     ->join('users', 'transactions.user_id', '=', 'users.user_id')
                     ->join('lms_users','users.user_id','lms_users.user_id')
+                    ->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
                     ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');

@@ -623,7 +623,6 @@ trait LmsTrait
                         }
                     }
 
-
                     /* Step 3 : Interest Refund  */
 
                     if($interestRefund>0 && $is_inv_settled == 2)
@@ -701,9 +700,15 @@ trait LmsTrait
 
             if($lastDisbursalId>0 && $trans['balance_amount']>0)
             {
-                $transactionData['disbursal'][$disbursalDetail->disbursal_id]['surplus_amount'] = ($trans['balance_amount']>0)?$trans['balance_amount']:NULL;
+                $nonFactoredAmtData = $this->createTransactionData($transDetail['user_id'], [
+                    'amount' => $trans['balance_amount'],
+                    'trans_date'=>$transDetail['trans_date'],
+                    'parent_trans_id'=>$transId
+                ], null,config('lms.TRANS_TYPE.NON_FACTORED_AMT'), 1);
+                $transactionData['nonFactoredAmt'][] = $nonFactoredAmtData;
             } 
             
+
             if(!empty($transactionData['repaymentTrail']))
             foreach ($transactionData['repaymentTrail'] as $rePayTrailValue) {
                 $this->lmsRepo->saveRepayment($rePayTrailValue);
@@ -733,11 +738,17 @@ trait LmsTrait
             foreach($transactionData['interestPaid'] as $interestPaidValue){
                 $this->lmsRepo->saveTransaction($interestPaidValue);
             }
+
+            if(!empty($transactionData['nonFactoredAmt']))
+            foreach($transactionData['nonFactoredAmt'] as $nonFactoredAmtValue){
+                $this->lmsRepo->saveTransaction($nonFactoredAmtValue);
+            }
         
             // if(!empty($transactionData['reversePayment']))
             // foreach ($transactionData['reversePayment'] as $interestRevPaymentValue){
             //     $this->lmsRepo->saveTransaction($interestRevPaymentValue);
             // }
+
             $this->calAccrualInterest($this->addDays($trans['trans_date'], 1));
         }
     }
