@@ -40,7 +40,7 @@ class FinancialJournalItems extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'je_config_id',
+        'ji_config_id',
         'date',
         'account_id', 
         'biz_id',
@@ -55,4 +55,10 @@ class FinancialJournalItems extends BaseModel {
         'updated_by'
     ];
 
+    public static function saveJournalItems($data) {
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }     
+        return self::create($data);            
+    }
 }
