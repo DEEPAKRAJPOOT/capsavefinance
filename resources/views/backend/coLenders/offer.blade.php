@@ -19,6 +19,15 @@ tr.border_bottom td {
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
+                    @if($colenderShare)
+                    <div class="row">
+                    <div class="col-md-12">
+                        <span><b>Capsave (%): </b>{{$colenderShare->capsave_percent}}</span>
+                        <span><b>Co-lender (%): </b>{{$colenderShare->co_lender_percent}}</span>
+                        <span><b>Co-lender Status: </b>{{$colenderShare->co_lender_status}}</span>
+                    </div>
+                    </div>
+                    @endif
                     @if($supplyOfferData->count() == 0)
                     <div class="card card-color mb-0">
                         <div class="card-header">
