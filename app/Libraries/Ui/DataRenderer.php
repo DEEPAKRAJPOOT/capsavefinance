@@ -2587,7 +2587,7 @@ class DataRenderer implements DataProviderInterface {
     public function getBaseRateList(Request $request, $baserates) {
 
         return DataTables::of($baserates)
-                        ->rawColumns(['is_active'])
+                        ->rawColumns(['is_active','action'])
                         ->addColumn(
                                 'name', function ($baserates) {
                             return $baserates->company_name;
@@ -2607,11 +2607,15 @@ class DataRenderer implements DataProviderInterface {
                         ->addColumn(
                                 'is_active', function ($baserates) {
                             $act = $baserates->is_active;
-                            $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBaseRateFrame" title="Edit Base Rate Detail" data-url ="' . route('edit_base_rate', ['id' => $baserates->id]) . '" data-height="250px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
-                            $status = '<div class="btn-group"><label class="badge badge-' . ($act == 1 ? 'success' : 'danger') . ' current-status">' . ($act == 1 ? 'Active' : 'In-Active') . '&nbsp; &nbsp;</label> &nbsp;' . $edit . '</div>';
+                            $status = '<div class="btn-group"><label class="badge badge-' . ($act == 1 ? 'success' : 'danger') . ' current-status">' . ($act == 1 ? 'Active' : 'In-Active') . '&nbsp; &nbsp;</label></div>';
                             return $status;
                         }
                         )
+                        ->addColumn(
+                                'action', function ($baserates) {
+                             $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBaseRateFrame" title="Edit Base Rate Detail" data-url ="' . route('edit_base_rate', ['id' => $baserates->id]) . '" data-height="250px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                             return $edit;
+                        })
                         ->filter(function ($query) use ($request) {
                             if ($request->get('search_keyword') != '') {
                                 $query->where(function ($query) use ($request) {

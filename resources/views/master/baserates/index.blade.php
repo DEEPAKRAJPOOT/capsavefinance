@@ -44,6 +44,7 @@
                                     <th>Created At</th>
                                     <th>Created By</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,6 +71,8 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };
+    
+    
 </script>
 <script src="{{ asset('backend/js/ajax-js/baserate.js') }}"></script>
 @endsection

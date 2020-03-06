@@ -28,7 +28,8 @@ try {
                     {data: 'base_rate'},
                     {data: 'created_at'},
                     {data: 'created_by'},
-                    {data: 'is_active'}
+                    {data: 'is_active'},
+                    {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': true, 'aTargets': [0,1,2]}]
         });
