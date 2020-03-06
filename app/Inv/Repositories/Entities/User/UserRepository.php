@@ -866,12 +866,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function getCinByUserId($biz_id)
     {
-          $owner =  BizPanGst::where('biz_id',$biz_id)->first();
-             if (empty($owner)) {
-            return false;
-        }
-
-        return $owner;
+          return   BizPanGst::where('biz_id',$biz_id)->first();
            
     }
    

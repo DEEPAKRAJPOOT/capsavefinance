@@ -144,10 +144,17 @@ class ApplicationController extends Controller
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-      // dd($OwnerPanApi);
+        if(count($getCin) > 0)
+        {
+            $cin =    $getCin->cin; 
+        }
+        else
+        {
+            $cin =    ""; 
+        }
         return view('frontend.application.promoter-detail')->with([
             'ownerDetails' => $OwnerPanApi, 
-            'cin_no' => $getCin->cin,
+            'cin_no' => $cin,
             'appId' => $appId, 
             'bizId' => $bizId,
             'edit' => $editFlag
