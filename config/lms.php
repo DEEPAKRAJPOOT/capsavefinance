@@ -23,6 +23,7 @@ return [
         'CGST'=>'13',
         'SGST'=>'14',
         'IGST'=>'15',
+        'PAYMENT_DISBURSED' =>'16',
         'REPAYMENT'=> '17',
         'DOCUMENT_FEE'=>'20',
         'NACH_BOUNCE_CHARGE'=>'24',

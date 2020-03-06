@@ -221,7 +221,7 @@
         $('#appendInput').empty();
         var status = $(this).val();
         if (status == 1) {
-            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
         } else if (status == 2) {
             $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');

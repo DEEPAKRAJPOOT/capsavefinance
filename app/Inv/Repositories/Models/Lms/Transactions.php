@@ -232,4 +232,36 @@ class Transactions extends BaseModel {
             }
         }
     }
+
+    public function getModeOfPaymentNameAttribute(){
+        $modeName = '';
+        switch ($this->mode_of_pay) {
+            case '1':
+                $modeName = 'UTR No';
+                break;
+            case '2':
+                $modeName = 'Cheque No';
+                break;
+            case '3':
+                $modeName = 'URN No';
+                break;  
+        }
+        return $modeName;
+    }
+
+    public function getModeOfPaymentNoAttribute(){
+        $modeNo = '';
+        switch ($this->mode_of_pay) {
+            case '1':
+                $modeNo = $this->utr_no;
+                break;
+            case '2':
+                $modeNo = $this->cheque_no;
+                break;
+            case '3':
+                $modeNo = $this->unr_no;
+                break;   
+        }
+        return $modeNo;
+    }
 }

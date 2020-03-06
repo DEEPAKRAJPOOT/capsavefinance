@@ -3300,7 +3300,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetTransactions(Request $request, $data)
     {
         return DataTables::of($data)
-        ->rawColumns(['balance'])
+        ->rawColumns(['balance','narration'])
             ->addColumn('customer_id', function($trans){
                 $data = '';
                 if($trans->lmsUser){
@@ -3323,46 +3323,53 @@ class DataRenderer implements DataProviderInterface
                 return $data;
             })
             ->addColumn('batch_no',function($trans){
-                return '';
+                if(in_array($trans->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]))
+                return $trans->txn_id;
             })
             ->addColumn('narration',function($trans){
-                return $trans->comment;;
+                $data = '';
+                if($trans->modeOfPaymentName && $trans->modeOfPaymentNo)
+                $data .= $trans->modeOfPaymentName.': '.$trans->modeOfPaymentNo.'<br>';
+
+                if($trans->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+                $data .= ' Repayment Allocated as -<br> Normal: '.$trans->amount . ' TDS:0.00'.'<br>';
+                return $data;
             })
             ->addColumn(
                 'virtual_acc_id',
-                function ($transaction) {
-                    return $transaction->virtual_acc_id;
+                function ($trans) {
+                    return $trans->virtual_acc_id;
                 }
             )
             ->addColumn(
-                'trans_date',
-                function ($transaction) {
-                    return date('d-M-Y',strtotime($transaction->trans_date));
+                'value_date',
+                function ($trans) {
+                    return date('d-m-Y',strtotime($trans->trans_date));
                 }
             )
             ->editColumn(
-                'value_date',
-                function ($transaction) {
-                    return date('d-M-Y',strtotime($transaction->created_at));
+                'trans_date',
+                function ($trans) {
+                    return date('d-m-Y',strtotime($trans->created_at));
                 }
             )
             ->editColumn(
                 'trans_type',
-                function ($transaction) {
-                    return $transaction->transname;
+                function ($trans) {
+                    return $trans->transname;
                 }
             )
             ->editColumn(
                 'currency',
-                function ($transaction) {
+                function ($trans) {
                     return 'INR';
                 }
             )
             ->editColumn(
                 'debit',
-                function ($transaction) {
-                    if($transaction->entry_type=='0'){
-                        return $transaction->amount;
+                function ($trans) {
+                    if($trans->entry_type=='0'){
+                        return number_format($trans->amount,2);
                     }else{
                         return '0.00';
                     }
@@ -3370,9 +3377,9 @@ class DataRenderer implements DataProviderInterface
             )
             ->editColumn(
                 'credit',
-                function ($transaction) {
-                    if($transaction->entry_type=='1'){
-                        return '('.$transaction->amount.')';
+                function ($trans) {
+                    if($trans->entry_type=='1'){
+                        return '('.number_format($trans->amount,2).')';
                     }else{
                         return '(0.00)';
                     }
@@ -3380,12 +3387,12 @@ class DataRenderer implements DataProviderInterface
             )
             ->editColumn(
                 'balance',
-                function ($transaction) {
+                function ($trans) {
                     $data = '';
-                    if($transaction->balance<0){
-                        $data = '<span style="color:red">'.round(abs($transaction->balance), 2).'</span>';
+                    if($trans->balance<0){
+                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
                     }else{
-                        $data = '<span style="color:green">'.round(abs($transaction->balance), 2).'</span>';
+                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
                     }
                     return $data;
                 }
