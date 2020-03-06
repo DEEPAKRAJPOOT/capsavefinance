@@ -12,6 +12,7 @@ use App\Inv\Repositories\Models\Financial\FinancialJeConfig;
 use App\Inv\Repositories\Models\Financial\FinancialJiConfig;
 use App\Inv\Repositories\Models\Financial\FinancialVariablesTransConfig;
 use App\Inv\Repositories\Models\Financial\FinancialJournalItems;
+use App\Inv\Repositories\Models\Financial\FinancialJournalEntries;
 
 class FinanceRepository extends BaseRepositories implements FinanceInterface
 {
@@ -138,4 +139,8 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     public function saveJournalItems($arrData){
         return FinancialJournalItems::saveJournalItems($arrData);
     }    
+
+    public function saveJournalEntries($arrData){
+        return FinancialJournalEntries::saveJournalEntries($arrData);
+    }   
 }

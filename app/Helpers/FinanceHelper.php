@@ -21,38 +21,55 @@ class FinanceHelper {
                     foreach($this->jeConfigData as $key=>$val) {                        
                         $this->jiConfigData = $this->finRepo->getAllJiConfig($val->je_config_id);
                         if(isset($this->jiConfigData) && !empty($this->jiConfigData)) {
-                            foreach($this->jiConfigData as $jikey=>$jival) {  
-                                //print_r($jival);
-                                $this->inputData = [];
-                                $this->inputData = [ 
-                                    'ji_config_id' => $jival->ji_config_id,               
-                                    'date' => \Carbon\Carbon::now()->format('Y-m-d h:i:s'),
-                                    'account_id' => $jival->account_id,
-                                    'label' => $jival->label,
-                                    'journal_id' => $val->journal_id,
-                                    'journal_entry_id' => 1 //need to update
-                                ]; 
+                            $this->inputData = [];
+                            $this->inputData = [ 
+                                'journal_id' => $val->journal_id,
+                                'entry_type' => $val->trans_type,       //need to update
+                                'reference' => $val->trans_type,        //need to update
+                                'date' => \Carbon\Carbon::now()->format('Y-m-d h:i:s')
+                            ]; 
+                            $outputQryJE = $this->finRepo->saveJournalEntries($this->inputData);
+                            if(isset($outputQryJE->journal_entry_id) && !empty($outputQryJE->journal_entry_id)) {
+                                foreach($this->jiConfigData as $jikey=>$jival) {  
+                                    $this->inputData = [];
+                                    $this->inputData = [ 
+                                        'ji_config_id' => $jival->ji_config_id,               
+                                        'date' => \Carbon\Carbon::now()->format('Y-m-d h:i:s'),
+                                        'account_id' => $jival->account_id,
+                                        'label' => $jival->label,
+                                        'journal_id' => $val->journal_id,
+                                        'journal_entry_id' => $outputQryJE->journal_entry_id 
+                                    ]; 
 
-                                if($jival->value_type_val==1) {     //credit
-                                    $this->inputData['credit_amount'] = '0';
-                                } else {                            //debit
-                                    $this->inputData['debit_amount'] = '0';
-                                }
+                                    if($jival->value_type_val==1) {     //credit
+                                        $this->inputData['credit_amount'] = '0';
+                                    } else {                            //debit
+                                        $this->inputData['debit_amount'] = '0';
+                                    }
 
-                                if($jival->is_partner_val==1) {     
-                                    $this->inputData['biz_id'] = $bizId;
-                                }
-                                print_r($this->inputData);
-                                $outputQry = $this->finRepo->saveJournalItems($this->inputData);
-                            }                            
+                                    if($jival->is_partner_val==1) {     
+                                        $this->inputData['biz_id'] = $bizId;
+                                    }
+                                    //print_r($this->inputData);
+                                    $outputQryJI = $this->finRepo->saveJournalItems($this->inputData);
+                                    if(isset($outputQryJI->journal_item_id) && !empty($outputQryJI->journal_item_id)) {
+                                        //dd($this->jeConfigData);
+                                        $this->resp['success'] = true;
+                                        $this->resp['errorMsg'] = 'Journal item saved';
+                                    } else {
+                                        $this->resp['success'] = false;
+                                        $this->resp['errorMsg'] = 'Journal item not saved';
+                                    }
+                                }   
+                            } else {
+                                $this->resp['success'] = false;
+                                $this->resp['errorMsg'] = 'Journal entry not saved';
+                            }                      
                         } else {
-                            $this->resp['success'] = true;
+                            $this->resp['success'] = false;
                             $this->resp['errorMsg'] = 'Ji Configuration not found';
                         }                        
-                    }
-                    //dd($this->jeConfigData);
-                    $this->resp['success'] = true;
-                    $this->resp['errorMsg'] = '';
+                    }                    
                 } else {
                     $this->resp['success'] = true;
                     $this->resp['errorMsg'] = 'JE Configuration not found';
