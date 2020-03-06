@@ -25,7 +25,7 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
-                {data: 'customer_name'},
+                // {data: 'customer_name'},
                 {data: 'trans_date'},
                 {data: 'value_date'},
                 {data: 'trans_type'},

@@ -232,4 +232,54 @@ class Transactions extends BaseModel {
             }
         }
     }
+
+    public function getModeOfPaymentNameAttribute(){
+        $modeName = '';
+        switch ($this->mode_of_pay) {
+            case '1':
+                $modeName = 'UTR No';
+                break;
+            case '2':
+                $modeName = 'Cheque No';
+                break;
+            case '3':
+                $modeName = 'URN No';
+                break;  
+        }
+        return $modeName;
+    }
+
+    public function getModeOfPaymentNoAttribute(){
+        $modeNo = '';
+        switch ($this->mode_of_pay) {
+            case '1':
+                $modeNo = $this->utr_no;
+                break;
+            case '2':
+                $modeNo = $this->cheque_no;
+                break;
+            case '3':
+                $modeNo = $this->unr_no;
+                break;   
+        }
+        return $modeNo;
+    }
+
+    public function getBatchNoAttribute(){
+        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]))
+        return $this->txn_id;
+    }
+
+    public function getNarrationAttribute(){
+        $data = '';
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+        $data .= $this->BatchNo.' ';
+
+        if($this->modeOfPaymentName && $this->modeOfPaymentNo)
+        $data .= $this->modeOfPaymentName.': '.$this->modeOfPaymentNo.' ';
+
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+        $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
+        return $data;
+    }
 }

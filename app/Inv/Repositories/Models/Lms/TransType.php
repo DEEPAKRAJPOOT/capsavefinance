@@ -92,6 +92,8 @@ class TransType extends BaseModel {
        $result=self::select('*')
         ->where("is_visible","=", 1)
         ->where("is_active","=", 1)
+        ->where("is_manual","=",1)
+        ->orderBy("priority","asc")
         ->get();
         return $result?$result:'';
     }
