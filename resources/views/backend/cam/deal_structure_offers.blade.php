@@ -166,12 +166,12 @@
                   <td colspan="4" >
                       <table width="100%" cellpadding="0" cellspacing="0">
                           <tr style="background-color: #d2d4de;">
-                              <td rowspan="3" style="background-color: #fff;"><b>Primary Security</b></td>
-                              <td><b>Security</b></td>
-                              <td><b>Type of Security</b></td>
-                              <td><b>Status of Security</b></td>
-                              <td><b>Time for security</b></td>
-                              <td><b>Description of Security</b></td>
+                              <td rowspan="3" style="background-color: #fff;" width="10%"><b>Primary Security</b></td>
+                              <td width="15%"><b>Security</b></td>
+                              <td width="15%"><b>Type of Security</b></td>
+                              <td width="10%"><b>Status of Security</b></td>
+                              <td width="25%"><b>Time for security</b></td>
+                              <td width="25%"><b>Description of Security</b></td>
                           </tr>
                           @foreach($supplyOffer->offerPs as $key=>$ops)
                           <tr>
@@ -192,12 +192,12 @@
                   <td colspan="4">
                       <table width="100%" >
                           <tr style="background-color: #d2d4de;" >
-                              <td rowspan="3" style="background-color: #fff;"><b>Collateral Security</b></td>
-                              <td><b>Description Security</b></td>
-                              <td><b>Type of Security</b></td>
-                              <td><b>Status of Security</b></td>
-                              <td><b>Time for security</b></td>
-                              <td><b>Description of Security</b></td>
+                              <td rowspan="3" style="background-color: #fff;" width="10%"><b>Collateral Security</b></td>
+                              <td width="15%"><b>Security</b></td>
+                              <td width="15%"><b>Type of Security</b></td>
+                              <td width="10%"><b>Status of Security</b></td>
+                              <td width="25%"><b>Time for security</b></td>
+                              <td width="25%"><b>Description of Security</b></td>
                           </tr>
                           @foreach($supplyOffer->offerCs as $key=>$ocs)
                           <tr>
@@ -218,12 +218,12 @@
                   <td colspan="4">
                       <table width="100%">
                           <tr style="background-color: #d2d4de;">
-                              <td rowspan="3" style="background-color: #fff;"><b>Personal Guarantee</b></td>
-                              <td><b>Guarantor</b></td>
-                              <td><b>Time for security</b></td>
-                              <td><b>Residential Address</b></td>
-                              <td><b>Net worth as per ITR/CA Cert</b></td>
-                              <td><b>Comments if any</b></td>
+                              <td rowspan="3" style="background-color: #fff;" width="10%"><b>Personal Guarantee</b></td>
+                              <td width="15%"><b>Guarantor</b></td>
+                              <td width="15%"><b>Time for security</b></td>
+                              <td width="10%"><b>Residential Address</b></td>
+                              <td width="25%"><b>Net worth as per ITR/CA Cert</b></td>
+                              <td width="25%"><b>Comments if any</b></td>
                           </tr>
                           @foreach($supplyOffer->offerPg as $key=>$opg)
                           <tr>
@@ -244,12 +244,12 @@
                   <td colspan="4">
                       <table width="100%">
                           <tr style="background-color: #d2d4de;">
-                              <td rowspan="3" style="background-color: #fff;"><b>Corporate Guarantee</b></td>
-                              <td><b>Type</b></td>
-                              <td><b>Guarantor</b></td>
-                              <td><b>Time for security</b></td>
-                              <td><b>Residential Address</b></td>
-                              <td><b>Comments if any</b></td>
+                              <td rowspan="3" style="background-color: #fff;" width="10%"><b>Corporate Guarantee</b></td>
+                              <td width="15%"><b>Type</b></td>
+                              <td width="15%"><b>Guarantor</b></td>
+                              <td width="10%"><b>Time for security</b></td>
+                              <td width="25%"><b>Residential Address</b></td>
+                              <td width="25%"><b>Comments if any</b></td>
                           </tr>
                           @foreach($supplyOffer->offerCg as $key=>$ocg)
                           <tr>
@@ -270,12 +270,12 @@
                   <td colspan="4">
                       <table width="100%">
                           <tr style="background-color: #d2d4de;">
-                              <td rowspan="3" style="background-color: #fff;"><b>Escrow Mechanism</b></td>
-                              <td><b>Debtor</b></td>
-                              <td><b>Expected cash flow per month</b></td>
-                              <td><b>Time for security</b></td>
-                              <td><b>Mechanism</b></td>
-                              <td><b>Comments if any</b></td>
+                              <td rowspan="3" style="background-color: #fff;" width="10%"><b>Escrow Mechanism</b></td>
+                              <td width="15%"><b>Debtor</b></td>
+                              <td width="15%"><b>Expected cash flow per month</b></td>
+                              <td width="10%"><b>Time for security</b></td>
+                              <td width="25%"><b>Mechanism</b></td>
+                              <td width="25%"><b>Comments if any</b></td>
                           </tr>
                           @foreach($supplyOffer->offerEm as $key=>$oem)
                           <tr>

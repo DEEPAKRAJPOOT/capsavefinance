@@ -42,7 +42,7 @@
                            <td class="">{{ (($arr['outstanding_exposure'] > 0) || ($arr['proposed_exposure'] > 0)) ?  $arr['outstanding_exposure'] + $arr['proposed_exposure'] : '' }}</td>
                           
                         </tr>
-                     @endforeach
+                        @endforeach
                   @endif   
                      
                      <tr>

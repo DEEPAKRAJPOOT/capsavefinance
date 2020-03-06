@@ -184,12 +184,12 @@
                               <td colspan="4" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" >
                                   <table width="100%" cellpadding="0" cellspacing="0">
                                       <tr style="background-color: #d2d4de;">
-                                          <td rowspan="3"  style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;"><b>Primary Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Type of Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Status of Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Description of Security</b></td>
+                                          <td width="10%" rowspan="3"  style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;"><b>Primary Security</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Security</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Type of Security</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Status of Security</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Description of Security</b></td>
                                       </tr>
                                       @foreach($supplyOffer->offerPs as $key=>$ops)
                                       <tr>
@@ -210,12 +210,12 @@
                               <td colspan="4" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" >
                                   <table width="100%" cellpadding="0" cellspacing="0">
                                       <tr style="background-color: #d2d4de;" >
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3" ><b>Collateral Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Description Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Type of Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Status of Security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Description of Security</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3" ><b>Collateral Security</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Security</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Type of Security</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Status of Security</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Description of Security</b></td>
                                       </tr>
                                       @foreach($supplyOffer->offerCs as $key=>$ocs)
                                       <tr>
@@ -236,12 +236,12 @@
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" colspan="4">
                                   <table width="100%" cellpadding="0" cellspacing="0">
                                       <tr style="background-color: #d2d4de;">
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3" ><b>Personal Guarantee</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Guarantor</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Residential Address</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Net worth as per ITR/CA Cert</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comments if any</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3" ><b>Personal Guarantee</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Guarantor</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Residential Address</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Net worth as per ITR/CA Cert</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comments if any</b></td>
                                       </tr>
                                       @foreach($supplyOffer->offerPg as $key=>$opg)
                                       <tr>
@@ -262,12 +262,12 @@
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" colspan="4">
                                   <table width="100%" cellpadding="0" cellspacing="0">
                                       <tr style="background-color: #d2d4de;">
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3" ><b>Corporate Guarantee</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Type</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Guarantor</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Residential Address</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comments if any</b></td>
+                                          <td  width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3" ><b>Corporate Guarantee</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Type</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Guarantor</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Residential Address</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comments if any</b></td>
                                       </tr>
                                       @foreach($supplyOffer->offerCg as $key=>$ocg)
                                       <tr>
@@ -288,12 +288,12 @@
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" colspan="4">
                                   <table width="100%" cellpadding="0" cellspacing="0">
                                       <tr style="background-color: #d2d4de;">
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3"><b>Escrow Mechanism</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Debtor</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Expected cash flow per month</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Mechanism</b></td>
-                                          <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comments if any</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px; background-color: #fff;" rowspan="3"><b>Escrow Mechanism</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Debtor</b></td>
+                                          <td width="15%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Expected cash flow per month</b></td>
+                                          <td width="10%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Time for security</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Mechanism</b></td>
+                                          <td width="25%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comments if any</b></td>
                                       </tr>
                                       @foreach($supplyOffer->offerEm as $key=>$oem)
                                       <tr>
