@@ -23,9 +23,9 @@
                   <td>{{$sharedColender->co_lender_percent}}%</td>
                   <td>{{$sharedColender->capsave_comment}}</td>
                   <td>{{$sharedColender->co_lender_comment}}</td>
-                  <td>{{($sharedColender->co_lender_status == 0)? 'Pending':(($sharedColeder->co_lender_status == 1)? 'Accept': 'Reject')}}</td>
-                  <td>{{($sharedColender->created_at)? \Carbon\Carbon::parse($sharedColender->created_at)->format('d/m/Y h:i A'): ''}}</td>
-                  {{--<td>{{($sharedColender->updated_at)? \Carbon\Carbon::parse($sharedColender->updated_at)->format('d/m/Y h:i A'): ''}}</td>--}}
+                  <td>{{($sharedColender->co_lender_status == 0)? 'Pending':(($sharedColender->co_lender_status == 1)? 'Accept': 'Reject')}}</td>
+                  <td>{{($sharedColender->created_at)? \Carbon\Carbon::parse($sharedColender->created_at)->format('d-m-Y'): ''}}</td>
+                  {{--<td>{{($sharedColender->updated_at)? \Carbon\Carbon::parse($sharedColender->updated_at)->format('d-m-Y'): ''}}</td>--}}
                   <!-- <td></td> -->
               </tr>
               @empty

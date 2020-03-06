@@ -197,7 +197,7 @@ class CoLenderControllers extends Controller {
         //$loanAmount = $appData ? $appData->loan_amt : 0;
         
         $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
-        $offerStatus = $this->appRepo->getOfferStatus($appId, ['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
         
         $colenderShare = $this->appRepo->getAppDataByAppId($appId)->colender;
 
