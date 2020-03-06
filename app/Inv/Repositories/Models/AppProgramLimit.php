@@ -146,14 +146,11 @@ class AppProgramLimit extends BaseModel {
      
       public static function getLimitProgram($aid)
      {     
-           /// $user_id =    LmsUser::pluck('user_id');
-            $achor_id =   User::with('lms')->where(['anchor_id' => $aid])->where('anchor_id','<>', null)->fi('anchor_id');  
+            $user_id =    LmsUser::pluck('user_id');
+            $achor_id =   User::whereIn('user_id',$user_id)->where(['is_active' => 1, 'anchor_id' => $aid])->where('anchor_id','<>', null)->pluck('anchor_id');  
             return AppProgramOffer::whereHas('productHas')->whereIn('anchor_id',$achor_id)->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
      }
-    public function lms()
-    {
-         return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id','user_id');  
-    }
+     
     public static function getLimitAnchor($aid){
         return AppProgramLimit::with('anchorList')->where(['app_id' =>$aid])->get();
     }

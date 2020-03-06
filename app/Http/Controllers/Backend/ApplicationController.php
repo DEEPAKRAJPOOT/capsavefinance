@@ -162,7 +162,7 @@ class ApplicationController extends Controller
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
-        if($getCin)
+        if(count($getCin) > 0)
         {
             $cin =    $getCin->cin; 
         }
