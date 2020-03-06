@@ -23,13 +23,6 @@ class RefundController extends Controller
 	protected $appRepo;
 	protected $lmsRepo;
 
-	/**
-	 * The pdf instance.
-	 *
-	 * @var App\Libraries\Pdf
-	 */
-	protected $pdf;
-	
 	public function __construct(InvAppRepoInterface $app_repo,  InvLmsRepoInterface $lms_repo ){
 		$this->appRepo = $app_repo;
 		$this->lmsRepo = $lms_repo;
@@ -43,35 +36,51 @@ class RefundController extends Controller
 	 */
 	public function refundList()
 	{
-		return view('lms.refund.list');              
+		return view('lms.refund.refund_list');              
 	}
 
 	/**
-	 * Display a listing of the customer.
+	 * Display confirm dialogue.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function confirmDisburse(Request $request)
+	public function confirmRefund(Request $request)
 	{
-		return view('lms.disbursal.confirm_disburse');              
+		return view('lms.refund.confirm_refund');              
 	}
 
-	/**
-	 * Display a listing of the customer.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function viewInvoice(Request $request)
+
+	public function sendRefund(Request $request)
 	{
-		$userId = $request->get('user_id');
-		$status = $request->get('status');
-		$userIvoices = $this->lmsRepo->getAllUserInvoice($userId);
+		$transId = $request->trans_id;
+		$disburseIds = $request->disbursal_ids;
+
+		$record = array_filter(explode(",",$disburseIds));
+
+		$allrecords = array_unique($record);
+		$allrecords = array_map('intval', $allrecords);
+
+		$allDisburse = $this->lmsRepo->getDisbursals($allrecords)->toArray();
+		foreach ($allDisburse as $disbursal) {
+			$refundMstId = (config('lms')['TRANS_TYPE']['PAYMENT_REVERSE']) ?? 2;
+			$data = [];
+			$data['amount'] = $disbursal['surplus_amount'];
+			$data['disbursal_id'] = $disbursal['disbursal_id'];
+			$transactionData = $this->createTransactionData($disbursal['user_id'],  $data, $transId, $refundMstId);
+			$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
+
+			if (!empty($createTransaction)) {
+				$disburseData = [];
+				$disburseData['surplus_amount'] = 0;
+				$updateDisburse = $this->lmsRepo->updateDisburse($disburseData, $disbursal['disbursal_id']);
+			}
+		}
 		
-		return view('lms.disbursal.view_invoice')
-				->with([
-					'userIvoices'=>$userIvoices, 
-					'status'=>$status, 
-				]);              
+		if (empty($allrecords)) {
+			return redirect()->route('lms_refund_list')->withErrors(trans('backend_messages.noSelectedInvoice'));
+		}
+        
+        Session::flash('message',trans('backend_messages.refunded'));
+		return redirect()->route('lms_refund_list');
 	}
-
 }

@@ -9,140 +9,142 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 class Disbursal extends BaseModel {
-    /* The database table used by the model.
-     *
-     * @var string
-     */
+	/* The database table used by the model.
+	 *
+	 * @var string
+	 */
 
-    protected $table = 'disbursal';
+	protected $table = 'disbursal';
 
-    /**
-     * Custom primary key is set for the table
-     *
-     * @var integer
-     */
-    protected $primaryKey = 'disbursal_id';
+	/**
+	 * Custom primary key is set for the table
+	 *
+	 * @var integer
+	 */
+	protected $primaryKey = 'disbursal_id';
 
-    /**
-     * Maintain created_at and updated_at automatically
-     *
-     * @var boolean
-     */
-    public $timestamps = true;
+	/**
+	 * Maintain created_at and updated_at automatically
+	 *
+	 * @var boolean
+	 */
+	public $timestamps = true;
 
-    /**
-     * Maintain created_by and updated_by automatically
-     *
-     * @var boolean
-     */
-    public $userstamps = true;
+	/**
+	 * Maintain created_by and updated_by automatically
+	 *
+	 * @var boolean
+	 */
+	public $userstamps = true;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'user_id',
-        'app_id',
-        'invoice_id',
-        'prgm_offer_id',
-        'bank_account_id',
-        'disburse_date',
-        'bank_name',
-        'ifsc_code',
-        'acc_no',
-        'virtual_acc_id',
-        'customer_id',
-        'principal_amount',
-        'inv_due_date',
-        'tenor_days',
-        'interest_rate',
-        'total_repaid_amt',
-        'total_interest',
-        'margin',
-        'disburse_amount',
-        'status_id',
-        'disbursal_api_log_id',
-        'disburse_type',
-        'settlement_date',
-        'accured_interest',
-        'interest_refund',
-        'funded_date',
-        'int_accrual_start_dt',
-        'processing_fee',
-        'grace_period',
-        'overdue_interest_rate',
-        'repayment_amount',
-        'total_repaid_amount',
-        'penalty_amount',
-        'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',
-    ];
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $fillable = [
+		'user_id',
+		'app_id',
+		'invoice_id',
+		'prgm_offer_id',
+		'bank_account_id',
+		'disburse_date',
+		'bank_name',
+		'ifsc_code',
+		'acc_no',
+		'virtual_acc_id',
+		'customer_id',
+		'principal_amount',
+		'inv_due_date',
+		'payment_due_date',
+		'tenor_days',
+		'interest_rate',
+		'total_repaid_amt',
+		'total_interest',
+		'margin',
+		'disburse_amount',
+		'status_id',
+		'disbursal_api_log_id',
+		'disburse_type',
+		'settlement_date',
+		'surplus_amount',
+		'accured_interest',
+		'interest_refund',
+		'funded_date',
+		'int_accrual_start_dt',
+		'processing_fee',
+		'grace_period',
+		'overdue_interest_rate',
+		'repayment_amount',
+		'total_repaid_amount',
+		'penalty_amount',
+		'created_at',
+		'created_by',
+		'updated_at',
+		'updated_by',
+	];
 
-    /**
-     * Get Interest Accrual 
-     * 
-     * @return type
-     */
-    public function interests() { 
-        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'disbursal_id', 'disbursal_id'); 
-    }
+	/**
+	 * Get Interest Accrual 
+	 * 
+	 * @return type
+	 */
+	public function interests() { 
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'disbursal_id', 'disbursal_id'); 
+	}
 
-    /**
-     * Get App Program Offer 
-     * 
-     * @return type
-     */
-    public function offer() { 
-        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id'); 
-    }
+	/**
+	 * Get App Program Offer 
+	 * 
+	 * @return type
+	 */
+	public function offer() { 
+		return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id'); 
+	}
 
-    /**
-     * Save or Update Disbursal Request
-     * 
-     * @param array $data
-     * @param array $whereCondition | optional
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public static function saveDisbursalRequest($data, $whereCondition=[])
-    {
-        if (!is_array($data)) {
-            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
-        }
-        
-        if (!empty($whereCondition)) {
-            return self::where($whereCondition)->update($data);
-        } else if (isset($data[0])) {
-            return self::insert($data);
-        } else {
-            return self::create($data);
-        }
-    }
-    
-    /**
-     * Get Disbursal Requests
-     *      
-     * @param array $whereCondition | optional
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public static function getDisbursalRequests($whereCondition=[])
-    {
-        if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
-        }
-        
-        $query = self::select('*');
-                
-        if (!empty($whereCondition)) {
-            if (isset($whereCondition['int_accrual_start_dt'])) {
-                $query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
-                unset($whereCondition['int_accrual_start_dt']);
-            } 
+	/**
+	 * Save or Update Disbursal Request
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function saveDisbursalRequest($data, $whereCondition=[])
+	{
+		if (!is_array($data)) {
+			throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+		}
+		
+		if (!empty($whereCondition)) {
+			return self::where($whereCondition)->update($data);
+		} else if (isset($data[0])) {
+			return self::insert($data);
+		} else {
+			return self::create($data);
+		}
+	}
+	
+	/**
+	 * Get Disbursal Requests
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function getDisbursalRequests($whereCondition=[])
+	{
+		if (!is_array($whereCondition)) {
+			throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+		}
+		
+		$query = self::select('*');
+				
+		if (!empty($whereCondition)) {
+			if (isset($whereCondition['int_accrual_start_dt'])) {
+				$query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
+				unset($whereCondition['int_accrual_start_dt']);
+			} 
 
             if (isset($whereCondition['status_id'])) {
                 $query->whereIn('status_id', $whereCondition['status_id']);
@@ -221,44 +223,55 @@ class Disbursal extends BaseModel {
     {
               return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->orderBy('invoice_due_date','asc');
    
-    }
-    
-    public function  user()
-    {
-          return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
-    }
-    public static function   updateRepayment($attr)
-    {
-         $res =   self::where(['invoice_id' => $attr['invoice_id']])->first();
-         if($res)
-         {
-             $sumAmount   =  $res->disburse_amount - $attr['repaid_amount'];
-             return self::where(['invoice_id' => $attr['invoice_id']])->update(['repayment_amount' =>  $sumAmount]);
-         }
-    }
-    
-    public  static function singleRepayment($disbursal_id,$sumAmount)
-    {
-      
-        return self::where(['disbursal_id' => $disbursal_id])->update(['repayment_amount' =>  $sumAmount]);
-    }
-    
-    public static function getOutstandingAmount($attr)
-    {
-      
-        $user_id  = $attr->user_id;
-        $pAmount  =   self::where('user_id',$user_id)->sum('principal_amount');
-        $tAmount  =   self::where('user_id',$user_id)->sum('total_interest');
-        $tRAmount =   self::where('user_id',$user_id)->sum('total_repaid_amt');
-        if($attr->chrg_applicable_id==2)
-        {
-              return   $pAmount+$tAmount-$tRAmount;
-        }
-        else if($attr->chrg_applicable_id==3)
-        {
-              return  $pAmount-$tRAmount;
-        }
-    }
-    
-    
+	}
+	
+	public function  user()
+	{
+		  return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+	}
+	public static function   updateRepayment($attr)
+	{
+		 $res =   self::where(['invoice_id' => $attr['invoice_id']])->first();
+		 if($res)
+		 {
+			 $sumAmount   =  $res->disburse_amount - $attr['repaid_amount'];
+			 return self::where(['invoice_id' => $attr['invoice_id']])->update(['repayment_amount' =>  $sumAmount]);
+		 }
+	}
+	
+	public  static function singleRepayment($disbursal_id,$sumAmount)
+	{
+	  
+		return self::where(['disbursal_id' => $disbursal_id])->update(['repayment_amount' =>  $sumAmount]);
+	}
+	
+	public static function getOutstandingAmount($attr)
+	{
+	  
+		$user_id  = $attr->user_id;
+		$pAmount  =   self::where('user_id',$user_id)->sum('principal_amount');
+		$tAmount  =   self::where('user_id',$user_id)->sum('total_interest');
+		$tRAmount =   self::where('user_id',$user_id)->sum('total_repaid_amt');
+		if($attr->chrg_applicable_id==2)
+		{
+			  return   $pAmount+$tAmount-$tRAmount;
+		}
+		else if($attr->chrg_applicable_id==3)
+		{
+			  return  $pAmount-$tRAmount;
+		}
+	}
+	
+	public function bank_details()
+	{
+		return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1, 'is_default' => 1]);
+	}
+
+	public static function lmsGetRefundList()
+	{
+		return self::with([])
+				->where('surplus_amount', '!=', [0])
+				->whereNotNull('surplus_amount');
+	}
+	
 }

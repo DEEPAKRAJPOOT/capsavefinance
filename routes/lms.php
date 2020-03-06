@@ -128,6 +128,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
              
 
+            Route::get('/confirm-refund', [
+                'as' => 'confirm_refund',
+                'uses' => 'Lms\RefundController@confirmRefund'
+            ]);
+            
+            Route::post('/send-refund', [
+                'as' => 'lms_send_refund',
+                'uses' => 'Lms\RefundController@sendRefund'
+            ]);
+
         });//end of application
 
         // Business address
