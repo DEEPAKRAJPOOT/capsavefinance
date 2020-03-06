@@ -41,7 +41,7 @@
                            <td class="">{{ (($arr['outstanding_exposure'] > 0) || ($arr['proposed_exposure'] > 0)) ?  $arr['outstanding_exposure'] + $arr['proposed_exposure'] : '' }}</td>
                           
                         </tr>
-                     @endforeach
+                        @endforeach
                   @endif   
                      
                      <tr>
@@ -55,7 +55,7 @@
 
 @include('backend.cam.deal_structure_offers')
 
-
+            
    <div class="data mt-4">
         <table class="table" cellpadding="0" cellspacing="0">
           <tr>
