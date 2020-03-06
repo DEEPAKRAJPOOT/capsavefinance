@@ -64,8 +64,8 @@ class FinanceController extends Controller {
     }  
 
     public function crateJeConfig(Request $request) {
-        //$finHelperObj = new FinanceHelper($this->finRepo);
-        //dd($finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL')));
+        $finHelperObj = new FinanceHelper($this->finRepo);
+        $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'));
         $variablesIdArray = [];
         $jeConfigId = $request->get('je_config_id');
         $transConfigId = $request->get('trans_config_id');
