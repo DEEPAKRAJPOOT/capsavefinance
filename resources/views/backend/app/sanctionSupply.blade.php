@@ -401,8 +401,8 @@
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td width="33.33%">Facility No</td>
-                        <td width="6.66%">{{$postData['pdc_facility_no']}}</td>
+                        <td width="20%">Facility No</td>
+                        <td width="20%">{{$postData['pdc_facility_no']}}</td>
                         <td width="30%">Facility Name</td>
                         <td width="30%">{{$postData['pdc_facility_name']}}</td>
                       </tr>
@@ -458,8 +458,8 @@
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td width="33.33%">Facility No</td>
-                        <td width="6.66%">{{$postData['nach_facility_no']}}</td>
+                        <td width="20%">Facility No</td>
+                        <td width="20%">{{$postData['nach_facility_no']}}</td>
                         <td width="30%">Facility Name</td>
                         <td width="30%">{{$postData['nach_facility_name']}}</td>
                       </tr>
