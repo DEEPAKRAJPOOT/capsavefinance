@@ -1593,11 +1593,32 @@ class ApplicationController extends Controller
             $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
             $filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
             \File::put($filepath, base64_encode(json_encode($arrFileData)));
-            if ($arrFileData['view'] == 'ravi') {
-              return view('backend.app.sanctionSupply')->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]);
-            }
             Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
             return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
+        } catch (Exception $ex) {
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+     /**
+     * Save Sanction Letter SupplyChain
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function previewSanctionLetterSupplychain(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = (int)$request->app_id; 
+            $offerId = (int)$request->offer_id; 
+            $bizId = (int) $request->get('biz_id');
+            $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
+            $supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+            $arrFileData = [];
+            if (file_exists($supplyChainFormFile)) {
+              $arrFileData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
+            }
+            return view('backend.app.sanctionSupply')->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]);
         } catch (Exception $ex) {
             return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
         }

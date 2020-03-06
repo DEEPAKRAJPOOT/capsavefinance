@@ -101,6 +101,9 @@
                 @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                 <div class="form-fields">
                   <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
+                  @if(!empty($supplyChainFormData))
+                    <a data-toggle="modal" data-target="#previewSupplyChainSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_supply_chain_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Preview/Send Mail</a>
+                    @endif
                   <table class="table" cellpadding="0" cellspacing="0">
                     <tr>
                       <td><b>To</b></td>
@@ -921,6 +924,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('previewSanctionLetter','Preview/Send Mail Sanction Letter', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('previewSupplyChainSanctionLetter','Preview/Send Mail SupplyChain Letter', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
 @endsection
 @section('jscript')
