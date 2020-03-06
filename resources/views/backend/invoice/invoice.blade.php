@@ -332,7 +332,7 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                    $("#moveCase").html('Invoice Successfully Approve.');
+                    $("#moveCase").html('Invoice successfully sent to  approve ');
                     $(th).parent('td').parent('tr').remove();
                 }
             });
