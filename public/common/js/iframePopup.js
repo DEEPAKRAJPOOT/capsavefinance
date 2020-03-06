@@ -89,7 +89,7 @@ var iframe_ids = [
         'viewInterestAccrual',
         'manageUserRolePassword',
         'addBaseRateFrame',
-        'editBaseRateFrame'
+        'editBaseRateFrame',
         'previewSupplyChainSanctionLetter',
     ];
 
