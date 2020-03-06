@@ -2,16 +2,26 @@
 
 namespace App\Helpers;
 
-use App\Inv\Repositories\Contracts\FinanceInterface;
-
 class FinanceHelper {
 
     private $finRepo;
-    public function __construct(FinanceInterface $finRepo) {
+    private $resp = [];
+    public function __construct($finRepo = null) {
         $this->finRepo = $finRepo;
     }
 
-    public static function test(){
-        dd('kkkk');
+    public function finExecution($transTypeId = null, $userId = null, $appId = null, $bizId = null){
+        try{
+            if(isset($transTypeId) && !empty($transTypeId)) {
+                $this->resp['success'] = true;
+                $this->resp['errorMsg'] = 'Transaction type id is found';
+            } else {
+                $this->resp['success'] = false;
+                $this->resp['errorMsg'] = 'Transaction type id is blank';
+            }
+            return $this->resp;
+        } catch (Exception $ex) {
+            throw new Error('Something wrong please try later');
+        }        
     }
 }

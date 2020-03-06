@@ -134,5 +134,11 @@ return [
         'Sales' => 'Sales',        
         'Miscellaneous' => 'Miscellaneous'
     ], 
+    'TRANS_TYPE' => [
+        'DISBURSAL' => 1,
+        'PAYMENT' => 2,
+        'REPAYMENT' => 3,
+        'CHARGES' => 4
+    ],
 ];
  

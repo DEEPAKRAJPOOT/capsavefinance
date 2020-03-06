@@ -11,6 +11,7 @@ use App\Http\Requests\Backend\CreateJeConfigRequest;
 use App\Http\Requests\Backend\CreateJiConfigRequest;
 use App\Http\Requests\Backend\CreateJournalRequest;
 use App\Http\Requests\Backend\CreateAccountRequest;
+use App\Helpers\FinanceHelper;
 
 class FinanceController extends Controller {
 
@@ -63,6 +64,8 @@ class FinanceController extends Controller {
     }  
 
     public function crateJeConfig(Request $request) {
+        $finHelperObj = new FinanceHelper($this->finRepo);
+        dd($finHelperObj->finExecution());
         $variablesIdArray = [];
         $jeConfigId = $request->get('je_config_id');
         $transConfigId = $request->get('trans_config_id');
