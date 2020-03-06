@@ -144,7 +144,7 @@ class ApplicationController extends Controller
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-        if(count($getCin) > 0)
+        if(!empty($getCin))
         {
             $cin =    $getCin->cin; 
         }
@@ -246,6 +246,7 @@ class ApplicationController extends Controller
      */
     public function showDocument(Request $request)
     {
+       
         $appId = $request->get('app_id');
         $biz_id = $request->get('biz_id');
         $editFlag = $request->get('edit');

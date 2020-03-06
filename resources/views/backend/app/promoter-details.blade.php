@@ -661,7 +661,6 @@
         
         $('.submit').on('click', function (event) {
         var button = $(this).attr("data-type");
-     
         $('input.first_name').each(function () {
         $(this).rules("add",
         {
@@ -858,18 +857,18 @@
                 {
                 
                   $('.isloader').hide();
-                  window.location.href = "{{ route('promoter_details', []) }}";
-             
+                 window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
+                  
                if (res.status == 1)
                {
-                    
+                   
                     if(button=='next')
                     {  
                           window.location.href = "{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                     }
                     else
                     {
-                         window.location.href = "{{ route('promoter_details', []) }}";
+                         window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                     }
                 }
                 else {
