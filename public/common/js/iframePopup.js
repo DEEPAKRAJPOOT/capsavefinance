@@ -83,6 +83,7 @@ var iframe_ids = [
         'editEquipmentFrame',
         'shareColenderFrame',
         'viewSharedColenderFrame',
+        'previewSupplyChainSanctionLetter',
     ];
 
 iframe_ids.forEach(function(id) {

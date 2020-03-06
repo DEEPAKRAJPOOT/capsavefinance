@@ -1,9 +1,4 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysiwyg/0.3.3/bootstrap3-wysihtml5.min.css" />
-@endsection
-@section('content')
-@include('layouts.backend.partials.admin-subnav')
 <style>
   h5{ 
     margin:0px;
@@ -95,7 +90,7 @@
               <form action="{{route('save_sanction_letter_supplychain')}}" method="POST">
                 @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                 <div class="form-fields">
-                  <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
+                  <!-- <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5> -->
                   <table class="table" cellpadding="0" cellspacing="0">
                     <tr>
                       <td><b>To</b></td>
@@ -646,4 +641,3 @@
   </div>
 </div>
 </div>
-@endsection
