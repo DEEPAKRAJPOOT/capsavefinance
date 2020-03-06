@@ -1036,10 +1036,15 @@ class ApplicationController extends Controller
         $offerId = null;
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
-        } 
+        }
+        $supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+        $supplyChainFormData = [];
+        if (file_exists($supplyChainFormFile)) {
+          $supplyChainFormData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
+        }
         $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
         $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
-        return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata]);  
+        return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData]);  
     }
 
    /* For Promoter pan verify iframe model    */
@@ -1473,6 +1478,29 @@ class ApplicationController extends Controller
                 Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
                 return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id,'biz_id' => $bizId]);
             } 
+        } catch (Exception $ex) {
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+     /**
+     * Save Sanction Letter SupplyChain
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function saveSanctionLetterSupplychain(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = (int)$request->app_id; 
+            $offerId = (int)$request->offer_id; 
+            $bizId = (int) $request->get('biz_id');
+            $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
+            $filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
+            \File::put($filepath, base64_encode(json_encode($arrFileData)));
+            $abc = view('backend.app.sanctionSupply')->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]);
+            Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
         } catch (Exception $ex) {
             return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
         }
