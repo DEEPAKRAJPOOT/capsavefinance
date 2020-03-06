@@ -19,7 +19,7 @@ tr.border_bottom td {
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
-                    @if($supplyOfferData->count() == 0 && $termOfferData->count() == 0 && $leaseOfferData->count() == 0 )
+                    @if($supplyOfferData->count() == 0)
                     <div class="card card-color mb-0">
                         <div class="card-header">
                             <a class="card-title ">No offer found.</a>
