@@ -165,7 +165,7 @@ class ApplicationController extends Controller
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
-            'cin_no' => $getCin->cin,
+            'cin_no' => ($getCin->cin) ? $getCin->cin : '',
             'appId' => $appId, 
             'bizId' => $bizId,
             'edit' => $editFlag
