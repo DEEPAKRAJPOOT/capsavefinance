@@ -801,8 +801,9 @@ class ApplicationController extends Controller
                   	$capId = sprintf('%09d', $user_id);
                   	$customerId = 'CAP'.$capId;
                   	$lmsCustomerArray = array(
-						'user_id' => $user_id, 
-						'customer_id' => $customerId,
+            'user_id' => $user_id, 
+            'customer_id' => $customerId,
+						'app_id' => $app_id, 
 						'created_by' => Auth::user()->user_id
 						);
                   	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
@@ -817,6 +818,7 @@ class ApplicationController extends Controller
                     // dd($companyStateId);
 						        if(isset($prcsAmt->offer)) {
                         foreach ($prcsAmt->offer as $key => $offer) {
+                          // dd($offer);
                           $pChargeId = config('lms')['TRANS_TYPE']['PROCESSING_FEE']; // 4
                           $dChargeId = config('lms')['TRANS_TYPE']['DOCUMENT_FEE']; // 20
 
@@ -836,12 +838,16 @@ class ApplicationController extends Controller
                                 $pfWGst = round((($pf*18)/100),2);
                                 $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
                                 $pfData['igst'] = $pfWGst;
+                                $pfData['amount'] += $pfWGst;
                                 
                               } else {
                                 $pfWGst = round((($pf*9)/100),2);
                                 $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
                                 $pfData['cgst'] = $pfWGst;
                                 $pfData['sgst'] = $pfWGst;
+                                $totalGst = $pfData['cgst'] + $pfData['sgst'];
+                                $pfData['amount'] += $totalGst;
+
                               }
                           } 
                           $pfDebitData = $this->createTransactionData($user_id, $pfData, null, $pChargeId);
@@ -860,12 +866,16 @@ class ApplicationController extends Controller
                                 $dfWGst = round((($df*18)/100),2);
                                 $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
                                 $dfData['igst'] = $dfWGst;
+                                $pfData['amount'] += $dfWGst;
+
                                 
                               } else {
                                 $dfWGst = round((($df*9)/100),2);
                                 $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
                                 $dfData['cgst'] = $dfWGst;
                                 $dfData['sgst'] = $dfWGst;
+                                $totalGst = $dfData['cgst'] + $dfData['sgst'];
+                                $pfData['amount'] += $totalGst;
                               }
                           } 
                           $dfWGst = round((($df*18)/100),2);

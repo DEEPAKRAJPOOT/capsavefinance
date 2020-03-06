@@ -1,6 +1,6 @@
 <ul class="main-menu">
     <li>
-        <a href="" class=" {{ ($active=='summary')? 'active': null }} ">Summary</a>
+        <a href="{{ route('lms_get_customer_applications', [ 'user_id' => $userInfo->user_id ]) }}" class=" {{ ($active=='summary')? 'active': null }} ">Summary</a>
     </li>
     @can('lms_get_bank_account')
     <li>
@@ -15,9 +15,9 @@
     <li>
         <a class=" {{ ($active=='invoice') ? 'active': null }} "  href="{{ route('lms_get_application_invoice', [ 'user_id' => $userInfo->user_id ]) }}">View Invoices</a>
     </li>
-    <li>
+   <!--  <li>
         <a class=" {{ ($active=='repayement') ? 'active': null }} " href="#">Repayment History</a>
-    </li>
+    </li> -->
     <li>
         <a class=" {{($active=='charges') ? 'active': null }} " href="{{route('manage_charge', ['user_id' => request()->get('user_id')])}}">Charges</a>
     </li>

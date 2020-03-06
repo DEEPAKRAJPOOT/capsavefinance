@@ -835,3 +835,7 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     color: #138864;
 }
 .charge_parent_div {width:100%;}
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}

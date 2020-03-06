@@ -2594,55 +2594,50 @@ class DataRenderer implements DataProviderInterface
                     
                 })
                 ->editColumn(
-                        'customer_mobile',
-                        function ($customer) {
-                    $mobile_no = $customer->user->mobile_no;
-                    return $mobile_no;
-                    
-                })
-                ->editColumn(
                     'limit',
                     function ($customer) {
-                    return 12;
-
-                })
-                ->editColumn(
-                    'interest_rate',
-                    function ($customer) {                    
-                    return 12;
+                        $this->totalLimit = 0;
+                        if(isset($customer->user->app->prgmLimits)) {
+                            foreach ($customer->user->app->prgmLimits as $value) {
+                                $this->totalLimit += $value->limit_amt;
+                            }
+                        }
+                    return $this->totalLimit;
                 })
                 ->editColumn(
                     'consume_limit',
                     function ($customer) {
-                    return 12;
+                        $this->totalCunsumeLimit = 0;
+                        if(isset($customer->user->app->acceptedOffers)) {
+                            foreach ($customer->user->app->acceptedOffers as $value) {
+                                $this->totalCunsumeLimit += $value->prgm_limit_amt;
+                            }
+                        }
+                    return $this->totalCunsumeLimit;
                 })
                 ->editColumn(
                     'available_limit',
                     function ($customer) {
                     
-                    return 12;
+                    return $this->totalLimit - $this->totalCunsumeLimit;
                 })
                 ->editColumn(
-                    'tenor_days',
+                    'anchor',
                     function ($customer) {
-                    return 12;
+                    
+                    return ($customer->user->anchor->comp_name) ?? '--' ;
                 })
                 ->editColumn(
-                    'assignee',
+                    'program_type',
                     function ($customer) {
-                    return 'xyz';
-                })
-                ->editColumn(
-                    'assigned_by',
-                    function ($customer) {
-                    return 'xyz';
-
+                    
+                    return ($customer->user->is_buyer == 1) ? 'Channel Finance' : 'Vender Finance';
                 })
                 ->editColumn(
                     'status',
                     function ($customer) {
                     if ($customer->is_assign == 0) {
-                        return "<label class=\"badge badge-warning current-status\">sanctioned</label>";
+                        return "<label class=\"badge badge-success current-status\">sanctioned</label>";
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }
