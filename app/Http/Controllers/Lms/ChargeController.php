@@ -137,6 +137,9 @@ class ChargeController extends Controller
                    {
                          $totalSumAmount  =  $request->charge_amount_new; 
                          $is_gst   = 0; 
+                         $cgst = 0;
+                         $sgst = 0;
+                         $igst =  0;
                    }
                  }
                     $id  = Auth::user()->user_id;
