@@ -65,7 +65,8 @@ class DisbursalController extends Controller
 		return view('lms.disbursal.view_invoice')
 				->with([
 					'userIvoices'=>$userIvoices, 
-					'status'=>$status, 
+					'status'=>$status,
+					'userId' => $userId 
 				]);              
 	}
 

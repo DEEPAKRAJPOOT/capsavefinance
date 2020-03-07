@@ -1,6 +1,6 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-
+        <input type="hidden" value="{{ $userId }}" name="user_id" id="user_id">  
 		@if($userIvoices->count() != 0)
 		<div class="row">
 			<div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse show" data-parent="#accordion" style="">
@@ -55,6 +55,12 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
+	let user_ids = parent.$('#user_ids').val();
+	let userIdArray = user_ids.split(",");
+
+	if (jQuery.inArray( $('#user_id').val(), userIdArray) == true) {
+		$('input.invoice_id').prop('checked', true);;
+	}
 	$('.invoice_id').on('click', function() {
 		let current_inv_ids = parent.$('#invoice_ids').val();
 		let current_id = $(this).val();
