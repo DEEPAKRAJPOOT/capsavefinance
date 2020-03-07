@@ -106,7 +106,7 @@ class UrlParamProtector {
         }
 
         foreach (Session::get($this->sessionKey) as $key => $value) {
-            if ($value['guid'] === $guid) {
+            if (!empty($value['guid']) && $value['guid'] === $guid) {
                 $this->valuesToBeMerged = $value['params'];
                 return true;
             }
@@ -123,7 +123,7 @@ class UrlParamProtector {
      */
     public function isValidGuidForPost($guid) {
         foreach (Session::get($this->sessionKey) as $key => $value) {
-            if ($value['guid'] === $guid && Auth::user()->id === $value['loggedin_user_id']) {
+            if (!empty($value['guid']) && $value['guid'] === $guid && Auth::user()->id === $value['loggedin_user_id']) {
                 $this->valuesToBeMerged = $value['params'];
                 return true;
             }
