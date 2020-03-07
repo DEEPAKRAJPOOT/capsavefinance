@@ -62,7 +62,6 @@ $(document).ready(function(){
 		$('input.invoice_id').prop('checked', true);;
 	}
 
-
 	var checkedVals = $('.invoice_id:checkbox:checked').map(function() {
 	    return this.value;
 	}).get();
