@@ -41,7 +41,7 @@
             <option value="">Select Anchor  </option>
               @foreach($anchor_list as $row)
                  @php if(isset($row->anchorOne->anchor_id)) { @endphp
-                <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}</option>
+                <option value="{{{$row->anchorOne->anchor_id}}},{{{$row->app_id}}}">{{{$row->anchorOne->comp_name}}}</option>
                 @php } @endphp
                 @endforeach
               </select>
@@ -294,11 +294,12 @@
   $(document).on('change','.changeBulkSupplier',function(){
     
        $("#program_bulk_id_msg" ).hide  ();
-      var program_id =  $(this).val(); 
+      var program_id =  $(this).val();
+       var anchor_id =  $("#anchor_bulk_id").val(); 
       $("#supplier_bulk_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'program_id':program_id,'_token':messages.token});
+       var postData =  ({'app_id':anchor_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',

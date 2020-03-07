@@ -189,7 +189,7 @@ public static function updateInvoice($invoiceId,$status)
      }  
      public static function  getBusinessNameApp($status_id)
      {
-         return self::with(['app'])->where(['status_id' =>$status_id])->groupBy('app_id')->get();
+         return self::with(['business'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
          
      }  
     
