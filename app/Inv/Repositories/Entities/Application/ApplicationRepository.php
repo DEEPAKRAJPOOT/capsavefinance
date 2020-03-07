@@ -1625,8 +1625,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getReviewerSummaryData($appId, $bizId){
         $returnData = []; 
-        $reviewerSummaryData = CamReviewerSummary::where('biz_id',$bizId)->where('app_id', $appId)->first()->toArray(); 
+        $reviewerSummaryData = CamReviewerSummary::where('biz_id',$bizId)->where('app_id', $appId)->first(); 
         if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+            $reviewerSummaryData = $reviewerSummaryData->toArray();
             $returnData['reviewerSummaryData'] = $reviewerSummaryData;
             $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])->where('is_active', 1)->get();
             if ($dataPrePostCond->count()) {
