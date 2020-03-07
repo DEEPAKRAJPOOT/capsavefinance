@@ -21,23 +21,53 @@
     <div class="card">
         <div class="card-body">       
             <div class="row">
-                <div class="col-md-4">
+                 <div class="col-md-3">
+                    {!!
+                    Form::text('from_date',
+                    null,
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'From Date',
+                    'id'=>'from_date'
+                    ])
+                    !!} 
+                </div>
+                 <div class="col-md-3">
+                    {!!
+                    Form::text('to_date',
+                    null,
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'To Date',
+                    'id'=>'to_date'
+                    ])
+                    !!} 
+                </div>
+                <div class="col-md-3" id="prefetch">
                     {!!
                     Form::text('search_keyword',
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by Customer Code',
-                    'id'=>'search_keyword'
+                    'placeholder' => 'Search by Customer ID/Name',
+                    'id'=>'search_keyword',
+                    'autocomplete'=>'off'
                     ])
                     !!}
-                </div>
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+                </div>
                 
                 <div class="col-md-3 ml-auto text-right">
 
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disabled" id="openDisbueseInvoices" >Refund by Bank</a>
-                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund Manually</a>
+                    {{-- <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disabled" id="openDisbueseInvoices" >Refund by Bank</a>
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund Manually</a> --}}
+
+
+
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disabled" id="openDisbueseInvoices" >Refund</a>
+                    <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Adjust </a>
+
+
                 </div>
                 <input type="hidden" value="" name="disbursal_ids" id="disbursal_ids">  
 
@@ -51,7 +81,7 @@
 	                                        <thead>
 	                                        	<tr role="row">
                                                     <th></th>
-                                                    <th>Customer Code</th>
+                                                    <th>Customer</th>
 													<th>Ben Name</th>
 													<th>Ben Bank Name</th>
 													<th>Ben IFSC</th>
@@ -86,11 +116,12 @@
         lms_get_refund_customer: "{{ URL::route('lms_get_refund_customer') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-
     };
 </script>
 
 <script src="{{ asset('backend/js/lms/refund.js') }}" type="text/javascript"></script>
+<script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>
+<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 
 <script>
 $(document).ready(function(){
@@ -104,8 +135,40 @@ $(document).ready(function(){
             $('#disbursal_ids').val(current_disbursal_ids.replace(new RegExp(current_id, 'g'), ''));
         }
     });
+
+
+var path = "{{ route('get_customer') }}";
+var sample_data = new Bloodhound({
+       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+       queryTokenizer: Bloodhound.tokenizers.whitespace,
+       prefetch:path,
+       remote:{
+        url:path+'?query=%QUERY',
+        wildcard:'%QUERY'
+       }
+      });
+      
     
+      $('#prefetch .form-control').typeahead(null, {
+       name: 'sample_data',
+       display: 'customer_id',
+       source:sample_data,
+       limit:10,
+       templates:{
+        suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{customer}} <small>( @{{customer_id}} )</small></div> </div>') }
+      });
 });
+
+$('#from_date').datetimepicker({
+        format: 'dd/mm/yyyy',
+        //  startDate: new Date(),
+        autoclose: true,
+        minView: 2, });
+    $('#to_date').datetimepicker({
+        format: 'dd/mm/yyyy',
+        //  startDate: new Date(),
+        autoclose: true,
+        minView: 2, });
 </script>
 @endsection
 
