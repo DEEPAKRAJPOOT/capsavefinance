@@ -3462,11 +3462,14 @@ if ($err) {
      
       public function getSupplierList(Request $request)
      {
+        
         $result  =  explode(",",$request['program_id']);
+        $res  =  explode(",",$request['app_id']);
         $request['program_id']  = $result[0];
         $request['prgm_offer_id']  = $result[1];
+        $appId     = $res[1];
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
-        $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
+        $getProgramLimit =   $this->invRepo->getProgramForAppLimit($request['program_id'],$appId);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
         return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
      }

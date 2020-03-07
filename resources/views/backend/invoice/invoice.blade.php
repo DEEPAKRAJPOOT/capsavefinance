@@ -70,7 +70,7 @@
                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                                 <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                                                     <option value="">Select Application  </option>
-                                                    @foreach($get_bus as $row)
+                                                        @foreach($get_bus as $row)
                                                     <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
                                                     @endforeach
 
@@ -82,6 +82,7 @@
                                             <div class="col-md-2">				 
 
                                                 <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
+                                                    <option value=""> Please select </option>
                                                     @foreach($anchor_list as $row)
                                                     @php if(isset($row->anchor->anchor_id)) { @endphp
                                                     <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
@@ -374,7 +375,7 @@
                         $("#supplier_id").append("<option value=''> Select Supplier </option>");
                         $(obj1).each(function (i, v) {
 
-                            $("#supplier_id").append("<option value='" + v.app.user.user_id + "'>" + v.app.user.f_name + "</option>");
+                            $("#supplier_id").append("<option value='" + v.user_id + "'>" + v.f_name + "</option>");
 
                         });
                     } else

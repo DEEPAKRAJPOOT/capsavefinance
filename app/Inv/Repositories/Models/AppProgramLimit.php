@@ -160,6 +160,13 @@ class AppProgramLimit extends BaseModel {
        return AppProgramLimit::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'anchor_id' => $uid])->get();
     }   
   
+    
+         public static function getUserBehalfApplication($uid)
+    {
+       return AppProgramLimit::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'anchor_id' => $uid])->get();
+    }   
+    
+    
     public static function geAnchortLimitProgram($aid){  
         return Program::where(['anchor_id' =>$aid,'parent_prgm_id' =>0])->first();
     }
