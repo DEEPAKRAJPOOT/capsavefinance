@@ -135,7 +135,7 @@ class Program extends BaseModel {
                         'prgm.max_tenor_old_invoice',
                         'prgm.margin',
                         'prgm.overdue_interest_rate',
-                        'prgm.interest_linkage',
+                        'prgm.base_rate_id',
                         'prgm.is_adhoc_facility',
                         'prgm.adhoc_interest_rate',
                         'prgm.is_grace_period',
