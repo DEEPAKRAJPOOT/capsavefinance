@@ -403,10 +403,7 @@
                     @endif
                   </div>
                   @endforeach
-                  <h5>Section 3:Specific Security<select class="select">
-                            <option>Applicable</option>
-                            <option>Not applicable</option>
-                   </select></h5>
+                  <h5>Section 3:Specific Security</h5>
                   <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
                   <h5>PDC</h5>
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
