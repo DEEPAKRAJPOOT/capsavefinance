@@ -3531,10 +3531,12 @@ if ($err) {
           }
        
         $i=0;
-      
-        $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
-        $appId = $res->app_id; 
+        $explode  =  explode(',',$request['anchor_bulk_id']);
+        $attributes['anchor_bulk_id']      =    $explode[0];  
+        $appId   = $explode[1]; 
+        $res =  $this->invRepo->getSingleAnchorDataByAppId($appId);
         $biz_id  = $res->biz_id;
+       
         $rowcount = count($rowData) -1;
         foreach($rowData as $key=>$row)
         {
