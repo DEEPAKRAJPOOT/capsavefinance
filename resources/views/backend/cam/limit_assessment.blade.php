@@ -119,7 +119,7 @@
                                             <tr>
                                                 <td width="10%" style="background: #e9ecef;"><b>Overdue Interest (%)</b></td>
                                                 <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Interest Rate (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Sub Limit</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
                                                 <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (Days)</b></td>
