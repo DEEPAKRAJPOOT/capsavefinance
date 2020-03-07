@@ -100,10 +100,11 @@
                         @csrf
                         @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                         <div class="form-fields">
-                           <h5 class="card-title form-head-h5">Sanction Letter for Supply Chain</h5>
+                           <h5 class="card-title form-head-h5">Sanction Letter for Supply Chain
                            @if(!empty($supplyChainFormData))
-                           <a data-toggle="modal" data-target="#previewSupplyChainSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_supply_chain_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Preview/Send Mail</a>
+                           <a data-toggle="modal" data-target="#previewSupplyChainSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_supply_chain_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3" style="margin: 5px 0 10px 0;">Preview/Send Mail</a>
                            @endif
+                           </h5>
                            <table class="table" cellpadding="0" cellspacing="0">
                               <tr>
                                  <td><b>To</b></td>
