@@ -2613,7 +2613,7 @@ class DataRenderer implements DataProviderInterface {
                         )
                         ->addColumn(
                                 'action', function ($baserates) {
-                             $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBaseRateFrame" title="Edit Base Rate Detail" data-url ="' . route('edit_base_rate', ['id' => $baserates->id]) . '" data-height="250px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                             $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBaseRateFrame" title="Edit Base Rate Detail" data-url ="' . route('edit_base_rate', ['id' => $baserates->id]) . '" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
                              return $edit;
                         })
                         ->filter(function ($query) use ($request) {
