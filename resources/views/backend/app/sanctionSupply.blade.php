@@ -710,6 +710,9 @@
                                     <li>{{$postData['any_other_doc_monitoring_3'] ?? NULL}}</li>
                                   </ul>
                                  @endif
+                                 <p>
+                                     Non submission of any of the above mentioned documents within the stipulated timelines, CFPL shall reserve the right to charge penalty from the due date of such submission at 2% p.a over and above the prevailing interest rates.
+                                  </p>
                                  <br />
                            </div>
                            <h5>Section 8:- General Conditions </h5>

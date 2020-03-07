@@ -320,7 +320,7 @@
                               <tbody>
                                  <tr>
                                     <td width="33.33%">Prepayment</td>
-                                    <td width="66.66%"><textarea class="form-control" name="prepayment">In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided by CFPL for time to time.</textarea>
+                                    <td width="66.66%"><textarea class="form-control" name="prepayment">{{$supplyChainFormData['prepayment'] ?? 'In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided by CFPL for time to time.'}}</textarea>
                                     </td>
                                  </tr>
                                  <tr>
@@ -825,6 +825,9 @@
                                     <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_2'] ?? ''}}" name="any_other_doc_monitoring_2" id="any_other_doc_monitoring_2" class="input_sanc" placeholder="Click here to enter text"></li>
                                     <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_3'] ?? ''}}" name="any_other_doc_monitoring_3" id="any_other_doc_monitoring_3" class="input_sanc" placeholder="Click here to enter text"></li>
                                   </ul>
+                                  <p>
+                                     Non submission of any of the above mentioned documents within the stipulated timelines, CFPL shall reserve the right to charge penalty from the due date of such submission at 2% p.a over and above the prevailing interest rates.
+                                  </p>
                                  <br />
                            </div>
                            <h5>Section 8:- General Conditions </h5>
