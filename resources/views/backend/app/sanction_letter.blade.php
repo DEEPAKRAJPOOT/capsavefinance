@@ -100,7 +100,7 @@
                         @csrf
                         @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                         <div class="form-fields">
-                           <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5>
+                           <h5 class="card-title form-head-h5">Sanction Letter for Supply Chain</h5>
                            @if(!empty($supplyChainFormData))
                            <a data-toggle="modal" data-target="#previewSupplyChainSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('preview_supply_chain_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" class="btn btn-success btn-sm float-right mt-3 ml-3">Preview/Send Mail</a>
                            @endif
@@ -108,22 +108,33 @@
                               <tr>
                                  <td><b>To</b></td>
                               </tr>
+                              @if(!empty($supplyChaindata['ConcernedPersonName']))
                               <tr>
-                                 <td>{{$supplyChaindata['ConcernedPersonName']}}</td>
+                                <td>{{$supplyChaindata['ConcernedPersonName']}}</td>
                               </tr>
+                              @endif
+                              @if(!empty($supplyChaindata['EntityName']))
                               <tr>
-                                 <td>{{$supplyChaindata['EntityName']}}</td>
+                                <td>{{$supplyChaindata['EntityName']}}</td>
                               </tr>
+                               @endif
+                               @if(!empty(trim($supplyChaindata['Address'])))
                               <tr>
-                                 <td>{{$supplyChaindata['Address']}}</td>
+                                <td>{{$supplyChaindata['Address']}}</td>
                               </tr>
+                              @endif
+                              @if(!empty($supplyChaindata['EmailId']))
                               <tr>
-                                 <td>{{$supplyChaindata['EmailId']}}</td>
+                                <td>{{$supplyChaindata['EmailId']}}</td>
                               </tr>
+                              @endif
+                              @if(!empty($supplyChaindata['MobileNumber']))
                               <tr>
-                                 <td>{{$supplyChaindata['MobileNumber']}}</td>
+                                <td>{{$supplyChaindata['MobileNumber']}}</td>
                               </tr>
+                              @endif
                            </table>
+                           <br />
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <thead>
                                  <tr>
@@ -227,10 +238,11 @@
                                        <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                           <thead>
                                              <tr>
-                                                <th width="35%">Max. Discounting Period</th>
-                                                <th width="25%">Grace Period</th>
-                                                <th width="25%">ROI</th>
-                                                <th width="25%">Margin</th>
+                                                <th width="30%">Max. Discounting Period</th>
+                                                <th width="20%">Grace Period</th>
+                                                <th width="15%">ROI</th>
+                                                <th width="20%">Bench Mark Date</th>
+                                                <th width="15%">Margin</th>
                                              </tr>
                                           </thead>
                                           <tbody>
@@ -238,6 +250,7 @@
                                                 <td>{{$offerD->tenor}}</td>
                                                 <td>{{$offerD->grace_period}}</td>
                                                 <td>{{$offerD->interest_rate}}</td>
+                                                <td>{{getBenchmarkType($offerD->benchmark_date)}}</td>
                                                 <td>{{$offerD->margin}}</td>
                                              </tr>
                                           </tbody>
@@ -246,8 +259,12 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Investment Payment Frequency</td>
-                                    <td width="66.66%" colspan="3">{{$offerD['payment_frequency']}}</td>
+                                    <td width="66.66%" colspan="3">{{getInvestmentPaymentFrequency($offerD['payment_frequency'])}}</td>
                                  </tr>
+                                 <tr>
+                                    <td width="33.33%">Methodology for calculating for  Drawing Power</td>
+                                    <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
+                                  </tr>
                                  <tr>
                                     <td width="33.33%">Penal Interest</td>
                                     <td width="66.66%">
@@ -286,7 +303,7 @@
                               <tbody>
                                  <tr>
                                     <td width="33.33%">Prepayment</td>
-                                    <td width="66.66%">In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided by CFPL for time to time.
+                                    <td width="66.66%"><textarea class="form-control" name="prepayment">In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided by CFPL for time to time.</textarea>
                                     </td>
                                  </tr>
                                  <tr>
@@ -572,7 +589,7 @@
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <thead>
                                  <tr>
-                                    <th>Amount(lacs in Inr )</th>
+                                    <th>Amount(lacs in INR )</th>
                                     <th>Tenure(in months)</th>
                                     <th>Comment if any</th>
                                  </tr>

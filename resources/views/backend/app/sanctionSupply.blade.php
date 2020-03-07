@@ -95,22 +95,33 @@
                     <tr>
                       <td><b>To</b></td>
                     </tr>
+                    @if(!empty($supplyChaindata['ConcernedPersonName']))
                     <tr>
                       <td>{{$supplyChaindata['ConcernedPersonName']}}</td>
                     </tr>
+                    @endif
+                    @if(!empty($supplyChaindata['EntityName']))
                     <tr>
                       <td>{{$supplyChaindata['EntityName']}}</td>
                     </tr>
+                     @endif
+                     @if(!empty(trim($supplyChaindata['Address'])))
                     <tr>
                       <td>{{$supplyChaindata['Address']}}</td>
                     </tr>
+                    @endif
+                    @if(!empty($supplyChaindata['EmailId']))
                     <tr>
                       <td>{{$supplyChaindata['EmailId']}}</td>
                     </tr>
+                    @endif
+                    @if(!empty($supplyChaindata['MobileNumber']))
                     <tr>
                       <td>{{$supplyChaindata['MobileNumber']}}</td>
                     </tr>
+                    @endif
                   </table>
+                  <br />
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <thead>
                       <tr>
@@ -195,9 +206,10 @@
                           <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                             <thead>
                               <tr>
-                                <th width="35%">Max. Discounting Period</th>
-                                <th width="25%">Grace Period</th>
-                                <th width="25%">ROI</th>
+                                <th width="25%">Max. Discounting Period</th>
+                                <th width="15%">Grace Period</th>
+                                <th width="15%">ROI</th>
+                                <th width="20%">Bench Mark Date</th>
                                 <th width="25%">Margin</th>
                               </tr>
                             </thead>
@@ -206,6 +218,7 @@
                                 <td>{{$offerD->tenor}}</td>
                                 <td>{{$offerD->grace_period}}</td>
                                 <td>{{$offerD->interest_rate}}</td>
+                                <td>{{getBenchmarkType($offerD->benchmark_date)}}</td>
                                 <td>{{$offerD->margin}}</td>
                               </tr>
                             </tbody>
@@ -214,7 +227,11 @@
                       </tr>
                       <tr>
                         <td width="33.33%">Investment Payment Frequency</td>
-                        <td width="66.66%" colspan="3">{{$offerD['payment_frequency']}}</td>
+                        <td width="66.66%" colspan="3">{{getInvestmentPaymentFrequency($offerD['payment_frequency'])}}</td>
+                      </tr>
+                      <tr>
+                        <td width="33.33%">Methodology for calculating for  Drawing Power</td>
+                        <td width="66.66%" colspan="3">As mentioned in Margin Section</td>
                       </tr>
                       <tr>
                         <td width="33.33%">Penal Interest</td>
@@ -243,8 +260,7 @@
                     <tbody>
                       <tr>
                         <td width="33.33%">Prepayment</td>
-                        <td width="66.66%">In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided by CFPL for time to time.
-                        </td>
+                        <td width="66.66%">{{$postData['prepayment'] ?? 'In case borrower desires to prepay the loan, the prepayment of loan will be accepted on the terms and conditions to be decided by CFPL for time to time.'}}</td>
                       </tr>
                       <tr>
                         <td width="33.33%">Payment Mechanism of Interest</td>
@@ -511,7 +527,7 @@
                   <table  class="table table-border"  cellpadding="0" cellspacing="0">
                     <thead>
                       <tr>
-                        <th>Amount(lacs in Inr )</th>
+                        <th>Amount(lacs in INR )</th>
                         <th>Tenure(in months)</th>
                         <th>Comment if any</th>
                       </tr>
