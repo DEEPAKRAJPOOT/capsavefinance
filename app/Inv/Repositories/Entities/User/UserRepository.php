@@ -1448,7 +1448,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetCustomers()
     {
-        $result = LmsUser::with('user')->get();
+        $result = LmsUser::with('user')->orderBy('DESC')->get();
         return $result ?: false;
     }
 

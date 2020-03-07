@@ -1113,11 +1113,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function createCustomerId($lmsCustomerArray = [])
     {
-    	$customerCheck = LmsUser::where('user_id', $lmsCustomerArray['user_id'])
-    			->first();
-    	if(!isset($customerCheck)) {
-    		$customer = LmsUser::create($lmsCustomerArray);
-    	} 
+    	// $customerCheck = LmsUser::where('user_id', $lmsCustomerArray['user_id'])
+    	// 		->first();
+    	// if(!isset($customerCheck)) {
+		$customer = LmsUser::create($lmsCustomerArray);
+    	// } 
 
         return (isset($customer)) ? $customer : false;
     } 
