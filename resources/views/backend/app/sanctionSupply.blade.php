@@ -686,6 +686,14 @@
                                        </tr>
                                     </tbody>
                                  </table>
+                                 @if(!empty($postData['any_other_doc_monitoring']) && strtolower($postData['any_other_doc_monitoring']) == 'applicable')
+                                 <ul style="list-style-type:unset;">
+                                    <li>Any other document for post disbursement monitoring</li>
+                                    <li>{{$postData['any_other_doc_monitoring_1'] ?? NULL}}</li>
+                                    <li>{{$postData['any_other_doc_monitoring_2'] ?? NULL}}</li>
+                                    <li>{{$postData['any_other_doc_monitoring_3'] ?? NULL}}</li>
+                                  </ul>
+                                 @endif
                                  <br />
                            </div>
                            <h5>Section 8:- General Conditions </h5>

@@ -799,6 +799,16 @@
                                        </tr>
                                     </tbody>
                                  </table>
+                                 <ul style="list-style-type:unset;">
+                                    <li>Any other document for post disbursement monitoring <select class="select" name="any_other_doc_monitoring">
+                                    <option {{!empty($supplyChainFormData['any_other_doc_monitoring']) && $supplyChainFormData['any_other_doc_monitoring'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                                    <option {{!empty($supplyChainFormData['any_other_doc_monitoring']) && $supplyChainFormData['any_other_doc_monitoring'] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
+                                    </select>
+                                    </li>
+                                    <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_1'] ?? ''}}" name="any_other_doc_monitoring_1" id="any_other_doc_monitoring_1" class="input_sanc" placeholder="Click here to enter text"></li>
+                                    <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_2'] ?? ''}}" name="any_other_doc_monitoring_2" id="any_other_doc_monitoring_2" class="input_sanc" placeholder="Click here to enter text"></li>
+                                    <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_3'] ?? ''}}" name="any_other_doc_monitoring_3" id="any_other_doc_monitoring_3" class="input_sanc" placeholder="Click here to enter text"></li>
+                                  </ul>
                                  <br />
                            </div>
                            <h5>Section 8:- General Conditions </h5>
