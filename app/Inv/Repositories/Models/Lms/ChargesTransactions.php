@@ -49,6 +49,7 @@ class ChargesTransactions extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'chrg_trans_id',
         'prgm_id',
         'chrg_master_id',
         'percent',
@@ -73,8 +74,8 @@ class ChargesTransactions extends BaseModel
     
     public static function saveChargeTrans($attr)
     {
-        $res =   self::create($attr);
-        return ($res) ? $res->chrg_trans_id : false;
+       return  self::create($attr);
+        
     }
     
     public static function getAllTransCharges()
