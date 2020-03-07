@@ -68,14 +68,16 @@
                      <div class="row"><div class="col-md-6"></div>
                  <div class="col-md-2">				 
                      <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                     <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                           <option value="">Select Application  </option>
-                           @foreach($get_bus as $row)
-                           <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                           @endforeach
-                          
-                        
-                  </select>
+                       <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
+                                                    <option value="">Select Application  </option>
+                                                        @foreach($get_bus as $row)
+                                                         @php if(isset($row->business->biz_id)) { @endphp
+                                                    <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
+                                                      @php } @endphp
+                                                    @endforeach
+
+
+                                                </select>
                      <span id="anchorMsg" class="error"></span>
                   
                    </div>
