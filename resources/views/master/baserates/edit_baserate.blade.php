@@ -41,7 +41,7 @@
     
     $(document).ready(function(){
         $('#filter_search_keyword').val(parent.$('#search_keyword').val());
-        console.log(parent.$('#search_keyword').val());
+	console.log(parent.$('#search_keyword').val());
     });
     
      $(document).ready(function () {
@@ -54,7 +54,7 @@
                     required: true,
                     number: true,
                     range: [0,100]
-                }
+                },
                 'is_active': {
                     required: true,
                 },

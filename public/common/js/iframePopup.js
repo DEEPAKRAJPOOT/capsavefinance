@@ -82,7 +82,7 @@ var iframe_ids = [
         'addEquipmentFrame',
         'editEquipmentFrame',
         'addBaseRateFrame',
-        'editBaseRateFrame'
+        'editBaseRateFrame',
     ];
 
 iframe_ids.forEach(function(id) {
