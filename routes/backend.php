@@ -302,12 +302,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@saveSanctionLetterSupplychain'
             ]); 
 
-             Route::post('save_sanction_letter_supplychain', [
-                'as' => 'save_sanction_letter_supplychain',
-                'uses' => 'Backend\ApplicationController@saveSanctionLetterSupplychain'
-            ]); 
- 
-
              Route::get('preview_supply_chain_sanction_letter', [
                 'as' => 'preview_supply_chain_sanction_letter',
                 'uses' => 'Backend\ApplicationController@previewSanctionLetterSupplychain'
