@@ -1297,6 +1297,39 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * Send sanction letter
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function sendSanctionLetterSupplyChain(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = (int) $request->get('biz_id');
+            $offerId = null;
+            $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId);
+            $supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+            $arrFileData = [];
+            if (file_exists($supplyChainFormFile)) {
+              $arrFileData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
+            }
+            $data = ['appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'download'=> false];
+            $htmlContent = view('backend.app.sanctionSupply')->with($data)->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData])->render();
+            $userData =  $this->userRepo->getUserByAppId($appId);
+            $emailData['email'] = $userData->email;
+            $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
+            $emailData['body'] = $htmlContent;
+            $emailData['attachment'] = $this->pdf->render($htmlContent);
+            $emailData['subject'] ="Sanction Letter for SupplyChain";
+            \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
+            Session::flash('message',trans('success_messages.send_sanction_letter_successfully'));
+            return redirect()->back()->with('is_send',1);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     
     /**
      * Show upload sanction letter
@@ -1523,7 +1556,9 @@ class ApplicationController extends Controller
             if (file_exists($supplyChainFormFile)) {
               $arrFileData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
             }
-            return view('backend.app.sanctionSupply')->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]);
+            $data = ['appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'download'=> true];
+            $html = view('backend.app.sanctionSupply')->with($data)->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData])->render();
+            return  $html;
         } catch (Exception $ex) {
             return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
         }
