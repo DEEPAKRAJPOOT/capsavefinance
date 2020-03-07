@@ -645,6 +645,35 @@
                                     </li>
                                     @endif
                                   </ul>
+                                  <table  class="table table-border"  cellpadding="0" cellspacing="0">
+                                    <tbody>
+                                       <tr>
+                                          <td width="33.33%">Raw Material</td>
+                                          <td width="66.67%">At Cost Price or Market Price, whichever is lower</td>
+                                       </tr>
+                                       <tr>
+                                          <td>Stock in Process</td>
+                                          <td>At Cost of production</td>
+                                       </tr>
+                                       <tr>
+                                          <td>Stores and Spares</td>
+                                          <td>At Cost Price or Market Price, whichever is lower</td>
+                                       </tr>
+                                       <tr>
+                                          <td>Finished Goods</td>
+                                          <td>At Cost of Sales or Controlled Price or Market Price, whichever is lower</td>
+                                       </tr>
+                                       <tr>
+                                          <td>Domestic receivables(Period upto 90/120 days)</td>
+                                          <td>At invoice Value</td>
+                                       </tr>
+                                       <tr>
+                                          <td>Export receivables(Period upto 90/120 days)</td>
+                                          <td>At invoice Value</td>
+                                       </tr>
+                                    </tbody>
+                                 </table>
+                                 <br />
                            </div>
                            <h5>Section 8:- General Conditions </h5>
                            <div class="section8">
