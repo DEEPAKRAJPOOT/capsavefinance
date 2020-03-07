@@ -54,6 +54,9 @@ use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
 use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Models\CamReviewerSummary;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
+
 /**
  * Application repository class
  */
@@ -1618,5 +1621,24 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAppApprovers($app_id)
     {
         return AppApprover::getAppApprovers($app_id);
+    }
+
+    public function getReviewerSummaryData($appId, $bizId){
+        $returnData = []; 
+        $reviewerSummaryData = CamReviewerSummary::where('biz_id',$bizId)->where('app_id', $appId)->first()->toArray(); 
+        if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+            $returnData['reviewerSummaryData'] = $reviewerSummaryData;
+            $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])->where('is_active', 1)->get();
+            if ($dataPrePostCond->count()) {
+                foreach ($dataPrePostCond as $key => $value) {
+                    if($value->cond_type == '1'){
+                        $returnData['preCond'][] = $value->cond;
+                    }else if($value->cond_type == '2'){
+                        $returnData['postCond'][] = $value->cond;
+                    }
+                }
+            } 
+        }
+        return  $returnData;
     }
 }

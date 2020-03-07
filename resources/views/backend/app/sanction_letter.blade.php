@@ -206,11 +206,27 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Specific Pre-disbursement Condition</td>
-                                    <td width="66.66%" colspan="3"></td>
+                                    <td width="66.66%" colspan="3">
+                                        @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
+                                       <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
+                                          @foreach($supplyChaindata['reviewerSummaryData']['preCond'] as $k => $precond)
+                                          <li>{{$precond}}</li>
+                                          @endforeach
+                                       </ul>
+                                       @endif
+                                    </td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%"> Specific Post-disbursement Condition</td>
-                                    <td width="66.66%" colspan="3"></td>
+                                    <td width="66.66%" colspan="3">
+                                       @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
+                                       <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
+                                          @foreach($supplyChaindata['reviewerSummaryData']['postCond'] as $k => $postcond)
+                                          <li>{{$postcond}}</li>
+                                          @endforeach
+                                       </ul>
+                                       @endif
+                                    </td>
                                  </tr>
                               </tbody>
                            </table>
@@ -799,6 +815,16 @@
                                        </tr>
                                     </tbody>
                                  </table>
+                                 <ul style="list-style-type:unset;">
+                                    <li>Any other document for post disbursement monitoring <select class="select" name="any_other_doc_monitoring">
+                                    <option {{!empty($supplyChainFormData['any_other_doc_monitoring']) && $supplyChainFormData['any_other_doc_monitoring'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
+                                    <option {{!empty($supplyChainFormData['any_other_doc_monitoring']) && $supplyChainFormData['any_other_doc_monitoring'] == 'Not applicable' ? 'selected' : '' }}>Not applicable</option>
+                                    </select>
+                                    </li>
+                                    <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_1'] ?? ''}}" name="any_other_doc_monitoring_1" id="any_other_doc_monitoring_1" class="input_sanc" placeholder="Click here to enter text"></li>
+                                    <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_2'] ?? ''}}" name="any_other_doc_monitoring_2" id="any_other_doc_monitoring_2" class="input_sanc" placeholder="Click here to enter text"></li>
+                                    <li><input type="text" value="{{$supplyChainFormData['any_other_doc_monitoring_3'] ?? ''}}" name="any_other_doc_monitoring_3" id="any_other_doc_monitoring_3" class="input_sanc" placeholder="Click here to enter text"></li>
+                                  </ul>
                                  <br />
                            </div>
                            <h5>Section 8:- General Conditions </h5>

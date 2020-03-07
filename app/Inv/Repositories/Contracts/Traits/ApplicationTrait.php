@@ -241,6 +241,7 @@ trait ApplicationTrait
         $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
         $AppLimitData  = $this->appRepo->getAppLimit($appId);
         $supplyChainOfferData = $this->appRepo->appOfferWithLimit($appId);
+        $reviewerSummaryData = $this->appRepo->getReviewerSummaryData($appId, $bizId);
 
         $user = $this->appRepo->getAppData($appId)->user;
         $anchors = $user->anchors;
@@ -289,6 +290,7 @@ trait ApplicationTrait
         $data['product_name'] = $ProgramData['product_name'] ?? 0;
         $data['tot_limit_amt'] = $tot_limit_amt;
         $data['offerData'] = $offerData;
+        $data['reviewerSummaryData'] = $reviewerSummaryData;
         $data['bizOwnerData'] = $bizOwnerData;
         $data['anchorData'] = $anchorArr;
         return $data;
