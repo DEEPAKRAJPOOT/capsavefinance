@@ -178,7 +178,7 @@
                                                                             <select id="interest_linkage" class="form-control" name="interest_linkage" tabindex="9">
                                                                                 <option value="">Select Base Rate</option>
                                                                                 @foreach($baserate_list as $key=>$baserate)
-                                                                                <option @if(isset($subProgramData->base_rate_id) && $baserate->id == $subProgramData->base_rate_id) selected @endif value="{{$baserate->id}}">{{$baserate->base_rate}}</option>
+                                                                                <option @if(isset($subProgramData->base_rate_id) && $baserate->id == $subProgramData->base_rate_id) selected @endif value="{{$baserate->id}}">{{$baserate->base_rate}}%&nbsp;&nbsp;({{$baserate->company_name}})</option>
                                                                                 @endforeach
                                                                             </select>
                                                                             {!! $errors->first('interest_linkage', '<span class="error">:message</span>') !!}
