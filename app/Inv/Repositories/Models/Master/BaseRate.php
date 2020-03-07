@@ -57,8 +57,7 @@ class BaseRate extends BaseModel {
      */
     public static function getBaseRateDropDown()
     {
-        $res = self::where('is_active', 1)->pluck('base_rate', 'id');
-        return $res ?: [];
+        return self::where('is_active', 1)->get();
     }
 
     public function userDetail(){

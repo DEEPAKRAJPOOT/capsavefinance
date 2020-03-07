@@ -16,8 +16,11 @@ class BaseRateController extends Controller {
         $this->masterRepo = $master;
     }
 
-    public function index() {
-        return view('master.baserates.index');
+    public function index(Request $request) {
+        
+        $filter['filter_search_keyword'] = $request->filter_search_keyword;
+        
+        return view('master.baserates.index',['filter' => $filter]);
     }
 
     public function addBaseRate() {
@@ -33,6 +36,7 @@ class BaseRateController extends Controller {
 
     public function saveBaseRate(Request $request) {
         try {
+            $filter['filter_search_keyword'] = $request->filter_search_keyword;
             $validatedData = $request->validate([
                 'company_name' => 'required|max:200',
                 'base_rate' => 'required',
@@ -54,10 +58,10 @@ class BaseRateController extends Controller {
             }
             if ($status) {
                 Session::flash('message', $baserate_id ? trans('master_messages.base_rate_update_success') : trans('master_messages.base_rate_add_success'));
-                return redirect()->route('get_baserate_list');
+                return redirect()->route('get_baserate_list',['filter_search_keyword' => $filter['filter_search_keyword']]);
             } else {
                 Session::flash('error', trans('master_messages.something_went_wrong'));
-                return redirect()->route('get_baserate_list');
+                return redirect()->route('get_baserate_list',['filter' => $filter]);
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

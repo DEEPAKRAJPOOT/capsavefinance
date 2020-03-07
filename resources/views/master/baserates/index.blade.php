@@ -21,7 +21,16 @@
         <div class="card-body">
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-4">
-                    <input class="form-control" placeholder="Search by Company Name" name="search_keyword" type="text">
+                    <!--<input class="form-control"  placeholder="Search by Company Name" name="search_keyword" type="text">-->
+                    {!!
+	                Form::text('search_keyword',
+					(isset($filter['filter_search_keyword'])) ? $filter['filter_search_keyword'] : null,
+	                [
+	                'class' => 'form-control',
+	                'placeholder' => 'Search by Company Name',
+	                'id'=>'search_keyword'
+	                ])
+                    !!}
                 </div>
                 <div class="col-md-1">
                     <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
@@ -44,6 +53,7 @@
                                     <th>Created At</th>
                                     <th>Created By</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,6 +80,8 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };
+    
+    
 </script>
 <script src="{{ asset('backend/js/ajax-js/baserate.js') }}"></script>
 @endsection

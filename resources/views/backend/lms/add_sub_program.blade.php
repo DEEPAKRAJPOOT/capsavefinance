@@ -175,14 +175,12 @@
                                                                             <label for="interest_linkage" >Base Rate(%)
                                                                                 <span class="error_message_label"></span>
                                                                             </label>
-                                                                            {!!
-                                                                            Form::select('interest_linkage',
-                                                                            $baserate_list,
-                                                                            isset($subProgramData->interest_linkage) ? $subProgramData->interest_linkage : null,
-                                                                            ['id' => 'interest_linkage',
-                                                                            'class'=>'form-control',
-                                                                            ])
-                                                                            !!}
+                                                                            <select id="interest_linkage" class="form-control" name="interest_linkage" tabindex="9">
+                                                                                <option value="">Select Base Rate</option>
+                                                                                @foreach($baserate_list as $key=>$baserate)
+                                                                                <option @if(isset($subProgramData->base_rate_id) && $baserate->id == $subProgramData->base_rate_id) selected @endif value="{{$baserate->id}}">{{$baserate->base_rate}}</option>
+                                                                                @endforeach
+                                                                            </select>
                                                                             {!! $errors->first('interest_linkage', '<span class="error">:message</span>') !!}
                                                                         </div>
                                                                     </div>
