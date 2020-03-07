@@ -163,7 +163,7 @@ class AppProgramLimit extends BaseModel {
     
          public static function getUserBehalfApplication($uid)
     {
-       return AppProgramLimit::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'anchor_id' => $uid])->get();
+       return Application::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'anchor_id' => $uid])->get();
     }   
     
     
@@ -182,8 +182,11 @@ class AppProgramLimit extends BaseModel {
     }   
     
     public static function getLimitSupplier($pid){
-        return AppProgramOffer::whereHas('productHas')->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->with('app.user')->where(['prgm_id' => $pid])->get();
-    }  
+        $appID =  AppProgramOffer::whereHas('productHas')->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where(['prgm_id' => $pid])->pluck('app_id');
+        $user_id =    LmsUser::whereIn('app_id',$appID)->pluck('user_id');
+        return User::whereIn('user_id',$user_id)->get();
+        
+      }  
 
    
     public function app(){
