@@ -827,7 +827,7 @@ class ApplicationController extends Controller
                           $pfData = [];
                           $pfData['amount'] = $pf;
 
-                          if($pPrgmChrg->is_gst_applicable == 1 ) {
+                          if(isset($pPrgmChrg->is_gst_applicable) && $pPrgmChrg->is_gst_applicable == 1 ) {
                               if($userStateId == $companyStateId) {
                                 $pfWGst = round((($pf*18)/100),2);
                                 $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
@@ -855,7 +855,7 @@ class ApplicationController extends Controller
                           $dfData = [];
                           $dfData['amount'] = $df;
 
-                          if($dPrgmChrg->is_gst_applicable == 1 ) {
+                          if(isset($dPrgmChrg->is_gst_applicable) && $dPrgmChrg->is_gst_applicable == 1 ) {
                               if($userStateId == $companyStateId) {
                                 $dfWGst = round((($df*18)/100),2);
                                 $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
