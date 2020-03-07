@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysiwyg/0.3.3/bootstrap3-wysihtml5.min.css" />
 <style>
   h5{ 
     margin:0px;
@@ -79,7 +78,13 @@
   .height{
     height:48px;
   }
+   @page {
+        size: A4 portrait;
+        margin: 0;
+    }
 </style>
+@extends('layouts.backend.admin_popup_layout')
+@section('content')
 <div class="content-wrapper">
   <div class="row grid-margin mt-3 mb-2">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
@@ -90,7 +95,7 @@
               <form action="{{route('save_sanction_letter_supplychain')}}" method="POST">
                 @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                 <div class="form-fields">
-                  <!-- <h5 class="card-title form-head-h5">Sanction Letter Supply Chain</h5> -->
+                  <h5 class="card-title form-head-h5">Sanction Letter For Supply Chain</h5>
                   <table class="table" cellpadding="0" cellspacing="0">
                     <tr>
                       <td><b>To</b></td>
@@ -222,11 +227,11 @@
                           <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                             <thead>
                               <tr>
-                                <th width="25%">Max. Discounting Period</th>
+                                <th width="35%">Max. Discounting Period</th>
                                 <th width="15%">Grace Period</th>
                                 <th width="15%">ROI</th>
                                 <th width="20%">Bench Mark Date</th>
-                                <th width="25%">Margin</th>
+                                <th width="15%">Margin</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -705,9 +710,15 @@
                                  @if(!empty($postData['any_other_doc_monitoring']) && strtolower($postData['any_other_doc_monitoring']) == 'applicable')
                                  <ul style="list-style-type:unset;">
                                     <li>Any other document for post disbursement monitoring</li>
+                                    @if(!empty($postData['any_other_doc_monitoring_1']))
                                     <li>{{$postData['any_other_doc_monitoring_1'] ?? NULL}}</li>
+                                    @endif
+                                    @if(!empty($postData['any_other_doc_monitoring_2']))
                                     <li>{{$postData['any_other_doc_monitoring_2'] ?? NULL}}</li>
+                                    @endif
+                                    @if(!empty($postData['any_other_doc_monitoring_3']))
                                     <li>{{$postData['any_other_doc_monitoring_3'] ?? NULL}}</li>
+                                    @endif
                                   </ul>
                                  @endif
                                  <p>
@@ -738,7 +749,7 @@
                               </ol>
                            </div>
                            @if(!empty($download) && $download == true)
-                           <div align="center"><a href="{{ route('send_sanction_letter_supplychain', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" style="    color: #fff!important;background-color: #30878e;border-color: #30878e;padding: 0.25rem 0.5rem;"> Send Email</a></div>
+                           <div align="center"><a href="{{ route('send_sanction_letter_supplychain', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" class="btn btn-success btn-sm"> Send Email</a></div>
                            @endif
                 </div>
                 @endif
@@ -752,3 +763,4 @@
   </div>
 </div>
 </div>
+@endsection
