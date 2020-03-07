@@ -54,7 +54,7 @@
 	                              		<table id="customerList" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-                                                    <th >Appliaction ID</th>       
+                                                    <th >Application ID</th>       
                                                     <th >Customer ID</th>       
 		                                     		<th >Virtual ID</th>		
 		                                     		<th >Customer Name</th>
