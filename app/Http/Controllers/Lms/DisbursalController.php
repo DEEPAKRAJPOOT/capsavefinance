@@ -107,7 +107,6 @@ class DisbursalController extends Controller
 		$userIvoices = $this->lmsRepo->getAllUserInvoiceIds($userIds)->toArray();
 		$allrecords = array_unique(array_merge($record, $userIvoices));
 		$allrecords = array_map('intval', $allrecords);
-
 		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
@@ -123,7 +122,7 @@ class DisbursalController extends Controller
 			foreach ($allinvoices as $invoice) {
 				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-				// $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
 				if($invoice['supplier_id'] = $userid) {
 					$interest= 0;
@@ -170,13 +169,13 @@ class DisbursalController extends Controller
 					// $apiLogData['utr_no'] = $utrNo;
 					$apiLogData['remark'] = $remarks;
 					$disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
-					// $updateDisbursal = $this->lmsRepo->updateDisburse([
-					// 		'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
-					// 	], $createDisbursal->disbursal_id);
+					$updateDisbursal = $this->lmsRepo->updateDisburse([
+							'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
+						], $createDisbursal->disbursal_id);
 					
-					// if ($updateDisbursal) {
-					// 	$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
-					// }
+					if ($updateDisbursal) {
+						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
+					}
 				}
 
 
