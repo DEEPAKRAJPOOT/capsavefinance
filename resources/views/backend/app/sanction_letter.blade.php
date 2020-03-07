@@ -924,7 +924,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('previewSanctionLetter','Preview/Send Mail Sanction Letter', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('previewSupplyChainSanctionLetter','Preview/Send Mail SupplyChain Letter', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('previewSupplyChainSanctionLetter','Send Mail SupplyChain Letter', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
 @endsection
 @section('jscript')
