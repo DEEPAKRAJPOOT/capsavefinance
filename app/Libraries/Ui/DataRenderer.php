@@ -2618,13 +2618,13 @@ class DataRenderer implements DataProviderInterface
                     'program_type',
                     function ($customer) {
                     
-                    return ($customer->user->is_buyer == 1) ? 'Channel Finance' : 'Vender Finance';
+                    return ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
                 })
                 ->editColumn(
                     'status',
                     function ($customer) {
                     if ($customer->is_assign == 0) {
-                        return "<label class=\"badge badge-success current-status\">sanctioned</label>";
+                        return "<label class=\"badge badge-success current-status\">Sanctioned</label>";
                     } else {
                         return "<span style='color:green'>Assigned</span>";
                     }
