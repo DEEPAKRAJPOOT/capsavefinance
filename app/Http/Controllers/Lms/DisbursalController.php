@@ -107,7 +107,6 @@ class DisbursalController extends Controller
 		$userIvoices = $this->lmsRepo->getAllUserInvoiceIds($userIds)->toArray();
 		$allrecords = array_unique(array_merge($record, $userIvoices));
 		$allrecords = array_map('intval', $allrecords);
-
 		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
@@ -126,13 +125,19 @@ class DisbursalController extends Controller
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
 				if($invoice['supplier_id'] = $userid) {
+					$interest= 0;
 					$now = strtotime($invoice['invoice_due_date']); // or your date as well
 			        $your_date = strtotime($invoice['invoice_date']);
 			        $datediff = abs($now - $your_date);
 
 			        $tenor = round($datediff / (60 * 60 * 24));
 			        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-			        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+			        $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+
+			        if($invoice['program_offer']['payment_frequency'] == 1) {
+			            $interest = $tInterest;
+			        }
+
 			        $totalInterest += $interest;
 			        $totalFunded += $fundedAmount;
     				$disburseAmount += round($fundedAmount - $interest, 2);
@@ -176,20 +181,19 @@ class DisbursalController extends Controller
 
 			}
 			
-			// dd($disburseAmount);		
 			if ($disburseAmount) {
 				if($disburseType == 2) {
-					// dd($disburseRequestData);
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-
 					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
 					
 					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
 					$intrstAmt = round($totalInterest,2);
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
-					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					if ($intrstAmt != 0) {
+						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
+						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					}
 
 					// $intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
 					// $createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
