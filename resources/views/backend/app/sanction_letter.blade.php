@@ -681,20 +681,20 @@
                                  <li>
                                     The borrower shall forward to CFPL, provisional balance sheet and Profit & Loss Account within 
                                     <select class="select" name="profit_loss_account_within">
-                                       <option>1</option>
-                                       <option>2</option>
-                                       <option>3</option>
-                                       <option>4</option>
+                                        <option {{!empty($supplyChainFormData['profit_loss_account_within']) && $supplyChainFormData['profit_loss_account_within'] == '1' ? 'selected' : '' }}>1</option>
+                                       <option {{!empty($supplyChainFormData['profit_loss_account_within']) && $supplyChainFormData['profit_loss_account_within'] == '2' ? 'selected' : '' }}>2</option>
+                                       <option {{!empty($supplyChainFormData['profit_loss_account_within']) && $supplyChainFormData['profit_loss_account_within'] == '3' ? 'selected' : '' }}>3</option>
+                                       <option {{!empty($supplyChainFormData['profit_loss_account_within']) && $supplyChainFormData['profit_loss_account_within'] == '4' ? 'selected' : '' }}>4</option>
                                     </select>
                                     months of year-end and audited accounts within 6 months of year end. Quarterly financial results shall be submitted within 60 days from the end of each quarter or with the filing with stock exchange for listed borrower.<select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][11]) && $supplyChainFormData['pre_post_condition'][11] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select>
                                  </li>
                                  <li>
                                     Inspection of assets charged to CFPL may be carried out once in 
                                     <select class="select" name="cfpl_carried_in">
-                                       <option>1</option>
-                                       <option>2</option>
-                                       <option>3</option>
-                                       <option>4</option>
+                                       <option {{!empty($supplyChainFormData['cfpl_carried_in']) && $supplyChainFormData['cfpl_carried_in'] == '1' ? 'selected' : '' }}>1</option>
+                                       <option {{!empty($supplyChainFormData['cfpl_carried_in']) && $supplyChainFormData['cfpl_carried_in'] == '2' ? 'selected' : '' }}>2</option>
+                                       <option {{!empty($supplyChainFormData['cfpl_carried_in']) && $supplyChainFormData['cfpl_carried_in'] == '3' ? 'selected' : '' }}>3</option>
+                                       <option {{!empty($supplyChainFormData['cfpl_carried_in']) && $supplyChainFormData['cfpl_carried_in'] == '4' ? 'selected' : '' }}>4</option>
                                     </select>
                                     months or at more frequent intervals as decided by CFPL by its own officials or through persons/firm appointed by CFPL. The cost of inspection is to be borne by the borrower.<select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][12]) && $supplyChainFormData['pre_post_condition'][12] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select>
                                  </li>
