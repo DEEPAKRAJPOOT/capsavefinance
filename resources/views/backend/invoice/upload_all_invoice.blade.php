@@ -40,7 +40,7 @@
                                                 <option value="">Please Select</option>
                                                 @foreach($get_anchor as $row) 
                                                 @php if(isset($row->anchorList->anchor_id)) { @endphp
-                                                <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
+                                                <option value="{{{$row->anchorList->anchor_id}}},{{{$row->app_id}}}">{{{$row->anchorList->comp_name}}}</option>
                                                 @php } @endphp
                                                 @endforeach
                                                
@@ -573,6 +573,8 @@ var messages = {
   $(document).on('change','.changeSupplier',function(){
       $("#invoice_date").val('');
       var program_id =  $(this).val(); 
+      var anchor_id =  $("#anchor_id").val(); 
+      
       if(program_id=='')
       {
           return false; 
@@ -580,7 +582,7 @@ var messages = {
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'program_id':program_id,'_token':messages.token});
+      var postData =  ({'app_id':anchor_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',
@@ -604,10 +606,9 @@ var messages = {
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                         
-                            $(obj1).each(function(i,v){
+                        $(obj1).each(function(i,v){
                             
-                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+                                 $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
                             });
                        
                     }
@@ -615,7 +616,6 @@ var messages = {
                     {
                        
                                $("#supplier_id").append("<option value=''>No data found</option>");  
-                           
                       
                     }
                   

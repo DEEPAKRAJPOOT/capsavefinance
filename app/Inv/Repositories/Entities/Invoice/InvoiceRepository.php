@@ -19,7 +19,7 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\InvoiceActivityLog;
-//
+use App\Inv\Repositories\Models\Application;
 
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
@@ -407,6 +407,17 @@ use CommonRepositoryTraits;
          
     }
     
+       public function getBusinessNameApp($status_id)
+    {
+        try
+        {
+           return InvoiceModel::getBusinessNameApp($status_id);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }
+    
      public function getRepaymentAmount($uid)
      {
           try
@@ -438,7 +449,7 @@ use CommonRepositoryTraits;
         }
          
     }
-    
+   
     public function getAllInvoice($request,$status)
     {
         try
@@ -509,6 +520,17 @@ use CommonRepositoryTraits;
          
     } 
     
+   public function getAllInvoiceAnchor($status_id)
+    {
+       
+        try
+        {
+          return InvoiceModel::getAllInvoiceAnchor($status_id);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
+    
     public function getUser($uid)
     {
        
@@ -530,7 +552,16 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }
-    
+      public function getUserBehalfApplication($attr)
+    {
+       
+        try
+        {
+          return Application::getUserBehalfApplication($attr);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
      public function getAnchor($aid)
     {
        
@@ -570,6 +601,17 @@ use CommonRepositoryTraits;
         try
         {
           return BizInvoice::getProgramForLimit($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }
+    
+      public function getProgramForAppLimit($pid,$appId)
+    {
+     
+        try
+        {
+          return BizInvoice::getProgramForAppLimit($pid,$appId);
         } catch (Exception $ex) {
            return $ex;
         } 
@@ -650,7 +692,18 @@ use CommonRepositoryTraits;
         } catch (Exception $ex) {
            return $ex;
         } 
-    }    
+    }  
+    
+    public function getSingleAnchorDataByAppId($appId)
+    {
+     
+        try
+        {
+          return Application::getSingleAnchorDataByAppId($appId);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }   
      public function getSingleLimit($aid)
     {
      

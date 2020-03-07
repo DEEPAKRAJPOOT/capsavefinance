@@ -188,6 +188,13 @@ class Application extends BaseModel
         
     }
     
+    public static function getSingleAnchorDataByAppId($appId)
+    {
+      return  self::where('app_id',$appId)->first();
+        
+    } 
+    
+    
     /**
      * Get Applications for Application list data tables
      */
@@ -444,6 +451,7 @@ class Application extends BaseModel
         return $appData ? $appData : [];
     }
     
+    
     public  function user()
     {
 
@@ -652,4 +660,10 @@ class Application extends BaseModel
     public function colender(){
         return $this->hasOne('App\Inv\Repositories\Models\ColenderShare','app_id','app_id')->where(['is_active' => 1, 'co_lender_id' => \Auth::user()->co_lender_id]);
     }        
+    
+    public static function getUserBehalfApplication($attr)
+    { 
+       
+        return  User::where(['anchor_id' => $attr['anchor_id']])->get();
+    }  
 }

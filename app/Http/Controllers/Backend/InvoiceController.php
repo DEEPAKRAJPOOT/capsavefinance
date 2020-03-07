@@ -45,7 +45,7 @@ class InvoiceController extends Controller {
     {
     
         $get_anchor = $this->invRepo->getLimitAllAnchor();
-       /// dd($get_anchor);
+        
         return view('backend.invoice.upload_all_invoice')
          ->with(['get_anchor' => $get_anchor]);
   
@@ -53,8 +53,8 @@ class InvoiceController extends Controller {
    
     public function viewInvoice() {
        
-         $getAllInvoice  =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+         $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(7);
+         $get_bus = $this->invRepo->getBusinessNameApp(7);
          return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
@@ -68,53 +68,53 @@ class InvoiceController extends Controller {
       } 
       
        public function viewApproveInvoice() {
-         $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+          $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(8);
+         $get_bus = $this->invRepo->getBusinessNameApp(8);
         return view('backend.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
        public function viewDisbursedInvoice() {
-         $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+          $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(9);
+         $get_bus = $this->invRepo->getBusinessNameApp(9);
         return view('backend.invoice.disbursed_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
        public function viewRepaidInvoice() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+         $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(13);
+         $get_bus = $this->invRepo->getBusinessNameApp(13);
         return view('backend.invoice.repaid_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
       
       
         public function viewSentToBankInvoice() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+          $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(10);
+         $get_bus = $this->invRepo->getBusinessNameApp(10);
         return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
         public function viewfailedDisbursment() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+         $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(11);
+         $get_bus = $this->invRepo->getBusinessNameApp(11);
         return view('backend.invoice.failed_disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
       
         public function viewdisbursed() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+       $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(12);
+         $get_bus = $this->invRepo->getBusinessNameApp(12);
         return view('backend.invoice.disbursment')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
         public function viewRejectInvoice() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+        $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(14);
+        $get_bus = $this->invRepo->getBusinessNameApp(14);
         return view('backend.invoice.reject_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
        public function exceptionCases() {
-        $getAllInvoice    =   $this->invRepo->getAllAnchor();
-         $get_bus = $this->invRepo->getBusinessName();
+        $getAllInvoice  =   $this->invRepo->getAllInvoiceAnchor(28);
+         $get_bus = $this->invRepo->getBusinessNameApp(28);
         return view('backend.invoice.exception_cases')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
                 
       }
@@ -124,8 +124,7 @@ class InvoiceController extends Controller {
     /* get suplier & program b behalf of anchor id */
       public function getProgramSupplier(Request $request){
        $attributes = $request->all();
-       $invId   = $attributes['anchor_id'];
-       $get_user  =   $this->invRepo->getUserBehalfAnchor($invId);
+       $get_user  =   $this->invRepo->getUserBehalfApplication($attributes);
        return response()->json(['status' => 1,'userList' =>$get_user]);
 
       }
@@ -187,20 +186,13 @@ class InvoiceController extends Controller {
 
     public function saveInvoice(Request $request) {
         $attributes = $request->all();
+        $explode  =  explode(',',$attributes['anchor_id']);
+        $attributes['anchor_id']      =    $explode[0];  
+        $appId   = $explode[1]; 
         $date = Carbon::now();
         $id = Auth::user()->user_id;
-        if(isset($attributes['app_id']))
-        {
-            $appId = $attributes['app_id']; 
-            $biz_id  = $attributes['biz_id'];
-        }
-        else {
-          /// $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
-           $res =  $this->invRepo->getSingleApp($attributes['supplier_id']);
-           $appId = $res->app_id; 
-           $biz_id  = $res->biz_id;
-         
-        }
+        $res =  $this->invRepo->getSingleAnchorDataByAppId($appId);
+        $biz_id  = $res->biz_id;
         if($attributes['exception'])
         {
             $statusId = 28; 

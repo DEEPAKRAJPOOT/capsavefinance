@@ -79,19 +79,15 @@
                   
                    </div>
                <div class="col-md-2">				 
-                                                              
-                    <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                           <option value="">Select Anchor  </option>
-                           @foreach($anchor_list as $row)
-                            @php if(isset($row->anchorOne->anchor_id)) { @endphp
-                           <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
-                          @php } @endphp
-                           @endforeach
-                          
-                        
+                  <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
+                        <option value=""> Please select </option>
+                        @foreach($anchor_list as $row)
+                        @php if(isset($row->anchor->anchor_id)) { @endphp
+                        <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                        @php } @endphp
+                        @endforeach
                   </select>
-                 
-                   </div>
+                </div>
              <div class="col-md-2">		    
                                                             
                  <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
@@ -401,7 +397,7 @@
                                $("#supplier_id").append("<option value=''> Select Supplier </option>"); 
                             $(obj1).each(function(i,v){
                          
-                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+                                   $("#supplier_id").append("<option value='"+v.user_id+"'>"+v.f_name+"</option>");  
                           
                           });
                         }
