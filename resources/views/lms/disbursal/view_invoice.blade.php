@@ -57,10 +57,20 @@
 $(document).ready(function(){
 	let user_ids = parent.$('#user_ids').val();
 	let userIdArray = user_ids.split(",");
-
-	if (jQuery.inArray( $('#user_id').val(), userIdArray) == true) {
+	let current_user_id = $('#user_id').val();
+	if (jQuery.inArray(current_user_id, userIdArray) == true) {
 		$('input.invoice_id').prop('checked', true);;
 	}
+
+
+	var checkedVals = $('.invoice_id:checkbox:checked').map(function() {
+	    return this.value;
+	}).get();
+	let current_inv_ids = parent.$('#invoice_ids').val();
+	let checkedIds = checkedVals.join(",");
+	parent.$('#invoice_ids').val(current_inv_ids+','+checkedIds);
+	parent.$('#user_ids').val(user_ids.replace(new RegExp(current_user_id, 'g'), ''));
+
 	$('.invoice_id').on('click', function() {
 		let current_inv_ids = parent.$('#invoice_ids').val();
 		let current_id = $(this).val();
