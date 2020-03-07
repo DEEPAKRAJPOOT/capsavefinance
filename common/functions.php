@@ -35,6 +35,16 @@ function getProductType($product_id){
 	 return $productType[$product_id] ?? '';
 }
 
+function getBenchmarkType($product_id){
+	 $productType = ['1'=>'Invoice Date', 'BOE Date', 'GRN Date', 'Date of discounting'];
+	 return $productType[$product_id] ?? '';
+}
+
+function getInvestmentPaymentFrequency($id){
+	 $productType = ['1'=>'Monthly', 'Upfront', 'Rear Ended'];
+	 return $productType[$id] ?? '';
+}
+
 function _uuid_rand($strLen = 60){
 	$string = sprintf('%04x%04x%04x%05x%05x%04x%04x%04x%05x%05x%06x',
 		mt_rand(0, 0xffff), mt_rand(0, 0xffff),mt_rand(0, 0xffff),
