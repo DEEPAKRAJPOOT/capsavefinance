@@ -608,7 +608,7 @@ var messages = {
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                         $(obj1).each(function(i,v){
                             
-                                 $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+                                 $("#supplier_id").append("<option value='"+v.user_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"</option>");  
                             });
                        
                     }
