@@ -2553,6 +2553,13 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($customer)
                 ->rawColumns(['customer_id', 'status', 'action'])
+
+                ->editColumn(
+                    'app_id',
+                    function ($customer) {
+                        return $customer->app_id;
+                    }
+                ) 
                 ->addColumn(
                     'customer_id',
                     function ($customer) {
