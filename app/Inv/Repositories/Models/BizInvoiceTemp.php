@@ -151,6 +151,7 @@ public static function saveBulkTempInvoice($arrInvoice)
             {
                 
                $result =  self::where('invoice_id',$attributes['id'][$i])->first();
+              
                $data = new BizInvoice;
                        $data->anchor_id =  $result->anchor_id;
                         $data->supplier_id =  $result->supplier_id;
