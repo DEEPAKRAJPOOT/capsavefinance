@@ -79,12 +79,12 @@
                                     <table id="supplier-listing" class="table table-striped cell-border  overview-table mb-0" cellspacing="0" width="100%">
                                         <thead>
                                             <tr role="row">
-                                            <th width="5%">Sr. No.</th>
-                                            <th width="16%">Product Type</th>
-                                            <th width="18%">Product Limit</th>
-                                            <th width="18%">Cosumed Product Limit</th>
-                                            <th width="18%">Remaining Product Limit</th>
-                                            <th width="25%">Action</th>
+                                            <th width="6%">Sr. No.</th>
+                                            <th width="15%">Product Type</th>
+                                            <th width="15%">Product Limit</th>
+                                            <th width="20%">Consumed Product Limit</th>
+                                            <th width="20%">Remaining Product Limit</th>
+                                            <th width="24%">Action</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -96,17 +96,17 @@
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <tr role="row" class="odd">
-                                                       <td width="5%">{{($key+1)}}</td>
-                                                       <td width="16%">{{$prgmLimit->product->product_name}}</td>
-                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
-                                                       <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="25%">
-                                                       <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
-                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
+                                                       <td width="6%">{{($key+1)}}</td>
+                                                       <td width="15%">{{$prgmLimit->product->product_name}}</td>
+                                                       <td width="15%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
+                                                       <td width="20%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="20%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
+                                                       <td width="24%">
+                                                       <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}"  title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        @if($offerStatus != 0)
-                                                       <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;">Share with Co-Lender</a>
-                                                       <a data-toggle="modal" data-target="#viewSharedColenderFrame" data-url ="{{route('view_shared_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 14px;" title="View Shared Co-Lender"><i class="fa fa-eye"></i></a>
+                                                       <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="Share with Co-Lender"><i class="fa fa-share"></i></a>
+                                                       <a data-toggle="modal" data-target="#viewSharedColenderFrame" data-url ="{{route('view_shared_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="View Shared Co-Lender"><i class="fa fa-eye"></i></a>
                                                        @endif
                                                        </td>
                                                     </tr>
@@ -117,12 +117,13 @@
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
                                             <tr>
-                                                <td width="10%" style="background: #e9ecef;"><b>Overdue Interest (%)</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Interest Rate (%)</b></td>
+                                                <td width="20%" style="background: #e9ecef;"><b>Overdue Interest Rate (%)</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Interest Rate (%)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Sub Limit</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (Days)</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (In Days)</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Payment Frequency</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
+                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (In Days)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
                                                 <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
                                             </tr>
@@ -135,6 +136,7 @@
                                                 <td>{{$prgmOffer->interest_rate}}%</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
+                                                <td>{{ config('common.payment_frequency.'.$prgmOffer->payment_frequency)}}</td>
                                                 <td>{{$prgmOffer->margin}}%</td>
                                                 <td>{{$prgmOffer->grace_period}}</td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
@@ -169,7 +171,7 @@
                                             <th width="5%">Sr. No.</th>
                                             <th width="16%">Product Type</th>
                                             <th width="18%">Product Limit</th>
-                                            <th width="18%">Cosumed Product Limit</th>
+                                            <th width="18%">Consumed Product Limit</th>
                                             <th width="18%">Remaining Product Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>

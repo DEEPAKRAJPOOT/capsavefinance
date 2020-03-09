@@ -1619,7 +1619,7 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
         $prgmOfferId = $request->get('offer_id');
-        $aplid = (int)$request->get('app_prgm_limit_id');
+        $aplid = (int)$request->get('app_prgm_limit_id');        
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
@@ -1648,7 +1648,7 @@ class CamController extends Controller
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
-
+        
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         $limitData = $this->appRepo->getLimit($aplid);
