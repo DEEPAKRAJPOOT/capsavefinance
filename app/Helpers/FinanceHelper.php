@@ -45,7 +45,7 @@ class FinanceHelper {
                                     $sysParameterStr = $val->variable_name;
                                     $sysFunctionStr = $val->sys_func_name;
                                     $amount = 0;
-                                    $amount = $this->getAmtByFormulaCal($formula, $sysParameterStr, $sysFunctionStr, $userId, $appId, $bizId);
+                                    $amount = $this->getAmtByFormulaCal($formula, explode(',',$sysParameterStr), explode(',',$sysFunctionStr), $userId, $appId, $bizId);
                                     if($jival->value_type_val==1) {     //credit
                                         $this->inputData['credit_amount'] = $amount;
                                     } else {                            //debit
@@ -89,7 +89,23 @@ class FinanceHelper {
     }
 
     private function getAmtByFormulaCal($formula=null, $sysParameterStr=null, $sysFunctionStr=null, $userId = null, $appId = null, $bizId = null) {
-        //dd($formula,$sysParameterStr,$sysFunctionStr);
+        $varFuncArr = array_combine($sysParameterStr, $sysFunctionStr);
+        foreach ($varFuncArr as $variable => $function) {
+           $funcName = '_'.$function;
+           $var_val = $this->$funcName($variable);
+           $varFuncArr[$variable] = $var_val;
+        }
+        dd($varFuncArr);
         return 0;
+    }
+
+    private function _sysFuncPrincipal($userId = null, $appId = null, $bizId = null){
+       return "1000";
+    }
+    private function _sysFuncRate($userId = null, $appId = null, $bizId = null){
+      return "5.8";
+    }
+    private function _sysFuncTenor($userId = null, $appId = null, $bizId = null){
+       return "3";
     }
 }
