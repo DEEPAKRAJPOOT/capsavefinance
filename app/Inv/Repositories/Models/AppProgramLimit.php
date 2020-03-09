@@ -146,7 +146,7 @@ class AppProgramLimit extends BaseModel {
      
       public static function getLimitProgram($aid)
      {     
-            $user_id =   User::where(['is_active' => 1, 'anchor_id' => $aid])->where('anchor_id','<>', null)->pluck('user_id');  
+            $user_id =   User::where(['anchor_id' => $aid])->where('anchor_id','<>', null)->pluck('user_id');  //'is_active' => 1,
             $app_id =    LmsUser::whereIn('user_id',$user_id)->pluck('app_id');
           return AppProgramOffer::whereHas('productHas')->whereIn('app_id',$app_id)->where(['anchor_id' => $aid,'is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
      }

@@ -2570,7 +2570,8 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'app_id',
                     function ($customer) {
-                        return $customer->app_id;
+                        //return $customer->app_id;
+                        return "CAPS" . sprintf('%06d',$customer->app_id);
                     }
                 ) 
                 ->addColumn(
