@@ -45,7 +45,7 @@ trait LmsTrait
     }   
 
     protected function calAccrualInterest($transDate=null){
-        $disbursalData = Disbursal::where('disbursal_id',[24])->get();
+        $disbursalData = Disbursal::whereIn('status_id',[12,13])->get();
         $currentDate = date('Y-m-d');
         $interest = 0;
         $returnData = [];
