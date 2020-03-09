@@ -83,8 +83,6 @@
         margin: 0;
     }
 </style>
-@extends('layouts.backend.admin_popup_layout')
-@section('content')
 <div class="content-wrapper">
   <div class="row grid-margin mt-3 mb-2">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
@@ -95,7 +93,7 @@
               <form action="{{route('save_sanction_letter_supplychain')}}" method="POST">
                 @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count())
                 <div class="form-fields">
-                  <h5 class="card-title form-head-h5">Sanction Letter For Supply Chain</h5>
+                  <h5 class="card-title form-head-h5" style="text-align: center; font-size: 20px;">Sanction Letter For Supply Chain</h5>
                   <table class="table" cellpadding="0" cellspacing="0">
                     <tr>
                       <td><b>To</b></td>
@@ -749,7 +747,7 @@
                               </ol>
                            </div>
                            @if(!empty($download) && $download == true)
-                           <div align="center"><a href="{{ route('send_sanction_letter_supplychain', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" class="btn btn-success btn-sm"> Send Email</a></div>
+                           <div align="center"><a href="{{ route('send_sanction_letter_supplychain', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" style=" background-color: #30878e;border: none;border-radius: 5px;color: white;padding: 10px 10px;text-align: center;text-decoration: none;display: inline-block;font-size: 14px;margin: 4px 2px;cursor: pointer;"> Send Email</a></div>
                            @endif
                 </div>
                 @endif
@@ -763,4 +761,3 @@
   </div>
 </div>
 </div>
-@endsection
