@@ -68,7 +68,8 @@ function calculate_formula($formula, $variables){
 	foreach ($variables as $key => $value) {
 		$formula = str_replace($key, $$key, $formula);
 	}
-	return eval('return '. $formula .';');
+	eval("\$formula = \"$formula\";");
+	return $formula;
 }
 
 function extra_char($string = ''){

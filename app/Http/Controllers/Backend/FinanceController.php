@@ -61,11 +61,15 @@ class FinanceController extends Controller {
 
     public function getFinVariable() {
         return view('backend.finance.variable_list');
+    }
+
+    public function executeInvoices($userId = null, $appId = null, $bizId = null) {
+        $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), 21);
     }  
 
     public function crateJeConfig(Request $request) {
         $finHelperObj = new FinanceHelper($this->finRepo);
-        $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'));
+        $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), 21);
         $variablesIdArray = [];
         $jeConfigId = $request->get('je_config_id');
         $transConfigId = $request->get('trans_config_id');
