@@ -497,9 +497,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return  $result? $result:false;
        }
 
-    public function getDisbursals($disburseIds)
-    {
-        return Disbursal::whereIn('disbursal_id', $disburseIds)
-               ->get();
-    }            
+   public function getAllRefundLmsUser(){
+      return LmsUser::with('user')->groupBy('user_id')
+               ->whereHas('transaction', function ($query) {
+                  $query->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')]);
+               });
+   }
+
+   public function getDisbursals($disburseIds)
+   {
+      return Disbursal::whereIn('disbursal_id', $disburseIds)
+            ->get();
+   }
 }

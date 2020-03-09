@@ -36,6 +36,7 @@ return [
         'INTEREST_PAID'=>'32',
         'INTEREST_OVERDUE'=>'33',
         'INVOICE_PARTIALLY_KNOCKED_OFF'=>'34',
+        'NON_FACTORED_AMT' => '35'
     ],
     'STATUS_ID' => [
         'DISBURSED'=>'12',

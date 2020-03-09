@@ -3886,7 +3886,7 @@ if ($err) {
      * @return json customer data
      */
     public function lmsGetRefundList(DataProviderInterface $dataProvider) {
-      $refundList = $this->lmsRepo->getAllLmsUser();
+      $refundList = $this->lmsRepo->getAllRefundLmsUser();
       $data = $dataProvider->lmsGetRefundCustomers($this->request, $refundList);
       return $data;
     }
