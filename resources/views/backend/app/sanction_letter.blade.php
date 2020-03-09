@@ -484,7 +484,7 @@
                               </select>
                            </h5>
                            <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
-                           <h5>PDC</h5>
+                           <h5 style="background-color: #ccc;padding: 10px;margin-bottom: 0;">PDC</h5>
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <tbody>
                                  <tr>
@@ -503,7 +503,6 @@
                                  </tr>
                               </tbody>
                            </table>
-                           <br />
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <thead>
                                  <tr>
@@ -541,7 +540,7 @@
                               </tbody>
                            </table>
                            <br />
-                           <h5>NACH Mandate with undertaking</h5>
+                           <h5 style="background-color: #ccc;padding: 10px;margin-bottom: 0;">NACH Mandate with undertaking</h5>
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <tbody>
                                  <tr>
@@ -560,7 +559,6 @@
                                  </tr>
                               </tbody>
                            </table>
-                           <br />
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <thead>
                                  <tr>
