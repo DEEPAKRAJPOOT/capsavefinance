@@ -145,7 +145,6 @@ class ProgramCharges extends BaseModel {
     
     public static function getTransName($attr)
     {
-       
         return self::with('charge')->where(['prgm_id'=>$attr->prog_id,'chrg_type' =>2,'is_active' =>1])->get();
     }
     
