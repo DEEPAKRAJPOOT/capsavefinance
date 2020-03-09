@@ -54,16 +54,16 @@
 	                              		<table id="customerList" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-                                                    <th >Application ID</th>       
-                                                    <th >Customer ID</th>       
-		                                     		<th >Virtual ID</th>		
+                                                    <th >Customer ID</th>               
+                                                    <th >Application ID</th>                                                           
+		                                     		<th >Virtual A/c No.</th>		
 		                                     		<th >Customer Name</th>
 													<th >Email ID</th>
+                                                    <th >Anchor</th>
+													<th >Program Type</th>                                                                                                        
 													<th >Loan/Limit Offer</th>
 													<th >Utilize Limit</th>
 													<th >Available Limit</th>
-                                                    <th >Anchor</th>
-													<th >Program Type</th>
 													<th >Status</th>
 												</tr>
 	                                        </thead>

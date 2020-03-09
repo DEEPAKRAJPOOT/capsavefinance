@@ -544,7 +544,7 @@ var messages = {
                            $("#program_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                              if(v.program!=null)
-                             {
+                             {                                 
                                    $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
                               }                   
                              });
@@ -607,8 +607,8 @@ var messages = {
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                         $(obj1).each(function(i,v){
-                              
-                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
+                                 var dApp = "000000" + v.app.app_id;
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" (CAPS"+dApp.slice(-6)+")</option>");  
                             });
                        
                     }
