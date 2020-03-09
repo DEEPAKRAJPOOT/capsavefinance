@@ -84,7 +84,8 @@ var iframe_ids = [
         'changeAppDisbursStatus',
         'addEquipmentFrame',
         'editEquipmentFrame',
-        'viewInterestAccrual'
+        'viewInterestAccrual',
+        'refund_adjust',
     ];
 
 iframe_ids.forEach(function(id) {

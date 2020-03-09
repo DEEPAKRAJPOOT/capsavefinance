@@ -83,4 +83,9 @@ class RefundController extends Controller
         Session::flash('message',trans('backend_messages.refunded'));
 		return redirect()->route('lms_refund_list');
 	}
+
+	public function refund_adjust(Request $request) 
+	{
+		return view('lms.refund.refund_adjust_list');
+	}
 }

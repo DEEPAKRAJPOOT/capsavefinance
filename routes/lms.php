@@ -138,6 +138,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@sendRefund'
             ]);
 
+            Route::get('/refund_adjust_list', [
+                'as' => 'refund_adjust_list',
+                'uses' => 'Lms\RefundController@refund_adjust'
+            ]);
+
         });//end of application
 
         // Business address
