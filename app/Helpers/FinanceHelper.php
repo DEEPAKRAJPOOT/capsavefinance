@@ -2,8 +2,10 @@
 
 namespace App\Helpers;
 
+use App\Inv\Repositories\Models\Financial\FinancialDisbursal as Disbursal;
 class FinanceHelper {
 
+    private $transConfigId;
     private $finRepo;
     private $jeConfigData;
     private $jiConfigData;
@@ -13,8 +15,9 @@ class FinanceHelper {
         $this->finRepo = $finRepo;
     }
 
-    public function finExecution($transConfigId = null, $userId = null, $appId = null, $bizId = null) {
+    public function finExecution($transConfigId = null, $pk_val = null) {
         try{
+            $this->transConfigId = $transConfigId;
             if(isset($transConfigId) && !empty($transConfigId)) {
                 $this->jeConfigData = $this->finRepo->getAllJeConfigByTransConfigId($transConfigId); 
                 if(isset($this->jeConfigData) && !empty($this->jeConfigData)) {
@@ -45,7 +48,7 @@ class FinanceHelper {
                                     $sysParameterStr = $val->variable_name;
                                     $sysFunctionStr = $val->sys_func_name;
                                     $amount = 0;
-                                    $amount = $this->getAmtByFormulaCal($formula, explode(',',$sysParameterStr), explode(',',$sysFunctionStr), $userId, $appId, $bizId);
+                                    $amount = $this->getAmtByFormulaCal($formula, explode(',',$sysParameterStr), explode(',',$sysFunctionStr), $pk_val);
                                     if($jival->value_type_val==1) {     //credit
                                         $this->inputData['credit_amount'] = $amount;
                                     } else {                            //debit
@@ -75,7 +78,7 @@ class FinanceHelper {
                         }                        
                     }                    
                 } else {
-                    $this->resp['success'] = true;
+                    $this->resp['success'] = false;
                     $this->resp['errorMsg'] = 'JE Configuration not found';
                 }                
             } else {
@@ -88,24 +91,47 @@ class FinanceHelper {
         }        
     }
 
-    private function getAmtByFormulaCal($formula=null, $sysParameterStr=null, $sysFunctionStr=null, $userId = null, $appId = null, $bizId = null) {
+    private function getAmtByFormulaCal($formula=null, $sysParameterStr=null, $sysFunctionStr=null, $pk_val=null) {
         $varFuncArr = array_combine($sysParameterStr, $sysFunctionStr);
         foreach ($varFuncArr as $variable => $function) {
            $funcName = '_'.$function;
-           $var_val = $this->$funcName($variable);
+           $var_val = $this->$funcName($pk_val);
            $varFuncArr[$variable] = $var_val;
         }
-        dd($varFuncArr);
-        return 0;
+        return calculate_formula($formula, $varFuncArr);
     }
 
-    private function _sysFuncPrincipal($userId = null, $appId = null, $bizId = null){
-       return "1000";
+
+    private function _getObject($transConfigId){
+        $objects = ['1' => new Disbursal()];
+        return $objects[$transConfigId];
     }
-    private function _sysFuncRate($userId = null, $appId = null, $bizId = null){
-      return "5.8";
+
+    private function _sysFuncPrincipal($pk_val = null){
+       $obj = $this->_getObject($this->transConfigId);
+       $disbursalData = $obj::find($pk_val);
+       return (!empty($disbursalData) ? $disbursalData->principal_amount : 0);
     }
-    private function _sysFuncTenor($userId = null, $appId = null, $bizId = null){
-       return "3";
+
+    public function __call($function, $args){
+      return 0;
+    }
+
+    private function _sysFuncRate($pk_val = null){
+       $obj = $this->_getObject($this->transConfigId);
+       $disbursalData = $obj::find($pk_val);
+       return (!empty($disbursalData) ? $disbursalData->interest_rate : 0);
+    }
+
+    private function _sysFuncTenor($pk_val = null){
+       $obj = $this->_getObject($this->transConfigId);
+       $disbursalData = $obj::find($pk_val);
+       return (!empty($disbursalData) ? $disbursalData->tenor_days : 0);
+    }
+
+    private function sysFuncOdIntRate($pk_val = null){
+       $obj = $this->_getObject($this->transConfigId);
+       $disbursalData = $obj::find($pk_val);
+       return (!empty($disbursalData) ? $disbursalData->overdue_interest_rate : 0);
     }
 }
