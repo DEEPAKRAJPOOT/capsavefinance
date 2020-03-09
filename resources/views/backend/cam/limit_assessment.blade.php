@@ -121,6 +121,7 @@
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Interest Rate (%)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Sub Limit</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (In Days)</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Payment Frequency</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
                                                 <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (In Days)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
@@ -135,6 +136,7 @@
                                                 <td>{{$prgmOffer->interest_rate}}%</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
+                                                <td>{{ config('common.payment_frequency.'.$prgmOffer->payment_frequency)}}</td>
                                                 <td>{{$prgmOffer->margin}}%</td>
                                                 <td>{{$prgmOffer->grace_period}}</td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
@@ -169,7 +171,7 @@
                                             <th width="5%">Sr. No.</th>
                                             <th width="16%">Product Type</th>
                                             <th width="18%">Product Limit</th>
-                                            <th width="18%">Cosumed Product Limit</th>
+                                            <th width="18%">Consumed Product Limit</th>
                                             <th width="18%">Remaining Product Limit</th>
                                             <th width="25%">Action</th>
                                             </tr>

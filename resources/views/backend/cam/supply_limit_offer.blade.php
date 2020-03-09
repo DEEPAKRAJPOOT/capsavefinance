@@ -69,11 +69,11 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Interest Payment Frequency</b></label> 
+        <label for="txtPassword"><b>Select Payment Frequency</b></label> 
         <select name="payment_frequency" class="form-control">
-            <option value="">Select Interest Payment Frequency</option>
-            <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Monthly</option>
-            <option value="2" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 2)? 'selected': ''}}>Up Front</option>
+            <option value="">Select Payment Frequency</option>
+            <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Up Front</option>
+            <option value="2" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 2)? 'selected': ''}}>Monthly</option>
             <!--<option value="3" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 3)? 'selected': ''}}>Rear Ended</option>-->
         </select>
       </div>
@@ -143,9 +143,8 @@
     
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Documentation Fee (%)</b></label> 
-        <a href="javascript:void(0);" class="verify-owner-no"></a>
-        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? number_format($offerData->document_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
+        <label for="txtPassword"><b>Documentation Fee (%)</b></label>         
+        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? $offerData->document_fee : ''}}" placeholder="Check Bounce Fee" maxlength="6">
       </div>
     </div>
     

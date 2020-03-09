@@ -233,6 +233,11 @@ return [
         '2'=>'W/o direct payment confirmation',
         '3'=>'With payment confirmation with Escrow a/c',
         '4'=>'W/o payment confirmation w/o Escrow a/c'
+    ],
+    'payment_frequency' => [
+        1 => 'Up Front',
+        2 => 'Monthly',
+        3 => 'Rear Ended'
     ]
 ];
  
