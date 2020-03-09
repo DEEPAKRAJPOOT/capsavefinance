@@ -186,8 +186,8 @@ class InvoiceController extends Controller {
 
     public function saveInvoice(Request $request) {
         $attributes = $request->all();
-        $explode  =  explode(',',$attributes['anchor_id']);
-        $attributes['anchor_id']      =    $explode[0];  
+        $explode  =  explode(',',$attributes['supplier_id']);
+        $attributes['supplier_id']      =    $explode[0];  
         $appId   = $explode[1]; 
         $date = Carbon::now();
         $id = Auth::user()->user_id;

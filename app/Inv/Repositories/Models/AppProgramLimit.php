@@ -184,7 +184,7 @@ class AppProgramLimit extends BaseModel {
     public static function getLimitSupplier($pid){
         $appID =  AppProgramOffer::whereHas('productHas')->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where(['prgm_id' => $pid])->pluck('app_id');
         $user_id =    LmsUser::whereIn('app_id',$appID)->pluck('user_id');
-        return User::whereIn('user_id',$user_id)->get();
+        return User::with('app.Business')->whereIn('user_id',$user_id)->get();
         
       }  
 

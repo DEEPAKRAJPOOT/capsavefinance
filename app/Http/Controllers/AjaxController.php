@@ -3465,12 +3465,10 @@ if ($err) {
      {
         
         $result  =  explode(",",$request['program_id']);
-        $res  =  explode(",",$request['app_id']);
         $request['program_id']  = $result[0];
         $request['prgm_offer_id']  = $result[1];
-        $appId     = $res[1];
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
-        $getProgramLimit =   $this->invRepo->getProgramForAppLimit($request['program_id'],$appId);
+        $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
         return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
      }
@@ -3513,8 +3511,11 @@ if ($err) {
        }
         $date = Carbon::now();
         $data = array();
-        $userId =  $request['supplier_bulk_id'];
         $id = Auth::user()->user_id;
+        $explode  =  explode(',',$request['supplier_bulk_id']);
+        $attributes['supplier_bulk_id']      =    $explode[0];
+        $userId     =    $attributes['supplier_bulk_id'];
+        $appId   = $explode[1]; 
         if ($request['doc_file']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice', 0775, true);
@@ -3531,9 +3532,7 @@ if ($err) {
           }
        
         $i=0;
-        $explode  =  explode(',',$request['anchor_bulk_id']);
-        $attributes['anchor_bulk_id']      =    $explode[0];  
-        $appId   = $explode[1]; 
+      
         $res =  $this->invRepo->getSingleAnchorDataByAppId($appId);
         $biz_id  = $res->biz_id;
        
