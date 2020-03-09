@@ -38,7 +38,6 @@
     height: 100%;
     position: fixed;
     background: #141415ad;
-    display: none;
 }
 .overlay__inner {
     left: 0;
@@ -88,7 +87,7 @@
     </div>
     @endif
 </div>
-<div id="overlay" class="overlay">
+<div id="overlay" class="overlay" style="display: none;">
     <div class="overlay__inner">
         <div class="overlay__content">Sending Email....  &nbsp;<span class="spinner">wait</span></div>
     </div>
