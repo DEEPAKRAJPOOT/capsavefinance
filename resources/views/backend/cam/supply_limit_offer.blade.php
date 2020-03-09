@@ -6,7 +6,7 @@
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
-    <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id">
+    <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id" id="offer_id">
     
     <div class="row">
     <div class="col-md-6">
@@ -913,7 +913,7 @@
         let anchor_id = $('#anchor_id').val();
         setLimit('input[name=prgm_limit_amt]', '');
         setLimit('input[name=interest_rate]', '');
-        fillPrograms(anchor_id, anchorPrgms);
+        fillPrograms(anchor_id, anchorPrgms);                
     });
 
     function fillPrograms(anchor_id, programs){
@@ -926,6 +926,15 @@
     }
 
     $('#program_id').on('change',function(){
+        if ($("#offer_id").val() == "") {            
+            $('input[name=margin]').val("");
+            $('input[name=overdue_interest_rate]').val("");                    
+            $('input[name=adhoc_interest_rate]').val("");                                        
+            $('input[name=grace_period]').val("");                                        
+            $('input[name="processing_fee"]').val("");                                        
+            $('input[name="document_fee"]').val(""); 
+        }
+                        
         unsetError('input[name=prgm_limit_amt]');
         unsetError('input[name=interest_rate]');
         let program_min_rate = $('#program_id option:selected').data('min_rate');
@@ -947,7 +956,8 @@
             setLimit('input[name=prgm_limit_amt]', '(<i class="fa fa-inr" aria-hidden="true"></i> '+program_min_limit+'-<i class="fa fa-inr" aria-hidden="true"></i> '+program_max_limit+')');
             setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
         }
-        let token = "{{ csrf_token() }}";
+        let token = "{{ csrf_token() }}";            
+
         $('.isloader').show();
         $.ajax({
             'url':messages.get_program_balance_limit,
@@ -959,7 +969,25 @@
             },
             success:function(res){
                 res = JSON.parse(res);
-                prgm_consumed_limit = parseInt(res) - current_offer_amt;
+                console.log('res', res);
+                if ($("#offer_id").val() == "") {
+                    var prgm_data = res.prgm_data;
+                    $('input[name=margin]').val(prgm_data.margin);
+                    $('input[name=overdue_interest_rate]').val(prgm_data.overdue_interest_rate);
+                    if (prgm_data.is_adhoc_facility == '1') {
+                        $('input[name=adhoc_interest_rate]').val(prgm_data.adhoc_interest_rate);
+                    }
+                    if (prgm_data.is_grace_period == '1') {
+                        $('input[name=grace_period]').val(prgm_data.grace_period);
+                    }
+                    if (prgm_data.processing_fee != '') {
+                        $('input[name="processing_fee"]').val(prgm_data.processing_fee);
+                    }
+                    if (prgm_data.document_fee != '') {
+                        $('input[name="document_fee"]').val(prgm_data.document_fee);
+                    }
+                }
+                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
                 $('.isloader').hide();
             }
         })

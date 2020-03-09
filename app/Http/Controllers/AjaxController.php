@@ -3450,7 +3450,8 @@ if ($err) {
     {
         $program_id = (int)$request->program_id;
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
-        return json_encode($prgm_limit);
+        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        return json_encode(['prgm_limit' => $prgm_limit, 'prgm_data' => $prgm_data]);
     }
     
      public function getProgramSingleList(Request $request)

@@ -1642,4 +1642,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         }
         return  $returnData;
     }
+    
+    
+    public function getProgramOfferData($program_id)
+    {
+       return AppProgramLimit::getProgramOfferData($program_id);
+    }    
 }
