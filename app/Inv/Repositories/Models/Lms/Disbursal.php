@@ -199,7 +199,7 @@ class Disbursal extends BaseModel {
     {
         $res = self::select('disbursal.*','invoice.invoice_no' ,'invoice.invoice_approve_amount', 'mst_status.status_name')
                 ->join('invoice','disbursal.invoice_id' ,'=','invoice.invoice_id')
-                ->join('mst_status','disbursal.status_id' ,'=','mst_status.id');
+                ->join('mst_status','disbursal.status_id' ,'=','mst_status.id')->orderBy('disbursal.disbursal_id', 'DESC');
         return $res;
     }
     /////////////* get customer id   */////////////////
