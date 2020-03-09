@@ -573,6 +573,8 @@ var messages = {
   $(document).on('change','.changeSupplier',function(){
       $("#invoice_date").val('');
       var program_id =  $(this).val(); 
+      var anchor_id =  $("#anchor_id").val(); 
+      
       if(program_id=='')
       {
           return false; 
@@ -604,10 +606,9 @@ var messages = {
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                         
-                            $(obj1).each(function(i,v){
-                            
-                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+                        $(obj1).each(function(i,v){
+                              
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
                             });
                        
                     }
@@ -615,7 +616,6 @@ var messages = {
                     {
                        
                                $("#supplier_id").append("<option value=''>No data found</option>");  
-                           
                       
                     }
                   

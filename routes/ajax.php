@@ -123,7 +123,7 @@ Route::group(
     
       Route::post('get_program_supplier', [
         'as' => 'get_program_supplier',
-        'uses' => 'Application\InvoiceController@getProgramSupplier'
+        'uses' => 'Backend\InvoiceController@getProgramSupplier'
     ]);
     
    

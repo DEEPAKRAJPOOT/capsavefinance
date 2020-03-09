@@ -109,7 +109,15 @@ class KarzaController extends Controller
            $requestCin   = $request->all();
            $result =  $KarzaApi->getPromoterDetailsByCin($requestCin);
            $get_dec = json_decode($result,1);
-           $res  = $get_dec['result']['directors'];          
+           if(!empty($get_dec['result']['directors']))
+           {
+               $res  = $get_dec['result']['directors'];         
+           }
+           else
+           {
+              $res  = "";       
+           }
+              
 // $status =  $get_dec['status-code'];
           
             ////if($status==101) { 

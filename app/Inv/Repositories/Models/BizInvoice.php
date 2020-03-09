@@ -182,6 +182,23 @@ public static function updateInvoice($invoiceId,$status)
          return self::with(['anchor','supplier','gst','pan'])->where(['invoice_id' =>$invId])->first();
          
      }
+     public static function  getAllInvoiceAnchor($status_id)
+     {
+         return self::with(['business','anchor'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
+         
+     }  
+     public static function  getBusinessNameApp($status_id)
+     {
+         return self::with(['business'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
+         
+     }  
+    
+       function business()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id','biz_id');  
+    
+     }
+     
       function pan()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'supplier_id','user_id')->where(['status' =>1,'type' =>1,]);  
@@ -276,8 +293,14 @@ public static function updateInvoice($invoiceId,$status)
      public static function getProgramForLimit($pid)
     {
        return Program::where(['prgm_id' =>$pid])->first();
-     }   
+    }   
    
+         public static function getProgramForAppLimit($pid,$appId)
+    {
+           return  AppProgramOffer::where(['prgm_id' =>$pid,'app_id' => $appId,'is_approve' =>1,'is_active'=>1,'status' =>1])->sum('prgm_limit_amt');
+     }  
+     
+     
     public static function getAllUserInvoice($userId)
     {
         return self::with('app.acceptedOffer')

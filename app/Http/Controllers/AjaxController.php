@@ -3462,6 +3462,7 @@ if ($err) {
      
       public function getSupplierList(Request $request)
      {
+        
         $result  =  explode(",",$request['program_id']);
         $request['program_id']  = $result[0];
         $request['prgm_offer_id']  = $result[1];
@@ -3509,8 +3510,11 @@ if ($err) {
        }
         $date = Carbon::now();
         $data = array();
-        $userId =  $request['supplier_bulk_id'];
         $id = Auth::user()->user_id;
+        $explode  =  explode(',',$request['supplier_bulk_id']);
+        $attributes['supplier_bulk_id']      =    $explode[0];
+        $userId     =    $attributes['supplier_bulk_id'];
+        $appId   = $explode[1]; 
         if ($request['doc_file']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice', 0775, true);
@@ -3528,9 +3532,9 @@ if ($err) {
        
         $i=0;
       
-        $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
-        $appId = $res->app_id; 
+        $res =  $this->invRepo->getSingleAnchorDataByAppId($appId);
         $biz_id  = $res->biz_id;
+       
         $rowcount = count($rowData) -1;
         foreach($rowData as $key=>$row)
         {

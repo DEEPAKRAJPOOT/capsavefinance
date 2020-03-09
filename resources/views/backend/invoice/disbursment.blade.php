@@ -2,15 +2,8 @@
 @section('additional_css')
 @endsection
 @section('content')
-
-
-
 <div class="content-wrapper">
-
-
-
-
-    <div class="col-md-12 ">
+<div class="col-md-12 ">
         <section class="content-header">
             <div class="header-icon">
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -30,40 +23,40 @@
             <div class="col-md-12 ">
                 <div class="card">
                     <div class="card-body">
- <ul class="nav nav-tabs" role="tablist">
-             <li class="nav-item ">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
-    </li>
-    <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
-    </li>
-  <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
-    </li>
-        
-   <li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
-    </li>
-	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
-    </li>
-    <li class="nav-item">
-              <a class="nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
-         
-    </li>
-      <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link @if(Route::currentRouteName()=='backend_get_reject_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
+     <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
+                            </li>
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
+                            </li>
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
+                            </li>
 
-    </li>
-  <li class="nav-item">
-                                <a class="nav-link @if(Route::currentRouteName()=='backend_get_exception_cases') active @endif" href="{{Route('backend_get_exception_cases')}}">Exception Cases</a>
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
+                            </li>
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
+                            </li>
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
 
                             </li>
-   
-  </ul>
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
+                            </li>
+                            <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_reject_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
+
+                            </li>
+
+ <li class="nav-item itemBackground">
+                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_exception_cases') active @endif" href="{{Route('backend_get_exception_cases')}}">Exception Cases</a>
+
+                            </li>
+                        </ul>
 
                         <div class="tab-content">
 
@@ -75,10 +68,12 @@
                                         <div class="row"><div class="col-md-6"></div>
                                             <div class="col-md-2">				 
                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                                <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
+                                                 <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                                                     <option value="">Select Application  </option>
-                                                    @foreach($get_bus as $row)
+                                                        @foreach($get_bus as $row)
+                                                         @php if(isset($row->business->biz_id)) { @endphp
                                                     <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
+                                                      @php } @endphp
                                                     @endforeach
 
 
@@ -88,14 +83,13 @@
                                             </div>
                                             <div class="col-md-2">				 
 
-                                                <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                    <option value="">Select Anchor  </option>
-                           @foreach($anchor_list as $row)
-                            @php if(isset($row->anchorOne->anchor_id)) { @endphp
-                           <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
-                          @php } @endphp
-                           @endforeach
-
+                                                           <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
+                                                    <option value=""> Please select </option>
+                                                    @foreach($anchor_list as $row)
+                                                    @php if(isset($row->anchor->anchor_id)) { @endphp
+                                                    <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                                                    @php } @endphp
+                                                    @endforeach
                                                 </select>
 
                                             </div>
@@ -318,6 +312,17 @@
     {!!Helpers::makeIframePopup('modalInvoiceDisbursed','Repayment Details', 'modal-lg')!!}
     @endsection
     @section('jscript')
+    <style>
+    .itemBackground 
+    { 
+      border: 2px solid blanchedalmond;  
+      background-color:#5c9742;
+    }
+     .itemBackgroundColor 
+    { 
+      color:white;
+    }
+</style>    
     <script>
 
         var messages = {
@@ -447,7 +452,7 @@
                             $("#supplier_id").append("<option value=''> Select Supplier </option>");
                             $(obj1).each(function (i, v) {
 
-                                $("#supplier_id").append("<option value='" + v.app.user.user_id + "'>" + v.app.user.f_name + "</option>");
+                                $("#supplier_id").append("<option value='" + v.user_id + "'>" + v.f_name + "</option>");
 
                             });
                         } else

@@ -294,11 +294,12 @@
   $(document).on('change','.changeBulkSupplier',function(){
     
        $("#program_bulk_id_msg" ).hide  ();
-      var program_id =  $(this).val(); 
+      var program_id =  $(this).val();
+       var anchor_id =  $("#anchor_bulk_id").val(); 
       $("#supplier_bulk_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'program_id':program_id,'_token':messages.token});
+       var postData =  ({'app_id':anchor_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',
@@ -323,9 +324,9 @@
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                          $(obj1).each(function(i,v){
-                            
-                                   $("#supplier_bulk_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
-                            });
+                                 
+                                  $("#supplier_bulk_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
+                          });
                        
                     }
                     else
