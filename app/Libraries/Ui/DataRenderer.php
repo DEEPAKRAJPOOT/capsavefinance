@@ -3622,7 +3622,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'trans_id',
             function ($data) {
-                return "<input type='checkbox' class='trans_ids' name='trans_id[]' value=".$data->trans_id." checked='true'>";
+                return "<input type='checkbox' class='trans_ids' name='trans_id[$data->trans_id]' value=".$data->trans_id." checked='true'>";
             }
         )
         ->addColumn(
