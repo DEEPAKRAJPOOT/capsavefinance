@@ -112,11 +112,14 @@ class DisbursalController extends Controller
 		$allrecords = array_map('intval', $allrecords);
 		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
-		$params = array('http_header' => '', 'header' => '', 'request' => []);
+		
+		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
+		$supplierIds = $this->lmsRepo->getInvoiceSupplier($record)->toArray();
 		foreach ($allinvoices as $inv_k => $inv_arr) {
 			 $finHelperObj = new FinanceHelper($this->finRepo);
         	 $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), $inv_arr['invoice_id'], $inv_arr['app_id'], $inv_arr['supplier_id'], $inv_arr['biz_id']);
 		}
+		$params = array('http_header' => '', 'header' => '', 'request' => []);
 		$fundedAmount = 0;
 		$interest = 0;
 		$disburseAmount = 0;
