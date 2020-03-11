@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Entities\Lms;
 
 use App\Http\Requests\Request;
+use Carbon\Carbon;
 use DB;
 use Session;
 use App\Inv\Repositories\Contracts\LmsInterface;
@@ -519,8 +520,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
          $user_ids = $request->user_ids;
          $action = $request->input(('action'));
 
+         $date =  Carbon::now();
+         $fromDate =  Carbon::parse($date)->format('Y-m-d');
+         $toDate =  Carbon::parse($date)->format('Y-m-d');
+         // dd($fromDate, $toDate);
         return Transactions::where('trans_type',$transType)
-                                //->whereBetween('trans_date',$fromDate, $toDate)
+                              //   ->whereBetween('trans_date',$fromDate, $toDate)
                                 ->whereIn('user_id',$user_ids)->get();
    }
 }
