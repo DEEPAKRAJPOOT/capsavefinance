@@ -14,6 +14,8 @@ use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Helpers\FinanceHelper;
+use App\Inv\Repositories\Contracts\FinanceInterface;
 class DisbursalController extends Controller
 {
 	use ApplicationTrait;
@@ -32,12 +34,13 @@ class DisbursalController extends Controller
 	 */
 	protected $pdf;
 	
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo ,InvMasterRepoInterface $master){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo ,InvMasterRepoInterface $master,FinanceInterface $finRepo){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
-                $this->masterRepo = $master;
+        $this->masterRepo = $master;
+        $this->finRepo = $finRepo;
 		$this->middleware('checkBackendLeadAccess');
 	}
 	
@@ -92,7 +95,10 @@ class DisbursalController extends Controller
 		
 		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($record)->toArray();
-		
+		foreach ($allinvoices as $inv_k => $inv_arr) {
+			 $finHelperObj = new FinanceHelper($this->finRepo);
+        	 $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), $inv_arr['invoice_id'], $inv_arr['app_id'], $inv_arr['supplier_id'], $inv_arr['biz_id']);
+		}
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
 		$fundedAmount = 0;
 		$interest = 0;
