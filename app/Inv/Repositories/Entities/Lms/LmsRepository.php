@@ -509,4 +509,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
       return Disbursal::whereIn('disbursal_id', $disburseIds)
             ->get();
    }
+
+   public function getFilterRefundAdjust($fromDate, $toDate)
+   {
+      // return LmsUser::wit
+   }
 }

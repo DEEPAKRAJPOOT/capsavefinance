@@ -86,6 +86,11 @@ class RefundController extends Controller
 
 	public function refund_adjust(Request $request) 
 	{
-		return view('lms.refund.refund_adjust_list');
+
+		$fromDate = $request->input('fromDate');
+		$toDate = $request->input('toDate');
+
+		$filter = $this->lmsRepo->getFilterRefundAdjust($fromDate, $toDate);
+		return view('lms.refund.refund_adjust_list', ['filter'=>$filter]);
 	}
 }
