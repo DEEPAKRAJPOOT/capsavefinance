@@ -84,12 +84,12 @@ class Handler extends ExceptionHandler
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 401) {
                  return redirect('/');                
             }elseif ($exception instanceof MethodNotAllowedHttpException) {
-                (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
+                // (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 //return redirect('/');
                 return Response::view('errors.400', [], 400);
             } else if ($exception && get_class($exception) != 'Illuminate\Validation\ValidationException') {
                 //dd($exception);
-                (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
+                // (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 return Response::view('errors.custom', [], 500);                
             }
         }
