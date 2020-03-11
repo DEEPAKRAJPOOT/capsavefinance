@@ -63,9 +63,11 @@
                     <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund Manually</a> --}}
 
 
+                    <a data-toggle="modal" data-target="#refund_amount" data-url ="{{route('refund_adjust_list', ['action' => 'refund']) }}" data-height="400px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="refund_button" >Refund</a>
+                    <a data-toggle="modal" data-target="#adjust_amount" data-url ="{{route('refund_adjust_list', ['action' => 'adjust']) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="adjust_button" >Adjust </a>
 
-                    <a data-toggle="modal" data-target="#refund_adjust" data-url ="{{route('refund_adjust_list', ['action' => 'refund']) }}" data-height="400px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Refund</a>
-                    <a data-toggle="modal" data-target="#refund_adjust" data-url ="{{route('refund_adjust_list', ['action' => 'adjust']) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisbueseInvoices" >Adjust </a>
+                    <input type="hidden" id="fromDate" value="">
+                    <input type="hidden" id="toDate" value="">
 
 
                 </div>
@@ -106,8 +108,8 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('disbueseInvoices','refund Invoices', 'modal-md')!!}
-{!!Helpers::makeIframePopup('refund_adjust','Adjust Amount', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('refund_adjust','Refund Amount', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('adjust_amount','Adjust Amount', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('refund_amount','Refund Amount', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

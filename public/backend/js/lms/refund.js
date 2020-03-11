@@ -24,7 +24,7 @@ try {
                 }
             },
             columns: [
-                {data: 'invoice_id'},
+                {data: 'lms_user_id'},
                 {data: 'customer_code'},
                 {data: 'ben_name'},
                 {data: 'ben_bank_name'},
@@ -39,6 +39,8 @@ try {
         //Search
         $('#searchbtn').on('click', function (e) {
             oTable.draw();
+            $("#fromDate").val($('input[name="from_date"]').val());
+            $("#toDate").val($('input[name="to_date"]').val());
         });
     });
 } catch (e) {

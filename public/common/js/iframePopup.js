@@ -85,7 +85,8 @@ var iframe_ids = [
         'addEquipmentFrame',
         'editEquipmentFrame',
         'viewInterestAccrual',
-        'refund_adjust',
+        'refund_amount',
+        'adjust_amount',
     ];
 
 iframe_ids.forEach(function(id) {
