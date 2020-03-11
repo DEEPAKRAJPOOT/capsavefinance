@@ -120,6 +120,7 @@ class DisbursalController extends Controller
 		$disburseAmount = 0;
 		$totalInterest = 0;
 		$totalFunded = 0;
+		$totalMargin = 0;
 
 		foreach ($supplierIds as $userid) {
 			$disburseAmount = 0;
