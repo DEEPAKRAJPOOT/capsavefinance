@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="header-title">
-	<h5>Interes</h5>
+	<h5>Interest</h5>
 </div>
 	
 <div class="col-12">

@@ -71,6 +71,7 @@ try {
                 searching: false,
                 bSort: true,
                 bPaginate: false,
+                info: false,
                 ajax: {
                     "url": messages.lms_get_refund_adjust, // json datasource
                     "method": 'POST',
@@ -109,6 +110,7 @@ try {
                 searching: false,
                 bSort: true,
                 bPaginate: false,
+                info: false,
                 ajax: {
                     "url": messages.lms_get_refund_adjust, // json datasource
                     "method": 'POST',
@@ -146,6 +148,7 @@ try {
                 searching: false,
                 bSort: true,
                 bPaginate: false,
+                info: false,
                 ajax: {
                     "url": messages.lms_get_refund_adjust, // json datasource
                     "method": 'POST',
