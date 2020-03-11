@@ -70,7 +70,12 @@ function calculate_formula($formula, $variables){
 		$var_val = $$key;
 		$script = str_replace($key, $var_val , $script);
 	}
-	return eval("return ". $script .";");
+	try {
+    	return eval("return ". $script .";");
+	} catch (ParseError $e) {
+	   return 0;
+	}
+	
 }
 
 function extra_char($string = ''){
