@@ -3460,11 +3460,11 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetRefundCustomers(Request $request, $data)
     {
         return DataTables::of($data)
-                ->rawColumns(['lms_user_id','status', 'action'])
+                ->rawColumns(['user_id','status', 'action'])
                 ->addColumn(
-                    'lms_user_id',
+                    'user_id',
                     function ($data) {
-                        return "<input type='checkbox' class='lms_user_id' value=".$data->lms_user_id.">";
+                        return "<input type='checkbox' class='user_ids' name='user_id[]' value=".$data->lms_user_id.">";
                     }
                 )
                 ->addColumn(
