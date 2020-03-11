@@ -95,11 +95,21 @@ class FinanceHelper {
         $varFuncArr = array_combine($sysParameterStr, $sysFunctionStr);
         foreach ($varFuncArr as $variable => $function) {
            $funcName = '_'.$function;
-           $var_val = $this->$funcName($variable, $invoice_id);
+           $var_val = $this->$funcName($variable, $invoice_id, $appId, $userId, $bizId);
            $varFuncArr[$variable] = $var_val;
         }
         return calculate_formula($formula, $varFuncArr);
     }
+
+    private function _calculateFormula($formula, $variables){
+      extract($variables);
+      $script = preg_replace('/\s+/', '', $formula);
+      foreach ($variables as $key => $value) {
+        $var_val = $$key;
+        $script = str_replace($key, $var_val , $script);
+      }
+      return eval("return $script;");
+  } 
 
     private function _sysFuncPrincipal($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
        $disbursalData = Disbursal::find($invoice_id);
