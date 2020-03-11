@@ -93,6 +93,15 @@ class DisbursalController extends Controller
 		$remarks = $request->remarks;
 		$record = array_filter(explode(",",$invoiceIds));
 		
+		$record = array_filter(explode(",",$invoiceIds));
+		$userIds = array_filter(explode(",",$customerRecords));
+
+		$userIvoices = $this->lmsRepo->getAllUserInvoiceIds($userIds)->toArray();
+		$allrecords = array_unique(array_merge($record, $userIvoices));
+		$allrecords = array_map('intval', $allrecords);
+		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+		
 		$allinvoices = $this->lmsRepo->getInvoices($record)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($record)->toArray();
 		foreach ($allinvoices as $inv_k => $inv_arr) {
@@ -103,6 +112,9 @@ class DisbursalController extends Controller
 		$fundedAmount = 0;
 		$interest = 0;
 		$disburseAmount = 0;
+		$totalInterest = 0;
+		$totalFunded = 0;
+
 		foreach ($supplierIds as $userid) {
 			foreach ($allinvoices as $invoice) {
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
