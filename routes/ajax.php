@@ -789,7 +789,59 @@ Route::group(
         'as' => 'get_trans_name',
         'uses' => 'AjaxController@getTransName'
     ]);   
-       
+          
+          
+    //Financial 
+    Route::post(
+        'get-trans-type-list',
+        [
+        'as' => 'get_ajax_trans_type_list',
+        'uses' => 'AjaxController@getTransTypeList'
+        ]
+    );    
+    Route::post(
+        'get-journal-list',
+        [
+        'as' => 'get_ajax_journal_list',
+        'uses' => 'AjaxController@getJournalList'
+        ]
+    );
+    Route::post(
+        'get-account-list',
+        [
+        'as' => 'get_ajax_account_list',
+        'uses' => 'AjaxController@getAccountList'
+        ]
+    );
+    Route::post(
+        'get-variable-list',
+        [
+        'as' => 'get_ajax_variable_list',
+        'uses' => 'AjaxController@getVariableList'
+        ]
+    );
+    Route::post(
+        'get-jeconfig-list',
+        [
+        'as' => 'get_ajax_jeconfig_list',
+        'uses' => 'AjaxController@getJeConfigList'
+        ]
+    );
+    Route::post(
+        'get-jiconfig-list',
+        [
+        'as' => 'get_ajax_jiconfig_list',
+        'uses' => 'AjaxController@getJiConfigList'
+        ]
+    );
+    Route::post(
+        'get-transactions',
+        [
+        'as' => 'get_ajax_transactions',
+        'uses' => 'AjaxController@getTransactions'
+        ]
+    );   
+
     Route::post('get-group-company-exposure', [
         'as' => 'get_group_company_exposure',
         'uses' => 'AjaxController@getGroupCompanyExposure'

@@ -3754,4 +3754,192 @@ class DataRenderer implements DataProviderInterface
                         ->make(true);
     }
 
+        public function getTransTypeListByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'trans_type',
+                        function ($dataRecords) {
+                        return $dataRecords->trans_type;
+                    }) 
+                    ->make(true);
+        }
+
+        public function getJournalByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'name',
+                        function ($dataRecords) {
+                        return $dataRecords->name;
+                    }) 
+                    ->editColumn(
+                        'journal_type',
+                        function ($dataRecords) {
+                        return $dataRecords->journal_type;
+                    }) 
+                    ->editColumn(
+                        'is_active',
+                        function ($dataRecords) {
+                        return ($dataRecords->is_active==1) ? 'Yes' : 'No';
+                    }) 
+                    ->addColumn(
+                        'action',
+                        function ($dataRecords) {
+                            return '<a class="btn btn-action-btn btn-sm" href ="'.route('get_fin_journal', ['journal_id' => $dataRecords->id]).'"><i class="fa fa-edit">Edit</a>';
+                        }
+                    )
+                    ->make(true);
+        }
+
+        public function getAccountByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'account_code',
+                        function ($dataRecords) {
+                        return $dataRecords->account_code;
+                    }) 
+                    ->editColumn(
+                        'account_name',
+                        function ($dataRecords) {
+                        return $dataRecords->account_name;
+                    }) 
+                    ->editColumn(
+                        'is_active',
+                        function ($dataRecords) {
+                        return ($dataRecords->is_active==1) ? 'Yes' : 'No';
+                    }) 
+                    ->addColumn(
+                        'action',
+                        function ($dataRecords) {
+                            return '<a class="btn btn-action-btn btn-sm" href ="'.route('get_fin_account', ['account_id' => $dataRecords->id]).'"><i class="fa fa-edit">Edit</a>';
+                        }
+                    )
+                    ->make(true);
+        }
+
+        public function getVariableByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'name',
+                        function ($dataRecords) {
+                        return $dataRecords->name;
+                    })
+                    ->make(true);
+        }
+
+        public function getJeConfigByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'journal_name',
+                        function ($dataRecords) {
+                        return $dataRecords->journal_name;
+                    })
+                    ->editColumn(
+                        'journal_type',
+                        function ($dataRecords) {
+                        return $dataRecords->journal_type;
+                    })
+                    ->editColumn(
+                        'trans_type',
+                        function ($dataRecords) {
+                        return $dataRecords->trans_type;
+                    })
+                    ->editColumn(
+                        'variable_name',
+                        function ($dataRecords) {
+                        return $dataRecords->variable_name;
+                    })
+                    ->addColumn(
+                        'action',
+                        function ($dataRecords) {
+                            return '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#addJiConfig" title="Add Ji Config" data-url ="'.route('add_ji_config', ['je_config_id' => $dataRecords->je_config_id]).'" data-height="600px" data-width="100%" data-placement="top">Add Ji Item</a>'
+                            .'<a class="btn btn-action-btn btn-sm" href ="'.route('create_je_config', ['je_config_id' => $dataRecords->je_config_id, 'trans_config_id' => $dataRecords->trans_config_id, 'journal_id' => $dataRecords->journal_id]).'">Edit</a>';
+                        }
+                    )
+                    ->make(true);
+        }
+
+        public function getJiConfigByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'account_name',
+                        function ($dataRecords) {
+                        return $dataRecords->account_name;
+                    })
+                    ->editColumn(
+                        'is_partner',
+                        function ($dataRecords) {
+                        return $dataRecords->is_partner;
+                    })
+                    ->editColumn(
+                        'label',
+                        function ($dataRecords) {
+                        return $dataRecords->label;
+                    })
+                    ->editColumn(
+                        'value_type',
+                        function ($dataRecords) {
+                        return $dataRecords->value_type;
+                    })
+                    ->editColumn(
+                        'config_value',
+                        function ($dataRecords) {
+                        return $dataRecords->config_value;
+                    })
+                    ->addColumn(
+                        'action',
+                        function ($dataRecords) {
+                            return '<a class="btn btn-action-btn btn-sm" href ="'.route('add_ji_config', ['je_config_id' => $dataRecords->je_config_id, 'ji_config_id' => $dataRecords->ji_config_id]).'"><i class="fa fa-edit">Edit</a>';
+                        }
+                    )
+                    ->make(true);
+        }
+
+        public function getTransactionsByDataProvider(Request $request, $dataRecords)
+        {
+            
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'date',
+                        function ($dataRecords) {
+                        return $dataRecords->date;
+                    }) 
+                    ->editColumn(
+                        'label',
+                        function ($dataRecords) {
+                        return $dataRecords->label;
+                    }) 
+                    ->editColumn(
+                        'account_name',
+                        function ($dataRecords) {
+                        return $dataRecords->account_name.'-'.$dataRecords->account_code;
+                    }) 
+                    ->editColumn(
+                        'biz_id',
+                        function ($dataRecords) {
+                        return $dataRecords->biz_id;
+                    }) 
+                    ->editColumn(
+                        'debit_amount',
+                        function ($dataRecords) {
+                        return $dataRecords->debit_amount;
+                    }) 
+                    ->editColumn(
+                        'credit_amount',
+                        function ($dataRecords) {
+                        return $dataRecords->credit_amount;
+                    }) 
+                    ->make(true);
+        }
 }

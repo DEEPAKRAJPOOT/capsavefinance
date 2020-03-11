@@ -33,6 +33,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 
 class AjaxController extends Controller {
@@ -45,12 +46,12 @@ class AjaxController extends Controller {
     protected $request;
     protected $user;
     protected $application;
-   protected $invRepo;
-   protected $docRepo;
-   protected $lms_repo;
+    protected $invRepo;
+    protected $docRepo;
+    protected $lms_repo;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
 
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -59,10 +60,10 @@ class AjaxController extends Controller {
         $this->userRepo = $user;
         $this->application = $application;
         $this->masterRepo = $master;
-        $this->invRepo   =    $invRepo;
-        $this->docRepo          = $docRepo;
         $this->lmsRepo = $lms_repo;
-
+        $this->invRepo = $invRepo;
+        $this->docRepo = $docRepo;
+        $this->finRepo = $finRepo;
     }
 
     /**
@@ -3863,6 +3864,43 @@ if ($err) {
         echo $columnVal;
     }
 
+    public function getTransTypeList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllTransType();
+        $this->providerResult = $dataProvider->getTransTypeListByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getJournalList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllJournal();
+        $this->providerResult = $dataProvider->getJournalByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getAccountList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllAccount();
+        $this->providerResult = $dataProvider->getAccountByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getVariableList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllVariable();
+        $this->providerResult = $dataProvider->getVariableByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getJeConfigList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllJeConfig();
+        $this->providerResult = $dataProvider->getJeConfigByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getJiConfigList(DataProviderInterface $dataProvider) { 
+        $jeConfigId = request()->get('je_config_id');
+        $this->dataRecords = $this->finRepo->getAllJiConfig($jeConfigId);
+        $this->providerResult = $dataProvider->getJiConfigByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
 
     public function getGroupCompanyExposure(Request $request ){
         $groupId = $request->get('groupid');
@@ -3929,4 +3967,9 @@ if ($err) {
         return $applications;
     }
 
+    public function getTransactions(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getTransactions();
+        $this->providerResult = $dataProvider->getTransactionsByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
 }

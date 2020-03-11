@@ -1216,6 +1216,54 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
          }); 
         //colender route 
+
+         Route::group(['prefix' => 'finance'], function () {
+            Route::get('/', [
+                'as' => 'get_fin_trans_list',
+                'uses' => 'Backend\FinanceController@getFinTransList'
+            ]);
+            Route::get('fin-journal', [
+                'as' => 'get_fin_journal',
+                'uses' => 'Backend\FinanceController@getFinJournal'
+            ]);
+            Route::post('save-journal', [
+                'as' => 'save_journal',
+                'uses' => 'Backend\FinanceController@saveJournal'
+            ]);
+            Route::get('fin-account', [
+                'as' => 'get_fin_account',
+                'uses' => 'Backend\FinanceController@getFinAccount'
+            ]);
+            Route::post('save-account', [
+                'as' => 'save_account',
+                'uses' => 'Backend\FinanceController@saveAccount'
+            ]);
+            Route::get('fin-variable', [
+                'as' => 'get_fin_variable',
+                'uses' => 'Backend\FinanceController@getFinVariable'
+            ]);
+            Route::get('create-je-config', [
+                'as' => 'create_je_config',
+                'uses' => 'Backend\FinanceController@crateJeConfig'
+            ]);
+            Route::post('save-je-config', [
+                'as' => 'save_je_config',
+                'uses' => 'Backend\FinanceController@saveJeConfig'
+            ]);
+            Route::get('add-ji-config', [
+                'as' => 'add_ji_config',
+                'uses' => 'Backend\FinanceController@addJiConfig'
+            ]);
+            Route::post('save-ji-config', [
+                'as' => 'save_ji_config',
+                'uses' => 'Backend\FinanceController@saveJiConfig'
+            ]);
+            Route::get('fin-transactions', [
+                'as' => 'get_fin_transactions',
+                'uses' => 'Backend\FinanceController@getFinTransactions'
+            ]);
+        });
+
     });
 
   });

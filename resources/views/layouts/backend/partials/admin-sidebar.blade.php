@@ -414,5 +414,38 @@
             </div>
         </li>
         @endif
+
+        
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuFinance" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-money"></i>
+                <span class="menu-title">Manage Finance</span>
+                <i class="fa fa-money" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenuFinance">
+                <ul class="nav flex-column sub-menu">  
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_transactions') }}">Transactions</a>
+                    </li>   
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('create_je_config') }}">JE Config</a>
+                    </li>                 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_trans_list') }}">Transaction Type List</a>
+                    </li>      
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_variable') }}">Variables List</a>
+                    </li>               
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_journal') }}">Journal List</a>
+                    </li>  
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_account') }}">Accounts List</a>
+                    </li> 
+                                                            
+                </ul>
+            </div>
+        </li>   
+          
     </ul>
 </nav>

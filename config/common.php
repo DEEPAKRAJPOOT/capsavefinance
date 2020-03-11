@@ -111,6 +111,17 @@ return [
         '3' => 'Asset Base Value',
         '4' => 'Sanction'
     ],
+
+    /*'SEND_MAIL_ACTIVE'=>1,
+    'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com", "dhriti.barman@capsavefinance.com", "vinay.agarwal@capsavefinance.com", "vilesh.modi@rentalpha.com"],*/
+    'OPERATORS' => [
+        ' ( ' => ' ( ',
+        ' ) ' => ' ) ',
+        ' / ' => ' / ',
+        ' * ' => ' * ',
+        ' + ' => ' + ',
+        ' - ' => ' - '
+    ], 
     'doc_type' => [
         '1' => 'On Boarding',
         '2' => 'Pre Sanction',
@@ -244,6 +255,20 @@ return [
         1 => 'Up Front',
         2 => 'Monthly',
         3 => 'Rear Ended'
-    ]
+        4 => 'Pre Offer'        
+    ],
+    'JOURNAL_TYPE' => [
+        'Bank' => 'Bank',
+        'Cash' => 'Cash',
+        'Purchase' => 'Purchase',
+        'Sales' => 'Sales',        
+        'Miscellaneous' => 'Miscellaneous'
+    ], 
+    'TRANS_CONFIG_TYPE' => [
+        'DISBURSAL' => 1,
+        'PAYMENT' => 2,
+        'REPAYMENT' => 3,
+        'CHARGES' => 4
+    ],
 ];
  

@@ -41,7 +41,7 @@ function getBenchmarkType($product_id){
 }
 
 function getInvestmentPaymentFrequency($id){
-	 $productType = ['1'=>'Monthly', 'Upfront', 'Rear Ended'];
+	 $productType = ['1'=>'Monthly', 'Upfront', 'Rear Ended','Pre Offer'];
 	 return $productType[$id] ?? '';
 }
 
@@ -64,10 +64,12 @@ function format_number($number) {
 
 function calculate_formula($formula, $variables){
 	extract($variables);
+	$script = preg_replace('/\s+/', '', $formula);
 	foreach ($variables as $key => $value) {
-		$formula = str_replace($key, $$key, $formula);
+		$var_val = $$key;
+		$script = str_replace($key, $var_val , $script);
 	}
-	return eval('return '. $formula .';');
+	return eval("return ". $script .";");
 }
 
 function extra_char($string = ''){

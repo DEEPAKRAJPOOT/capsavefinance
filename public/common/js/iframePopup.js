@@ -91,6 +91,7 @@ var iframe_ids = [
         'addBaseRateFrame',
         'editBaseRateFrame',
         'previewSupplyChainSanctionLetter',
+        'addJiConfig',
     ];
 
 iframe_ids.forEach(function(id) {
