@@ -115,13 +115,49 @@ try {
                         d.to_date = parent.$('#toDate').val(); 
                         d.user_ids = parent.user_ids;
                         d.action = messages.action;
-                        d.trans_type = messages.non_factored_id;
+                        d.trans_type = messages.non_factored;
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
 
                         $("#nonFactoredRefundList").append('<tbody class="appList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
                         $("#nonFactoredRefundList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'trans_id'},
+                    {data: 'customer_id'},
+                    {data: 'trans_date'},
+                    {data: 'amount'},
+                    {data: 'balance_amount'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
+
+        if($('#marginList').length){
+            oTable2 = $('#marginList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: '*',
+                searching: false,
+                bSort: true,
+                ajax: {
+                    "url": messages.lms_get_refund_adjust, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.from_date = parent.$('#fromDate').val();
+                        d.to_date = parent.$('#toDate').val(); 
+                        d.user_ids = parent.user_ids;
+                        d.action = messages.action;
+                        d.trans_type = messages.margin;
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+
+                        $("#marginList").append('<tbody class="appList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#marginList_processing").css("display", "none");
                     }
                 },
                 columns: [
