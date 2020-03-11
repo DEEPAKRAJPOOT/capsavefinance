@@ -254,7 +254,7 @@ return [
     'payment_frequency' => [
         1 => 'Up Front',
         2 => 'Monthly',
-        3 => 'Rear Ended'
+        3 => 'Rear Ended',
         4 => 'Pre Offer'        
     ],
     'JOURNAL_TYPE' => [
