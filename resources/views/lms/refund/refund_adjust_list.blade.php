@@ -77,6 +77,9 @@
 <script>
 
     var messages = {
+		action: "{{ $action }}",
+		non_factored_id: "{{config('lms.TRANS_TYPE.NON_FACTORED_AMT')}}",
+		interest_refund: "{{config('lms.TRANS_TYPE.INTEREST_REFUND')}}",
         lms_get_refund_adjust: "{{ URL::route('lms_get_refund_adjust') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",

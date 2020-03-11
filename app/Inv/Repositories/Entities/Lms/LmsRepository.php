@@ -2,6 +2,7 @@
 
 namespace App\Inv\Repositories\Entities\Lms;
 
+use App\Http\Requests\Request;
 use DB;
 use Session;
 use App\Inv\Repositories\Contracts\LmsInterface;
@@ -510,8 +511,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             ->get();
    }
 
-   public function getFilterRefundAdjust($fromDate, $toDate)
+   public function getRefundAdjustList($request)
    {
-      // return LmsUser::wit
+     $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        $transType = $request->trans_type;
+        $user_ids = $request->user_ids;
+        $action = $request->input(('action'));
+
+        dd(Transactions::where('trans_type',$transType));
+        $refundList = Transactions::where('trans_type',$transType)
+                                //->whereBetween('trans_date',$fromDate, $toDate)
+                                ->whereIn('user_id',$user_ids)->get();
    }
 }

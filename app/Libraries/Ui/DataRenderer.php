@@ -3464,7 +3464,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'user_id',
                     function ($data) {
-                        return "<input type='checkbox' class='user_ids' name='user_id[]' value=".$data->lms_user_id.">";
+                        return "<input type='checkbox' class='user_ids' name='user_id[]' value=".$data->user_id.">";
                     }
                 )
                 ->addColumn(

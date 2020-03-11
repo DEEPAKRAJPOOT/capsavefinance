@@ -34,8 +34,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
-
-
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class AjaxController extends Controller {
 
@@ -3911,6 +3910,10 @@ if ($err) {
     }
 
     public function lmsGetRefundAdjust(Request $request){
-        dd($request);   
+
+        $refundList = $this->lmsRepo->getRefundAdjustList($request);
+        dd($refundList);
+        $arrData = $dataProvider->getRefundAdjustList($this->request, $refundList);
+        return $arrData;   
     }
 }

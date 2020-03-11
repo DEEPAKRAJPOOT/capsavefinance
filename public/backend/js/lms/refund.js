@@ -60,6 +60,7 @@ try {
             $("#fromDate").val($('input[name="from_date"]').val());
             $("#toDate").val($('input[name="to_date"]').val());
             user_ids = [];
+
         });
         if($('#interestRefundList').length){
 
@@ -76,6 +77,8 @@ try {
                         d.from_date = parent.$('#fromDate').val();
                         d.to_date = parent.$('#toDate').val(); 
                         d.user_ids = parent.user_ids;
+                        d.action = messages.action;
+                        d.trans_type = messages.interest_refund;
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
@@ -110,6 +113,8 @@ try {
                         d.from_date = parent.$('#fromDate').val();
                         d.to_date = parent.$('#toDate').val(); 
                         d.user_ids = parent.user_ids;
+                        d.action = messages.action;
+                        d.trans_type = messages.non_factored_id;
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
