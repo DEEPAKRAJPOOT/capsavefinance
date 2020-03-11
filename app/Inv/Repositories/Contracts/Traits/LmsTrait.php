@@ -1107,7 +1107,7 @@ trait LmsTrait
         // dd($data);
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['gl_flag'] = 1;
-        $transactionData['soa_flag'] = 1;
+        $transactionData['soa_flag'] = ($transType == 10) ? 0 : 1;
         $transactionData['user_id'] = $userId ?? null;
         $transactionData['disbursal_id'] = $data['disbursal_id'] ?? null;
         $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
