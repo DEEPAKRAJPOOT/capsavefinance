@@ -733,6 +733,12 @@ Route::group(
         'as' => 'lms_get_refund_customer',
         'uses' => 'AjaxController@lmsGetRefundList'
     ]);
+
+
+    Route::post('lms-get-refund-adjust',[
+        'as' => 'lms_get_refund_adjust',
+        'uses' => 'AjaxController@lmsGetRefundAdjust'
+    ]);
     
     
     /*lms route*/
