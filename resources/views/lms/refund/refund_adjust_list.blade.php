@@ -19,6 +19,7 @@
 									<th>Trans Date</th>
 									<th>Invoice No</th>
 									<th>Amount</th>
+									<th>Balance Amount</th>
 									<th>Action</th>
 								</tr>
 							</thead>
@@ -51,8 +52,8 @@
 									<th>#</th>
 									<th>Customer ID</th>
 									<th>Trans Date</th>
-									<th>Invoice No</th>
 									<th>Amount</th>
+									<th>Balance Amount</th>
 									<th>Action</th>
 								</tr>
 							</thead>

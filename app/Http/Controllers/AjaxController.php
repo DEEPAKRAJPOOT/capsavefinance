@@ -3909,11 +3909,10 @@ if ($err) {
         return response()->json($status);
     }
 
-    public function lmsGetRefundAdjust(Request $request){
+    public function lmsGetRefundAdjust(DataProviderInterface $dataProvider){
 
-        $refundList = $this->lmsRepo->getRefundAdjustList($request);
-        dd($refundList);
-        $arrData = $dataProvider->getRefundAdjustList($this->request, $refundList);
-        return $arrData;   
+        $refundList = $this->lmsRepo->getRefundAdjustList($this->request);
+        $data = $dataProvider->getRefundAdjustList($this->request, $refundList);
+        return $data;   
     }
 }

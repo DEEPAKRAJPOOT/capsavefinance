@@ -67,7 +67,7 @@ try {
             oTable1 = $('#interestRefundList').DataTable({
                 processing: true,
                 serverSide: true,
-                pageLength: 10,
+                pageLength: '*',
                 searching: false,
                 bSort: true,
                 ajax: {
@@ -89,11 +89,12 @@ try {
                 },
                 columns: [
                     {data: 'trans_id'},
-                    {data: 'customer_code'},
+                    {data: 'customer_id'},
                     {data: 'trans_date'},
                     {data: 'invoice_no'},
                     {data: 'amount'},
-                    {data: 'status'}
+                    {data: 'balance_amount'},
+                    {data: 'action'}
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
@@ -103,7 +104,7 @@ try {
             oTable2 = $('#nonFactoredRefundList').DataTable({
                 processing: true,
                 serverSide: true,
-                pageLength: 10,
+                pageLength: '*',
                 searching: false,
                 bSort: true,
                 ajax: {
@@ -125,11 +126,11 @@ try {
                 },
                 columns: [
                     {data: 'trans_id'},
-                    {data: 'customer_code'},
+                    {data: 'customer_id'},
                     {data: 'trans_date'},
-                    {data: 'invoice_no'},
                     {data: 'amount'},
-                    {data: 'status'}
+                    {data: 'balance_amount'},
+                    {data: 'action'}
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });

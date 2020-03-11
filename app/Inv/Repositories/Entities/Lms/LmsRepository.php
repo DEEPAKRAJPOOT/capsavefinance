@@ -513,14 +513,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRefundAdjustList($request)
    {
-     $fromDate = $request->from_date;
-        $toDate = $request->to_date;
-        $transType = $request->trans_type;
-        $user_ids = $request->user_ids;
-        $action = $request->input(('action'));
+         $fromDate = $request->from_date;
+         $toDate = $request->to_date;
+         $transType = $request->trans_type;
+         $user_ids = $request->user_ids;
+         $action = $request->input(('action'));
 
-        dd(Transactions::where('trans_type',$transType));
-        $refundList = Transactions::where('trans_type',$transType)
+        return Transactions::where('trans_type',$transType)
                                 //->whereBetween('trans_date',$fromDate, $toDate)
                                 ->whereIn('user_id',$user_ids)->get();
    }
