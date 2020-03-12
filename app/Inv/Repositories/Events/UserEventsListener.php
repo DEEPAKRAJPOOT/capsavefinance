@@ -637,12 +637,17 @@ class UserEventsListener extends BaseEvent
         $this->func_name = __FUNCTION__;
         //Send mail to User
         
+        $email = [];
+        foreach($user as $u) {
+            $email[] = $u['receiver_email'];
+        }        
+        
         if( env('SEND_MAIL_ACTIVE') == 1){
-            $email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
+            //$email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
             //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
             $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
         }else{
-            $email = $user["receiver_email"];
+            //$email = $user["receiver_email"];
             $email_cc = '';
         }  
             
@@ -686,9 +691,8 @@ class UserEventsListener extends BaseEvent
                 FinanceModel::logEmail($mailContent);
             });
         }
-        */
-
-           $mailObj = Mail::to($email, $user["receiver_user_name"]);
+        */           
+           $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
            if (!empty($email_cc)) {
                $mailObj->cc($email_cc);
            }
