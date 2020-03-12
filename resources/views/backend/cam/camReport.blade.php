@@ -786,7 +786,7 @@
                               <tr>
                                  <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrReviewer[$i]->assignee}}
                                      <span style="font-size: 11px;"></br>Updated at </br>
-                                          {{ \Carbon\Carbon::parse($arrReviewer[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                          {{ \Helpers::convertDateTimeFormat($arrReviewer[$i]->updated_at, 'Y-m-d H:i:s', 'j F, Y h:i A') }}</span>
                                  </th>
                                  @php $i++; @endphp
                               </tr>
