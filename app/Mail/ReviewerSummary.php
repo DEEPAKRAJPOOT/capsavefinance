@@ -98,7 +98,7 @@ class ReviewerSummary extends Mailable
             'leaseOfferData'=> $leaseOfferData,
             'arrStaticData' => $arrStaticData,
             'facilityTypeList' => $facilityTypeList,
-            'receiverUserName' => $this->user['receiver_user_name'],
+            //'receiverUserName' => $this->user['receiver_user_name'],
             'appId' => $appId,
             'url' => 'https://'. config('proin.backend_uri'),
             'dispAppId' => $dispAppId

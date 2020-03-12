@@ -906,7 +906,8 @@ class Helper extends PaypalHelper
 
         $application = Application::find($app_id);
         $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$application->business->biz_id)->where('app_id','=',$application->app_id)->first();
-
+        
+        $allEmailData=[];
         foreach ($approvers as $approver) {
 
             $user = User::getfullUserDetail((int)$approver->user_id);
@@ -914,9 +915,10 @@ class Helper extends PaypalHelper
             $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
             $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
             $emailData['receiver_email'] = $user->email;
-            $emailData['cover_note'] = (isset($reviewerSummaryData->cover_note))?$reviewerSummaryData->cover_note:'';
-            \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($emailData));
+            $emailData['cover_note'] = (isset($reviewerSummaryData->cover_note))?$reviewerSummaryData->cover_note:'';  
+            $allEmailData[] = $emailData;
         }
+        \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
     
