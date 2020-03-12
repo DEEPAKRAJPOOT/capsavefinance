@@ -3264,6 +3264,11 @@ class DataRenderer implements DataProviderInterface
                         'biz_id',
                         function ($dataRecords) {
                         return $dataRecords->biz_id;
+                    })  
+                    ->editColumn(
+                        'invoice_id',
+                        function ($dataRecords) {
+                        return $dataRecords->invoice_id;
                     }) 
                     ->editColumn(
                         'debit_amount',
