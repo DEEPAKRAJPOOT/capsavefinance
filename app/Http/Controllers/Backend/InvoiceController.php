@@ -51,12 +51,10 @@ class InvoiceController extends Controller {
     }
 
     public function viewInvoice(Request $req) {
-//        dd($req->all());
         $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
-//         dd($user_id,$app_id,$userInfo->app->app_id);
         $getAllInvoice = $this->invRepo->getAllAnchor();
         $get_bus = $this->invRepo->getBusinessName();
         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);

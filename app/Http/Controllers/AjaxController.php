@@ -2722,6 +2722,7 @@ if ($err) {
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
+//         dd($this->request->get('app_id'));
         $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;

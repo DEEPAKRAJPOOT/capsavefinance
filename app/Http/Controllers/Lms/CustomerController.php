@@ -60,9 +60,7 @@ class CustomerController extends Controller
                         $transactions = 0;
 			$user_id = $request->get('user_id');
 			$userInfo = $this->userRepo->getCustomerDetail($user_id);
-                        
 			$application = $this->appRepo->getCustomerApplications($user_id);
-                        //dd($application);
                         $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 			foreach ($application as $key => $value) {
 				$totalLimit += (isset($value->appLimit->tot_limit_amt)) ? $value->appLimit->tot_limit_amt : 0;
