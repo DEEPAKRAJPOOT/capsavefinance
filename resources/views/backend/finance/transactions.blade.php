@@ -14,6 +14,7 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
+                <div style="float: right"><a href="{{route('export_txns')}}" class="btn btn-success">Export</a></div>
                 <div class="col-sm-12">
                     <div class="table-responsive">
                         <table id="transactions" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
@@ -22,9 +23,11 @@
                                     <th>Date</th>
                                     <th>Label</th>                                    
                                     <th>Account Name</th>
+                                    <th>Journal Name</th>
                                     <th>Biz Id</th>
                                     <th>Debit Amount</th>
                                     <th>Credit Amount</th>
+                                    <th>Reference No</th>
                                 </tr>
                             </thead>
                             <tbody>

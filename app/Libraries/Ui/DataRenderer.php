@@ -3939,6 +3939,16 @@ class DataRenderer implements DataProviderInterface
                         'credit_amount',
                         function ($dataRecords) {
                         return $dataRecords->credit_amount;
+                    })  
+                    ->editColumn(
+                        'reference',
+                        function ($dataRecords) {
+                        return $dataRecords->reference;
+                    })   
+                    ->editColumn(
+                        'journals_name',
+                        function ($dataRecords) {
+                        return $dataRecords->journals_name;
                     }) 
                     ->make(true);
         }

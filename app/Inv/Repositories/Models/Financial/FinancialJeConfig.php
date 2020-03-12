@@ -90,4 +90,43 @@ class FinancialJeConfig extends BaseModel {
         WHERE rta_financial_je_config.trans_config_id = ?", [$transConfigId]);
         return empty($result) ? false : $result;    
     }
+
+    public static function getAllTxns(){
+        /*$result = \DB::select("SELECT 
+            journal_entries.invoice_id, journals.name as journal_name, trxn.`date`, 
+            users.f_name, users.m_name, users.l_name, trxn.label as naration, 
+            trxn.`debit_amount`, journal_entries.reference as dr_ref_no, trxn.`debit_amount` as dr_ref_amount,
+            trxn.`credit_amount`, journal_entries.reference as cr_ref_no,  trxn.`credit_amount` as cr_ref_amount,
+            IF(jiconf.value_type = 0, 'Debit', 'Credit') as transtype, if(jiconf.is_partner = '0' , 'No', 'Yes') as is_partner,
+            journal_entries.entry_type
+            FROM 
+            rta_financial_journal_items as trxn, 
+            rta_financial_journals as journals, 
+            rta_financial_ji_config as jiconf, 
+            rta_financial_journal_entries as journal_entries,
+            rta_disbursal as disbursal, 
+            rta_users as users
+            WHERE 
+            trxn. journal_id = journals.id 
+            AND trxn.ji_config_id = jiconf.ji_config_id 
+            AND trxn.journal_entry_id = journal_entries.journal_entry_id 
+            AND journal_entries.invoice_id = disbursal.invoice_id 
+            AND disbursal.user_id = users.user_id 
+            ");*/
+         $result = self::select('journal_entries.invoice_id', 'journals.name as journal_name', 'trxn.date', 
+            'users.f_name', 'users.m_name', 'users.l_name', 
+             // \DB::raw("CONCAT(users.f_name,' ',users.m_name,' ',users.l_name) as ledger_Name"),
+            'trxn.debit_amount', 'journal_entries.reference as dr_ref_no', 'trxn.debit_amount as dr_ref_amount',
+            'trxn.credit_amount', 'journal_entries.reference as cr_ref_no',  'trxn.credit_amount as cr_ref_amount',
+            \DB::raw("IF(value_type = 0, 'Debit', 'Credit') as transtype"), \DB::raw("IF(is_partner= 0, 'No', 'Yes') as is_partner"), 
+            'journal_entries.entry_type', 'trxn.label as naration')
+           ->from('financial_journal_items as trxn')
+           ->join('financial_journals as journals', 'trxn.journal_id' ,'=' ,'journals.id')
+           ->join('financial_ji_config as jiconf', 'trxn.ji_config_id', '=' , 'jiconf.ji_config_id')
+           ->join('financial_journal_entries as journal_entries', 'trxn.journal_entry_id', '=', 'journal_entries.journal_entry_id')
+           ->join('disbursal', 'journal_entries.invoice_id', '=', 'disbursal.invoice_id')
+           ->join('users', 'disbursal.user_id', '=', 'users.user_id')
+           ->get();
+        return empty($result) ? false : $result;    
+    }
 }

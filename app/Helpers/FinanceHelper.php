@@ -28,7 +28,8 @@ class FinanceHelper {
                             $this->inputData = [ 
                                 'journal_id' => $val->journal_id,
                                 'entry_type' => $val->trans_type,       //need to update
-                                'reference' => $val->trans_type,        //need to update
+                                'invoice_id' => $invoice_id ?? 0,       //need to update
+                                'reference' => _getRand(15),        //need to update
                                 'date' => \Carbon\Carbon::now()->format('Y-m-d h:i:s')
                             ]; 
                             $outputQryJE = $this->finRepo->saveJournalEntries($this->inputData);
