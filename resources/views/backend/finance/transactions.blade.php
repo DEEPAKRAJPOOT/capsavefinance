@@ -24,7 +24,7 @@
                                     <th>Label</th>                                    
                                     <th>Account Name</th>
                                     <th>Journal Name</th>
-                                    <th>Biz Id</th>
+                                    <th>Invoice Id</th>
                                     <th>Debit Amount</th>
                                     <th>Credit Amount</th>
                                     <th>Reference No</th>

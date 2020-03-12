@@ -187,7 +187,7 @@ try {
                     {data: 'label'},
                     {data: 'account_name'},
                     {data: 'journals_name'},
-                    {data: 'biz_id'},
+                    {data: 'invoice_id'},
                     {data: 'debit_amount'},
                     {data: 'credit_amount'},
                     {data: 'reference'}
