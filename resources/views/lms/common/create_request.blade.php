@@ -131,7 +131,6 @@
 								</tr>
 							</thead>
 							<tbody>
-								<input type="text" id="yourText">
 							</tbody>
 						</table>
 					</div>
