@@ -99,7 +99,6 @@
 								</tr>
 							</thead>
 							<tbody>
-
 							</tbody>
 						</table>
 					</div>
@@ -153,7 +152,7 @@
 		non_factored: "{{config('lms.TRANS_TYPE.NON_FACTORED_AMT')}}",
 		interest_refund: "{{config('lms.TRANS_TYPE.INTEREST_REFUND')}}",
 		margin: "{{config('lms.TRANS_TYPE.MARGIN')}}",
-        lms_get_refund_adjust: "{{ URL::route('lms_get_refund_adjust') }}",
+        url: "{{ URL::route('lms_create_batch_ajax') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
     };

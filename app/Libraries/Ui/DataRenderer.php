@@ -3616,7 +3616,7 @@ class DataRenderer implements DataProviderInterface
     }
 
     
-    public function getRefundAdjustList(Request $request, $data){
+    public function getCreateBatchData(Request $request, $data){
         return DataTables::of($data)
         ->rawColumns(['trans_id','action'])
         ->editColumn(
@@ -3684,5 +3684,181 @@ class DataRenderer implements DataProviderInterface
         })                 
      
         ->make(true);
-    }   
+    } 
+
+    public function getEditBatchData(Request $request, $data){
+        return DataTables::of($data)
+        ->rawColumns(['trans_id','action'])
+        ->editColumn(
+            'trans_id',
+            function ($data) {
+                return "<input type='checkbox' class='trans_ids' name='trans_id[$data->trans_id]' value=".$data->trans_id." checked='true'>";
+            }
+        )
+        ->addColumn(
+            'customer_id',
+            function ($data) {
+                return $link = $data->lmsUser->customer_id;
+            }
+        )
+        ->addColumn(
+            'trans_date',
+            function ($data) {
+                return date('d-M-Y',strtotime($data->trans_date));
+            }
+        )     
+        ->addColumn(
+            'invoice_no',
+            function ($data) {
+                $result = '';
+                if($data->disburse){
+                    $result = $data->disburse->invoice->invoice_no;
+                }
+                return $result;
+            }
+        )
+        ->editColumn(
+            'amount',
+            function ($data) {
+                return $data->amount;
+            }
+        )
+        ->addColumn(
+            'balance_amount',
+            function ($data) {
+                return $data->amount-$data->settled_amount;
+            }
+        )
+        ->addColumn(
+            'action',
+            function ($data) {
+                return '<input type="text" name="settledAmount['.$data->trans_id.']" value="'.($data->amount-$data->settled_amount).'">';
+
+            }
+        )     
+        ->filter(function ($query) use ($request) {
+
+           /*  if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+            //if($request->get('user_ids')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $query->whereIn('user_id',$request->user_ids);
+                });
+            //} */
+          
+        })                 
+     
+        ->make(true);
+    }
+    
+    public function getRequestList(Request $request, $data){
+        return DataTables::of($data)
+        ->rawColumns(['action'])
+        ->editColumn(
+            'ref_code',
+            function ($data) {
+                return $data->ref_code;
+            }
+        )
+        ->editColumn(
+            'type',
+            function ($data) {
+                return $link = $data->typeName;
+            }
+        )
+        ->editColumn(
+            'amount',
+            function ($data) {
+                return $data->totalAmount;// date('d-M-Y',strtotime($data->trans_date));
+            }
+        )     
+        ->editColumn(
+            'created_at',
+            function ($data) {
+                return date('d-m-Y',strtotime($data->created_at));
+            }
+        )
+        ->addColumn(
+            'assignee',
+            function ($data) {
+                return $data->assigneeName;
+            }
+        )
+        ->addColumn(
+            'assignedBy',
+            function ($data) {
+                return $data->assignedByName;
+            }
+        )  
+        ->editColumn(
+            'status',
+            function ($data){
+                return $data->statusName;
+            }
+        )   
+        ->editColumn(
+            'action',
+            function ($data){
+                $result = ''; 
+                switch ($data->type) {
+                    case '1':
+                        $result .= '<a 
+                        data-toggle="modal" 
+                        data-target="#edit_refund_amount" 
+                        data-url="'.route('lms_edit_batch', ['action' => 'refund', 'batch_id'=>$data->batch_id ]).'"
+                        data-height="400px" 
+                        data-width="100%" 
+                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                    break;
+                    case '2':
+                        $result .= '<a
+                        data-toggle="modal" 
+                        data-target="#edit_adjust_amount" 
+                        data-url="'.route('lms_edit_batch', ['action' => 'adjust', 'batch_id'=>$data->batch_id]).'"
+                        data-height="400px" 
+                        data-width="100%" 
+                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                    break;
+                    case '3':
+                        $result .= '<a
+                        data-toggle="modal" 
+                        data-target="#edit_waveoff_amount" 
+                        data-url="'.route('lms_edit_batch', ['action' => 'waveoff', 'batch_id'=>$data->batch_id]).'"
+                        data-height="400px" 
+                        data-width="100%" 
+                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                        break;
+                }
+
+                return $result;
+
+                // return '<a title="Edit Batch" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                //         <a title="Delete Batch" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                //         <a title="Move to Oops Maker" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+            }
+        )  
+        ->filter(function ($query) use ($request) {
+
+           /*  if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+            //if($request->get('user_ids')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $query->whereIn('user_id',$request->user_ids);
+                });
+            //} */
+          
+        })                 
+     
+        ->make(true);
+    }
 } 

@@ -123,10 +123,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             Route::get('/refund/refund-list', [
                 'as' => 'lms_refund_list',
-                'uses' => 'Lms\RefundController@refundList'
+                'uses' => 'Lms\RefundController@customerList'
             ]);
-            
-             
 
             Route::get('/confirm-refund', [
                 'as' => 'confirm_refund',
@@ -138,12 +136,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@sendRefund'
             ]);
 
-            Route::get('/refund_adjust_list', [
-                'as' => 'refund_adjust_list',
-                'uses' => 'Lms\RefundController@refund_adjust'
+            Route::get('/lms-create-batch', [
+                'as' => 'lms_create_batch',
+                'uses' => 'Lms\RefundController@createBatch'
             ]);
 
-        });//end of application
+            Route::get('/lms-edit-batch', [
+                'as' => 'lms_edit_batch',
+                'uses' => 'Lms\RefundController@editBatch'
+            ]);
+
+            Route::get('/refund/request',[
+                'as' => 'request_list',
+                'uses' => 'Lms\RefundController@requestList'
+            ]);
+        });
+        
+        //end of application
 
         // Business address
         Route::get('/address', [

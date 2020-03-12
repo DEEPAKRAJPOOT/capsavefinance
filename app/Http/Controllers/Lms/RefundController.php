@@ -28,15 +28,23 @@ class RefundController extends Controller
 		$this->lmsRepo = $lms_repo;
 		$this->middleware('checkBackendLeadAccess');
 	}
+
+	/**
+	 * Display a listing of the Refund Request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function requestList(){
+		return view('lms.common.request');
+	}
 	
 	/**
 	 * Display a listing of the refund.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function refundList()
+	public function customerList()
 	{
-		return view('lms.refund.refund_list');              
+		return view('lms.common.view_customer');              
 	}
 
 	/**
@@ -84,12 +92,13 @@ class RefundController extends Controller
 		return redirect()->route('lms_refund_list');
 	}
 
-	public function refund_adjust(Request $request) 
+	public function createBatch(Request $request) 
 	{
-		$action = $request->input('action');
-		// $fromDate = $request->input('fromDate');
-		// $toDate = $request->input('toDate');
-
-		return view('lms.refund.refund_adjust_list', ['action'=>$action]);
+		return view('lms.common.create_request', $request->all());
+	}
+	
+	public function editBatch(Request $request) 
+	{
+		return view('lms.common.edit_request', $request->all());
 	}
 }
