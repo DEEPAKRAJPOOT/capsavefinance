@@ -57,7 +57,7 @@
 									<th>Action</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id="selectChechbox">
 
 							</tbody>
 						</table>
@@ -88,4 +88,15 @@
 </script>
 
 <script src="{{ asset('backend/js/lms/refund.js') }}" type="text/javascript"></script>
+<script>
+	let selectChechbox = document.getElementById('selectChechbox');
+	let chks = selectChechbox.getElementsByTagName('INPUT')
+
+	for(let i = 0; i < chks.length; i++) {
+		if(chks[i].checked) {
+			console.log('he')
+			console.log(chks)
+		}
+	}
+</script>
 @endsection
