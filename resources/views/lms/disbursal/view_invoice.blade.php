@@ -59,30 +59,59 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
-	let user_ids = parent.$('#user_ids').val();
-	let userIdArray = user_ids.split(",");
-	let current_user_id = $('#user_id').val();
-	if (jQuery.inArray(current_user_id, userIdArray) == true) {
-		$('input.invoice_id').prop('checked', true);;
-	}
-
-	var checkedVals = $('.invoice_id:checkbox:checked').map(function() {
-	    return this.value;
-	}).get();
-	let current_inv_ids = parent.$('#invoice_ids').val();
-	let checkedIds = checkedVals.join(",");
-	parent.$('#invoice_ids').val(current_inv_ids+','+checkedIds);
-	parent.$('#user_ids').val(user_ids.replace(new RegExp(','+current_user_id, 'g'), ','));
+	$('.invoice_id').each(function() {
+		let parent_inv_ids = parent.$('#invoice_ids').val();
+		let allInvIds = parent_inv_ids.split(',');
+		let curr_val = $(this).val();
+		let is_checked = jQuery.inArray(curr_val, allInvIds) != -1;
+		$(this).prop('checked', is_checked);
+	})
 
 	$('.invoice_id').on('click', function() {
-		let current_inv_ids = parent.$('#invoice_ids').val();
 		let current_id = $(this).val();
 		if($(this).is(':checked')){
-			parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
+			let parent_inv_ids = parent.$('#invoice_ids').val().trim();
+			let allInvIds = parent_inv_ids.split(',');
+			if(!parent_inv_ids.length){
+				allInvIds = [];
+			}
+			if(allInvIds.length != 0){
+				allInvIds.push(current_id);
+				allInvIds.join();
+				parent.$('#invoice_ids').val(allInvIds.join());
+			}else{
+				parent.$('#invoice_ids').val(current_id);
+			}
+			
 		}else{
-			parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(','+current_id, 'g'), ','));
+			let parent_inv_ids = parent.$('#invoice_ids').val().trim();
+			let allInvIds = parent_inv_ids.split(',');
+			if(!parent_inv_ids.length){
+				allInvIds = [];
+			}
+			allInvIds = allInvIds.filter(e => e !== current_id);
+			parent.$('#invoice_ids').val(allInvIds.join());
 		}
-	})
+	});
+
+	// let parent_inv_ids = parent.$('#invoice_ids').val();
+	// let invoiceIdArray = parent_inv_ids.split(",");
+	// console.log(invoiceIdArray);
+	// var checkedVals = $('.invoice_id:checkbox').map(function() {
+	// 	if (jQuery.inArray(this.value, invoiceIdArray)) {
+	// 		$('input.invoice_id').prop('checked', true);;
+	// 	}
+	// }).get();
+
+	// $('.invoice_id').on('click', function() {
+	// 	let current_inv_ids = parent.$('#invoice_ids').val();
+	// 	let current_id = $(this).val();
+	// 	if($(this).is(':checked')){
+	// 		parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
+	// 	}else{
+	// 		parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(','+current_id, 'g'), ','));
+	// 	}
+	// })
 	
 });
 </script>

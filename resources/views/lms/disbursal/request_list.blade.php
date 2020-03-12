@@ -48,29 +48,29 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-	                                        <thead>
-	                                        	<tr role="row">
+                                        <table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                            <thead>
+                                                <tr role="row">
                                                     <th></th>
                                                     <th>Customer Code</th>
-													<th>Ben Name</th>
-													<th>Ben Bank Name</th>
-													<th>Ben IFSC</th>
-													<th>Ben Account No.</th>
-													<th>Total Invoice Amt.</th>
-													<th>Total Disburse Amt.</th>
-													<th>Total Actual Funded Amt.</th>
-													<th>Total Invoice </th>
+                                                    <th>Ben Name</th>
+                                                    <th>Ben Bank Name</th>
+                                                    <th>Ben IFSC</th>
+                                                    <th>Ben Account No.</th>
+                                                    <th>Total Invoice Amt.</th>
+                                                    <th>Total Disburse Amt.</th>
+                                                    <th>Total Actual Funded Amt.</th>
+                                                    <th>Total Invoice </th>
                                                     <th>Status</th>
-													<th>Action</th>
-												</tr>
-	                                        </thead>
-	                                        <tbody>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
 
-	                                        </tbody>
-                                    	</table>
-							  		</div>
-                            		<div id="disbursalCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="disbursalCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -112,6 +112,11 @@ $(document).ready(function(){
         // }
 
         let user_id = $(this).val();
+        if($(this).is(':checked')){
+            var checked = 1;
+        }else{
+            var checked = 0;
+        }
         var data = ({'user_id': user_id, '_token': messages.token});
         $.ajax({
         type: "POST",
@@ -120,13 +125,16 @@ $(document).ready(function(){
             cache: false,
             success: function (res)
             {
-                let current_inv_ids = parent.$('#invoice_ids').val();
-                // $('#invoice_ids').val(current_inv_ids+','+res);
+                let current_inv_ids = $('#invoice_ids').val();
 
-                if($(this).is(':checked')){
-                    $('#invoice_ids').val(current_inv_ids+','+res);
+                
+                if(checked == 1){
+                    ids = current_inv_ids ? current_inv_ids + ',' + res : res;
+                    $('#invoice_ids').val(ids);
                 }else{
-                    $('#invoice_ids').val(current_inv_ids.replace(new RegExp(','+res, 'g'), ','));
+                    let curr_arr = current_inv_ids.split(',');
+                    newArr = removeA(curr_arr, res);
+                    $('#invoice_ids').val( newArr.join());
                 }
             },
             error: function (error)
@@ -137,7 +145,12 @@ $(document).ready(function(){
         });
 
 
-
+        function removeA(arr, remove) { 
+            for (var i = remove.length -1; i >= 0; i--){
+                    arr.splice(remove[i], 1); 
+            }
+            return arr; 
+        }
 
 
 
