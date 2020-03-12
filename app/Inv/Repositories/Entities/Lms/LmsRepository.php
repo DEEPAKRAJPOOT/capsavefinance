@@ -514,18 +514,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRefundAdjustList($request)
    {
-         $fromDate = $request->from_date;
-         $toDate = $request->to_date;
-         $transType = $request->trans_type;
-         $user_ids = $request->user_ids;
-         $action = $request->input(('action'));
-
-         $date =  Carbon::now();
-         $fromDate =  Carbon::parse($date)->format('Y-m-d');
-         $toDate =  Carbon::parse($date)->format('Y-m-d');
-         // dd($fromDate, $toDate);
-        return Transactions::where('trans_type',$transType)
-                              //   ->whereBetween('trans_date',$fromDate, $toDate)
-                                ->whereIn('user_id',$user_ids)->get();
+      $transType = $request->trans_type;
+      return Transactions::where('trans_type',$transType);
    }
 }

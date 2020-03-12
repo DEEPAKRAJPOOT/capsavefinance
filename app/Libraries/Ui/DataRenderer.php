@@ -2773,6 +2773,7 @@ class DataRenderer implements DataProviderInterface
                     'total_actual_funded_amt',
                     function ($customer) {
                         $disburseAmount = 0;
+                        $interest = 0;
                         $apps = $customer->app;
                         foreach ($apps as $app) {
                             foreach ($app->invoices as $inv) {
@@ -2781,8 +2782,10 @@ class DataRenderer implements DataProviderInterface
                                 $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
                                 
                                 $tenorDays = $this->calculateTenorDays($invoice);
-                                $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
-                                
+                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
+                                if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
+                                    $interest = $tInterest;
+                                }
                                 $disburseAmount += round($fundedAmount - $interest, 2);
                             }
                         }
@@ -3662,23 +3665,24 @@ class DataRenderer implements DataProviderInterface
                 return '<input type="text" class="settledAmount['.$data->trans_id.']" name="settledAmount['.$data->trans_id.']" value="'.($data->amount-$data->settled_amount).'">';
 
             }
-        )                      
-       /*  ->filter(function ($query) use ($request) {
-            if ($request->get('search_keyword') != '') {
-                if ($request->has('search_keyword')) {
-                    $search_keyword = trim($request->get('search_keyword'));
-                    $query->where('customer_id', 'like',"%$search_keyword%");
-                }
-            }
+        )     
+        ->filter(function ($query) use ($request) {
 
             if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                $query->whereHas('transaction',function ($query) use ($request) {
+                $query->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                     $query->WhereBetween('trans_date', [$from_date, $to_date]);
                 });
             }
-        }) */
+            //if($request->get('user_ids')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $query->whereIn('user_id',$request->user_ids);
+                });
+            //}
+          
+        })                 
+     
         ->make(true);
     }   
 } 

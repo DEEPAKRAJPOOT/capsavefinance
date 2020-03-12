@@ -25,12 +25,16 @@
 					</b></li>
 					<li>Actual Funded Amt. <br> <i class="fa fa-inr"></i><b>
 					@php
+						$interest = 0;
 						$now = strtotime($invoice->invoice_due_date); // or your date as well
 						$your_date = strtotime($invoice->invoice_date);
 						$datediff = abs($now - $your_date);
 						$tenor = round($datediff / (60 * 60 * 24));
 						$fundedAmount = $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->program_offer->margin)/100);
-		    			$interest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / 360) ;                
+		    			$tInterest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / 360) ;     
+		    			if($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) {
+				            $interest = $tInterest;
+				        }           
 						$disburseAmount = round($fundedAmount - $interest, 2);
 					@endphp
 
