@@ -9,19 +9,19 @@
 				<div class="col-md-4">
 					<div class="form-group">
 						<label for="marginAmount">Margin Amount</label>
-						<input type="text" name="" id="" class="form-control" readonly="true">
+						<input type="text" name="" id="marginAmt" class="form-control" readonly="true">
 					</div>
 				</div>
 				<div class="col-md-4">
 					<div class="form-group">
 						<label for="nonFactoredAmount">Non Factored Amount</label>
-						<input type="text" name="" id="" class="form-control" readonly="true">
+						<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true">
 					</div>
 				</div>
 				<div class="col-md-4">
 					<div class="form-group password-input">
 						<label for="txtPassword">Interest Amount</label>
-						<input type="text" name="" id="" class="form-control" readonly="true">
+						<input type="text" name="" id="interestAmt" class="form-control" readonly="true">
 					</div>
 				</div>
 			</div>
@@ -65,7 +65,7 @@
 									<th>Action</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody class="chechBoxContainter" id="chechBoxContainter">
 
 							</tbody>
 						</table>
@@ -120,7 +120,7 @@
 				<div class="col-sm-12">
 					<div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
 						<table id="marginList" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-							<thead>
+							<thead id="selectField">
 								<tr role="row">
 									<th>#</th>
 									<th>Customer ID</th>
@@ -131,7 +131,7 @@
 								</tr>
 							</thead>
 							<tbody>
-
+								<input type="text" id="yourText">
 							</tbody>
 						</table>
 					</div>
@@ -141,6 +141,17 @@
 		</div>
 	</div>
 </div>
+
+<?php
+	// If data send via POST, with the name "cbname"
+	if(isset($_POST['trans_id'])) {
+	$cbarray = $_POST['trans_id'];       // gets the value of the selected checkboxes
+	print_r($cbarray);       // outputs the array with data stored in $cbarray
+	}
+	else {
+	echo 'Select the web sites you like:';
+	}
+?>
 
 @endsection
 
@@ -159,4 +170,64 @@
 </script>
 
 <script src="{{ asset('backend/js/lms/refund.js') }}" type="text/javascript"></script>
+<script>
+var totalAmt;
+		
+	function disableInput(el) {
+		var value = $(el).val();
+
+		if($(el).prop("checked") == true){
+			$("input[name='settledAmount["+value+"]']").prop('disabled', false);
+		}
+		else if($(el).prop("checked") == false){
+			$("input[name='settledAmount["+value+"]']").prop('disabled', true);
+		}
+		calMarginAmt();
+		calNonFactoredAmt();
+		calInterestAmt(value);
+	}
+
+	function calMarginAmt(){
+		totalAmt = 0;
+		$(".transType"+messages.margin).each(function (index, element) {
+
+			totalAmt += parseFloat(element.val());
+		
+		});
+		$('#marginAmt').val(totalAmt);
+	}
+
+	function calNonFactoredAmt(){
+		totalAmt = 0;
+		$(".transType"+messages.non_factored).each(function (index, element) {
+			totalAmt += parseFloat($(element).val());
+		});
+		$('#nonFactoredAmt').val(totalAmt);
+	}
+
+	function calInterestAmt(value){	
+		totalAmt = 0;
+		$(".transType"+messages.interest_refund).each(function (index, element) {
+
+			let elName = $(element).attr('transId');
+
+			if($("#"+elName).prop("checked") == true){
+
+				totalAmt += parseFloat($(element).val());
+			}
+
+		});
+		
+		$('#interestAmt').val(totalAmt);
+		
+	}
+	$(document).ajaxSuccess(function(event,request,settings){
+		console.log('success')
+		jQuery(document).ready(function ($) {
+			disableInput();
+		});
+	});
+	
+
+</script>
 @endsection

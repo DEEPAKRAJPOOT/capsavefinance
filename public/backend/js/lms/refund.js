@@ -294,3 +294,7 @@ try {
         console.log(e);
     }
 }
+
+// function checkDisableInput() {
+//     alert('sfdf')
+// } ajaxSuccess

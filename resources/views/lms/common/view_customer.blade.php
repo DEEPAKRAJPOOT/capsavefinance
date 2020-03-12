@@ -92,12 +92,12 @@
                                                     <th>Status</th>
 												</tr>
 	                                        </thead>
-	                                        <tbody>
+	                                        <tbody >
 
 	                                        </tbody>
                                     	</table>
 							  		</div>
-                            		<div id="refundCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            		<div id="chechBoxContainter" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -172,6 +172,26 @@ $('#from_date').datetimepicker({
         //  startDate: new Date(),
         autoclose: true,
         minView: 2, });
+</script>
+
+<script>
+    async function disableInput() {
+			var chechBoxContainter = document.getElementById('chechBoxContainter');
+
+			var products = document.getElementsByTagName('input');
+            
+
+			var len = products.length;
+
+			for(let i = 0; i < len; i++) {
+				console.log(products[i])
+				if(this.type === 'checkbox') {
+					products[i].onchange = console.log(products[i])
+				}
+			}
+		}
+
+		// disableInput()
 </script>
 @endsection
 
