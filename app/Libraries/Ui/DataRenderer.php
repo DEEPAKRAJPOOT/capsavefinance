@@ -3622,7 +3622,8 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'trans_id',
             function ($data) {
-                return "<input type='checkbox' class='trans_id[$data->trans_id]' name='trans_id[$data->trans_id]' value=".$data->trans_id." checked='true'>";
+                return '<input type="checkbox" id="trans_id'.$data->trans_id.'" name="trans_id[]" value="'.$data->trans_id.'" checked=
+                "true" onchange="disableInput(this)">';
             }
         )
         ->addColumn(
@@ -3662,7 +3663,7 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'action',
             function ($data) {
-                return '<input type="text" class="settledAmount['.$data->trans_id.']" name="settledAmount['.$data->trans_id.']" value="'.($data->amount-$data->settled_amount).'">';
+                return '<input type="text"  class="transType'.$data->trans_type.'" transId="trans_id'.$data->trans_id.'" name="settledAmount['.$data->trans_id.']" value="'.($data->amount-$data->settled_amount).'">';
 
             }
         )     
