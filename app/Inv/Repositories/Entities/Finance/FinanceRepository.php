@@ -149,4 +149,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
         $this->result = FinancialJournalItems::getTransactions();
         return $this->result;
     }
+
+    public function getAllTxns()
+    {
+        return FinancialJeConfig::getAllTxns();         
+    }
 }

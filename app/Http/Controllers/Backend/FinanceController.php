@@ -63,6 +63,33 @@ class FinanceController extends Controller {
         return view('backend.finance.variable_list');
     }
     
+    public function exportTransactions(Request $request) {
+        $result = $this->finRepo->getAllTxns();
+         $records[] = [
+              'invoice_id' => "Invoice No",
+              'journal_name' => "Vch Type",
+              'date' => "Invoice Date",
+              'f_name' => "Ledger Name",
+              'debit_amount' => "Dr Amt",
+              'dr_ref_no' => "Ref No",
+              'dr_ref_amount' => "Ref Amt",
+              'credit_amount' => "cr Amt",
+              'cr_ref_no' => "Cr Ref No",
+              'cr_ref_amount' => "Cr Ref Amt",
+              'transtype' => "transtype",
+              'is_partner' => "is_partner",
+              'entry_type' => "entry_type",
+              'naration' => "Narration",
+            ];
+        foreach ($result as $key => $value) {
+           $ledger_name = $value['f_name']. ' '. $value['m_name'].' '. $value['l_name'];
+           unset($value['m_name'],$value['l_name']);
+           $value['f_name'] =  $ledger_name;
+           $records[] = $value->toArray();
+        }
+        $this->array_to_csv($records, "execl.csv");
+    }
+    
     public function crateJeConfig(Request $request) {
          // $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), $inv_arr['invoice_id'], $inv_arr['app_id'], $inv_arr['supplier_id'], $inv_arr['biz_id']); 
         $finHelperObj = new FinanceHelper($this->finRepo);
@@ -266,5 +293,28 @@ class FinanceController extends Controller {
 
     public function getFinTransactions() {
         return view('backend.finance.transactions');
-    }  
+    }
+
+    public function array_to_csv($array, $download = "") {
+        if ($download != ""){    
+            header('Content-Type: application/csv');
+            header('Content-Disposition: attachement; filename="' . $download . '"');
+        }        
+        ob_start();
+        $f = fopen('php://output', 'w') or die("Can't open php://output");
+        $n = 0;     
+        foreach ($array as $line){
+            $n++;
+            if (!fputcsv($f, $line)){
+               continue;
+            }
+        }
+        $str = ob_get_contents();
+        ob_end_clean();
+        if ($download == ""){
+            return $str;    
+        }else{    
+            echo $str;
+        }        
+    }
 }

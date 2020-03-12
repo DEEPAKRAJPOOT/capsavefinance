@@ -186,9 +186,11 @@ try {
                     {data: 'date'},
                     {data: 'label'},
                     {data: 'account_name'},
+                    {data: 'journals_name'},
                     {data: 'biz_id'},
                     {data: 'debit_amount'},
-                    {data: 'credit_amount'}
+                    {data: 'credit_amount'},
+                    {data: 'reference'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

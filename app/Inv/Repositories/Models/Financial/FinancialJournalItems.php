@@ -64,8 +64,10 @@ class FinancialJournalItems extends BaseModel {
 
     public static function getTransactions() 
     {
-        $result = self::select('financial_journal_items.*', 'financial_accounts.account_code', 'financial_accounts.account_name')
+        $result = self::select('financial_journal_items.*', 'financial_accounts.account_code', 'financial_accounts.account_name','financial_journal_entries.reference','financial_journals.name as journals_name')
             ->join('financial_accounts','financial_accounts.id','=','financial_journal_items.account_id')
+            ->join('financial_journal_entries','financial_journal_entries.journal_entry_id','=','financial_journal_items.journal_entry_id')
+            ->join('financial_journals','financial_journals.id','=','financial_journal_items.journal_id')
             ->orderBy('journal_item_id', 'DESC');
         return $result;
     }
