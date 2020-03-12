@@ -3909,10 +3909,21 @@ if ($err) {
         return response()->json($status);
     }
 
-    public function lmsGetRefundAdjust(DataProviderInterface $dataProvider){
-
-        $refundList = $this->lmsRepo->getRefundAdjustList($this->request);
-        $data = $dataProvider->getRefundAdjustList($this->request, $refundList);
+    public function lmsCreateBatch(DataProviderInterface $dataProvider){
+        $refundList = $this->lmsRepo->getCreateBatchData($this->request);
+        $data = $dataProvider->getCreateBatchData($this->request, $refundList);
         return $data;   
+    }
+    
+    public function lmsEditBatch(DataProviderInterface $dataProvider){
+        $refundList = $this->lmsRepo->getEditBatchData($this->request);
+        $data = $dataProvider->getEditBatchData($this->request, $refundList);
+        return $data;   
+    }
+
+    public function lmsGetRequestList(DataProviderInterface $dataProvider){
+        $requestData = $this->lmsRepo->getRequestList($this->request);
+        $data = $dataProvider->getRequestList($this->request, $requestData);
+        return $data;
     }
 }
