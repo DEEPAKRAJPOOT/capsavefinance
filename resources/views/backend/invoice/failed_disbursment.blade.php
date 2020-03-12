@@ -311,6 +311,7 @@
         invoice_document_save: "{{ URL::route('invoice_document_save') }}",
         update_bulk_invoice: "{{ URL::route('update_bulk_invoice') }}",
         token: "{{ csrf_token() }}",
+        appp_id: "{{ $app_id }}",
     };
 
 
