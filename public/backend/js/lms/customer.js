@@ -23,6 +23,7 @@ try {
                 }
             },
             columns: [
+                {data: 'app_id'},
                 {data: 'customer_id'},
                 {data: 'virtual_acc_id'},
                 {data: 'customer_name'},
