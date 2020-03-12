@@ -107,25 +107,27 @@
    
 var messages = {
     is_accept: "{{ Session::get('is_accept') }}",    
+    error_code : "{{ Session::has('error_code') }}",
  };
      $(document).ready(function(){
         var assign_case = $("input[name=assign_case]").val(); 
         var targetModel = assign_case == '1' ? 'assignCaseFrame' : 'sendNextstage';
         var parent =  window.parent;  
-        
-        /*
-        $('.btn-move-next-stage').click(function() {
-            //$('.isloader').show();
+                
+        $('.btn-move-next-stage').click(function() {            
             if ($('#frmMoveStage').valid()) {
-                $(this).attr('disabled', 'disabled');
+                parent.$('.isloader').show();
             }
         });
-        */
-       
+        
+        if (messages.error_code) {
+            parent.$('.isloader').hide();
+        }
+        
         if(messages.is_accept == 1){
            parent.jQuery("#"+targetModel).modal('hide');  
            parent.oTable.draw();
-           //$('.isloader').hide();           
+           parent.$('.isloader').hide();           
         }
 
         $('#close_btn').click(function() {

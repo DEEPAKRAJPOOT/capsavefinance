@@ -96,7 +96,7 @@
             </div>
         </div>
     </div>
-    <div class="isloader" style="display:none;">  
+    <div class="isloader" style="display:none;z-index: 99999999;">  
         <img src="{{asset('backend/assets/images/loader.gif')}}">
     </div>
 </body>
