@@ -98,6 +98,12 @@ class FinanceHelper {
            $var_val = $this->$funcName($variable, $invoice_id, $appId, $userId, $bizId);
            $varFuncArr[$variable] = $var_val;
         }
+
+        $formula_vars = array_values(array_filter(explode(' ',preg_replace("/[^a-zA-Z_]/", " ", $formula))));
+        $stored_vars = array_keys($varFuncArr);
+        if(!empty(array_diff($formula_vars, $stored_vars))){
+          return 0;
+        }
         return calculate_formula($formula, $varFuncArr);
     }
 
