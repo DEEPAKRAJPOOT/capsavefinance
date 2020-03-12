@@ -142,18 +142,6 @@
 		</div>
 	</div>
 </div>
-
-<?php
-	// If data send via POST, with the name "cbname"
-	if(isset($_POST['trans_id'])) {
-	$cbarray = $_POST['trans_id'];       // gets the value of the selected checkboxes
-	print_r($cbarray);       // outputs the array with data stored in $cbarray
-	}
-	else {
-	echo 'Select the web sites you like:';
-	}
-?>
-
 @endsection
 
 @section('jscript')
@@ -192,7 +180,7 @@ var totalAmt;
 		totalAmt = 0;
 		$(".transType"+messages.margin).each(function (index, element) {
 
-			totalAmt += parseFloat(element.val());
+			totalAmt += parseFloat($(element).val());
 		
 		});
 		$('#marginAmt').val(totalAmt);
