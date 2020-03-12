@@ -1,6 +1,48 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
+<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
+	<form method="POST" action="" onsubmit="">
+	<div class=" form-fields">
+		<div class="form-sections">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="marginAmount">Margin Amount</label>
+						<input type="text" name="" id="" class="form-control" readonly="true">
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="nonFactoredAmount">Non Factored Amount</label>
+						<input type="text" name="" id="" class="form-control" readonly="true">
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group password-input">
+						<label for="txtPassword">Interest Amount</label>
+						<input type="text" name="" id="" class="form-control" readonly="true">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group password-input">
+						<label for="txtPassword">Comment</label>
+						<textarea name="" id="" class="form-control" cols="30" rows="5"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="d-flex btn-section">
+				<div class="ml-auto text-right">
+					<input type="submit" value="Save" class="btn btn-success btn-sm">
+				</div>
+			</div>
+		</div>									
+	</div>
+	</form>
+</div>
+
 <div class="header-title">
 	<h5>Interest</h5>
 </div>
@@ -102,9 +144,6 @@
 </div>
 
 @endsection
-
-
-
 
 @section('jscript')
 <script>

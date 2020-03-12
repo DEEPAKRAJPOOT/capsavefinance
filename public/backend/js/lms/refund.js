@@ -2,6 +2,7 @@ try {
     var oTable;
     var oTable1;
     var oTable2;
+    var oTable3;
     var user_ids = [];
     
     jQuery(document).ready(function ($) {
@@ -85,7 +86,7 @@ try {
                     },
                     "error": function () {  // error handling
 
-                        $("#interestRefundList").append('<tbody class="appList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#interestRefundList").append('<tbody class="appList-error"><tr><th colspan="7">' + messages.data_not_found + '</th></tr></tbody>');
                         $("#interestRefundList_processing").css("display", "none");
                     }
                 },
@@ -141,7 +142,7 @@ try {
         }
 
         if($('#marginList').length){
-            oTable2 = $('#marginList').DataTable({
+            oTable3 = $('#marginList').DataTable({
                 processing: true,
                 serverSide: true,
                 pageLength: '*',

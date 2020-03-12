@@ -3675,11 +3675,11 @@ class DataRenderer implements DataProviderInterface
                     $query->WhereBetween('trans_date', [$from_date, $to_date]);
                 });
             }
-            $query->where(function ($query) use ($request) {
-                $query->whereIn('user_id',$request->user_ids);
-            });
-
-            $query->get();
+            //if($request->get('user_ids')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $query->whereIn('user_id',$request->user_ids);
+                });
+            //}
           
         })                 
      
