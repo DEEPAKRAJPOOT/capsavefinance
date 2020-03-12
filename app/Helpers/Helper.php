@@ -1057,4 +1057,19 @@ class Helper extends PaypalHelper
         }
         return $wfData;
     }
+    
+    /**
+     * Convert Datetime Format
+     * 
+     * @param string $dateTime
+     * @param string $fromDateFormat
+     * @param string $toDateFormat
+     * @return string
+     */
+    public static function convertDateTimeFormat($dateTime, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') 
+    {
+        $convertedDateTime = \Carbon\Carbon::createFromFormat($fromDateFormat, $dateTime, config('app.timezone'))
+                ->setTimezone(config('common.timezone'))->format($toDateFormat);
+        return $convertedDateTime;
+    }    
 }
