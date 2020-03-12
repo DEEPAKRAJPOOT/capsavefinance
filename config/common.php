@@ -270,5 +270,6 @@ return [
         'REPAYMENT' => 3,
         'CHARGES' => 4
     ],
+    'timezone' => 'Asia/Kolkata'
 ];
  
