@@ -3909,4 +3909,11 @@ if ($err) {
         }
         return response()->json($status);
     }
+    
+    public function lmsGetInvoiceByUser(Request $request ){
+        $userId = $request->get('user_id');
+        $invoiceIds = $this->lmsRepo->getUserInvoiceIds($userId)->toArray();
+        return response()->json($invoiceIds);
+    }
+
 }

@@ -72,7 +72,7 @@ $(document).ready(function(){
 	let current_inv_ids = parent.$('#invoice_ids').val();
 	let checkedIds = checkedVals.join(",");
 	parent.$('#invoice_ids').val(current_inv_ids+','+checkedIds);
-	parent.$('#user_ids').val(user_ids.replace(new RegExp(current_user_id, 'g'), ''));
+	parent.$('#user_ids').val(user_ids.replace(new RegExp(','+current_user_id, 'g'), ','));
 
 	$('.invoice_id').on('click', function() {
 		let current_inv_ids = parent.$('#invoice_ids').val();
@@ -80,7 +80,7 @@ $(document).ready(function(){
 		if($(this).is(':checked')){
 			parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
 		}else{
-			parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(current_id, 'g'), ''));
+			parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(','+current_id, 'g'), ','));
 		}
 	})
 	

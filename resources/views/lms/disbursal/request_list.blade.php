@@ -90,6 +90,7 @@
 
     var messages = {
         lms_get_disbursal_customer: "{{ URL::route('lms_get_disbursal_customer') }}",
+        lms_get_invoices: "{{ URL::route('lms_get_invoices') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -102,13 +103,44 @@
 $(document).ready(function(){
     $(document).on('change', '.user_id', function() {
 
-        let current_user_ids = $('#user_ids').val();
-        let current_id = $(this).val();
-        if($(this).is(':checked')){
-            $('#user_ids').val(current_user_ids+','+current_id);
-        }else{
-            $('#user_ids').val(current_user_ids.replace(new RegExp(current_id, 'g'), ''));
-        }
+        // let current_user_ids = $('#user_ids').val();
+        // let current_id = $(this).val();
+        // if($(this).is(':checked')){
+        //     $('#user_ids').val(current_user_ids+','+current_id);
+        // }else{
+        //     $('#user_ids').val(current_user_ids.replace(new RegExp(','+current_id, 'g'), ','));
+        // }
+
+        let user_id = $(this).val();
+        var data = ({'user_id': user_id, '_token': messages.token});
+        $.ajax({
+        type: "POST",
+            url: '{{Route('lms_get_invoices')}}',
+            data: data,
+            cache: false,
+            success: function (res)
+            {
+                let current_inv_ids = parent.$('#invoice_ids').val();
+                // $('#invoice_ids').val(current_inv_ids+','+res);
+
+                if($(this).is(':checked')){
+                    $('#invoice_ids').val(current_inv_ids+','+res);
+                }else{
+                    $('#invoice_ids').val(current_inv_ids.replace(new RegExp(','+res, 'g'), ','));
+                }
+            },
+            error: function (error)
+            {
+                console.log(error);
+            }
+
+        });
+
+
+
+
+
+
     });
     
 });
