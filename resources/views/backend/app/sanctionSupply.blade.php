@@ -223,7 +223,7 @@
                                 <th  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Max. Discounting Period</th>
                                 <th  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Grace Period</th>
                                 <th  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">ROI</th>
-                                <th  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Bench Mark Date</th>
+                                <th  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Benchmark Date</th>
                                 <th  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Margin</th>
                               </tr>
                             </thead>
@@ -261,7 +261,7 @@
                             <li>The rate of interest will be {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} higher than the rate stipulated under each of the facilities till the security is created.</li>
                             @endif
                              @if(!empty($postData['penal_applicable'][$key][2]) && strtolower($postData['penal_applicable'][$key][2]) == 'applicable')
-                            <li>If security is not created within the stipulated timeframe then a penal interest of 
+                            <li>If security is not created within the stipulated time frame then a penal interest of 
                             {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} p.a. {{$postData['penal_on'][$key][1]}} entire principle.</li>
                             @endif
                           </ul>
@@ -289,7 +289,7 @@
                     </tbody>
                   </table>
                   <br />
-                  <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
+                  <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assessment>></h5>
                   @foreach($supplyChaindata['offerData'] as $offerD)
                   <div style="border: 2px solid #cccccc;margin-bottom: 20px;">
                     @if($offerD->offerPs->count())
@@ -634,7 +634,7 @@
                         @endif
 
                         @if(!empty($postData['pre_post_condition']['11']) && strtolower($postData['pre_post_condition']['11']) == 'applicable')
-                        <li>The borrower shall forward to CFPL, provisional balance sheet and Profit & Loss Account within {{$postData['profit_loss_account_within'] ?? '1'}}  months of year-end and audited accounts within 6 months of year end. Quarterly financial results shall be submitted within 60 days from the end of each quarter or with the filing with stock exchange for listed borrower.</li> 
+                        <li>The borrower shall forward to CFPL, provisional balance sheet and Profit & Loss Account within {{$postData['profit_loss_account_within'] ?? '1'}}  months of the year-end and audited accounts within 6 months of the year end. Quarterly financial results shall be submitted within 60 days from the end of each quarter or with the filing with stock exchange for listed borrower.</li> 
                         @endif
 
                         @if(!empty($postData['pre_post_condition']['12']) && strtolower($postData['pre_post_condition']['12']) == 'applicable')
@@ -722,7 +722,7 @@
                            <h5>Section 8:- General Conditions </h5>
                            <div class="section8">
                               <ol>
-                                    <li>The loan shall be utilised for the purpose for which it is sanctioned and it should not be utilised for –
+                                    <li>The loan shall be utilised for the purpose for which it is sanctioned and it should not be utilised for -
                                       <ul style="list-style-type:unset;">
                                         <li>Subscription to or purchase of shares/debentures.</li>
                                         <li>Extending loans to subsidiary companies/associates or for making inter-corporate deposits.</li>
@@ -733,12 +733,12 @@
                                     <li>The borrower will keep CFPL informed of the happening of any event which is likely to have an impact on their profit or business and more particularly, if the monthly production or sale and profit are likely to be substantially lower than already indicated to CFPL. The borrower will inform accordingly with reasons and the remedial steps proposed to be taken. </li>
                                     <li>CFPL will have the right to examine at all times the borrower's books of accounts and to have the borrower's factory(s)/branches inspected from time to time by officer(s) of the CFPL and/or qualified auditors including stock audit and/or technical experts and/or management consultants of CFPL's choice and/or we can also get the stock audit conducted by other banker. The cost of such inspections will be borne by the borrower.</li>
                                     <li>The borrower should not pay any consideration by way of commission, brokerage, fees or in any other form to guarantors directly or indirectly.</li>
-                                    <li>The Borrower and Guarantor(s) shall be deemed to have given their express consent to CFPL to disclose the information and data furnished by them to CFPL and also those regarding the credit facility/ies enjoyed by the borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau (India) Ltd. (“CIBIL”), or RBI or any other agencies specified by RBI who are authorised to seek and publish information.</li>
+                                    <li>The Borrower and Guarantor(s) shall be deemed to have given their express consent to CFPL to disclose the information and data furnished by them to CFPL and also those regarding the credit facility/ies enjoyed by the borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau (India) Ltd. ("CIBIL"), or RBI or any other agencies specified by RBI who are authorised to seek and publish information.</li>
                                     <li>The Borrower will keep the CFPL advised of any circumstances adversely affecting their financial position including any action taken by any creditor, Government authority against them.</li>
-                                    <li>The borrower shall procure a consent every year from the auditors appointed by the borrower to comply with and give report / specific comments in respect of any query or requisition made by us as regards the audited accounts or balance sheet of the borrower. We may provide information and documents to the Auditors in order to enable the Auditors to carry out the investigation requested for by us. In that event, we shall be entitled to make specific queries to the Auditors in the light of Statements, particulars and other information submitted by the borrower to us for the purpose of availing finance, and the Auditors shall give specific comments on the queries made by us.</li>
+                                    <li>The borrower shall procure a consent every year from the auditors appointed by the borrower to comply with and give report / specific comments in respect of any query or requisition made by us as regards the audited accounts or balance sheet of the borrower. We may provide information and documents to the Auditors in order to enable the Auditors to carry out the investigation requested by us. In that event, we shall be entitled to make specific queries to the Auditors in the light of Statements, particulars and other information submitted by the borrower to us for the purpose of availing finance, and the Auditors shall give specific comments on the queries made by us.</li>
                                     <li>The sanction limits would be valid for acceptance for 30 days from the date of the issuance of letter.</li>
-                                    <li>CFPL reserves the right to alter, amend any of the condition or withdraw the facility, at any time without assigning any reason and also without giving any notice.</li>
-                                    <li>Provided further that notwithstanding anything to the contrary contained in this Agreement, CFPL may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan or any part thereof (even if partial or no disbursement is made) without any liability and without any obligations to give any reason whatsoever, whereupon all principal monies, interest thereon and all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable to CFPL by the Borrower forthwith upon demand from CFPL</li>
+                                    <li>CFPL reserves the right to alter, amend any of the condition or withdraw the facility, at any time without assigning any reason and without giving any notice.</li>
+                                    <li>Provided further that notwithstanding anything to the contrary contained in this Agreement, CFPL may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan or any part thereof (even if partial or no disbursement is made) without any liability and without any obligation to give any reason whatsoever, whereupon all principal monies, interest thereon and all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable to CFPL by the Borrower forthwith upon demand from CFPL</li>
                               </ol>
                            </div>
                            @if(!empty($download) && $download == true && !Session::has('message'))
