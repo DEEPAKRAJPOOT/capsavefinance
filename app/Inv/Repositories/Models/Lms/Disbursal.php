@@ -221,7 +221,7 @@ class Disbursal extends BaseModel {
     
     function invoice()
     {
-              return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->orderBy('invoice_due_date','asc');
+        return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->orderBy('invoice_due_date','asc');
    
 	}
 	

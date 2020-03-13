@@ -766,4 +766,21 @@ use CommonRepositoryTraits;
         $result = Transactions::find($trans_id);
         return $result ?: false;
     }
+    
+    
+    /**
+     * Get a customer model by id
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getCustomerDetail($userId)
+    {
+        $result = UserModel::getCustomerDetail((int) $userId);
+
+        return $result ?: false;
+    }
 }

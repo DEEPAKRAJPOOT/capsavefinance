@@ -35,6 +35,7 @@ use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class AjaxController extends Controller {
 
@@ -2721,7 +2722,6 @@ if ($err) {
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
@@ -3938,7 +3938,7 @@ if ($err) {
      * @return json customer data
      */
     public function lmsGetRefundList(DataProviderInterface $dataProvider) {
-      $refundList = $this->userRepo->lmsGetRefundList();
+      $refundList = $this->lmsRepo->getAllRefundLmsUser();
       $data = $dataProvider->lmsGetRefundCustomers($this->request, $refundList);
       return $data;
     }
@@ -3952,6 +3952,24 @@ if ($err) {
           $status = false;
         }
         return response()->json($status);
+    }
+
+    public function lmsCreateBatch(DataProviderInterface $dataProvider){
+        $refundList = $this->lmsRepo->getCreateBatchData($this->request);
+        $data = $dataProvider->getCreateBatchData($this->request, $refundList);
+        return $data;   
+    }
+    
+    public function lmsEditBatch(DataProviderInterface $dataProvider){
+        $refundList = $this->lmsRepo->getEditBatchData($this->request);
+        $data = $dataProvider->getEditBatchData($this->request, $refundList);
+        return $data;   
+    }
+
+    public function lmsGetRequestList(DataProviderInterface $dataProvider){
+        $requestData = $this->lmsRepo->getRequestList($this->request);
+        $data = $dataProvider->getRequestList($this->request, $requestData);
+        return $data;
     }
     
     public function getAllBaseRateList(DataProviderInterface $dataProvider) { 

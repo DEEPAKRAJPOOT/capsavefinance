@@ -101,4 +101,9 @@ class LmsUser extends Authenticatable
     {
         return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->whereHas('invoices');
     }
+
+    public function transaction()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions', 'user_id', 'user_id');
+    }
 }

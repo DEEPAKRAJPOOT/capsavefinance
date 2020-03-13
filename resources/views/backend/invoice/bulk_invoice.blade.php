@@ -2,6 +2,7 @@
 @section('additional_css')
 @endsection
 @section('content')
+
 <div class="content-wrapper">
 <div class="col-md-12 ">
    <section class="content-header">

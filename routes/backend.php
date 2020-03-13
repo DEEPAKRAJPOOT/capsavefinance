@@ -1214,6 +1214,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_offer_by_colender',
                 'uses' => 'Master\CoLenderControllers@acceptOffer'
             ]);
+            // Payment Advice Excel Download
+            Route::get('payment_refund_index', [
+                'as' => 'payment_refund_index',
+               'uses' => 'Backend\PaymentController@paymentInvoiceList'
+           ]); 
+
          }); 
         //colender route 
 
