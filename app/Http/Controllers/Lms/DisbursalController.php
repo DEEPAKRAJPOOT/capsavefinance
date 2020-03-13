@@ -112,10 +112,15 @@ class DisbursalController extends Controller
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
 
-		// foreach ($allinvoices as $invoice) {
-			/*code*/
-		// }
-		
+		foreach ($allinvoices as $inv) {
+			if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+				return redirect()->route('lms_disbursal_request_list')->withErrors(trans('backend_messages.noBankAccount'));
+			} elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
+				return redirect()->route('lms_disbursal_request_list')->withErrors(trans('backend_messages.noBankAccount'));
+			}
+		}
+
+
 		$fundedAmount = 0;
 		$interest = 0;
 		$disburseAmount = 0;
@@ -126,7 +131,7 @@ class DisbursalController extends Controller
 		foreach ($supplierIds as $userid) {
 			$disburseAmount = 0;
 			foreach ($allinvoices as $invoice) {
-
+				
 				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
