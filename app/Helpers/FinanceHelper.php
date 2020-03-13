@@ -119,7 +119,7 @@ class FinanceHelper {
   } 
 
     private function _sysFuncPrincipal($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
-       $disbursalData = Disbursal::find($invoice_id);
+       $disbursalData = Disbursal::where('invoice_id', $invoice_id)->first();
        return (!empty($disbursalData) ? $disbursalData->principal_amount : 0);
     }
 
