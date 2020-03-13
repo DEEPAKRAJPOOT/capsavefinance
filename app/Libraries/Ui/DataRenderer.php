@@ -2589,12 +2589,20 @@ class DataRenderer implements DataProviderInterface {
         return DataTables::of($baserates)
                         ->rawColumns(['is_active','action'])
                         ->addColumn(
-                                'name', function ($baserates) {
-                            return $baserates->company_name;
+                                'bank_id', function ($baserates) {
+                            return $baserates->bank->bank_name ?? 'N/A';
                         })
                         ->addColumn(
                                 'base_rate', function ($baserates) {
                             return $baserates->base_rate;
+                        })
+                        ->addColumn(
+                                'min_base_rate', function ($baserates) {
+                            return $baserates->min_base_rate;
+                        })
+                        ->addColumn(
+                                'max_base_rate', function ($baserates) {
+                            return $baserates->max_base_rate;
                         })
                         ->addColumn(
                                 'created_at', function ($baserates) {
@@ -2618,9 +2626,9 @@ class DataRenderer implements DataProviderInterface {
                         })
                         ->filter(function ($query) use ($request) {
                             if ($request->get('search_keyword') != '') {
-                                $query->where(function ($query) use ($request) {
+                                $query->whereHas('bank', function ($query) use ($request) {
                                     $search_keyword = trim($request->get('search_keyword'));
-                                    $query->where('company_name', 'like', "%$search_keyword%");
+                                    $query->where('bank_name', 'like', "%$search_keyword%");
                                 });
                             }
                         })

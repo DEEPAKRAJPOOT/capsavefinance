@@ -27,7 +27,7 @@
 					(isset($filter['filter_search_keyword'])) ? $filter['filter_search_keyword'] : null,
 	                [
 	                'class' => 'form-control',
-	                'placeholder' => 'Search by Company Name',
+	                'placeholder' => 'Search by Bank Name',
 	                'id'=>'search_keyword'
 	                ])
                     !!}
@@ -48,8 +48,10 @@
                         <table id="baserateList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Company Name</th>
-                                    <th>Base Rate (%)</th>
+                                    <th>Bank Name</th>
+                                    <th>Base Rate (%)</th>                   
+                                    <th>Min Base Rate (%)</th>
+                                    <th>Max Base Rate (%)</th>
                                     <th>Created At</th>
                                     <th>Created By</th>
                                     <th>Status</th>
@@ -68,8 +70,8 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addBaseRateFrame','Add Base Rate', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editBaseRateFrame','Edit Base Rate Detail', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addBaseRateFrame','Add Base Rate', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editBaseRateFrame','Edit Base Rate Detail', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

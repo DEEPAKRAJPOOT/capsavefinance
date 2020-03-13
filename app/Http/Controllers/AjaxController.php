@@ -3701,6 +3701,7 @@ if ($err) {
     
     public function getAllBaseRateList(DataProviderInterface $dataProvider) { 
      $baseRateList = $this->masterRepo->getAllBaseRateList();
+//     dd($baseRateList);
      $baserates = $dataProvider->getBaseRateList($this->request, $baseRateList);
      return $baserates;
     }

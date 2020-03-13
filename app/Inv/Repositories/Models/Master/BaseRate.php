@@ -41,15 +41,27 @@ class BaseRate extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'company_name',
+        'bank_id',
         'base_rate',
+        'min_base_rate',
+        'max_base_rate',
         'is_active',
         'created_by',
         'created_at',
         'updated_at',
         'updated_by'
     ];
-
+    
+    public static function getAllBaseRateList(){
+        return self::with('bank')->orderBy('id', 'DESC');
+    }
+    
+    function bank()
+    {
+          return $this->belongsTo('App\Inv\Repositories\Models\Master\Bank', 'bank_id','id');  
+    
+    }
+     
     /**
      * Get Drop down list
      *
