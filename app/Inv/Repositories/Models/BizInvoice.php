@@ -331,4 +331,10 @@ public static function updateInvoice($invoiceId,$status)
         return self::where(['invoice_no' => $invNo])->first();
     }
 
+    public static function getUserInvoiceIds($userId)
+    {
+        return self::where('supplier_id', $userId)
+            ->where('status_id', 9)
+            ->pluck('invoice_id');
+    }
 }

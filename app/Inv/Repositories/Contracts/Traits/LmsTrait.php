@@ -45,7 +45,7 @@ trait LmsTrait
     }   
 
     protected function calAccrualInterest($transDate=null){
-        $disbursalData = Disbursal::where('disbursal_id',[24])->get();
+        $disbursalData = Disbursal::whereIn('status_id',[12,13])->get();
         $currentDate = date('Y-m-d');
         $interest = 0;
         $returnData = [];
@@ -964,7 +964,6 @@ trait LmsTrait
             foreach($transactionData['nonFactoredAmt'] as $nonFactoredAmtValue){
                 $this->lmsRepo->saveTransaction($nonFactoredAmtValue);
             }
-        
             // if(!empty($transactionData['reversePayment']))
             // foreach ($transactionData['reversePayment'] as $interestRevPaymentValue){
             //     $this->lmsRepo->saveTransaction($interestRevPaymentValue);
@@ -1052,10 +1051,10 @@ trait LmsTrait
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
         $totalinterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
-        $disburseAmount = round($fundedAmount - $totalinterest, 2);
         if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
             $interest = $totalinterest;
         }
+        $disburseAmount = round($fundedAmount - $interest, 2);
 
         $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
@@ -1108,7 +1107,7 @@ trait LmsTrait
         // dd($data);
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['gl_flag'] = 1;
-        $transactionData['soa_flag'] = 1;
+        $transactionData['soa_flag'] = ($transType == 10) ? 0 : 1;
         $transactionData['user_id'] = $userId ?? null;
         $transactionData['disbursal_id'] = $data['disbursal_id'] ?? null;
         $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;

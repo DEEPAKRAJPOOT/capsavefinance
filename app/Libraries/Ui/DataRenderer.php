@@ -2552,7 +2552,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['customer_id', 'status', 'action'])
+                ->rawColumns(['customer_id', 'status','limit', 'consume_limit', 'available_limit','action'])
 
                 ->editColumn(
                     'app_id',
@@ -2596,7 +2596,7 @@ class DataRenderer implements DataProviderInterface
                                 $this->totalLimit += $value->limit_amt;
                             }
                         }
-                    return $this->totalLimit;
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
                 })
                 ->editColumn(
                     'consume_limit',
@@ -2607,13 +2607,13 @@ class DataRenderer implements DataProviderInterface
                                 $this->totalCunsumeLimit += $value->prgm_limit_amt;
                             }
                         }
-                    return $this->totalCunsumeLimit;
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
                 })
                 ->editColumn(
                     'available_limit',
                     function ($customer) {
                     
-                    return $this->totalLimit - $this->totalCunsumeLimit;
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit - $this->totalCunsumeLimit).'</i></label>';
                 })
                 ->editColumn(
                     'anchor',
@@ -2773,6 +2773,7 @@ class DataRenderer implements DataProviderInterface
                     'total_actual_funded_amt',
                     function ($customer) {
                         $disburseAmount = 0;
+                        $interest = 0;
                         $apps = $customer->app;
                         foreach ($apps as $app) {
                             foreach ($app->invoices as $inv) {
@@ -2781,8 +2782,10 @@ class DataRenderer implements DataProviderInterface
                                 $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
                                 
                                 $tenorDays = $this->calculateTenorDays($invoice);
-                                $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
-                                
+                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
+                                if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
+                                    $interest = $tInterest;
+                                }
                                 $disburseAmount += round($fundedAmount - $interest, 2);
                             }
                         }
