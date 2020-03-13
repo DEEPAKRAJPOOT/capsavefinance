@@ -85,6 +85,7 @@ class FinanceController extends Controller {
            $ledger_name = $value['f_name']. ' '. $value['m_name'].' '. $value['l_name'];
            unset($value['m_name'],$value['l_name']);
            $value['f_name'] =  $ledger_name;
+           $value['journal_name'] =  'Journal';
            $records[] = $value->toArray();
         }
         $this->array_to_csv($records, "execl.csv");

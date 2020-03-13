@@ -123,10 +123,6 @@ class DisbursalController extends Controller
 			}
 		}
 
-		foreach ($allinvoices as $inv_k => $inv_arr) {
-			 $finHelperObj = new FinanceHelper($this->finRepo);
-        	 $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), $inv_arr['invoice_id'], $inv_arr['app_id'], $inv_arr['supplier_id'], $inv_arr['biz_id']);
-		}
 		$params = array('http_header' => '', 'header' => '', 'request' => []);
 
 
@@ -230,6 +226,10 @@ class DisbursalController extends Controller
 
 				}
 			}
+		}
+		foreach ($allinvoices as $inv_k => $inv_arr) {
+			 $finHelperObj = new FinanceHelper($this->finRepo);
+        	 $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), $inv_arr['invoice_id'], $inv_arr['app_id'], $inv_arr['supplier_id'], $inv_arr['biz_id']);
 		}
 		// dd($allrecords);
 		// --- production code end 

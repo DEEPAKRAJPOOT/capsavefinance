@@ -183,14 +183,17 @@ try {
                 }
             },
            columns: [
-                    {data: 'date'},
-                    {data: 'label'},
-                    {data: 'account_name'},
+                    {data: 'invoice_no'},
                     {data: 'journals_name'},
-                    {data: 'invoice_id'},
+                    {data: 'date'},
+                    {data: 'full_name'},
+                    {data: 'debit_amount'},
+                    {data: 'reference'},
                     {data: 'debit_amount'},
                     {data: 'credit_amount'},
-                    {data: 'reference'}
+                    {data: 'reference'},
+                    {data: 'credit_amount'},
+                    {data: 'label'},
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
