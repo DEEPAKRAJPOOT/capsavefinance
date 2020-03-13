@@ -23,8 +23,8 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
-                {data: 'app_id'},
                 {data: 'customer_code'},
+                {data: 'app_id'},
                 {data: 'ben_name'},
                 {data: 'bank'},
                 {data: 'total_invoice_amt'},
