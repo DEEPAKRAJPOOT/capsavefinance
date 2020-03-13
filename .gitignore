@@ -28,6 +28,7 @@ Homestead.json
 /nbproject/*
 *.fdf
 /public/storage
+/public/storage1
 /storage
 /app/Inv/Repositories/config/common.php
 /bootstrap/cache/config.php

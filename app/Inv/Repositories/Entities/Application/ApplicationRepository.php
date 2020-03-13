@@ -1421,18 +1421,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     * @return type mixed
     */
 
-    public function lmsGetTransactions()
-    {
-        return Transactions::select('transactions.*')
-                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
-                    ->join('lms_users','users.user_id','lms_users.user_id')
-                    ->orderBy('user_id', 'asc')
-                    ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
-                    ->orderBy('trans_id', 'asc');
-                            
-        //with('trans_detail')->where('soa_flag', 1);
-    }
-
     public function getTotalByPrgmLimitId($appPrgmLimitId){
         return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
     }

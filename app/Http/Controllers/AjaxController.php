@@ -3830,12 +3830,12 @@ if ($err) {
    *
    * @return json transaction data
    */
-  public function lmsGetSoaList(DataProviderInterface $dataProvider) {
+    public function lmsGetSoaList(DataProviderInterface $dataProvider) {
 
-    $transactionList = $this->application->lmsGetTransactions();
-    $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
-    return $users;
-  }
+        $transactionList = $this->lmsRepo->getSoaList();
+        $users = $dataProvider->getSoaList($this->request, $transactionList);
+        return $users;
+    }
         /**
      * Get all Equipment
      *

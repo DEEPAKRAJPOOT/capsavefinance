@@ -363,7 +363,7 @@ class PaymentController extends Controller {
 
     $counter +=1;
     $objPHPExcel->setActiveSheetIndex(0)
-                ->setCellValue('A'.$counter, 'Margin Relesed')
+                ->setCellValue('A'.$counter, 'Margin Released')
                 ->setCellValue('E'.$counter, ($totalMarginAmount>0)?$totalMarginAmount:0);
     $objPHPExcel->getActiveSheet()->getStyle("A".$counter.":F".$counter)->getFont()->setBold(true);
 

@@ -3313,7 +3313,7 @@ class DataRenderer implements DataProviderInterface
      * @param object $data
      * @return mixed
      */
-    public function lmsGetTransactions(Request $request, $data)
+    public function getSoaList(Request $request, $data)
     {
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])

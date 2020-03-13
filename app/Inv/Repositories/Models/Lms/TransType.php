@@ -97,4 +97,6 @@ class TransType extends BaseModel {
         ->get();
         return $result?$result:'';
     }
+
+    
 }
