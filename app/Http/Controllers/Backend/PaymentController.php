@@ -418,9 +418,6 @@ class PaymentController extends Controller {
   public function paymentInvoiceList(Request $request)
   {
     $transId = $request->get('trans_id');
-    $counter = 1;
-    $overdueInterest = 0;
-    $interestRefund = 0;
     $totalMarginAmount = 0;
     $nonFactoredAmount = 0;
     
@@ -450,6 +447,12 @@ class PaymentController extends Controller {
     }
     
     // dd($repayment);
-    return view('backend.payment.payment_invoice_list');
+    return view('backend.payment.payment_invoice_list', 
+      ['repaymentTrails' => $repaymentTrails, 
+       'repayment'=>$repayment,
+       'nonFactoredAmount' => $nonFactoredAmount,
+       'amountForMargin' => $amountForMargin,
+       'marginAmountData' => $marginAmountData
+      ]);
   }
 }

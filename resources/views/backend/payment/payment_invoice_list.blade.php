@@ -3,6 +3,7 @@
 @section('content')
 
 
+
 <div class="col-12">
 	<div class="overflow">
 		<div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -20,55 +21,149 @@
 									<th>Credit</th>
 								</tr>
                             </thead>
-                                <tr role="row" class="odd">
-                                    <td class="sorting_1">03-Mar-2020</td>
-                                    <td>05-Mar-2020</td>
-                                    <td>Repayment</td>
-                                    <td>INV000001</td>
-                                    <td>3000.00</td>
-                                    <td>233000</td>
-                                </tr>
+                            @php 
+                                $overdueInterest = 0;
+                                $interestRefund = 0;
+                                $totalMarginAmount = 0;
+                                $nonFactoredAmount = 0;
+                            @endphp
+                                    <tr>
+                                        <td>{{date('d-m-Y',strtotime($repayment->trans_date))}}</td>
+                                        <td>{{date('d-M-Y',strtotime($repayment->created_at))}}</td>
+                                        <td>
+                                            @if($repayment->trans_detail->chrg_master_id!='0')
+                                                {{$repayment->trans_detail->charge->chrg_name}}
+                                            @else
+                                                {{$repayment->trans_detail->trans_name}}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($repayment->disburse && $repayment->disburse->invoice  {{--  && $repayment->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF' --}} ))
+                                                {{$repayment->disburse->invoice->invoice_no}}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($repayment->entry_type=='0')
+                                                {{ number_format($repayment->amount,2) }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($repayment->entry_type=='1')
+                                                {{ number_format($repayment->amount,2) }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @foreach($repaymentTrails as $repay)
+                                    <tr role="row" >
+                                        <td> {{date('d-m-Y',strtotime($repay->trans_date))}}</td>
+                                        <td>{{date('d-M-Y',strtotime($repay->created_at))}}</td>
+                                        <td>
+                                            @if($repay->trans_detail->chrg_master_id!='0')
+                                                {{$repay->trans_detail->charge->chrg_name}}
+                                            @else
+                                                {{$repay->trans_detail->trans_name}}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{-- @if($repay->disburse && $repay->disburse->invoice && $repay->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF')) --}}
+                                                {{$repay->disburse->invoice->invoice_no}}
+                                            {{-- @endif --}}
+                                        </td>
+                                        <td>
+                                            @if($repay->entry_type=='0')
+                                                {{ number_format($repay->amount,2) }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($repay->entry_type=='1')
+                                                {{ number_format($repay->amount,2) }}
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    @php
+                                    if($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                                        $overdueInterest += $repay->amount;
+                                    }
+
+                                    if($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_REFUND')){
+                                        $interestRefund += $repay->amount;
+                                    }
+                                    @endphp
+                                @endforeach
 
                                 <!-- blank -->
-                                <tr role="row" class="odd">
+                                <tr role="row" >
+                                    <td colspan="6" style="min-height: 15px"></td>
+                                </tr>
+
+
+                                <tr role="row" >
+                                    <td colspan="4">Total Factored</td>
+                                    <td>{{ $repayment->amount }}</td>
+                                    <td></td>
+                                </tr>
+                                <tr role="row">
+                                    <td style="font-weight:bold" colspan="4"><b>Non Factored</b></td>
+                                    <td>{{ number_format($nonFactoredAmount,2) }}</td>
                                     <td></td>
                                 </tr>
 
-                                <tr role="row" class="odd">
-                                    <td>Total Factored</td>
-                                </tr>
-                                <tr role="row" class="odd">
-                                    <td style="font-weight:bold"><b>Non Factored</b></td>
+                                <!-- blank -->
+                                <tr role="row" >
+                                    <td colspan="6" style="min-height: 15px"></td>
                                 </tr>
 
-                                <!-- blank -->
-                                <tr role="row" class="odd">
+                                <tr role="row" >
+                                    <td colspan="4">Total amt for Margin</td>
+                                    <td>{{ number_format($amountForMargin,2) }}</td>
+                                    <td></td>
+                                </tr>
+                              
+
+                                @foreach($marginAmountData as $margin)
+                                <tr role="row" >
+                                    <td colspan="3">% Margin</td>
+                                    <td>@if($margin['margin'] >0 ){{ $margin['margin'] }} % @endif</td>
+                                    <td>{{ number_format($margin['margin_amount'],2) }}</td>
+                                    <td></td>
+                                    @php 
+                                        $totalMarginAmount += $margin['margin_amount'];
+                                    @endphp
+                                </tr>
+                                @endforeach
+                                <tr role="row" >
+                                    <td colspan="4">Overdue Interest</td>
+                                    <td>{{ number_format($overdueInterest,2) }}</td>
                                     <td></td>
                                 </tr>
 
-                                <tr role="row" class="odd">
-                                    <td>Total amt for Margin</td>
-                                </tr>
-                                <tr role="row" class="odd">
-                                    <td>% Margin</td>
-                                </tr>
-                                <tr role="row" class="odd">
-                                    <td>Overdue Interest</td>
-                                </tr>
-                                <tr role="row" class="odd">
-                                    <td style="font-weight:bold"><b>Margin Released</b></td>
-                                </tr>
-
-                                <!-- blank -->
-                                <tr role="row" class="odd">
+                                @php  
+                                    $totalMarginAmount -= $overdueInterest;
+                                @endphp
+                                <tr role="row" >
+                                    <td colspan="4" style="font-weight:bold"><b>Margin Released</b></td>
+                                    <td>{{ number_format($totalMarginAmount,2) }}</td>
                                     <td></td>
                                 </tr>
 
-                                <tr role="row" class="odd">
-                                    <td style="font-weight:bold"><b>Interest Refund</b></td>
+                                <tr role="row" >
+                                    <td colspan="6" style="min-height: 15px"></td>
                                 </tr>
-                                <tr role="row" class="odd">
-                                    <td style="font-weight:bold; font-size: 15px"><b>Total Refund</b></td>
+
+
+                                <tr role="row" >
+                                    <td colspan="4" style="font-weight:bold"><b>Interest Refund</b></td>
+                                    <td>{{ number_format($interestRefund,2) }}</td>
+                                    <td></td>
+                                </tr>
+                                @php 
+                                    $totalMarginAmount += $interestRefund;
+                                @endphp
+                                <tr role="row" >
+                                    <td colspan="4" style="font-weight:bold; font-size: 15px"><b>Total Refundable Amount</b></td>
+                                    <td>{{ $totalMarginAmount }}</td>
+                                    <td></td>
                                 </tr>
 							<tbody>
 
@@ -77,7 +172,14 @@
 					</div>
 					<div id="interestRefundList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
 				</div>
-			</div>
+            </div>
+            
+            <div class="row">
+                <div class="form-group col-md-12 text-right">
+                    <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit">
+                </div>
+            </div>
+
 		</div>
 	</div>
 </div>
