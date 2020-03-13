@@ -12,9 +12,11 @@
 		<a class=" {{( $active=='address') ? 'active': null }} " href="{{route('addr_get_customer_list',[ 'user_id' => $userInfo->user_id ])}}">Address </a>
     </li>
     @endcan
+    @can('backend_get_invoice')
     <li>
-        <a class=" {{ ($active=='invoice') ? 'active': null }} "  href="{{ route('lms_get_application_invoice', [ 'user_id' => $userInfo->user_id ]) }}">View Invoices</a>
+        <a class=" {{ ($active=='invoice') ? 'active': null }} "  href="{{ route('backend_get_invoice', [ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ]) }}">View Invoices</a>
     </li>
+    @endcan
    <!--  <li>
         <a class=" {{ ($active=='repayement') ? 'active': null }} " href="#">Repayment History</a>
     </li> -->
