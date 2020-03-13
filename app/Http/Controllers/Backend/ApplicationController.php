@@ -1418,7 +1418,7 @@ class ApplicationController extends Controller
             $emailData['attachment'] = $this->pdf->render($htmlContent);
             $emailData['subject'] ="Sanction Letter for SupplyChain";
             \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
-            Session::flash('message',trans('Sanction Letter for Supply Chain send successfully.'));
+            Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));
             return redirect()->back()->with('is_send',1);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
