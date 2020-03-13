@@ -506,5 +506,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public static function getUserInvoiceIds($userId)
     {
         return BizInvoice::getUserInvoiceIds($userId);
-    }            
+    }
+    
+    public function getSoaList()
+    {
+        return Transactions::getSoaList();
+    }
+
 }

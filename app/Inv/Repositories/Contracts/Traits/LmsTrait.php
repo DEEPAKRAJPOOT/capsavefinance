@@ -906,7 +906,21 @@ trait LmsTrait
                         $transactionData['interestRefund'][] = $refundData;
                     }   
                 }
+
+                $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',[$disbursalDetail->disbursal_id])
+                                    ->groupBy('margin')
+                                    ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->first();
+                if($marginAmountData && $marginAmountData->margin_amount>0)
+                {
+                    $marginAmountData = $this->createTransactionData($transDetail['user_id'], [
+                        'amount' => $marginAmountData->margin_amount,
+                        'trans_date'=>$transDetail['trans_date'],
+                        'parent_trans_id'=>$transId
+                    ], null,config('lms.TRANS_TYPE.MARGIN'), 0);
+                    $transactionData['marginReleased'][] = $marginAmountData;
+                } 
                 if($trans['balance_amount']<=0) break;
+
             }
 
             if($trans['balance_amount']>0)
@@ -964,6 +978,12 @@ trait LmsTrait
             foreach($transactionData['nonFactoredAmt'] as $nonFactoredAmtValue){
                 $this->lmsRepo->saveTransaction($nonFactoredAmtValue);
             }
+
+            if(!empty($transactionData['marginReleased']))
+            foreach($transactionData['marginRefund'] as $marginReleasedValue){
+                $this->lmsRepo->saveTransaction($marginReleasedValue);
+            }
+
             // if(!empty($transactionData['reversePayment']))
             // foreach ($transactionData['reversePayment'] as $interestRevPaymentValue){
             //     $this->lmsRepo->saveTransaction($interestRevPaymentValue);
@@ -1107,7 +1127,7 @@ trait LmsTrait
         // dd($data);
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['gl_flag'] = 1;
-        $transactionData['soa_flag'] = ($transType == 10) ? 0 : 1;
+        $transactionData['soa_flag'] = in_array($transType,[10]) ? 0 : 1;
         $transactionData['user_id'] = $userId ?? null;
         $transactionData['disbursal_id'] = $data['disbursal_id'] ?? null;
         $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
