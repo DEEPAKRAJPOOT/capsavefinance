@@ -741,7 +741,7 @@
                                     <li>Provided further that notwithstanding anything to the contrary contained in this Agreement, CFPL may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan or any part thereof (even if partial or no disbursement is made) without any liability and without any obligations to give any reason whatsoever, whereupon all principal monies, interest thereon and all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable to CFPL by the Borrower forthwith upon demand from CFPL</li>
                               </ol>
                            </div>
-                           @if(!empty($download) && $download == true)
+                           @if(!empty($download) && $download == true && !Session::has('message'))
                            <div align="center"><a href="{{ route('send_sanction_letter_supplychain', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId]) }}" style=" background-color: #30878e;border: none;border-radius: 5px;color: white;padding: 10px 10px;text-align: center;text-decoration: none;display: inline-block;font-size: 14px;margin: 4px 2px;cursor: pointer;" onclick="document.getElementById('overlay').style.display='block'"> Send Email</a></div>
                            @endif
                 </div>
