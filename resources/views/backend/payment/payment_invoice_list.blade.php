@@ -19,7 +19,57 @@
 									<th>Debit</th>
 									<th>Credit</th>
 								</tr>
-							</thead>
+                            </thead>
+                                <tr role="row" class="odd">
+                                    <td class="sorting_1">03-Mar-2020</td>
+                                    <td>05-Mar-2020</td>
+                                    <td>Repayment</td>
+                                    <td>INV000001</td>
+                                    <td>3000.00</td>
+                                    <td>233000</td>
+                                </tr>
+
+                                <!-- blank -->
+                                <tr role="row" class="odd">
+                                    <td></td>
+                                </tr>
+
+                                <tr role="row" class="odd">
+                                    <td>Total Factored</td>
+                                </tr>
+                                <tr role="row" class="odd">
+                                    <td style="font-weight:bold"><b>Non Factored</b></td>
+                                </tr>
+
+                                <!-- blank -->
+                                <tr role="row" class="odd">
+                                    <td></td>
+                                </tr>
+
+                                <tr role="row" class="odd">
+                                    <td>Total amt for Margin</td>
+                                </tr>
+                                <tr role="row" class="odd">
+                                    <td>% Margin</td>
+                                </tr>
+                                <tr role="row" class="odd">
+                                    <td>Overdue Interest</td>
+                                </tr>
+                                <tr role="row" class="odd">
+                                    <td style="font-weight:bold"><b>Margin Released</b></td>
+                                </tr>
+
+                                <!-- blank -->
+                                <tr role="row" class="odd">
+                                    <td></td>
+                                </tr>
+
+                                <tr role="row" class="odd">
+                                    <td style="font-weight:bold"><b>Interest Refund</b></td>
+                                </tr>
+                                <tr role="row" class="odd">
+                                    <td style="font-weight:bold; font-size: 15px"><b>Total Refund</b></td>
+                                </tr>
 							<tbody>
 
 							</tbody>
