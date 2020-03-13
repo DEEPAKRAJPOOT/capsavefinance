@@ -2721,7 +2721,6 @@ if ($err) {
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
@@ -3926,4 +3925,11 @@ if ($err) {
         $data = $dataProvider->getRequestList($this->request, $requestData);
         return $data;
     }
+    
+    public function lmsGetInvoiceByUser(Request $request ){
+        $userId = $request->get('user_id');
+        $invoiceIds = $this->lmsRepo->getUserInvoiceIds($userId)->toArray();
+        return response()->json($invoiceIds);
+    }
+
 }

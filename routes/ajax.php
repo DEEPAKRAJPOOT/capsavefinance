@@ -816,4 +816,8 @@ Route::group(
         'as' => 'lms_get_request_list',
         'uses' => 'AjaxController@lmsGetRequestList'
     ]);
+    Route::post('lms_get_invoices', [
+        'as' => 'lms_get_invoices',
+        'uses' => 'AjaxController@lmsGetInvoiceByUser'
+    ]); 
 });

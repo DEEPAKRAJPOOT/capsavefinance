@@ -27,12 +27,10 @@ try {
                 {data: 'customer_id'},
                 {data: 'virtual_acc_id'},
                 {data: 'customer_name'},
-                {data: 'customer_email'},
                 {data: 'limit'},
                 {data: 'consume_limit'},
                 {data: 'available_limit'},
                 {data: 'anchor'},
-                {data: 'program_type'},
                 {data: 'status'}
             ],
             aoColumnDefs: [{

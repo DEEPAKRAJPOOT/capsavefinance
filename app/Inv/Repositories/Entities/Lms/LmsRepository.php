@@ -543,4 +543,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
    {
       return Batch::createBatch(1);
    }
+   
+    public static function getUserInvoiceIds($userId)
+    {
+        return BizInvoice::getUserInvoiceIds($userId);
+    }            
 }

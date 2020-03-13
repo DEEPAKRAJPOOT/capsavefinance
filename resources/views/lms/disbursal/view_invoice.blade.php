@@ -1,6 +1,6 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-
+        <input type="hidden" value="{{ $userId }}" name="user_id" id="user_id">  
 		@if($userIvoices->count() != 0)
 		<div class="row">
 			<div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse show" data-parent="#accordion" style="">
@@ -18,10 +18,10 @@
 					<li>Invoice No. <br>  <b>{{ $invoice->invoice_no }}</b></li>
 					<li>Invoice Date <br> <b>{{ $invoice->invoice_date }}</b></li>
 					<li>Invoice Due Date <br> <b>{{ $invoice->invoice_due_date }}</b></li>
-					<li>Invoice Amt. <br> <i class="fa fa-inr"></i><b>{{ $invoice->invoice_approve_amount }}</b></li>
+					<li>Invoice Amt. <br> <i class="fa fa-inr"></i><b>{{ number_format($invoice->invoice_approve_amount) }}</b></li>
 					<li>Margin(%). <br> <i class="fa fa-inr"></i><b>{{ $margin }}</b></li>
 					<li>Disburse Amt. <br> <i class="fa fa-inr"></i><b>
-					{{ $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100) }}
+					{{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100)) }}
 					</b></li>
 					<li>Actual Funded Amt. <br> <i class="fa fa-inr"></i><b>
 					@php
@@ -38,8 +38,9 @@
 						$disburseAmount = round($fundedAmount - $interest, 2);
 					@endphp
 
-					{{ $disburseAmount }}
+					{{ number_format($disburseAmount) }}
 					</b></li>
+					<li>Type  <br> <span class="badge badge-primary">{{ ($invoice->program_offer->payment_frequency == 1) ? 'UPFRONT' : ''  }}</span></li>
 					<li>Status  <br> <span class="badge badge-warning">{{ $invoice->mstStatus->status_name }}</span></li>
 				</ul>
 				<hr>
@@ -59,15 +60,59 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
+	$('.invoice_id').each(function() {
+		let parent_inv_ids = parent.$('#invoice_ids').val();
+		let allInvIds = parent_inv_ids.split(',');
+		let curr_val = $(this).val();
+		let is_checked = jQuery.inArray(curr_val, allInvIds) != -1;
+		$(this).prop('checked', is_checked);
+	})
+
 	$('.invoice_id').on('click', function() {
-		let current_inv_ids = parent.$('#invoice_ids').val();
 		let current_id = $(this).val();
 		if($(this).is(':checked')){
-			parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
+			let parent_inv_ids = parent.$('#invoice_ids').val().trim();
+			let allInvIds = parent_inv_ids.split(',');
+			if(!parent_inv_ids.length){
+				allInvIds = [];
+			}
+			if(allInvIds.length != 0){
+				allInvIds.push(current_id);
+				allInvIds.join();
+				parent.$('#invoice_ids').val(allInvIds.join());
+			}else{
+				parent.$('#invoice_ids').val(current_id);
+			}
+			
 		}else{
-			parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(current_id, 'g'), ''));
+			let parent_inv_ids = parent.$('#invoice_ids').val().trim();
+			let allInvIds = parent_inv_ids.split(',');
+			if(!parent_inv_ids.length){
+				allInvIds = [];
+			}
+			allInvIds = allInvIds.filter(e => e !== current_id);
+			parent.$('#invoice_ids').val(allInvIds.join());
 		}
-	})
+	});
+
+	// let parent_inv_ids = parent.$('#invoice_ids').val();
+	// let invoiceIdArray = parent_inv_ids.split(",");
+	// console.log(invoiceIdArray);
+	// var checkedVals = $('.invoice_id:checkbox').map(function() {
+	// 	if (jQuery.inArray(this.value, invoiceIdArray)) {
+	// 		$('input.invoice_id').prop('checked', true);;
+	// 	}
+	// }).get();
+
+	// $('.invoice_id').on('click', function() {
+	// 	let current_inv_ids = parent.$('#invoice_ids').val();
+	// 	let current_id = $(this).val();
+	// 	if($(this).is(':checked')){
+	// 		parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
+	// 	}else{
+	// 		parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(','+current_id, 'g'), ','));
+	// 	}
+	// })
 	
 });
 </script>
