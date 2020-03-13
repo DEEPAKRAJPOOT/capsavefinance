@@ -9,11 +9,11 @@
       <i class="fa fa-clipboard" aria-hidden="true"></i>
    </div>
    <div class="header-title">
-      <h3 class="mt-2">Payment Advice</h3>
+      <h3 class="mt-2">Payment Advice and Refund</h3>
      
       <ol class="breadcrumb">
          <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-         <li class="active">Payment Advice</li>
+         <li class="active">Payment Advice and Refund</li>
       </ol>
    </div>
 
@@ -101,6 +101,7 @@
 
 </div></div>
 </div>
+{!!Helpers::makeIframePopup('paymentRefundInvoice','Payment Refund Invoice', 'modal-lg')!!}
     @endsection
     @section('jscript')
     <script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>

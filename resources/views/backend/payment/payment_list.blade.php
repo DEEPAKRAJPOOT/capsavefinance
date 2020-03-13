@@ -92,6 +92,7 @@
 
   </div>
   {!!Helpers::makeIframePopup('modalUploadPayment','Upload Payment', 'modal-lg')!!}
+
     @endsection
     @section('jscript')
 <script>

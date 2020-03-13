@@ -2,6 +2,8 @@
 
 namespace App\Inv\Repositories\Entities\Lms;
 
+use App\Http\Requests\Request;
+use Carbon\Carbon;
 use DB;
 use Session;
 use App\Inv\Repositories\Contracts\LmsInterface;
@@ -22,6 +24,8 @@ use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
+use App\Inv\Repositories\Models\Lms\Batch;
+use App\Inv\Repositories\Models\Lms\BatchLog;
 
 /**
  * Lms Repository class
@@ -497,12 +501,49 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return  $result? $result:false;
        }
 
-    public function getDisbursals($disburseIds)
-    {
-        return Disbursal::whereIn('disbursal_id', $disburseIds)
-               ->get();
-    }
-    
+   public function getAllRefundLmsUser()
+   {
+      return LmsUser::with('user')->groupBy('user_id')
+               ->whereHas('transaction', function ($query) {
+                  $query->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')]);
+               });
+   }
+
+   public function getDisbursals($disburseIds)
+   {
+      return Disbursal::whereIn('disbursal_id', $disburseIds)
+            ->get();
+   }
+
+   public function getCreateBatchData($request)
+   {
+      $transType = $request->trans_type;
+      return Transactions::where('trans_type',$transType);
+   }
+
+   public function getEditBatchData($request)
+   {
+      $transType = $request->trans_type;
+      $batch_id = $request->batch_id;
+
+      return BatchLog::whereHas('batch', function ($query) use ($request) {
+         $query->where('batch_id','=',$request->batch_id)->whereIn('status',[1,4]);
+      })->whereHas('transactions', function ($query) use($request){
+         $query->where('trans_type','=',$request->trans_type);
+      })->whereIn('status',[1,4])->get();
+     
+   }
+
+   public function getRequestList($request)
+   {
+      return Batch::all();
+   }
+
+   public function createBatch()
+   {
+      return Batch::createBatch(1);
+   }
+   
     public static function getUserInvoiceIds($userId)
     {
         return BizInvoice::getUserInvoiceIds($userId);
