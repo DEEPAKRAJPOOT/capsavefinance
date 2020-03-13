@@ -2552,7 +2552,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['customer_id', 'status','limit', 'consume_limit', 'available_limit','action'])
+                ->rawColumns(['customer_id','customer_name', 'status','limit', 'consume_limit', 'available_limit','anchor','action'])
 
                 ->editColumn(
                     'app_id',
@@ -2576,17 +2576,17 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'customer_name',
                         function ($customer) {
+
                         $full_name = $customer->user->f_name.' '.$customer->user->l_name;
-                        return $full_name;
+                        $email = $customer->user->email;
+
+                        $data = '';
+                        $data .= $full_name ? '<span><b>Name:&nbsp;</b>'.$full_name.'</span>' : '';
+                        $data .= $email ? '<br><span><b>Email:&nbsp;</b>'.$email.'</span>' : '';
+
+                        return $data;
                     }
                 )
-                ->editColumn(
-                        'customer_email',
-                        function ($customer) {
-                    $email = $customer->user->email;
-                    return $email;
-                    
-                })
                 ->editColumn(
                     'limit',
                     function ($customer) {
@@ -2618,14 +2618,12 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'anchor',
                     function ($customer) {
-                    
-                    return ($customer->user->anchor->comp_name) ?? '--' ;
-                })
-                ->editColumn(
-                    'program_type',
-                    function ($customer) {
-                    
-                    return ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
+                        $anchor = ($customer->user->anchor->comp_name) ?? '--';
+                        $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
+                        $data = '';
+                        $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
+                        $data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        return $data;
                 })
                 ->editColumn(
                     'status',
@@ -2668,7 +2666,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetDisbursalCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['customer_id','status', 'action'])
+                ->rawColumns(['customer_id', 'app_id','bank', 'total_invoice_amt', 'total_disburse_amt', 'total_actual_funded_amt' ,'status', 'action'])
                 ->addColumn(
                     'customer_id',
                     function ($customer) {
@@ -2700,49 +2698,55 @@ class DataRenderer implements DataProviderInterface
                         // return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
+                ->editColumn(
+                    'app_id',
+                    function ($customer) {
+                        return 'CAPS000'.$customer->app_id;
+                    }
+                )
                 ->addColumn(
                     'ben_name',
                     function ($customer) {
+
                         if ($customer->user->is_buyer == 2) {
-                            return (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
+                            $benName = (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
                         } else {
-                            return (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                            $benName =  (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
                         }
+                        return $benName;
                     }
                 )     
                 ->editColumn(
-                    'ben_bank_name',
+                    'bank',
                         function ($customer) {
                         if ($customer->user->is_buyer == 2) {
-                            return (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
+                            $bank_name = (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
                         } else {
-                            return (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                            $bank_name = (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
                         }
-                        
-                    }
-                )
-                ->editColumn(
-                    'ben_ifsc',
-                        function ($customer) {
+
+
                         if ($customer->user->is_buyer == 2) {
                             $ifsc_code = (isset($customer->user->anchor_bank_details->ifsc_code)) ? $customer->user->anchor_bank_details->ifsc_code : '';
                         } else {
                             $ifsc_code = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
                         }
-                        return $ifsc_code;
-                    
-                })
-                ->editColumn(
-                    'ben_account_no',
-                        function ($customer) {
+
                         if ($customer->user->is_buyer == 2) {
                             $benAcc = (isset($customer->user->anchor_bank_details->acc_no)) ? $customer->user->anchor_bank_details->acc_no : '';
                         } else {
                             $benAcc = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
                         }
-                        return $benAcc;
-                    
-                })
+
+                        $account = '';
+                        $account .= $bank_name ? '<span><b>Bank:&nbsp;</b>'.$bank_name.'</span>' : '';
+                        $account .= $ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$ifsc_code.'</span>' : '';
+                        $account .= $benAcc ? '<br><span><b>Acc. #:&nbsp;</b>'.$benAcc.'</span>' : '';
+
+                        return $account;
+
+                    }
+                )
                 ->editColumn(
                     'total_invoice_amt',
                     function ($customer) {
@@ -2751,7 +2755,7 @@ class DataRenderer implements DataProviderInterface
                         foreach ($apps as $app) {
                             $invoiceTotal += array_sum(array_column($app['invoices'], 'invoice_approve_amount'));
                         }
-                        return $invoiceTotal;
+                        return '<i class="fa fa-inr"></i> '.number_format($invoiceTotal).'';
 
                 })
                 ->editColumn(
@@ -2767,7 +2771,7 @@ class DataRenderer implements DataProviderInterface
                             }
                         }
 
-                        return $fundedAmount;
+                        return '<i class="fa fa-inr"></i> '.number_format($fundedAmount);
                 })
                 ->editColumn(
                     'total_actual_funded_amt',
@@ -2790,7 +2794,7 @@ class DataRenderer implements DataProviderInterface
                             }
                         }
 
-                        return $disburseAmount;
+                        return '<i class="fa fa-inr"></i> '.number_format($disburseAmount);
                 })
                 ->editColumn(
                     'total_invoice',

@@ -18,10 +18,10 @@
 					<li>Invoice No. <br>  <b>{{ $invoice->invoice_no }}</b></li>
 					<li>Invoice Date <br> <b>{{ $invoice->invoice_date }}</b></li>
 					<li>Invoice Due Date <br> <b>{{ $invoice->invoice_due_date }}</b></li>
-					<li>Invoice Amt. <br> <i class="fa fa-inr"></i><b>{{ $invoice->invoice_approve_amount }}</b></li>
+					<li>Invoice Amt. <br> <i class="fa fa-inr"></i><b>{{ number_format($invoice->invoice_approve_amount) }}</b></li>
 					<li>Margin(%). <br> <i class="fa fa-inr"></i><b>{{ $margin }}</b></li>
 					<li>Disburse Amt. <br> <i class="fa fa-inr"></i><b>
-					{{ $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100) }}
+					{{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100)) }}
 					</b></li>
 					<li>Actual Funded Amt. <br> <i class="fa fa-inr"></i><b>
 					@php
@@ -38,8 +38,9 @@
 						$disburseAmount = round($fundedAmount - $interest, 2);
 					@endphp
 
-					{{ $disburseAmount }}
+					{{ number_format($disburseAmount) }}
 					</b></li>
+					<li>Type  <br> <span class="badge badge-primary">{{ ($invoice->program_offer->payment_frequency == 1) ? 'UPFRONT' : ''  }}</span></li>
 					<li>Status  <br> <span class="badge badge-warning">{{ $invoice->mstStatus->status_name }}</span></li>
 				</ul>
 				<hr>
