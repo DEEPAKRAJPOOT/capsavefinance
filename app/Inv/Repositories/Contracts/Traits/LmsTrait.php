@@ -214,7 +214,7 @@ trait LmsTrait
                     $this->lmsRepo->saveTransaction($interestDue);
                 }
 
-                $calInterestRate  = round($currentInterestRate / 100, 2);
+                $calInterestRate  = $currentInterestRate/100;
                 $interest = round($this->calInterest($balancePrincipalAmt, $calInterestRate, 1),2);
                 
                 $intAccrualData = [];
@@ -980,7 +980,7 @@ trait LmsTrait
             }
 
             if(!empty($transactionData['marginReleased']))
-            foreach($transactionData['marginRefund'] as $marginReleasedValue){
+            foreach($transactionData['marginReleased'] as $marginReleasedValue){
                 $this->lmsRepo->saveTransaction($marginReleasedValue);
             }
 
