@@ -3592,7 +3592,8 @@ class DataRenderer implements DataProviderInterface
                 'action',
                 function ($data) {
                 $act = $data->action;
-                $refund = "<a class='btn btn-action-btn btn-sm' title='Payment Refund' href =\"" . route('manage_role_permission', ['role_id' => $data->trans_id ]) . "\" rel=\"tooltip\"   > <i class='fa fa-undo'></i></a>";
+                $refund = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('payment_refund_index', ['trans_id' => $data->trans_id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-undo"></a>';
+                // $refund = "<a class='btn btn-action-btn btn-sm' data-target='#paymentRefundInvoice' title='Payment Refund' href =\"" . route('payment_refund_index', ['trans_id' => $data->trans_id ]) . "\" rel=\"tooltip\"   data-height='150px' data-width='100%' data-placement='top'> <i class='fa fa-undo'></i></a>";
                 $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" href ="'.route('payment_advice_excel', ['trans_id' => $data->trans_id]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a> &nbsp; '. $refund .'';
                 return $download;
                 }

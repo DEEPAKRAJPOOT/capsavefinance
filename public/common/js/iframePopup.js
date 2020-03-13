@@ -90,6 +90,7 @@ var iframe_ids = [
         'edit_refund_amount',
         'edit_adjust_amount',
         'edit_waveoff_amount',
+        'paymentRefundInvoice',
     ];
 
 iframe_ids.forEach(function(id) {

@@ -101,6 +101,7 @@
 
 </div></div>
 </div>
+{!!Helpers::makeIframePopup('paymentRefundInvoice','Payment Refund Invoice', 'modal-lg')!!}
     @endsection
     @section('jscript')
     <script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>

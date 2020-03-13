@@ -414,4 +414,9 @@ class PaymentController extends Controller {
     $objWriter->save('php://output');
     
   }
+
+  public function paymentInvoiceList()
+  {
+    return view('backend.payment.payment_invoice_list');
+  }
 }
