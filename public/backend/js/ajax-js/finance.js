@@ -184,7 +184,7 @@ try {
             },
            columns: [
                     {data: 'invoice_no'},
-                    {data: 'journals_type'},
+                    {data: 'journal_type'},
                     {data: 'date'},
                     {data: 'full_name'},
                     {data: 'debit_amount'},
