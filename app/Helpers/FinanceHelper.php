@@ -147,17 +147,17 @@ class FinanceHelper {
     }
 
     private function _sysFuncRate($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
-       $disbursalData = Disbursal::find($invoice_id);
+       $disbursalData = Disbursal::where('invoice_id', $invoice_id)->first();
        return (!empty($disbursalData) ? $disbursalData->interest_rate : 0);
     }
 
     private function _sysFuncTenor($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
-       $disbursalData = Disbursal::find($invoice_id);
+       $disbursalData = Disbursal::where('invoice_id', $invoice_id)->first();
        return (!empty($disbursalData) ? $disbursalData->tenor_days : 0);
     }
 
     private function sysFuncOdIntRate($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
-       $disbursalData = Disbursal::find($invoice_id);
+       $disbursalData = Disbursal::where('invoice_id', $invoice_id)->first();
        return (!empty($disbursalData) ? $disbursalData->overdue_interest_rate : 0);
     }
 }
