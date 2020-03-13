@@ -48,29 +48,29 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-	                                        <thead>
-	                                        	<tr role="row">
+                                        <table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                            <thead>
+                                                <tr role="row">
                                                     <th></th>
                                                     <th>Customer Code</th>
-													<th>Ben Name</th>
-													<th>Ben Bank Name</th>
-													<th>Ben IFSC</th>
-													<th>Ben Account No.</th>
-													<th>Total Invoice Amt.</th>
-													<th>Total Disburse Amt.</th>
-													<th>Total Actual Funded Amt.</th>
-													<th>Total Invoice </th>
+                                                    <th>Ben Name</th>
+                                                    <th>Ben Bank Name</th>
+                                                    <th>Ben IFSC</th>
+                                                    <th>Ben Account No.</th>
+                                                    <th>Total Invoice Amt.</th>
+                                                    <th>Total Disburse Amt.</th>
+                                                    <th>Total Actual Funded Amt.</th>
+                                                    <th>Total Invoice </th>
                                                     <th>Status</th>
-													<th>Action</th>
-												</tr>
-	                                        </thead>
-	                                        <tbody>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
 
-	                                        </tbody>
-                                    	</table>
-							  		</div>
-                            		<div id="disbursalCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="disbursalCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -90,6 +90,7 @@
 
     var messages = {
         lms_get_disbursal_customer: "{{ URL::route('lms_get_disbursal_customer') }}",
+        lms_get_invoices: "{{ URL::route('lms_get_invoices') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -102,12 +103,52 @@
 $(document).ready(function(){
     $(document).on('change', '.user_id', function() {
 
-        let current_user_ids = $('#user_ids').val();
-        let current_id = $(this).val();
+        // let current_user_ids = $('#user_ids').val();
+        // let current_id = $(this).val();
+        // if($(this).is(':checked')){
+        //     $('#user_ids').val(current_user_ids+','+current_id);
+        // }else{
+        //     $('#user_ids').val(current_user_ids.replace(new RegExp(','+current_id, 'g'), ','));
+        // }
+
+        let user_id = $(this).val();
         if($(this).is(':checked')){
-            $('#user_ids').val(current_user_ids+','+current_id);
+            var checked = 1;
         }else{
-            $('#user_ids').val(current_user_ids.replace(new RegExp(current_id, 'g'), ''));
+            var checked = 0;
+        }
+        var data = ({'user_id': user_id, '_token': messages.token});
+        $.ajax({
+        type: "POST",
+            url: '{{Route('lms_get_invoices')}}',
+            data: data,
+            cache: false,
+            success: function (res)
+            {
+                let current_inv_ids = $('#invoice_ids').val();
+
+                if(checked == 1){
+                    ids = current_inv_ids ? current_inv_ids + ',' + res : res;
+                    $('#invoice_ids').val(ids);
+                }else{
+                    let curr_arr = current_inv_ids.split(',').map(function(item) {
+                        return parseInt(item);
+                    });
+                    newArr = array_diff(curr_arr, res);
+                    $('#invoice_ids').val( newArr.join());
+                }
+            },
+            error: function (error)
+            {
+                console.log(error);
+            }
+
+        });
+        
+        function array_diff(realArray, toRemoveArray) {
+          return realArray.filter(function(elm) {
+            return toRemoveArray.indexOf(elm) === -1;
+          })
         }
     });
     

@@ -56,58 +56,37 @@ class CustomerController extends Controller
 	{
 		try {
 			$totalLimit = 0;
+			$totalCunsumeLimit = 0;
 			$consumeLimit = 0;
-                        $transactions = 0;
+			$transactions = 0;
 			$user_id = $request->get('user_id');
 			$userInfo = $this->userRepo->getCustomerDetail($user_id);
-                        
+						
 			$application = $this->appRepo->getCustomerApplications($user_id);
-                        //dd($application);
-                        $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
-			foreach ($application as $key => $value) {
-				$totalLimit += (isset($value->appLimit->tot_limit_amt)) ? $value->appLimit->tot_limit_amt : 0;
-			}
+			$anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 
-			foreach ($application as  $value) {
-                          
-                             foreach ($value->disbursal as  $val) { 
-                             $consumeLimit += (isset($val->principal_amount)) ? $val->principal_amount : 0;
-			
-                             }
-                         }
-                       foreach ($application as  $value) {
-                          
-                             foreach ($value->transactions as  $val) { 
-                             $transactions += (isset($val->amount)) ? $val->amount : 0;
-			
-                             }
-                         }
-                      
-                        $consumeLimitTotal =  $totalLimit-$consumeLimit; 
-                        $final_consumer_limit = $consumeLimitTotal+$transactions;
+			foreach ($application as $key => $app) {
+				if(isset($app->prgmLimits)) {
+                    foreach ($app->prgmLimits as $value) {
+                        $totalLimit += $value->limit_amt;
+                    }
+                }	
+                if(isset($app->acceptedOffers)) {
+                    foreach ($app->acceptedOffers as $value) {
+                        $totalCunsumeLimit += $value->prgm_limit_amt;
+                    }
+                }
+			}
 			$userInfo->total_limit = number_format($totalLimit);
-                        if($final_consumer_limit >=$totalLimit)
-                        {
-                            $userInfo->consume_limit = number_format($totalLimit-$final_consumer_limit);
-                        }
-                        else
-                        {
-                            $userInfo->consume_limit = number_format($final_consumer_limit);
-                        }
-			if($transactions >=$consumeLimit)
-                        {
-                            $userInfo->utilize_limit = 0;
-                        }
-                        else
-                        {
-                           $userInfo->utilize_limit = number_format($consumeLimit-$transactions);
-                        }
-                        return view('lms.customer.list_applications')
-				->with([
-					'userInfo' => $userInfo, 
-					'application' => $application,
-					'anchors' => $anchors
-					]);
+			$userInfo->consume_limit = number_format($totalCunsumeLimit);
+			$userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+
+			return view('lms.customer.list_applications')
+			->with([
+				'userInfo' => $userInfo, 
+				'application' => $application,
+				'anchors' => $anchors
+				]);
 
 
 		} catch (Exception $ex) {

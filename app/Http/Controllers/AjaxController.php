@@ -3954,7 +3954,6 @@ if ($err) {
         return response()->json($status);
     }
     
-    
     public function getAllBaseRateList(DataProviderInterface $dataProvider) { 
      $baseRateList = $this->masterRepo->getAllBaseRateList();
      $baserates = $dataProvider->getBaseRateList($this->request, $baseRateList);
@@ -3972,4 +3971,10 @@ if ($err) {
         $this->providerResult = $dataProvider->getTransactionsByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+    public function lmsGetInvoiceByUser(Request $request ){
+        $userId = $request->get('user_id');
+        $invoiceIds = $this->lmsRepo->getUserInvoiceIds($userId)->toArray();
+        return response()->json($invoiceIds);
+    }
+
 }

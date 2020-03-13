@@ -1,6 +1,6 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-
+        <input type="hidden" value="{{ $userId }}" name="user_id" id="user_id">  
 		@if($userIvoices->count() != 0)
 		<div class="row">
 			<div id="collapseOne" class="card-body bdr pt-2 pb-2 collapse show" data-parent="#accordion" style="">
@@ -25,12 +25,16 @@
 					</b></li>
 					<li>Actual Funded Amt. <br> <i class="fa fa-inr"></i><b>
 					@php
+						$interest = 0;
 						$now = strtotime($invoice->invoice_due_date); // or your date as well
 						$your_date = strtotime($invoice->invoice_date);
 						$datediff = abs($now - $your_date);
 						$tenor = round($datediff / (60 * 60 * 24));
 						$fundedAmount = $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->program_offer->margin)/100);
-		    			$interest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / 360) ;                
+		    			$tInterest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / 360) ;     
+		    			if($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) {
+				            $interest = $tInterest;
+				        }           
 						$disburseAmount = round($fundedAmount - $interest, 2);
 					@endphp
 
@@ -55,15 +59,59 @@
 @section('jscript')
 <script>
 $(document).ready(function(){
+	$('.invoice_id').each(function() {
+		let parent_inv_ids = parent.$('#invoice_ids').val();
+		let allInvIds = parent_inv_ids.split(',');
+		let curr_val = $(this).val();
+		let is_checked = jQuery.inArray(curr_val, allInvIds) != -1;
+		$(this).prop('checked', is_checked);
+	})
+
 	$('.invoice_id').on('click', function() {
-		let current_inv_ids = parent.$('#invoice_ids').val();
 		let current_id = $(this).val();
 		if($(this).is(':checked')){
-			parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
+			let parent_inv_ids = parent.$('#invoice_ids').val().trim();
+			let allInvIds = parent_inv_ids.split(',');
+			if(!parent_inv_ids.length){
+				allInvIds = [];
+			}
+			if(allInvIds.length != 0){
+				allInvIds.push(current_id);
+				allInvIds.join();
+				parent.$('#invoice_ids').val(allInvIds.join());
+			}else{
+				parent.$('#invoice_ids').val(current_id);
+			}
+			
 		}else{
-			parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(current_id, 'g'), ''));
+			let parent_inv_ids = parent.$('#invoice_ids').val().trim();
+			let allInvIds = parent_inv_ids.split(',');
+			if(!parent_inv_ids.length){
+				allInvIds = [];
+			}
+			allInvIds = allInvIds.filter(e => e !== current_id);
+			parent.$('#invoice_ids').val(allInvIds.join());
 		}
-	})
+	});
+
+	// let parent_inv_ids = parent.$('#invoice_ids').val();
+	// let invoiceIdArray = parent_inv_ids.split(",");
+	// console.log(invoiceIdArray);
+	// var checkedVals = $('.invoice_id:checkbox').map(function() {
+	// 	if (jQuery.inArray(this.value, invoiceIdArray)) {
+	// 		$('input.invoice_id').prop('checked', true);;
+	// 	}
+	// }).get();
+
+	// $('.invoice_id').on('click', function() {
+	// 	let current_inv_ids = parent.$('#invoice_ids').val();
+	// 	let current_id = $(this).val();
+	// 	if($(this).is(':checked')){
+	// 		parent.$('#invoice_ids').val(current_inv_ids+','+current_id);
+	// 	}else{
+	// 		parent.$('#invoice_ids').val(current_inv_ids.replace(new RegExp(','+current_id, 'g'), ','));
+	// 	}
+	// })
 	
 });
 </script>

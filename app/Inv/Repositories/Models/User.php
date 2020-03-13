@@ -721,6 +721,6 @@ class User extends Authenticatable
 
     public function anchor_bank_details()
     {
-        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where(['is_active' => 1]);
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where(['is_active' => 1, 'is_default' => 1]);
     }
 }

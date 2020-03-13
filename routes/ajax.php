@@ -874,4 +874,9 @@ Route::group(
         'as' => 'get_calculation_amount',
         'uses' => 'AjaxController@getCalculationAmount'
     ]);
+
+    Route::post('lms_get_invoices', [
+        'as' => 'lms_get_invoices',
+        'uses' => 'AjaxController@lmsGetInvoiceByUser'
+    ]); 
 });
