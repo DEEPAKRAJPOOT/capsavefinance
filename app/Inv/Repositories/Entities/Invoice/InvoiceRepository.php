@@ -783,4 +783,10 @@ use CommonRepositoryTraits;
 
         return $result ?: false;
     }
+
+    public function getProgramOfferByPrgmId($prgmId)
+    {
+        return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
+    }    
+
 }

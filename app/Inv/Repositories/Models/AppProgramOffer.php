@@ -405,4 +405,23 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
     }
     
+    
+    public static function getProgramOfferByPrgmId($prgmId)
+    {
+        $result = self::select('app_prgm_offer.*','app.user_id','users.f_name','users.l_name')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')                
+                ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->join('users', 'users.user_id', '=', 'app.user_id')                
+                ->join('lms_users', function ($join) {
+                    $join->on('lms_users.user_id', '=', 'users.user_id');                    
+                    $join->on('lms_users.app_id', '=', 'app.app_id');
+                })                
+                ->where('app_product.product_id', 1)
+                ->where('app_prgm_offer.prgm_id', $prgmId)
+                ->where('app_prgm_offer.is_approve', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->get();
+        
+        return isset($result[0]) ? $result : [];
+    }
 }

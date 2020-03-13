@@ -296,4 +296,18 @@ class Transactions extends BaseModel {
                     ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');
     }
+    
+    public static function getRepaymentAmount($userId, $transType)
+    {
+        $result = self::select(DB::raw('SUM(amount+cgst+sgst+igst) AS rpayamount'))                
+                ->whereIn('is_settled', [0,1])
+                ->where('user_id', $userId)
+                ->where('entry_type', '0')
+                ->where('trans_type', $transType)
+                ->groupBy('user_id')
+                ->get();
+        
+        return isset($result[0]) ? $result : [];
+    }    
+
 }
