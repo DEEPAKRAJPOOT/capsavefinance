@@ -146,7 +146,7 @@ trait LmsTrait
                             }
                            
 
-                            $recalInterestRate  = round($currentInterestRate / 100, 2);
+                            $recalInterestRate  = $currentInterestRate/100;
                             $recalinterest = round($this->calInterest($recalbalancePrincipalAmt, $recalInterestRate, 1),2);
                             
                             $intAccrualData = [];
