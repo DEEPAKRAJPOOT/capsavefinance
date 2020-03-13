@@ -113,7 +113,7 @@ class FinancialJeConfig extends BaseModel {
             AND journal_entries.invoice_id = disbursal.invoice_id 
             AND disbursal.user_id = users.user_id 
             ");*/
-         $result = self::select('journal_entries.invoice_id', 'journals.name as journal_name', 'trxn.date', 
+         $result = self::select('invoice.invoice_no', 'journals.name as journal_name', 'trxn.date', 
             'users.f_name', 'users.m_name', 'users.l_name', 
              // \DB::raw("CONCAT(users.f_name,' ',users.m_name,' ',users.l_name) as ledger_Name"),
             'trxn.debit_amount', 'journal_entries.reference as dr_ref_no', 'trxn.debit_amount as dr_ref_amount',
@@ -125,6 +125,7 @@ class FinancialJeConfig extends BaseModel {
            ->join('financial_ji_config as jiconf', 'trxn.ji_config_id', '=' , 'jiconf.ji_config_id')
            ->join('financial_journal_entries as journal_entries', 'trxn.journal_entry_id', '=', 'journal_entries.journal_entry_id')
            ->join('disbursal', 'journal_entries.invoice_id', '=', 'disbursal.invoice_id')
+           ->join('invoice', 'invoice.invoice_id', '=', 'disbursal.invoice_id')
            ->join('users', 'disbursal.user_id', '=', 'users.user_id')
            ->get();
         return empty($result) ? false : $result;    

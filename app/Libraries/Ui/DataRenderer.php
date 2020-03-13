@@ -3269,6 +3269,11 @@ class DataRenderer implements DataProviderInterface
                         'invoice_id',
                         function ($dataRecords) {
                         return $dataRecords->invoice_id;
+                    })   
+                    ->editColumn(
+                        'invoice_no',
+                        function ($dataRecords) {
+                        return $dataRecords->invoice_no;
                     }) 
                     ->editColumn(
                         'debit_amount',
@@ -3289,6 +3294,11 @@ class DataRenderer implements DataProviderInterface
                         'journals_name',
                         function ($dataRecords) {
                         return $dataRecords->journals_name;
+                    })    
+                    ->editColumn(
+                        'full_name',
+                        function ($dataRecords) {
+                        return $dataRecords->f_name . ' ' . $dataRecords->m_name . ' ' . $dataRecords->l_name;
                     }) 
                     ->make(true);
         }

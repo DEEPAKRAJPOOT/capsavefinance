@@ -20,14 +20,17 @@
                         <table id="transactions" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Date</th>
-                                    <th>Label</th>                                    
-                                    <th>Account Name</th>
-                                    <th>Journal Name</th>
-                                    <th>Invoice Id</th>
+                                    <th>Invoice No</th>
+                                    <th>Voucher Type</th>
+                                    <th>Invoice Date</th>
+                                    <th>Ledger Name</th>
                                     <th>Debit Amount</th>
+                                    <th>Reference No</th>
+                                    <th>Ref Amount</th>
                                     <th>Credit Amount</th>
                                     <th>Reference No</th>
+                                    <th>Cr Ref Amount</th>
+                                    <th>Narration</th>                                    
                                 </tr>
                             </thead>
                             <tbody>
