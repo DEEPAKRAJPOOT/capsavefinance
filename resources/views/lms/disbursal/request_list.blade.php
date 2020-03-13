@@ -127,13 +127,14 @@ $(document).ready(function(){
             {
                 let current_inv_ids = $('#invoice_ids').val();
 
-                
                 if(checked == 1){
                     ids = current_inv_ids ? current_inv_ids + ',' + res : res;
                     $('#invoice_ids').val(ids);
                 }else{
-                    let curr_arr = current_inv_ids.split(',');
-                    newArr = removeA(curr_arr, res);
+                    let curr_arr = current_inv_ids.split(',').map(function(item) {
+                        return parseInt(item);
+                    });
+                    newArr = array_diff(curr_arr, res);
                     $('#invoice_ids').val( newArr.join());
                 }
             },
@@ -143,17 +144,12 @@ $(document).ready(function(){
             }
 
         });
-
-
-        function removeA(arr, remove) { 
-            for (var i = remove.length -1; i >= 0; i--){
-                    arr.splice(remove[i], 1); 
-            }
-            return arr; 
+        
+        function array_diff(realArray, toRemoveArray) {
+          return realArray.filter(function(elm) {
+            return toRemoveArray.indexOf(elm) === -1;
+          })
         }
-
-
-
     });
     
 });
