@@ -1089,7 +1089,7 @@ trait LmsTrait
         $disbursalData['customer_id'] = $invoice['lms_user']['customer_id'] ?? null;
         $disbursalData['principal_amount'] = $fundedAmount ?? null;
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
-        $disbursalData['payment_due_date'] = ($invoice['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime($invoice['disburse_date']. "+ $tenor Days")) : $invoice['invoice_due_date'];
+        $disbursalData['payment_due_date'] = ($invoice['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$invoice['disburse_date']). "+ $tenor Days")) : $invoice['invoice_due_date'];
         $disbursalData['tenor_days'] =  $invoice['program_offer']['tenor'] ?? null;
         $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
         $disbursalData['total_interest'] = $interest;

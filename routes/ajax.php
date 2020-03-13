@@ -728,13 +728,20 @@ Route::group(
         'uses' => 'AjaxController@getTableValByField'
     ]);
 
-
     Route::post('lms-get-refund-customer', [
         'as' => 'lms_get_refund_customer',
         'uses' => 'AjaxController@lmsGetRefundList'
     ]);
+
+    Route::post('lms-create-batch-ajax',[
+        'as' => 'lms_create_batch_ajax',
+        'uses' => 'AjaxController@lmsCreateBatch'
+    ]);
     
-    
+    Route::post('lms-edit-batch-ajax',[
+        'as' => 'lms_edit_batch_ajax',
+        'uses' => 'AjaxController@lmsEditBatch'
+    ]);
     /*lms route*/
 
 
@@ -742,36 +749,33 @@ Route::group(
     
     //////////////// ajax request for upload invoice///////////////////////
     Route::POST('front_program_list', [
-            'as' => 'front_program_list',
-            'uses' => 'AjaxController@getProgramSingleList'
+        'as' => 'front_program_list',
+        'uses' => 'AjaxController@getProgramSingleList'
     ]); 
-        Route::POST('front_supplier_list', [
-            'as' => 'front_supplier_list',
-            'uses' => 'AjaxController@getSupplierList'
+    Route::POST('front_supplier_list', [
+        'as' => 'front_supplier_list',
+        'uses' => 'AjaxController@getSupplierList'
     ]); 
-       Route::POST('check_duplicate_invoice', [
-            'as' => 'check_duplicate_invoice',
-            'uses' => 'AjaxController@checkDuplicateInvoice'
+    Route::POST('check_duplicate_invoice', [
+        'as' => 'check_duplicate_invoice',
+        'uses' => 'AjaxController@checkDuplicateInvoice'
     ]);            
-   Route::POST('upload_invoice_csv', [
-            'as' => 'upload_invoice_csv',
-            'uses' => 'AjaxController@uploadInvoice'
+    Route::POST('upload_invoice_csv', [
+        'as' => 'upload_invoice_csv',
+        'uses' => 'AjaxController@uploadInvoice'
     ]); 
     Route::POST('delete_temp_invoice', [
-            'as' => 'delete_temp_invoice',
-            'uses' => 'AjaxController@DeleteTempInvoice'
+        'as' => 'delete_temp_invoice',
+        'uses' => 'AjaxController@DeleteTempInvoice'
     ]);    
-               
     Route::POST('get-ueser-by-role', [
         'as' => 'get_ueser_by_role',
         'uses' => 'AjaxController@getUserByRole'
     ]); 
-    
     Route::POST('get-co-lender-list', [
         'as' => 'get_co_lender_list',
         'uses' => 'AjaxController@getColenderList'
     ]); 
-          
     Route::get('get-group-company', [
         'as' => 'get_group_company',
         'uses' => 'AjaxController@getGroupCompany'
@@ -794,19 +798,24 @@ Route::group(
         'uses' => 'AjaxController@updateGroupCompanyExposure'
     ]); 
 
-     Route::post('get_chrg_amount', [
-                'as' => 'get_chrg_amount',
-                'uses' => 'AjaxController@getChrgAmount'
-            ]);
-     Route::post('backend_get_payment_advice', [
+    Route::post('get_chrg_amount', [
+        'as' => 'get_chrg_amount',
+        'uses' => 'AjaxController@getChrgAmount'
+    ]);
+    Route::post('backend_get_payment_advice', [
         'as' => 'backend_get_payment_advice',
         'uses' => 'AjaxController@getPaymentAdvice'
     ]);
     
-      Route::post('get_calculation_amount', [
-                'as' => 'get_calculation_amount',
-                'uses' => 'AjaxController@getCalculationAmount'
-            ]);
+    Route::post('get_calculation_amount', [
+        'as' => 'get_calculation_amount',
+        'uses' => 'AjaxController@getCalculationAmount'
+    ]);
+
+    Route::post('lms-get-request-list',[
+        'as' => 'lms_get_request_list',
+        'uses' => 'AjaxController@lmsGetRequestList'
+    ]);
     Route::post('lms_get_invoices', [
         'as' => 'lms_get_invoices',
         'uses' => 'AjaxController@lmsGetInvoiceByUser'
