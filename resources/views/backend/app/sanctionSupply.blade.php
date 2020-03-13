@@ -642,14 +642,14 @@
                         @endif
 
                         @if(!empty($postData['pre_post_condition']['13']) && strtolower($postData['pre_post_condition']['13']) == 'applicable')
-                        <li>During the currency of CFPL’s credit facility(s), the borrower will not without CFPL’s prior {{$postData['cfpl_prior'] ?? ''}} in writing: 
+                        <li>During the currency of CFPL's credit facility(s), the borrower will not without CFPL's prior {{$postData['cfpl_prior'] ?? ''}} in writing: 
                           <ol>
                             <li>conclude any fresh borrowing arrangement either secured or unsecured with any other Bank or Financial Institutions, borrower or otherwise, not create any further charge over their fixed assets without our prior approval in writing. </li>
                             <li>undertake any expansion or fresh project or acquire fixed assets, while normal capital expenditure, e.g. replacement of parts, can be incurred. </li>
                             <li>invest by way of share capital in or lend or advance to or place deposits with any other concern (normal trade credit or security deposit in the routine course of business or advances to employees can, however, be extended). </li>
                             <li>formulate any scheme of amalgamation with any other borrower or reconstruction, acquire any borrower. </li>
                             <li>undertake guarantee obligations on behalf of any other borrower or any third party. </li>
-                            <li>declare dividend for any year except out of profits relating to that year after making all the due and necessary provisions provided that no default had occurred in any repayment obligation and Bank’s permission is obtained. </li>
+                            <li>declare dividend for any year except out of profits relating to that year after making all the due and necessary provisions provided that no default had occurred in any repayment obligation and Bank's permission is obtained. </li>
                             <li>make any repayment of the loans and deposits and discharge other liabilities except those shown in the funds flow statement submitted from time to time. </li>
                             <li>make any change in their management set-up. </li>
                           </ol></li>
@@ -729,9 +729,9 @@
                                         <li>Any speculative purposes.</li>
                                       </ul>
                                     </li>
-                                    <li>The borrower shall maintain adequate books and records which should correctly reflect their financial position and operations and it should submit to CFPL at regular intervals such statements as may be prescribed by CFPL in terms of the RBI / Bank’s instructions issued from time to time.</li>
+                                    <li>The borrower shall maintain adequate books and records which should correctly reflect their financial position and operations and it should submit to CFPL at regular intervals such statements as may be prescribed by CFPL in terms of the RBI / Bank's instructions issued from time to time.</li>
                                     <li>The borrower will keep CFPL informed of the happening of any event which is likely to have an impact on their profit or business and more particularly, if the monthly production or sale and profit are likely to be substantially lower than already indicated to CFPL. The borrower will inform accordingly with reasons and the remedial steps proposed to be taken. </li>
-                                    <li>CFPL will have the right to examine at all times the borrower’s books of accounts and to have the borrower’s factory(s)/branches inspected from time to time by officer(s) of the CFPL and/or qualified auditors including stock audit and/or technical experts and/or management consultants of CFPL’s choice and/or we can also get the stock audit conducted by other banker. The cost of such inspections will be borne by the borrower.</li>
+                                    <li>CFPL will have the right to examine at all times the borrower's books of accounts and to have the borrower's factory(s)/branches inspected from time to time by officer(s) of the CFPL and/or qualified auditors including stock audit and/or technical experts and/or management consultants of CFPL's choice and/or we can also get the stock audit conducted by other banker. The cost of such inspections will be borne by the borrower.</li>
                                     <li>The borrower should not pay any consideration by way of commission, brokerage, fees or in any other form to guarantors directly or indirectly.</li>
                                     <li>The Borrower and Guarantor(s) shall be deemed to have given their express consent to CFPL to disclose the information and data furnished by them to CFPL and also those regarding the credit facility/ies enjoyed by the borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau (India) Ltd. (“CIBIL”), or RBI or any other agencies specified by RBI who are authorised to seek and publish information.</li>
                                     <li>The Borrower will keep the CFPL advised of any circumstances adversely affecting their financial position including any action taken by any creditor, Government authority against them.</li>
