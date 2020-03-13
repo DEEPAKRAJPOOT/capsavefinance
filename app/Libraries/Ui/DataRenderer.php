@@ -2203,7 +2203,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'is_gst_applicable',
                     function ($charges) {
-                     return ($charges->transaction->gst == 1) ? 'Yes' : 'No'; 
+                     return (!empty($charges->transaction->gst) && $charges->transaction->gst == 1) ? 'Yes' : 'No'; 
                 })      
                  ->addColumn(
                     'charge_percent',
@@ -2218,7 +2218,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'effective_date',
                     function ($charges) {
-                   return $charges->transaction->trans_date;
+                   return $charges->transaction->trans_date ?? 'N/A';
                 }) 
                 ->addColumn(
                     'applicability',
@@ -2228,7 +2228,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'chrg_desc',
                     function ($charges) {
-                     return $charges->ChargeMaster->chrg_desc;
+                     return $charges->ChargeMaster->chrg_desc ?? 'N/A';
                 })
                 ->addColumn(
                     'created_at',
