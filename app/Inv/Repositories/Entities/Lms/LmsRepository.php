@@ -501,5 +501,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::whereIn('disbursal_id', $disburseIds)
                ->get();
+    }
+    
+    public static function getUserInvoiceIds($userId)
+    {
+        return BizInvoice::getUserInvoiceIds($userId);
     }            
 }

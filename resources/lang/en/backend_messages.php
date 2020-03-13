@@ -27,5 +27,6 @@ return [
     'limit_offer_success' => 'Offer generated successfully.',
     'add_payment_manual' => 'Payment add successfully.',
     'refunded' => 'Selected amount has been successfully refunded.',
+    'noBankAccount' => 'No Bank Account Found.',
 ];
 

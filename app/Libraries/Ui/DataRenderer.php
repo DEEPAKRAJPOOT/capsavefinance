@@ -2596,7 +2596,7 @@ class DataRenderer implements DataProviderInterface
                                 $this->totalLimit += $value->limit_amt;
                             }
                         }
-                    return $this->totalLimit;
+                    return number_format($this->totalLimit);
                 })
                 ->editColumn(
                     'consume_limit',
@@ -2607,13 +2607,13 @@ class DataRenderer implements DataProviderInterface
                                 $this->totalCunsumeLimit += $value->prgm_limit_amt;
                             }
                         }
-                    return $this->totalCunsumeLimit;
+                    return number_format($this->totalCunsumeLimit);
                 })
                 ->editColumn(
                     'available_limit',
                     function ($customer) {
                     
-                    return $this->totalLimit - $this->totalCunsumeLimit;
+                    return number_format($this->totalLimit - $this->totalCunsumeLimit);
                 })
                 ->editColumn(
                     'anchor',
