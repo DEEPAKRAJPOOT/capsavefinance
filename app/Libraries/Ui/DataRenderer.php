@@ -3241,9 +3241,7 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
-        public function getTransactionsByDataProvider(Request $request, $dataRecords)
-        {
-            
+        public function getTransactionsByDataProvider(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
                     ->editColumn(
                         'date',

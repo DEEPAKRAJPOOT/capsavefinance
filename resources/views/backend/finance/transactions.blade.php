@@ -19,6 +19,7 @@
                     <div class="table-responsive">
                         <table id="transactions" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
+                                
                                 <tr role="row">
                                     <th>Invoice No</th>
                                     <th>Voucher Type</th>

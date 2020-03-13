@@ -194,6 +194,7 @@ try {
                     {data: 'reference'},
                     {data: 'credit_amount'},
                     {data: 'label'},
+                    
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
