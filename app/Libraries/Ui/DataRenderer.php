@@ -3963,9 +3963,9 @@ class DataRenderer implements DataProviderInterface
                         return $dataRecords->journals_name;
                     })      
                     ->editColumn(
-                        'journals_type',
+                        'journal_type',
                         function ($dataRecords) {
-                        return $dataRecords->journals_type;
+                        return $dataRecords->journal_type;
                     })    
                     ->editColumn(
                         'full_name',
