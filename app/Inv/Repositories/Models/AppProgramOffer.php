@@ -384,7 +384,7 @@ class AppProgramOffer extends BaseModel {
                 ->join('users', 'users.user_id', '=', 'app.user_id')                
                 ->join('lms_users', function ($join) {
                     $join->on('lms_users.user_id', '=', 'users.user_id');                    
-                    $join->on('lms_users.user_id', '=', 'app.app_id');
+                    $join->on('lms_users.app_id', '=', 'app.app_id');
                 })                
                 ->where('app_product.product_id', 1)
                 ->where('app_prgm_offer.prgm_id', $prgmId)
