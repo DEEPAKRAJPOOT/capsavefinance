@@ -607,7 +607,7 @@ var messages = {
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                          $("#supplier_id").empty();
-                         $("#supplier_id").append("<option value=''>Select Customer</option>");  
+                         $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
                         $(obj1).each(function(i,v){
                                 var dApp = "000000" + v.app_id;
                                  //$("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
