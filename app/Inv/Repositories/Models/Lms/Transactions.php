@@ -282,4 +282,17 @@ class Transactions extends BaseModel {
         $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
         return $data;
     }
+    
+    public static function getRepaymentAmount($userId, $transType)
+    {
+        $result = self::select(DB::raw('SUM(amount+cgst+sgst+igst) AS rpayamount'))                
+                ->whereIn('is_settled', [0,1])
+                ->where('user_id', $userId)
+                ->where('entry_type', '0')
+                ->where('trans_type', $transType)
+                ->groupBy('user_id')
+                ->get();
+        
+        return isset($result[0]) ? $result : [];
+    }    
 }
