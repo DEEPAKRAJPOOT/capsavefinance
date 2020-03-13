@@ -58,16 +58,27 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $('#baseRateForm454').validate({// initialize the plugin
+        $('#baseRateForm').validate({// initialize the plugin
             rules: {
-                company_name: {
+                bank_id: {
                     required: true,
-                    maxlength: 200
+                    digits: true,
                 },
                 base_rate: {
                     required: true,
                     number: true,
                     range: [0, 100]
+                },
+                min_base_rate: {
+                    required: true,
+                    number: true,
+                    max: $('input[name=max_base_rate]').val(),
+                },
+                max_base_rate: {
+                    required: true,
+                    number: true,
+                    max: $('input[name=base_rate]').val(),
+                    min: $('input[name=min_base_rate]').val()
                 },
                 is_active: {
                     required: true,
@@ -75,8 +86,8 @@
                 }
             },
             messages: {
-                company_name: {
-                    required: "Please Enter Company Name",
+                bank_id: {
+                    required: "Please Select Bank",
                 },
                 base_rate: {
                     required: "Please Enter Base Rate",
