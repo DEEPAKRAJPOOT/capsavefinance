@@ -766,4 +766,9 @@ use CommonRepositoryTraits;
         $result = Transactions::find($trans_id);
         return $result ?: false;
     }
+    
+    public function getProgramOfferByPrgmId($prgmId)
+    {
+        return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
+    }    
 }

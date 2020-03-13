@@ -606,9 +606,12 @@ var messages = {
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
+                         $("#supplier_id").empty();
+                         $("#supplier_id").append("<option value=''>Select Customer</option>");  
                         $(obj1).each(function(i,v){
                               
-                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
+                                 //$("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app_id+")</option>");  
                             });
                        
                     }
@@ -622,7 +625,11 @@ var messages = {
                 }
         }); }); 
     
-    
+  $(document).on('change','#supplier_id',function(){
+    var selValue = $(this).val();
+    var selValueArr = selValue.split(",");
+    $("#prgm_offer_id").val(selValueArr[2]);       
+  });
   </script> 
 @endsection
  
