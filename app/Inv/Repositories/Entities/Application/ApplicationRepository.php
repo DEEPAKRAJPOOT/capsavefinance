@@ -1128,6 +1128,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->whereHas('programLimit', function ($query) {
                         $query->where('product_id', 1);
                 })
+                ->where('is_active', 1)
                 ->get();
 	}   
 

@@ -2552,7 +2552,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetCustomers(Request $request, $customer)
     {
         return DataTables::of($customer)
-                ->rawColumns(['customer_id', 'status', 'action'])
+                ->rawColumns(['customer_id', 'status','limit', 'consume_limit', 'available_limit','action'])
 
                 ->editColumn(
                     'app_id',
@@ -2596,7 +2596,7 @@ class DataRenderer implements DataProviderInterface
                                 $this->totalLimit += $value->limit_amt;
                             }
                         }
-                    return number_format($this->totalLimit);
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
                 })
                 ->editColumn(
                     'consume_limit',
@@ -2607,13 +2607,13 @@ class DataRenderer implements DataProviderInterface
                                 $this->totalCunsumeLimit += $value->prgm_limit_amt;
                             }
                         }
-                    return number_format($this->totalCunsumeLimit);
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
                 })
                 ->editColumn(
                     'available_limit',
                     function ($customer) {
                     
-                    return number_format($this->totalLimit - $this->totalCunsumeLimit);
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit - $this->totalCunsumeLimit).'</i></label>';
                 })
                 ->editColumn(
                     'anchor',

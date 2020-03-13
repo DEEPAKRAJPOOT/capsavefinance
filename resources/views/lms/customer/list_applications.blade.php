@@ -23,13 +23,13 @@
 								</tr>
 								<tr>
 									<td class="text-left" width="30%"><b>Total Limit</b></td>
-									<td>{{ $userInfo->total_limit }} </td> 
+									<td><i class="fa fa-inr"></i> {{ $userInfo->total_limit }} </td> 
 									<td class="text-left" width="30%"><b>Available Limit</b></td>
-									<td>{{  $userInfo->consume_limit }} </td> 
+									<td> <i class="fa fa-inr"></i> {{  $userInfo->consume_limit }} </td> 
 								</tr>
 								<tr>
 									<td class="text-left" width="30%"><b>Utilize Limit</b></td>
-									<td>{{ $userInfo->utilize_limit }} </td> 
+									<td> <i class="fa fa-inr"></i> {{ $userInfo->utilize_limit }} </td> 
 									<td class="text-left" width="30%"><b>Sales Manager</b></td>
 									<td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>
 								</tr>
@@ -94,7 +94,7 @@
 										@if($application->count() >0)
 										@foreach ($application AS $app)
 										<tr>
-											<td class="text-left">{{$app->app_id}}</td>
+											<td class="text-left">CAPS000{{$app->app_id}}</td>
 											<td class="text-left">{{$app->business->biz_entity_name}}</td>
 											<td class="text-left">
 												@if($app->status == 1)
