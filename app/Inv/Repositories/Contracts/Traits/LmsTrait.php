@@ -214,7 +214,7 @@ trait LmsTrait
                     $this->lmsRepo->saveTransaction($interestDue);
                 }
 
-                $calInterestRate  = round($currentInterestRate / 100, 2);
+                $calInterestRate  = $currentInterestRate/100;
                 $interest = round($this->calInterest($balancePrincipalAmt, $calInterestRate, 1),2);
                 
                 $intAccrualData = [];
