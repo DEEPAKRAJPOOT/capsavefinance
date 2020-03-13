@@ -23,11 +23,10 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
+                {data: 'app_id'},
                 {data: 'customer_code'},
                 {data: 'ben_name'},
-                {data: 'ben_bank_name'},
-                {data: 'ben_ifsc'},
-                {data: 'ben_account_no'},
+                {data: 'bank'},
                 {data: 'total_invoice_amt'},
                 {data: 'total_disburse_amt'},
                 {data: 'total_actual_funded_amt'},
@@ -35,7 +34,7 @@ try {
                 {data: 'status'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8, 9, 10]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8, 9]}]
         });
 
         //Search

@@ -51,18 +51,17 @@
                                         <table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">
-                                                    <th></th>
-                                                    <th>Customer Code</th>
-                                                    <th>Ben Name</th>
-                                                    <th>Ben Bank Name</th>
-                                                    <th>Ben IFSC</th>
-                                                    <th>Ben Account No.</th>
-                                                    <th>Total Invoice Amt.</th>
-                                                    <th>Total Disburse Amt.</th>
-                                                    <th>Total Actual Funded Amt.</th>
-                                                    <th>Total Invoice </th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th width="1%"></th>
+                                                    <th width="5%">Cust ID</th>
+                                                    <th width="5%">App ID</th>
+                                                    <th width="13%">Ben Name</th>
+                                                    <th width="20%">Bank Detail</th>
+                                                    <th width="12%">Total Invoice Amt.</th>
+                                                    <th width="12%">Total Disburse Amt.</th>
+                                                    <th width="15%">Total Actual Funded Amt.</th>
+                                                    <th width="8%">Total Invoice </th>
+                                                    <th width="5%">Status</th>
+                                                    <th width="4%">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
