@@ -105,6 +105,7 @@ class FinanceHelper {
         if(!empty(array_diff($formula_vars, $stored_vars))){
           return 0;
         }
+        dd($formula,array_diff($formula_vars, $stored_vars));
         return calculate_formula($formula, $varFuncArr);
     }
 
