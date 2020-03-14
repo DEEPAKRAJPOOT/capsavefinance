@@ -421,7 +421,7 @@ trait LmsTrait
                             'parent_trans_id'=>$transId
                         ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
 
-                        $transactionData['interestPaid'][$disbursalDetail->disbursal_id] = $interestPaidData;
+                        $transactionData['interestPaid'][] = $interestPaidData;
 
                         $settlementLevel = 1;
                     }
@@ -466,7 +466,7 @@ trait LmsTrait
                         'parent_trans_id'=>$transId
                     ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
 
-                    $transactionData['interestPaid'][$disbursalDetail->disbursal_id] = $interestPaidData;
+                    $transactionData['interestPaid'][] = $interestPaidData;
 
                     $settlementLevel = 1;
                 }
