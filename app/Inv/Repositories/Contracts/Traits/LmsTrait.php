@@ -542,15 +542,16 @@ trait LmsTrait
                         })->orderBy('trans_date','asc')->get();
             
             foreach ($getChargesDetails as $key => $chargeDetail) {
-
-                $chargePaidAmt = ($chargeDetail->amount<=$trans['balance_amount'])?$chargeDetail->amount:$trans['balance_amount'];
-                $trans['balance_amount'] -= $chargePaidAmt; 
-                $chargesSettledData = $this->createTransactionData($transDetail['user_id'], [
-                    'amount' => $chargePaidAmt,
-                    'trans_date'=>$transDetail['trans_date'],
-                    'parent_trans_id'=>$transId
-                ], null, $chargeDetail->trans_type, 0);
-                $transactionData['charges'][] = $chargesSettledData;
+                if($trans['balance_amount']>0){
+                    $chargePaidAmt = ($chargeDetail->amount<=$trans['balance_amount'])?$chargeDetail->amount:$trans['balance_amount'];
+                    $trans['balance_amount'] -= $chargePaidAmt; 
+                    $chargesSettledData = $this->createTransactionData($transDetail['user_id'], [
+                        'amount' => $chargePaidAmt,
+                        'trans_date'=>$transDetail['trans_date'],
+                        'parent_trans_id'=>$transId
+                    ], null, $chargeDetail->trans_type, 0);
+                    $transactionData['charges'][] = $chargesSettledData;
+                }
                 
                 if($trans['balance_amount']<=0) break;
             }
