@@ -62,29 +62,68 @@
     });
 
     $(document).ready(function () {
+        $.validator.addMethod('less_than', function (value, element, param) {
+            return this.optional(element) || value <= $(param).val();
+        }, 'Invalid value');
+
+        $.validator.addMethod('greater_than', function (value, element, param) {
+            return this.optional(element) || value >= $(param).val();
+        }, 'Invalid value');
+
+        $.validator.addMethod("rate_percent", function (value, element) {
+            return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
+        }, "Please specify a valid base rate percent");
+
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
-                'company_name': {
+                bank_id: {
                     required: true,
+                    digits: true,
                 },
-                'base_rate': {
+                base_rate: {
                     required: true,
                     number: true,
-                    range: [0, 100]
+                    range: [0, 100],
+                    rate_percent: 'input[name="base_rate"]',
                 },
-                'is_active': {
+                min_base_rate: {
                     required: true,
+                    number: true,
+                    range: [0, 100],
+                    rate_percent: 'input[name="min_base_rate"]',
+                    less_than: 'input[name="max_base_rate"]',
                 },
+                max_base_rate: {
+                    required: true,
+                    number: true,
+                    range: [0, 100],
+                    rate_percent: 'input[name="max_base_rate"]',
+                    less_than: 'input[name="base_rate"]',
+                    greater_than: 'input[name="min_base_rate"]',
+                },
+                is_active: {
+                    required: true,
+                    digits: true
+                }
             },
             messages: {
-                'company_name': {
-                    required: "Please enter Company Name",
+                bank_id: {
+                    required: "Please Select Bank",
                 },
-                'base_rate': {
-                    required: "Please enter base rate",
+                base_rate: {
+                    required: "Please Enter Base Rate",
                 },
-                'is_active': {
-                    required: "Please Select Status of Industry",
+                min_base_rate: {
+                    required: "Please Enter Min Base Rate",
+                    less_than: "Must be less than or equal to The Max Base Rate",
+                },
+                max_base_rate: {
+                    required: "Please Enter Max Base Rate",
+                    less_than: "Must be less than or equal to The Base Rate",
+                    greater_than: "Must be greater than or equal to The Min Base Rate"
+                },
+                is_active: {
+                    required: "Please Select Status of Base Rate",
                 },
             }
         });
