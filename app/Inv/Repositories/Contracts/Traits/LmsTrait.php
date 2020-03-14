@@ -79,9 +79,9 @@ trait LmsTrait
             $settledInterest = 0;
 
             if($int_type_config==2){
-                $balancePrincipalAmt = round(($principalAmount + $totalInterest) - ($settledAmount + $settledInterest),2);
+                $balancePrincipalAmt = round(($principalAmount + $totalInterest) - ($settledAmount + $settledInterest),5);
             }else{
-                $balancePrincipalAmt = round(($principalAmount - $settledAmount),2);
+                $balancePrincipalAmt = round(($principalAmount - $settledAmount),5);
             }
             
             if($transDate && $maxAccrualDate && strtotime($transDate)<= strtotime($maxAccrualDate)){
@@ -141,14 +141,14 @@ trait LmsTrait
                                         ->sum('accrued_interest');
 
                             if($int_type_config==2){
-                                $recalbalancePrincipalAmt = round(($principalAmount + $recalAccuredInterest) - ($settledAmount + $settledInterest),2);
+                                $recalbalancePrincipalAmt = round(($principalAmount + $recalAccuredInterest) - ($settledAmount + $settledInterest),5);
                             }else{
-                                $recalbalancePrincipalAmt = round(($principalAmount - $settledAmount),2);
+                                $recalbalancePrincipalAmt = round(($principalAmount - $settledAmount),5);
                             }
                            
 
                             $recalInterestRate  = $currentInterestRate/100;
-                            $recalinterest = round($this->calInterest($recalbalancePrincipalAmt, $recalInterestRate, 1),2);
+                            $recalinterest = round($this->calInterest($recalbalancePrincipalAmt, $recalInterestRate, 1),5);
                             
                             $intAccrualData = [];
                             $intAccrualData['disbursal_id'] = $disburse->disbursal_id;
@@ -216,7 +216,7 @@ trait LmsTrait
                 }
 
                 $calInterestRate  = $currentInterestRate/100;
-                $interest = round($this->calInterest($balancePrincipalAmt, $calInterestRate, 1),2);
+                $interest = round($this->calInterest($balancePrincipalAmt, $calInterestRate, 1),5);
                 
                 $intAccrualData = [];
                 $intAccrualData['disbursal_id'] = $disburse->disbursal_id;
@@ -521,7 +521,7 @@ trait LmsTrait
                     /* 
                     $invoiceRepayment['user_id'] = $transDetail['user_id'];
                     $invoiceRepayment['invoice_id'] = $disbursalDetail->invoice_id;
-                    $invoiceRepayment['repaid_amount'] = round($principalPaidAmt,2);
+                    $invoiceRepayment['repaid_amount'] = round($principalPaidAmt,5);
                     $invoiceRepayment['repaid_date'] = $transDetail['trans_date'];
                     $invoiceRepayment['trans_type'] = ($is_inv_settled==2)?config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'):config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF');
                     $transactionData['repaymentTrail'][$disbursalDetail->disbursal_id] = $invoiceRepayment;
