@@ -121,8 +121,12 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $whereCondition['status'] = isset($whereCondition['status']) ? $whereCondition['status'] : 1;
-
+        $whereCondition['prgm.status'] = isset($whereCondition['status']) ? $whereCondition['status'] : 1;
+        $whereCondition['prgm.prgm_id'] = isset($whereCondition['prgm_id']) ? $whereCondition['prgm_id'] : 1;
+        
+        unset($whereCondition['status']);
+        unset($whereCondition['prgm_id']);
+        
         $appNote = self::select('prgm.prgm_id', 'prgm.prgm_name', 'prgm.product_name', 'prgm.prgm_type',
                         'prgm.anchor_limit', 'prgm.min_loan_size',
                         'prgm.max_loan_size',
@@ -152,10 +156,22 @@ class Program extends BaseModel {
                             WHEN is_fldg_applicable = 0 THEN 'No'
                             WHEN is_fldg_applicable = 1 THEN 'Yes'
                             ELSE ''
-                        END AS is_fldg_applicable")
+                        END AS is_fldg_applicable"),
+                        'prgm_chrg_process_fee.chrg_calculation_type as processing_fee_type',
+                        'prgm_chrg_process_fee.chrg_calculation_amt as processing_fee_amt',
+                        'prgm_chrg_doc_fee.chrg_calculation_type as document_fee_type',
+                        'prgm_chrg_doc_fee.chrg_calculation_amt as document_fee_amt'              
                 )
                 ->leftJoin('mst_industry', 'prgm.industry_id', '=', 'mst_industry.id')
                 ->leftJoin('mst_sub_industry', 'prgm.sub_industry_id', '=', 'mst_sub_industry.id')
+                ->leftJoin('prgm_chrg as prgm_chrg_process_fee', function($join){
+                    $join->on('prgm_chrg_process_fee.prgm_id', '=', 'prgm.prgm_id');
+                    $join->on('prgm_chrg_process_fee.charge_id', '=', DB::raw('3'));   //Processing Fee
+                })
+                ->leftJoin('prgm_chrg as prgm_chrg_doc_fee', function($join){
+                    $join->on('prgm_chrg_doc_fee.prgm_id', '=', 'prgm.prgm_id');
+                    $join->on('prgm_chrg_doc_fee.charge_id', '=', DB::raw('4'));   //Document Fee
+                })                
                 ->where($whereCondition)
                 ->orderBy('prgm.prgm_id', 'DESC')
                 ->first();
