@@ -24,7 +24,7 @@ try {
                 }
             },
            columns: [
-                    {data: 'name'},
+                    {data: 'bank_id'},
                     {data: 'base_rate'},
                     {data: 'created_at'},
                     {data: 'created_by'},

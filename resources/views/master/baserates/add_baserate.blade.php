@@ -6,14 +6,18 @@
         @csrf
 
         <div class="row">
-            <div class="form-group col-md-12">
-                <label for="company_name">Company Name</label>
-                <input type="text" class="form-control" name="company_name" placeholder="Enter Company Name">
-                {!! $errors->first('company_name', '<span class="error">:message</span>') !!}
+            <div class="form-group col-md-6">
+                <label for="bank_id">Bank Name</label>
+                <select name="bank_id" id="bank_id" class='form-control'>
+                    <option value="">Select Bank</option>
+                    @foreach($bank_list as $key => $option)
+                    <option value="{{$key}}">{{$option}}</option>
+                    @endforeach
+                </select>
+                {!! $errors->first('bank_id', '<span class="error">:message</span>') !!}
             </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-12">
+
+            <div class="form-group col-md-6">
                 <label for="base_rate">Base Rate(%)</label>
                 <input type="text" class="form-control" name="base_rate" placeholder="Enter Base Rate Percentage">
                 {!! $errors->first('base_rate', '<span class="error">:message</span>') !!}
@@ -41,26 +45,31 @@
 @section('jscript')
 <script type="text/javascript">
     $(document).ready(function () {
- 
-    $('#baseRateForm').validate({ // initialize the plugin
-        rules: {
-            company_name: {
-                required: true,
-                maxlength:200
+
+        $.validator.addMethod("rate_percent", function (value, element) {
+            return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
+        }, "Please specify a valid base rate percent");
+
+        $('#baseRateForm').validate({// initialize the plugin
+            rules: {
+                bank_id: {
+                    required: true,
+                    digits: true,
+                },
+                base_rate: {
+                    required: true,
+                    number: true,
+                    range: [0, 100],
+                    rate_percent: 'input[name="base_rate"]',
+                },
+                is_active: {
+                    required: true,
+                    digits: true
+                }
             },
-            base_rate: {
-                required: true,
-                number: true,
-                range: [0,100]
-            },
-            is_active: {
-                required: true,
-                digits: true
-            }
-        },
-         messages: {
-                company_name: {
-                    required: "Please Enter Company Name",
+            messages: {
+                bank_id: {
+                    required: "Please Select Bank",
                 },
                 base_rate: {
                     required: "Please Enter Base Rate",
@@ -69,7 +78,7 @@
                     required: "Please Select Status of Base Rate",
                 },
             }
+        });
     });
-});
 </script>
 @endsection

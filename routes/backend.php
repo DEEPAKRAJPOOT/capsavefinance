@@ -962,7 +962,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
             
             //Base Rate
-            Route::get('/base-rate', [
+            Route::get('/bank-base-rate', [
                 'as' => 'get_baserate_list',
                 'uses' => 'Master\BaseRateController@index'
             ]);

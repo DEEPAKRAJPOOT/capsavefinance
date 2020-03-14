@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Base Rates</h3>
-            <small>Base Rate List</small>
+            <h3>Manage Bank Base Rates</h3>
+            <small>Bank Base Rate List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Manage Base Rates</li>
-                <li class="active">Base Rate List</li>
+                <li style="color:#374767;">Manage Bank Base Rates</li>
+                <li class="active">Bank Base Rate List</li>
             </ol>
         </div>
     </section>
@@ -27,7 +27,7 @@
 					(isset($filter['filter_search_keyword'])) ? $filter['filter_search_keyword'] : null,
 	                [
 	                'class' => 'form-control',
-	                'placeholder' => 'Search by Company Name',
+	                'placeholder' => 'Search by Bank Name',
 	                'id'=>'search_keyword'
 	                ])
                     !!}
@@ -48,7 +48,7 @@
                         <table id="baserateList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Company Name</th>
+                                    <th>Bank Name</th>
                                     <th>Base Rate (%)</th>
                                     <th>Created At</th>
                                     <th>Created By</th>
@@ -68,8 +68,8 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addBaseRateFrame','Add Base Rate', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editBaseRateFrame','Edit Base Rate Detail', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addBaseRateFrame','Add Base Rate', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editBaseRateFrame','Edit Base Rate Detail', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

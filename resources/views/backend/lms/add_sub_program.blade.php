@@ -178,7 +178,7 @@
                                                                             <select id="interest_linkage" class="form-control" name="interest_linkage" tabindex="9">
                                                                                 <option value="">Select Base Rate</option>
                                                                                 @foreach($baserate_list as $key=>$baserate)
-                                                                                <option @if(isset($subProgramData->base_rate_id) && $baserate->id == $subProgramData->base_rate_id) selected @endif value="{{$baserate->id}}">{{$baserate->base_rate}}%&nbsp;&nbsp;({{$baserate->company_name}})</option>
+                                                                                <option @if(isset($subProgramData->base_rate_id) && $baserate->id == $subProgramData->base_rate_id) selected @endif value="{{$baserate->id}}">{{$baserate->base_rate}}%&nbsp;&nbsp;({{$baserate->bank->bank_name}})</option>
                                                                                 @endforeach
                                                                             </select>
                                                                             {!! $errors->first('interest_linkage', '<span class="error">:message</span>') !!}
@@ -193,7 +193,7 @@
                                                                             </label>
                                                                             {!! Form::text('min_interest_rate',
                                                                             isset($subProgramData->min_interest_rate) ? $subProgramData->min_interest_rate : null,
-                                                                            ['class'=>'form-control percentage','placeholder'=>'Min'])   !!}
+                                                                            ['class'=>'form-control percentage','placeholder'=>'Min', 'id'=>'min_interest_rate'])   !!}
 
                                                                         </div>
                                                                         <div class="col-md-6">
@@ -202,7 +202,7 @@
                                                                             </label>
                                                                             {!! Form::text('max_interest_rate',
                                                                             isset($subProgramData->max_interest_rate) ? $subProgramData->max_interest_rate : null,
-                                                                            ['class'=>'form-control percentage ','placeholder'=>'Max'])   
+                                                                            ['class'=>'form-control percentage ','placeholder'=>'Max', 'id'=>'max_interest_rate'])   
                                                                             !!}
 
                                                                         </div>
@@ -738,7 +738,7 @@
 @section('jscript')
 
 <script>
-//    let 
+
     var messages = {
         get_charges_html: "{{ URL::route('get_charges_html') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
