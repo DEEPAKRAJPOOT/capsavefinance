@@ -74,7 +74,7 @@
             <option value="">Select Payment Frequency</option>
             <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Up Front</option>
             <option value="2" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 2)? 'selected': ''}}>Monthly</option>
-            <!--<option value="3" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 3)? 'selected': ''}}>Rear Ended</option>-->
+            <option value="3" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 3)? 'selected': ''}}>Rear Ended</option>
         </select>
       </div>
     </div>
@@ -980,11 +980,11 @@
                     if (prgm_data.is_grace_period == '1') {
                         $('input[name=grace_period]').val(prgm_data.grace_period);
                     }
-                    if (prgm_data.processing_fee != '') {
-                        $('input[name="processing_fee"]').val(prgm_data.processing_fee);
+                    if (prgm_data.processing_fee_amt != '') {
+                        $('input[name="processing_fee"]').val(prgm_data.processing_fee_amt);
                     }
-                    if (prgm_data.document_fee != '') {
-                        $('input[name="document_fee"]').val(prgm_data.document_fee);
+                    if (prgm_data.document_fee_amt != '') {
+                        $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
