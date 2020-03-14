@@ -4014,10 +4014,10 @@ if ($err) {
         $creditAmt = 0;
         
         if (isset($repaymentAmtData['debitAmtData']['amount'])) {
-            $debitAmt = $repaymentAmtData['debitAmtData']['amount'] + $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
+            $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
         }
         if (isset($repaymentAmtData['creditAmtData']['amount'])) {
-            $creditAmt = $repaymentAmtData['creditAmtData']['amount'] + $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
+            $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
         }        
         $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
         return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
