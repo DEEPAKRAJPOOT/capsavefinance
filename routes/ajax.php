@@ -807,4 +807,9 @@ Route::group(
                 'as' => 'get_calculation_amount',
                 'uses' => 'AjaxController@getCalculationAmount'
             ]);
+      
+    Route::post('get-repayment-amount', [
+        'as' => 'get_repayment_amount',
+        'uses' => 'AjaxController@getRepaymentAmount'
+    ]);      
 });
