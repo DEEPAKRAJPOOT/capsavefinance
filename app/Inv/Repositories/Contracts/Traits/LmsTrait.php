@@ -418,7 +418,7 @@ trait LmsTrait
                             'trans_date'=>$transDetail['trans_date'],
                             'disbursal_id'=>$disbursalDetail->disbursal_id,
                             'parent_trans_id'=>$transId
-                        ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 1);
+                        ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
 
                         $transactionData['interestPaid'][$disbursalDetail->disbursal_id] = $interestPaidData;
 
