@@ -157,9 +157,9 @@ class Program extends BaseModel {
                             ELSE ''
                         END AS is_fldg_applicable"),
                         'prgm_chrg_process_fee.chrg_calculation_type as processing_fee_type',
-                        'prgm_chrg_process_fee.chrg_calculation_type as processing_fee_amt',
+                        'prgm_chrg_process_fee.chrg_calculation_amt as processing_fee_amt',
                         'prgm_chrg_doc_fee.chrg_calculation_type as document_fee_type',
-                        'prgm_chrg_doc_fee.chrg_calculation_type as document_fee_amt'              
+                        'prgm_chrg_doc_fee.chrg_calculation_amt as document_fee_amt'              
                 )
                 ->leftJoin('mst_industry', 'prgm.industry_id', '=', 'mst_industry.id')
                 ->leftJoin('mst_sub_industry', 'prgm.sub_industry_id', '=', 'mst_sub_industry.id')

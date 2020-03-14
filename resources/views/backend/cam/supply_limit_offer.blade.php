@@ -136,15 +136,15 @@
     
     <div class="col-md-6">
       <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%)</b></label>
+          <label for="txtPassword"><b>Processing Fee <span id="processing_fee_type">(%)</span></b></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Documentation Fee (%)</b></label>         
-        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? $offerData->document_fee : ''}}" placeholder="Check Bounce Fee" maxlength="6">
+        <label for="txtPassword"><b>Documentation Fee <span id="document_fee_type">(%)</span></b></label>         
+        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? $offerData->document_fee : ''}}" placeholder="Documentation Fee" maxlength="6">
       </div>
     </div>
     
@@ -981,9 +981,13 @@
                         $('input[name=grace_period]').val(prgm_data.grace_period);
                     }
                     if (prgm_data.processing_fee_amt != '') {
+                        var processing_fee_type = prgm_data.processing_fee_type == '2' ? '%' : '&#8377;';
+                        $("#processing_fee_type").html("(" + processing_fee_type + ")");
                         $('input[name="processing_fee"]').val(prgm_data.processing_fee_amt);
                     }
                     if (prgm_data.document_fee_amt != '') {
+                        var document_fee_type = prgm_data.document_fee_type == '2' ? '%' : '&#8377;';
+                        $("#document_fee_type").html("(" + document_fee_type + ")");
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }
