@@ -87,14 +87,15 @@
                                             </div>
                                         </div>
                                       
-                                        <!--start processing fees code-->
+                                        <!--start processing fees code-->   
+                                        <!--
                                         <div class="col-md-4 processFeeElmnt">
                                             <div class="form-group INR ">
                                                 <label for="txtCreditPeriod">Transaction Amount inclusive GST ? <span class="error_message_label">*</span> </label>
                                                 <br>
                                                 <input type="radio" id="incl_gst" name="incl_gst" value="1">Yes &nbsp;&nbsp;  <input type="radio" id="incl_gst" name="incl_gst" value="0" checked>No
                                             </div>
-                                        </div>
+                                        </div>                                        
                                         <div class="col-md-4 processFeeElmnt noGstShow">
                                             <div class="form-group INR">
                                                 <label for="txtCreditPeriod">Select GST Option <span class="error_message_label">*</span> </label>
@@ -128,6 +129,7 @@
                                                 <input type="text" name="igst_amt" id="igst_amt" readonly="readonly" class="form-control" value="">
                                             </div>
                                         </div>
+                                        -->
                                         <div class="col-md-4">
                                             <div class="form-group ">
                                                 <label for="txtCreditPeriod">Transaction Id<span class="error_message_label">*</span> </label>
@@ -207,6 +209,7 @@
     var messages = {
         get_val: "{{URL::route('get_field_val')}}",
         token: "{{ csrf_token() }}",
+        get_repayment_amount_url: "{{ route('get_repayment_amount') }}",
     };
 
     $(document).ready(function() {
@@ -395,6 +398,25 @@ $(document).ready(function () {
                      }
                   }
                });
+               
+            $("#trans_type").change(function(){
+               $.ajax({
+                    type: 'POST',                    
+                    url: messages.get_repayment_amount_url,
+                    data: {user_id: $("#customer_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+                    beforeSend: function( xhr ) {
+                        $('.isloader').show();
+                    },
+                    success: function(resultData) {                        
+                        if (resultData.repayment_amount != ""){
+                            $("#amount").val(resultData.repayment_amount);                           
+                        } else {
+                            $("#amount").val("");
+                        }
+                        $('.isloader').hide();
+                    }
+               });
+            });
         });
 </script>
 @endsection

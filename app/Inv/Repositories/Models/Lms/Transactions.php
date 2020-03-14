@@ -297,17 +297,38 @@ class Transactions extends BaseModel {
                     ->orderBy('trans_id', 'asc');
     }
     
+    /**
+     * Get Repayment Amount
+     * 
+     * @param integer $userId
+     * @param integer $transType
+     * @return mixed
+     */
     public static function getRepaymentAmount($userId, $transType)
     {
-        $result = self::select(DB::raw('SUM(amount+cgst+sgst+igst) AS rpayamount'))                
+        //Calculate Debit Amount
+        $result = self::select(DB::raw('SUM(amount) AS amount, gst, SUM(cgst) AS cgst, SUM(sgst) AS sgst, SUM(igst) AS igst'))
                 ->whereIn('is_settled', [0,1])
                 ->where('user_id', $userId)
-                ->where('entry_type', '0')
+                ->where('entry_type', '0')    //Debit
                 ->where('trans_type', $transType)
                 ->groupBy('user_id')
-                ->get();
+                ->first();
+        $debitAmtData = $result ? $result->toArray() : [];
         
-        return isset($result[0]) ? $result : [];
-    }    
+        //Calculate Credit Amount
+        $result = self::select(DB::raw('SUM(amount) AS amount, gst, SUM(cgst) AS cgst, SUM(sgst) AS sgst, SUM(igst) AS igst'))
+                ->whereIn('is_settled', [0,1])
+                ->where('user_id', $userId)
+                ->where('entry_type', '1')
+                ->where('trans_type', $transType)
+                ->groupBy('user_id')
+                ->first();
+        $creditAmtData = $result ? $result->toArray() : [];
+        
+        $repaymentAmount = ['debitAmtData' => $debitAmtData, 'creditAmtData' => $creditAmtData];
+        
+        return $repaymentAmount;
+    }
 
 }

@@ -889,4 +889,10 @@ Route::group(
         'as' => 'lms_get_invoices',
         'uses' => 'AjaxController@lmsGetInvoiceByUser'
     ]); 
+      
+    Route::post('get-repayment-amount', [
+        'as' => 'get_repayment_amount',
+        'uses' => 'AjaxController@getRepaymentAmount'
+    ]);      
+
 });
