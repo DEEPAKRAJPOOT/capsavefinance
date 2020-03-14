@@ -324,7 +324,8 @@ trait LmsTrait
                     $marginPaidAmt = 0;
                     $interestPaidAmt = 0;
                     $principalPaidAmt = 0; 
-                    $overduePaidAmt = 0;                    
+                    $overduePaidAmt = 0;
+                    $restInterestPaidAmt = 0;                    
 
                     $lastDisbursalId = $disbursalDetail->disbursal_id;
               
@@ -448,6 +449,27 @@ trait LmsTrait
                         
                         $settlementLevel = 2;
                     }
+
+                 /* Step 1.1 : Interest Settlement */
+
+                    
+                if(($accured_interest-$interestDue)>0 && $trans['balance_amount']>0)
+                {
+                    $restInterestPaidAmt = ($trans['balance_amount']>=($accured_interest-$interestDue))?($accured_interest-$interestDue):$trans['balance_amount'];
+                    $trans['balance_amount'] -= $restInterestPaidAmt;
+                    $disbursal['total_repaid_amt'] += $restInterestPaidAmt;
+
+                    $interestPaidData = $this->createTransactionData($transDetail['user_id'], [
+                        'amount' => $restInterestPaidAmt,
+                        'trans_date'=>$transDetail['trans_date'],
+                        'disbursal_id'=>$disbursalDetail->disbursal_id,
+                        'parent_trans_id'=>$transId
+                    ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
+
+                    $transactionData['interestPaid'][$disbursalDetail->disbursal_id] = $interestPaidData;
+
+                    $settlementLevel = 1;
+                }
 
                     if($marginDueAmt>0 && $trans['balance_amount']>0)
                     {
