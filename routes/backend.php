@@ -1136,6 +1136,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                'uses' => 'Backend\PaymentController@paymentAdviceExcel'
            ]); 
 
+            // Payment Advice Excel Download
+            Route::get('payment_refund_index', [
+                'as' => 'payment_refund_index',
+               'uses' => 'Backend\PaymentController@paymentInvoiceList'
+           ]); 
+
          }); 
     });
 
