@@ -16,8 +16,6 @@ class BankBaseRateRequest extends Request {
         return $rules = [
             'bank_id' => 'required|numeric',
             'base_rate' => 'required|numeric|between:0,99.99|regex:/^\d+(\.\d{1,2})?$/',
-            'min_base_rate' => 'required|numeric|between:0,99.99|regex:/^\d+(\.\d{1,2})?$/|max:' . $this->request->get('max_base_rate'),
-            'max_base_rate' => 'required|numeric|between:0,99.99|regex:/^\d+(\.\d{1,2})?$/|max:' . $this->request->get('base_rate') . '|min:' . $this->request->get('min_base_rate'),
             'is_active' => 'required',
         ];
     }

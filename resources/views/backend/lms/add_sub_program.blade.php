@@ -178,7 +178,7 @@
                                                                             <select id="interest_linkage" class="form-control" name="interest_linkage" tabindex="9">
                                                                                 <option value="">Select Base Rate</option>
                                                                                 @foreach($baserate_list as $key=>$baserate)
-                                                                                <option @if(isset($subProgramData->base_rate_id) && $baserate->id == $subProgramData->base_rate_id) selected @endif value="{{$baserate->id}}" data-min="{{$baserate->min_base_rate}}" data-max="{{$baserate->max_base_rate}}">{{$baserate->base_rate}}%&nbsp;&nbsp;({{$baserate->bank->bank_name}})</option>
+                                                                                <option @if(isset($subProgramData->base_rate_id) && $baserate->id == $subProgramData->base_rate_id) selected @endif value="{{$baserate->id}}">{{$baserate->base_rate}}%&nbsp;&nbsp;({{$baserate->bank->bank_name}})</option>
                                                                                 @endforeach
                                                                             </select>
                                                                             {!! $errors->first('interest_linkage', '<span class="error">:message</span>') !!}
@@ -738,16 +738,6 @@
 @section('jscript')
 
 <script>
-
-    $(document).ready(function () {
-        $("#interest_linkage").change(function () {
-            var selectedBaseRate = $(this).children("option:selected").val();
-            var minbaserate = $(this).children("option:selected").data('min');
-            var maxbaserate = $(this).children("option:selected").data('max');
-            $('#min_interest_rate').val(minbaserate);
-            $('#max_interest_rate').val(maxbaserate);
-        });
-    });
 
     var messages = {
         get_charges_html: "{{ URL::route('get_charges_html') }}",

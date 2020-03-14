@@ -2597,14 +2597,6 @@ class DataRenderer implements DataProviderInterface {
                             return $baserates->base_rate;
                         })
                         ->addColumn(
-                                'min_base_rate', function ($baserates) {
-                            return $baserates->min_base_rate;
-                        })
-                        ->addColumn(
-                                'max_base_rate', function ($baserates) {
-                            return $baserates->max_base_rate;
-                        })
-                        ->addColumn(
                                 'created_at', function ($baserates) {
                             return ($baserates->created_at) ? date('d-M-Y', strtotime($baserates->created_at)) : '---';
                         })

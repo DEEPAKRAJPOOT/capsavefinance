@@ -25,18 +25,6 @@
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="min_base_rate">Min Base Rate(%)</label>
-                <input type="text" class="form-control" name="min_base_rate" placeholder="Enter Min Base Rate Percentage">
-                {!! $errors->first('min_base_rate', '<span class="error">:message</span>') !!}
-            </div>
-            <div class="form-group col-md-6">
-                <label for="max_base_rate">Max Base Rate(%)</label>
-                <input type="text" class="form-control" name="max_base_rate" placeholder="Enter Max Base Rate Percentage">
-                {!! $errors->first('max_base_rate', '<span class="error">:message</span>') !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
                 <label for="is_active">Status</label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option value="" selected>Select</option>
@@ -58,14 +46,6 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $.validator.addMethod('less_than', function (value, element, param) {
-            return this.optional(element) || value <= $(param).val();
-        }, 'Invalid value');
-
-        $.validator.addMethod('greater_than', function (value, element, param) {
-            return this.optional(element) || value >= $(param).val();
-        }, 'Invalid value');
-
         $.validator.addMethod("rate_percent", function (value, element) {
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
         }, "Please specify a valid base rate percent");
@@ -82,21 +62,6 @@
                     range: [0, 100],
                     rate_percent: 'input[name="base_rate"]',
                 },
-                min_base_rate: {
-                    required: true,
-                    number: true,
-                    range: [0, 100],
-                    rate_percent: 'input[name="min_base_rate"]',
-                    less_than: 'input[name="max_base_rate"]',
-                },
-                max_base_rate: {
-                    required: true,
-                    number: true,
-                    range: [0, 100],
-                    rate_percent: 'input[name="max_base_rate"]',
-                    less_than: 'input[name="base_rate"]',
-                    greater_than: 'input[name="min_base_rate"]',
-                },
                 is_active: {
                     required: true,
                     digits: true
@@ -108,15 +73,6 @@
                 },
                 base_rate: {
                     required: "Please Enter Base Rate",
-                },
-                min_base_rate: {
-                    required: "Please Enter Min Base Rate",
-                    less_than: "Must be less than or equal to The Max Base Rate",
-                },
-                max_base_rate: {
-                    required: "Please Enter Max Base Rate",
-                    less_than: "Must be less than or equal to The Base Rate",
-                    greater_than: "Must be greater than or equal to The Base Rate"
                 },
                 is_active: {
                     required: "Please Select Status of Base Rate",

@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Base Rates</h3>
-            <small>Base Rate List</small>
+            <h3>Manage Bank Base Rates</h3>
+            <small>Bank Base Rate List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Manage Base Rates</li>
-                <li class="active">Base Rate List</li>
+                <li style="color:#374767;">Manage Bank Base Rates</li>
+                <li class="active">Bank Base Rate List</li>
             </ol>
         </div>
     </section>
@@ -49,9 +49,7 @@
                             <thead>
                                 <tr role="row">
                                     <th>Bank Name</th>
-                                    <th>Base Rate (%)</th>                   
-                                    <th>Min Base Rate (%)</th>
-                                    <th>Max Base Rate (%)</th>
+                                    <th>Base Rate (%)</th>
                                     <th>Created At</th>
                                     <th>Created By</th>
                                     <th>Status</th>

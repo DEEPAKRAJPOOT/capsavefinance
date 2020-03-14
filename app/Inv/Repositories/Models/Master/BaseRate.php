@@ -43,8 +43,6 @@ class BaseRate extends BaseModel {
     protected $fillable = [
         'bank_id',
         'base_rate',
-        'min_base_rate',
-        'max_base_rate',
         'is_active',
         'created_by',
         'created_at',
