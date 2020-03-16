@@ -22,10 +22,10 @@
     
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Limit:</b></label>
+        <label for="txtPassword"><b>Product Limit</b></label>
         <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($balanceLimit > 0)? $balanceLimit: 0}}</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="limit_amt" class="form-control number_format" value="{{isset($currentPrgmLimitData->limit_amt)? number_format($currentPrgmLimitData->limit_amt): ''}}" placeholder="Limit amount" maxlength="15">
+        <input type="text" name="limit_amt" class="form-control number_format" value="{{isset($currentPrgmLimitData->limit_amt)? number_format($currentPrgmLimitData->limit_amt): ''}}" placeholder="Product Limit amount" maxlength="15">
       </div>
     </div>
 
@@ -51,16 +51,16 @@
     let limit_amt = $('input[name=limit_amt]').val().trim();
 
     if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
-        setError('input[name=limit_amt]', 'Please fill limit amount');
+        setError('input[name=limit_amt]', 'Please fill Product Limit amount');
         flag = false;
     }else if(balance_limit == 0){
-        setError('input[name=limit_amt]', 'Your limit has been expired');
+        setError('input[name=limit_amt]', 'Your Product limit has been expired');
         flag = false;
     }else if(parseInt(limit_amt.replace(/,/g, '')) > parseInt(balance_limit)){
-        setError('input[name=limit_amt]', 'Limit amount can not exceed from balance amount');
+        setError('input[name=limit_amt]', 'Product Limit amount can not exceed from balance amount');
         flag = false;
     }else if(parseInt(limit_amt.replace(/,/g, '')) < parseInt(totalOfferedAmount)){
-        setError('input[name=limit_amt]', 'Limit amount can not be less than applied offer amount');
+        setError('input[name=limit_amt]', 'Product Limit amount can not be less than applied offer amount');
         flag = false;
     }
 

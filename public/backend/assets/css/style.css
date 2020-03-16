@@ -1103,7 +1103,7 @@ pre {
     opacity: 1; }
 
 select.form-control:not([size]):not([multiple]) {
-  height: calc(2.25rem + 2px); }
+  height: calc(2.25rem + 0); }
 
 select.form-control:focus::-ms-value {
   color: #495057;
@@ -6088,8 +6088,8 @@ h5 {
     width: 100%; }
 
 .container-scroller {
-  height: 100vh;
-  position: relative; }
+  /*height: 100vh;*/
+  /*position: relative;*/}
 
 pre {
   background: #eceeef;
