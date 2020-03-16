@@ -270,6 +270,11 @@ return [
         'REPAYMENT' => 3,
         'CHARGES' => 4
     ],
-    'timezone' => 'Asia/Kolkata'
+    'timezone' => 'Asia/Kolkata',
+    'idprefix' => [
+        'APP' => 'CAPS',
+        'VA' => 'CAPVA',
+        'CUSTID' => 'CAP'
+    ],    
 ];
  

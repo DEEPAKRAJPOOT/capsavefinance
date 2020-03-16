@@ -930,7 +930,7 @@ class Helper extends PaypalHelper
         foreach ($approvers as $approver) {
 
             $user = User::getfullUserDetail((int)$approver->user_id);
-            $emailData['app_id'] = 'CAPS000'.$application->app_id;
+            $emailData['app_id'] = \Helpers::formatIdWithPrefix($application->app_id, 'APP');
             $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
             $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
             $emailData['receiver_email'] = $user->email;
@@ -1100,5 +1100,29 @@ class Helper extends PaypalHelper
         $convertedDateTime = \Carbon\Carbon::createFromFormat($fromDateFormat, $dateTime, config('app.timezone'))
                 ->setTimezone(config('common.timezone'))->format($toDateFormat);
         return $convertedDateTime;
+    }
+    
+    /**
+     * Format Id with Prefix
+     * 
+     * @param string $idValue
+     * @param string $type
+     * @return string
+     */
+    public static function formatIdWithPrefix($idValue, $type='APP') 
+    {
+        $prefix = config('common.idprefix.'.$type);
+        $formatedId = null;
+        
+        if ($type == 'APP') {            
+            $formatedId = $prefix . sprintf('%06d', $idValue);
+        } else if ($type == 'VA') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%07d', $idValue);            
+        } else if ($type == 'CUSTID') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%09d', $idValue);            
+        }
+        return $formatedId;
     }    
 }
