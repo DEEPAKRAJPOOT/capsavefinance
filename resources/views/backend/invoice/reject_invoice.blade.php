@@ -2,6 +2,9 @@
 @section('additional_css')
 @endsection
 @section('content')
+@if($flag == 1)
+@include('layouts.backend.partials.admin_customer_links',['active' => 'invoice'])
+@endif
 <div class="content-wrapper">
     <div class="col-md-12 ">
         <section class="content-header">
@@ -24,13 +27,6 @@
                 <div class="card">
                     <div class="card-body">
                         @include('layouts.backend.invoice_status_links')
-                        <div class="tab-content">
-
- <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_exception_cases') active @endif" href="{{Route('backend_get_exception_cases')}}">Exception Cases</a>
-
-                            </li>
-                        </ul>
   <div class="tab-content">
     
     <div id="menu1" class=" active tab-pane "><br>

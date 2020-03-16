@@ -2,6 +2,9 @@
 @section('additional_css')
 @endsection
 @section('content')
+@if($flag == 1)
+@include('layouts.backend.partials.admin_customer_links',['active' => 'invoice'])
+@endif
 <div class="content-wrapper">
     <div class="col-md-12 ">
         <section class="content-header">
