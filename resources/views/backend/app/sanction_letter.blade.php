@@ -466,10 +466,10 @@
                                  <tbody>
                                     @foreach($offerD->offerEm as $EscrowMechanism)
                                     <tr>
-                                       <td>{{$EscrowMechanism->em_debtor_id}}</td>
+                                       <td>{{$supplyChaindata['anchorData'][$EscrowMechanism->em_debtor_id]['comp_name'] ?? ''}}</td>
                                        <td>&#8377; {{number_format($EscrowMechanism->em_expected_cash_flow)}}</td>
                                        <td>{{config('common.em_time_for_perfecting_security_id.'.$EscrowMechanism->em_time_for_perfecting_security_id)}}</td>
-                                       <td>{{$EscrowMechanism->em_mechanism_id}}</td>
+                                       <td>{{getMechanism($EscrowMechanism->em_mechanism_id)}}</td>
                                        <td>{{$EscrowMechanism->em_comments}}</td>
                                     </tr>
                                     @endforeach
