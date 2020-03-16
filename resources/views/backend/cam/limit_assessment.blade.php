@@ -17,14 +17,14 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group INR">
-                                    <label>Total Exposure</label>
+                                    <label>Total Credit Assessed</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure" {{isset($limitData->tot_limit_amt)? 'disabled': ''}}>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group INR">
-                                    <label>Available Exposure (offered)</label>
+                                    <label>Available Credit Assessed</label>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:27px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control form-control-sm number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure (offered)" disabled>
                                 </div>
@@ -52,14 +52,14 @@
 
                             <div class="col-md-3">
                                 <div class="form-group INR">
-                                    <label>Enter Limit</label><span class="limit float-right"></span>
+                                    <label>Proposed Product Limit</label><span class="limit float-right"></span>
                                     <span class="float-right text-success">
                                     @if($balance != '')
                                         Remaining Limit Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}
                                     @endif
                                     </span>
                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:30px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control number_format" name="limit_amt" id="limit_amt" value="{{old('limit_amt')}}" maxlength="15" placeholder="Enter Limit">
+                                    <input type="text" class="form-control number_format" name="limit_amt" id="limit_amt" value="{{old('limit_amt')}}" maxlength="15" placeholder="Enter Proposed Product Limit">
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -93,7 +93,7 @@
                                 <div class="accordion">
                                     <div class="card card-color mb-0">
                                         <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#scollapse{{$key+1}}" aria-expanded="false">
-                                            <table cellspacing="0" cellpadding="0" width="100%">
+                                            <table cellspacing="0" cellpadding="0" width="100%" class="pdl-15">
                                                 <tbody>
                                                     <tr role="row" class="odd">
                                                        <td width="6%">{{($key+1)}}</td>
@@ -119,7 +119,7 @@
                                             <tr>
                                                 <td width="20%" style="background: #e9ecef;"><b>Overdue Interest Rate (%)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Interest Rate (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Sub Limit</b></td>
+                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Program Limit</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (In Days)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Payment Frequency</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
@@ -182,7 +182,7 @@
                                 <div class="accordion">
                                     <div class="card card-color mb-0">
                                         <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#tcollapse{{$key+1}}" aria-expanded="false">
-                                            <table cellspacing="0" cellpadding="0" width="100%">
+                                            <table cellspacing="0" cellpadding="0" width="100%" class="pdl-15">
                                                 <tbody>
                                                     <tr role="row" class="odd">
                                                        <td width="5%">{{($key+1)}}</td>
@@ -190,8 +190,8 @@
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
-                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
+                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -285,7 +285,7 @@
                                 <div class="accordion">
                                     <div class="card card-color mb-0">
                                         <div class="card-header pl-0 pr-0 collapsed" data-toggle="collapse" href="#lcollapse{{$key+1}}" aria-expanded="false">
-                                            <table cellspacing="0" cellpadding="0" width="100%">
+                                            <table cellspacing="0" cellpadding="0" width="100%" class="pdl-15">
                                                 <tbody>
                                                     <tr role="row" class="odd">
                                                        <td width="5%">{{($key+1)}}</td>
@@ -293,8 +293,8 @@
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Edit Limit</button>
-                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}">Add Offer</button>
+                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -432,23 +432,23 @@ function checkValidation(){
     let tot_limit_amt = $('input[name=tot_limit_amt]').val().trim();
     let prgmLimitTotal = "{{$prgmLimitTotal}}";
     if(tot_limit_amt.length == 0 || parseInt(tot_limit_amt.replace(/,/g, '')) == 0){
-        setError('input[name=tot_limit_amt]', 'Please fill total exposure limit');
+        setError('input[name=tot_limit_amt]', 'Please fill total Credit Assessed');
         flag = false;
     }
 
     if(product_id == ''){
-        setError('select[name=product_id]', 'Please select product type');
+        setError('select[name=product_id]', 'Please select Product Type');
         flag = false;
     }
 
     if(limit_amt.length == 0 || parseInt(limit_amt.replace(/,/g, '')) == 0){
-        setError('input[name=limit_amt]', 'Please fill limit amount');
+        setError('input[name=limit_amt]', 'Please fill Product Limit');
         flag = false;
     }else if(parseInt(limit_amt.replace(/,/g, '')) > parseInt(tot_limit_amt.replace(/,/g, ''))){
-        setError('input[name=limit_amt]', 'Limit amount can not exceed from Total Exposure');
+        setError('input[name=limit_amt]', 'Product Limit amount can not exceed from Total Credit Assessed');
         flag = false;
     }else if(parseInt(limit_amt.replace(/,/g, '')) > (parseInt(tot_limit_amt.replace(/,/g, '')) - prgmLimitTotal)){
-        setError('input[name=limit_amt]', 'Your limit has been expired');
+        setError('input[name=limit_amt]', 'Your Product limit has been expired');
         flag = false;
     }else{
         // TAKE REST

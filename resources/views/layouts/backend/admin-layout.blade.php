@@ -144,6 +144,23 @@
                    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                });
             });
+
+            $(document).on('keypress','.float_format', function(event) {
+                let num = $(this).val();
+                if(event.which == 8 || event.which == 0){
+                    return true;
+                }
+                if(event.which < 46 || event.which > 59) {
+                    return false;
+                }
+               
+                if(event.which == 46 && $(this).val().indexOf('.') != -1) {
+                    return false;
+                }
+                if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
+                    return false;
+                }
+            });
         });
 
         function datepickerDisFdate(){
