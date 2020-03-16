@@ -23,41 +23,8 @@
             <div class="col-md-12 ">
                 <div class="card">
                     <div class="card-body">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice')}}">Pending</a>
-                            </li>
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
-                            </li>
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
-                            </li>
 
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_sent_to_bank') active @endif" href="{{Route('backend_get_sent_to_bank')}}">Sent to Bank</a>
-                            </li>
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
-                            </li>
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_disbursed') active @endif" href="{{Route('backend_get_disbursed')}}">Disbursed</a>
-
-                            </li>
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_repaid_invoice') active @endif" href="{{Route('backend_get_repaid_invoice')}}">Repaid</a>
-                            </li>
-                            <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_reject_invoice') active @endif" href="{{Route('backend_get_reject_invoice')}}">Reject</a>
-
-                            </li>
-
- <li class="nav-item itemBackground">
-                                <a class="itemBackgroundColor nav-link @if(Route::currentRouteName()=='backend_get_exception_cases') active @endif" href="{{Route('backend_get_exception_cases')}}">Exception Cases</a>
-
-                            </li>
-                        </ul>
-
+                        @include('layouts.backend.invoice_status_links')
 
                         <div class="tab-content">
 

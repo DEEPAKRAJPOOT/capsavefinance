@@ -461,6 +461,25 @@ function checkValidation(){
     }
 }
 
+function fillAnchors(programs){
+    let html = '<option value="" data-limit="0">Select Anchor</option>';
+    $.each(programs, function(i,program){
+        if(program.anchors != null)
+            html += '<option value="'+program.anchors.anchor_id+'" data-limit="'+program.anchors.prgm_data.anchor_limit+'">'+program.anchors.comp_name+'</option>';
+    });
+    $('#anchor_id').html(html);
+    
+}
+
+function fillPrograms(programs){
+    let html = '<option value="" data-sub_limit="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
+    $.each(programs, function(i,program){
+        if(program.prgm_name != null)
+            html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'">'+program.prgm_name+'</option>';
+    });
+    $('#program_id').html(html);
+}
+
 </script>
 
 @php 
