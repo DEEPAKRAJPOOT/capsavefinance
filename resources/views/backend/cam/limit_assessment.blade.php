@@ -484,6 +484,7 @@ function fillAnchors(programs){
             html += '<option value="'+program.anchors.anchor_id+'" data-limit="'+program.anchors.prgm_data.anchor_limit+'">'+program.anchors.comp_name+'</option>';
     });
     $('#anchor_id').html(html);
+    
 }
 
 function fillPrograms(programs){
