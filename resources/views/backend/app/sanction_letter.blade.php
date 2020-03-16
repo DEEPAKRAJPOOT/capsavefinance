@@ -255,8 +255,8 @@
                                        <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                           <thead>
                                              <tr>
-                                                <th width="30%">Max. Discounting Period (Days)</th>
-                                                <th width="20%">Grace Period (Days)</th>
+                                                <th width="30%">Max. Discounting Period (days)</th>
+                                                <th width="20%">Grace Period (days)</th>
                                                 <th width="15%">ROI (%)</th>
                                                 <th width="20%">Bench Mark Date</th>
                                                 <th width="15%">Margin (%)</th>
@@ -604,8 +604,8 @@
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <thead>
                                  <tr>
-                                    <th>Amount(lacs in INR )</th>
-                                    <th>Tenure(in months)</th>
+                                    <th>Amount (lacs in INR )</th>
+                                    <th>Tenure (months)</th>
                                     <th>Comment if any</th>
                                  </tr>
                               </thead>
