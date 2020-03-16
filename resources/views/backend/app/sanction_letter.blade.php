@@ -147,7 +147,7 @@
                               <tbody>
                                  <tr>
                                     <td class="">{{getProductType($supplyChaindata['product_id'])}}</td>
-                                    <td class="">{{$supplyChaindata['tot_limit_amt']}}</td>
+                                    <td class="">&#8377; {{number_format($supplyChaindata['tot_limit_amt'])}}</td>
                                     <td class="">
                                        <select class="select" name="sublimit_of" id="sublimit_of">
                                        <option {{ !empty($supplyChainFormData['sublimit_of']) && $supplyChainFormData['sublimit_of'] == 'Term Loan' ? 'selected' : '' }}>Term Loan</option>
@@ -172,7 +172,7 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3">{{$supplyChaindata['limit_amt']}}</td>
+                                    <td width="66.66%" colspan="3">&#8377; {{number_format($supplyChaindata['limit_amt'])}}</td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
@@ -246,7 +246,7 @@
                                           <tbody>
                                              <tr>
                                                 <td>{{$supplyChaindata['anchorData'][$offerD->anchor_id]['comp_name'] ?? ''}}</td>
-                                                <td>{{$offerD->prgm_limit_amt}}</td>
+                                                <td>&#8377; {{number_format($offerD->prgm_limit_amt)}}</td>
                                              </tr>
                                           </tbody>
                                        </table>
@@ -255,11 +255,11 @@
                                        <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                           <thead>
                                              <tr>
-                                                <th width="30%">Max. Discounting Period</th>
-                                                <th width="20%">Grace Period</th>
-                                                <th width="15%">ROI</th>
+                                                <th width="30%">Max. Discounting Period (days)</th>
+                                                <th width="20%">Grace Period (days)</th>
+                                                <th width="15%">ROI (%)</th>
                                                 <th width="20%">Bench Mark Date</th>
-                                                <th width="15%">Margin</th>
+                                                <th width="15%">Margin (%)</th>
                                              </tr>
                                           </thead>
                                           <tbody>
@@ -419,7 +419,7 @@
                                        <td>{{$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
                                        <td>{{config('common.pg_time_for_perfecting_security_id.'.$PersonalGuarantee->pg_time_for_perfecting_security_id)}}</td>
                                        <td>{{$PersonalGuarantee->pg_residential_address}}</td>
-                                       <td>{{$PersonalGuarantee->pg_net_worth}}</td>
+                                       <td>&#8377; {{number_format($PersonalGuarantee->pg_net_worth)}}</td>
                                        <td>{{$PersonalGuarantee->pg_comments}}</td>
                                     </tr>
                                     @endforeach
@@ -466,10 +466,10 @@
                                  <tbody>
                                     @foreach($offerD->offerEm as $EscrowMechanism)
                                     <tr>
-                                       <td>{{$EscrowMechanism->em_debtor_id}}</td>
-                                       <td>{{$EscrowMechanism->em_expected_cash_flow}}</td>
+                                       <td>{{$supplyChaindata['anchorData'][$EscrowMechanism->em_debtor_id]['comp_name'] ?? ''}}</td>
+                                       <td>&#8377; {{number_format($EscrowMechanism->em_expected_cash_flow)}}</td>
                                        <td>{{config('common.em_time_for_perfecting_security_id.'.$EscrowMechanism->em_time_for_perfecting_security_id)}}</td>
-                                       <td>{{$EscrowMechanism->em_mechanism_id}}</td>
+                                       <td>{{getMechanism($EscrowMechanism->em_mechanism_id)}}</td>
                                        <td>{{$EscrowMechanism->em_comments}}</td>
                                     </tr>
                                     @endforeach
@@ -495,7 +495,7 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3"><input type="text" value="{{$supplyChainFormData['pdc_facility_amt'] ?? ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="66.66%" colspan="3"><input type="text" value="&#8377; {{number_format((float)$supplyChainFormData['pdc_facility_amt']) ?? ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
@@ -551,7 +551,7 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3"><input type="text" value="{{$supplyChainFormData['nach_facility_amt'] ?? ''}}" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="66.66%" colspan="3"><input type="text" value="&#8377; {{number_format((float)$supplyChainFormData['nach_facility_amt']) ?? ''}}" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
@@ -604,14 +604,14 @@
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <thead>
                                  <tr>
-                                    <th>Amount(lacs in INR )</th>
-                                    <th>Tenure(in months)</th>
+                                    <th>Amount (lacs in INR )</th>
+                                    <th>Tenure (months)</th>
                                     <th>Comment if any</th>
                                  </tr>
                               </thead>
                               <tbody>
                                  <tr>
-                                    <td><input value="{{$supplyChainFormData['dsra_amt'] ?? ''}}" type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
+                                    <td><input value="&#8377; {{number_format((float)$supplyChainFormData['dsra_amt']) ?? ''}}" type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
                                     <td><input value="{{$supplyChainFormData['dsra_tenure'] ?? ''}}" type="text" name="dsra_tenure" class="input_sanc" placeholder="Enter DSRA Tenure"></td>
                                     <td><input value="{{$supplyChainFormData['dsra_comment'] ?? ''}}" type="text" name="dsra_comment" class="input_sanc" placeholder="Comment if any"></td>
                                  </tr>
