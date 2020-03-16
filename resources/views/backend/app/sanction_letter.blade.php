@@ -611,7 +611,7 @@
                               </thead>
                               <tbody>
                                  <tr>
-                                    <td><input value="{{$supplyChainFormData['dsra_amt'] ?? ''}}" type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
+                                    <td><input value="&#8377; {{number_format($supplyChainFormData['dsra_amt']) ?? ''}}" type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
                                     <td><input value="{{$supplyChainFormData['dsra_tenure'] ?? ''}}" type="text" name="dsra_tenure" class="input_sanc" placeholder="Enter DSRA Tenure"></td>
                                     <td><input value="{{$supplyChainFormData['dsra_comment'] ?? ''}}" type="text" name="dsra_comment" class="input_sanc" placeholder="Comment if any"></td>
                                  </tr>
