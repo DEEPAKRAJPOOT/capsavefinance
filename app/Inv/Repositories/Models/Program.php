@@ -69,6 +69,7 @@ class Program extends BaseModel {
         'max_tenor_old_invoice',
         'margin',
         'overdue_interest_rate',
+        'base_rate_id',
         'interest_linkage',
         'is_adhoc_facility',
         'adhoc_interest_rate',
@@ -393,6 +394,11 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
         return Program::whereIn('anchor_id', $anchor_ids)->with(['programCharges'])->where('prgm_type', $uesr_type)->where('parent_prgm_id', '<>', 0)->get();
+    }
+
+    public function baseRate()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\ProgramCharges', 'prgm_id', 'prgm_id');
     }
 
 }

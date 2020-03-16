@@ -23,7 +23,7 @@
 
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword" ><b>Product Limit</b></label> 
+        <label for="txtPassword" ><b>Proposed Product Limit</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
       </div>
@@ -51,11 +51,11 @@
 
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Sub Limit</b></label>
+        <label for="txtPassword"><b>Program Limit</b></label>
         <span class="text-success limit"></span>
         <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($limitBalance<0)? 0: $limitBalance}}</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
-        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Loan Offer" maxlength="15">
+        <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Program Limit" maxlength="15">
       </div>
     </div>
     
@@ -85,9 +85,7 @@
         <select name="benchmark_date" class="form-control">
             <option value="">Select Benchmark Date</option>
             <option value="1" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 1)? 'selected': ''}}>Invoice Date</option>
-            <option value="2" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 2)? 'selected': ''}}>BOE Date</option>
-            <option value="3" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 3)? 'selected': ''}}>GRN Date</option>
-            <option value="4" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 4)? 'selected': ''}}>Date of discounting</option>
+            <option value="2" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 2)? 'selected': ''}}>Date of discounting</option>
         </select>
       </div>
     </div>
@@ -95,14 +93,14 @@
 <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Invoice Tenor (In Days)</b></label> 
-        <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Invoice Tenor (In Days)" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Old Invoice Tenor (In Days)</b></label> 
-        <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Tenor for old invoice" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Old Invoice Tenor (In Days)" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
     
@@ -944,7 +942,7 @@
         let program_id = $('#program_id').val();
         setLimit('input[name=prgm_limit_amt]', '');
         setLimit('input[name=interest_rate]', '');
-        //fillProgramData(anchorPrgms);
+        fillProgramData(anchorPrgms);
 
         if(program_id == ''){
             unsetError('select[name=prgm_id]');
@@ -969,8 +967,7 @@
             },
             success:function(res){
                 res = JSON.parse(res);
-                console.log('res', res);
-                if ($("#offer_id").val() == "") {
+                /*if ($("#offer_id").val() == "") {
                     var prgm_data = res.prgm_data;
                     $('input[name=margin]').val(prgm_data.margin);
                     $('input[name=overdue_interest_rate]').val(prgm_data.overdue_interest_rate);
@@ -990,7 +987,7 @@
                         $("#document_fee_type").html("(" + document_fee_type + ")");
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
-                }
+                }*/
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
                 $('.isloader').hide();
             }
@@ -1045,7 +1042,7 @@
     }
 
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
-        setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
+        setError('input[name=prgm_limit_amt]', 'Please fill program limit amount');
         flag = false;
     }else if(anchor_id !='' && prgm_id != ''){
         if((parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(limitObj.prgm_min_limit)) ||(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_max_limit))){
@@ -1078,12 +1075,12 @@
     } 
 
     if(tenor == ''){
-        setError('input[name=tenor]', 'Please flll tenor');
+        setError('input[name=tenor]', 'Please flll invoice tenor');
         flag = false;
     }
 
     if(tenor_old_invoice == ''){
-        setError('input[name=tenor_old_invoice]', 'Please fill old tenor invoice');
+        setError('input[name=tenor_old_invoice]', 'Please fill old invoice tenor');
         flag = false;
     }
 
@@ -1405,6 +1402,7 @@
   })
 
   function fillProgramData(anchorPrgms){
+    console.log(anchorPrgms);
     let program_id = $('#program_id option:selected').val();
     if(typeof program_id == 'undefined' || program_id == '' || program_id == null){
         //$('input[name=tenor]').val();
@@ -1413,7 +1411,7 @@
         $('input[name=overdue_interest_rate]').val('');
         $('input[name=adhoc_interest_rate]').val('');
         $('input[name=grace_period]').val('');
-        $('input[name=processing_fee]').val('');
+        //$('input[name=processing_fee]').val('');
         //$('input[name=document_fee]').val();
         return;
     }
@@ -1425,7 +1423,7 @@
             $('input[name=overdue_interest_rate]').val(program.overdue_interest_rate);
             $('input[name=adhoc_interest_rate]').val(program.adhoc_interest_rate);
             $('input[name=grace_period]').val(program.grace_period);
-            $('input[name=processing_fee]').val(program.processing_fee);
+            //$('input[name=processing_fee]').val(program.processing_fee);
             //$('input[name=document_fee]').val();
         }
     });

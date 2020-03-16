@@ -272,7 +272,7 @@ table.remove-tr-bg tbody tr{
     padding-bottom: 5px;
     padding-left: 10px;
     border-left: solid #adbdb8;
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 28px;
 }
 .accordion .card-header.collapsed:after {
@@ -827,4 +827,8 @@ ul.listing.listing1 li{float:left; width:33.33%;}
 }
 .table tr td i {
     color: #138864;
+}
+
+table.pdl-15 tr td{
+    padding-left: 15px;
 }
