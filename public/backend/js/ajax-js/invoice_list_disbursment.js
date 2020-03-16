@@ -18,6 +18,7 @@ try {
                     d.front = $('input[name=front]').val();
                     d.front = $('input[name=front]').val();
                     d._token = messages.token;
+                    d.app_id = messages.appp_id;
                 },
                 "error": function () {  // error handling
                    

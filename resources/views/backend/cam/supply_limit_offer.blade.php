@@ -6,7 +6,7 @@
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
-    <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id">
+    <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id" id="offer_id">
     
     <div class="row">
     <div class="col-md-6">
@@ -23,7 +23,7 @@
 
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword" ><b>Limit</b></label> 
+        <label for="txtPassword" ><b>Product Limit</b></label> 
         <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
         <input type="text" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
       </div>
@@ -31,7 +31,7 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Anchor</b></label> 
+        <label for="txtPassword"><b>Select Anchor</b></label> 
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
                 @foreach($anchors as $key=>$anchor)
@@ -43,7 +43,7 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Program</b></label> 
+        <label for="txtPassword"><b>Select Program</b></label> 
             <select name="prgm_id" id="program_id" class="form-control">
             </select>
         </div>
@@ -61,7 +61,7 @@
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Interest(%)</b></label>
+        <label for="txtPassword"><b>Interest Rate (%)</b></label>
         <span class="float-right text-success limit"></span>
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
       </div>
@@ -69,16 +69,16 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Interest Payment Frequency</b></label> 
+        <label for="txtPassword"><b>Select Payment Frequency</b></label> 
         <select name="payment_frequency" class="form-control">
-            <option value="">Select Interest Payment Frequency</option>
-            <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Monthly</option>
-            <option value="2" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 2)? 'selected': ''}}>Upfront</option>
+            <option value="">Select Payment Frequency</option>
+            <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Up Front</option>
+            <option value="2" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 2)? 'selected': ''}}>Monthly</option>
             <option value="3" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 3)? 'selected': ''}}>Rear Ended</option>
         </select>
       </div>
     </div>
-
+        
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Benchmark Date</b></label> 
@@ -92,6 +92,62 @@
       </div>
     </div>
 
+<div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Invoice Tenor (In Days)</b></label> 
+        <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Old Invoice Tenor (In Days)</b></label> 
+        <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Tenor for old invoice" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Margin (%)</b></label> 
+        <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="5">
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Overdue Interest Rate (%)</b></label> 
+        <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="5">
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Adhoc Interest Rate (%)</b></label> 
+        <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="5">
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword"><b>Grace Period (In Days)</b></label> 
+        <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="form-group">
+          <label for="txtPassword"><b>Processing Fee <span id="processing_fee_type">(%)</span></b></label>
+            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="form-group INR">
+        <label for="txtPassword"><b>Documentation Fee <span id="document_fee_type">(%)</span></b></label>         
+        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? $offerData->document_fee : ''}}" placeholder="Documentation Fee" maxlength="6">
+      </div>
+    </div>
+    
     <!-- -------------- PRIMARY SECURITY BLOCK ------------ -->
     <div class="col-md-12">
           <div class="form-group row">
@@ -798,62 +854,7 @@
         </div>
     <!-- -------------- -->
     
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Invoice Tenor(Days)</b></label> 
-        <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-      </div>
-    </div>
     
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Old Invoice Tenor(Days)</b></label> 
-        <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Tenor for old invoice" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-      </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Margin(%)</b></label> 
-        <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="5">
-      </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Overdue Interest(%)</b></label> 
-        <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="5">
-      </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Adhoc Interest(%)</b></label> 
-        <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="5">
-      </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="txtPassword"><b>Grace Period(Days)</b></label> 
-        <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-      </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%)</b></label>
-            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
-      </div>
-    </div>
-    
-    <div class="col-md-6">
-      <div class="form-group INR">
-        <label for="txtPassword"><b>Documentation Fee (%)</b></label> 
-        <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? number_format($offerData->document_fee): ''}}" placeholder="Check Bounce Fee" maxlength="6">
-      </div>
-    </div>
     
     <div class="col-md-6">
       <div class="form-group">
@@ -912,7 +913,7 @@
         let anchor_id = $('#anchor_id').val();
         setLimit('input[name=prgm_limit_amt]', '');
         setLimit('input[name=interest_rate]', '');
-        fillPrograms(anchor_id, anchorPrgms);
+        fillPrograms(anchor_id, anchorPrgms);                
     });
 
     function fillPrograms(anchor_id, programs){
@@ -925,6 +926,15 @@
     }
 
     $('#program_id').on('change',function(){
+        if ($("#offer_id").val() == "") {            
+            $('input[name=margin]').val("");
+            $('input[name=overdue_interest_rate]').val("");                    
+            $('input[name=adhoc_interest_rate]').val("");                                        
+            $('input[name=grace_period]').val("");                                        
+            $('input[name="processing_fee"]').val("");                                        
+            $('input[name="document_fee"]').val(""); 
+        }
+                        
         unsetError('input[name=prgm_limit_amt]');
         unsetError('input[name=interest_rate]');
         let program_min_rate = $('#program_id option:selected').data('min_rate');
@@ -934,6 +944,7 @@
         let program_id = $('#program_id').val();
         setLimit('input[name=prgm_limit_amt]', '');
         setLimit('input[name=interest_rate]', '');
+        //fillProgramData(anchorPrgms);
 
         if(program_id == ''){
             unsetError('select[name=prgm_id]');
@@ -945,7 +956,8 @@
             setLimit('input[name=prgm_limit_amt]', '(<i class="fa fa-inr" aria-hidden="true"></i> '+program_min_limit+'-<i class="fa fa-inr" aria-hidden="true"></i> '+program_max_limit+')');
             setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
         }
-        let token = "{{ csrf_token() }}";
+        let token = "{{ csrf_token() }}";            
+
         $('.isloader').show();
         $.ajax({
             'url':messages.get_program_balance_limit,
@@ -957,7 +969,29 @@
             },
             success:function(res){
                 res = JSON.parse(res);
-                prgm_consumed_limit = parseInt(res) - current_offer_amt;
+                console.log('res', res);
+                if ($("#offer_id").val() == "") {
+                    var prgm_data = res.prgm_data;
+                    $('input[name=margin]').val(prgm_data.margin);
+                    $('input[name=overdue_interest_rate]').val(prgm_data.overdue_interest_rate);
+                    if (prgm_data.is_adhoc_facility == '1') {
+                        $('input[name=adhoc_interest_rate]').val(prgm_data.adhoc_interest_rate);
+                    }
+                    if (prgm_data.is_grace_period == '1') {
+                        $('input[name=grace_period]').val(prgm_data.grace_period);
+                    }
+                    if (prgm_data.processing_fee_amt != '') {
+                        var processing_fee_type = prgm_data.processing_fee_type == '2' ? '%' : '&#8377;';
+                        $("#processing_fee_type").html("(" + processing_fee_type + ")");
+                        $('input[name="processing_fee"]').val(prgm_data.processing_fee_amt);
+                    }
+                    if (prgm_data.document_fee_amt != '') {
+                        var document_fee_type = prgm_data.document_fee_type == '2' ? '%' : '&#8377;';
+                        $("#document_fee_type").html("(" + document_fee_type + ")");
+                        $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
+                    }
+                }
+                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
                 $('.isloader').hide();
             }
         })
@@ -1369,5 +1403,32 @@
         $(selector+'>div:not(:first)').remove();
     }
   })
+
+  function fillProgramData(anchorPrgms){
+    let program_id = $('#program_id option:selected').val();
+    if(typeof program_id == 'undefined' || program_id == '' || program_id == null){
+        //$('input[name=tenor]').val();
+        //$('input[name=tenor_old_invoice]').val();
+        $('input[name=margin]').val('');
+        $('input[name=overdue_interest_rate]').val('');
+        $('input[name=adhoc_interest_rate]').val('');
+        $('input[name=grace_period]').val('');
+        $('input[name=processing_fee]').val('');
+        //$('input[name=document_fee]').val();
+        return;
+    }
+    $.each(anchorPrgms, function(i,program){
+        if(program.prgm_id == program_id){
+            //$('input[name=tenor]').val();
+            //$('input[name=tenor_old_invoice]').val();
+            $('input[name=margin]').val(program.margin);
+            $('input[name=overdue_interest_rate]').val(program.overdue_interest_rate);
+            $('input[name=adhoc_interest_rate]').val(program.adhoc_interest_rate);
+            $('input[name=grace_period]').val(program.grace_period);
+            $('input[name=processing_fee]').val(program.processing_fee);
+            //$('input[name=document_fee]').val();
+        }
+    });
+  }
 </script>
 @endsection

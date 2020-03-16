@@ -78,9 +78,10 @@
                     {!! Form::hidden('user_id', $user_id) !!}
                     {!! Form::hidden('curr_role_id', $curr_role_id) !!}
                     {!! Form::hidden('assign_case', $assign_case) !!}
+                    {!! Form::hidden('biz_id', $biz_id) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
-                <button type="submit" class="btn btn-success btn-sm">{{ $confirmBtn }}</button> &nbsp;
+                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>
@@ -98,14 +99,27 @@
    
 var messages = {
     is_accept: "{{ Session::get('is_accept') }}",    
+    error_code : "{{ Session::has('error_code') }}",
  };
      $(document).ready(function(){
         var assign_case = $("input[name=assign_case]").val(); 
         var targetModel = assign_case == '1' ? 'assignCaseFrame' : 'sendNextstage';
-        var parent =  window.parent;        
+        var parent =  window.parent;  
+                
+        $('.btn-move-next-stage').click(function() {            
+            if ($('#frmMoveStage').valid()) {
+                parent.$('.isloader').show();
+            }
+        });
+        
+        if (messages.error_code) {
+            parent.$('.isloader').hide();
+        }
+        
         if(messages.is_accept == 1){
            parent.jQuery("#"+targetModel).modal('hide');  
            parent.oTable.draw();
+           parent.$('.isloader').hide();           
         }
 
         $('#close_btn').click(function() {

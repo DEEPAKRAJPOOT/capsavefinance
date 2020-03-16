@@ -24,10 +24,9 @@ try {
             columns: [
                 {data: 'customer_id'},
                 {data: 'customer_code'},
+                {data: 'app_id'},
                 {data: 'ben_name'},
-                {data: 'ben_bank_name'},
-                {data: 'ben_ifsc'},
-                {data: 'ben_account_no'},
+                {data: 'bank'},
                 {data: 'total_invoice_amt'},
                 {data: 'total_disburse_amt'},
                 {data: 'total_actual_funded_amt'},
@@ -35,7 +34,7 @@ try {
                 {data: 'status'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8, 9, 10]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8, 9]}]
         });
 
         //Search
@@ -69,10 +68,12 @@ try {
                 {data: 'disburse_date'},
                 {data: 'invoice_no'},
                 {data: 'inv_due_date'},
+                {data: 'payment_due_date'},
                 {data: 'invoice_approve_amount'},
                 {data: 'principal_amount'},
                 {data: 'status_name'},
                 {data: 'disburse_amount'},
+                {data: 'total_interest'},
                 {data: 'settlement_date'},
                 {data: 'settlement_amount'},
                 {data: 'accured_interest'},

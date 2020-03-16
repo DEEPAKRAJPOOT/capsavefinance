@@ -91,43 +91,36 @@
                                        
                                         </div>
                                     </div>
-                    <div class="col-md-4">
-                    <div class="form-group">
-                                            <label for="txtCreditPeriod">Payment Date Calculation  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
-                                            <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
-                                              <option value="">Please Select</option>
-                                              <option value="1">Invoice Date</option>
-                                              <option value="2">Disburse Date </option>
-                                             </select>
-                                             					 <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
-                                        </div>
-               </div> 
-									<div class="col-md-4">
-                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
+                                    
+                                    				
+					<div class="col-md-4">
+                                        <div class="form-group">
+                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
-                                    </div>
-									
-									<div class="col-md-4">
-                                       							 <div class="form-group">
+										 <div class="form-group">
                                             <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label">*</span></label>
 											
 		<div class="custom-file">
                <label for="email">Upload Document</label>
                <input type="file" class="custom-file-input" id="customFile" name="doc_file">
                <label class="custom-file-label" for="customFile">Choose file</label>
+                <span id="msgFile" class="text-success"></span>
             </div>
-			 </div>
-                  </div>				
-				
-                    <div class="col-md-8">
-                    <div class="form-group">
-                    <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
-                    <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
-                    </div>
-                    </div>
+			
+			
+			
+                                            
+                                        </div>
+                                    </div>
+					<div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
+                                               <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
+                                    </div>
+                                    </div>
+                
 		</div> 
                 <div class="row">
                    <div class="col-md-12">
@@ -333,7 +326,13 @@ var messages = {
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
     check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
    };
-   
+   ///* upload image and get ,name  */
+   $('input[type="file"]'). change(function(e){
+        $("#customFile-error").hide();
+        var fileName = e. target. files[0]. name;
+        $("#msgFile").html('The file "' + fileName + '" has been selected.' );
+    });
+
    ///////////////// invoice approve amount check here///////////
    $(document).on('change blur keyup','#invoice_approve_amount', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
@@ -449,10 +448,10 @@ var messages = {
         });
         $("#invoice_no" ).rules( "add", {
         required: true,
-        minlength: 6,
+        maxlength: 20,
         messages: {
         required: "Please enter Invoice No",
-        minlength: "Please, at least 6  characters are necessary",
+        maxlength: "Maximum 20  characters are necessary",
         }
         });
         
@@ -462,12 +461,6 @@ var messages = {
         required: "Please enter Invoice Due Date",
         }
         }); 
-        $("#pay_calculation_on" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please Select Payment Calculation",
-        }
-        });  
         $("#invoice_date" ).rules( "add", {
         required: true,
         messages: {
@@ -551,7 +544,7 @@ var messages = {
                            $("#program_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
                              if(v.program!=null)
-                             {
+                             {                                 
                                    $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
                               }                   
                              });
@@ -580,6 +573,8 @@ var messages = {
   $(document).on('change','.changeSupplier',function(){
       $("#invoice_date").val('');
       var program_id =  $(this).val(); 
+      var anchor_id =  $("#anchor_id").val(); 
+      
       if(program_id=='')
       {
           return false; 
@@ -611,10 +606,12 @@ var messages = {
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                         $("#supplier_id").append("<option value=''>Please Select</option>");  
-                            $(obj1).each(function(i,v){
-                            
-                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+                         $("#supplier_id").empty();
+                         $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
+                        $(obj1).each(function(i,v){
+                                var dApp = "000000" + v.app_id;
+                                 //$("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" (CAPS"+dApp.slice(-6)+")</option>");  
                             });
                        
                     }
@@ -622,14 +619,17 @@ var messages = {
                     {
                        
                                $("#supplier_id").append("<option value=''>No data found</option>");  
-                           
                       
                     }
                   
                 }
         }); }); 
     
-    
+  $(document).on('change','#supplier_id',function(){
+    var selValue = $(this).val();
+    var selValueArr = selValue.split(",");
+    $("#prgm_offer_id").val(selValueArr[2]);       
+  });
   </script> 
 @endsection
  

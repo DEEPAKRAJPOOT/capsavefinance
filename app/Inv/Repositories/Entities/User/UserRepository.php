@@ -866,12 +866,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function getCinByUserId($biz_id)
     {
-          $owner =  BizPanGst::where('biz_id',$biz_id)->first();
-             if (empty($owner)) {
-            return false;
-        }
-
-        return $owner;
+          return   BizPanGst::where('biz_id',$biz_id)->first();
            
     }
    
@@ -1453,7 +1448,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetCustomers()
     {
-        $result = LmsUser::with('user');
+        $result = LmsUser::with('user')->orderBy('lms_user_id','DESC')->get();
         return $result ?: false;
     }
 
@@ -1548,6 +1543,18 @@ class UserRepository extends BaseRepositories implements UserInterface
         $user_id=(int)$user_id;
         $result= UserModel::getSingleUserDetails($user_id);
         return $result?$result:'';
+    }
+
+    /**
+     * Get all customer from lms_users
+     *
+     * @return query data
+     */
+    public function lmsGetRefundList()
+    {
+        $result = Disbursal::lmsGetRefundList();
+      
+        return $result ?: false;
     } 
 
     /**

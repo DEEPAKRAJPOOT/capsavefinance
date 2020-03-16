@@ -30,10 +30,19 @@ function _rand_str($length = 2){
 	 return $random_string;
 }
 
-
 function getProductType($product_id){
 	 $productType = ['1'=>'Supply Chain', 'Term Loan', 'Leasing'];
 	 return $productType[$product_id] ?? '';
+}
+
+function getBenchmarkType($product_id){
+	 $productType = ['1'=>'Invoice Date', 'BOE Date', 'GRN Date', 'Date of discounting'];
+	 return $productType[$product_id] ?? '';
+}
+
+function getInvestmentPaymentFrequency($id){
+	 $productType = ['1'=>'Monthly', 'Upfront', 'Rear Ended', 'Pre Offer'];
+	 return $productType[$id] ?? '';
 }
 
 function _uuid_rand($strLen = 60){
@@ -51,6 +60,20 @@ function _uuid_rand($strLen = 60){
 function format_number($number) {
     $num = number_format($number,6, '.', '');
     return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
+}
+
+function calculate_formula($formula, $variables){
+	extract($variables);
+	$script = preg_replace('/\s+/', '', $formula);
+	foreach ($variables as $key => $value) {
+		$var_val = $$key;
+		$script = str_replace($key, $var_val , $script);
+	}
+	try {
+    	return eval("return ". $script .";");
+	} catch (ParseError $e) {
+	   return 0;
+	}
 }
 
 function extra_char($string = ''){

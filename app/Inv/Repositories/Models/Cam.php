@@ -192,4 +192,6 @@ class Cam extends BaseModel
     public static function getCamDataByBizAppId($bizId, $appId){
         return Cam::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
     }
+
+
 }

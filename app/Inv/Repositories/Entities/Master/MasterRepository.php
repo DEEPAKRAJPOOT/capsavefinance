@@ -29,6 +29,7 @@ use App\Inv\Repositories\Models\Master\Segment;
 use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\Master\FacilityType;
+use App\Inv\Repositories\Models\Master\BaseRate;
 
 /**
  * 
@@ -627,6 +628,41 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function getFacilityTypeList()
     {
         return FacilityType::getFacilityTypeList();
-    }    
+    }   
+    
+    /*
+     * Get Base Rate List
+     * 
+     * return array
+     */
+    public function getAllBaseRateList(){
+//      $result = BaseRate::orderBy('id', 'DESC');
+        $result = BaseRate::getAllBaseRateList();
+      return $result ?: false;
+    }
+    
+    public function saveBaseRate($attributes){
+        $status = BaseRate::create($attributes);
+        return $status ?: false;
+    }
+    
+    public function findBaseRateById($baseRateId){
+      if (empty($baseRateId) || !ctype_digit($baseRateId)) {
+            throw new BlankDataExceptions('No Data Found');
+      }
+      $result = BaseRate::find($baseRateId);
+      return $result ?: false;
+    }
+    
+    public function updateBaseRate($attributes = [], $baseRateId){
+        $status = BaseRate::where('id', $baseRateId)->first()->update($attributes);
+        return $status ?: false;
+
+    }
+    
+    public function getBaseRateDropDown()
+    {
+        return BaseRate::getBaseRateDropDown();
+    }
 
 }

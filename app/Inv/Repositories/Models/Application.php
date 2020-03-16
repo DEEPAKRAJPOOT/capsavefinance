@@ -9,6 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\Master\State;
+    use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class Application extends BaseModel
@@ -184,6 +187,13 @@ class Application extends BaseModel
         return ($appData?$appData:null);
         
     }
+    
+    public static function getSingleAnchorDataByAppId($appId)
+    {
+      return  self::where('app_id',$appId)->first();
+        
+    } 
+    
     
     /**
      * Get Applications for Application list data tables
@@ -441,6 +451,7 @@ class Application extends BaseModel
         return $appData ? $appData : [];
     }
     
+    
     public  function user()
     {
 
@@ -610,5 +621,49 @@ class Application extends BaseModel
         $result = self::where($where)->orderBy('app_id', $orderBy)->get();
         return $result ?: false;
     }
+
+    /* get address  */
+    public static function getUserAddress($app_id)
+    {
         
+        $biz_id =  self::where(['app_id' => $app_id])->pluck('biz_id');
+        return  BusinessAddress::whereIn('biz_id',$biz_id)->where(['address_type' => 0])->pluck('state_id')->first(); 
+        
+    }
+    
+    public static  function companyAdress()
+    {
+        return  Company::where(['company_id' => 1,'is_active' =>1])->pluck('state')->first(); 
+    }
+
+    public function prgmLimits()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'app_id');
+    }
+
+    public function acceptedOffers()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where(['is_active' => 1, 'status' => 1]);
+    }   
+
+    protected static function getColenderApplications() 
+    {  
+        $appData = self::distinct()->whereHas('colender')->select('app.user_id','app.app_id','app.loan_amt', 'users.co_lender_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->join('users', 'app.user_id', '=', 'users.user_id');
+                //->where('users.agency_id', \Auth::user()->agency_id);
+        //$appData->groupBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC');
+        return $appData;
+    }
+
+    public function colender(){
+        return $this->hasOne('App\Inv\Repositories\Models\ColenderShare','app_id','app_id')->where(['is_active' => 1, 'co_lender_id' => \Auth::user()->co_lender_id]);
+    }        
+    
+    public static function getUserBehalfApplication($attr)
+    { 
+       
+        return  User::where(['anchor_id' => $attr['anchor_id']])->get();
+    }  
 }

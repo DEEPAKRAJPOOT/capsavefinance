@@ -170,7 +170,10 @@ class ProgramController extends Controller {
             $charges = $this->appRepo->getChargesList()->toArray();
 
             $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['anchor_sub_limit'])->sum('anchor_sub_limit');
-
+            
+            $baserate_list =$this->master->getBaseRateDropDown();
+//            dd($baserate_list);
+            
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
@@ -230,7 +233,8 @@ class ProgramController extends Controller {
                             'subProgramData',
                             'action',
                             'doaResult',
-                            'invoiceDataCount'
+                            'invoiceDataCount',
+                            'baserate_list'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -258,7 +262,7 @@ class ProgramController extends Controller {
             'anchor_limit' => $request->get('anchor_limit'),
             'min_loan_size' => ($request->get('min_loan_size')) ? str_replace(',', '', $request->get('min_loan_size')) : null,
             'max_loan_size' => ($request->get('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : null,
-            'interest_linkage' => $request->get('interest_linkage'),
+            'base_rate_id' => $request->get('interest_linkage'),
             'interest_borne_by' => $request->get('interest_borne_by'),
             'margin' => $request->get('margin'),
             'is_adhoc_facility' => $request->get('is_adhoc_facility'),

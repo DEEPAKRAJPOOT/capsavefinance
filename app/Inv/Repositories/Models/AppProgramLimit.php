@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\User;
 
 class AppProgramLimit extends BaseModel {
     /* The database table used by the model.
@@ -132,6 +134,8 @@ class AppProgramLimit extends BaseModel {
      public static function getBusinessName()
      {
         return self::whereHas('supplyOffers')->where(['product_id' =>1])->with('business')->groupBy('biz_id')->get(['biz_id']);
+       /// $biz_id =  BizInvoice::pluck('biz_id');
+        
      }   
      
      function Business()
@@ -141,11 +145,12 @@ class AppProgramLimit extends BaseModel {
      } 
      
       public static function getLimitProgram($aid)
-     {
-     
-        return AppProgramOffer::whereHas('productHas')->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->with('program')->where(['anchor_id' =>$aid])->groupBy('prgm_id')->get();
+     {     
+            $user_id =   User::where(['anchor_id' => $aid])->where('anchor_id','<>', null)->pluck('user_id');  //'is_active' => 1,
+            $app_id =    LmsUser::whereIn('user_id',$user_id)->pluck('app_id');
+          return AppProgramOffer::whereHas('productHas')->whereIn('app_id',$app_id)->where(['anchor_id' => $aid,'is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
      }
-     
+      
     public static function getLimitAnchor($aid){
         return AppProgramLimit::with('anchorList')->where(['app_id' =>$aid])->get();
     }
@@ -155,12 +160,21 @@ class AppProgramLimit extends BaseModel {
        return AppProgramLimit::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'anchor_id' => $uid])->get();
     }   
   
+    
+         public static function getUserBehalfApplication($uid)
+    {
+       return Application::whereHas('supplyOffers')->with('app.user')->where(['product_id' =>1,'anchor_id' => $uid])->get();
+    }   
+    
+    
     public static function geAnchortLimitProgram($aid){  
         return Program::where(['anchor_id' =>$aid,'parent_prgm_id' =>0])->first();
     }
      
     public static function getLimitAllAnchor(){
-            return AppProgramOffer::whereHas('productHas')->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorList')->groupBy('anchor_id')->get();
+            $user_id =    LmsUser::pluck('user_id');
+            $achor_id =   User::whereIn('user_id',$user_id)->where('anchor_id','<>', null)->pluck('anchor_id');  
+            return AppProgramOffer::whereHas('productHas')->whereIn('anchor_id',$achor_id)->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorList')->groupBy('anchor_id')->get();
     }
      
     public  function anchorList(){   
@@ -168,8 +182,11 @@ class AppProgramLimit extends BaseModel {
     }   
     
     public static function getLimitSupplier($pid){
-        return AppProgramOffer::whereHas('productHas')->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->with('app.user')->where(['prgm_id' => $pid])->get();
-    }  
+        $appID =  AppProgramOffer::whereHas('productHas')->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where(['prgm_id' => $pid])->pluck('app_id');
+        $user_id =    LmsUser::whereIn('app_id',$appID)->pluck('user_id');
+        return User::with('app.Business')->whereIn('user_id',$user_id)->get();
+        
+      }  
 
    
     public function app(){
@@ -238,5 +255,5 @@ class AppProgramLimit extends BaseModel {
 
     public static function getTotalPrgmLimitByAppId($appId){
         return AppProgramLimit::where(['app_id'=>$appId])->sum('limit_amt');
-    }
+    }        
 }

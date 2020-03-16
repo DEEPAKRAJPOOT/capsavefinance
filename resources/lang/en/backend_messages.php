@@ -26,5 +26,8 @@ return [
     'change_app_disbursed_status' => 'Application disbursed successfully.',
     'limit_offer_success' => 'Offer generated successfully.',
     'add_payment_manual' => 'Payment add successfully.',
+    'refunded' => 'Selected amount has been successfully refunded.',
+    'under_approval' => 'Offer is under approval, can\'t be updated',
+    'noBankAccount' => 'No Bank Account Found.',
 ];
 

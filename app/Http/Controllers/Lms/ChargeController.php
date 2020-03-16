@@ -88,7 +88,9 @@ class ChargeController extends Controller
       
        public function saveManualCharges(Request $request)
        {  
-           
+         
+           $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
+           $comAddrState = $this->lmsRepo->companyAdress();
            $getAmount =  str_replace(',', '', $request->amount);
            $getTransType  =  DB::table('mst_trans_type')->where(['chrg_master_id' => $request->chrg_name])->first();
            $totalSumAmount = 0;
@@ -99,13 +101,19 @@ class ChargeController extends Controller
                     $percent  = 0; 
                     if($request->is_gst_applicable==1)
                    {
-                       $totalSumAmount  =  $request->charge_amount_gst_new;  
-                       $is_gst   = 1; 
+                        $totalSumAmount  =  $request->charge_amount_gst_new;  
+                        $cgst = 0;
+                        $sgst = 0; 
+                        $igst =  18;
+                        $is_gst   = 1;  
                    }
                    else
                    {
                         $totalSumAmount  =  $request->amount; 
-                         $is_gst   = 0; 
+                        $cgst = 9;
+                        $sgst = 9;
+                        $igst =  0;
+                        $is_gst   = 0;  
                    }
                    $chrg_applicable_id = null;
                  }
@@ -116,12 +124,28 @@ class ChargeController extends Controller
                    if($request->is_gst_applicable==1)
                    {
                        $totalSumAmount  =  $request->charge_amount_gst_new;  
-                       $is_gst   = 1; 
+                       if($comAddrState== $getUserState)
+                        {
+                            $cgst = 9;
+                            $sgst = 9;
+                            $igst =  0;
+                            $is_gst   = 0; 
+                        }
+                        else
+                        {
+                            $cgst = 0;
+                            $sgst = 0; 
+                            $igst =  18;
+                            $is_gst   = 1; 
+                        }
                    }
                    else
                    {
-                        $totalSumAmount  =  $request->charge_amount_new; 
-                        $is_gst   = 0; 
+                         $totalSumAmount  =  $request->charge_amount_new; 
+                         $is_gst   = 0; 
+                         $cgst = 0;
+                         $sgst = 0;
+                         $igst =  0;
                    }
                  }
                     $id  = Auth::user()->user_id;
@@ -133,21 +157,26 @@ class ChargeController extends Controller
                                 "amount" =>   $totalSumAmount,
                                 'created_by' =>  $id,
                                 'created_at' =>  $mytime ];
+                
                   $chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);  
+              
                   if( $chrgTransId)
                   {
                         $arr  = [ "user_id" =>  $request->user_id,
                                   "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
-                                  "chrg_trans_id" =>  $chrgTransId,
+                                  "chrg_trans_id" =>  $chrgTransId->chrg_trans_id,
                                   "amount" =>   $totalSumAmount,
                                   "gst"   => $is_gst,
+                                  "cgst"   => $cgst,
+                                  "sgst"   => $sgst,
+                                  "igst"   => $igst,
                                   'entry_type' =>0,
                                   "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                                   "trans_type" => $getTransType->id,
                                   "pay_from" => $request['pay_from'],
                                   'created_by' =>  $id, 
                                   'created_at' =>  $mytime ];
-                        
+                      
                          $res =   $this->lmsRepo->saveCharge($arr);
                           if($res)
                         {

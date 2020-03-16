@@ -110,6 +110,17 @@ return [
         '2' => 'Asset Value',
         '3' => 'Asset Base Value',
         '4' => 'Sanction'
+    ],
+
+    /*'SEND_MAIL_ACTIVE'=>1,
+    'SEND_MAIL'=>["gaurav.agarwal@prolitus.com", "varun.dudani@zuron.in", "binay.kumar@prolitus.com", "dhriti.barman@capsavefinance.com", "vinay.agarwal@capsavefinance.com", "vilesh.modi@rentalpha.com"],*/
+    'OPERATORS' => [
+        ' ( ' => ' ( ',
+        ' ) ' => ' ) ',
+        ' / ' => ' / ',
+        ' * ' => ' * ',
+        ' + ' => ' + ',
+        ' - ' => ' - '
     ], 
     'doc_type' => [
         '1' => 'On Boarding',
@@ -190,13 +201,6 @@ return [
         '4'=>'Second Pari-pasu',
         '5'=>'Sub-Servient'
     ],
-    'cs_status_of_security_id'=>[
-        '1'=>'First Pari-pasu',
-        '2'=>'Exclusive',
-        '3'=>'Third Pari-pasu',
-        '4'=>'Second Pari-pasu',
-        '5'=>'Sub-Servient'
-    ],
     'cs_time_for_perfecting_security_id'=>[
         '1'=>'Before Disbusrement',
         '2'=>'With in 30 days from date of first disbusrement',
@@ -240,6 +244,32 @@ return [
         '5'=>'With in 120 days from date of first disbursement',
         '6'=>'with in 180 days from date of first disbursement',
         '7'=>'with in 360 days from date of first disbsurement'
-    ]
+    ],
+    'em_mechanism_id'=>[
+        '1'=>'With direct Payment confirmation',
+        '2'=>'W/o direct payment confirmation',
+        '3'=>'With payment confirmation with Escrow a/c',
+        '4'=>'W/o payment confirmation w/o Escrow a/c'
+    ],
+    'payment_frequency' => [
+        1 => 'Up Front',
+        2 => 'Monthly',
+        3 => 'Rear Ended',
+        4 => 'Pre Offer'        
+    ],
+    'JOURNAL_TYPE' => [
+        'Bank' => 'Bank',
+        'Cash' => 'Cash',
+        'Purchase' => 'Purchase',
+        'Sales' => 'Sales',        
+        'Miscellaneous' => 'Miscellaneous'
+    ], 
+    'TRANS_CONFIG_TYPE' => [
+        'DISBURSAL' => 1,
+        'PAYMENT' => 2,
+        'REPAYMENT' => 3,
+        'CHARGES' => 4
+    ],
+    'timezone' => 'Asia/Kolkata'
 ];
  

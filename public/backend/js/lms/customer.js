@@ -24,22 +24,18 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
+                {data: 'app_id'},                
                 {data: 'virtual_acc_id'},
                 {data: 'customer_name'},
-                {data: 'customer_email'},
-                {data: 'customer_mobile'},
                 {data: 'limit'},
-                {data: 'interest_rate'},
                 {data: 'consume_limit'},
                 {data: 'available_limit'},
-                {data: 'tenor_days'},
-                {data: 'assignee'},
-                {data: 'assigned_by'},
+                {data: 'anchor'},
                 {data: 'status'}
             ],
             aoColumnDefs: [{
                     'bSortable': false,
-                    'aTargets': []
+                    'aTargets': [0]
                 }]
 
         });

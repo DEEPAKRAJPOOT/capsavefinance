@@ -6,6 +6,7 @@ var iframe_ids = [
         'appStatusFrame',
         'assignCaseFrame',
         'addCaseNote',
+        'addAppCopy',
         'addAnchorFrm',
         'uploadAnchLead',
         'editAnchorFrm',
@@ -87,6 +88,16 @@ var iframe_ids = [
         'viewSharedColenderFrame',
         'viewInterestAccrual',
         'manageUserRolePassword',
+        'addBaseRateFrame',
+        'editBaseRateFrame',
+        'previewSupplyChainSanctionLetter',
+        'addJiConfig',        
+        'refund_amount',
+        'adjust_amount',
+        'edit_refund_amount',
+        'edit_adjust_amount',
+        'edit_waveoff_amount',
+        'paymentRefundInvoice',
     ];
 
 iframe_ids.forEach(function(id) {

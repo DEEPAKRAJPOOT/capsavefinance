@@ -1,107 +1,291 @@
 try {
     var oTable;
+    var user_ids = [];
+    
     jQuery(document).ready(function ($) {
-        //User Listing code
-        oTable = $('#refundCustomerList').DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 10,
-            searching: false,
-            bSort: true,
-            ajax: {
-                "url": messages.lms_get_refund_customer, // json datasource
-                "method": 'POST',
-                data: function (d) {
-                    d.search_keyword = $('input[name=search_keyword]').val();
-                    d._token = messages.token;
-                },
-                "error": function () {  // error handling
-
-                    $("#refundCustomerList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#refundCustomerList_processing").css("display", "none");
-                }
-            },
-            columns: [
-                {data: 'customer_id'},
-                {data: 'customer_code'},
-                {data: 'ben_name'},
-                {data: 'ben_bank_name'},
-                {data: 'ben_ifsc'},
-                {data: 'ben_account_no'},
-                {data: 'total_invoice'},
-                {data: 'status'},
-                {data: 'action'}
-            ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8, 9, 10]}]
+        
+        $(document).on('change', '.user_ids', function() {
+            let id = $(this).val();
+            if($(this).is(':checked')){
+                user_ids.push(id);
+            }else{
+                user_ids = $.grep(user_ids, function(value) {
+                    return value != id;
+                });
+            }
         });
+
+        //User Listing code
+        if($('#refundCustomerList').length){
+            oTable = $('#refundCustomerList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                searching: false,
+                bSort: true,
+                ajax: {
+                    "url": messages.lms_get_refund_customer, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.from_date = $('input[name="from_date"]').val();
+                        d.to_date = $('input[name="to_date"]').val();
+                        d.search_keyword = $('input[name=search_keyword]').val();
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+
+                        $("#refundCustomerList").append('<tbody class="appList-error"><tr><th colspan="8">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#refundCustomerList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'user_id'},
+                    {data: 'customer_code'},
+                    {data: 'ben_name'},
+                    {data: 'ben_bank_name'},
+                    {data: 'ben_ifsc'},
+                    {data: 'ben_account_no'},
+                    {data: 'surplus_amount'},
+                    {data: 'status'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
 
         //Search
         $('#searchbtn').on('click', function (e) {
             oTable.draw();
-        });
+            $("#fromDate").val($('input[name="from_date"]').val());
+            $("#toDate").val($('input[name="to_date"]').val());
+            user_ids = [];
 
-        var refundList = $('#refundList').DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 10,
-            searching: false,
-            bSort: true,
-            ajax: {
-                "url": messages.lms_get_refund_list, // json datasource
-                "method": 'POST',
-                data: function (d) {
-                    d.search_keyword = $('input[name=search_keyword]').val();
-                    d.is_status = $('select[name=is_status]').val();
-                    d.from_date = $('input[name=from_date]').val();
-                    d.to_date = $('input[name=to_date]').val();
-                    d._token = messages.token;
+        });
+        
+        if($('#interestRefundList').length){
+
+            $('#interestRefundList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: '*',
+                searching: false,
+                bSort: true,
+                bPaginate: false,
+                info: false,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.from_date = parent.$('#fromDate').val();
+                        d.to_date = parent.$('#toDate').val(); 
+                        d.user_ids = parent.user_ids;
+                        d.action = messages.action;
+                        d.trans_type = messages.interest_refund;
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+
+                        $("#interestRefundList").append('<tbody class="appList-error"><tr><th colspan="7">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#interestRefundList_processing").css("display", "none");
+                    }
                 },
-                "error": function () {  // error handling
+                columns: [
+                    {data: 'trans_id'},
+                    {data: 'customer_id'},
+                    {data: 'trans_date'},
+                    {data: 'invoice_no'},
+                    {data: 'amount'},
+                    {data: 'balance_amount'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
 
-                    $("#refundCustomerList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#refundCustomerList_processing").css("display", "none");
-                }
-            },
-            columns: [
-                {data: 'disburse_date'},
-                {data: 'invoice_no'},
-                {data: 'inv_due_date'},
-                {data: 'invoice_approve_amount'},
-                {data: 'principal_amount'},
-                {data: 'status_name'},
-                {data: 'disburse_amount'},
-                {data: 'collection_date'},
-                {data: 'collection_amount'},
-                {data: 'accured_interest'},
-                {data: 'surplus_amount'}
-            ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
-        });
+        if($('#nonFactoredRefundList').length){
+            $('#nonFactoredRefundList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: '*',
+                searching: false,
+                bSort: true,
+                bPaginate: false,
+                info: false,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.from_date = parent.$('#fromDate').val();
+                        d.to_date = parent.$('#toDate').val(); 
+                        d.user_ids = parent.user_ids;
+                        d.action = messages.action;
+                        d.trans_type = messages.non_factored;
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
 
+                        $("#nonFactoredRefundList").append('<tbody class="appList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#nonFactoredRefundList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'trans_id'},
+                    {data: 'customer_id'},
+                    {data: 'trans_date'},
+                    {data: 'amount'},
+                    {data: 'balance_amount'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
 
-        $('#searchB').on('click', function (e) {
-            refundList.draw();
-        });
+        if($('#marginList').length){
+            $('#marginList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: '*',
+                searching: false,
+                bSort: true,
+                bPaginate: false,
+                info: false,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.from_date = parent.$('#fromDate').val();
+                        d.to_date = parent.$('#toDate').val(); 
+                        d.user_ids = parent.user_ids;
+                        d.action = messages.action;
+                        d.trans_type = messages.margin;
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
 
-        $('#from_date').datetimepicker({
-            format: 'dd/mm/yyyy',
-            //  startDate: new Date(),
-            autoclose: true,
-            minView: 2, });
-        $('#to_date').datetimepicker({
-            format: 'dd/mm/yyyy',
-            //  startDate: new Date(),
-            autoclose: true,
-            minView: 2, });
-        
-        
-        $(document).on('click', '#reset', function () {
-            $(this).parents('.row').find('input.form-control,select.form-control').each(function () {
-               
-                $(this).val('');
-                refundList.draw();
-            })
-        });
+                        $("#marginList").append('<tbody class="appList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#marginList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'trans_id'},
+                    {data: 'customer_id'},
+                    {data: 'trans_date'},
+                    {data: 'amount'},
+                    {data: 'balance_amount'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
+
+        if($('#editInterestRefundList').length){
+
+            $('#editInterestRefundList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: '*',
+                searching: false,
+                bSort: true,
+                bPaginate: false,
+                info: false,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.batch_id = messages.batch_id;
+                        d.action = messages.action;
+                        d.trans_type = messages.interest_refund;
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+
+                        $("#editInterestRefundList").append('<tbody class="appList-error"><tr><th colspan="7">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#editInterestRefundList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'trans_id'},
+                    {data: 'customer_id'},
+                    {data: 'trans_date'},
+                    {data: 'invoice_no'},
+                    {data: 'amount'},
+                    {data: 'balance_amount'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
+
+        if($('#editNonFactoredRefundList').length){
+            $('#editNonFactoredRefundList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: '*',
+                searching: false,
+                bSort: true,
+                bPaginate: false,
+                info: false,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.batch_id = messages.batch_id;
+                        d.action = messages.action;
+                        d.trans_type = messages.non_factored;
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+
+                        $("#editNonFactoredRefundList").append('<tbody class="appList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#editNonFactoredRefundList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'trans_id'},
+                    {data: 'customer_id'},
+                    {data: 'trans_date'},
+                    {data: 'amount'},
+                    {data: 'balance_amount'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
+
+        if($('#editMarginList').length){
+            $('#editMarginList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: '*',
+                searching: false,
+                bSort: true,
+                bPaginate: false,
+                info: false,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.batch_id = messages.batch_id;
+                        d.action = messages.action;
+                        d.trans_type = messages.margin;
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+
+                        $("#editMarginList").append('<tbody class="appList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#editMarginList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'trans_id'},
+                    {data: 'customer_id'},
+                    {data: 'trans_date'},
+                    {data: 'amount'},
+                    {data: 'balance_amount'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
 
 
     });
@@ -110,3 +294,7 @@ try {
         console.log(e);
     }
 }
+
+// function checkDisableInput() {
+//     alert('sfdf')
+// } ajaxSuccess

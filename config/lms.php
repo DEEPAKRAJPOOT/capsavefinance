@@ -17,12 +17,14 @@ return [
         'LOAN_DISBURSED'=>'6',
         'TDS'=>'7',
         'INCOME'=>'8',
+        'INTEREST'=>'9',
         'MARGIN'=>'10',
         'PENALTY'=>'11',
         'GST'=>'12',
         'CGST'=>'13',
         'SGST'=>'14',
         'IGST'=>'15',
+        'PAYMENT_DISBURSED' =>'16',
         'REPAYMENT'=> '17',
         'DOCUMENT_FEE'=>'20',
         'NACH_BOUNCE_CHARGE'=>'24',
@@ -30,10 +32,11 @@ return [
         'PREPAYMENT_CHARGE'=>'28',
         'OTHER_CHARGE'=>'29',
         'INVOICE_KNOCKED_OFF'=>'30',
-        'INTEREST'=>'9',
         'INTEREST_REFUND'=>'31',
         'INTEREST_PAID'=>'32',
-        'INTEREST_OVERDUE'=>'33'
+        'INTEREST_OVERDUE'=>'33',
+        'INVOICE_PARTIALLY_KNOCKED_OFF'=>'34',
+        'NON_FACTORED_AMT' => '35'
     ],
     'STATUS_ID' => [
         'DISBURSED'=>'12',

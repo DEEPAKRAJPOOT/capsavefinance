@@ -115,7 +115,7 @@ public static function updateInvoice($invoiceId,$status)
     public static function updateInvoiceAmount($attributes)
     {
         $invoiceId  =    $attributes['invoice_id'];
-        $amount     =    $attributes['approve_invoice_amount'];
+        $amount     =  str_replace(',','', $attributes['approve_invoice_amount']);  
         $comment    =    $attributes['comment'];
         $id = Auth::user()->user_id;
         $result =  User::getSingleUserDetails($id);
@@ -145,6 +145,7 @@ public static function updateInvoice($invoiceId,$status)
      
      public static function getAllInvoice($request,$status)
      {
+         $whr = [];
          
          if($request->get('supplier_id')!='' && $request->get('biz_id')=='')
          {
@@ -170,11 +171,14 @@ public static function updateInvoice($invoiceId,$status)
                  $whr = ['anchor_id' => $request->get('anchor_id')];
           
          }
-        else {
-             $whr = [];
-        }
+          
        
-                    return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'asc')->get();
+         if($request->get('app_id')!=''){
+             $whr['app_id']= $request->get('app_id');
+        }
+        //backend_get_invoice
+
+        return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'asc')->get();
      } 
      
     public static function  getSingleInvoice($invId)
@@ -182,6 +186,23 @@ public static function updateInvoice($invoiceId,$status)
          return self::with(['anchor','supplier','gst','pan'])->where(['invoice_id' =>$invId])->first();
          
      }
+     public static function  getAllInvoiceAnchor($status_id)
+     {
+         return self::with(['business','anchor'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
+         
+     }  
+     public static function  getBusinessNameApp($status_id)
+     {
+         return self::with(['business'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
+         
+     }  
+    
+       function business()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id','biz_id');  
+    
+     }
+     
       function pan()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst', 'supplier_id','user_id')->where(['status' =>1,'type' =>1,]);  
@@ -276,8 +297,14 @@ public static function updateInvoice($invoiceId,$status)
      public static function getProgramForLimit($pid)
     {
        return Program::where(['prgm_id' =>$pid])->first();
-     }   
+    }   
    
+         public static function getProgramForAppLimit($pid,$appId)
+    {
+           return  AppProgramOffer::where(['prgm_id' =>$pid,'app_id' => $appId,'is_approve' =>1,'is_active'=>1,'status' =>1])->sum('prgm_limit_amt');
+     }  
+     
+     
     public static function getAllUserInvoice($userId)
     {
         return self::with('app.acceptedOffer')
@@ -331,4 +358,10 @@ public static function updateInvoice($invoiceId,$status)
         return self::where(['invoice_no' => $invNo])->first();
     }
 
+    public static function getUserInvoiceIds($userId)
+    {
+        return self::where('supplier_id', $userId)
+            ->where('status_id', 9)
+            ->pluck('invoice_id');
+    }
 }

@@ -149,7 +149,7 @@ trait ApplicationTrait
     }
 
 
-    protected function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
+     protected function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
         $offerWhereCond = [];
         
         if ($offerId) {
@@ -184,6 +184,7 @@ trait ApplicationTrait
             $data['contact_person'] = ($cam)?$cam->contact_person:'';
             $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_id:'';
             $data['validity_date'] = ($sanctionData)?$sanctionData->validity_date:'';
+            $data['expire_date'] = ($sanctionData)?$sanctionData->expire_date:'';
             $data['lessor'] = ($sanctionData)?$sanctionData->lessor:'';
             $data['validity_comment'] = ($sanctionData)?$sanctionData->validity_comment:'';
             $data['payment_type'] = ($sanctionData)?$sanctionData->payment_type:'';
@@ -205,6 +206,17 @@ trait ApplicationTrait
             $data['equipmentData'] = $equipmentData;
             $data['ptpqrData'] = $ptpqrData;
             $data['businessAddress'] = $businessAddress;
+            $data['sanction_expire_msg'] = '';
+            $currentDate = date("Y-m-d");
+            if(empty($data['expire_date'])){
+                 $data['expire_date'] = date('Y/m/d', strtotime($currentDate. ' + 30 days'));
+            } 
+            if(isset($data['expire_date'])){
+                if(strtotime($currentDate) > strtotime($data['expire_date'])){
+                    $data['sanction_expire_msg'] = "Sanction Letter Expired.";
+                }
+            }
+               
         }
         $data['leasingLimitData'] = $this->appRepo->getProgramLimitData($appId, '3')->toArray();
         $data['leaseOfferData'] = AppProgramOffer::getAllOffers($appId, '3');
@@ -222,12 +234,22 @@ trait ApplicationTrait
         return $data;
     }
 
-     protected function getSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
+    
+    protected function getSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
         $bizData = $this->appRepo->getApplicationById($bizId);
         $EntityData  = $this->appRepo->getEntityByBizId($bizId);
         $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
         $AppLimitData  = $this->appRepo->getAppLimit($appId);
-        $supplyChainOfferData = $this->appRepo->getAppProducts($appId);
+        $supplyChainOfferData = $this->appRepo->appOfferWithLimit($appId);
+        $reviewerSummaryData = $this->appRepo->getReviewerSummaryData($appId, $bizId);
+
+        $user = $this->appRepo->getAppData($appId)->user;
+        $anchors = $user->anchors;
+        $anchorArr=[];
+        foreach($anchors as $anchor){
+          $anchorArr[$anchor->anchor_id]  = $anchor->toArray();
+        }
+
         $ProgramData = $supplyChainOffer = [];
         if ($supplyChainOfferData->count()) {
             $supplyChainOfferData = $supplyChainOfferData[0];
@@ -268,7 +290,9 @@ trait ApplicationTrait
         $data['product_name'] = $ProgramData['product_name'] ?? 0;
         $data['tot_limit_amt'] = $tot_limit_amt;
         $data['offerData'] = $offerData;
+        $data['reviewerSummaryData'] = $reviewerSummaryData;
         $data['bizOwnerData'] = $bizOwnerData;
+        $data['anchorData'] = $anchorArr;
         return $data;
     }
 }

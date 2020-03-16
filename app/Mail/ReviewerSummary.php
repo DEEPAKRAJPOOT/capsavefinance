@@ -28,9 +28,10 @@ class ReviewerSummary extends Mailable
      *
      * @return void
      */
-    public function __construct($mstRepo)
+    public function __construct($mstRepo, $user)
     {
         $this->mstRepo = $mstRepo;
+        $this->user = $user;
     }
 
     /**
@@ -87,7 +88,9 @@ class ReviewerSummary extends Mailable
         $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
         $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
         $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
-        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');      
+        $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');  
+        $dispAppId = 'CAPS' . sprintf('%06d', $appId);
+        $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain  
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
@@ -96,8 +99,14 @@ class ReviewerSummary extends Mailable
             'postCondArr' => $postCondArr,
             'leaseOfferData'=> $leaseOfferData,
             'arrStaticData' => $arrStaticData,
-            'facilityTypeList' => $facilityTypeList
-        ]);
+            'facilityTypeList' => $facilityTypeList,
+            //'receiverUserName' => $this->user['receiver_user_name'],
+            'appId' => $appId,
+            'url' => 'https://'. config('proin.backend_uri'),
+            'dispAppId' => $dispAppId,
+            'supplyOfferData' => $supplyOfferData
+
+        ]);        
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
         //         'email_to' => config('common.review_summ_mails'),
@@ -107,7 +116,9 @@ class ReviewerSummary extends Mailable
         //         'body' => $email,
         // ];
 
-        $email->subject('New Application For Approver - '.$businessDetails->biz_entity_name);
+        //$email_subject = 'Application ' . $dispAppId . ' is waiting for your approval - '.$businessDetails->biz_entity_name;
+        $email_subject = 'New Application is waiting for your approval ' . $businessDetails->biz_entity_name;
+        $email->subject($email_subject);
 
         if($fileArray) {
             foreach($fileArray as $key=>$val) {

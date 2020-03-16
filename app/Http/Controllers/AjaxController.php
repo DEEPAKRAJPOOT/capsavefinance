@@ -33,7 +33,9 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class AjaxController extends Controller {
 
@@ -45,12 +47,12 @@ class AjaxController extends Controller {
     protected $request;
     protected $user;
     protected $application;
-   protected $invRepo;
-   protected $docRepo;
-   protected $lms_repo;
+    protected $invRepo;
+    protected $docRepo;
+    protected $lms_repo;
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
 
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -59,10 +61,10 @@ class AjaxController extends Controller {
         $this->userRepo = $user;
         $this->application = $application;
         $this->masterRepo = $master;
-        $this->invRepo   =    $invRepo;
-        $this->docRepo          = $docRepo;
         $this->lmsRepo = $lms_repo;
-
+        $this->invRepo = $invRepo;
+        $this->docRepo = $docRepo;
+        $this->finRepo = $finRepo;
     }
 
     /**
@@ -2720,7 +2722,6 @@ if ($err) {
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
@@ -3450,7 +3451,8 @@ if ($err) {
     {
         $program_id = (int)$request->program_id;
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
-        return json_encode($prgm_limit);
+        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        return json_encode(['prgm_limit' => $prgm_limit, 'prgm_data' => $prgm_data]);
     }
     
      public function getProgramSingleList(Request $request)
@@ -3463,12 +3465,14 @@ if ($err) {
      
       public function getSupplierList(Request $request)
      {
+        
         $result  =  explode(",",$request['program_id']);
         $request['program_id']  = $result[0];
         $request['prgm_offer_id']  = $result[1];
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
-        $get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
+        //$get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
+        $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
         return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
      }
            
@@ -3510,8 +3514,11 @@ if ($err) {
        }
         $date = Carbon::now();
         $data = array();
-        $userId =  $request['supplier_bulk_id'];
         $id = Auth::user()->user_id;
+        $explode  =  explode(',',$request['supplier_bulk_id']);
+        $attributes['supplier_bulk_id']      =    $explode[0];
+        $userId     =    $attributes['supplier_bulk_id'];
+        $appId   = $explode[1]; 
         if ($request['doc_file']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice', 0775, true);
@@ -3529,9 +3536,9 @@ if ($err) {
        
         $i=0;
       
-        $res =  $this->invRepo->getSingleLimit($request['anchor_bulk_id']);
-        $appId = $res->app_id; 
+        $res =  $this->invRepo->getSingleAnchorDataByAppId($appId);
         $biz_id  = $res->biz_id;
+       
         $rowcount = count($rowData) -1;
         foreach($rowData as $key=>$row)
         {
@@ -3599,7 +3606,6 @@ if ($err) {
                 $data[$i]['tenor'] =  $request['tenor']; 
                 $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
                 $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
-                $data[$i]['pay_calculation_on'] = $request['pay_calculation_on'];
                 $data[$i]['invoice_approve_amount'] =  $invoice_amount;
                 $data[$i]['is_bulk_upload'] = 1;
                 $data[$i]['batch_id'] = $batch_id;
@@ -3708,8 +3714,8 @@ if ($err) {
     public function setDefaultAccount(Request $request)
     {
         $acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
-     //   $value = $request->get('value');
-        $this->application->updateBankAccount(['is_default' => 0]);
+        $userId = $this->application->getUserIdByBankAccId($acc_id);
+        $updateBankAccount = $this->application->updateBankAccount(['is_default' => 0], ['user_id' => $userId]);
         $res = $this->application->updateBankAccount(['is_default' => 1], ['bank_account_id' => $acc_id]);
         return \response()->json(['success' => $res]);
     }
@@ -3825,12 +3831,12 @@ if ($err) {
    *
    * @return json transaction data
    */
-  public function lmsGetSoaList(DataProviderInterface $dataProvider) {
+    public function lmsGetSoaList(DataProviderInterface $dataProvider) {
 
-    $transactionList = $this->application->lmsGetTransactions();
-    $users = $dataProvider->lmsGetTransactions($this->request, $transactionList);
-    return $users;
-  }
+        $transactionList = $this->lmsRepo->getSoaList();
+        $users = $dataProvider->getSoaList($this->request, $transactionList);
+        return $users;
+    }
         /**
      * Get all Equipment
      *
@@ -3842,7 +3848,6 @@ if ($err) {
         $data = $dataProvider->getEquipments($this->request, $equipment);
         return $data;
     }
-
 
     /** 
      * @Author: Rent Alpha
@@ -3858,6 +3863,43 @@ if ($err) {
         $getFieldVal= Helpers::getTableVal($tableName, $whereId, $fieldVal); 
         $columnVal= ($getFieldVal) ? $getFieldVal->$column : false;
         echo $columnVal;
+    }
+
+    public function getTransTypeList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllTransType();
+        $this->providerResult = $dataProvider->getTransTypeListByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getJournalList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllJournal();
+        $this->providerResult = $dataProvider->getJournalByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getAccountList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllAccount();
+        $this->providerResult = $dataProvider->getAccountByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getVariableList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllVariable();
+        $this->providerResult = $dataProvider->getVariableByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getJeConfigList(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllJeConfig();
+        $this->providerResult = $dataProvider->getJeConfigByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getJiConfigList(DataProviderInterface $dataProvider) { 
+        $jeConfigId = request()->get('je_config_id');
+        $this->dataRecords = $this->finRepo->getAllJiConfig($jeConfigId);
+        $this->providerResult = $dataProvider->getJiConfigByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
     }
 
 
@@ -3890,8 +3932,18 @@ if ($err) {
             return response()->json(['status' => 0]); 
         }
     }
-
-
+    
+    /**
+     * Get all customer list
+     *
+     * @return json customer data
+     */
+    public function lmsGetRefundList(DataProviderInterface $dataProvider) {
+      $refundList = $this->lmsRepo->getAllRefundLmsUser();
+      $data = $dataProvider->lmsGetRefundCustomers($this->request, $refundList);
+      return $data;
+    }
+    
     public function updateGroupCompanyExposure(Request $request ){
         $group_company_expo_id = $request->get('group_company_expo_id');
         $arrData = GroupCompanyExposure::where("group_company_expo_id", $group_company_expo_id)->update(['is_active' => 2]);
@@ -3903,4 +3955,71 @@ if ($err) {
         return response()->json($status);
     }
 
+    public function lmsCreateBatch(DataProviderInterface $dataProvider){
+        $refundList = $this->lmsRepo->getCreateBatchData($this->request);
+        $data = $dataProvider->getCreateBatchData($this->request, $refundList);
+        return $data;   
+    }
+    
+    public function lmsEditBatch(DataProviderInterface $dataProvider){
+        $refundList = $this->lmsRepo->getEditBatchData($this->request);
+        $data = $dataProvider->getEditBatchData($this->request, $refundList);
+        return $data;   
+    }
+
+    public function lmsGetRequestList(DataProviderInterface $dataProvider){
+        $requestData = $this->lmsRepo->getRequestList($this->request);
+        $data = $dataProvider->getRequestList($this->request, $requestData);
+        return $data;
+    }
+    
+    public function getAllBaseRateList(DataProviderInterface $dataProvider) { 
+     $baseRateList = $this->masterRepo->getAllBaseRateList();
+//     dd($baseRateList);
+     $baserates = $dataProvider->getBaseRateList($this->request, $baseRateList);
+     return $baserates;
+    }
+
+    public function getColenderAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getColenderApplications();
+        $applications = $dataProvider->getColenderAppList($this->request, $appList);
+        return $applications;
+    }
+
+    public function getTransactions(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getTransactions();
+        $this->providerResult = $dataProvider->getTransactionsByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+    public function lmsGetInvoiceByUser(Request $request ){
+        $userId = $request->get('user_id');
+        $invoiceIds = $this->lmsRepo->getUserInvoiceIds($userId)->toArray();
+        return response()->json($invoiceIds);
+    }
+
+    
+    /**
+     * Get Repayment Amount
+     * 
+     * @param Request $request
+     * @return mixed
+     */
+    public function getRepaymentAmount(Request $request)
+    {
+        $userId    = $request->get('user_id');
+        $transType = $request->get('trans_type');
+        $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
+        
+        $debitAmt = 0;
+        $creditAmt = 0;
+        
+        if (isset($repaymentAmtData['debitAmtData']['amount'])) {
+            $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
+        }
+        if (isset($repaymentAmtData['creditAmtData']['amount'])) {
+            $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
+        }        
+        $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
+        return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
+    }
 }

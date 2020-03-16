@@ -504,6 +504,7 @@ table.remove-tr-bg tbody tr{
     vertical-align: top;}
 .overview-table.table td{border-left: 1px solid #e9ecef; vertical-align:middle;   position: relative;  }
 	.data{    border: 1px solid #e9ecef;
+              padding: 0px;
    }
 .sub-title{    font-size: 15px;
    }	
@@ -833,4 +834,33 @@ ul.listing.listing1 li{float:left; width:33.33%;}
 .table tr td i {
     color: #138864;
 }
+
 .charge_parent_div {width:100%;}
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+span.multiselect-native-select select {
+	border: 0!important;
+	clip: rect(0 0 0 0)!important;
+	height: 1px!important;
+	margin: -1px -1px -1px -3px!important;
+	overflow: hidden!important;
+	padding: 0!important;
+	position: absolute!important;
+	width: 1px!important;
+	left: 50%;
+	top: 30px;
+}
+
+.multiselect-container {
+	padding: 5px 15px;
+	max-height: 165px;
+	overflow: auto;
+}
+
+.multiselect-container li a label {
+	color: #000;
+	font-weight: 400;
+}

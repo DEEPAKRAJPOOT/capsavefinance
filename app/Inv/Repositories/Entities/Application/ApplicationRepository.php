@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\AppStatusLog;
 use App\Inv\Repositories\Models\Master\SubIndustry;
 use App\Inv\Repositories\Models\Master\Segment;
+use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\Master\Bank;
@@ -52,6 +53,9 @@ use App\Inv\Repositories\Models\OfferCollateralSecurity;
 use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
+use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Models\CamReviewerSummary;
+use App\Inv\Repositories\Models\CamReviewSummPrePost;
 
 /**
  * Application repository class
@@ -1051,7 +1055,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getAllOffers($appId, $product_id=null){
-        return AppProgramOffer::getAllOffers($appId, $product_id);
+        return AppProgramOffer::getAllOffers((int)$appId, $product_id);
     }    
     
     /**
@@ -1109,11 +1113,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function createCustomerId($lmsCustomerArray = [])
     {
-    	$customerCheck = LmsUser::where('user_id', $lmsCustomerArray['user_id'])
-    			->first();
-    	if(!isset($customerCheck)) {
-    		$customer = LmsUser::create($lmsCustomerArray);
-    	} 
+    	// $customerCheck = LmsUser::where('user_id', $lmsCustomerArray['user_id'])
+    	// 		->first();
+    	// if(!isset($customerCheck)) {
+		$customer = LmsUser::create($lmsCustomerArray);
+    	// } 
 
         return (isset($customer)) ? $customer : false;
     } 
@@ -1150,6 +1154,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->whereHas('programLimit', function ($query) {
                         $query->where('product_id', 1);
                 })
+                ->where('is_active', 1)
                 ->get();
 	}   
 
@@ -1219,6 +1224,20 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 )
                 ->get();
     }
+
+
+
+    public function appOfferWithLimit($app_id)
+    {
+        return AppProgramOffer::with('programLimit')
+                ->where(['app_id' => $app_id,
+                    'is_active' => 1]
+                )
+                ->get();
+    }
+
+
+
     public function getApplicationProduct($app_id)
     {
         return Application::with('products')
@@ -1243,8 +1262,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->get();
     }
 
-    public function getOfferStatus($appId){
-        return AppProgramOffer::getOfferStatus($appId);
+    public function getOfferStatus($where_condition){
+        return AppProgramOffer::getOfferStatus($where_condition);
     }
 
     public function changeOfferApprove($appId){
@@ -1402,18 +1421,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     * @return type mixed
     */
 
-    public function lmsGetTransactions()
-    {
-        return Transactions::select('transactions.*')
-                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
-                    ->join('lms_users','users.user_id','lms_users.user_id')
-                    ->orderBy('user_id', 'asc')
-                    ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
-                    ->orderBy('trans_id', 'asc');
-                            
-        //with('trans_detail')->where('soa_flag', 1);
-    }
-
     public function getTotalByPrgmLimitId($appPrgmLimitId){
         return AppProgramOffer::getTotalByPrgmLimitId($appPrgmLimitId);
     }
@@ -1464,7 +1471,73 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return User::where('user_id', $userId)
                 ->pluck('is_buyer')->first();
-    } 
+    }
+
+    /**
+     * Get trans type
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getTransTypeData($transTypeId)
+    {
+        return TransType::where('id', $transTypeId)
+                ->first();
+    }
+    
+    /**
+     * Get prgm charge data
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getPrgmChrgeData($prgmId, $chargeId)
+    {
+        return ProgramCharges::where(['prgm_id' => $prgmId, 'charge_id' => $chargeId])
+                ->first();
+    }
+
+    /**
+     * Get user state id by appId
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getUserAddress($appId)
+    {
+        return Application::getUserAddress($appId);
+    }
+
+    /**
+     * Get company state id by appId
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function companyAdress()
+    {
+        return Company::companyAdress();
+    }
+
+    /**
+     * Get company state id by appId
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getUserIdByBankAccId($bankAccId)
+    {
+        return UserBankAccount::where('bank_account_id', $bankAccId)
+            ->pluck('user_id')
+            ->first();
+    }
+
+
     
 
     public function saveShareToColender($data, $co_lenders_share_id=null){
@@ -1522,4 +1595,46 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function addOfferEscrowMechanism($data){
         return OfferEscrowMechanism::addOfferEscrowMechanism($data);
     }
+
+    public function getColenderApplications() 
+    {
+        return Application::getColenderApplications();
+    }
+
+    /**
+     * Get Approval status against appId
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */    
+    public function getAppApprovers($app_id)
+    {
+        return AppApprover::getAppApprovers($app_id);
+    }
+
+    public function getReviewerSummaryData($appId, $bizId){
+        $returnData = []; 
+        $reviewerSummaryData = CamReviewerSummary::where('biz_id',$bizId)->where('app_id', $appId)->first(); 
+        if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+            $reviewerSummaryData = $reviewerSummaryData->toArray();
+            $returnData['reviewerSummaryData'] = $reviewerSummaryData;
+            $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])->where('is_active', 1)->get();
+            if ($dataPrePostCond->count()) {
+                foreach ($dataPrePostCond as $key => $value) {
+                    if($value->cond_type == '1'){
+                        $returnData['preCond'][] = $value->cond;
+                    }else if($value->cond_type == '2'){
+                        $returnData['postCond'][] = $value->cond;
+                    }
+                }
+            } 
+        }
+        return  $returnData;
+    }
+    
+    
+    public function getProgramOfferData($program_id)
+    {
+       return AppProgramLimit::getProgramOfferData($program_id);
+    }    
 }

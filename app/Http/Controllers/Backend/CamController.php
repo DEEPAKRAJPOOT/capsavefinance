@@ -354,6 +354,7 @@ class CamController extends Controller
           $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
         }
       } 
+      $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
 
       $roleData =  Helpers::getUserRole()->first();
       $is_editable = ($roleData->id == config('common.user_role.APPROVER'))?0:1;
@@ -367,7 +368,8 @@ class CamController extends Controller
         'postCondArr' => $postCondArr,
         'arrStaticData' => $arrStaticData,
         'facilityTypeList' => $facilityTypeList,
-        'is_editable' => $is_editable
+        'is_editable' => $is_editable,
+        'supplyOfferData' => $supplyOfferData
       ]);
     }
 
@@ -400,22 +402,22 @@ class CamController extends Controller
     }
 
     public function mailReviewerSummary(Request $request) {
-      // if( env('SEND_MAIL_ACTIVE') == 1){
-      //   Mail::to(explode(',', env('SEND_MAIL')))
-      //     ->bcc(explode(',', env('SEND_MAIL_BCC')))
-      //     ->cc(explode(',', env('SEND_MAIL_CC')))
-      //     ->send(new ReviewerSummary($this->mstRepo));
+      if( env('SEND_MAIL_ACTIVE') == 1){
+        Mail::to(explode(',', env('SEND_MAIL')))
+          ->bcc(explode(',', env('SEND_MAIL_BCC')))
+          ->cc(explode(',', env('SEND_MAIL_CC')))
+          ->send(new ReviewerSummary($this->mstRepo));
 
-      //   if(count(Mail::failures()) > 0 ) {
-      //     Session::flash('error',trans('Mail not sent, Please try again later..'));
-      //   } else {
-      //     Session::flash('message',trans('Mail sent successfully.'));        
-      //   }
-      // } else {
-      //   Session::flash('message',trans('Mail not sent, Please try again later.')); 
-      // }
-      // return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
-      return new \App\Mail\ReviewerSummary($this->mstRepo);        
+        if(count(Mail::failures()) > 0 ) {
+          Session::flash('error',trans('Mail not sent, Please try again later..'));
+        } else {
+          Session::flash('message',trans('Mail sent successfully.'));        
+        }
+      } else {
+        Session::flash('message',trans('Mail not sent, Please try again later.')); 
+      }
+      return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);           
+      //return new \App\Mail\ReviewerSummary($this->mstRepo);        
     }
 
      public function uploadFinanceXLSX(Request $request){
@@ -1457,6 +1459,8 @@ class CamController extends Controller
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
+        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
@@ -1470,7 +1474,8 @@ class CamController extends Controller
                 ->with('supplyPrgmLimitData', $supplyPrgmLimitData)
                 ->with('termPrgmLimitData', $termPrgmLimitData)
                 ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
-                ->with('currStageCode', $currStageCode);
+                ->with('currStageCode', $currStageCode)
+                ->with('offerStatus', $offerStatus);
     }
     
     /**
@@ -1490,8 +1495,13 @@ class CamController extends Controller
               'product_id'=>$request->product_id
               ]);
 
+            $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+
             if($checkProgram->count()){
               Session::flash('message',trans('backend_messages.already_exist'));
+              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+            }elseif($checkApprovalStatus->count()){
+              Session::flash('message', trans('backend_messages.under_approval'));
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
 
@@ -1609,7 +1619,7 @@ class CamController extends Controller
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
         $prgmOfferId = $request->get('offer_id');
-        $aplid = (int)$request->get('app_prgm_limit_id');
+        $aplid = (int)$request->get('app_prgm_limit_id');        
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
@@ -1621,6 +1631,7 @@ class CamController extends Controller
         if($request->has('sub_limit')) {
             $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
         }
+
         if($request->has('facility_type_id') && $request->facility_type_id != 3){
           $request['discounting'] = null;
         }elseif($request->has('facility_type_id') && $request->facility_type_id == 3){
@@ -1629,8 +1640,15 @@ class CamController extends Controller
           $request['security_deposit'] = null;
           $request['security_deposit_type'] = null;
           $request['security_deposit_of'] = null;
-        } 
-      
+        }
+
+        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+
+        if($checkApprovalStatus->count()){
+          Session::flash('message', trans('backend_messages.under_approval'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }
+        
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         $limitData = $this->appRepo->getLimit($aplid);
@@ -1686,6 +1704,14 @@ class CamController extends Controller
         $bizId = $request->get('biz_id');
         $aplid = (int)$request->get('app_prgm_limit_id');
         $request['limit_amt'] = str_replace(',', '', $request->limit_amt);
+
+        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+
+        if($checkApprovalStatus->count()){
+          Session::flash('message', trans('backend_messages.under_approval'));
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+        }
+
         $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
 
         if($limitData){

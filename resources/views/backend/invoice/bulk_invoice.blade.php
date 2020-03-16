@@ -2,6 +2,7 @@
 @section('additional_css')
 @endsection
 @section('content')
+
 <div class="content-wrapper">
 <div class="col-md-12 ">
    <section class="content-header">
@@ -34,7 +35,7 @@
                     
                      
                      
-		 <div class="col-md-4">
+		 <div class="col-md-6">
 		<div class="form-group">
         <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
         <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
@@ -49,7 +50,7 @@
                 
                 </div></div>
 		
-		 <div class="col-md-4">
+		 <div class="col-md-6">
                     <div class="form-group">
                         <label for="txtCreditPeriod">Product Program Name
                             <span class="error_message_label">*</span>  <!-- <span id="pro_limit" class="error"></span> -->
@@ -61,7 +62,7 @@
                                     <span id="program_bulk_id_msg" class="error"></span>
                </div>
 		</div>
-                       <div class="col-md-4">
+                       <div class="col-md-6">
             <div class="form-group">
             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
            <select readonly="readonly" class="form-control" id="supplier_bulk_id" >
@@ -70,25 +71,15 @@
             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
             </div>
             </div>
-           <div class="col-md-4">
-    <div class="form-group">
-                            <label for="txtCreditPeriod">Payment Date Calculation  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
-                            <select readonly="readonly" class="form-control" id="pay_calculation_on"  name="pay_calculation_on">
-                              <option value="">Please Select</option>
-                              <option value="1">Invoice Date</option>
-                              <option value="2">Disburse Date </option>
-                             </select>
-                          <span id="pay_calculation_on_msg" class="error"></span>                                        <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
-                        </div>
-               </div> 
-										
+          							
             <div class="col-md-4">
             <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
             <div class="custom-file  ">
 
                <input type="file" accept=".csv"   class="custom-file-input fileUpload" id="customFile" name="file_id">
             <label class="custom-file-label" for="customFile">Choose file</label>
-            <span id="customFile_msg" class="error"></span>
+             <span id="customFile_msg" class="error"></span>
+             <span id="msgFile" class="text-success"></span>
             </div>
 
             </div>
@@ -175,7 +166,12 @@
             token: "{{ csrf_token() }}",
  };
  
- 
+  ///* upload image and get ,name  */
+   $('input[type="file"]'). change(function(e){
+        $("#customFile_msg").html('');
+        var fileName = e. target. files[0]. name;
+        $("#msgFile").html('The file "' + fileName + '" has been selected.' );
+    });
   $(document).ready(function () {
         $(".finalButton").hide();
         $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
@@ -299,11 +295,12 @@
   $(document).on('change','.changeBulkSupplier',function(){
     
        $("#program_bulk_id_msg" ).hide  ();
-      var program_id =  $(this).val(); 
+      var program_id =  $(this).val();
+       var anchor_id =  $("#anchor_bulk_id").val(); 
       $("#supplier_bulk_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'program_id':program_id,'_token':messages.token});
+       var postData =  ({'app_id':anchor_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',
@@ -327,11 +324,10 @@
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                          $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                         $("#supplier_bulk_id").append("<option value=''>Please Select</option>");  
-                            $(obj1).each(function(i,v){
-                            
-                                   $("#supplier_bulk_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
-                            });
+                         $(obj1).each(function(i,v){
+                                 
+                                  $("#supplier_bulk_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
+                          });
                        
                     }
                     else
@@ -347,16 +343,7 @@
            $("#supplier_bulk_id_msg" ).hide();
         }
       });
-      
-       $(document).on('change','#pay_calculation_on',function(){
-           
-       if($("#pay_calculation_on").val() > 0)
-        {
-           $("#pay_calculation_on_msg" ).hide();
-        }
-      });
-      
-        $(document).on('change','.fileUpload',function(){
+       $(document).on('change','.fileUpload',function(){
        
           $("#customFile_msg" ).hide();
        
@@ -584,7 +571,7 @@
                     }
                      var invoice_approve_amount =  invoice_approve_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     
-                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="10" minlength="6" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
+                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="20" minlength="2" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
                       
                     });
                       datepickerDisFdate();

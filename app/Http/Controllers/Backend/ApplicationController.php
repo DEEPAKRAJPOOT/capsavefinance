@@ -62,7 +62,16 @@ class ApplicationController extends Controller
     
        return view('backend.app.index');              
     }
+    
+    public function addAppCopy(Request $request)
+    {  
+        $data['user_id']  = $request->get('user_id');
+        $data['app_id']  = $request->get('app_id');
+        $data['biz_id']  = $request->get('biz_id');
+        return view('backend.app.app_copy')->with(['res' =>$data]);              
+    } 
 
+    
     /**
      * Render view for company detail page according to biz id
      * 
@@ -153,16 +162,18 @@ class ApplicationController extends Controller
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
-       if($getCin==false)
-       {
-          return redirect()->back();
-       }
-      
+        if(!empty($getCin))
+        {
+            $cin =    $getCin->cin; 
+        }
+        else
+        {
+            $cin =    ""; 
+        }
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
-      // dd($OwnerPanApi);
         return view('backend.app.promoter-details')->with([
             'ownerDetails' => $OwnerPanApi, 
-            'cin_no' => $getCin->cin,
+            'cin_no' => $cin,
             'appId' => $appId, 
             'bizId' => $bizId,
             'edit' => $editFlag
@@ -696,7 +707,8 @@ class ApplicationController extends Controller
                 ->with('user_id', $user_id)
                 ->with('assign_case', $assign_case)    
                 ->with('curr_role_id', $curr_role_id)
-                ->with('next_role_id', $next_role_id);
+                ->with('next_role_id', $next_role_id)
+                ->with('biz_id', $appData->biz_id);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -786,12 +798,12 @@ class ApplicationController extends Controller
                         return redirect()->back();                                            
                     }
                 } else if ($currStage->stage_code == 'opps_checker') {
-
                   	$capId = sprintf('%09d', $user_id);
                   	$customerId = 'CAP'.$capId;
                   	$lmsCustomerArray = array(
-						'user_id' => $user_id, 
-						'customer_id' => $customerId,
+            'user_id' => $user_id, 
+            'customer_id' => $customerId,
+						'app_id' => $app_id, 
 						'created_by' => Auth::user()->user_id
 						);
                   	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
@@ -801,23 +813,74 @@ class ApplicationController extends Controller
               			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
 
               			$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+                    $userStateId = $this->appRepo->getUserAddress($app_id);
+                    $companyStateId = $this->appRepo->companyAdress();
+                    // dd($companyStateId);
 						        if(isset($prcsAmt->offer)) {
                         foreach ($prcsAmt->offer as $key => $offer) {
-                                  // $tranType = 4 for processing acc. to mst_trans_type table
+                          // dd($offer);
+                          $pChargeId = config('lms')['TRANS_TYPE']['PROCESSING_FEE']; // 4
+                          $dChargeId = config('lms')['TRANS_TYPE']['DOCUMENT_FEE']; // 20
+
+                          $pChargeMasterId = $this->appRepo->getTransTypeData($pChargeId);
+                          $dChargeMasterId = $this->appRepo->getTransTypeData($dChargeId);
+
+                          $pPrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $pChargeMasterId->chrg_master_id);
+                          $dPrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $dChargeMasterId->chrg_master_id);
+
+                          // $tranType = 4 for processing acc. to mst_trans_type table
                           $pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
-                          $pfWGst = round((($pf*18)/100),2);
+                          $pfData = [];
+                          $pfData['amount'] = $pf;
 
-                          $pfDebitData = $this->createTransactionData($user_id,['amount' => $pf, 'gst' => $pfWGst] , null, 4);
+                          if(isset($pPrgmChrg->is_gst_applicable) && $pPrgmChrg->is_gst_applicable == 1 ) {
+                              if($userStateId == $companyStateId) {
+                                $pfWGst = round((($pf*18)/100),2);
+                                $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
+                                $pfData['igst'] = $pfWGst;
+                                $pfData['amount'] += $pfWGst;
+                                
+                              } else {
+                                $pfWGst = round((($pf*9)/100),2);
+                                $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
+                                $pfData['cgst'] = $pfWGst;
+                                $pfData['sgst'] = $pfWGst;
+                                $totalGst = $pfData['cgst'] + $pfData['sgst'];
+                                $pfData['amount'] += $totalGst;
+
+                              }
+                          } 
+                          $pfDebitData = $this->createTransactionData($user_id, $pfData, null, $pChargeId);
                           $pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
-
-                          // $pfCreditData = $this->createTransactionData($user_id, ['amount' => $pf, 'gst' => $pfWGst], null, 4, 1);
+                          
+                          // $pfCreditData = $this->createTransactionData($user_id, $pfData, null, 4, 1);
                           // $pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
 
                           // $tranType = 20 for document fee acc. to mst_trans_type table
                           $df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
+                          $dfData = [];
+                          $dfData['amount'] = $df;
+
+                          if(isset($dPrgmChrg->is_gst_applicable) && $dPrgmChrg->is_gst_applicable == 1 ) {
+                              if($userStateId == $companyStateId) {
+                                $dfWGst = round((($df*18)/100),2);
+                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
+                                $dfData['igst'] = $dfWGst;
+                                $pfData['amount'] += $dfWGst;
+
+                                
+                              } else {
+                                $dfWGst = round((($df*9)/100),2);
+                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
+                                $dfData['cgst'] = $dfWGst;
+                                $dfData['sgst'] = $dfWGst;
+                                $totalGst = $dfData['cgst'] + $dfData['sgst'];
+                                $pfData['amount'] += $totalGst;
+                              }
+                          } 
                           $dfWGst = round((($df*18)/100),2);
 
-                          $dfDebitData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20);
+                          $dfDebitData = $this->createTransactionData($user_id, $dfData, null, $dChargeId);
                           $createTransaction = $this->appRepo->saveTransaction($dfDebitData);
 
                           // $dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
@@ -952,7 +1015,7 @@ class ApplicationController extends Controller
         $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
         $termOfferData = $this->appRepo->getAllOffers($appId, 2);//for term loan
         $leaseOfferData = $this->appRepo->getAllOffers($appId, 3);//for lease loan
-        $offerStatus = $this->appRepo->getOfferStatus($appId);//to check the offer status
+        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL]);//to check the offer status
         $currentStage = Helpers::getCurrentWfStage($appId);   
         $roleData = Helpers::getUserRole();        
         $viewGenSancLettertBtn = ($currentStage && $currentStage->role_id == $roleData[0]->id) ? 1 : 0;
@@ -1067,10 +1130,15 @@ class ApplicationController extends Controller
         $offerId = null;
         if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
             $offerId = $request->get('offer_id');
-        } 
+        }
+        $supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+        $supplyChainFormData = [];
+        if (file_exists($supplyChainFormFile)) {
+          $supplyChainFormData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
+        }
         $data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
         $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
-        return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata]);   
+        return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData]);  
     }
 
    /* For Promoter pan verify iframe model    */
@@ -1323,6 +1391,39 @@ class ApplicationController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * Send sanction letter
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function sendSanctionLetterSupplyChain(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = (int) $request->get('biz_id');
+            $offerId = null;
+            $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId);
+            $supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+            $arrFileData = [];
+            if (file_exists($supplyChainFormFile)) {
+              $arrFileData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
+            }
+            $data = ['appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'download'=> false];
+            $htmlContent = view('backend.app.sanctionSupply')->with($data)->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData])->render();
+            $userData =  $this->userRepo->getUserByAppId($appId);
+            $emailData['email'] = $userData->email;
+            $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
+            $emailData['body'] = $htmlContent;
+            $emailData['attachment'] = $this->pdf->render($htmlContent);
+            $emailData['subject'] ="Sanction Letter for SupplyChain";
+            \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
+            Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));
+            return redirect()->back()->with('is_send',1);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
     
     /**
      * Show upload sanction letter
@@ -1485,6 +1586,7 @@ class ApplicationController extends Controller
                 'prgm_offer_id' => $offerId,
                 'lessor' => $request->lessor,
                 'validity_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_validity_date)->format('Y-m-d')  , 
+                'expire_date'=>  Carbon::createFromFormat('d/m/Y', $request->sanction_expire_date)->format('Y-m-d')  , 
                 'validity_comment' =>  $request->sanction_validity_comment, 
                 'payment_type' =>  $request->payment_type, 
                 'payment_type_other' =>  $request->payment_type_comment,
@@ -1504,6 +1606,54 @@ class ApplicationController extends Controller
                 Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
                 return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id,'biz_id' => $bizId]);
             } 
+        } catch (Exception $ex) {
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+     /**
+     * Save Sanction Letter SupplyChain
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function saveSanctionLetterSupplychain(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = (int)$request->app_id; 
+            $offerId = (int)$request->offer_id; 
+            $bizId = (int) $request->get('biz_id');
+            $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
+            $filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
+            \File::put($filepath, base64_encode(json_encode($arrFileData)));
+            Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
+        } catch (Exception $ex) {
+            return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+     /**
+     * Save Sanction Letter SupplyChain
+     * 
+     * @param Request $request
+     * @return view
+     */  
+    public function previewSanctionLetterSupplychain(Request $request){
+        try {
+            $arrFileData = $request->all();
+            $appId = (int)$request->app_id; 
+            $offerId = (int)$request->offer_id; 
+            $bizId = (int) $request->get('biz_id');
+            $supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
+            $supplyChainFormFile = storage_path('app/public/user/'.$appId.'_supplychain.json');
+            $arrFileData = [];
+            if (file_exists($supplyChainFormFile)) {
+              $arrFileData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
+            }
+            $data = ['appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'download'=> true];
+            $html = view('backend.app.sanctionSupply')->with($data)->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData])->render();
+            return  $html;
         } catch (Exception $ex) {
             return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId, 'sanction_id' => $sanction_info->sanction_id])->withErrors(Helpers::getExceptionMessage($ex));
         }

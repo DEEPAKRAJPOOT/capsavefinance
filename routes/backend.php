@@ -203,7 +203,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_app_note',
                 'uses' => 'Backend\ApplicationController@addAppNote'
             ]);
-            
+              Route::get('add-app-copy', [
+                'as' => 'add_app_copy',
+                'uses' => 'Backend\ApplicationController@addAppCopy'
+            ]);
             Route::post('save-app-note', [
                 'as' => 'save_app_note',
                 'uses' => 'Backend\ApplicationController@saveAppNote'
@@ -213,7 +216,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'send_case_confirmBox',
                 'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
             ]); 
-
+           
             Route::get('view-approvers', [
                 'as' => 'view_approvers',
                 'uses' => 'Backend\ApplicationController@viewApprovers'
@@ -272,6 +275,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('download-sanction-letter', [
                 'as' => 'send_sanction_letter',
                 'uses' => 'Backend\ApplicationController@sendSanctionLetter'
+            ]); 
+
+            Route::get('send_sanction_letter_supplychain', [
+                'as' => 'send_sanction_letter_supplychain',
+                'uses' => 'Backend\ApplicationController@sendSanctionLetterSupplyChain'
             ]);
 
             Route::get('show-upload-sanction-letter', [
@@ -287,6 +295,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-sanction-letter', [
                 'as' => 'save_sanction_letter',
                 'uses' => 'Backend\ApplicationController@saveSanctionLetter'
+            ]);
+               
+            Route::post('save_sanction_letter_supplychain', [
+                'as' => 'save_sanction_letter_supplychain',
+                'uses' => 'Backend\ApplicationController@saveSanctionLetterSupplychain'
+            ]); 
+
+             Route::get('preview_supply_chain_sanction_letter', [
+                'as' => 'preview_supply_chain_sanction_letter',
+                'uses' => 'Backend\ApplicationController@previewSanctionLetterSupplychain'
             ]); 
 
             Route::get('preview-sanction-letter',[
@@ -943,6 +961,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\EquipmentController@saveEquipment'
             ]);
             
+            //Base Rate
+            Route::get('/bank-base-rate', [
+                'as' => 'get_baserate_list',
+                'uses' => 'Master\BaseRateController@index'
+            ]);
+            
+            Route::get('/add-base-rate', [
+                'as' => 'add_base_rate',
+                'uses' => 'Master\BaseRateController@addBaseRate'
+            ]); 
+            Route::get('/edit-base-rate', [
+                'as' => 'edit_base_rate',
+                'uses' => 'Master\BaseRateController@editBaseRate'
+            ]);
+
+            Route::post('/save-base-rate', [
+                'as' => 'save_base_rate',
+                'uses' => 'Master\BaseRateController@saveBaseRate'
+            ]);
+            
+            
         });
 
         Route::group(['prefix' => 'agency'], function () {
@@ -1157,7 +1196,84 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                'uses' => 'Backend\PaymentController@paymentAdviceExcel'
            ]); 
 
+         });
+
+        //colender route 
+         Route::group(['prefix' => 'colender'], function () {
+            Route::get('application', [
+                'as' => 'colender_application_list',
+                'uses' => 'Master\CoLenderControllers@appList'
+            ]); 
+            
+            Route::get('application/view-offer', [
+                'as' => 'colender_view_offer',
+                'uses' => 'Master\CoLenderControllers@showOffer'
+            ]);
+
+            Route::post('accept-offer', [
+                'as' => 'accept_offer_by_colender',
+                'uses' => 'Master\CoLenderControllers@acceptOffer'
+            ]);
+            // Payment Advice Excel Download
+            Route::get('payment_refund_index', [
+                'as' => 'payment_refund_index',
+               'uses' => 'Backend\PaymentController@paymentInvoiceList'
+           ]); 
+
          }); 
+        //colender route 
+
+         Route::group(['prefix' => 'finance'], function () {
+            Route::get('/', [
+                'as' => 'get_fin_trans_list',
+                'uses' => 'Backend\FinanceController@getFinTransList'
+            ]);
+            Route::get('fin-journal', [
+                'as' => 'get_fin_journal',
+                'uses' => 'Backend\FinanceController@getFinJournal'
+            ]);
+            Route::post('save-journal', [
+                'as' => 'save_journal',
+                'uses' => 'Backend\FinanceController@saveJournal'
+            ]);
+            Route::get('fin-account', [
+                'as' => 'get_fin_account',
+                'uses' => 'Backend\FinanceController@getFinAccount'
+            ]);
+            Route::post('save-account', [
+                'as' => 'save_account',
+                'uses' => 'Backend\FinanceController@saveAccount'
+            ]);
+            Route::get('fin-variable', [
+                'as' => 'get_fin_variable',
+                'uses' => 'Backend\FinanceController@getFinVariable'
+            ]);
+            Route::get('create-je-config', [
+                'as' => 'create_je_config',
+                'uses' => 'Backend\FinanceController@crateJeConfig'
+            ]);
+            Route::post('save-je-config', [
+                'as' => 'save_je_config',
+                'uses' => 'Backend\FinanceController@saveJeConfig'
+            ]);
+            Route::get('add-ji-config', [
+                'as' => 'add_ji_config',
+                'uses' => 'Backend\FinanceController@addJiConfig'
+            ]);
+            Route::post('save-ji-config', [
+                'as' => 'save_ji_config',
+                'uses' => 'Backend\FinanceController@saveJiConfig'
+            ]);
+            Route::get('fin-transactions', [
+                'as' => 'get_fin_transactions',
+                'uses' => 'Backend\FinanceController@getFinTransactions'
+            ]);
+            Route::get('export_txns', [
+                'as' => 'export_txns',
+                'uses' => 'Backend\FinanceController@exportTransactions'
+            ]);
+        });
+
     });
 
   });

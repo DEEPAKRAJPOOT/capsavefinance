@@ -46,8 +46,6 @@
 @endsection
 
 @section('jscript')
-<script src="{{ url('frontend/js/disburse.js') }}"></script>
-
 <script>
 $(document).ready(function(){
 	$('#invoiceids').val(parent.$('#invoice_ids').val());

@@ -73,7 +73,24 @@
                     </ul>
                 </div>
          </li>
-    @endcan  
+    @endcan
+
+    @can('colender_application_list')  
+        <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-address-book-o" aria-hidden="true"></i>
+                    <span class="menu-title">Manage Co-lender Apps</span>
+                   <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="layoutsSubmenu12">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('colender_application_list') }}">Co-lender Applications</a>
+                        </li>
+                    </ul>
+                </div>
+         </li>
+    @endcan 
 
     @canany(['get_anchor_list','get_anchor_lead_list'])
         <li class="nav-item">
@@ -219,7 +236,7 @@
             </div>
         </li>
     
-     @canany(['payment_list','payment_list'])
+        @canany(['payment_list','payment_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-credit-card" aria-hidden="true"></i>
@@ -242,9 +259,9 @@
                 </ul>
             </div>
         </li>
-    @endcan
-    
-    @canany(['get_agency_list','get_agency_user_list'])
+        @endcan
+   
+        @canany(['get_agency_list','get_agency_user_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu9" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-user-secret" aria-hidden="true"></i>
@@ -266,7 +283,7 @@
                 </ul>
             </div>
         </li>   
-    @endcan      
+        @endcan      
         
         @php $roleData = \Helpers::getUserRole() @endphp
         
@@ -370,10 +387,12 @@
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="#">SMS Master</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Base Rate Master</a>
-                 </li> -->
+                 </li>-->
+                 @can('get_baserate_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_baserate_list') }}">Manage Base Rate</a>
+                </li> 
+                @endcan
               </ul>
            </div>
         </li>
@@ -395,5 +414,38 @@
             </div>
         </li>
         @endif
+
+        
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuFinance" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-money"></i>
+                <span class="menu-title">Manage Finance</span>
+                <i class="fa fa-money" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenuFinance">
+                <ul class="nav flex-column sub-menu">  
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_transactions') }}">Transactions</a>
+                    </li>   
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('create_je_config') }}">JE Config</a>
+                    </li>                 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_trans_list') }}">Transaction Type List</a>
+                    </li>      
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_variable') }}">Variables List</a>
+                    </li>               
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_journal') }}">Journal List</a>
+                    </li>  
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_fin_account') }}">Accounts List</a>
+                    </li> 
+                                                            
+                </ul>
+            </div>
+        </li>   
+          
     </ul>
 </nav>

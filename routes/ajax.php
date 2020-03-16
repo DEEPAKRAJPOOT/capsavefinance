@@ -123,7 +123,7 @@ Route::group(
     
       Route::post('get_program_supplier', [
         'as' => 'get_program_supplier',
-        'uses' => 'Application\InvoiceController@getProgramSupplier'
+        'uses' => 'Backend\InvoiceController@getProgramSupplier'
     ]);
     
    
@@ -728,13 +728,20 @@ Route::group(
         'uses' => 'AjaxController@getTableValByField'
     ]);
 
-
     Route::post('lms-get-refund-customer', [
         'as' => 'lms_get_refund_customer',
-        'uses' => 'AjaxController@lmsGetDisbursalCustomer'
+        'uses' => 'AjaxController@lmsGetRefundList'
+    ]);
+
+    Route::post('lms-create-batch-ajax',[
+        'as' => 'lms_create_batch_ajax',
+        'uses' => 'AjaxController@lmsCreateBatch'
     ]);
     
-    
+    Route::post('lms-edit-batch-ajax',[
+        'as' => 'lms_edit_batch_ajax',
+        'uses' => 'AjaxController@lmsEditBatch'
+    ]);
     /*lms route*/
 
 
@@ -742,41 +749,43 @@ Route::group(
     
     //////////////// ajax request for upload invoice///////////////////////
     Route::POST('front_program_list', [
-            'as' => 'front_program_list',
-            'uses' => 'AjaxController@getProgramSingleList'
+        'as' => 'front_program_list',
+        'uses' => 'AjaxController@getProgramSingleList'
     ]); 
-        Route::POST('front_supplier_list', [
-            'as' => 'front_supplier_list',
-            'uses' => 'AjaxController@getSupplierList'
+    Route::POST('front_supplier_list', [
+        'as' => 'front_supplier_list',
+        'uses' => 'AjaxController@getSupplierList'
     ]); 
-       Route::POST('check_duplicate_invoice', [
-            'as' => 'check_duplicate_invoice',
-            'uses' => 'AjaxController@checkDuplicateInvoice'
+    Route::POST('check_duplicate_invoice', [
+        'as' => 'check_duplicate_invoice',
+        'uses' => 'AjaxController@checkDuplicateInvoice'
     ]);            
-   Route::POST('upload_invoice_csv', [
-            'as' => 'upload_invoice_csv',
-            'uses' => 'AjaxController@uploadInvoice'
+    Route::POST('upload_invoice_csv', [
+        'as' => 'upload_invoice_csv',
+        'uses' => 'AjaxController@uploadInvoice'
     ]); 
     Route::POST('delete_temp_invoice', [
-            'as' => 'delete_temp_invoice',
-            'uses' => 'AjaxController@DeleteTempInvoice'
+        'as' => 'delete_temp_invoice',
+        'uses' => 'AjaxController@DeleteTempInvoice'
     ]);    
-               
     Route::POST('get-ueser-by-role', [
         'as' => 'get_ueser_by_role',
         'uses' => 'AjaxController@getUserByRole'
     ]); 
-    
     Route::POST('get-co-lender-list', [
         'as' => 'get_co_lender_list',
         'uses' => 'AjaxController@getColenderList'
     ]); 
-          
     Route::get('get-group-company', [
         'as' => 'get_group_company',
         'uses' => 'AjaxController@getGroupCompany'
-    ]);   
-    
+    ]); 
+
+    Route::post('get-app-colender',[
+         'as' => 'ajax_colender_app_list',
+         'uses' => 'AjaxController@getColenderAppList'
+         ]
+    );  
           
    /////////// get transa name//////////
     
@@ -784,7 +793,59 @@ Route::group(
         'as' => 'get_trans_name',
         'uses' => 'AjaxController@getTransName'
     ]);   
-       
+          
+          
+    //Financial 
+    Route::post(
+        'get-trans-type-list',
+        [
+        'as' => 'get_ajax_trans_type_list',
+        'uses' => 'AjaxController@getTransTypeList'
+        ]
+    );    
+    Route::post(
+        'get-journal-list',
+        [
+        'as' => 'get_ajax_journal_list',
+        'uses' => 'AjaxController@getJournalList'
+        ]
+    );
+    Route::post(
+        'get-account-list',
+        [
+        'as' => 'get_ajax_account_list',
+        'uses' => 'AjaxController@getAccountList'
+        ]
+    );
+    Route::post(
+        'get-variable-list',
+        [
+        'as' => 'get_ajax_variable_list',
+        'uses' => 'AjaxController@getVariableList'
+        ]
+    );
+    Route::post(
+        'get-jeconfig-list',
+        [
+        'as' => 'get_ajax_jeconfig_list',
+        'uses' => 'AjaxController@getJeConfigList'
+        ]
+    );
+    Route::post(
+        'get-jiconfig-list',
+        [
+        'as' => 'get_ajax_jiconfig_list',
+        'uses' => 'AjaxController@getJiConfigList'
+        ]
+    );
+    Route::post(
+        'get-transactions',
+        [
+        'as' => 'get_ajax_transactions',
+        'uses' => 'AjaxController@getTransactions'
+        ]
+    );   
+
     Route::post('get-group-company-exposure', [
         'as' => 'get_group_company_exposure',
         'uses' => 'AjaxController@getGroupCompanyExposure'
@@ -794,18 +855,44 @@ Route::group(
         'as' => 'update_group_company_exposure',
         'uses' => 'AjaxController@updateGroupCompanyExposure'
     ]); 
+    
+    /*Master Base Rate route*/
+    Route::post(
+        'get-master-base-rate-list',
+        [
+        'as' => 'get_ajax_master_base_rate_list',
+        'uses' => 'AjaxController@getAllBaseRateList'
+        ]
+    );
 
      Route::post('get_chrg_amount', [
-                'as' => 'get_chrg_amount',
-                'uses' => 'AjaxController@getChrgAmount'
-            ]);
+        'as' => 'get_chrg_amount',
+        'uses' => 'AjaxController@getChrgAmount'
+    ]);
      Route::post('backend_get_payment_advice', [
         'as' => 'backend_get_payment_advice',
         'uses' => 'AjaxController@getPaymentAdvice'
     ]);
     
-      Route::post('get_calculation_amount', [
-                'as' => 'get_calculation_amount',
-                'uses' => 'AjaxController@getCalculationAmount'
-            ]);
+    Route::post('get_calculation_amount', [
+        'as' => 'get_calculation_amount',
+        'uses' => 'AjaxController@getCalculationAmount'
+    ]);
+
+
+    Route::post('lms-get-request-list',[
+        'as' => 'lms_get_request_list',
+        'uses' => 'AjaxController@lmsGetRequestList'
+    ]);
+
+    Route::post('lms_get_invoices', [
+        'as' => 'lms_get_invoices',
+        'uses' => 'AjaxController@lmsGetInvoiceByUser'
+    ]); 
+      
+    Route::post('get-repayment-amount', [
+        'as' => 'get_repayment_amount',
+        'uses' => 'AjaxController@getRepaymentAmount'
+    ]);      
+
 });

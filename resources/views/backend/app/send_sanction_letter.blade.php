@@ -19,13 +19,11 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 
                     <div class=" form-fields">
-                      
-                            <h5 class="card-title form-head-h5 text-center">Sanction Letter</h5>                            
-                            
+                            <h5 class="card-title form-head-h5 text-center">Sanction Letter</h5> 
 
-                            <p>Ref No: CFPL/{{$date->isoFormat('MMMYY') }}/{{$sanctionData->sanction_id}} <br><br>
-                                    {{ $date->isoFormat('MMMM D, Y') }}<br><br>
-                                <b>{{ $biz_entity_name }},<br>
+                            <p>Ref No: CFPL/{{$date->isoFormat('MMMYY') }}/{{$sanctionData->sanction_id}}
+                                </br>{{ $date->isoFormat('MMMM D, Y') }}
+                                </br> <b>{{ $biz_entity_name }},<br>
                                     {{ $businessAddress->addr_1 }}<br>
                                     {{ $businessAddress->addr_2 }}<br>
                                     {{ $businessAddress->city_name }}
@@ -63,7 +61,7 @@
                                         <tr>
                                             <td>5.</td>
                                             <td>Sanction validity</td>
-                                            <td>{{ \Carbon\Carbon::parse($sanctionData->validity_date)->format('d/m/Y')}}</td>
+                                            <td>{{isset($sanctionData->validity_date) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sanctionData->validity_date)->format('F j, Y') : ''}}</td>
                                         </tr>
                                     </tbody>
                                 </table>        

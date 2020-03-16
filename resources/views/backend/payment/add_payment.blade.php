@@ -2,9 +2,6 @@
 @section('additional_css')
 @endsection
 @section('content')
-
-
-
 <div class="content-wrapper">
 <section class="content-header">
         <div class="header-icon">
@@ -56,7 +53,7 @@
                                                 <select class="form-control trans_type" name="trans_type" id="trans_type">
                                                     <option value="">Select Transation Type</option>
                                                     @foreach($tranType as $key => $value)
-                                                    <option value="{{$value->id}}"> {{$value->trans_name}} </option>
+                                                    <option value="{{$value->id}}"> {{$value->credit_desc}} </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -90,14 +87,15 @@
                                             </div>
                                         </div>
                                       
-                                        <!--start processing fees code-->
+                                        <!--start processing fees code-->   
+                                        <!--
                                         <div class="col-md-4 processFeeElmnt">
                                             <div class="form-group INR ">
                                                 <label for="txtCreditPeriod">Transaction Amount inclusive GST ? <span class="error_message_label">*</span> </label>
                                                 <br>
                                                 <input type="radio" id="incl_gst" name="incl_gst" value="1">Yes &nbsp;&nbsp;  <input type="radio" id="incl_gst" name="incl_gst" value="0" checked>No
                                             </div>
-                                        </div>
+                                        </div>                                        
                                         <div class="col-md-4 processFeeElmnt noGstShow">
                                             <div class="form-group INR">
                                                 <label for="txtCreditPeriod">Select GST Option <span class="error_message_label">*</span> </label>
@@ -131,9 +129,14 @@
                                                 <input type="text" name="igst_amt" id="igst_amt" readonly="readonly" class="form-control" value="">
                                             </div>
                                         </div>
-                                        
-                                        <!--end processing fees code-->
-                                        
+                                        -->
+                                        <div class="col-md-4">
+                                            <div class="form-group ">
+                                                <label for="txtCreditPeriod">Transaction Id<span class="error_message_label">*</span> </label>
+
+                                                <input type="text" name="txn_id" id="txn_id" class="form-control">
+                                            </div>
+                                        </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
@@ -149,13 +152,6 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <!-- <div class="col-md-4">
-                                            <div class="form-group ">
-                                                <label for="txtCreditPeriod">Payment Reference No. <span class="error_message_label">*</span> </label>
-
-                                                <input type="text" name="refrence_no" id="refrence_no" class="form-control">
-                                            </div>
-                                        </div> -->
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>
@@ -213,6 +209,7 @@
     var messages = {
         get_val: "{{URL::route('get_field_val')}}",
         token: "{{ csrf_token() }}",
+        get_repayment_amount_url: "{{ route('get_repayment_amount') }}",
     };
 
     $(document).ready(function() {
@@ -224,7 +221,7 @@
         $('#appendInput').empty();
         var status = $(this).val();
         if (status == 1) {
-            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Customer Virtual Account No.</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
         } else if (status == 2) {
             $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
@@ -401,6 +398,25 @@ $(document).ready(function () {
                      }
                   }
                });
+               
+            $("#trans_type").change(function(){
+               $.ajax({
+                    type: 'POST',                    
+                    url: messages.get_repayment_amount_url,
+                    data: {user_id: $("#customer_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+                    beforeSend: function( xhr ) {
+                        $('.isloader').show();
+                    },
+                    success: function(resultData) {                        
+                        if (resultData.repayment_amount != ""){
+                            $("#amount").val(resultData.repayment_amount);                           
+                        } else {
+                            $("#amount").val("");
+                        }
+                        $('.isloader').hide();
+                    }
+               });
+            });
         });
 </script>
 @endsection

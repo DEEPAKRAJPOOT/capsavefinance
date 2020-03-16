@@ -5,7 +5,7 @@ try {
         oTable = $('#lmsSoaList').DataTable({
             processing: true,
             serverSide: true,
-            pageLength: 10,
+            pageLength: 50,
             searching: false,
             bSort: false,
             ajax: {
@@ -25,7 +25,7 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
-                {data: 'customer_name'},
+                // {data: 'customer_name'},
                 {data: 'trans_date'},
                 {data: 'value_date'},
                 {data: 'trans_type'},

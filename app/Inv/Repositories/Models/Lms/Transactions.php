@@ -166,13 +166,17 @@ class Transactions extends BaseModel {
     public static function get_balance($trans_code,$user_id){
         $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
-                    ->where('trans_type','!=','30')
-                    ->where('entry_type','=','0')->sum('amount');
+                    ->where('soa_flag','=',1)
+                    ->whereNull('parent_trans_id')
+                    ->where('entry_type','=','0')
+                    ->sum('amount');
 
-        $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-        ->where('user_id','=',$user_id)
-                   ->where('entry_type','=','1')->sum('amount');
-        return abs($dr - $cr);
+         $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+                    ->where('user_id','=',$user_id)
+                    ->where('soa_flag','=',1)
+                    ->where('entry_type','=','1')
+                    ->sum('amount');
+        return $dr - $cr;
     }
     
     public  function getBalanceAttribute()
@@ -213,4 +217,119 @@ class Transactions extends BaseModel {
     {
        return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
     }
+
+    /**
+    * Get Transaction Type and Charge Name 
+    */
+    public function getTransNameAttribute(){
+        if($this->trans_detail->chrg_master_id!='0'){
+            if($this->entry_type == 0){
+                return $this->trans_detail->charge->debit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->charge->credit_desc;
+            }
+        }else{
+            if($this->entry_type == 0){
+                return $this->trans_detail->debit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->credit_desc;
+            }
+        }
+    }
+
+    public function getModeOfPaymentNameAttribute(){
+        $modeName = '';
+        switch ($this->mode_of_pay) {
+            case '1':
+                $modeName = 'UTR No';
+                break;
+            case '2':
+                $modeName = 'Cheque No';
+                break;
+            case '3':
+                $modeName = 'URN No';
+                break;  
+        }
+        return $modeName;
+    }
+
+    public function getModeOfPaymentNoAttribute(){
+        $modeNo = '';
+        switch ($this->mode_of_pay) {
+            case '1':
+                $modeNo = $this->utr_no;
+                break;
+            case '2':
+                $modeNo = $this->cheque_no;
+                break;
+            case '3':
+                $modeNo = $this->unr_no;
+                break;   
+        }
+        return $modeNo;
+    }
+
+    public function getBatchNoAttribute(){
+        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]))
+        return $this->txn_id;
+    }
+
+    public function getNarrationAttribute(){
+        $data = '';
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+        $data .= $this->BatchNo.' ';
+
+        if($this->modeOfPaymentName && $this->modeOfPaymentNo)
+        $data .= $this->modeOfPaymentName.': '.$this->modeOfPaymentNo.' ';
+
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+        $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
+        return $data;
+    }
+
+    public static function getSoaList(){
+
+        return self::select('transactions.*')
+                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
+                    ->join('lms_users','users.user_id','lms_users.user_id')
+                    ->where('soa_flag','=',1)
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('trans_id', 'asc');
+    }
+    
+    /**
+     * Get Repayment Amount
+     * 
+     * @param integer $userId
+     * @param integer $transType
+     * @return mixed
+     */
+    public static function getRepaymentAmount($userId, $transType)
+    {
+        //Calculate Debit Amount
+        $result = self::select(DB::raw('SUM(amount) AS amount, gst, SUM(cgst) AS cgst, SUM(sgst) AS sgst, SUM(igst) AS igst'))
+                ->whereIn('is_settled', [0,1])
+                ->where('user_id', $userId)
+                ->where('entry_type', '0')    //Debit
+                ->where('trans_type', $transType)
+                ->groupBy('user_id')
+                ->first();
+        $debitAmtData = $result ? $result->toArray() : [];
+        
+        //Calculate Credit Amount
+        $result = self::select(DB::raw('SUM(amount) AS amount, gst, SUM(cgst) AS cgst, SUM(sgst) AS sgst, SUM(igst) AS igst'))
+                ->whereIn('is_settled', [0,1])
+                ->where('user_id', $userId)
+                ->where('entry_type', '1')
+                ->where('trans_type', $transType)
+                ->groupBy('user_id')
+                ->first();
+        $creditAmtData = $result ? $result->toArray() : [];
+        
+        $repaymentAmount = ['debitAmtData' => $debitAmtData, 'creditAmtData' => $creditAmtData];
+        
+        return $repaymentAmount;
+    }
+
 }

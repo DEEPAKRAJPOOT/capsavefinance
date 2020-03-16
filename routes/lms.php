@@ -123,38 +123,68 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             Route::get('/refund/refund-list', [
                 'as' => 'lms_refund_list',
-                'uses' => 'Lms\RefundController@refundList'
+                'uses' => 'Lms\RefundController@customerList'
             ]);
                           
             Route::get('view-interest-accrual', [
                 'as' => 'view_interest_accrual',
                 'uses' => 'Lms\DisbursalController@viewInterestAccrual'
             ]);
-             
-        });//end of application
 
-        // Business address
-        Route::get('/address', [
-            'as' => 'addr_get_customer_list',
-            'uses' => 'Lms\AddressController@list'
-        ]);
+            Route::get('/confirm-refund', [
+                'as' => 'confirm_refund',
+                'uses' => 'Lms\RefundController@confirmRefund'
+            ]);
+            
+            Route::post('/send-refund', [
+                'as' => 'lms_send_refund',
+                'uses' => 'Lms\RefundController@sendRefund'
+            ]);
 
-        Route::get('/add_addr', [
-            'as' => 'add_addr',
-            'uses' => 'Lms\AddressController@addAddress'
-        ]);
 
-        Route::post('/save_addr', [
-            'as' => 'save_addr',
-            'uses' => 'Lms\AddressController@saveAddress'
-        ]);
+            Route::get('/lms-create-batch', [
+                'as' => 'lms_create_batch',
+                'uses' => 'Lms\RefundController@createBatch'
+            ]);
 
-        Route::get('/edit_addr', [
-            'as' => 'edit_addr',
-            'uses' => 'Lms\AddressController@editAddress'
-        ]);
-        // end address
-	});
+            Route::get('/lms-edit-batch', [
+                'as' => 'lms_edit_batch',
+                'uses' => 'Lms\RefundController@editBatch'
+            ]);
 
+            Route::get('/refund/request',[
+                'as' => 'request_list',
+                'uses' => 'Lms\RefundController@requestList'
+            ]);
+
+            // Business address
+            Route::get('/address', [
+                'as' => 'addr_get_customer_list',
+                'uses' => 'Lms\AddressController@list'
+            ]);
+
+            Route::get('/add_addr', [
+                'as' => 'add_addr',
+                'uses' => 'Lms\AddressController@addAddress'
+            ]);
+
+            Route::post('/save_addr', [
+                'as' => 'save_addr',
+                'uses' => 'Lms\AddressController@saveAddress'
+            ]);
+
+            Route::get('/edit_addr', [
+                'as' => 'edit_addr',
+                'uses' => 'Lms\AddressController@editAddress'
+            ]);
+              Route::post('/copy_app', [
+                    'as' => 'copy_app',
+                    'uses' => 'Lms\CopyController@duplicateApp'
+                ]); 
+            // end address
+            });            
+        });
+        
+        //end of application
 });
 

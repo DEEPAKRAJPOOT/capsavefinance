@@ -53,19 +53,15 @@
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
 	                              		<table id="customerList" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
-	                                        	<tr role="row">
-                                                    <th >Customer ID</th>       
-		                                     		<th >Virtual Account ID</th>		
-		                                     		<th >Customer Name</th>
-													<th >Customer Email Address</th>
-													<th >Customer Mobile</th>
+	                                        	<tr role="row">                                                   
+                                                    <th >Cust ID</th>       
+                                                    <th >App ID</th>       
+		                                     		<th >Virtual ID</th>		
+		                                     		<th >Customer Detail</th>
 													<th >Loan/Limit Offer</th>
-													<th >Interest Rate</th>
 													<th >Utilize Limit</th>
-													<th >Avialable Limit</th>
-													<th >Tenor(Days)</th>
-													<th >Assignee</th>
-													<th >Assigned By</th>
+													<th >Available Limit</th>
+                                                    <th >Anchor Detail</th>
 													<th >Status</th>
 												</tr>
 	                                        </thead>

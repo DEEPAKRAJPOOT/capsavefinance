@@ -14,6 +14,8 @@ use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Helpers\FinanceHelper;
+use App\Inv\Repositories\Contracts\FinanceInterface;
 class DisbursalController extends Controller
 {
 	use ApplicationTrait;
@@ -32,12 +34,13 @@ class DisbursalController extends Controller
 	 */
 	protected $pdf;
 	
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo ,InvMasterRepoInterface $master){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo ,InvMasterRepoInterface $master,FinanceInterface $finRepo){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
         $this->masterRepo = $master;
+        $this->finRepo = $finRepo;
 		$this->middleware('checkBackendLeadAccess');
 	}
 	
@@ -65,7 +68,8 @@ class DisbursalController extends Controller
 		return view('lms.disbursal.view_invoice')
 				->with([
 					'userIvoices'=>$userIvoices, 
-					'status'=>$status, 
+					'status'=>$status,
+					'userId' => $userId 
 				]);              
 	}
 
@@ -107,33 +111,54 @@ class DisbursalController extends Controller
 		$userIvoices = $this->lmsRepo->getAllUserInvoiceIds($userIds)->toArray();
 		$allrecords = array_unique(array_merge($record, $userIvoices));
 		$allrecords = array_map('intval', $allrecords);
-
 		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
 		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
-		$params = array('http_header' => '', 'header' => '', 'request' => []);
 		
+
+		foreach ($allinvoices as $inv) {
+			if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+				return redirect()->route('lms_disbursal_request_list')->withErrors(trans('backend_messages.noBankAccount'));
+			} elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
+				return redirect()->route('lms_disbursal_request_list')->withErrors(trans('backend_messages.noBankAccount'));
+			}
+		}
+
+		$params = array('http_header' => '', 'header' => '', 'request' => []);
+
+
 		$fundedAmount = 0;
 		$interest = 0;
 		$disburseAmount = 0;
 		$totalInterest = 0;
 		$totalFunded = 0;
+		$totalMargin = 0;
 
 		foreach ($supplierIds as $userid) {
+			$disburseAmount = 0;
 			foreach ($allinvoices as $invoice) {
+				
 				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-				// dd($disburseRequestData);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 				$refId ='CAP'.$userid;
 				if($invoice['supplier_id'] = $userid) {
+					$interest= 0;
+					$margin= 0;
 					$now = strtotime($invoice['invoice_due_date']); // or your date as well
 			        $your_date = strtotime($invoice['invoice_date']);
 			        $datediff = abs($now - $your_date);
 
 			        $tenor = round($datediff / (60 * 60 * 24));
-			        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-			        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+			        $margin = (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
+			        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+			        $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+
+			        if($invoice['program_offer']['payment_frequency'] == 1) {
+			            $interest = $tInterest;
+			        }
+
 			        $totalInterest += $interest;
+			        $totalMargin += $margin;
 			        $totalFunded += $fundedAmount;
     				$disburseAmount += round($fundedAmount - $interest, 2);
 
@@ -156,8 +181,8 @@ class DisbursalController extends Controller
 					$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
 					$requestData[$userid]['Remarks'] = 'test remarks';
 					$requestData[$userid]['Value_Date'] = date('Y-m-d');
-				}
-				else {
+
+				} else {
 
 					$apiLogData['refer_id'] = $refId;
 					$apiLogData['tran_id'] = $transId;
@@ -176,25 +201,35 @@ class DisbursalController extends Controller
 
 			}
 			
-			// dd($disburseAmount);		
 			if ($disburseAmount) {
 				if($disburseType == 2) {
-					// dd($disburseRequestData);
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $totalFunded], $transId, 16);
+					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
 					
 					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
 					$intrstAmt = round($totalInterest,2);
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt], $transId, 9);
-					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					if ($intrstAmt > 0.00) {
+						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
+						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					}
 
-					$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt], $transId, 9, 1);
-					$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					// $marginAmt = round($totalMargin,2);
+					// if ($marginAmt > 0.00) {
+					// 	$marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
+					// 	$createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
+					// }
+
+					// $intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+					// $createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
 				}
 			}
+		}
+		foreach ($allinvoices as $inv_k => $inv_arr) {
+			 $finHelperObj = new FinanceHelper($this->finRepo);
+        	 $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), $inv_arr['invoice_id'], $inv_arr['app_id'], $inv_arr['supplier_id'], $inv_arr['biz_id']);
 		}
 		// dd($allrecords);
 		// --- production code end 
