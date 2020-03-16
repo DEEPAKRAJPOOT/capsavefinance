@@ -122,7 +122,7 @@
                                         @if(count($application)>0)
                                         @foreach ($application AS $app)
                                         <tr>
-                                            <td class="text-left">@if($app['app_id']) CAPS000{{$app['app_id']}} @endif</td>
+                                            <td class="text-left">@if($app['app_id']) {{ \Helpers::formatIdWithPrefix($app['app_id'], 'APP') }} @endif</td>
                                             <td> {{ isset($app['biz_entity_name']) ? $app['biz_entity_name'] : ''}}</td>
                                             <td>
                                                 @if($app['status'] == 1)
