@@ -609,9 +609,9 @@ var messages = {
                          $("#supplier_id").empty();
                          $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
                         $(obj1).each(function(i,v){
-                                var dApp = "000000" + v.app_id;
+                                var dApp = v.appCode;
                                  //$("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
-                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" (CAPS"+dApp.slice(-6)+")</option>");  
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" ("+ dApp +")</option>");  
                             });
                        
                     }
