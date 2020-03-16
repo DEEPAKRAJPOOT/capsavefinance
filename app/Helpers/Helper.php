@@ -1115,13 +1115,13 @@ class Helper extends PaypalHelper
         $formatedId = null;
         
         if ($type == 'APP') {            
-            $formatedId = $prefix . sprintf('%06d', $idValue);
+            $formatedId = $prefix . sprintf('%08d', $idValue);
         } else if ($type == 'VA') {
             $prefix = config('common.idprefix.'.$type);
-            $formatedId = $prefix . sprintf('%07d', $idValue);            
+            $formatedId = $prefix . sprintf('%08d', $idValue);            
         } else if ($type == 'CUSTID') {
             $prefix = config('common.idprefix.'.$type);
-            $formatedId = $prefix . sprintf('%09d', $idValue);            
+            $formatedId = $prefix . sprintf('%08d', $idValue);            
         }
         return $formatedId;
     }    

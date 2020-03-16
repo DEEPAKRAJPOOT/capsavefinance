@@ -272,9 +272,9 @@ return [
     ],
     'timezone' => 'Asia/Kolkata',
     'idprefix' => [
-        'APP' => 'CAPS',
+        'APP' => 'CAPAI',
         'VA' => 'CAPVA',
-        'CUSTID' => 'CAP'
+        'CUSTID' => 'CAPCI'
     ],    
 ];
  
