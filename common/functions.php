@@ -41,7 +41,7 @@ function getBenchmarkType($product_id){
 }
 
 function getInvestmentPaymentFrequency($id){
-	 $productType = ['1'=>'Monthly', 'Upfront', 'Rear Ended', 'Pre Offer'];
+	 $productType = ['1'=>'Upfront', 'Monthly', 'Rear Ended', 'Pre Offer'];
 	 return $productType[$id] ?? '';
 }
 
