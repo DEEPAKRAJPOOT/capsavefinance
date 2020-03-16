@@ -495,7 +495,7 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3"><input type="text" value="&#8377; {{($supplyChainFormData['pdc_facility_amt']) ?? ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="66.66%" colspan="3"><input type="text" value="&#8377; {{number_format((float)$supplyChainFormData['pdc_facility_amt']) ?? ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
@@ -551,7 +551,7 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3"><input type="text" value="&#8377; {{number_format($supplyChainFormData['nach_facility_amt']) ?? ''}}" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="66.66%" colspan="3"><input type="text" value="&#8377; {{number_format((float)$supplyChainFormData['nach_facility_amt']) ?? ''}}" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
@@ -611,7 +611,7 @@
                               </thead>
                               <tbody>
                                  <tr>
-                                    <td><input value="&#8377; {{number_format($supplyChainFormData['dsra_amt']) ?? ''}}" type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
+                                    <td><input value="&#8377; {{number_format((float)$supplyChainFormData['dsra_amt']) ?? ''}}" type="text" name="dsra_amt" class="input_sanc" placeholder="Enter DSRA Amount"></td>
                                     <td><input value="{{$supplyChainFormData['dsra_tenure'] ?? ''}}" type="text" name="dsra_tenure" class="input_sanc" placeholder="Enter DSRA Tenure"></td>
                                     <td><input value="{{$supplyChainFormData['dsra_comment'] ?? ''}}" type="text" name="dsra_comment" class="input_sanc" placeholder="Comment if any"></td>
                                  </tr>
