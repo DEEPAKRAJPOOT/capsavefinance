@@ -255,11 +255,11 @@
                                        <table class="table-border table table-inner" cellpadding="0" cellspacing="0">
                                           <thead>
                                              <tr>
-                                                <th width="30%">Max. Discounting Period</th>
-                                                <th width="20%">Grace Period</th>
-                                                <th width="15%">ROI</th>
+                                                <th width="30%">Max. Discounting Period (Days)</th>
+                                                <th width="20%">Grace Period (Days)</th>
+                                                <th width="15%">ROI (%)</th>
                                                 <th width="20%">Bench Mark Date</th>
-                                                <th width="15%">Margin</th>
+                                                <th width="15%">Margin (%)</th>
                                              </tr>
                                           </thead>
                                           <tbody>
