@@ -26,6 +26,7 @@ try {
                 }
             },
             columns: [
+                {data: 'invoice_checkbox'},
                 {data: 'anchor_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
@@ -37,7 +38,7 @@ try {
                 {data: 'status'},
                
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3]}]
         });
 
         //Search

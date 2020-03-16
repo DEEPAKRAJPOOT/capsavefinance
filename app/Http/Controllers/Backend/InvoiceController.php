@@ -264,4 +264,14 @@ class InvoiceController extends Controller {
         }
     }
 
+    /**
+     * Display a pop up on Confirm Invoices.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function confirmInvoice(Request $request)
+    {
+        return view('backend.invoice.confirm_invoice');              
+    }
+
 }

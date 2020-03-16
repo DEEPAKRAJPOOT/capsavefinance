@@ -1008,6 +1008,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]); 
             
             
+            Route::get('/confirm-invoice', [
+                'as' => 'confirm_invoice',
+                'uses' => 'Backend\InvoiceController@confirmInvoice'
+            ]);
             
              Route::get('backend_get_repaid_invoice', [
                  'as' => 'backend_get_repaid_invoice',

@@ -106,7 +106,7 @@
 
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row"><div class="col-md-6"></div>
+                                        <div class="row">
                                             <div class="col-md-2">				 
                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                                 <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
@@ -140,8 +140,18 @@
 
                                                 </select>
                                             </div>    
+                                            <div class="col-md-4 ml-auto text-right">
+                                                <a data-toggle="modal" data-target="#disburseInvoice" data-url ="{{route('confirm_invoice', ['disburse_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Send To Bank</a>
+                                                <a data-toggle="modal" data-target="#disburseInvoice" data-url ="{{route('confirm_invoice', ['disburse_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Disburse Manually</a>
+
+                                                <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disabled" id="openDisbueseInvoices" style="display: none;" >Refund by Bank</a>
+                                                
+                                            </div>
+                                            <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
 
                                         </div>
+
+                                        
                                         <div class="row">
                                             <div class="col-12 dataTables_wrapper mt-4">
                                                 <div class="overflow">
@@ -151,6 +161,7 @@
                                                                 <table id="invoiceListDisbursedQue" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                                                     <thead>
                                                                         <tr role="row">
+                                                                            <th><input type="checkbox" id="chkAll"></th> 
                                                                             <th>Invoice No</th> 
                                                                             <th>Anchor Name</th>
                                                                             <th>Customer Name</th>
@@ -298,8 +309,11 @@
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('disburseInvoice','Disburse Invoices', 'modal-lg')!!}
+
 @endsection
 @section('jscript')
+<script src="{{ asset('backend/js/ajax-js/invoice_list_disbursment_que.js') }}"></script>
 <script>
 
     var messages = {
@@ -315,7 +329,42 @@
         token: "{{ csrf_token() }}",
         appp_id: "{{ $app_id }}",
     };
+    
+    $(document).on('click', '.disburseClickBtn', function(){
+       $('#fiaid4upload').val($(this).data('fiadd_id'));
+       $('#openFiDocModal').trigger('click');
+    });
+    
+    $(document).ready(function(){
+        $('.invoice_id').on('click', function() {
+            let current_id = $(this).val();
+            console.log(current_id);
+            if($(this).is(':checked')){
+                let parent_inv_ids = $('#invoice_ids').val().trim();
+                let allInvIds = parent_inv_ids.split(',');
+                if(!parent_inv_ids.length){
+                    allInvIds = [];
+                }
+                if(allInvIds.length != 0){
+                    allInvIds.push(current_id);
+                    allInvIds.join();
+                    $('#invoice_ids').val(allInvIds.join());
+                }else{
+                    $('#invoice_ids').val(current_id);
+                }
+                
+            }else{
+                let parent_inv_ids = $('#invoice_ids').val().trim();
+                let allInvIds = parent_inv_ids.split(',');
+                if(!parent_inv_ids.length){
+                    allInvIds = [];
+                }
+                allInvIds = allInvIds.filter(e => e !== current_id);
+                $('#invoice_ids').val(allInvIds.join());
+            }
+        });
 
+    });
 
     $(document).ready(function () {
         $("#program_bulk_id").append("<option value=''>No data found</option>");
@@ -371,30 +420,6 @@
         }
     });
 
-    ///////////////////////For Invoice Approve////////////////////////
-    $(document).on('click', '.approveInv', function () {
-        if (confirm('Are you sujre? You want to approve it'))
-        {
-            var invoice_id = $(this).attr('data-id');
-            var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
-            th = this;
-            jQuery.ajax({
-                url: messages.update_invoice_approve,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                    alert(errorThrown);
-                },
-                success: function (data) {
-                    $(th).parent('td').parent('tr').remove();
-                }
-            });
-        } else
-        {
-            return false;
-        }
-    });
     //////////////////// onchange anchor  id get data /////////////////
 
     $("#supplier_id").append("<option value=''>Select customer</option>");
@@ -539,129 +564,6 @@
         });
     });
 
-
-    function uploadInvoice()
-    {
-        $('.isloader').show();
-        $("#submitInvoiceMsg").empty();
-        var file = $("#customFile")[0].files[0];
-        var datafile = new FormData();
-        var anchor_bulk_id = $("#anchor_bulk_id").val();
-        var program_bulk_id = $("#program_bulk_id").val();
-        var supplier_bulk_id = $("#supplier_bulk_id").val();
-        var pro_limit_hide = $("#pro_limit_hide").val();
-        datafile.append('_token', messages.token);
-        datafile.append('doc_file', file);
-        datafile.append('anchor_bulk_id', anchor_bulk_id);
-        datafile.append('program_bulk_id', program_bulk_id);
-        datafile.append('supplier_bulk_id', supplier_bulk_id);
-        datafile.append('pro_limit_hide', pro_limit_hide);
-        $.ajax({
-            headers: {'X-CSRF-TOKEN': messages.token},
-            url: messages.upload_invoice_csv,
-            type: "POST",
-            data: datafile,
-            processData: false,
-            contentType: false,
-            cache: false, // To unable request pages to be cached
-            enctype: 'multipart/form-data',
-
-            success: function (r) {
-                $(".isloader").hide();
-
-                if (r.status == 1)
-                {
-                    $("#submitInvoiceMsg").show();
-                    $("#submitInvoiceMsg").text('Invoice Successfully uploaded');
-                } else
-                {
-                    $("#submitInvoiceMsg").show();
-                    $("#submitInvoiceMsg").text('Total Amount if invoice should not greater Program Limit');
-                }
-            }
-        });
-    }
-    //////////////////// for upload invoice//////////////////////////////   
-    function uploadFile(app_id, id)
-    {
-        $(".isloader").show();
-        var file = $("#file" + id)[0].files[0];
-        var extension = file.name.split('.').pop().toLowerCase();
-        var datafile = new FormData();
-        datafile.append('_token', messages.token);
-        datafile.append('app_id', app_id);
-        datafile.append('doc_file', file);
-        datafile.append('invoice_id', id);
-        $.ajax({
-            headers: {'X-CSRF-TOKEN': messages.token},
-            url: messages.invoice_document_save,
-            type: "POST",
-            data: datafile,
-            processData: false,
-            contentType: false,
-            cache: false, // To unable request pages to be cached
-            enctype: 'multipart/form-data',
-            success: function (r) {
-                $(".isloader").hide();
-                location.reload();
-            }
-        });
-    }
-
-//////////////////////////// for bulk approve invoice////////////////////
-
-
-    $(document).on('click', '#bulkApprove', function () {
-        var arr = [];
-        i = 0;
-        th = this;
-        $(".chkstatus:checked").each(function () {
-            arr[i++] = $(this).val();
-        });
-        if (arr.length == 0) {
-            alert('Please select atleast one checked');
-            return false;
-        }
-        if (confirm('Are you sujre? You want to approve it'))
-        {
-            var postData = ({'invoice_id': arr, 'status': 9, '_token': messages.token});
-            jQuery.ajax({
-                url: messages.update_bulk_invoice,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                    alert(errorThrown);
-
-                },
-                success: function (data) {
-                    if (data == 1)
-                    {
-
-                        location.reload();
-                    }
-
-                }
-            });
-        } else
-        {
-            return false;
-        }
-    });
-
-///////////////////////////////////////// change invoice amount////////////////
-    $(document).on('click', '.changeInvoiceAmount', function () {
-
-        var limit = $(this).attr('data-limit');
-        var approveAmount = $(this).attr('data-approve');
-        var amount = $(this).attr('data-amount');
-        var invoiceId = $(this).attr('data-id');
-        $("#invoice_id").val(invoiceId);
-        $("#invoice_amount").val(amount);
-        $("#invoice_approve_amount").val(approveAmount);
-
-    });
-
 ///////////////////////////////////////// change invoice amount////////////////
     $(document).on('click', '#UpdateInvoiceAmount', function () {
 
@@ -679,6 +581,5 @@
         }
     });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list_disbursment_que.js') }}"></script>
 
 @endsection
