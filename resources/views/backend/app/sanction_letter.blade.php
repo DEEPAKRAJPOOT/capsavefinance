@@ -497,7 +497,7 @@
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3">&#8377; <input type="text" value="{{number_format((float)$supplyChainFormData['pdc_facility_amt']) ?? ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="66.66%" colspan="3">&#8377; <input type="text" value="{{isset($supplyChainFormData['pdc_facility_amt']) ? number_format((float)$supplyChainFormData['pdc_facility_amt']) : ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
