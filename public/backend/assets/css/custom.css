@@ -272,7 +272,7 @@ table.remove-tr-bg tbody tr{
     padding-bottom: 5px;
     padding-left: 10px;
     border-left: solid #adbdb8;
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 28px;
 }
 .accordion .card-header.collapsed:after {
@@ -835,6 +835,7 @@ ul.listing.listing1 li{float:left; width:33.33%;}
     color: #138864;
 }
 
+<<<<<<< HEAD
 .charge_parent_div {width:100%;}
 a.disabled {
   pointer-events: none;
@@ -863,4 +864,7 @@ span.multiselect-native-select select {
 .multiselect-container li a label {
 	color: #000;
 	font-weight: 400;
+}
+table.pdl-15 tr td{
+    padding-left: 15px;
 }

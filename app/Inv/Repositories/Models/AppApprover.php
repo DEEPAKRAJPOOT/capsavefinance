@@ -126,7 +126,7 @@ class AppApprover extends BaseModel
         ->join('role_user as ru', 'ru.user_id', '=', 'u.user_id')
         ->join('roles as r', 'r.id', '=','ru.role_id')
         ->where('app_approval_status.app_id', (int) $app_id)
-        ->where('app_approval_status.is_active','1')
+        ->where('app_approval_status.is_active', 1)        
         ->get();
 
         return $appApprovers;

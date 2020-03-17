@@ -70,6 +70,7 @@ class Program extends BaseModel {
         'margin',
         'overdue_interest_rate',
         'base_rate_id',
+        'interest_linkage',
         'is_adhoc_facility',
         'adhoc_interest_rate',
         'is_grace_period',
@@ -220,11 +221,12 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        $res = self::select('prgm.*', 'u.f_name','mp.product_name')
+        $res = self::select('prgm.*', 'u.f_name','mp.product_name as mp_product_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
                 ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')
                 ->where(['u.user_type' => 2])
-                ->where('prgm.parent_prgm_id', '0');
+                ->where('prgm.parent_prgm_id', '0')
+                ->orderBy('prgm.prgm_id', 'desc');
         if (!empty($id)) {
             $res = $res->where('prgm.anchor_id', $id);
         }
@@ -394,6 +396,11 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
         return Program::whereIn('anchor_id', $anchor_ids)->with(['programCharges'])->where('prgm_type', $uesr_type)->where('parent_prgm_id', '<>', 0)->get();
+    }
+
+    public function baseRate()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\ProgramCharges', 'prgm_id', 'prgm_id');
     }
 
 }
