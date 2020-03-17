@@ -2727,6 +2727,13 @@ if ($err) {
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
+    
+   //////////////////// get use wise  invoice list/////////////////
+     public function getUserWiseInvoiceList(DataProviderInterface $dataProvider) {
+        $invoice_data = $this->invRepo->getUserWiseInvoiceData($this->request->user_id);
+        $invoice = $dataProvider->getUserWiseInvoiceList($this->request, $invoice_data);
+        return $invoice;
+    }   
 
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {

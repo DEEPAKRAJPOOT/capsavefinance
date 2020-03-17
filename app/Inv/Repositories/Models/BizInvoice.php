@@ -137,12 +137,12 @@ public static function updateInvoice($invoiceId,$status)
      
      }
     
-    /* get invoice */    
-  public static function getInvoice()
+    /* get anchor */    
+    public static function getInvoice()
     {
        return Anchor::get();
      }   
-     
+  
      public static function getAllInvoice($request,$status)
      {
          $whr = [];
@@ -357,7 +357,17 @@ public static function updateInvoice($invoiceId,$status)
         
         return self::where(['invoice_no' => $invNo])->first();
     }
-
+   public static function getUserWiseInvoiceData($user_id)
+    {
+        
+        return self::with('mstStatus')->where(['supplier_id' => $user_id]);
+    }
+    
+    function status()
+    {
+        
+    }
+   
     public static function getUserInvoiceIds($userId)
     {
         return self::where('supplier_id', $userId)

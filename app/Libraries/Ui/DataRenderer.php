@@ -584,6 +584,82 @@ class DataRenderer implements DataProviderInterface
                 })
               ->make(true);
     }  
+     /*      
+     * Get  User Wise Invoice list for backend
+     */
+    public function getUserWiseInvoiceList(Request $request,$invoice)
+    {   
+        return DataTables::of($invoice)
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+           
+               
+                 ->addColumn(
+                    'invoice_id',
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+             })
+             
+              ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
+                })
+                 ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
+                })  
+                ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        return $inv_amount;
+                })
+                ->addColumn(            
+                    'status',
+                    function ($invoice) {                        
+                    
+                        return  $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
+                       
+                })
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('status_id') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('status_id'));
+                            $query->where('status_id',"$search_keyword");
+                        });                        
+                    }
+                   
+                    
+                })
+              ->make(true);
+    } 
     
     /*      
      * Get Invoice list for backend
