@@ -140,11 +140,12 @@
 
                                                 </select>
                                             </div>    
-                                            <div class="col-md-4 ml-auto text-right">
-                                                <a data-toggle="modal" data-target="#disburseInvoice" data-url ="{{route('confirm_invoice', ['disburse_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Send To Bank</a>
-                                                <a data-toggle="modal" data-target="#disburseInvoice" data-url ="{{route('confirm_invoice', ['disburse_type' => 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Disburse Manually</a>
+                                            <div class="col-md-4 ml-auto text-right" id="buttonDiv">
+                                                <a data-toggle="modal" data-target="#disburseInvoice" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Send To Bank</a>
 
-                                                <a data-toggle="modal" data-target="#disbueseInvoices" data-url ="{{route('confirm_refund', ['refund_type' => 1]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disabled" id="openDisbueseInvoices" style="display: none;" >Refund by Bank</a>
+                                                <a data-url="{{ route('confirm_invoice', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Disburse Manually</a>
+
+                                                <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
                                                 
                                             </div>
                                             <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
@@ -309,11 +310,16 @@
         </div>
     </div>
 </div>
+
+<div id="loadDiv1">
+    <input type="hidden" id="loadUrl1" value=""> 
+</div>
 {!!Helpers::makeIframePopup('disburseInvoice','Disburse Invoices', 'modal-lg')!!}
 
 @endsection
 @section('jscript')
 <script src="{{ asset('backend/js/ajax-js/invoice_list_disbursment_que.js') }}"></script>
+<script src="{{ asset('backend/js/invoice-disburse.js') }}"></script>
 <script>
 
     var messages = {
@@ -329,42 +335,6 @@
         token: "{{ csrf_token() }}",
         appp_id: "{{ $app_id }}",
     };
-    
-    $(document).on('click', '.disburseClickBtn', function(){
-       $('#fiaid4upload').val($(this).data('fiadd_id'));
-       $('#openFiDocModal').trigger('click');
-    });
-    
-    $(document).ready(function(){
-        $('.invoice_id').on('click', function() {
-            let current_id = $(this).val();
-            console.log(current_id);
-            if($(this).is(':checked')){
-                let parent_inv_ids = $('#invoice_ids').val().trim();
-                let allInvIds = parent_inv_ids.split(',');
-                if(!parent_inv_ids.length){
-                    allInvIds = [];
-                }
-                if(allInvIds.length != 0){
-                    allInvIds.push(current_id);
-                    allInvIds.join();
-                    $('#invoice_ids').val(allInvIds.join());
-                }else{
-                    $('#invoice_ids').val(current_id);
-                }
-                
-            }else{
-                let parent_inv_ids = $('#invoice_ids').val().trim();
-                let allInvIds = parent_inv_ids.split(',');
-                if(!parent_inv_ids.length){
-                    allInvIds = [];
-                }
-                allInvIds = allInvIds.filter(e => e !== current_id);
-                $('#invoice_ids').val(allInvIds.join());
-            }
-        });
-
-    });
 
     $(document).ready(function () {
         $("#program_bulk_id").append("<option value=''>No data found</option>");

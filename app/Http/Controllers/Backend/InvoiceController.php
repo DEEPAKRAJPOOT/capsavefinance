@@ -9,6 +9,8 @@ use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
@@ -20,10 +22,14 @@ class InvoiceController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
+    protected $lmsRepo;
+    protected $userRepo;
 
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo) {
+    public function __construct(InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
+        $this->lmsRepo = $lms_repo;
+        $this->userRepo = $user_repo;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
     }
@@ -271,7 +277,33 @@ class InvoiceController extends Controller {
      */
     public function confirmInvoice(Request $request)
     {
-        return view('backend.invoice.confirm_invoice');              
+        $disburseType = $request->get('disburse_type');
+        $invoiceIds = $request->get('invoice_ids');
+        if(empty($invoiceIds)){
+            return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
+        }
+        $record = array_filter(explode(",",$invoiceIds));
+        $allrecords = array_unique($record);
+        $allrecords = array_map('intval', $allrecords);
+        $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+        $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+        $userIds = [];
+
+        foreach ($supplierIds as $userid) {
+            foreach ($allinvoices as $invoice) {
+                if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
+                    $userIds[] = $userid;
+                }
+            }
+        } 
+
+        $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
+
+        return view('backend.invoice.confirm_invoice')
+                ->with([
+                    'customersDisbursalList' => $customersDisbursalList, 
+                    'invoiceIds' => $invoiceIds 
+                ]);;              
     }
 
 }
