@@ -140,7 +140,7 @@
                               <thead>
                                  <tr>
                                     <th width="33.33%">Facility (Product)</th>
-                                    <th width="33.33%">Amount (Rs. In Mn)</th>
+                                    <th width="33.33%">Amount (Rs. In INR)</th>
                                     <th width="33.33%">Sub-Limit of</th>
                                  </tr>
                               </thead>
