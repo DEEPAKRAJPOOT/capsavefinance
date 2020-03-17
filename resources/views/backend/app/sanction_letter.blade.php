@@ -865,9 +865,9 @@
                      </form>
                   </div>
                   <div id="SanctionLeasing" class="tab-pane fade">
-                     <div class="card card-color mb-0 {{empty($sanction_expire_msg) ? 'hide' : '' }}">
+                     <div class="card card-color mb-0 {{isset($sanction_expire_msg) && empty($sanction_expire_msg) ? 'hide' : '' }}">
                         <div class="card-header">
-                           <a class="card-title ">{{$sanction_expire_msg}}</a>
+                           <a class="card-title ">{{isset($sanction_expire_msg) ? $sanction_expire_msg : ''}}</a>
                         </div>
                      </div>
                      @if( is_array($offerData)?count($offerData):$offerData->count())
