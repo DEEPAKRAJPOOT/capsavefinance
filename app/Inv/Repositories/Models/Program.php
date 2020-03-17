@@ -221,11 +221,12 @@ class Program extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        $res = self::select('prgm.*', 'u.f_name','mp.product_name')
+        $res = self::select('prgm.*', 'u.f_name','mp.product_name as mp_product_name')
                 ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
                 ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')
                 ->where(['u.user_type' => 2])
-                ->where('prgm.parent_prgm_id', '0');
+                ->where('prgm.parent_prgm_id', '0')
+                ->orderBy('prgm.prgm_id', 'desc');
         if (!empty($id)) {
             $res = $res->where('prgm.anchor_id', $id);
         }

@@ -1967,21 +1967,21 @@ class DataRenderer implements DataProviderInterface
                     'prgm_id',
                     function ($program) {                   
                       return $program->prgm_id;
-                    })
-                ->editColumn(
-                    'f_name',
-                    function ($program) {                   
-                      return $program->f_name;
-                    })
+                    })                
                 ->editColumn(
                     'product_id',
                     function ($program) {                   
-                      return $program->product_name;
+                      return $program->mp_product_name;
                     })
                 ->editColumn(
                     'prgm_name',
                     function ($program) {                   
                       return $program->prgm_name;
+                    })
+                ->editColumn(
+                    'f_name',
+                    function ($program) {                   
+                        return $program->f_name;
                     })
                 ->editColumn(
                     'anchor_limit',
