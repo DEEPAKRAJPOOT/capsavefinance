@@ -237,6 +237,22 @@ class Transactions extends BaseModel {
         }
     }
 
+    public function getOppTransNameAttribute(){
+        if($this->trans_detail->chrg_master_id!='0'){
+            if($this->entry_type == 0){
+                return $this->trans_detail->charge->credit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->charge->debit_desc;
+            }
+        }else{
+            if($this->entry_type == 0){
+                return $this->trans_detail->credit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->debit_desc;
+            }
+        }
+    }
+
     public function getModeOfPaymentNameAttribute(){
         $modeName = '';
         switch ($this->mode_of_pay) {
