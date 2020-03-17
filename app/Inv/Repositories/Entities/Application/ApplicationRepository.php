@@ -1623,8 +1623,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 foreach ($dataPrePostCond as $key => $value) {
                     if($value->cond_type == '1'){
                         $returnData['preCond'][] = $value->cond;
+                        $returnData['preCondTimeline'][] = $value->timeline;
                     }else if($value->cond_type == '2'){
                         $returnData['postCond'][] = $value->cond;
+                        $returnData['postCondTimeline'][] = $value->timeline;
                     }
                 }
             } 

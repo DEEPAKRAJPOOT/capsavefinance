@@ -205,29 +205,31 @@
                                     </td>
                                  </tr>
                                  <tr>
-                                    <td width="33.33%">Specific Pre-disbursement Condition</td>
-                                    <td width="66.66%" colspan="3">
-                                        @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
-                                       <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
-                                          @foreach($supplyChaindata['reviewerSummaryData']['preCond'] as $k => $precond)
-                                          <li>{{$precond}}</li>
-                                          @endforeach
-                                       </ul>
-                                       @endif
-                                    </td>
+                                    <td colspan="2" width="33.33%"><b>Specific Pre-disbursement Condition</b></td>
                                  </tr>
+                                 @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
+                                 @foreach($supplyChaindata['reviewerSummaryData']['preCond'] as $k => $precond)
                                  <tr>
-                                    <td width="33.33%"> Specific Post-disbursement Condition</td>
-                                    <td width="66.66%" colspan="3">
-                                       @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
-                                       <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
-                                          @foreach($supplyChaindata['reviewerSummaryData']['postCond'] as $k => $postcond)
-                                          <li>{{$postcond}}</li>
-                                          @endforeach
-                                       </ul>
-                                       @endif
+                                    <td width="50%">{!! nl2br($precond) !!}</td>
+                                    <td width="50%" >                                   
+                                    {!! isset($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) : '' !!}                           
                                     </td>
                                  </tr>
+                                 @endforeach
+                                 @endif
+                                 <tr>
+                                    <td colspan="2" width="33.33%"><b>Specific Post-disbursement Condition</b></td>
+                                 </tr>
+                                 @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
+                                 @foreach($supplyChaindata['reviewerSummaryData']['postCond'] as $k => $postcond)                                          
+                                 <tr>
+                                    <td width="50%">{!! nl2br($postcond) !!}</td>                    
+                                    <td width="50%" >                                   
+                                    {!! isset($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) : '' !!}                          
+                                    </td>
+                                 </tr>
+                                 @endforeach
+                                 @endif
                               </tbody>
                            </table>
                            <br />
