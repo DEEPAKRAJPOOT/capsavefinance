@@ -1528,6 +1528,7 @@ class CamController extends Controller
             $this->addOfferPersonalGuarantee($request, $offerData->prgm_offer_id);
             $this->addOfferCorporateGuarantee($request, $offerData->prgm_offer_id);
             $this->addOfferEscrowMechanism($request, $offerData->prgm_offer_id);
+            $this->addOfferCharges($request, $offerData->prgm_offer_id);
         }elseif($limitData->product_id == 2 || $limitData->product_id == 3){
           /*Add offer PTPQ block*/
           $ptpqArr =[];
@@ -1975,6 +1976,22 @@ class CamController extends Controller
           $emArr[$key]['created_by'] = Auth::user()->user_id;
         }
         $this->appRepo->addOfferEscrowMechanism($emArr);
+      }
+    }
+
+    public function addOfferCharges($request, $prgm_offer_id){
+      if($request->has('charge_names')){
+        $chArr =[];
+        foreach($request->charge_names as $key=>$ch){
+          $id_type = explode('#', $key);
+          $chArr[$key]['prgm_offer_id'] = $prgm_offer_id;
+          $chArr[$key]['charge_id'] = $id_type[0];
+          $chArr[$key]['chrg_type'] = $id_type[1];
+          $chArr[$key]['chrg_value'] = $ch;
+          $chArr[$key]['created_at'] = \Carbon\Carbon::now();
+          $chArr[$key]['created_by'] = Auth::user()->user_id;
+        }
+        $this->appRepo->addOfferCharges($chArr);
       }
     }
 }

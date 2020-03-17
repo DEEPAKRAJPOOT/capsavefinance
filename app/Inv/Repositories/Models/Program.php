@@ -393,7 +393,7 @@ class Program extends BaseModel {
         if (!is_array($anchor_ids)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
-        return Program::whereIn('anchor_id', $anchor_ids)->with(['programCharges','baseRate'])->where('prgm_type', $uesr_type)->where('parent_prgm_id', '<>', 0)->get();
+        return Program::whereIn('anchor_id', $anchor_ids)->with(['programCharges.chargeName','baseRate'])->where('prgm_type', $uesr_type)->where('parent_prgm_id', '<>', 0)->get();
     }
 
     public function baseRate()

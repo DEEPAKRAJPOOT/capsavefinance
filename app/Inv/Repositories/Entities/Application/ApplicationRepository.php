@@ -50,6 +50,7 @@ use App\Inv\Repositories\Models\OfferCollateralSecurity;
 use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
+use App\Inv\Repositories\Models\OfferCharge;
 
 /**
  * Application repository class
@@ -1422,5 +1423,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getProgramOfferData($program_id)
     {
        return AppProgramLimit::getProgramOfferData($program_id);
+    }
+
+    public function addOfferCharges($data){
+        return OfferCharge::addOfferCharges($data);
     }    
 }

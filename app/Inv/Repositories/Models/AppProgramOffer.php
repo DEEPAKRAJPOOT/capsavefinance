@@ -354,5 +354,9 @@ class AppProgramOffer extends BaseModel {
     public function offerEm(){
         return $this->hasMany('App\Inv\Repositories\Models\OfferEscrowMechanism', 'prgm_offer_id', 'prgm_offer_id');
     }
+
+    public function offerCharges(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferCharge', 'prgm_offer_id', 'prgm_offer_id');
+    }
     
 }
