@@ -62,14 +62,14 @@
                         <div class="tab-content">
 
                             <div id="menu1" class=" active tab-pane "><br>
-                             <span id="moveCase" class="error"></span>
+                             <span id="moveCase" class="text-success"></span>
                                <div class="card">
                                     <div class="card-body">
-                                        <div class="row"><div class="col-md-3"></div>
-                                            <div class="col-md-2">				 
+                                        <div class="row"><div class="col-md-1"></div>
+                                            <div class="col-md-3">				 
                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                                 <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                    <option value="">Select Application  </option>
+                                                    <option value="">Select Business Name  </option>
                                                         @foreach($get_bus as $row)
                                                          @php if(isset($row->business->biz_id)) { @endphp
                                                     <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
@@ -84,7 +84,7 @@
                                             <div class="col-md-2">				 
 
                                                 <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                    <option value=""> Please select </option>
+                                                    <option value="">  Select Anchor </option>
                                                     @foreach($anchor_list as $row)
                                                     @php if(isset($row->anchor->anchor_id)) { @endphp
                                                     <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
@@ -118,16 +118,12 @@
                                                                     <thead>
                                                                         <tr role="row">
                                                                             <th><input type="checkbox" id="chkAll"></th> 
-                                                                            <th>Invoice  No</th>
-                                                                            <th>Anchor Name</th>
-                                                                            <th>Customer Name</th>
-                                                                            <th>Invoice Date</th>
-                                                                            <th>Invoice Due Date</th>
-                                                                            <th>Tenor</th>
-                                                                            <th>Invoice  Amount</th>
-                                                                            <th>Invoice Approve Amount</th>
-                                                                            <th>View & Upload Invoice </th> 
-                                                                            <th>Status</th>
+                                                                            <th>Inv. No.</th>
+                                                                            <th>Anchor Detail</th>
+                                                                            <th>Customer Detail</th>
+                                                                            <th> Inv Detail</th>
+                                                                            <th> Inv Amount</th>
+                                                                             <th>Upload Invoice </th> 
                                                                             <th>Action</th>
                                                                         </tr>
                                                                     </thead>
@@ -350,7 +346,7 @@
     });
     //////////////////// onchange anchor  id get data /////////////////
 
-    $("#supplier_id").append("<option value=''>Select customer</option>");
+    $("#supplier_id").append("<option value=''>Select Customer</option>");
     $(document).on('change', '.changeAnchor', function () {
         var anchor_id = $(this).val();
         $("#supplier_id").empty();

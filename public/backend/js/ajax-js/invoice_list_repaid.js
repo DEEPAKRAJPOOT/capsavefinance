@@ -26,16 +26,12 @@ try {
                 }
             },
             columns: [
-                {data: 'anchor_id'},
+                {data: 'invoice_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
                 {data: 'invoice_date'},
-                {data: 'invoice_due_date'},
-                 {data: 'tenor'},
                 {data: 'invoice_amount'},
-                {data: 'invoice_approve_amount'},
-                {data: 'status'},
-               
+                
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });

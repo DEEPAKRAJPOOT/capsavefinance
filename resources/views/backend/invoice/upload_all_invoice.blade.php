@@ -574,7 +574,6 @@ var messages = {
       $("#invoice_date").val('');
       var program_id =  $(this).val(); 
       var anchor_id =  $("#anchor_id").val(); 
-      
       if(program_id=='')
       {
           return false; 
@@ -595,7 +594,6 @@ var messages = {
                 success: function (data) {
                     if(data.status==1)
                     {
-                      
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
@@ -605,19 +603,19 @@ var messages = {
                         $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
-                         $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                         $("#supplier_id").empty();
-                         $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
+                        $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
+                        $("#supplier_id").empty();
+                        $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
                         $(obj1).each(function(i,v){
-                                var dApp = "000000" + v.app_id;
+                                 var dApp = "000000" + v.app_id;
                                  //$("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
-                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" (CAPS"+dApp.slice(-6)+")</option>");  
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.biz_entity_name+"&nbsp;&nbsp;("+v.customer_id+")</option>");  
                             });
                        
                     }
                     else
                     {
-                       
+                        
                                $("#supplier_id").append("<option value=''>No data found</option>");  
                       
                     }
