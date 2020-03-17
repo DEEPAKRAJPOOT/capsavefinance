@@ -438,7 +438,7 @@
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Amount</td>
-                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format((float)$postData['pdc_facility_amt'])}}</td>
+                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['pdc_facility_amt']) ? number_format((float)$postData['pdc_facility_amt']) : ''}}</td>
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Purpose</td>
@@ -494,7 +494,7 @@
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Amount</td>
-                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format((float)$postData['nach_facility_amt'])}}</td>
+                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['nach_facility_amt']) ? number_format((float)$postData['nach_facility_amt']) : ''}}</td>
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Purpose</td>
@@ -551,7 +551,7 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format((float)$postData['dsra_amt']) ?? NULL}}</td>
+                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['dsra_amt']) ? number_format((float)$postData['dsra_amt']) : ''}}</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['dsra_tenure'] ?? NULL}}</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['dsra_comment'] ?? NULL}}</td>
                       </tr>
