@@ -917,8 +917,13 @@
     function fillPrograms(anchor_id, programs){
         let html = '<option value="" data-sub_limit="0" data-min_rate="0" data-max_rate="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
         $.each(programs, function(i,program){
-            if(program.prgm_name != null && program.anchor_id == anchor_id)
-                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+program.min_interest_rate+'"  data-max_rate="'+program.max_interest_rate+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
+            if(program.prgm_name != null && program.anchor_id == anchor_id){
+
+                let base_rate = (program.base_rate != null)? program.base_rate.base_rate: 0;
+                let min_rate = parseFloat(program.min_interest_rate) + parseFloat(base_rate);
+                let max_rate = parseFloat(program.max_interest_rate) + parseFloat(base_rate);
+                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+min_rate.toFixed(2)+'"  data-max_rate="'+max_rate.toFixed(2)+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
+            }
         });
         $('#program_id').html(html);
     }
@@ -1402,6 +1407,7 @@
   })
 
   function fillProgramData(anchorPrgms){
+    debugger;
     console.log(anchorPrgms);
     let program_id = $('#program_id option:selected').val();
     if(typeof program_id == 'undefined' || program_id == '' || program_id == null){
