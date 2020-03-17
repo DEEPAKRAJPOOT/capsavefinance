@@ -41,6 +41,12 @@
                     </div>
                 </div>     
             </div>
+            <div class="row" style="margin-bottom: 25px;">
+                <div class="col-md-4">
+                    <input class="form-control" placeholder="Search by Program Name, Anchor Name" id="search_keyword" name="search_keyword" type="text">
+                </div>
+                <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+           </div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="table-responsive">

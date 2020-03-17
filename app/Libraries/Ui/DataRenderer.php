@@ -2027,7 +2027,13 @@ class DataRenderer implements DataProviderInterface
                       }
                     })
                     ->filter(function ($query) use ($request) {
-                        
+                        if ($request->get('search_keyword') != '') {                        
+                            $query->where(function ($query) use ($request) {
+                                $search_keyword = trim($request->get('search_keyword'));
+                                $query->where('prgm_name', 'like',"%$search_keyword%")
+                                ->orWhere('f_name', 'like', "%$search_keyword%");
+                            });                        
+                        }
                     })
                     ->make(true);
     }
