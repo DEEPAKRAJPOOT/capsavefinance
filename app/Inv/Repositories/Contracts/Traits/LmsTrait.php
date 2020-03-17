@@ -453,7 +453,7 @@ trait LmsTrait
                  /* Step 1.1 : Interest Settlement */
 
                     
-                if(($accured_interest-$interestDue)>0 && $trans['balance_amount']>0 && $is_principal_settled==2)
+                if(($accured_interest-$interestDue)>0 && $trans['balance_amount']>0 && $is_principal_settled==2 && $int_type_config != '1')
                 {
                     $restInterestPaidAmt = ($trans['balance_amount']>=($accured_interest-$interestDue))?($accured_interest-$interestDue):$trans['balance_amount'];
                     $trans['balance_amount'] -= $restInterestPaidAmt;
