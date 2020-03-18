@@ -1463,7 +1463,7 @@
   function fillChargesBlock(program){
     let html='';
     $.each(program.program_charges, function(i,program_charge){
-        if(program_charge.charge_name.chrg_tiger_id == 1)
+        if(program_charge.charge_name.chrg_tiger_id == 1){
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
                     '<label for="txtPassword"><b>'+program_charge.charge_name.chrg_name+'</b></label>'+
