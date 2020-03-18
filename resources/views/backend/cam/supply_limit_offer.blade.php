@@ -1462,13 +1462,15 @@
   }
 
   function fillChargesBlock(program){
+    debugger;
+    console.log(program);
     let html='';
     $.each(program.program_charges, function(i,program_charge){
         if(program_charge.charge_name.chrg_tiger_id == 1){
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
                     '<label for="txtPassword"><b>'+program_charge.charge_name.chrg_name+((program_charge.charge_name.chrg_calculation_type == 2)? ' (%)':'')+'</b></label>'+
-                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" value="" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
+                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" value="'+program_charge.chrg_calculation_amt+'" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
                 '</div>'+
             '</div>';
         }
