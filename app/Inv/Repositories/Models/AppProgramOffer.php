@@ -360,6 +360,10 @@ class AppProgramOffer extends BaseModel {
     public function offerEm(){
         return $this->hasMany('App\Inv\Repositories\Models\OfferEscrowMechanism', 'prgm_offer_id', 'prgm_offer_id');
     }
+
+    public function offerCharges(){
+        return $this->hasMany('App\Inv\Repositories\Models\OfferCharge', 'prgm_offer_id', 'prgm_offer_id');
+    }
     
     
     public static function getLimitAmount($arr)
@@ -401,6 +405,7 @@ class AppProgramOffer extends BaseModel {
         return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit', 'app_prgm_limit_id','app_prgm_limit_id')->where(['product_id' =>1]);  
     
     }
+
     public function program(){
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
     }

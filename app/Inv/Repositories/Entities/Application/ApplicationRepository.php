@@ -56,6 +56,7 @@ use App\Inv\Repositories\Models\OfferEscrowMechanism;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
+use App\Inv\Repositories\Models\OfferCharge;
 
 /**
  * Application repository class
@@ -1623,8 +1624,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 foreach ($dataPrePostCond as $key => $value) {
                     if($value->cond_type == '1'){
                         $returnData['preCond'][] = $value->cond;
+                        $returnData['preCondTimeline'][] = $value->timeline;
                     }else if($value->cond_type == '2'){
                         $returnData['postCond'][] = $value->cond;
+                        $returnData['postCondTimeline'][] = $value->timeline;
                     }
                 }
             } 
@@ -1636,5 +1639,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getProgramOfferData($program_id)
     {
        return AppProgramLimit::getProgramOfferData($program_id);
+    }
+
+    public function addOfferCharges($data){
+        return OfferCharge::addOfferCharges($data);
     }    
 }

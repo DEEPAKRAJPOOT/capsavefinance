@@ -2037,7 +2037,13 @@ class DataRenderer implements DataProviderInterface
                       }
                     })
                     ->filter(function ($query) use ($request) {
-                        
+                        if ($request->get('search_keyword') != '') {                        
+                            $query->where(function ($query) use ($request) {
+                                $search_keyword = trim($request->get('search_keyword'));
+                                $query->where('prgm_name', 'like',"%$search_keyword%")
+                                ->orWhere('f_name', 'like', "%$search_keyword%");
+                            });                        
+                        }
                     })
                     ->make(true);
     }
@@ -2173,7 +2179,8 @@ class DataRenderer implements DataProviderInterface
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('chrg_desc', 'like',"%$search_keyword%")
-                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_name', 'like', "%$search_keyword%");
                         });
                     }
                 })
@@ -3259,7 +3266,6 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-
     // LMS Customer Address
     public function addressGetCustomers(Request $request, $data)
     {
@@ -3375,7 +3381,11 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_type',
                 function ($trans) {
-                    return $trans->transname;
+                    if($trans->parent_trans_id && $trans->trans_detail->chrg_master_id!='0'){
+                        return $trans->oppTransName;
+                    }else{
+                        return $trans->transname;
+                    }
                 }
             )
             ->editColumn(

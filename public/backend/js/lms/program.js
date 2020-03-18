@@ -144,9 +144,7 @@ try {
                 url: messages.get_program_list,
                 method: 'POST',
                 data: function (d) {
-                    d.by_email = $('input[name=by_email]').val();
-                    d.is_assign = $('select[name=is_assign]').val();
-                    d.anchor_id = messages.anchor_id;
+                    d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
                 },
                 error: function () { // error handling
@@ -694,6 +692,9 @@ try {
             return true;
         })
 
+        $('#searchbtn').on('click', function (e) {
+            oTables.draw();
+        }); 
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

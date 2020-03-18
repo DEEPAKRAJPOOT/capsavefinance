@@ -36,7 +36,7 @@ function getProductType($product_id){
 }
 
 function getBenchmarkType($product_id){
-	 $productType = ['1'=>'Invoice Date', 'BOE Date', 'GRN Date', 'Date of discounting'];
+	 $productType = ['1'=>'Invoice Date', 'Date of discounting', 'BOE Date', 'GRN Date'];
 	 return $productType[$product_id] ?? '';
 }
 

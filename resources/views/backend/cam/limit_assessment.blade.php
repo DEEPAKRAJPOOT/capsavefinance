@@ -123,8 +123,8 @@
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (In Days)</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Payment Frequency</b></td>
                                                 <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (In Days)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
+                                                <td width="18%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (In Days)</b></td>
+                                                <td width="12%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Adhoc Interest Rate (%)</b></td>
                                                 <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
                                             </tr>
                                             </thead>
@@ -139,7 +139,7 @@
                                                 <td>{{ config('common.payment_frequency.'.$prgmOffer->payment_frequency)}}</td>
                                                 <td>{{$prgmOffer->margin}}%</td>
                                                 <td>{{$prgmOffer->grace_period}}</td>
-                                                <td>{{$prgmOffer->processing_fee}}%</td>
+                                                <td>{{$prgmOffer->adhoc_interest_rate}}%</td>
                                                 <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
                                             </tr>
                                             @endforeach

@@ -41,7 +41,7 @@ trait LmsTrait
 
     protected function calculateFundedAmount($invoice = [], $margin)
     {
-        return $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
+        return $invoice['invoice_approve_amount'] - ((float)($invoice['invoice_approve_amount']*$margin)/100);
     }   
 
     protected function calAccrualInterest($transDate=null){
@@ -147,7 +147,7 @@ trait LmsTrait
                             }
                            
 
-                            $recalInterestRate  = $currentInterestRate/100;
+                            $recalInterestRate  = (float)$currentInterestRate/100;
                             $recalinterest = round($this->calInterest($recalbalancePrincipalAmt, $recalInterestRate, 1),5);
                             
                             $intAccrualData = [];
@@ -215,7 +215,7 @@ trait LmsTrait
                     $this->lmsRepo->saveTransaction($interestDue);
                 }
 
-                $calInterestRate  = $currentInterestRate/100;
+                $calInterestRate  = (float)$currentInterestRate/100;
                 $interest = round($this->calInterest($balancePrincipalAmt, $calInterestRate, 1),5);
                 
                 $intAccrualData = [];
@@ -300,7 +300,7 @@ trait LmsTrait
                 ->count();
             
             $disbursalData =  Disbursal::where(['user_id'=>$transDetail['user_id']])
-                ->whereIn('status_id',[config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED'),config('lms.STATUS_ID.DISBURSED')])
+                //->whereIn('status_id',[config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED'),config('lms.STATUS_ID.DISBURSED')])
                 ->where('int_accrual_start_dt', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
                 ->orderBy('inv_due_date','asc')
                 ->orderBy('disbursal_id','asc')
@@ -453,30 +453,30 @@ trait LmsTrait
                  /* Step 1.1 : Interest Settlement */
 
                     
-                if(($accured_interest-$interestDue)>0 && $trans['balance_amount']>0 && $is_principal_settled==2)
-                {
-                    $restInterestPaidAmt = ($trans['balance_amount']>=($accured_interest-$interestDue))?($accured_interest-$interestDue):$trans['balance_amount'];
-                    $trans['balance_amount'] -= $restInterestPaidAmt;
-                    $disbursal['total_repaid_amt'] += $restInterestPaidAmt;
+                    if(($accured_interest-$interestDue)>0 && $trans['balance_amount']>0 && $is_principal_settled==2 && $int_type_config != '1')
+                    {
+                        $restInterestPaidAmt = ($trans['balance_amount']>=($accured_interest-$interestDue))?($accured_interest-$interestDue):$trans['balance_amount'];
+                        $trans['balance_amount'] -= $restInterestPaidAmt;
+                        $disbursal['total_repaid_amt'] += $restInterestPaidAmt;
 
-                    $transactionData['interestPaid'][] = $this->createTransactionData($transDetail['user_id'], [
-                        'amount' => $restInterestPaidAmt,
-                        'trans_date'=>$transDetail['trans_date'],
-                        'disbursal_id'=>$disbursalDetail->disbursal_id,
-                        'parent_trans_id'=>$transId
-                    ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
+                        $transactionData['interestPaid'][] = $this->createTransactionData($transDetail['user_id'], [
+                            'amount' => $restInterestPaidAmt,
+                            'trans_date'=>$transDetail['trans_date'],
+                            'disbursal_id'=>$disbursalDetail->disbursal_id,
+                            'parent_trans_id'=>$transId
+                        ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
 
-                    $interestPaidData = $this->createTransactionData($transDetail['user_id'], [
-                        'amount' => $restInterestPaidAmt,
-                        'trans_date'=>$transDetail['trans_date'],
-                        'disbursal_id'=>$disbursalDetail->disbursal_id,
-                        'parent_trans_id'=>$transId
-                    ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
+                        $interestPaidData = $this->createTransactionData($transDetail['user_id'], [
+                            'amount' => $restInterestPaidAmt,
+                            'trans_date'=>$transDetail['trans_date'],
+                            'disbursal_id'=>$disbursalDetail->disbursal_id,
+                            'parent_trans_id'=>$transId
+                        ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
 
-                    $transactionData['interestPaid'][] = $interestPaidData;
+                        $transactionData['interestPaid'][] = $interestPaidData;
 
-                    $settlementLevel = 1;
-                }
+                        $settlementLevel = 1;
+                    }
 
                     if($marginDueAmt>0 && $trans['balance_amount']>0)
                     {
@@ -661,6 +661,8 @@ trait LmsTrait
             $this->calAccrualInterest($this->addDays($trans['trans_date'], 1),$knockedOffDisbursedIds);
         }
     }
+
+    
     
     protected function calDisbursalAmount($principalAmount, $deductions)
     {
@@ -739,7 +741,7 @@ trait LmsTrait
         $datediff = abs($now - $your_date);
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-        $totalinterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+        $totalinterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
         if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
             $interest = $totalinterest;
         }
