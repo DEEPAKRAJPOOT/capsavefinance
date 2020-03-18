@@ -145,7 +145,7 @@
                     <tbody>
                       <tr>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{getProductType($supplyChaindata['product_id'])}}</td>
-                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($supplyChaindata['tot_limit_amt'])}}</td>
+                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($supplyChaindata['tot_limit_amt']) ?? 0}}</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['sublimit_of']}}</td>
                       </tr>
                     </tbody>
@@ -163,7 +163,7 @@
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Amount</td>
-                        <td width="66.66%"  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" colspan="3">&#8377; {{number_format($supplyChaindata['limit_amt'])}}</td>
+                        <td width="66.66%"  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" colspan="3">&#8377; {{number_format($supplyChaindata['limit_amt']) ?? 0}}</td>
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Purpose</td>
@@ -236,7 +236,7 @@
                             <tbody>
                               <tr>
                                 <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" >{{$supplyChaindata['anchorData'][$offerD->anchor_id]['comp_name'] ?? ''}}</td>
-                                <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($offerD->prgm_limit_amt)}}</td>
+                                <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($offerD->prgm_limit_amt) ?? 0}}</td>
                                 <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$offerD->tenor}}</td>
                                 <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$offerD->grace_period}}</td>
                                 <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$offerD->interest_rate}}</td>
@@ -374,7 +374,7 @@
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] ?? ''}}</td>
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{config('common.pg_time_for_perfecting_security_id.'.$PersonalGuarantee->pg_time_for_perfecting_security_id)}}</td>
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$PersonalGuarantee->pg_residential_address}}</td>
-                          <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($PersonalGuarantee->pg_net_worth)}}</td>
+                          <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($PersonalGuarantee->pg_net_worth) ?? 0}}</td>
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$PersonalGuarantee->pg_comments}}</td>
                         </tr>
                         @endforeach
@@ -422,7 +422,7 @@
                         @foreach($offerD->offerEm as $EscrowMechanism)
                         <tr>
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$supplyChaindata['anchorData'][$EscrowMechanism->em_debtor_id]['comp_name'] ?? ''}}</td>
-                          <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($EscrowMechanism->em_expected_cash_flow)}}</td>
+                          <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{number_format($EscrowMechanism->em_expected_cash_flow) ?? 0}}</td>
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{config('common.em_time_for_perfecting_security_id.'.$EscrowMechanism->em_time_for_perfecting_security_id)}}</td>
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{getMechanism($EscrowMechanism->em_mechanism_id)}}</td>
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$EscrowMechanism->em_comments}}</td>
@@ -446,7 +446,7 @@
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Amount</td>
-                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['pdc_facility_amt']) ? number_format((float)$postData['pdc_facility_amt']) : ''}}</td>
+                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['pdc_facility_amt']) ? number_format((float)$postData['pdc_facility_amt']) : '0'}}</td>
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Purpose</td>
@@ -502,7 +502,7 @@
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Amount</td>
-                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['nach_facility_amt']) ? number_format((float)$postData['nach_facility_amt']) : ''}}</td>
+                        <td width="66.66%" colspan="3" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['nach_facility_amt']) ? number_format((float)$postData['nach_facility_amt']) : '0'}}</td>
                       </tr>
                       <tr>
                         <td width="33.33%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Purpose</td>
@@ -559,7 +559,7 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['dsra_amt']) ? number_format((float)$postData['dsra_amt']) : ''}}</td>
+                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">&#8377; {{isset($postData['dsra_amt']) ? number_format((float)$postData['dsra_amt']) : '0'}}</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['dsra_tenure'] ?? NULL}}</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['dsra_comment'] ?? NULL}}</td>
                       </tr>
