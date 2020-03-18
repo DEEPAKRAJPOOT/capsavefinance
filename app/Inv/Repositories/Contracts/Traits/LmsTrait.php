@@ -27,6 +27,11 @@ trait LmsTrait
     {
         $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
         return $interest;        
+    }  
+
+    protected function calMargin($amt, $val)
+    {
+        return ($amt*$val)/100;
     }   
     
     protected function calculateTenorDays($invoice = [])

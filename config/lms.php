@@ -42,5 +42,9 @@ return [
         'DISBURSED'=>'12',
         'PARTIALLY_PAYMENT_SETTLED' => '13',
         'PAYMENT_SETTLED' => '15'
+    ],
+    'DISBURSE_TYPE' => [
+        'ONLINE' => '1',
+        'OFFLINE'=>'2'
     ]
 ];

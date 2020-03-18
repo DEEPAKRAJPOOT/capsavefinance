@@ -9,7 +9,6 @@
 
     $(document).on('click', '.invoice_id', function(){
         let current_id = $(this).val();
-        console.log(current_id);
         if($(this).is(':checked')){
             let parent_inv_ids = $('#invoice_ids').val().trim();
             let allInvIds = parent_inv_ids.split(',');
