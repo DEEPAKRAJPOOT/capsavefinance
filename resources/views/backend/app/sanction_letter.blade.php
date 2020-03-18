@@ -375,6 +375,10 @@
                                        <td>{{$PrimarySecurity->ps_desc_of_security}}</td>
                                     </tr>
                                     @endforeach
+                                    <tr>
+                                       <td>Specific Collateral security condition/s</td>
+                                       <td><input type="text" value="{{$supplyChainFormData['primary_sec_cond'] ?? ''}}" name="primary_sec_cond" id="primary_sec_cond" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    </tr>
                                  </tbody>
                               </table>
                               @endif
@@ -400,6 +404,10 @@
                                        <td>{{$CollateralSecurity->cs_desc_of_security}}</td>
                                     </tr>
                                     @endforeach
+                                    <tr>
+                                       <td>Specific Collateral security condition/s</td>
+                                       <td><input type="text" value="{{$supplyChainFormData['collateral_sec_cond'] ?? ''}}" name="collateral_sec_cond" id="collateral_sec_cond" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    </tr>
                                  </tbody>
                               </table>
                               @endif
