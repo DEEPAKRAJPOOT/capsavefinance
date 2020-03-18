@@ -215,11 +215,11 @@ class DisbursalController extends Controller
 						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 					}
 
-					// $marginAmt = round($totalMargin,2);
-					// if ($marginAmt > 0.00) {
-					// 	$marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
-					// 	$createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
-					// }
+					$marginAmt = round($totalMargin,2);
+					if ($marginAmt > 0.00) {
+						$marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 0);
+						$createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
+					}
 
 					// $intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
 					// $createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
