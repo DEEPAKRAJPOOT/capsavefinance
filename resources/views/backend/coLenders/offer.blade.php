@@ -59,8 +59,8 @@ tr.border_bottom td {
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
                                                     <td>{{$supplyOffer->prgm_limit_amt}}</td>
-                                                    <td><b>Documentation Fee (%): </b></td>
-                                                    <td>{{$supplyOffer->document_fee}}</td>
+                                                    <td><b>Grace Period (Days): </b></td>
+                                                    <td>{{$supplyOffer->grace_period}}</td>
                                                     <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
                                                 </tr>
                                                 
@@ -88,14 +88,18 @@ tr.border_bottom td {
                                                     <td>{{$supplyOffer->adhoc_interest_rate}}</td>
                                                     <td></td>
                                                 </tr>
+                                                @foreach($supplyOffer->offerCharges as $key=>$offerCharge)
+                                                @if($key%2 == 0)
                                                 <tr>
-                                                <td></td>
-                                                    <td><b>Grace Period (Days): </b></td>
-                                                    <td>{{$supplyOffer->grace_period}}</td>
-                                                    <td><b>Processing Fee (%): </b></td>
-                                                    <td>{{$supplyOffer->processing_fee}}</td>
+                                                    <td></td>
+                                                    @endif
+                                                    <td><b>{{$offerCharge->chargeName->chrg_name}} {{($offerCharge->chrg_type == 2)? ' (%)': ''}}: </b></td>
+                                                    <td>{{$offerCharge->chrg_value}}</td>
+                                                    @if($key%2 != 0)
                                                     <td></td>
                                                 </tr>
+                                                @endif
+                                                @endforeach
                                                 <tr>
                                                 <td></td>
                                                     <td><b>Comment: </b></td>
