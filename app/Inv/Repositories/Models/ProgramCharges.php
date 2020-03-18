@@ -153,5 +153,8 @@ class ProgramCharges extends BaseModel {
        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Charges', 'charge_id', 'id'); 
     }
 
-   
+    public function chargeName(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
+    }
+
 }

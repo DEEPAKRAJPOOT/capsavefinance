@@ -131,8 +131,20 @@
         <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
+    <div class="charges_block" style="width: 100%;display: inherit;">
+        @if(isset($offerData->offerCharges))
+        @foreach($offerData->offerCharges as $key=>$offerCharge)
+        <div class="col-md-6">
+          <div class="form-group">
+              <label for="txtPassword"><b>{{$offerCharge->chargeName->chrg_name}}</b></label>
+                <input type="text" name="charge_names[{{$offerCharge->charge_id.'#'.$offerCharge->chrg_type}}]" class="form-control" data-type="{{$offerCharge->chrg_type}}" value="{{$offerCharge->chrg_value}}" maxlength="6">
+          </div>
+        </div>
+        @endforeach
+        @endif
+    </div>
     
-    <div class="col-md-6">
+    {{--<div class="col-md-6">
       <div class="form-group">
           <label for="txtPassword"><b>Processing Fee <span id="processing_fee_type">(%)</span></b></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
@@ -144,7 +156,7 @@
         <label for="txtPassword"><b>Documentation Fee <span id="document_fee_type">(%)</span></b></label>         
         <input type="text" name="document_fee" class="form-control" value="{{isset($offerData->document_fee)? $offerData->document_fee : ''}}" placeholder="Documentation Fee" maxlength="6">
       </div>
-    </div>
+    </div>--}}
     
     <!-- -------------- PRIMARY SECURITY BLOCK ------------ -->
     <div class="col-md-12">
@@ -917,8 +929,13 @@
     function fillPrograms(anchor_id, programs){
         let html = '<option value="" data-sub_limit="0" data-min_rate="0" data-max_rate="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
         $.each(programs, function(i,program){
-            if(program.prgm_name != null && program.anchor_id == anchor_id)
-                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+program.min_interest_rate+'"  data-max_rate="'+program.max_interest_rate+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
+            if(program.prgm_name != null && program.anchor_id == anchor_id){
+
+                let base_rate = (program.base_rate != null)? program.base_rate.base_rate: 0;
+                let min_rate = parseFloat(program.min_interest_rate) + parseFloat(base_rate);
+                let max_rate = parseFloat(program.max_interest_rate) + parseFloat(base_rate);
+                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+min_rate.toFixed(2)+'"  data-max_rate="'+max_rate.toFixed(2)+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
+            }
         });
         $('#program_id').html(html);
     }
@@ -1003,7 +1020,7 @@
         'limit_balance_amt':"{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}",
         'prgm_balance_limit':$('#program_id option:selected').data('sub_limit') - prgm_consumed_limit,
     };
-    
+
     unsetError('select[name=anchor_id]');
     unsetError('select[name=prgm_id]');
     unsetError('input[name=prgm_limit_amt]');
@@ -1014,8 +1031,9 @@
     unsetError('input[name=overdue_interest_rate]');
     unsetError('input[name=adhoc_interest_rate]');
     unsetError('input[name=grace_period]');
-    unsetError('input[name=processing_fee]');
-    unsetError('input[name=document_fee]');
+    //unsetError('input[name=processing_fee]');
+    //unsetError('input[name=document_fee]');
+    unsetError('input[name*=charge_names]');
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
@@ -1028,8 +1046,8 @@
     let overdue_interest_rate = $('input[name=overdue_interest_rate]').val().trim();
     let adhoc_interest_rate = $('input[name=adhoc_interest_rate]').val().trim();
     let grace_period = $('input[name=grace_period]').val().trim();
-    let processing_fee = $('input[name=processing_fee]').val().trim();
-    let document_fee = $('input[name=document_fee]').val().trim();
+    //let processing_fee = $('input[name=processing_fee]').val().trim();
+    //let document_fee = $('input[name=document_fee]').val().trim();
 
     if(anchor_id == ''){
         setError('select[name=anchor_id]', 'Please select Anchor');
@@ -1113,21 +1131,34 @@
         flag = false;
     }
 
-    if(processing_fee == '' || isNaN(processing_fee)){
+
+    $.each($('input[name*=charge_names]'), function(i, val){
+        let data = $(this).val();
+        let type = $(this).data('type');
+        if(data == '' || isNaN(data)){
+            setError('input[name*=charge_names]:eq('+i+')', 'Please fill data');
+            flag = false;
+        }else if(type == 2 && parseFloat(data) > 100){
+            setError('input[name*=charge_names]:eq('+i+')', 'Value can not be greater than 100 percent');
+            flag = false;
+        }
+    })
+
+    /*if(processing_fee == '' || isNaN(processing_fee)){
         setError('input[name=processing_fee]', 'Please fill processing fee');
         flag = false;
     }else if(parseFloat(processing_fee) > 100){
         setError('input[name=processing_fee]', 'Processing fee can not be greater than 100 percent');
         flag = false;
-    }
+    }*/
 
-    if(document_fee == '' || isNaN(document_fee)){
+    /*if(document_fee == '' || isNaN(document_fee)){
         setError('input[name=document_fee]', 'Please fill document fee');
         flag = false;
     }else if(parseFloat(document_fee) > 100){
         setError('input[name=document_fee]', 'Document fee can not be greater than 100 percent');
         flag = false;
-    }
+    }*/
 
     if(flag){
         return true;
@@ -1402,7 +1433,6 @@
   })
 
   function fillProgramData(anchorPrgms){
-    console.log(anchorPrgms);
     let program_id = $('#program_id option:selected').val();
     if(typeof program_id == 'undefined' || program_id == '' || program_id == null){
         //$('input[name=tenor]').val();
@@ -1425,8 +1455,23 @@
             $('input[name=grace_period]').val(program.grace_period);
             //$('input[name=processing_fee]').val(program.processing_fee);
             //$('input[name=document_fee]').val();
+            fillChargesBlock(program);
         }
     });
+  }
+
+  function fillChargesBlock(program){
+    let html='';
+    $.each(program.program_charges, function(i,program_charge){
+        html += '<div class="col-md-6">'+
+            '<div class="form-group">'+
+                '<label for="txtPassword"><b>'+program_charge.charge_name.chrg_name+'</b></label>'+
+                '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" value="" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
+            '</div>'+
+        '</div>';
+    });
+    $('.charges_block').html(html);
+    //$(html).insertAfter(".charges_block");
   }
 </script>
 @endsection
