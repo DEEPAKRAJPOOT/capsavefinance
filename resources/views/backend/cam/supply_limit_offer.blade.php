@@ -136,8 +136,8 @@
         @foreach($offerData->offerCharges as $key=>$offerCharge)
         <div class="col-md-6">
           <div class="form-group">
-              <label for="txtPassword"><b>{{$offerCharge->chargeName->chrg_name}}</b></label>
-                <input type="text" name="charge_names[{{$offerCharge->charge_id.'#'.$offerCharge->chrg_type}}]" class="form-control" data-type="{{$offerCharge->chrg_type}}" value="{{$offerCharge->chrg_value}}" maxlength="6">
+              <label for="txtPassword"><b>{{$offerCharge->chargeName->chrg_name.(($offerCharge->chrg_type == 2)? ' (%)': '')}}</b></label>
+                <input type="text" name="charge_names[{{$offerCharge->charge_id.'#'.$offerCharge->chrg_type}}]" class="form-control" data-type="{{$offerCharge->chrg_type}}" data-name="{{$offerCharge->chargeName->chrg_name}}" value="{{$offerCharge->chrg_value}}" maxlength="6">
           </div>
         </div>
         @endforeach
@@ -1135,11 +1135,12 @@
     $.each($('input[name*=charge_names]'), function(i, val){
         let data = $(this).val();
         let type = $(this).data('type');
+        let name = $(this).data('name');
         if(data == '' || isNaN(data)){
-            setError('input[name*=charge_names]:eq('+i+')', 'Please fill data');
+            setError('input[name*=charge_names]:eq('+i+')', 'Please fill '+name);
             flag = false;
         }else if(type == 2 && parseFloat(data) > 100){
-            setError('input[name*=charge_names]:eq('+i+')', 'Value can not be greater than 100 percent');
+            setError('input[name*=charge_names]:eq('+i+')', name+' can not be greater than 100 percent');
             flag = false;
         }
     })
@@ -1466,8 +1467,8 @@
         if(program_charge.charge_name.chrg_tiger_id == 1){
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
-                    '<label for="txtPassword"><b>'+program_charge.charge_name.chrg_name+'</b></label>'+
-                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" value="" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
+                    '<label for="txtPassword"><b>'+program_charge.charge_name.chrg_name+((program_charge.charge_name.chrg_calculation_type == 2)? ' (%)':'')+'</b></label>'+
+                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" value="" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
                 '</div>'+
             '</div>';
         }
