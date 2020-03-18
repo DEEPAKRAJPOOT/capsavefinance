@@ -320,6 +320,10 @@
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$PrimarySecurity->ps_desc_of_security}}</td>
                         </tr>
                         @endforeach
+                        <tr>
+                            <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Specific Collateral security condition/s</td>
+                            <td colspan="4" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{($postData['primary_sec_cond']) ?? ''}}</td>
+                        </tr>
                       </tbody>
                     </table>
                     @endif
@@ -345,6 +349,10 @@
                           <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$CollateralSecurity->cs_desc_of_security}}</td>
                         </tr>
                         @endforeach
+                        <tr>
+                            <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Specific Collateral security condition/s</td>
+                            <td colspan="4" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{($postData['collateral_sec_cond']) ?? ''}}</td>
+                        </tr>
                       </tbody>
                     </table>
                     @endif
