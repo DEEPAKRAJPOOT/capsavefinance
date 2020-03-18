@@ -7,7 +7,7 @@ try {
         //Charges Listing code
         oTable = $('#chargesList').DataTable({
             processing: true,
-            serverSide: false,
+            serverSide: true,
             pageLength: 25,
             searching: false,
             bSort: true,

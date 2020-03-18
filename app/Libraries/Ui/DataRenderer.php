@@ -2169,7 +2169,8 @@ class DataRenderer implements DataProviderInterface
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('chrg_desc', 'like',"%$search_keyword%")
-                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_name', 'like', "%$search_keyword%");
                         });
                     }
                 })
