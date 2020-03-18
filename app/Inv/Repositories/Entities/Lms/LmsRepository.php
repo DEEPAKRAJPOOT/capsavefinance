@@ -11,6 +11,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
@@ -557,5 +558,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getRepaymentAmount($userId, $transType)
     {
         return Transactions::getRepaymentAmount($userId, $transType);
+    }
+    
+      public function searchBusiness($search)
+    {
+        try
+       {
+            return Business::searchBusiness($search);
+       } catch (Exception $ex) {
+            return $ex;
+       }
+       
     }
 }

@@ -739,11 +739,23 @@ use CommonRepositoryTraits;
         return InvoiceModel::getInvoiceData($where, $select);
     }
     
-    public function checkDuplicateInvoice($invoiceNo)
+    public function checkDuplicateInvoice($invoiceNo,$user_id)
     {
         
-          return BizInvoice::checkDuplicateInvoice($invoiceNo);
+          return BizInvoice::checkDuplicateInvoice($invoiceNo,$user_id);
     }
+    
+    public function getUserWiseInvoiceData($user_id)
+    {
+        try
+        {
+             return BizInvoice::getUserWiseInvoiceData($user_id);
+        } catch (Exception $ex) 
+        {
+             return $ex;
+        }
+         
+    }  
 
     public function  getPaymentAdvice()
     {

@@ -60,6 +60,18 @@ class InvoiceController extends Controller {
         $get_bus = $this->invRepo->getBusinessNameApp(7);
         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
     }
+    
+    public function UserWiseInvoice(Request $req) {
+        $flag = $req->get('flag') ?: null;
+        $user_id = $req->get('user_id') ?: null;
+        $app_id = $req->get('app_id') ?: null;
+        $userInfo = $this->invRepo->getCustomerDetail($user_id);
+
+        $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(7);
+        $get_bus = $this->invRepo->getBusinessNameApp(7);
+        $status =  DB::table('mst_status')->where(['status_type' =>4])->get();
+        return view('backend.invoice.user_wise_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
+    } 
 
     public function getBulkInvoice() {
 

@@ -1056,7 +1056,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                  'as' => 'backend_get_invoice',
                 'uses' => 'Backend\InvoiceController@viewInvoice'
             ]); 
-          
+           Route::get('user_wise_invoice', [
+                 'as' => 'user_wise_invoice',
+                'uses' => 'Backend\InvoiceController@UserWiseInvoice'
+            ]); 
            Route::get('backend_get_approve_invoice', [
                  'as' => 'backend_get_approve_invoice',
                 'uses' => 'Backend\InvoiceController@viewApproveInvoice'

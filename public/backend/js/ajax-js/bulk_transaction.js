@@ -23,11 +23,10 @@ try {
                 }
             },
             columns: [
-                {data: 'DT_RowIndex'},
                 {data: 'customer_id'},
                 {data: 'virtual_account_no.'},
-                {data: 'amount'},
                 {data: 'trans_by'},
+                {data: 'comment'},
                 {data: 'created_by'},
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
