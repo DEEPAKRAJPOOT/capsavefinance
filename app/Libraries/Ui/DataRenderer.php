@@ -717,8 +717,8 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
                 ->addColumn(
@@ -795,12 +795,12 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
                ->addColumn(
@@ -926,12 +926,12 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
                         
@@ -986,12 +986,12 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
                   ->addColumn(
@@ -1056,12 +1056,12 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
                    ->addColumn(
@@ -1127,12 +1127,12 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
               ->make(true);
@@ -1185,12 +1185,12 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
               ->make(true);
@@ -1244,12 +1244,12 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(
@@ -1272,41 +1272,60 @@ class DataRenderer implements DataProviderInterface
         /// dd($trans->disburse);
     
          return DataTables::of($trans)
-               ->rawColumns(['trans_by'])
+               ->rawColumns(['trans_by','customer_id','virtual_account_no'])
                 ->addIndexColumn()
                 
                 ->addColumn(
                     'customer_id',
                     function ($trans) {                        
-                      // return $trans->disburse ? $trans->disburse->customer_id : '';
-                        return $trans->lmsUser ? $trans->lmsUser->customer_id : '';
+                        $customer = '';
+                        $customer .= $trans->user ? '<span><b>Name:&nbsp;</b>'.$trans->user->f_name.'&nbsp;'.$trans->user->l_name.'</span>' : '';
+                        $customer .= $trans->lmsUser ? '<br><span><b>Customer Id:&nbsp;</b>'.$trans->lmsUser->customer_id.'</span>' : '';
+                         $customer .= $trans->virtual_acc_id ? '<br><span><b>Virtual Acc. No.:&nbsp;</b>'.$trans->virtual_acc_id.'</span>' : '';
+                        return $customer;
                 })
                 ->addColumn(
                     'virtual_account_no',
                     function ($trans) { 
+                        $payment = '';
+                        $payment .= $trans->trans_date ? '<span><b>Trans. Date:&nbsp;</b>'.date("Y-m-d", strtotime($trans->trans_date)).'</span>' : '';
+                        $payment .= $trans->trans_detail ? '<br><span><b>Trans. Type:&nbsp;</b>'.$trans->trans_detail->trans_name.'</span>' : '';
+                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b>'.number_format($trans->amount).'</span>' : '';
+                        return $payment;
                          return $trans->virtual_acc_id 	 ? $trans->virtual_acc_id : '';
                 })
-                   ->addColumn(
-                    'amount',
-                    function ($trans) {                        
-                         return $trans->amount ? number_format($trans->amount) : '';
-                })  
+               
                  ->addColumn(
                     'trans_by',
                     function ($trans) {  
                        if($trans->trans_by==1)
                        {
-                         return 'Manual';
+                         $type =  'Manual';
                        }
                        else if($trans->trans_by==2)
                        {
-                         return 'Excel';
+                         $type =  'Excel';
                        }
                        else
                        {
-                           return 'N/A';
+                           $type =  'N/A';
                        }
+                    $mode  = ['1' =>  'Online RTGS/NEFT','2' => 'Cheque','3' => 'NACH','4' => 'Other'];
+                    $refNo  = ['1' =>  'utr_no','2' => 'cheque_no','3' => 'unr_no','4' => 'unr_no'];
+                    $refNoShpw  = ['1' =>  'Utr No.','2' => 'Cheque No.','3' => 'Unr No.','4' => 'Other '];
+                    $rfNo = $refNo[$trans->mode_of_pay];
+                    $refNoShpw = $refNoShpw[$trans->mode_of_pay];
+                       $transaction = '';
+                       $transaction .= $trans->mode_of_pay ? '<span><b>Payment Mode:&nbsp;</b>'.$mode[$trans->mode_of_pay].'</span>' : '';
+                       $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
+                       $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
+                       return $transaction;
                 })
+                 ->addColumn(
+                    'comment',
+                    function ($trans) {                        
+                         return $trans->comment ? $trans->comment : '';
+                })  
                 ->addColumn(
                     'created_by',
                     function ($trans) {                        

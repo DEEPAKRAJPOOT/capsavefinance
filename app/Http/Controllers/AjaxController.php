@@ -2998,7 +2998,6 @@ if ($err) {
     public function getCustomerId(Request $request) 
     {
         $result  =  $this->invRepo->getCustomerId($request->user_id);
-     
         return \Response::json(['status' => $request->user_id,'result' => $result]); 
     }
      
@@ -3562,7 +3561,7 @@ if ($err) {
                 $invoice_amount  = str_replace("\n","",$invoice_amount);
                 $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
                 $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
-                $res =  $this->invRepo->checkDuplicateInvoice($invoice_no);
+                $res =  $this->invRepo->checkDuplicateInvoice($invoice_no,$attributes['supplier_bulk_id']);
                 if(strlen($invoice_date) < 10)
                {
                     return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It Should be "dd/mm/yy" format']); 
@@ -3930,7 +3929,8 @@ if ($err) {
     function  checkDuplicateInvoice(Request $request)
     {
         $invoice_no  =  $request->invoice;
-        $res =  $this->invRepo->checkDuplicateInvoice($invoice_no);
+        $user_id  =  $request->user_id;
+        $res =  $this->invRepo->checkDuplicateInvoice($invoice_no,$user_id);
         if($res)
         {
             return response()->json(['status' => 1]); 
@@ -4029,5 +4029,18 @@ if ($err) {
         }        
         $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
         return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
+    }
+    ////////////*  get business */////
+    public function searchBusiness(Request $request)
+    {
+      $result =   $this->lmsRepo->searchBusiness($request->search);    
+      if(count( $result) > 0)
+      {
+         return response()->json(['status' => 1,'result' => $result]);
+      }
+      else
+      {
+           return response()->json(['status' => 0,'result' => $result]);
+      }
     }
 }

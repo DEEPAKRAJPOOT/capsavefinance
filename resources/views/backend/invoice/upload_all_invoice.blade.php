@@ -355,9 +355,17 @@ var messages = {
 
  //////////// check duplicate invoice ////////////////////
  
-  $(document).on('change blur keyup','#invoice_no', function() {
-     var invoice = $(this).val();
-      var postData =  ({'invoice':invoice,'_token':messages.token});
+  $(document).on('change blur keyup','#invoice_no,#supplier_id', function() {
+     var invoice = $("#invoice_no").val();
+     var user_id  = $("#supplier_id").val();
+     var user_id  =  user_id.split(',');
+     var user  =  user_id[0];
+     if(user==""  || invoice=="")
+     {
+         return false;
+     }
+    
+      var postData =  ({'user_id':user,'invoice':invoice,'_token':messages.token});
        jQuery.ajax({
         url: messages.check_duplicate_invoice,
                 method: 'post',

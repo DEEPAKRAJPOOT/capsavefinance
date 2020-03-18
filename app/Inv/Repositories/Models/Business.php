@@ -9,6 +9,7 @@ use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\LmsUser;
 use Carbon\Carbon;
 
 class Business extends BaseModel
@@ -385,6 +386,14 @@ class Business extends BaseModel
         ->where('biz.biz_id', $biz_id)
         ->first();
         return $arrData;
+    }
+    public function  LmsUser()
+    {
+         return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
+    public static function searchBusiness($search)
+    {
+      return  self::with('LmsUser')->where("biz_entity_name","LIKE","{$search}%")->groupBy('user_id')->get();
     }
 
 }

@@ -146,7 +146,7 @@ class Transactions extends BaseModel {
     /*** get all transaction  **/
     public static function getAllManualTransaction()
     {
-          return self::with('disburse')->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
+          return self::with(['disburse','trans_detail','user'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
     }
     
     public function disburse()
@@ -331,5 +331,6 @@ class Transactions extends BaseModel {
         
         return $repaymentAmount;
     }
+
 
 }

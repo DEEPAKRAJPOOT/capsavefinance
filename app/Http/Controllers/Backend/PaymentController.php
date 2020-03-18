@@ -91,9 +91,9 @@ class PaymentController extends Controller {
                 'virtual_acc' => 'required',  
                 'date_of_payment' => 'required', 
                 'amount' => 'required', 
-                'utr_no' => 'required', 
-                'description' => 'required',
-                'txn_id' => 'required'
+               /// 'utr_no' => 'required', 
+                'description' => 'required'
+               // 'txn_id' => 'required'
           ]);
         $user_id  = Auth::user()->user_id;
         $mytime = Carbon::now(); 

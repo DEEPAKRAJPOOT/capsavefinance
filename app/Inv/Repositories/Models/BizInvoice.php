@@ -352,10 +352,10 @@ public static function updateInvoice($invoiceId,$status)
         return $res ?: false;
     }
     
-    public static function checkDuplicateInvoice($invNo)
+    public static function checkDuplicateInvoice($invNo,$user_id)
     {
         
-        return self::where(['invoice_no' => $invNo])->first();
+        return self::where(['invoice_no' => $invNo,'supplier_id' => $user_id])->first();
     }
    public static function getUserWiseInvoiceData($user_id)
     {

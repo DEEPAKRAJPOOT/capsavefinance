@@ -26,7 +26,7 @@
                         <div class="form-sections">
 						<div class="row">
 						<div class="col-md-2">
-						<label class="float-left">Current Date
+						<label class="float-left">Transaction Date
 						</label> 
 						<input type="text" name="date" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
 						</div>
@@ -59,12 +59,12 @@
                                     <table id="invoiceListTransaction" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th>Sr. No.</th>
-                                                <th>Customer N0.</th>
-                                                <th>Virtual Account No</th>
-                                                <th> Amount</th>
-                                                <th>Type</th>
-                                                <th>Created By</th> 
+                                              
+                                                <th>Customer Detail</th>
+                                                <th>Repayment Detail</th>
+                                                <th>Payment Method</th>
+                                                 <th> Comment</th>
+                                                <th>Created Date</th> 
                                             </tr>
                                             
                                         </thead>
