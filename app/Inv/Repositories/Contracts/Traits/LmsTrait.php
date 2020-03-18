@@ -348,7 +348,7 @@ trait LmsTrait
                     
                     $marginAmountDetails = $this->userRepo->getDisbursalList()->where('disbursal_id','=',$disbursalDetail->disbursal_id)
                                     ->groupBy('margin')
-                                    ->select(DB::raw('((float)sum(invoice_approve_amount)*margin)/100 as margin_amount,margin'))
+                                    ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount,margin'))
                                     ->first();
                     $totalMarginAmount = $marginAmountDetails->margin_amount;
 
