@@ -3256,7 +3256,6 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
-
     // LMS Customer Address
     public function addressGetCustomers(Request $request, $data)
     {
