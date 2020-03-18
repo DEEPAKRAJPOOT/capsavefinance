@@ -205,26 +205,26 @@
                                     </td>
                                  </tr>
                                  <tr>
-                                    <td colspan="2" width="33.33%"><b>Specific Pre-disbursement Condition</b></td>
+                                    <td colspan="4" width="100%"><b>Specific Pre-disbursement Condition</b></td>
                                  </tr>
                                  @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
                                  @foreach($supplyChaindata['reviewerSummaryData']['preCond'] as $k => $precond)
                                  <tr>
-                                    <td width="50%">{!! nl2br($precond) !!}</td>
-                                    <td width="50%" >                                   
+                                    <td colspan="2" width="50%">{!! nl2br($precond) !!}</td>
+                                    <td colspan="2" width="50%" >                                   
                                     {!! isset($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) : '' !!}                           
                                     </td>
                                  </tr>
                                  @endforeach
                                  @endif
                                  <tr>
-                                    <td colspan="2" width="33.33%"><b>Specific Post-disbursement Condition</b></td>
+                                    <td colspan="4" width="100%"><b>Specific Post-disbursement Condition</b></td>
                                  </tr>
                                  @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
                                  @foreach($supplyChaindata['reviewerSummaryData']['postCond'] as $k => $postcond)                                          
                                  <tr>
-                                    <td width="50%">{!! nl2br($postcond) !!}</td>                    
-                                    <td width="50%" >                                   
+                                    <td colspan="2" width="50%">{!! nl2br($postcond) !!}</td>                    
+                                    <td colspan="2" width="50%" >                                   
                                     {!! isset($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) : '' !!}                          
                                     </td>
                                  </tr>
@@ -491,13 +491,13 @@
                               <tbody>
                                  <tr>
                                     <td width="20%">Facility No</td>
-                                    <td width="20%"><input type="text" value="{{$supplyChainFormData['pdc_facility_no'] ?? ''}}" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="20%"><input type="text" value="{{$supplyChainFormData['pdc_facility_no'] ?? ''}}" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Enter facility no"></td>
                                     <td width="30%">Facility Name</td>
                                     <td width="30%"><input type="text" value="{{$supplyChainFormData['pdc_facility_name'] ?? ''}}" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc" placeholder="Click here to enter text"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3">&#8377; <input type="text" value="{{isset($supplyChainFormData['pdc_facility_amt']) ? number_format((float)$supplyChainFormData['pdc_facility_amt']) : ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="66.66%" colspan="3">&#8377; <input type="text" value="{{isset($supplyChainFormData['pdc_facility_amt']) ? number_format((float)$supplyChainFormData['pdc_facility_amt']) : ''}}" name="pdc_facility_amt" id="pdc_facility_amt" class="input_sanc" placeholder="Enter facility amount"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
@@ -547,13 +547,13 @@
                               <tbody>
                                  <tr>
                                     <td width="20%">Facility No</td>
-                                    <td width="20%"><input type="text" value="{{$supplyChainFormData['nach_facility_no'] ?? ''}}" name="nach_facility_no" id="nach_facility_no" class="input_sanc"></td>
+                                    <td width="20%"><input type="text" value="{{$supplyChainFormData['nach_facility_no'] ?? ''}}" name="nach_facility_no" id="nach_facility_no" class="input_sanc"  placeholder="Enter facility no"></td>
                                     <td width="30%">Facility Name</td>
-                                    <td width="30%"><input type="text" value="{{$supplyChainFormData['nach_facility_name'] ?? ''}}" name="nach_facility_name" id="nach_facility_name" class="input_sanc"></td>
+                                    <td width="30%"><input type="text" value="{{$supplyChainFormData['nach_facility_name'] ?? ''}}" name="nach_facility_name" id="nach_facility_name" class="input_sanc"  placeholder="Click here to enter text"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Facility Amount</td>
-                                    <td width="66.66%" colspan="3">&#8377; <input type="text" value="{{isset($supplyChainFormData['nach_facility_amt']) ? number_format((float)$supplyChainFormData['nach_facility_amt']) : ''}}" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Click here to enter text"></td>
+                                    <td width="66.66%" colspan="3">&#8377; <input type="text" value="{{isset($supplyChainFormData['nach_facility_amt']) ? number_format((float)$supplyChainFormData['nach_facility_amt']) : ''}}" name="nach_facility_amt" id="nach_facility_amt" class="input_sanc" placeholder="Enter facility amount"></td>
                                  </tr>
                                  <tr>
                                     <td width="33.33%">Purpose</td>
