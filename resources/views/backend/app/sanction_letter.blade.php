@@ -160,7 +160,7 @@
                               </tbody>
                            </table>
                            <br />
-                           <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
+                           <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facility lies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
                            <!-- Vender Program -->
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <tbody>
@@ -294,13 +294,13 @@
                                              <option {{!empty($supplyChainFormData['penal_on'][$key][0]) && $supplyChainFormData['penal_on'][$key][0] == 'over and above the rate for the last draw down or Rollover of facility on' ? 'selected' : '' }}>over and above the rate for the last draw down  or Rollover of facility on</option>
                                              </select> entire principal / payable interest on delay in repayment of principal / Interest / charges <select class="select" name="penal_applicable[{{$key}}][]">
                                              <option {{!empty($supplyChainFormData['penal_applicable'][$key][0]) && $supplyChainFormData['penal_applicable'][$key][0] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                             <option {{!empty($supplyChainFormData['penal_applicable'][$key][0]) && $supplyChainFormData['penal_applicable'][$key][0] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                             <option {{!empty($supplyChainFormData['penal_applicable'][$key][0]) && $supplyChainFormData['penal_applicable'][$key][0] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                              </select>
                                           </li>
                                           <li>The rate of interest will be {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} higher than the rate stipulated under each of the facilities till the security is created
                                              <select class="select" name="penal_applicable[{{$key}}][]">
                                              <option {{ !empty($supplyChainFormData['penal_applicable'][$key][1]) &&  $supplyChainFormData['penal_applicable'][$key][1] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                             <option {{ !empty($supplyChainFormData['penal_applicable'][$key][1]) &&  $supplyChainFormData['penal_applicable'][$key][1] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                             <option {{ !empty($supplyChainFormData['penal_applicable'][$key][1]) &&  $supplyChainFormData['penal_applicable'][$key][1] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                              </select>
                                           </li>
                                           <li>If security is not created within the stipulated timeframe then a penal interest of 
@@ -309,7 +309,7 @@
                                              <option {{!empty($supplyChainFormData['penal_on'][$key][1]) && $supplyChainFormData['penal_on'][$key][1] == 'On' ? 'selected' : '' }}>On</option>
                                              <option {{!empty($supplyChainFormData['penal_on'][$key][1]) && $supplyChainFormData['penal_on'][$key][1] == 'over and above the rate for the last draw down or Rollover of facility on' ? 'selected' : '' }}>over and above the rate for the last draw down  or Rollover of facility on</option>
                                              </select> entire principle <select class="select" name="penal_applicable[{{$key}}][]"><option {{!empty($supplyChainFormData['penal_applicable'][$key][2]) && $supplyChainFormData['penal_applicable'][$key][2] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                             <option {{!empty($supplyChainFormData['penal_applicable'][$key][2]) && $supplyChainFormData['penal_applicable'][$key][2] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option></select>
+                                             <option {{!empty($supplyChainFormData['penal_applicable'][$key][2]) && $supplyChainFormData['penal_applicable'][$key][2] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option></select>
                                           </li>
                                        </ul>
                                     </td>
@@ -488,9 +488,9 @@
                               @endif
                            </div>
                            @endforeach
-                           <h5>Section 3:Specific Security<select class="select" name="specific_security">
+                           <h5>Section 3:- Specific Security<select class="select" name="specific_security">
                               <option {{!empty($supplyChainFormData['specific_security']) && $supplyChainFormData['specific_security'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                              <option {{!empty($supplyChainFormData['specific_security']) && $supplyChainFormData['specific_security'] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                              <option {{!empty($supplyChainFormData['specific_security']) && $supplyChainFormData['specific_security'] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                               </select>
                            </h5>
                            <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
@@ -608,7 +608,7 @@
                            <br />
                            <h5>DSRA <select class="select" name="dsra_applicability">
                               <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                              <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                              <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                               </select>
                            </h5>
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
@@ -630,7 +630,7 @@
                            <br />
                            <h5>Any other security <select class="select" name="dsra_applicability">
                               <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                              <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                              <option {{!empty($supplyChainFormData['dsra_applicability']) && $supplyChainFormData['dsra_applicability'] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                               </select>
                            </h5>
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
@@ -662,7 +662,7 @@
                                     <td><input maxlength="10" value="{{ $supplyChainFormData['covenants']['ratio'][$i] ?? ''}}" type="text" name="covenants[ratio][]" class="input_sanc" placeholder="Enter Minimum/Maximum ratio"></td>
                                     <td><select class="select" name="covenants[ratio_applicability][]">
                                        <option {{!empty($supplyChainFormData['covenants']['ratio_applicability'][$i]) && $supplyChainFormData['covenants']['ratio_applicability'][$i] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                       <option {{!empty($supplyChainFormData['covenants']['ratio_applicability'][$i]) && $supplyChainFormData['covenants']['ratio_applicability'][$i] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                       <option {{!empty($supplyChainFormData['covenants']['ratio_applicability'][$i]) && $supplyChainFormData['covenants']['ratio_applicability'][$i] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                        </select>
                                     </td>
                                  </tr>
@@ -679,43 +679,43 @@
                                  <li>CFPL shall, at its discretion, obtain a confidential credit report on the borrower from its other lenders.
                                     <select class="select" name="pre_post_condition[]">
                                     <option {{!empty($supplyChainFormData['pre_post_condition'][1]) && $supplyChainFormData['pre_post_condition'][1] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['pre_post_condition'][1]) && $supplyChainFormData['pre_post_condition'][1] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['pre_post_condition'][1]) && $supplyChainFormData['pre_post_condition'][1] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                  </li>
                                  <li>All the assets charged to the CFPL are to be insured for full value covering all risks with usual CFPL clause. A copy of the insurance policy(ies) to be furnished to the CFPL within 30 days of security perfection.<select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][2]) && $supplyChainFormData['pre_post_condition'][2] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select>
                                  </li>
                                  <li>The obligation of the Lender to make disbursements out of the Facility shall be subject to the Borrower complying with the following conditions to the satisfaction of CFPL .The Borrower shall complete all documentation as stipulated, to the satisfaction of CFPL.The Borrower to furnish title investigation search and valuation of security ( being mortgaged to CFPL) prior to disbursement.<select class="select" name="pre_post_condition[]">
                                     <option {{!empty($supplyChainFormData['pre_post_condition'][3]) && $supplyChainFormData['pre_post_condition'][3] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['pre_post_condition'][3]) && $supplyChainFormData['pre_post_condition'][3] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['pre_post_condition'][3]) && $supplyChainFormData['pre_post_condition'][3] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                  </li>
                                  <li>The borrower shall finalise its selling arrangements to the satisfaction of CFPL.
                                     <select class="select" name="pre_post_condition[]">
                                     <option {{!empty($supplyChainFormData['pre_post_condition'][4]) && $supplyChainFormData['pre_post_condition'][4] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['pre_post_condition'][4]) && $supplyChainFormData['pre_post_condition'][4] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['pre_post_condition'][4]) && $supplyChainFormData['pre_post_condition'][4] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                  </li>
                                  <li>The borrower shall obtain necessary sanction of power, water, fuel, etc from the relevant authorities to the satisfaction of CFPL. 
                                     <select class="select" name="pre_post_condition[]">
                                     <option {{!empty($supplyChainFormData['pre_post_condition'][5]) && $supplyChainFormData['pre_post_condition'][5] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['pre_post_condition'][5]) && $supplyChainFormData['pre_post_condition'][5] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['pre_post_condition'][5]) && $supplyChainFormData['pre_post_condition'][5] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                  </li>
                                  <li>The borrower shall make adequate arrangements for treatment and disposal of effluents, solid waste and emissions from its project and shall furnish appropriate approvals from the authorities in this regard.
                                     <select class="select" name="pre_post_condition[]">
                                     <option {{!empty($supplyChainFormData['pre_post_condition'][6]) && $supplyChainFormData['pre_post_condition'][6] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['pre_post_condition'][6]) && $supplyChainFormData['pre_post_condition'][6] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['pre_post_condition'][6]) && $supplyChainFormData['pre_post_condition'][6] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                  </li>
                                  <li>The borrower shall broadbase its Board of Directors and finalise and strengthen its management set-up to the satisfaction of CFPL, if necessary. <select class="select" name="pre_post_condition[]">
                                     <option {{!empty($supplyChainFormData['pre_post_condition'][7]) && $supplyChainFormData['pre_post_condition'][7] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['pre_post_condition'][7]) && $supplyChainFormData['pre_post_condition'][7] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['pre_post_condition'][7]) && $supplyChainFormData['pre_post_condition'][7] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                  </li>
                                  <li>The borrower shall carry out safety/environment/energy audit of its project to the satisfaction of CFPL.
                                     <select class="select" name="pre_post_condition[]">
                                     <option {{!empty($supplyChainFormData['pre_post_condition'][8]) && $supplyChainFormData['pre_post_condition'][8] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['pre_post_condition'][8]) && $supplyChainFormData['pre_post_condition'][8] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['pre_post_condition'][8]) && $supplyChainFormData['pre_post_condition'][8] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                  </li>
                                  <li>CFPL reserves the right to appoint qualified accountants / technical experts /management consultants of its choice to examine the books of accounts, factories and operations of the borrower or to carry out a full concurrent/statutory audit. The cost of such inspection shall be borne by the <select class="select" name="abfl_or_borrower"><option {{!empty($supplyChainFormData['abfl_or_borrower']) && $supplyChainFormData['abfl_or_borrower'] == 'Borrower' ? 'selected' : ''}}>Borrower</option><option {{!empty($supplyChainFormData['abfl_or_borrower']) && $supplyChainFormData['abfl_or_borrower'] == 'ABFL' ? 'selected' : ''}}>ABFL</option></select><select class="select hide" name="pre_post_condition[]"><option {{!empty($supplyChainFormData['pre_post_condition'][9]) && $supplyChainFormData['pre_post_condition'][9] == 'Applicable' ? 'selected' : '' }}>Applicable</option></select></li>
@@ -770,7 +770,7 @@
                                     <li>
                                     Stock and Book Debt statements <select class="select" name="stock_n_book_statement">
                                     <option {{!empty($supplyChainFormData['stock_n_book_statement']) && $supplyChainFormData['stock_n_book_statement'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['stock_n_book_statement']) && $supplyChainFormData['stock_n_book_statement'] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['stock_n_book_statement']) && $supplyChainFormData['stock_n_book_statement'] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                     </li>
                                     <li>
@@ -791,7 +791,7 @@
                                     </select>
                                        th of next month.Basis of Valuation of Inventory and Book Debts.<select class="select" name="stock_n_book_statement_applicable">
                                     <option {{!empty($supplyChainFormData['stock_n_book_statement_applicable']) && $supplyChainFormData['stock_n_book_statement_applicable'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['stock_n_book_statement_applicable']) && $supplyChainFormData['stock_n_book_statement_applicable'] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['stock_n_book_statement_applicable']) && $supplyChainFormData['stock_n_book_statement_applicable'] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                     </li>
                                   </ul>
@@ -826,7 +826,7 @@
                                  <ul style="list-style-type:unset;">
                                     <li>Any other document for post disbursement monitoring <select class="select" name="any_other_doc_monitoring">
                                     <option {{!empty($supplyChainFormData['any_other_doc_monitoring']) && $supplyChainFormData['any_other_doc_monitoring'] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
-                                    <option {{!empty($supplyChainFormData['any_other_doc_monitoring']) && $supplyChainFormData['any_other_doc_monitoring'] == 'Not applicable' ? 'selected' : '' }}>Not Applicable</option>
+                                    <option {{!empty($supplyChainFormData['any_other_doc_monitoring']) && $supplyChainFormData['any_other_doc_monitoring'] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                     </select>
                                     </li>
                                     <li><input type="text" maxlength="200" value="{{$supplyChainFormData['any_other_doc_monitoring_1'] ?? ''}}" name="any_other_doc_monitoring_1" id="any_other_doc_monitoring_1" class="input_sanc" placeholder="Click here to enter text"></li>

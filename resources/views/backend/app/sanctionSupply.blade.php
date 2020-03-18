@@ -151,7 +151,7 @@
                     </tbody>
                   </table>
                   <br />
-                  <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facilitylies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
+                  <h5>Section 1:- Conditions for individual facilities<br/><small>(Select facility lies from below mentioned facilities and delete others while submitting the final term sheet.)</small></h5>
                   <!-- Vender Program -->
                   <table  style="width:100%;font-family:Arial;font-size: 14px;border:#ccc solid 1px;" cellpadding="0" cellspacing="0">
                     <tbody>
@@ -178,7 +178,7 @@
                         <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" width="33.33%">Specific Condition</td>
                         <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" width="66.66%" colspan="3">
                           <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
-                            <li>Invoices should not be older than 30 days from {{$postData['specific_cond']}}.</li>
+                            <li>Invoices should not be older than 30 days from {{$postData['specific_cond']}} on the date of Discounting.</li>
                             <li>Discounting proceed to be credited to working capital account of the borrowers.</li>
                           </ul>
                         </td>
@@ -433,7 +433,7 @@
                     @endif
                   </div>
                   @endforeach
-                  <h5>Section 3:Specific Security</h5>
+                  <h5>Section 3:- Specific Security</h5>
                   <h5>Section 4:- Security PDCs/ECS Mandate with Undertaking, DSRA and Other Securities</h5>
                   <h5 style="background-color: #ccc;padding: 10px;margin-bottom: 0;">PDC</h5>
                   <table style="width:100%;font-family:Arial;font-size: 14px;border:#ccc solid 1px;" cellpadding="0" cellspacing="0">
