@@ -1234,7 +1234,9 @@
                   alphanumeric: true
                },
                "covenants[ratio][]": {
-                  number: true
+                  number: true,
+                  min: 0,
+                  max: 1.24
                }                              
          }
       });
