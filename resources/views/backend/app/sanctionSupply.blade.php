@@ -156,7 +156,7 @@
                   <table  style="width:100%;font-family:Arial;font-size: 14px;border:#ccc solid 1px;" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility No</td>
+                        <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility No.</td>
                         <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$supplyChaindata['prgm_type']}}</td>
                         <td width="30%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Name</td>
                         <td width="30%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$supplyChaindata['prgm_type'] == '2' ? 'Purchase Finance Facility  /  Channel Financing' : 'Vendor Finance Facility'}}</td>
@@ -439,7 +439,7 @@
                   <table style="width:100%;font-family:Arial;font-size: 14px;border:#ccc solid 1px;" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility No</td>
+                        <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility No.</td>
                         <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['pdc_facility_no']}}</td>
                         <td width="30%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Name</td>
                         <td width="30%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['pdc_facility_name']}}</td>
@@ -458,7 +458,7 @@
                     <thead>
                       <tr>
                         <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Cheque for</th>
-                        <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">No of Cheque </th>
+                        <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">No. of Cheque </th>
                         <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Not Above </th>
                       </tr>
                     </thead>
@@ -484,7 +484,7 @@
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['pdc_not_above'][3]}}</td>
                       </tr>
                       <tr>
-                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">security</td>
+                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Security</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['pdc_no_of_cheque'][4]}}</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['pdc_not_above'][4]}}</td>
                       </tr>
@@ -495,7 +495,7 @@
                   <table style="width:100%;font-family:Arial;font-size: 14px;border:#ccc solid 1px;" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility No</td>
+                        <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility No.</td>
                         <td width="20%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['nach_facility_no']}}</td>
                         <td width="30%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Facility Name</td>
                         <td width="30%" style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['nach_facility_name']}}</td>
@@ -514,7 +514,7 @@
                     <thead>
                       <tr>
                         <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Cheque for</th>
-                        <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">No of Cheque </th>
+                        <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">No. of Cheque </th>
                         <th style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Not Above </th>
                       </tr>
                     </thead>
@@ -540,7 +540,7 @@
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['nach_not_above']['3']}}</td>
                       </tr>
                       <tr>
-                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">security</td>
+                        <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">Security</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['nach_no_of_cheque']['4']}}</td>
                         <td style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;">{{$postData['nach_not_above']['4']}}</td>
                       </tr>

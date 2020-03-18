@@ -165,7 +165,7 @@
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <tbody>
                                  <tr>
-                                    <td width="20%">Facility No</td>
+                                    <td width="20%">Facility No.</td>
                                     <td width="20%">{{$supplyChaindata['prgm_type']}}</td>
                                     <td width="30%">Facility Name</td>
                                     <td width="30%">{{$supplyChaindata['prgm_type'] == '2' ? 'Purchase Finance Facility  /  Channel Financing' : 'Vendor Finance Facility'}}</td>
@@ -498,8 +498,8 @@
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <tbody>
                                  <tr>
-                                    <td width="20%">Facility No</td>
-                                    <td width="20%"><input maxlength="20" type="text" value="{{$supplyChainFormData['pdc_facility_no'] ?? ''}}" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Enter facility no"></td>
+                                    <td width="20%">Facility No.</td>
+                                    <td width="20%"><input maxlength="20" type="text" value="{{$supplyChainFormData['pdc_facility_no'] ?? ''}}" name="pdc_facility_no" id="pdc_facility_no" class="input_sanc" placeholder="Enter facility no."></td>
                                     <td width="30%">Facility Name</td>
                                     <td width="30%"><input maxlength="50" type="text" value="{{$supplyChainFormData['pdc_facility_name'] ?? ''}}" name="pdc_facility_name" id="pdc_facility_name" class="input_sanc" placeholder="Click here to enter text"></td>
                                  </tr>
@@ -517,34 +517,34 @@
                               <thead>
                                  <tr>
                                     <th>Cheque for</th>
-                                    <th>No of Cheque </th>
+                                    <th>No. of Cheque </th>
                                     <th>Not Above </th>
                                  </tr>
                               </thead>
                               <tbody>
                                  <tr>
                                     <td >Principal</td>
-                                    <td><input maxlength="20" type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['0'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input maxlength="20" type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['0'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input maxlength="50" type="text" value="{{$supplyChainFormData['pdc_not_above']['0'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td >Interest</td>
-                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['1'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['1'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input maxlength="50"  type="text" value="{{$supplyChainFormData['pdc_not_above']['1'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td>Repayment</td>
-                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['2'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['2'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input maxlength="50"  type="text" value="{{$supplyChainFormData['pdc_not_above']['2'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td>Other</td>
-                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['3'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['3'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input maxlength="50"  type="text" value="{{$supplyChainFormData['pdc_not_above']['3'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td>Security</td>
-                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['4'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input maxlength="20"  type="text" value="{{$supplyChainFormData['pdc_no_of_cheque']['4'] ?? ''}}" name="pdc_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input maxlength="50"  type="text" value="{{$supplyChainFormData['pdc_not_above']['4'] ?? ''}}" name="pdc_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                               </tbody>
@@ -554,8 +554,8 @@
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <tbody>
                                  <tr>
-                                    <td width="20%">Facility No</td>
-                                    <td width="20%"><input maxlength="20"  type="text" value="{{$supplyChainFormData['nach_facility_no'] ?? ''}}" name="nach_facility_no" id="nach_facility_no" class="input_sanc"  placeholder="Enter facility no"></td>
+                                    <td width="20%">Facility No.</td>
+                                    <td width="20%"><input maxlength="20"  type="text" value="{{$supplyChainFormData['nach_facility_no'] ?? ''}}" name="nach_facility_no" id="nach_facility_no" class="input_sanc"  placeholder="Enter facility no."></td>
                                     <td width="30%">Facility Name</td>
                                     <td width="30%"><input maxlength="50"  type="text" value="{{$supplyChainFormData['nach_facility_name'] ?? ''}}" name="nach_facility_name" id="nach_facility_name" class="input_sanc"  placeholder="Click here to enter text"></td>
                                  </tr>
@@ -573,34 +573,34 @@
                               <thead>
                                  <tr>
                                     <th>Cheque for</th>
-                                    <th>No of Cheque </th>
+                                    <th>No. of Cheque </th>
                                     <th>Not Above </th>
                                  </tr>
                               </thead>
                               <tbody>
                                  <tr>
                                     <td >Principal</td>
-                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['0'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['0'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input type="text" maxlength="50" value="{{$supplyChainFormData['nach_not_above']['0'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td >Interest</td>
-                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['1'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['1'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input type="text" maxlength="50" value="{{$supplyChainFormData['nach_not_above']['1'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td>Repayment</td>
-                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['2'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['2'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input type="text" maxlength="50" value="{{$supplyChainFormData['nach_not_above']['2'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td>Other</td>
-                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['3'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['3'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input type="text" maxlength="50" value="{{$supplyChainFormData['nach_not_above']['3'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                                  <tr>
                                     <td>Security</td>
-                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['4'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no of Cheques"></td>
+                                    <td><input type="text" maxlength="20" value="{{$supplyChainFormData['nach_no_of_cheque']['4'] ?? ''}}" name="nach_no_of_cheque[]" class="input_sanc" placeholder="Enter no. of Cheques"></td>
                                     <td><input type="text" maxlength="50" value="{{$supplyChainFormData['nach_not_above']['4'] ?? ''}}" name="nach_not_above[]" class="input_sanc" placeholder="Enter Not above"></td>
                                  </tr>
                               </tbody>
@@ -1082,7 +1082,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('previewSanctionLetter','Preview/Send Mail Sanction Letter', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('previewSupplyChainSanctionLetter','Send Mail SupplyChain Letter', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('previewSupplyChainSanctionLetter','Send Mail Supply Chain Letter', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('uploadSanctionLetter','Upload Sanction Letter', 'modal-md')!!}
 @endsection
 @section('jscript')
