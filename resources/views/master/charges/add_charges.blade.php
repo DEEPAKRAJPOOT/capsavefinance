@@ -51,7 +51,7 @@
                     </div>
                     <div class="form-group col-md-6" id="approved_limit_div">
                         <label for="chrg_type">Charge Applicable On</label>
-                        <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id" style="height:35px; margin-bottom: -20px">
+                        <select class="form-control" name="chrg_applicable_id" id="chrg_applicable_id">
                             <option value="" selected>Select</option>
                             <option value="1">Limit Amount</option>
                             <option value="2">Outstanding Amount</option>
@@ -93,7 +93,7 @@
             </div> 
             <!--        </div>           
                     <div class="row">-->
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-3">
                 <label for="is_gst_applicable">GST Applicable</label><br />
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
@@ -106,10 +106,14 @@
                     </label>
                 </div>
             </div>
+            <div class="form-group col-md-3" id="gst_div">
+             <label for="chrg_type"></label>
+             <input type="hidden" class="form-control" name="gst_percentage" placeholder="GST Percentage" readonly="readonly" value="{{Config::get('payment.gst')}}" style="height:35px; margin-bottom: -20px">
+        </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="chrg_type">Charge Trigger</label>
+                <label for="chrg_tiger_id">Charge Trigger</label>
                 <select class="form-control" name="chrg_tiger_id" id="chrg_tiger_id">
                     <option value="" selected>Select</option>
                     <option value="1">Limit Assignment</option>
@@ -172,6 +176,9 @@
                 'gst_percentage': {
                     required: true,
                 },
+                'chrg_tiger_id': {
+                    required: true,
+                },
                 'chrg_applicable_id': {
                     required: true,
                 },
@@ -197,6 +204,9 @@
                 },
                 'gst_percentage': {
                     required: "Please enter GST Percentage",
+                },
+                'chrg_tiger_id': {
+                    required: "Please Select Charge Trigger",
                 },
                 'chrg_applicable_id': {
                     required: "Please Select Approved limit",
