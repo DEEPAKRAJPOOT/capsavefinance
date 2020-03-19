@@ -801,4 +801,9 @@ use CommonRepositoryTraits;
         return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
     }    
 
+    public function getAllBankInvoice()
+    {
+        $this->result = Disbursal::getAllBankInvoice();
+        return $this->result;
+    }
 }

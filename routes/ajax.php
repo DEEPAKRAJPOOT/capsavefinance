@@ -374,6 +374,13 @@ Route::group(
         ]
     );  
        
+    Route::post(
+        'get-ajax-bank-invoice',
+        [
+        'as' => 'get_ajax_bank_invoice',
+        'uses' => 'AjaxController@getAjaxBankInvoice'
+        ]
+    );  
             
        Route::post(
         'backend_get_invoice_list_failed_disbursed',

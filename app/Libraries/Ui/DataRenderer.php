@@ -4248,4 +4248,33 @@ class DataRenderer implements DataProviderInterface
      
         ->make(true);
     }
+
+    public function getBankInvoiceByDataProvider(Request $request, $dataRecords)
+    {
+        
+        return DataTables::of($dataRecords)
+                ->editColumn(
+                    'batch_id',
+                    function ($dataRecords) {
+                    return $dataRecords->batch_id;
+                }) 
+                ->editColumn(
+                    'total_users',
+                    function ($dataRecords) {
+                    return $dataRecords->total_users;
+                }) 
+                ->editColumn(
+                    'total_amt',
+                    function ($dataRecords) {
+                    return $dataRecords->total_amt;
+                }) 
+                ->addColumn(
+                    'action',
+                    function ($dataRecords) {
+                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('get_fin_journal', ['batch_id' => $dataRecords->batch_id]).'">View Invoice</a>'
+                        .'<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice').'"><i class="fa fa-download"></a>';
+                    }
+                )
+                ->make(true);
+    }
 }

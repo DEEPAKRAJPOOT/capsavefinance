@@ -4048,4 +4048,10 @@ if ($err) {
            return response()->json(['status' => 0,'result' => $result]);
       }
     }
+
+    public function getAjaxBankInvoice(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->invRepo->getAllBankInvoice();
+        $this->providerResult = $dataProvider->getBankInvoiceByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
 }
