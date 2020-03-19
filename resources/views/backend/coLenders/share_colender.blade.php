@@ -77,10 +77,12 @@
                 },
                 'capsave_percent': {
                     required: true,
+                    number: true,
                     max: 100,
                 },
                 'co_lender_percent' : {
                     required : true,
+                    number: true,
                     max: 100,
                 }
             },
@@ -90,9 +92,11 @@
                 },
                 'capsave_percent': {
                     required: 'Please fill Capsave percent',
+                    number: 'Please fill correct Capsave percent',
                 },
                 'co_lender_percent': {
-                    required: "Please enter Co-lender percent",
+                    required: "Please fill Co-lender percent",
+                    number: 'Please fill correct Co-lender percent',
                 }
             }
         });
