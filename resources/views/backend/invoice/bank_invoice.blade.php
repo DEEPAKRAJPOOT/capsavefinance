@@ -39,7 +39,7 @@
                                                                 <thead>
                                                                     <tr role="row">
                                                                         <th>Batch No.</th>
-                                                                        <th>Total Users</th>
+                                                                        <th>Total Customers</th>
                                                                         <th>Total Amount</th>
                                                                         <th>Action</th>
                                                                     </tr>
