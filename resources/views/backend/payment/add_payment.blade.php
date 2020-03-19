@@ -220,6 +220,7 @@ cursor: pointer;
     var messages = {
         get_val: "{{URL::route('get_field_val')}}",
         search_business: "{{URL::route('search_business')}}",
+        get_repayment_amount_url: "{{ route('get_repayment_amount') }}",
         token: "{{ csrf_token() }}",
     };
 
@@ -410,6 +411,25 @@ $(document).ready(function () {
                   }
                });
         });
+        
+    $("#trans_type").change(function(){
+               $.ajax({
+                    type: 'POST',                    
+                    url: messages.get_repayment_amount_url,
+                    data: {user_id: $("#customer_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+                    beforeSend: function( xhr ) {
+                        $('.isloader').show();
+                    },
+                    success: function(resultData) {                        
+                        if (resultData.repayment_amount != ""){
+                            $("#amount").val(resultData.repayment_amount);                           
+                        } else {
+                            $("#amount").val("");
+                        }
+                        $('.isloader').hide();
+                    }
+               });
+            });    
    $(document).on('keyup','.searchBusiness',function(){
        $(".business_list").empty();
        var search  =  $(this).val();
