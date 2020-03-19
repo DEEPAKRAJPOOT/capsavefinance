@@ -48,9 +48,9 @@ tr.border_bottom td {
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="10%">Sr. No.</th>
-                                                   <th width="70%" colspan="4">Offer Details</th>
-                                                   <th width="20%">Status</th>
+                                                   <th width="5%">Sr. No.</th>
+                                                   <th width="80%" colspan="4">Offer Details</th>
+                                                   <th width="15%">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

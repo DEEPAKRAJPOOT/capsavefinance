@@ -31,7 +31,7 @@
                 <label for="txtMobile">GST Number
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control gst" value="{{ isset($coLenderData->gst) ? $coLenderData->gst : null }}"  name="gst" id="gst" type="text" placeholder="GST Number" minlength="15" maxlength="15">
+                <input class="form-control gst" value="{{ isset($coLenderData->gst) ? $coLenderData->gst : null }}"  name="gst" id="gst" type="text" placeholder="GST Number" maxlength="15">
             </div>
         </div>
 
@@ -40,7 +40,7 @@
                 <label for="txtMobile">PAN Number
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control pan-validate pan_no" value="{{ isset($coLenderData->pan_no) ? $coLenderData->pan_no : null }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" minlength="10" maxlength="10">
+                <input class="form-control pan-validate pan_no" value="{{ isset($coLenderData->pan_no) ? $coLenderData->pan_no : null }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" maxlength="10">
             </div>
         </div>
     </div>
@@ -211,21 +211,33 @@ $error = session()->get('error', false);
 				required: true,
 				number: true,
 				minlength: 10,
-				maxlength: 10
+				maxlength: 10,
+                messages: {
+                    minlength: "Please enter correct Phone number",
+                    maxlength: "Please enter correct Phone number",
+                }
 			})
 		});
         $('input.pan_no').each(function () {
             $(this).rules("add", {
                 required: true,
                 minlength: 10,
-                maxlength: 10
+                maxlength: 10,
+                messages: {
+                    minlength: "Please enter correct PAN number",
+                    maxlength: "Please enter correct PAN number",
+                }
             })
         });
         $('input.gst').each(function () {
             $(this).rules("add", {
                 required: true,
                 minlength: 15,
-                maxlength: 15
+                maxlength: 15,
+                messages: {
+                    minlength: "Please enter correct GST number",
+                    maxlength: "Please enter correct GST number",
+                }
             })
         });
 		$('select.state').each(function () {
@@ -248,7 +260,11 @@ $error = session()->get('error', false);
 				required: true,
 				number: true,
                 minlength: 6,
-                maxlength: 6
+                maxlength: 6,
+                messages: {
+                    minlength: "Please enter correct Pin Code",
+                    maxlength: "Please enter correct Pin Code",
+                }
 			})
 		});
 		// test if form is valid                
