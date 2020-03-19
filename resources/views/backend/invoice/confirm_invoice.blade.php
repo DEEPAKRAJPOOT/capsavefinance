@@ -2,7 +2,7 @@
 @section('content')
 
 <input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-
+<a class="btn btn-success btn-sm ml-2" href="{{ URL::previous() }}"> <i class="fa fa-arrow-left"></i> back</a>
 <div class="col-12 dataTables_wrapper mt-4">
 	<div class="overflow">
 		<div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">

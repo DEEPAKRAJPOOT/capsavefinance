@@ -7,6 +7,7 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
@@ -27,12 +28,14 @@ class InvoiceController extends Controller {
 	use ApplicationTrait;
 	use LmsTrait;
 
+	protected $appRepo;
 	protected $invRepo;
 	protected $docRepo;
 	protected $lmsRepo;
 	protected $userRepo;
 
-	public function __construct(InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+	public function __construct(InvAppRepoInterface $app_repo, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+		$this->appRepo = $app_repo;
 		$this->invRepo = $invRepo;
 		$this->docRepo = $docRepo;
 		$this->lmsRepo = $lms_repo;
@@ -295,9 +298,23 @@ class InvoiceController extends Controller {
 		$record = array_filter(explode(",",$invoiceIds));
 		$allrecords = array_unique($record);
 		$allrecords = array_map('intval', $allrecords);
+		$allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+		$supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+		$userIds = [];
+
+		foreach ($supplierIds as $userid) {
+			foreach ($allinvoices as $invoice) {
+				if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
+					$userIds[] = $userid;
+				}
+			}
+		} 
+
+		$customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
 
 		return view('backend.invoice.disburse_check')
 				->with([
+					'customersDisbursalList' => $customersDisbursalList,
 					'invoiceIds' => $invoiceIds 
 				]);;              
 	}
@@ -345,8 +362,9 @@ class InvoiceController extends Controller {
 	 */
 	public function disburseOffline(Request $request)
 	{
+		$transId = _getRand(18);
 		$invoiceIds = $request->get('invoice_ids');
-		$disburseType = config('lms.DISBURSE_TYPE')['ONLINE']; // Online by Bank Api i.e 2
+		$disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
 		if(empty($invoiceIds)){
 			return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
 		}
@@ -369,12 +387,12 @@ class InvoiceController extends Controller {
 			$disburseAmount = 0;
 
 			foreach ($allinvoices as $invoice) {
-				
+				$invoice['batch_id'] = _getRand(12);
 				$invoice['disburse_date'] = $disburseDate;
 				$disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
 				$createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
 
-				$refId ='CAP'.$userid;
+				$refId = $invoice['lms_user']['virtual_acc_id'];
 				
 				if($invoice['supplier_id'] = $userid) {
 
@@ -416,17 +434,8 @@ class InvoiceController extends Controller {
 					$exportData[$userid]['Remarks'] = 'test remarks';
 					$exportData[$userid]['Value_Date'] = date('Y-m-d');
 
-					$apiLogData['refer_id'] = $refId;
-					$apiLogData['tran_id'] = $transId;
-					// $apiLogData['utr_no'] = $utrNo;
-					$apiLogData['remark'] = $remarks;
-					$disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
-					$updateDisbursal = $this->lmsRepo->updateDisburse([
-							'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
-						], $createDisbursal->disbursal_id);
-					
-					if ($updateDisbursal) {
-						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 12);
+					if ($createDisbursal) {
+						$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
 					}
 
 				} 
@@ -518,19 +527,19 @@ class InvoiceController extends Controller {
 
 		foreach($data as $rowData){
 			$sheet->setActiveSheetIndex(0)
-				->setCellValue('A' . $rows, $rowData['column'] ?? '')
-				->setCellValue('B' . $rows, $rowData['column'] ?? '')
-				->setCellValue('C' . $rows, $rowData['column'] ?? '')
-				->setCellValue('D' . $rows, $rowData['column'] ?? '')
-				->setCellValue('E' . $rows, $rowData['column'] ?? '')
-				->setCellValue('F' . $rows, $rowData['column'] ?? '')
-				->setCellValue('G' . $rows, $rowData['column'] ?? '')
-				->setCellValue('H' . $rows, $rowData['column'] ?? '')
-				->setCellValue('I' . $rows, $rowData['column'] ?? '')
-				->setCellValue('J' . $rows, $rowData['column'] ?? '')
-				->setCellValue('K' . $rows, $rowData['column'] ?? '')
-				->setCellValue('L' . $rows, $rowData['column'] ?? '')
-				->setCellValue('M' . $rows, $rowData['column'] ?? '')
+				->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
+				->setCellValue('B' . $rows, $rowData['Debit_Acct_No'] ?? '')
+				->setCellValue('C' . $rows, $rowData['Trans_Type_Code'] ?? '')
+				->setCellValue('D' . $rows, $rowData['Value_Date'] ?? '')
+				->setCellValue('E' . $rows, $rowData['Amount'] ?? '')
+				->setCellValue('F' . $rows, $rowData['Ben_Name'] ?? '')
+				->setCellValue('G' . $rows, $rowData['Ben_Acct_No'] ?? '')
+				->setCellValue('H' . $rows, $rowData['Ben_IFSC'] ?? '')
+				->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
+				->setCellValue('J' . $rows, $rowData['Ben_Email'] ?? '')
+				->setCellValue('K' . $rows, $rowData['Ben_Mobile'] ?? '')
+				->setCellValue('L' . $rows, $rowData['Remarks'] ?? '')
+				->setCellValue('M' . $rows, $rowData['Mode_of_Pay'] ?? '')
 				->setCellValue('N' . $rows, $rowData['column'] ?? '')
 				->setCellValue('O' . $rows, $rowData['column'] ?? '')
 				->setCellValue('P' . $rows, $rowData['column'] ?? '')
@@ -544,7 +553,7 @@ class InvoiceController extends Controller {
 				->setCellValue('X' . $rows, $rowData['column'] ?? '')
 				->setCellValue('Y' . $rows, $rowData['column'] ?? '')
 				->setCellValue('Z' . $rows, $rowData['column'] ?? '')
-				->setCellValue('AA' . $rows, $rowData['column'] ?? '');
+				->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? '');
 
 			$rows++;
 		}
