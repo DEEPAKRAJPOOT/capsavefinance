@@ -4266,7 +4266,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'total_amt',
                     function ($dataRecords) {
-                    return $dataRecords->total_amt;
+                    return "₹ ".number_format($dataRecords->total_amt);
                 }) 
                 ->addColumn(
                     'action',
