@@ -4271,7 +4271,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($dataRecords) {
-                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice', ['batch_id' => $dataRecords->batch_id]).'">View Invoice</a>'
+                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice', ['batch_id' => $dataRecords->batch_id]).'">View Customers</a>'
                         .'<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice').'"><i class="fa fa-download"></a>';
                     }
                 )
