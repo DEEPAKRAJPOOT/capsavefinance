@@ -7,23 +7,39 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
 use DB;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
+use PHPExcel; 
+use PHPExcel_IOFactory;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 
 class InvoiceController extends Controller {
 
+    use ApplicationTrait;
+    use LmsTrait;
+
+    protected $appRepo;
     protected $invRepo;
     protected $docRepo;
+    protected $lmsRepo;
+    protected $userRepo;
 
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo) {
+    public function __construct(InvAppRepoInterface $app_repo, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+        $this->appRepo = $app_repo;
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
+        $this->lmsRepo = $lms_repo;
+        $this->userRepo = $user_repo;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
     }
@@ -273,4 +289,299 @@ class InvoiceController extends Controller {
         }
     }
 
+    /**
+     * Display a pop up iframe for disburse check
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function disburseConfirm(Request $request)
+    {
+        $disburseType = $request->get('disburse_type');
+        $invoiceIds = $request->get('invoice_ids');
+        if(empty($invoiceIds)) {
+            Session::flash('message', trans('backend_messages.noSelectedInvoice'));
+            Session::flash('operation_status', 1);
+            
+            return redirect()->route('backend_get_disbursed_invoice');
+        }
+        $record = array_filter(explode(",",$invoiceIds));
+        $allrecords = array_unique($record);
+        $allrecords = array_map('intval', $allrecords);
+        $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+        $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+        $userIds = [];
+
+        foreach ($supplierIds as $userid) {
+            foreach ($allinvoices as $invoice) {
+                if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
+                    $userIds[] = $userid;
+                }
+            }
+        } 
+
+        $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
+
+        return view('backend.invoice.disburse_check')
+                ->with([
+                    'customersDisbursalList' => $customersDisbursalList,
+                    'invoiceIds' => $invoiceIds 
+                ]);;              
+    }
+
+    /**
+     * Display a pop up iframe for bankAPiOnline
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function disburseOnline(Request $request)
+    {
+        $invoiceIds = $request->get('invoice_ids');
+        $disburseType = config('lms.DISBURSE_TYPE')['ONLINE']; // Online by Bank Api
+        if(empty($invoiceIds)){
+            return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
+        }
+        $record = array_filter(explode(",",$invoiceIds));
+        $allrecords = array_unique($record);
+        $allrecords = array_map('intval', $allrecords);
+        $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+        $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+        $userIds = [];
+
+        foreach ($supplierIds as $userid) {
+            foreach ($allinvoices as $invoice) {
+                if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
+                    $userIds[] = $userid;
+                }
+            }
+        } 
+
+        $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
+
+        return view('backend.invoice.confirm_invoice')
+                ->with([
+                    'customersDisbursalList' => $customersDisbursalList, 
+                    'invoiceIds' => $invoiceIds 
+                ]);;              
+    }
+
+    /**
+     * Display a pop up iframe for bankAPiOnline
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function disburseOffline(Request $request)
+    {
+        $transId = _getRand(18);
+        $invoiceIds = $request->get('invoice_ids');
+        $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
+        if(empty($invoiceIds)){
+            return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
+        }
+        $record = array_filter(explode(",",$invoiceIds));
+        $allrecords = array_unique($record);
+        $allrecords = array_map('intval', $allrecords);
+        $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+        $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+
+        $disburseDate = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $fundedAmount = 0;
+        $interest = 0;
+        $disburseAmount = 0;
+        $totalInterest = 0;
+        $totalFunded = 0;
+        $totalMargin = 0;
+        $exportData = [];
+
+        foreach ($supplierIds as $userid) {
+            $disburseAmount = 0;
+
+            foreach ($allinvoices as $invoice) {
+                $invoice['batch_id'] = _getRand(12);
+                $invoice['disburse_date'] = $disburseDate;
+                $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
+                $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+
+                $refId = $invoice['lms_user']['virtual_acc_id'];
+                
+                if($invoice['supplier_id'] = $userid) {
+
+                    $interest= 0;
+                    $margin= 0;
+
+                    $tenor = $this->calculateTenorDays($invoice);
+                    $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+                    $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+                    $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+
+                    if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $interest = $tInterest;
+                    }
+
+                    $totalInterest += $interest;
+                    $totalMargin += $margin;
+                    $totalFunded += $fundedAmount;
+                    $disburseAmount += round($fundedAmount, 2);
+
+                }
+
+                if($disburseType == 2) {
+
+                    $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+                    $exportData[$userid]['RefNo'] = $refId;
+                    $exportData[$userid]['Amount'] = $disburseAmount;
+                    $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
+                    $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
+                    $exportData[$userid]['Debit_Mobile'] = '9876543210';
+                    $exportData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
+                    $exportData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
+                    $exportData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
+                    $exportData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
+                    $exportData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
+                    $exportData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
+                    $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                    $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
+                    $exportData[$userid]['Remarks'] = 'test remarks';
+                    $exportData[$userid]['Value_Date'] = date('Y-m-d');
+
+                    if ($createDisbursal) {
+                        $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+                    }
+
+                } 
+
+
+            }
+            
+            if ($disburseAmount) {
+                if($disburseType == 2) {
+                    
+                    // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
+                    $transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate], $transId, 16);
+                    $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
+                    
+                    // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
+                    $intrstAmt = round($totalInterest,2);
+                    if ($intrstAmt > 0.00) {
+                        $intrstDbtTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
+                        $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
+
+                        $intrstCdtTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+                        $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                    }
+
+                    // Margin transaction $tranType = 10 
+                    $marginAmt = round($totalMargin,2);
+                    if ($marginAmt > 0.00) {
+                        $marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
+                        $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
+                    }
+
+                    
+
+                }
+            }
+        }
+        $this->export($exportData);
+        die("here");
+
+        Session::flash('message',trans('backend_messages.disbursed'));
+        return view('backend.invoice.confirm_invoice')
+                ->with([
+                    'customersDisbursalList' => $customersDisbursalList, 
+                    'invoiceIds' => $invoiceIds 
+                ]);;              
+    }
+
+    public function export($data) {
+
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Bank Disburse Excel")
+                ->setSubject("Bank Disburse Excel")
+                ->setDescription("Bank Disburse Excel")
+                ->setKeywords("Bank Disburse Excel")
+                ->setCategory("Bank Disburse Excel");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Client Code')
+                ->setCellValue('B1', 'Debit account no.')
+                ->setCellValue('C1', 'Transaction type code')
+                ->setCellValue('D1', 'Value date')
+                ->setCellValue('E1', 'Amount')
+                ->setCellValue('F1', 'Beneficary Name')
+                ->setCellValue('G1', 'Beneficary Accunt no.')
+                ->setCellValue('H1', 'IFSC code')
+                ->setCellValue('I1', 'Customer Ref no.')
+                ->setCellValue('J1', 'Beneficary email id')
+                ->setCellValue('K1', 'Beneficiary mobile no.')
+                ->setCellValue('L1', 'Remarks')
+                ->setCellValue('M1', 'Payment Type')
+                ->setCellValue('N1', 'Purpose code')
+                ->setCellValue('O1', 'Bene a/c type')
+                ->setCellValue('P1', 'Payable Location')
+                ->setCellValue('Q1', 'Print branch name')
+                ->setCellValue('R1', 'Mode of delivery')
+                ->setCellValue('S1', 'Transaction currency')
+                ->setCellValue('T1', 'BENE_ADD1')
+                ->setCellValue('U1', 'BENE_ADD2')
+                ->setCellValue('V1', 'BENE_ADD3')
+                ->setCellValue('W1', 'BENE_ADD4')
+                ->setCellValue('X1', 'Beneficiary ID')
+                ->setCellValue('Y1', 'Remote Printing')
+                ->setCellValue('Z1', 'Print Branch Location')
+                ->setCellValue('AA1', 'Nature Of Payment');
+        $rows = 2;
+
+        foreach($data as $rowData){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['Debit_Acct_No'] ?? '')
+                ->setCellValue('C' . $rows, $rowData['Trans_Type_Code'] ?? '')
+                ->setCellValue('D' . $rows, $rowData['Value_Date'] ?? '')
+                ->setCellValue('E' . $rows, $rowData['Amount'] ?? '')
+                ->setCellValue('F' . $rows, $rowData['Ben_Name'] ?? '')
+                ->setCellValue('G' . $rows, $rowData['Ben_Acct_No'] ?? '')
+                ->setCellValue('H' . $rows, $rowData['Ben_IFSC'] ?? '')
+                ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
+                ->setCellValue('J' . $rows, $rowData['Ben_Email'] ?? '')
+                ->setCellValue('K' . $rows, $rowData['Ben_Mobile'] ?? '')
+                ->setCellValue('L' . $rows, $rowData['Remarks'] ?? '')
+                ->setCellValue('M' . $rows, $rowData['Mode_of_Pay'] ?? '')
+                ->setCellValue('N' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('O' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('P' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Q' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('R' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('S' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('T' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('U' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('V' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('W' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('X' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Y' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Z' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? '');
+
+            $rows++;
+        }
+
+
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="test.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header ('Pragma: public'); // HTTP/1.0
+
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
+    }
 }

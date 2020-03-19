@@ -86,10 +86,16 @@ class LmsUser extends Authenticatable
                     ->update(['virtual_acc_id' => $virtualId]);
     }
 
-    public static function lmsGetDisbursalCustomer()
+    public static function lmsGetDisbursalCustomer($userIds = [])
     {
         return self::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank'])
-                ->whereHas('app')->get();
+                ->whereHas('app')
+                ->whereHas('app.invoices', function($query) use ($userIds) {
+                    if (!empty($userIds)) {
+                        $query->whereIn('supplier_id', $userIds);
+                    }
+                })
+                ->get();
     }
 
     public function bank_details()

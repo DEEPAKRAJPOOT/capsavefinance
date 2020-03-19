@@ -818,20 +818,26 @@ class DataRenderer implements DataProviderInterface
     { 
     
       return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id'])
-                   ->addColumn(
+                ->rawColumns(['invoice_checkbox', 'status','anchor_id'])
+
+                ->addColumn(
+                    'invoice_checkbox',
+                    function ($invoice) {                        
+                        return '<input type="checkbox" class="invoice_id" value="'.$invoice->invoice_id.'">';
+                })
+                ->addColumn(
                     'anchor_id',
                     function ($invoice) use ($request)  {     
-                           if($request->front)
-                           {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
-                           }
-                        else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                        if($request->front)
+                        {
+                            return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
         
                         }
-             })
+                        else {
+                            return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+                })
                 ->addColumn(
                     'anchor_name',
                     function ($invoice) {                        

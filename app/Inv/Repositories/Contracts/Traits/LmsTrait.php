@@ -27,6 +27,11 @@ trait LmsTrait
     {
         $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
         return $interest;        
+    }  
+
+    protected function calMargin($amt, $val)
+    {
+        return ($amt*$val)/100;
     }   
     
     protected function calculateTenorDays($invoice = [])
@@ -763,6 +768,7 @@ trait LmsTrait
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
         $disbursalData['prgm_offer_id'] = $invoice['prgm_offer_id'] ?? null;
+        $disbursalData['batch_id'] = $invoice['batch_id'];
         $disbursalData['bank_account_id'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank_account_id'] : $invoice['supplier_bank_detail']['bank_account_id'];
         $disbursalData['disburse_date'] = (!empty($invoice['disburse_date'])) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$invoice['disburse_date']))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['bank_name'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank']['bank_name'] : $invoice['supplier_bank_detail']['bank']['bank_name'] ;

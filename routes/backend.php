@@ -1071,6 +1071,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]); 
             
             
+            Route::get('/disburse-confirm', [
+                'as' => 'disburse_confirm',
+                'uses' => 'Backend\InvoiceController@disburseConfirm'
+            ]);
+
+            Route::post('/disburse-online', [
+                'as' => 'disburse_online',
+                'uses' => 'Backend\InvoiceController@disburseOnline'
+            ]);
+
+            Route::post('/disburse-offline', [
+                'as' => 'disburse_offline',
+                'uses' => 'Backend\InvoiceController@disburseOffline'
+            ]);
             
              Route::get('backend_get_repaid_invoice', [
                  'as' => 'backend_get_repaid_invoice',
