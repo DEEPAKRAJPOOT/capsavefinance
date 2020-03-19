@@ -799,7 +799,26 @@ use CommonRepositoryTraits;
     public function getProgramOfferByPrgmId($prgmId)
     {
         return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
-    }    
+    } 
+     public function getBizAnchor($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return BizInvoice::getBizAnchor($attributes);  
+    }  
 
     public function getAllBankInvoice()
     {

@@ -41,6 +41,7 @@
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Search business name <span class="error_message_label">*</span> </label>
                                                 <input type="hidden" name="customer_id" id="customer_id">
+                                                <input type="hidden" name="biz_id" id="biz_id">
                                                 <input type="text" name="search_bus"   id="search_bus" class="form-control searchBusiness">
                                                 <ul class="business_list">
                                                 </ul>
@@ -451,7 +452,7 @@ $(document).ready(function () {
                             if(v.lms_user!=null)
                             {
 
-                                  $(".business_list").append("<li class='business_list_li' data-user_id="+v.user_id+" data-virtual_acc="+v.lms_user.virtual_acc_id+">"+v.biz_entity_name+" / "+ v.lms_user.customer_id+"</li>");
+                                  $(".business_list").append("<li class='business_list_li' data-user_id="+v.user_id+" data-biz_id="+v.biz_id+" data-virtual_acc="+v.lms_user.virtual_acc_id+">"+v.biz_entity_name+" / "+ v.lms_user.customer_id+"</li>");
                             } 
                            })
                         }
@@ -472,10 +473,12 @@ $(document).ready(function () {
        var business_name =  $(this).text();
        var user_id =  $(this).attr('data-user_id'); 
        var virtual_acc = $(this).attr('data-virtual_acc'); 
+       var biz_id = $(this).attr('data-biz_id'); 
        var business_name    = business_name.split("/");
        $("#search_bus").val(business_name[0]);
        $("#customer_id").val(user_id);
        $("#virtual_acc").val(virtual_acc);
+       $("#biz_id").val(biz_id);
        $(".business_list").empty();
     })
 </script>
