@@ -363,15 +363,15 @@ public static function updateInvoice($invoiceId,$status)
         return self::with('mstStatus')->where(['supplier_id' => $user_id]);
     }
     
-    function status()
-    {
-        
-    }
-   
     public static function getUserInvoiceIds($userId)
     {
         return self::where('supplier_id', $userId)
             ->where('status_id', 9)
             ->pluck('invoice_id');
+    }
+     public static function getBizAnchor($attr)
+    {
+        return self::with('anchor')->where(['status_id' => $attr['status_id'],'biz_id' => $attr['biz_id']])->groupBy('anchor_id')->get();
+          
     }
 }
