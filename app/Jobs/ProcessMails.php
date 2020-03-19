@@ -74,7 +74,7 @@ class ProcessMails implements ShouldQueue
                 //$emailData['cover_note'] = $reviewerSummaryData->cover_note;
                 $emailData['lead_id'] = '000'.$application->user_id;
                 $emailData['entity_name'] = (isset($application->business->biz_entity_name))?$application->business->biz_entity_name:'';
-                $emailData['app_id'] = 'CAPS000'.$assignmentData->app_id;
+                $emailData['app_id'] = \Helpers::formatIdWithPrefix($assignmentData->app_id, 'APP');
                 $emailData['comment'] = $assignmentData->sharing_comment;
                 $emailData['sender_user_name'] = $from_user->f_name .' '. $from_user->m_name .' '. $from_user->l_name ;
                 $emailData['sender_role_name'] = '';//$from_user->roles[0]->name;

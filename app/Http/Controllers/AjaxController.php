@@ -3480,6 +3480,11 @@ if ($err) {
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         //$get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
         $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
+        $all_supplier=[];
+        foreach($get_supplier as $supplier) {
+            $supplier->appCode = \Helpers::formatIdWithPrefix($supplier->app_id, 'APP');
+            $all_supplier[] =  $supplier;       
+        }
         return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
      }
            

@@ -89,7 +89,7 @@ class ReviewerSummary extends Mailable
         $arrStaticData['securityDepositType'] = array('1'=>'INR','2'=>'%');
         $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
         $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');  
-        $dispAppId = 'CAPS' . sprintf('%06d', $appId);
+        $dispAppId = \Helpers::formatIdWithPrefix($appId, 'APP');
         $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain  
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,

@@ -188,9 +188,9 @@ class DataRenderer implements DataProviderInterface
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
-                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
+                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
                         }else{
-                            return "<a id='app-id-$app_id' rel='tooltip'> CAPS" . sprintf('%06d',$app_id) . "</a>";
+                            return "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
                         } 
                     }
                 )
@@ -362,7 +362,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $link = route('backend_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, $type='APP') . "</a> ";
                     }
                 )
                 ->addColumn(
@@ -1414,8 +1414,8 @@ class DataRenderer implements DataProviderInterface
                             $link = '#';
                         //}                        
                         //$link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]);
-                        //return '<a id="app-id-' . $app->app_id . ' rel="tooltip" href="' . $link . '">' . 'CAPS000'.$app->app_id . '</a>';
-                        return 'CAPS000'.$app->app_id ;
+                        //return '<a id="app-id-' . $app->app_id . ' rel="tooltip" href="' . $link . '">' . \Helpers::formatIdWithPrefix($app->app_id, 'APP') . '</a>';
+                        return \Helpers::formatIdWithPrefix($app->app_id, 'APP');
                     }
                 )
                 ->addColumn(
@@ -2576,7 +2576,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($customer) {
                         //return $customer->app_id;
-                        return "CAPS" . sprintf('%06d',$customer->app_id);
+                        return \Helpers::formatIdWithPrefix($customer->app_id, 'APP');
                     }
                 ) 
                 ->addColumn(
@@ -2720,7 +2720,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'app_id',
                     function ($customer) {
-                        return 'CAPS000'.$customer->app_id;
+                        return \Helpers::formatIdWithPrefix($customer->app_id, 'APP');
                     }
                 )
                 ->addColumn(
@@ -3654,7 +3654,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $link = route('colender_view_offer', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\"> CAPS000" . $app->app_id . "</a> ";
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, 'APP')  . "</a> ";
                     }
                 )
                 ->addColumn(

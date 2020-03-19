@@ -34,7 +34,7 @@
 							<input type="checkbox" class="invoice_id" value="{{ $invoice->invoice_id }}">
 							@endif
 							</td>
-							<td> CAPS000{{ $invoice->app->app_id }}</td>
+							<td> {{ \Helpers::formatIdWithPrefix($invoice->app->app_id, 'APP') }}</td>
 							<td> {{ $invoice->invoice_no }}</td>
 							<td> {{ $invoice->invoice_date }}</td>
 							<td> {{ $invoice->invoice_due_date }}</td>
