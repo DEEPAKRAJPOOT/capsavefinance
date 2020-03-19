@@ -52,17 +52,11 @@
                   
                    </div>
                <div class="col-md-2">				 
-                                                              
-                      <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                    <option value=""> Select Anchor </option>
-                                                    @foreach($anchor_list as $row)
-                                                    @php if(isset($row->anchor->anchor_id)) { @endphp
-                                                    <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
-                                                    @php } @endphp
-                                                    @endforeach
-                  </select>
-                 
-                   </div>
+
+                                                <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
+
+                                                </select>
+                                            </div>
              <div class="col-md-2">		    
                                                             
                  <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
@@ -115,113 +109,8 @@
    </div>
 </div></div>
 
-
-
-
-<div class="modal align-middle" id="myModal6" style="display: none;" aria-hidden="true">
-   <div class="modal-dialog modal-md modal-dialog-centered">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-			<h5>Upload Invoices</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body ">
-		 <form id="signupForm">
-		 <div class="row">
-		 <div class="col-md-6">
-		<div class="form-group">
-        <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span></label>
-        <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id"  name="anchor_bulk_id">
-                                             
-              <option value="">Select Anchor  </option>
-                           @foreach($anchor_list as $row)
-                            @php if(isset($row->anchorOne->anchor_id)) { @endphp
-                           <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
-                          @php } @endphp
-                           @endforeach
-                                             </select>
-                                             <span id="anc_limit"></span>
-                
-                </div></div>
-		
-		 <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="txtCreditPeriod">Product Program Name
-                            <span class="error_message_label">*</span>
-                        </label>
-                         <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" name="supplier_bulk_id">
-                                            </select>
-                                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
-                                   <span id="pro_limit"></span>
-               </div>
-		</div>
-            <div class="col-md-6">
-            <div class="form-group">
-            <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
-            <select readonly="readonly" class="form-control" id="supplier_bulk_id" name="supplier_bulk_id">
-            </select>
-            <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
-            </div>
-            </div>
-                                    
-									
-									
-			<div class="clearfix">
-			</div>
-			</div>	
-                     <h5 id="submitInvoiceMsg" class="text-success"></h5>
-                     <button type="submit" id="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Upload</button> 
-				 <button type="reset" class="btn btn-secondary btn-sm mt-3 float-right" data-dismiss="modal">Close</button> 	
-				 
-				 </form>
-            
-         </div>
-      </div>
-   </div>
 </div>
-</div>
-<div class="modal show" id="myModal7" style="display: none;">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-        
-         <div class="modal-header">
-			<h5>Confirm Invoice Approved Amount</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-        
-         <div class="modal-body text-left">
-             <form id="signupFormNew"  action="{{Route('update_invoice_amount')}}" method="post">
-		@csrf	
-                 <div class="row">
-                           <div class="col-md-12">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Invoice Amount
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                  <input type="text" class="form-control" id="invoice_amount" value="" disabled="">
-                                  <input type="hidden" name="invoice_id" id="invoice_id">
-                              </div>
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Invoice Approved Amount
-                                 <span class="mandatory">*</span>
-                                 </label>
-			      <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="Enter Amount">
-                                 
-                              </div>
-                           </div>
-						   
-						  
 
-                        </div>
-             <span class="model7msg error"></span>			
-             <input type="submit" id="UpdateInvoiceAmount" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
-             </form> 
-         </div>
-      </div>
-   </div>
-</div>
     @endsection
     @section('jscript')
     <style>
@@ -242,6 +131,7 @@
             upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
             get_program_supplier: "{{ URL::route('get_program_supplier') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
+              get_biz_anchor: "{{ URL::route('get_biz_anchor') }}",
             front_program_list: "{{ URL::route('front_program_list') }}",
             front_supplier_list: "{{ URL::route('front_supplier_list') }}",
             update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
@@ -475,7 +365,51 @@
                 }
         }); }); 
     
-    
+       //////////////////// onchange Business  id get Anchor /////////////////
+
+    $("#changeAnchor").append("<option value=''>Select Anchor</option>");
+    $(document).on('change', '.changeBiz', function () {
+        var biz_id = $(this).val();
+        $("#changeAnchor").empty();
+        var postData = ({'status_id': 28, 'biz_id': biz_id, '_token': messages.token});
+        jQuery.ajax({
+            url: messages.get_biz_anchor,
+            method: 'post',
+            dataType: 'json',
+            data: postData,
+            error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+
+            },
+            success: function (data) {
+
+                if (data.status == 1)
+                {
+                    var obj1 = data.userList;
+
+                    ///////////////////// for suppllier array///////////////  
+
+                    if (obj1.length > 0)
+                    {
+                        $("#changeAnchor").append("<option value=''> Select Anchor </option>");
+                        $(obj1).each(function (i, v) {
+
+                            $("#changeAnchor").append("<option value='" + v.anchor.anchor_id + "'>" + v.anchor.comp_name + "</option>");
+
+                        });
+                    } else
+                    {
+                        $("#changeAnchor").append("<option value=''>No data found</option>");
+
+                    }
+
+
+                }
+
+
+            }
+        });
+    });
     function uploadInvoice()
     {
        $('.isloader').show();

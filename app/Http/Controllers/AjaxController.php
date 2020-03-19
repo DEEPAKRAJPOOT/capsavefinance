@@ -4009,7 +4009,12 @@ if ($err) {
         $invoiceIds = $this->lmsRepo->getUserInvoiceIds($userId)->toArray();
         return response()->json($invoiceIds);
     }
-
+    public function getBizAnchor(Request $request) {
+        $attributes = $request->all();
+        $get_user = $this->invRepo->getBizAnchor($attributes);
+        return response()->json(['status' => 1, 'userList' => $get_user]);
+    }
+   
     
     /**
      * Get Repayment Amount

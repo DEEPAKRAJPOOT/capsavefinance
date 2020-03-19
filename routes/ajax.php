@@ -125,8 +125,11 @@ Route::group(
         'as' => 'get_program_supplier',
         'uses' => 'Backend\InvoiceController@getProgramSupplier'
     ]);
-    
-   
+  
+      Route::post('get_biz_anchor', [
+        'as' => 'get_biz_anchor',
+        'uses' => 'AjaxController@getBizAnchor'
+    ]);
     
      Route::post('verify-otp-mobile', [
         'as' => 'verify_otp_mobile',
