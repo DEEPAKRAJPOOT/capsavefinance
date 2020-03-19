@@ -217,6 +217,22 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return BizInvoice::groupBy('supplier_id')
                 ->whereIn('invoice_id', $invoiceIds)
                 ->pluck('supplier_id');
+    } 
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function lmsGetInvoiceClubCustomer($userIds, $invoiceIds)
+    {
+        return LmsUser::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank'])
+                ->whereHas('app')
+                ->with(['app.invoices' => function ($query) use($invoiceIds) {
+                      $query->whereIn('invoice_id', $invoiceIds);
+                  }])
+                ->get();
     }    
 
     /**

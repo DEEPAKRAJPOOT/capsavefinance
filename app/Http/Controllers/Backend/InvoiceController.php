@@ -310,7 +310,6 @@ class InvoiceController extends Controller {
         $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
         $userIds = [];
-
         foreach ($supplierIds as $userid) {
             foreach ($allinvoices as $invoice) {
                 if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
@@ -319,8 +318,7 @@ class InvoiceController extends Controller {
             }
         } 
 
-        $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
-
+        $customersDisbursalList = $this->lmsRepo->lmsGetInvoiceClubCustomer($userIds, $allrecords);
         return view('backend.invoice.disburse_check')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList,
@@ -371,8 +369,8 @@ class InvoiceController extends Controller {
      */
     public function disburseOffline(Request $request)
     {
-        $transId = _getRand(18);
         $invoiceIds = $request->get('invoice_ids');
+        $disburseDate = $request->get('disburse_date');
         $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
         if(empty($invoiceIds)){
             return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
@@ -383,7 +381,6 @@ class InvoiceController extends Controller {
         $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 
-        $disburseDate = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $fundedAmount = 0;
         $interest = 0;
         $disburseAmount = 0;
@@ -391,12 +388,14 @@ class InvoiceController extends Controller {
         $totalFunded = 0;
         $totalMargin = 0;
         $exportData = [];
+        $batchId= _getRand(12);
+        $transId = _getRand(18);
 
         foreach ($supplierIds as $userid) {
             $disburseAmount = 0;
 
             foreach ($allinvoices as $invoice) {
-                $invoice['batch_id'] = _getRand(12);
+                $invoice['batch_id'] = $batchId;
                 $invoice['disburse_date'] = $disburseDate;
                 $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
@@ -481,8 +480,7 @@ class InvoiceController extends Controller {
                 }
             }
         }
-        $this->export($exportData);
-        die("here");
+        $this->export($exportData,$batchId);
 
         Session::flash('message',trans('backend_messages.disbursed'));
         return view('backend.invoice.confirm_invoice')
@@ -492,7 +490,7 @@ class InvoiceController extends Controller {
                 ]);;              
     }
 
-    public function export($data) {
+    public function export($data, $filename) {
 
         $sheet =  new PHPExcel();
         $sheet->getProperties()
@@ -568,9 +566,10 @@ class InvoiceController extends Controller {
         }
 
 
+        $storage_path = storage_path();
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="test.xlsx"');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
@@ -580,8 +579,13 @@ class InvoiceController extends Controller {
         header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
+        
+        // $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
 
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        // $objWriter->save($storage_path);
+        // ob_end();
+        // exit;
         $objWriter->save('php://output');
     }
 }

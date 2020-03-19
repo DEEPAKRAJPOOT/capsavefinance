@@ -1,29 +1,35 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-<div class="card card-color mb-0">
-	<div class="card-header">
-		<a class="card-title ">
-			Are you sure you want to disburse checked invoices?
-		</a>
+<div class="row">
+	<div class="col-6">
+		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}">
+			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
+			@csrf
+			<div class="col-6">
+				<div class="form-group">
+					<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
+					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate">
+				</div>
+			</div>
+			<div class="col-6">
+				<input type="submit" id="submitManualDisburse" value="Disburse Ofline" class="btn btn-success btn-sm ml-2">
+			</div>
+		</form>
+	</div>
+	<div class="col-6 row">
+		<div class="col-6"></div>
+		<div class="col-3">
+			<form id="manualDisburse" method="POST" action="{{ Route('disburse_online') }}">
+				@csrf
+				<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
+				
+				<input type="submit" id="submitManualDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2 disabled">
+			</form>
+		</div>
 	</div>
 </div>
 <div class="row">	
-	<div class="col-3">
-		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}">
-			@csrf
-			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-			
-			<input type="submit" id="submitManualDisburse" value="Export CSV (OFFLINE)" class="btn btn-success btn-sm ml-2">
-		</form>
-	</div>
-	<div class="col-3">
-		<form id="manualDisburse" method="POST" action="{{ Route('disburse_online') }}">
-			@csrf
-			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-			
-			<input type="submit" id="submitManualDisburse" value="Send To Bank (ONLINE)" class="btn btn-success btn-sm ml-2">
-		</form>
-	</div>
+	
 </div>
 <div class="col-12 dataTables_wrapper mt-4">
 	<div class="overflow">
@@ -145,4 +151,13 @@
 		</div>
 	</div>
 </div>
+@endsection
+@section('jscript')
+
+<script type="text/javascript">
+	$(document).ready(function () {
+	    parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
+	});
+
+</script>
 @endsection
