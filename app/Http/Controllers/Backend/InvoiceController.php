@@ -559,7 +559,7 @@ class InvoiceController extends Controller {
         }
 
 
-        $storage_path = storage_path('/app/public/');
+        $storage_path = storage_path('app/public/');
         // dd($storage_path);
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -579,7 +579,7 @@ class InvoiceController extends Controller {
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
         // $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
 
-        $objWriter->save($storage_path.'/'.$filename.'.xlsx');
+        $objWriter->save($storage_path.$filename.'.xlsx');
         ob_end();
         exit;
         $objWriter->save('php://output');
