@@ -109,6 +109,27 @@ class WfStage extends BaseModel {
         return ($arr ? $arr : null);
     }        
     
+    /**
+     * Get previous workflow by $wf_order_no
+     *
+     * @param string $req_type 
+     * @param string $wf_order_no
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public static function getPrevWfStage($req_type, $wf_order_no)
+    {
+        $prev_wf_order_no = (int) $wf_order_no - 1;
+        if ($prev_wf_order_no < 0)
+            $prev_wf_order_no = 0;
+        
+        $arr = self::from('lms_wf_stage as wf')
+            ->select('wf.*')
+            ->where('wf.req_type', $req_type)
+            ->skip($prev_wf_order_no)->take(1)->first();
+        return ($arr ? $arr : null);
+    } 
     
     /**
      * Get Workflow Detail By Order No

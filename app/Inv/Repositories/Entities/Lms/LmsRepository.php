@@ -746,5 +746,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getApprRequestLogData($whereCond)
     {
         return ApprovalRequestLog::getApprRequestLogData($whereCond);
-    }    
+    } 
+    
+    /**
+     * Get previous workflow by $wf_order_no
+     *
+     * @param string $req_type 
+     * @param string $wf_order_no
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function getPrevWfStage($req_type, $wf_order_no)
+    {
+        return WfStage::getPrevWfStage($req_type, $wf_order_no);
+    }
 }
