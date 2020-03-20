@@ -44,7 +44,7 @@ class ApprovalRequest extends BaseModel {
     protected $fillable = [
         'req_id',
         'ref_code',
-        'type',
+        'req_type',
         'status',  
         'amount',
         'created_at',
@@ -78,6 +78,15 @@ class ApprovalRequest extends BaseModel {
                 return self::create($reqData);
             }
         }
-    } 
+    }
+    
+    public static function getApprRequestData($reqId)
+    {
+        $result = self::select('*')
+                ->where('req_id', $reqId)
+                ->first();
+        
+        return $result ? $result : null;
+    }
 }
 

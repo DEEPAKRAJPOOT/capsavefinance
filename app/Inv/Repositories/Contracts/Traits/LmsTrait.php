@@ -966,7 +966,7 @@ trait LmsTrait
         }
         $saveReqData = $this->lmsRepo->saveApprRequestData($reqData);
         $req_id = $saveReqData->req_id;        
-        $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => ''], $req_id);
+        $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => 'REF000'.$req_id], $req_id);
         $reqLogData['req_id'] = $req_id;
         
         $wt_stages = $this->lmsRepo->getWfStages($wf_stage_type);
@@ -1016,7 +1016,7 @@ trait LmsTrait
                         $assignRequests[] = $dataArr;
                         
                         //Save Request Log Data
-                        $allReqLogData[] = $reqLogData + ['assigned_user_id' => $auser->user_id];
+                        $allReqLogData[] = $reqLogData + ['assigned_user_id' => $auser->user_id, 'wf_stage_id' => $data->wf_stage_id];
                     }
                 } 
                 /*else { 
@@ -1036,4 +1036,125 @@ trait LmsTrait
         }
         
     }
+    
+    protected function updateApprRequest($reqId, $addlData=[]) 
+    {        
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $wfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
+        $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
+        
+        //Update Request Log Data
+        $updateReqLogData = ['is_active' => '0'];
+        $whereCond=[];
+        $whereCond['req_id'] = $reqId;
+        $whereCond['assigned_user_id'] = \Auth::user()->user_id;
+        $whereCond['wf_stage_id'] = $wf_stage_id;
+        $this->lmsRepo->updateApprRequestLogData($whereCond, $updateReqLogData);
+        
+        //Insert Request Log Data
+        $reqLogData=[];
+        $reqLogData['req_id'] = $reqId;
+        $reqLogData['status'] = $addlData['status'];
+        $reqLogData['assigned_user_id'] = $addlData['assigned_user_id'];            
+        $this->lmsRepo->saveApprRequestLogData($reqLogData);
+        
+        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval'])) {
+            
+            //Get Assigned Request for Approval
+            $whereCond=[];
+            $whereCond['req_id'] = $reqId;
+            $assignedReqData = $this->lmsRepo->getAssignedReqData($whereCond);            
+            $cntAssignedReqStatus = count($assignedReqData);
+            
+            //Get Request Log with Status for Approval
+            $whereCond=[];
+            $whereCond['req_id'] = $reqId;
+            $whereCond['wf_stage_id'] = $wf_stage_id;
+            $apprReqLogData = $this->lmsRepo->getApprRequestLogData($whereCond);
+            $cntUpdatedReqStatus=count($apprReqLogData);
+            $cntApprReqStatus=0;
+            foreach($apprReqLogData as $rLog) {
+                if ($rLog->status == config('lms.REQUEST_TYPE.APPROVED')) {
+                    $cntApprReqStatus++;
+                }
+            }
+            if ($cntAssignedReqStatus == $cntUpdatedReqStatus) {
+                $reqStatus = $cntUpdatedReqStatus == $cntApprReqStatus ? config('lms.REQUEST_TYPE.APPROVED') : config('lms.REQUEST_TYPE.REJECTED');
+                $updateReqData=[];
+                $updateReqData['status'] = $reqStatus;
+                $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
+            }
+        }
+        
+        $wf_stage_status = $reqStatus == config('lms.REQUEST_TYPE.APPROVED') ? config('lms.WF_STAGE_STATUS.COMPLETED') : config('lms.WF_STAGE_STATUS.IN_PROGRESS');
+        $updateWfStage=[];
+        $updateWfStage['wf_status'] = $wf_stage_status;        
+        $this->lmsRepo->updateWfStage($wf_stage_id, $reqId, $updateWfStage);
+        
+        return true;
+    }
+
+    protected function moveRequestToNextStage($reqId, $addlData=[]) 
+    {
+        //Get Current workflow stage
+        $wfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        if (!$wfStage) return false;
+                
+        $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
+        $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';        
+        
+        $wf_stage_status = config('lms.WF_STAGE_STATUS.PENDING');
+        $updateWfStage=[];
+        $updateWfStage['wf_status'] = $wf_stage_status;        
+        $this->lmsRepo->updateWfStage($wf_stage_id, $reqId, $updateWfStage);
+        
+        if ($assignRequest) {
+            //get role id by wf_stage_id
+            $data = $result;
+            $this->lmsRepo->updateRequestAssignById((int) $reqId, ['is_owner' => 0]);
+            //update assign table
+            $assignRequests=[];
+            $allReqLogData=[];
+            $assignRoles = explode(',', $data->assign_role);
+            foreach($assignRoles as $role) {
+                $assignedUsers = $this->lmsRepo->getBackendUsersByRoleId($role->role_id);
+                if (count($assignedUsers) > 0) {
+                    foreach($assignedUsers as $auser) {
+                        $dataArr = [];
+                        $dataArr['from_id'] = \Auth::user()->user_id;
+                        $dataArr['to_id'] = $auser->user_id;
+                        $dataArr['role_id'] = null;
+                        $dataArr['req_id'] = $reqId;
+                        $dataArr['assign_status'] = '0';
+                        $dataArr['assign_type'] = '2';
+                        $dataArr['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                        $dataArr['is_owner'] = 1;
+                        $assignRequests[] = $dataArr;
+                        
+                        //Save Request Log Data
+                        $allReqLogData[] = $reqLogData + ['assigned_user_id' => $auser->user_id, 'wf_stage_id' => $data->wf_stage_id];
+                    }
+                } 
+                /*else { 
+                    $assignRequests['from_id'] = \Auth::user()->user_id;    
+                    $assignRequests['req_id'] = $reqId;
+                    $assignRequests['assign_status'] = '0';
+                    $assignRequests['assign_type'] = '2';
+                    $assignRequests['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                    $assignRequests['is_owner'] = 1;                
+                    $assignRequests['to_id'] = null;
+                    $assignRequests['role_id'] = $role->role_id;
+                }*/
+            }
+            $this->lmsRepo->assignRequest($assignRequests);
+            $this->lmsRepo->saveApprRequestLogData($allReqLogData);
+            return $data;
+        }        
+    }   
 }

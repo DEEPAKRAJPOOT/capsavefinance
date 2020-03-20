@@ -59,5 +59,10 @@ return [
         'REJECTED' => '4',
         'APPROVED' => '5',
         'PROCESSED' => '6'
-    ]    
+    ],
+    'WF_STAGE_STATUS' => [
+        'PENDING' => '0',
+        'COMPLETED' => '1',
+        'IN_PROGRESS' => '2',
+    ],    
 ];

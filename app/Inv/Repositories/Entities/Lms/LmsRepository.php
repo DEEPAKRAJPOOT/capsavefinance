@@ -679,7 +679,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     
     public function updateRequestAssignById($req_id, $data)
     {
-        return RequestAssign::updateRequestAssignById($req_id, $data);
+        return RequestAssign::updateRequestAssignById((int) $req_id, $data);
     }
     
     public function assignRequest($data)
@@ -714,5 +714,37 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function saveApprRequestLogData($reqLogData)
     {
         return ApprovalRequestLog::saveApprRequestLogData($reqLogData);
+    }
+    
+    public function getApprRequestData($reqId)
+    {
+        return ApprovalRequest::getApprRequestData($reqId);
+    }
+    
+    /**
+     * Update Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * @param array $reqLogData
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateApprRequestLogData($whereCond, $reqLogData)
+    {
+        return ApprovalRequestLog::updateApprRequestLogData($whereCond, $reqLogData);
+    }
+    
+    /**
+     * Get Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getApprRequestLogData($whereCond)
+    {
+        return ApprovalRequestLog::getApprRequestLogData($whereCond);
     }    
 }

@@ -41,14 +41,12 @@ class ApprovalRequestLog extends BaseModel {
      *
      * @var array
      */
-    protected $fillable = [
-        'request_log_id',
-        'req_id',
-        'trans_id',
+    protected $fillable = [        
+        'req_id',        
         'assigned_user_id',
-        'status',        
-        'amount',
-        'approve_amount',
+        'status',
+        'wf_stage_id',
+        'is_active',
         'created_at',
         'created_by',
         'updated_at',
@@ -76,4 +74,50 @@ class ApprovalRequestLog extends BaseModel {
             return self::create($reqLogData);
         }
     }
+    
+    /**
+     * Update Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * @param array $reqLogData
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function updateApprRequestLogData($whereCond, $reqLogData)
+    {
+        //Check $reqLogData is not an array
+        if (!is_array($reqLogData)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }        
+        
+        return self::where($whereCond)->update($reqLogData);        
+    }
+    
+    /**
+     * Get Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getApprRequestLogData($whereCond)
+    {
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        
+        $result = self::select('*')
+                ->where($whereCond)
+                ->where('is_active', 1)
+                ->get();
+        
+        return $result ? $result : [];                
+    }    
+    
 }

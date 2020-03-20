@@ -57,15 +57,25 @@ class RequestAssign extends BaseModel {
         'updated_by',
     ];
 
-    public static function updateRequestAssignById($req_id, $data)
+    public static function updateRequestAssignById($reqId, $data)
     {
-        $rowUpdate = self::where('req_id',(int) $req_id)->where('is_owner',1)->update($data);
+        $rowUpdate = self::where('req_id', $reqId)->where('is_owner',1)->update($data);
         return ($rowUpdate ? $rowUpdate : false);        
     }
     
     public static function assignRequest($data)
     {
         return self::create($data);     
-    }    
+    } 
+    
+    public static function getAssignedReqData($reqId)
+    {
+        $result = self::select('*')
+                ->where('req_id', $reqId)
+                ->where('is_owner',1)
+                ->get();
+        
+        return isset($result[0]) ? $result : [];     
+    }
 }
 
