@@ -31,14 +31,6 @@
 
     <li class="nav-item itemBackground">
         @if($flag == 1)
-        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_bank_invoice') active @endif" href="{{Route('backend_get_bank_invoice',[ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ])}}">Bank Invoice</a>
-        @else
-        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_bank_invoice') active @endif" href="{{Route('backend_get_bank_invoice')}}">Bank Invoice</a>
-        @endif
-    </li>
-
-    <li class="nav-item itemBackground">
-        @if($flag == 1)
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment',[ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ])}}">Failed Disbursement</a>
         @else
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_failed_disbursment') active @endif" href="{{Route('backend_get_failed_disbursment')}}">Failed Disbursement</a>
