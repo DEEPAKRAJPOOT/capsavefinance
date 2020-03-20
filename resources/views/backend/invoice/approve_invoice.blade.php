@@ -515,6 +515,45 @@
             return true;
         }
     });
+    
+    ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('change', '.approveInv1', function () {
+        var status = $(this).val();
+        if (status == 0)
+        {
+            return false;
+        }
+        if(status==7)
+        {
+            var st =  "Pending";
+        }
+        if(status==14)
+        {
+            var st =  "Reject";
+        }
+        if (confirm('Are you sure? You want to '+st+' it.'))
+        {
+            th = this;
+            var invoice_id = $(this).attr('data-id');
+            var postData = ({'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            th = this;
+            jQuery.ajax({
+                url: messages.update_invoice_approve,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                    $(th).closest('tr').remove();
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list_approve.js') }}"></script>
 

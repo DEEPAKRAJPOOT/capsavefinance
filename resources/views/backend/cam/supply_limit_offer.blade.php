@@ -131,7 +131,7 @@
         <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
-    <div class="charges_block" style="width: 100%;display: inherit;">
+    <div class="charges_block" style="width: 100%;display: contents;">
         @if(isset($offerData->offerCharges))
         @foreach($offerData->offerCharges as $key=>$offerCharge)
         <div class="col-md-6">

@@ -40,8 +40,7 @@
                                             </div>
                                             <div class="col-md-3">				 
                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                              
-                                                <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
+                                              <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                                                     <option value="">Select Business Name  </option>
                                                         @foreach($get_bus as $row)
                                                          @php if(isset($row->business->biz_id)) { @endphp
@@ -92,7 +91,6 @@
                                                                             <th>Customer Detail</th>
                                                                             <th> Inv Detail</th>
                                                                             <th> Inv Amount</th>
-                                                                             <th>Upload Invoice </th> 
                                                                             <th>Action</th>
                                                                         </tr>
                                                                     </thead>
@@ -174,6 +172,16 @@
 @endsection
 @section('jscript')
 <style>
+    .image-upload > input
+   {
+      display: none;
+   }
+
+   .image-upload i
+   {
+      width: 80px;
+      cursor: pointer;
+   }
     .itemBackground 
     { 
       border: 2px solid blanchedalmond;  
@@ -384,7 +392,7 @@
 function uploadFile(app_id,id)
 {
    $(".isloader").show(); 
-   var file  = $("#file"+id)[0].files[0];
+   var file  = $(".file"+id)[0].files[0];
    var extension = file.name.split('.').pop().toLowerCase();
    var datafile = new FormData();
    datafile.append('_token', messages.token );
