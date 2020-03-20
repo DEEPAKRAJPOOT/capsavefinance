@@ -27,6 +27,8 @@ use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Lms\Batch;
 use App\Inv\Repositories\Models\Lms\BatchLog;
+use App\Inv\Repositories\Models\Lms\DisbursalBatch;
+use App\Inv\Repositories\Models\UserFile;
 
 /**
  * Lms Repository class
@@ -217,6 +219,22 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return BizInvoice::groupBy('supplier_id')
                 ->whereIn('invoice_id', $invoiceIds)
                 ->pluck('supplier_id');
+    } 
+    /**
+     * Get Repayments
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function lmsGetInvoiceClubCustomer($userIds, $invoiceIds)
+    {
+        return LmsUser::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank'])
+                ->whereHas('app')
+                ->with(['app.invoices' => function ($query) use($invoiceIds) {
+                      $query->whereIn('invoice_id', $invoiceIds);
+                  }])
+                ->get();
     }    
 
     /**
@@ -272,10 +290,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function updateDisburse($data, $disbursalId)
+    public static function updateDisburse($data, $disbursalIds)
     {
-        return Disbursal::where('disbursal_id', $disbursalId)
+        if (!is_array($disbursalIds)) {
+            return Disbursal::where('disbursal_id', $disbursalIds)
                 ->update($data);
+        } else {
+            return Disbursal::whereIn('disbursal_id', $disbursalIds)
+                    ->update($data);
+        }
     }          
      
      /**
@@ -569,5 +592,25 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             return $ex;
        }
        
+    }
+
+    /**
+     * create Disburse Api Log
+     */
+    public static function saveBatchFile($data)
+    {
+        return UserFile::create($data);
+    }
+
+    /**
+     * create Disburse Api Log
+     */
+    public static function createDisbursalBatch($file, $batchId = null)
+    {   
+        if (!empty($batchId)) {
+            $disburseBatch['batch_id'] = ($batchId) ?? $batchId;
+            $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+        }
+        return DisbursalBatch::create($disburseBatch);
     }
 }

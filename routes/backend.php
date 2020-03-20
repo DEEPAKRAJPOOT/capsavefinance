@@ -1158,6 +1158,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_get_bank_invoice',
                'uses' => 'Backend\InvoiceController@viewBankInvoice'
             ]); 
+
+            Route::get('bank-invoice-customers', [
+                'as' => 'backend_get_bank_invoice_customers',
+               'uses' => 'Backend\InvoiceController@viewBankInvoiceCustomers'
+            ]);
+
+            Route::get('view-disburse-invoice', [
+                'as' => 'backend_view_disburse_invoice',
+               'uses' => 'Backend\InvoiceController@viewDisburseInvoice'
+            ]);
          });
          
         Route::group(['prefix' => 'document'], function () {

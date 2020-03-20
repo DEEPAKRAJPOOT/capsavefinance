@@ -782,7 +782,6 @@ trait LmsTrait
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
         $disbursalData['prgm_offer_id'] = $invoice['prgm_offer_id'] ?? null;
-        $disbursalData['batch_id'] = $invoice['batch_id'];
         $disbursalData['bank_account_id'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank_account_id'] : $invoice['supplier_bank_detail']['bank_account_id'];
         $disbursalData['disburse_date'] = (!empty($invoice['disburse_date'])) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$invoice['disburse_date']))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['bank_name'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank']['bank_name'] : $invoice['supplier_bank_detail']['bank']['bank_name'] ;
@@ -855,6 +854,30 @@ trait LmsTrait
         $transactionData['created_by'] = Auth::user()->user_id ?? null;
         
         return $transactionData;
+    }
+
+    /**
+     * Prepare Disbursal Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createBatchFileData($file = null)
+    {
+        /**
+        * disburseType = 1 for online and 2 for manually
+        */
+        $data = [];
+
+        $data['file_path'] = $file['file_path'] ?? '';
+        $data['file_type'] = $file['file_type'] ?? '';
+        $data['file_name'] = $file['file_name'] ?? '';
+        $data['file_size'] = $file['file_size'] ?? '';
+        $data['file_encp_key'] =  !empty($path) ? md5(basename($path)) : md5('2');
+        $data['created_by'] = 1;
+        $data['updated_by'] = 1;
+        
+        return $data;
     }    
     /**
      * Get Overdue Interest

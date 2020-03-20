@@ -60,8 +60,7 @@ class InvoiceController extends Controller {
 
     public function getAllInvoice() {
 
-        $get_anchor = $this->invRepo->getLimitAllAnchor();
-
+        $get_anchor = $this->invRepo->getLmsLimitAllAnchor();
         return view('backend.invoice.upload_all_invoice')
                         ->with(['get_anchor' => $get_anchor]);
     }
@@ -71,7 +70,6 @@ class InvoiceController extends Controller {
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
-
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(7);
         $get_bus = $this->invRepo->getBusinessNameApp(7);
         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
@@ -137,10 +135,20 @@ class InvoiceController extends Controller {
     }
 
     public function viewBankInvoice(Request $req) {
-        $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
-        return view('backend.invoice.bank_invoice')->with(['flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id]);
+        return view('backend.invoice.bank_invoice')->with(['user_id' => $user_id, 'app_id' => $app_id]);
+    }
+
+    public function viewBankInvoiceCustomers(Request $req) {
+        $batch_id = $req->get('batch_id') ?: null;
+        return view('backend.invoice.bank_invoice_customers')->with(['batch_id' => $batch_id]);
+    }
+
+    public function viewDisburseInvoice(Request $req) {
+        $batch_id = $req->get('batch_id') ?: null;
+        $disbursed_user_id = $req->get('disbursed_user_id') ?: null;
+        return view('backend.invoice.view_disburse_invoice')->with(['batch_id' => $batch_id, 'disbursed_user_id' => $disbursed_user_id]);
     }
 
     public function viewfailedDisbursment(Request $req) {
@@ -317,7 +325,6 @@ class InvoiceController extends Controller {
         $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
         $userIds = [];
-
         foreach ($supplierIds as $userid) {
             foreach ($allinvoices as $invoice) {
                 if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
@@ -326,8 +333,7 @@ class InvoiceController extends Controller {
             }
         } 
 
-        $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
-
+        $customersDisbursalList = $this->lmsRepo->lmsGetInvoiceClubCustomer($userIds, $allrecords);
         return view('backend.invoice.disburse_check')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList,
@@ -364,7 +370,7 @@ class InvoiceController extends Controller {
 
         $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
 
-        return view('backend.invoice.confirm_invoice')
+        return view('backend.invoice.disburse_online')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList, 
                     'invoiceIds' => $invoiceIds 
@@ -378,8 +384,8 @@ class InvoiceController extends Controller {
      */
     public function disburseOffline(Request $request)
     {
-        $transId = _getRand(18);
         $invoiceIds = $request->get('invoice_ids');
+        $disburseDate = $request->get('disburse_date');
         $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
         if(empty($invoiceIds)){
             return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
@@ -390,7 +396,6 @@ class InvoiceController extends Controller {
         $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 
-        $disburseDate = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $fundedAmount = 0;
         $interest = 0;
         $disburseAmount = 0;
@@ -398,16 +403,19 @@ class InvoiceController extends Controller {
         $totalFunded = 0;
         $totalMargin = 0;
         $exportData = [];
+        $disbursalIds = [];
+        $batchId= _getRand(12);
+        $transId = _getRand(18);
 
         foreach ($supplierIds as $userid) {
             $disburseAmount = 0;
 
             foreach ($allinvoices as $invoice) {
-                $invoice['batch_id'] = _getRand(12);
+                $invoice['batch_id'] = $batchId;
                 $invoice['disburse_date'] = $disburseDate;
                 $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
-
+                $disbursalIds[] = $createDisbursal->disbursal_id; 
                 $refId = $invoice['lms_user']['virtual_acc_id'];
                 
                 if($invoice['supplier_id'] = $userid) {
@@ -428,7 +436,6 @@ class InvoiceController extends Controller {
                     $totalMargin += $margin;
                     $totalFunded += $fundedAmount;
                     $disburseAmount += round($fundedAmount, 2);
-
                 }
 
                 if($disburseType == 2) {
@@ -453,10 +460,7 @@ class InvoiceController extends Controller {
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                     }
-
                 } 
-
-
             }
             
             if ($disburseAmount) {
@@ -482,25 +486,30 @@ class InvoiceController extends Controller {
                         $marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
-
-                    
-
                 }
             }
         }
-        $this->export($exportData);
-        die("here");
+
+        $result = $this->export($exportData, $batchId);
+        $file['file_path'] = $result['file_path'];
+        if ($file) {
+            $createBatchFileData = $this->createBatchFileData($file);
+            $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+            if ($createBatchFile) {
+                $createDisbursalBatch = $this->lmsRepo->createDisbursalBatch($createBatchFile, $batchId);
+                if($createDisbursalBatch) {
+                    $updateDisbursal = $this->lmsRepo->updateDisburse([
+                            'disbursal_batch_id' => $createDisbursalBatch->disbursal_batch_id
+                        ], $disbursalIds);
+                }
+            }
+        }
 
         Session::flash('message',trans('backend_messages.disbursed'));
-        return view('backend.invoice.confirm_invoice')
-                ->with([
-                    'customersDisbursalList' => $customersDisbursalList, 
-                    'invoiceIds' => $invoiceIds 
-                ]);;              
+        return redirect()->route('backend_get_disbursed_invoice');
     }
 
-    public function export($data) {
-
+    public function export($data, $filename) {
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -574,21 +583,30 @@ class InvoiceController extends Controller {
             $rows++;
         }
 
-
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="test.xlsx"');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
+        // header('Cache-Control: max-age=1');
 
-        // If you're serving to IE over SSL, then the following may be needed
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header ('Pragma: public'); // HTTP/1.0
+        // // If you're serving to IE over SSL, then the following may be needed
+        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        // header ('Pragma: public'); // HTTP/1.0
+        
+        if (!Storage::exists('/public/docs/bank_excel')) {
+            Storage::makeDirectory('/public/docs/bank_excel');
+        }
+        $storage_path = storage_path('app/public/docs/bank_excel');
+        $filePath = $storage_path.'/'.$filename.'.xlsx';
 
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save('php://output');
+        $objWriter->save($filePath);
+
+        return [ 'status' => 1,
+                'file_path' => $filePath
+                ];
     }
 }

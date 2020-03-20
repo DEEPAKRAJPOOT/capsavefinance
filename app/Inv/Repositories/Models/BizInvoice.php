@@ -191,6 +191,8 @@ public static function updateInvoice($invoiceId,$status)
          return self::with(['business','anchor'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
          
      }  
+    
+     
      public static function  getBusinessNameApp($status_id)
      {
          return self::with(['business'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
