@@ -25,8 +25,13 @@ use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
-use App\Inv\Repositories\Models\Lms\Batch;
-use App\Inv\Repositories\Models\Lms\BatchLog;
+use App\Inv\Repositories\Models\Lms\ApprovalRequest;
+use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
+use App\Inv\Repositories\Models\Lms\RequestAssign;
+use App\Inv\Repositories\Models\Lms\WfStage;
+use App\Inv\Repositories\Models\Lms\RequestWfStage;
+use App\Inv\Repositories\Models\Lms\Variables;
+use App\Inv\Repositories\Models\Lms\Refund;
 
 /**
  * Lms Repository class
@@ -569,5 +574,105 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             return $ex;
        }
        
+    }
+    
+    public function getRefundData($transId)
+    {
+        return Refund::getRefundData($transId);
+    }
+    
+    /**
+     * Get Wf stage Details 
+     *
+    */
+    public function getWfStages($reqType)
+    {
+        return WfStage::getWfStages($reqType);
+    }
+    
+    /**
+     * Get workflow detail by wf stage code
+     * 
+     * @param string $req_type 
+     * @param string $wf_stage_code
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function getWfDetailById($req_type, $wf_stage_code)
+    {
+        return WfStage::getWfDetailById($req_type, $wf_stage_code);
+    }
+  
+    /**
+     * Get next workflow by $wf_order_no
+     *
+     * @param string $req_type 
+     * @param string $wf_order_no
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function getNextWfStage($req_type, $wf_order_no)
+    {
+        return WfStage::getNextWfStage($req_type, $wf_order_no);
+    }        
+        
+    /**
+     * Get Workflow Detail By Order No
+     *
+     * @param string $req_type 
+     * @param integer $wf_order_no
+     *
+     * @return mixed
+     */
+    public function getWfDetailByOrderNo($req_type, $wf_order_no)
+    {
+        return WfStage::getWfDetailByOrderNo($req_type, $wf_order_no);
+    }
+    
+    /**
+     * Get Wf stage Details 
+     *
+    */
+    public function updateWfStage($wf_stage_id, $req_id, $arrData = [])
+    {
+        return RequestWfStage::updateWfStage($wf_stage_id, $req_id, $arrData);
+    }
+    
+            
+    /**
+     * Save application workflow stage
+     * 
+     * @param array $arrData
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function saveWfDetail($arrData)
+    {
+        return RequestWfStage::saveWfDetail($arrData);
+    }
+    
+    /**
+     * Get Current WfStage by req id
+     * 
+     * @param integer $req_id
+     * @return mixed
+     */    
+    protected function getCurrentWfStage($req_id) 
+    {
+        return RequestWfStage::getCurrentWfStage($req_id);
+    }
+
+    /**
+     * Get request workflow stage by $wf_stage_code and $req_id
+     * 
+     * @param string $wf_stage_code
+     * @param integer $req_id
+     * 
+     * @return mixed
+     */
+    protected function getRequestWfStage($wf_stage_code, $req_id) 
+    {
+        return RequestWfStage::getRequestWfStage($wf_stage_code, $req_id);
     }
 }

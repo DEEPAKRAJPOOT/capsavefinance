@@ -46,5 +46,18 @@ return [
     'DISBURSE_TYPE' => [
         'ONLINE' => '1',
         'OFFLINE'=>'2'
-    ]
+    ],
+    'REQUEST_TYPE' => [
+        'REFUND' => '1',
+        'ADJUSTMENT' => '2',
+        'WAVE_OFF' => '3',
+    ],
+    'REQUEST_STATUS' => [
+        'NEW_REQUEST' => '1',
+        'DELETED' => '2',
+        'IN_PROCESS' => '3',
+        'REJECTED' => '4',
+        'APPROVED' => '5',
+        'PROCESSED' => '6'
+    ]    
 ];

@@ -929,4 +929,79 @@ trait LmsTrait
     {
        dd($attr);
     } 
+    
+    protected function getRefundData($transId)
+    {   
+        $data = [];
+        $result = $this->lmsRepo->getRefundData($transId);        
+        foreach($result as $row) {
+            if ($row->name == 'MARGIN') {
+                $data[$row->name][] = $row;
+            } else {
+                $data[$row->name] = $row;
+            }
+        }
+        return $data;
+    }
+    
+    protected function createApprRequest($requestType, $req_id, $addlData=[]) 
+    {
+        $wf_stage_types = config('lms.REQUEST_STATUS');
+                
+        $wf_stage_type = isset($wf_stage_types[$requestType]) ? $wf_stage_types[$requestType] : '';
+        $wt_stages = $this->lmsRepo->getWfStages($wf_stage_type);        
+        foreach($wf_stages as $wf_stage) {
+            $wf_stage_code = $wf_stage->stage_code;
+            $wfData = $this->lmsRepo->getWfDetailById($wf_stage_type, $wf_stage_code);
+            if ($wfData) {
+                $wfAppStageData = $this->lmsRepo->getRequestWfStage($wf_stage_code, $req_id);
+                if (!$wfAppStageData) {
+                    $arrData = [
+                        'wf_stage_id' => $wfData->wf_stage_id,
+                        'req_id' => $req_id,
+                        'wf_status' => config('lms.REQUEST_STATUS'),
+                    ];
+                    $this->lmsRepo->saveWfDetail($arrData);
+                }
+            }
+        }
+        
+        if ($assign_role) {
+            //get role id by wf_stage_id
+            $data = WfStage::find($result->wf_stage_id);
+            AppAssignment::updateAppAssignById((int) $app_id, ['is_owner' => 0]);
+            //update assign table
+            $dataArr = [];
+            $dataArr['from_id'] = \Auth::user()->user_id;
+            if ($data->role_id == 4) {
+                //$toUserId = User::getLeadSalesManager($user_id);
+                $userData = User::getfullUserDetail($user_id);
+                if ($userData && !empty($userData->anchor_id)) {
+                    $toUserId = User::getLeadSalesManager($user_id);
+                } else {
+                    $toUserId = LeadAssign::getAssignedSalesManager($user_id);
+                }
+                $dataArr['to_id'] = $toUserId;
+                $dataArr['role_id'] = null;
+            } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
+                $toUserId = $addl_data['to_id'];
+                $dataArr['to_id'] = $toUserId;
+                $dataArr['role_id'] = null;
+            } else {
+                $dataArr['to_id'] = null;
+                $dataArr['role_id'] = $data->role_id;
+            }
+            $dataArr['assigned_user_id'] = $user_id;
+            $dataArr['app_id'] = $app_id;
+            $dataArr['assign_status'] = '0';
+            $dataArr['assign_type'] = '2';
+            $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';
+            $dataArr['is_owner'] = 1;
+
+            AppAssignment::saveData($dataArr);
+
+            return $data;
+        }        
+        
+    }
 }
