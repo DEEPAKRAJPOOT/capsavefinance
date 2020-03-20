@@ -290,5 +290,13 @@ class Disbursal extends BaseModel {
 		WHERE batch_id = ? AND batch_id IS NOT null 
 		GROUP BY rta_disbursal.user_id, rta_disbursal.app_id, customer_id, bank_name, acc_no, ifsc_code",[$batch_id]);
         return $result;    
+	}
+	
+	public static function getAllDisburseInvoice($batch_id, $disbursed_user_id){
+        $result = \DB::select("SELECT rta_disbursal.app_id,rta_disbursal.invoice_id,DATE_FORMAT(disburse_date,'%Y-%m-%d') as disburse_date,DATE_FORMAT(inv_due_date,'%Y-%m-%d') as inv_due_date,disburse_amount,disburse_type,rta_invoice.invoice_no
+		FROM rta_disbursal
+        JOIN rta_invoice ON (rta_invoice.invoice_id=rta_disbursal.invoice_id)
+		WHERE rta_disbursal.batch_id IS NOT null AND rta_disbursal.batch_id = ? AND rta_disbursal.user_id=?",[$batch_id, $disbursed_user_id]);
+        return $result;    
     }
 }

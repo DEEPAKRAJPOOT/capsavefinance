@@ -58,6 +58,38 @@ try {
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
+
+        oTableViewDisburseInvoice = $('#viewDisburseInvoice').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: true,
+            bSort: true,
+            ajax: {
+               "url": messages.get_ajax_view_disburse_invoice,
+                "method": 'POST',
+                data: function (d) {
+                    d.batch_id = $('input[name=batch_id]').val();
+                    d.disbursed_user_id = $('input[name=disbursed_user_id]').val();
+                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {                   
+                    $("#viewDisburseInvoice").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#leadMaster_processing").css("display", "none");
+                }
+            },
+           columns: [
+                    {data: 'app_id'},
+                    {data: 'invoice_no'},
+                    {data: 'disburse_date'},
+                    {data: 'inv_due_date'},
+                    {data: 'disburse_amount'},
+                    {data: 'disburse_type'}
+                ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+        });
+
         // //Search
         // $('#searchbtn').on('click', function (e) {
         //     oTable.draw();

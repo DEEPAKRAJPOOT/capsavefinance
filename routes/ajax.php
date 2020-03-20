@@ -393,6 +393,14 @@ Route::group(
         ]
     );  
 
+    Route::post(
+        'get-ajax-view-disburse-invoice',
+        [
+        'as' => 'get_ajax_view_disburse_invoice',
+        'uses' => 'AjaxController@getAjaxViewDisburseInvoice'
+        ]
+    );  
+
        Route::post(
         'backend_get_invoice_list_failed_disbursed',
         [

@@ -4320,10 +4320,48 @@ class DataRenderer implements DataProviderInterface
                 }) 
                 ->addColumn(
                     'action',
-                    function ($dataRecords) {
-                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice_customers', ['user_id' => $dataRecords->user_id]).'"><i class="fa fa-eye" /></a>';
+                    function ($dataRecords) use($request) {
+                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_view_disburse_invoice', ['batch_id' => $request->get('batch_id'), 'disbursed_user_id' => $dataRecords->user_id]).'"><i class="fa fa-eye" /></a>';
                     }
                 )
+                ->make(true);
+    }
+
+    public function getDisburseInvoiceByDataProvider(Request $request, $dataRecords)
+    {
+        
+        return DataTables::of($dataRecords)
+                ->rawColumns([]) 
+                ->editColumn(
+                    'app_id',
+                    function ($dataRecords) {
+                    return \Helpers::formatIdWithPrefix($dataRecords->app_id, 'APP');
+                }) 
+                ->editColumn(
+                    'invoice_no',
+                    function ($dataRecords) {
+                    return $dataRecords->invoice_no; 
+                }) 
+                ->editColumn(
+                    'disburse_date',
+                    function ($dataRecords) {
+                    return $dataRecords->disburse_date;
+                })  
+                ->editColumn(
+                    'inv_due_date',
+                    function ($dataRecords) {
+                    return $dataRecords->inv_due_date;
+                })               
+                ->editColumn(
+                    'disburse_amount',
+                    function ($dataRecords) {
+                    return "₹ ".number_format($dataRecords->disburse_amount);
+                })    
+                ->editColumn(
+                    'disburse_type',
+                    function ($dataRecords) {
+                    return ($dataRecords->disburse_type==1) ? 'Online' : 'Offline';
+                })              
                 ->make(true);
     }
 }
