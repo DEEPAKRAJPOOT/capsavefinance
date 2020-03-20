@@ -2728,6 +2728,13 @@ if ($err) {
         return $invoice;
     } 
     
+     //////////////////// use for invoice list/////////////////
+     public function getFrontendInvoiceList(DataProviderInterface $dataProvider) {
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
+       /// dd($invoice_data);
+        $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
+        return $invoice;
+    } 
    //////////////////// get use wise  invoice list/////////////////
      public function getUserWiseInvoiceList(DataProviderInterface $dataProvider) {
         $invoice_data = $this->invRepo->getUserWiseInvoiceData($this->request->user_id);
@@ -3469,7 +3476,13 @@ if ($err) {
          $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
          return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
      }
-     
+       public function getProgramLmsSingleList(Request $request)
+     {
+       
+         $get_program = $this->invRepo->getProgramLmsSingleList($request['anchor_id']);
+         $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
+         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
+     }
       public function getSupplierList(Request $request)
      {
         

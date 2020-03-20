@@ -54,26 +54,29 @@ class InvoiceController extends Controller {
     public function getAllInvoice()
     {
         
-        $get_anchor = $this->invRepo->getLimitAllAnchor();
-       return view('frontend.application.invoice.upload_all_invoice')
+        $get_anchor = $this->invRepo->getLmsLimitAllAnchor();
+        return view('frontend.application.invoice.upload_all_invoice')
                    ->with(['get_anchor' => $get_anchor]);
   
     }
   
       public function getBulkInvoice() {
           
-         $getAllInvoice    =   $this->invRepo->getAllAnchor();
+         $getAllInvoice    =   $this->invRepo->getLmsLimitAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();  
          return view('frontend.application.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
         
       } 
     
-         public function viewInvoice() {
-           
-            $getAllInvoice    =   $this->invRepo->getAllAnchor();
-            $get_bus = $this->invRepo->getBusinessName();
-            return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
-
+         public function viewInvoice(Request $req) {
+                $flag = $req->get('flag') ?: null;
+                $user_id = $req->get('user_id') ?: null;
+                $app_id = $req->get('app_id') ?: null;
+                $userInfo = $this->invRepo->getCustomerDetail($user_id);
+                $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(7);
+                $get_bus = $this->invRepo->getBusinessNameApp(7);
+                return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+  
         }
       
        public function viewApproveInvoice() {
@@ -165,64 +168,13 @@ class InvoiceController extends Controller {
                return back();
           }
       }
-        /* save bulk invoice */
-      public function saveBulkInvoice(Request $request) { 
-           $attributes = $request->all();
-           $res =  $this->invRepo->saveBulk($attributes);
-           if($res)
-           {
-                 
-                  Session::flash('message', 'Invoice successfully saved');
-                  return back();
-           }
-        else {
-               Session::flash('message', 'Something wrong, Invoice is not saved');
-               return back();
-          }
-          
-      }
-      
-      
-     /*   save invoice */
-     public function saveInvoice(Request $request) {
+       /* save bulk invoice */
+
+    public function saveBulkInvoice(Request $request) {
         $attributes = $request->all();
-        $date = Carbon::now();
-        $id = Auth::user()->user_id;
-        
-        if(isset($attributes['app_id']))
-        {
-            $appId = $attributes['app_id']; 
-            $biz_id  = $attributes['biz_id'];
-        }
-        else {
-           $res =  $this->invRepo->getSingleLimit($attributes['anchor_id']);
-           $appId = $res->app_id; 
-           $biz_id  = $res->biz_id;
-        }
-        $uploadData = Helpers::uploadAppFile($attributes, $appId);
-        $userFile = $this->docRepo->saveFile($uploadData);
-       
-        $arr = array('anchor_id' => $attributes['anchor_id'],
-            'supplier_id' => $attributes['supplier_id'],
-            'program_id' => $attributes['program_id'],
-            'app_id'    => $appId,
-            'biz_id'  => $biz_id,
-            'invoice_no' => $attributes['invoice_no'],
-            'tenor' => $attributes['tenor'],
-            'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
-            'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
-            'invoice_approve_amount' => $attributes['invoice_approve_amount'],
-            'invoice_amount' => $attributes['invoice_approve_amount'],
-            'prgm_offer_id' => $attributes['prgm_offer_id'],
-            'remark' => $attributes['remark'],
-            'file_id'  =>$userFile->file_id,
-            'created_by' => $id,
-            'created_at' => $date);
-           $result = $this->invRepo->save($arr);
+        $res = $this->invRepo->saveBulk($attributes);
+        if ($res) {
 
-        if ($result) {
-
-            $this->invRepo->saveInvoiceActivityLog($result,7,null,$id,null);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
@@ -230,5 +182,57 @@ class InvoiceController extends Controller {
             return back();
         }
     }
-    
+
+      
+     /*   save invoice */
+
+    public function saveInvoice(Request $request) {
+        $attributes = $request->all();
+        $explode = explode(',', $attributes['supplier_id']);
+        $attributes['supplier_id'] = $explode[0];
+        $appId = $explode[1];
+        $date = Carbon::now();
+        $id = Auth::user()->user_id;
+        $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
+        $biz_id = $res->biz_id;
+        if ($attributes['exception']) {
+            $statusId = 28;
+        } else {
+            $statusId = 7;
+        }
+
+        $uploadData = Helpers::uploadAppFile($attributes, $appId);
+        $userFile = $this->docRepo->saveFile($uploadData);
+        $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
+        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+        $arr = array('anchor_id' => $attributes['anchor_id'],
+            'supplier_id' => $attributes['supplier_id'],
+            'program_id' => $attributes['program_id'],
+            'app_id' => $appId,
+            'biz_id' => $biz_id,
+            'invoice_no' => $attributes['invoice_no'],
+            'tenor' => $attributes['tenor'],
+            'invoice_due_date' => ($attributes['invoice_due_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_due_date'])->format('Y-m-d') : '',
+            'invoice_date' => ($attributes['invoice_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['invoice_date'])->format('Y-m-d') : '',
+            'invoice_approve_amount' => $invoice_approve_amount,
+            'invoice_amount' => $invoice_amount,
+            'prgm_offer_id' => $attributes['prgm_offer_id'],
+            'status_id' => $statusId,
+            'remark' => $attributes['remark'],
+            'file_id' => $userFile->file_id,
+            'created_by' => $id,
+            'created_at' => $date);
+        $result = $this->invRepo->save($arr);
+
+        if ($result) {
+
+            $this->invRepo->saveInvoiceActivityLog($result, 7, null, $id, null);
+            Session::flash('message', 'Invoice successfully saved');
+            return back();
+        } else {
+            Session::flash('message', 'Something wrong, Invoice is not saved');
+            return back();
+        }
+    }
+
 }
