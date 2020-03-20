@@ -7,74 +7,30 @@
 @endif
 <div class="content-wrapper">
  <div class="col-md-12 ">
-        <section class="content-header">
-            <div class="header-icon">
-                <i class="fa fa-clipboard" aria-hidden="true"></i>
-            </div>
-            <div class="header-title">
-                <h3 class="mt-2">Manage Invoice</h3>
-
-                <ol class="breadcrumb">
-                    <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-                    <li class="active">Manage Invoice</li>
-                </ol>
-            </div>
-            <div class="clearfix"></div>
-        </section>
+      
         <div class="row grid-margin">
 
             <div class="col-md-12 ">
                 <div class="card">
-                    <div class="card-body">
-
-                        @include('layouts.backend.invoice_status_links')
-
+                   
                         <div class="tab-content">
 
                             <div id="menu1" class=" active tab-pane "><br>
                              <span id="moveCase" class="text-success"></span>
-                               <div class="card">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-3">				 
-                                                <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                              <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                    <option value="">Select Business Name  </option>
-                                                        @foreach($get_bus as $row)
-                                                         @php if(isset($row->business->biz_id)) { @endphp
-                                                    <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                                                      @php } @endphp
-                                                    @endforeach
-
-
+                               <div class="row">
+                                   <div class="col-md-9">
+                                       
+                                       <input type="hidden" name="user_id" value="{{($user_id) ? $user_id : ''}}">
+                                   </div>
+                                                 <div class="col-md-3">
+                                                <select class="form-control form-control-sm changeBiz searchbtn" name="status_id">
+                                                    <option value=""> Select Invoice Status</option>  
+                                                        @foreach($status as $row)
+                                                        <option value="{{{$row->id}}}">{{{$row->status_name}}} </option>
+                                                        @endforeach
                                                 </select>
-                                                <span id="anchorMsg" class="error"></span>
-
                                             </div>
-                                            <div class="col-md-2">				 
-                                                <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
-                                                 
-                                                </select>
-
-                                            </div>
-                                            <div class="col-md-2">		    
-
-                                                <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-
-                                                </select>
-                                            </div>    
-                                            <div class="col-md-2">	
-                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-                                              
-
-                                            </div>
-                                            <div class="col-md-1">	          
-                                                <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
-                                               
-                                            
-                                            </div>
+                                           
                                         </div>
                                         <div class="row">
                                             <div class="col-12 dataTables_wrapper mt-4">
@@ -85,13 +41,14 @@
                                                                 <table id="invoiceList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                                                     <thead>
                                                                         <tr role="row">
-                                                                            <th><input type="checkbox" id="chkAll"></th> 
+                                                                           
                                                                             <th>Inv. No.</th>
                                                                             <th>Anchor Detail</th>
                                                                             <th>Customer Detail</th>
                                                                             <th> Inv Detail</th>
                                                                             <th> Inv Amount</th>
-                                                                            <th>Action</th>
+                                                                            <th> Status</th>
+                                                                            
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -107,18 +64,80 @@
 
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                            </div>
+                           </div>
 
                         </div>
 
-
-                    </div>
                 </div>
             </div>
         </div></div>
+
+
+
+
+    <div class="modal align-middle" id="myModal6" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5>Upload Invoices</h5>
+                    <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body ">
+                    <form id="signupForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span></label>
+                                    <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id"  name="anchor_bulk_id">
+
+                                        <option value="">Select Anchor  </option>
+                                        @foreach($anchor_list as $row)
+                                        @php if(isset($row->anchor->anchor_id)) { @endphp
+                                        <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
+                                          @php } @endphp
+                                        @endforeach
+                                    </select>
+                                    <span id="anc_limit"></span>
+
+                                </div></div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtCreditPeriod">Product Program Name
+                                        <span class="error_message_label">*</span>
+                                    </label>
+                                    <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" name="supplier_bulk_id">
+                                    </select>
+                                    <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
+                                    <span id="pro_limit"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
+                                    <select readonly="readonly" class="form-control" id="supplier_bulk_id" name="supplier_bulk_id">
+                                    </select>
+                                    <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
+                                </div>
+                            </div>
+
+
+
+                            <div class="clearfix">
+                            </div>
+                        </div>	
+                        <h5 id="submitInvoiceMsg" class="text-success"></h5>
+                        <button type="submit" id="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Upload</button> 
+                        <button type="reset" class="btn btn-secondary btn-sm mt-3 float-right" data-dismiss="modal">Close</button> 	
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal show" id="myModal7" style="display: none;">
     <div class="modal-dialog modal-md">
@@ -172,16 +191,6 @@
 @endsection
 @section('jscript')
 <style>
-    .image-upload > input
-   {
-      display: none;
-   }
-
-   .image-upload i
-   {
-      width: 80px;
-      cursor: pointer;
-   }
     .itemBackground 
     { 
       border: 2px solid blanchedalmond;  
@@ -194,10 +203,9 @@
 </style>    
 <script>
  var messages = {
-        backend_get_invoice_list: "{{ URL::route('backend_get_invoice_list') }}",
+        user_wise_invoice_list: "{{ URL::route('user_wise_invoice_list') }}",
         upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
         get_program_supplier: "{{ URL::route('get_program_supplier') }}",
-        get_biz_anchor: "{{ URL::route('get_biz_anchor') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         front_program_list: "{{ URL::route('front_program_list') }}",
         front_supplier_list: "{{ URL::route('front_supplier_list') }}",
@@ -300,52 +308,6 @@
         });
     });
 
-   //////////////////// onchange Business  id get Anchor /////////////////
-
-    $("#changeAnchor").append("<option value=''>Select Anchor</option>");
-    $(document).on('change', '.changeBiz', function () {
-        var biz_id = $(this).val();
-        $("#changeAnchor").empty();
-        var postData = ({'status_id':7,'biz_id': biz_id, '_token': messages.token});
-        jQuery.ajax({
-            url: messages.get_biz_anchor,
-            method: 'post',
-            dataType: 'json',
-            data: postData,
-            error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-
-            },
-            success: function (data) {
-            
-                if (data.status == 1)
-                {
-                    var obj1 = data.userList;
-
-                    ///////////////////// for suppllier array///////////////  
-
-                    if (obj1.length > 0)
-                    {
-                        $("#changeAnchor").append("<option value=''> Select Anchor </option>");
-                        $(obj1).each(function (i, v) {
-                           
-                            $("#changeAnchor").append("<option value='" + v.anchor.anchor_id + "'>" + v.anchor.comp_name + "</option>");
-
-                        });
-                    } else
-                    {
-                        $("#changeAnchor").append("<option value=''>No data found</option>");
-
-                    }
-
-
-                }
-               
-
-            }
-        });
-    });
-    
     function uploadInvoice()
     {
        $('.isloader').show();
@@ -392,7 +354,7 @@
 function uploadFile(app_id,id)
 {
    $(".isloader").show(); 
-   var file  = $(".file"+id)[0].files[0];
+   var file  = $("#file"+id)[0].files[0];
    var extension = file.name.split('.').pop().toLowerCase();
    var datafile = new FormData();
    datafile.append('_token', messages.token );
@@ -586,6 +548,6 @@ function uploadFile(app_id,id)
         }
     });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/user_wise_invoice_list.js') }}"></script>
 
 @endsection
