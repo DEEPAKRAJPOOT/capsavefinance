@@ -45,16 +45,39 @@ class ApprovalRequest extends BaseModel {
         'req_id',
         'ref_code',
         'type',
-        'status',        
+        'status',  
+        'amount',
         'created_at',
         'created_by',
         'updated_at',
         'updated_by',
     ];
 
-    public static function ()
+    /**
+     * Save Approval Request Data
+     * 
+     * @param array $reqData
+     * @param integer $reqId optional
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function saveApprRequestData($reqData=[], $reqId=null)
     {
+        //Check $reqData is not an array
+        if (!is_array($reqData)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }        
         
-    }
+        if (!is_null($reqId)) {
+            return self::where('req_id', $reqId)->update($reqData);
+        } else {
+            if(isset($reqData[0])) {
+                return self::insert($reqData);
+            } else {
+                return self::create($reqData);
+            }
+        }
+    } 
 }
 

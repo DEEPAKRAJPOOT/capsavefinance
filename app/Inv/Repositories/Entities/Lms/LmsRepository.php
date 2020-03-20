@@ -32,6 +32,7 @@ use App\Inv\Repositories\Models\Lms\WfStage;
 use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
+use App\Inv\Repositories\Models\Master\RoleUser;
 
 /**
  * Lms Repository class
@@ -598,9 +599,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @return mixed
      * @throws BlankDataExceptions
      */
-    public function getWfDetailById($req_type, $wf_stage_code)
+    public function getWfDetailById($wf_stage_code)
     {
-        return WfStage::getWfDetailById($req_type, $wf_stage_code);
+        return WfStage::getWfDetailById($wf_stage_code);
     }
   
     /**
@@ -658,7 +659,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * @param integer $req_id
      * @return mixed
      */    
-    protected function getCurrentWfStage($req_id) 
+    public function getCurrentWfStage($req_id) 
     {
         return RequestWfStage::getCurrentWfStage($req_id);
     }
@@ -671,8 +672,47 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * 
      * @return mixed
      */
-    protected function getRequestWfStage($wf_stage_code, $req_id) 
+    public function getRequestWfStage($wf_stage_code, $req_id) 
     {
         return RequestWfStage::getRequestWfStage($wf_stage_code, $req_id);
     }
+    
+    public function updateRequestAssignById($req_id, $data)
+    {
+        return RequestAssign::updateRequestAssignById($req_id, $data);
+    }
+    
+    public function assignRequest($data)
+    {
+        return RequestAssign::assignRequest($data);
+    }
+    
+    /**
+     * Get Backend Users By Role Id
+     * 
+     * @param integer $role_id
+     * @return array
+     */
+    public function getBackendUsersByRoleId($role_id, $usersNotIn=[])
+    {
+        return RoleUser::getBackendUsersByRoleId($role_id, $usersNotIn);
+    }
+    
+    public function saveApprRequestData($reqData=[], $reqId=null)
+    {
+        return ApprovalRequest::saveApprRequestData($reqData, $reqId);
+    }
+
+    /**
+     * Save Approval Request Log Data
+     * 
+     * @param array $reqLogData
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveApprRequestLogData($reqLogData)
+    {
+        return ApprovalRequestLog::saveApprRequestLogData($reqLogData);
+    }    
 }

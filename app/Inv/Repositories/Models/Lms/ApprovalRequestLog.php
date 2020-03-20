@@ -55,5 +55,25 @@ class ApprovalRequestLog extends BaseModel {
         'updated_by',
     ];
 
-
+    /**
+     * Save Approval Request Log Data
+     * 
+     * @param array $reqLogData
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function saveApprRequestLogData($reqLogData)
+    {
+        //Check $reqLogData is not an array
+        if (!is_array($reqLogData)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        
+        if (isset($reqLogData[0])) {
+            return self::insert($reqLogData);
+        } else {
+            return self::create($reqLogData);
+        }
+    }
 }

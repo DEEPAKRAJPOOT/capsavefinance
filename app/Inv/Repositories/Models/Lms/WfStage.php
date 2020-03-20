@@ -76,7 +76,7 @@ class WfStage extends BaseModel {
      * @return mixed
      * @throws BlankDataExceptions
      */
-    public static function getWfDetailById($req_type, $wf_stage_code)
+    public static function getWfDetailById($wf_stage_code)
     {
         if (empty($wf_stage_code)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
@@ -84,7 +84,6 @@ class WfStage extends BaseModel {
         
         $arr = self::from('lms_wf_stage as wf')
             ->select('wf.*')   
-            ->where('wf.req_type', $req_type)
             ->where('wf.stage_code', $wf_stage_code)
             ->first();
 

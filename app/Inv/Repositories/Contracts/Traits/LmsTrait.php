@@ -946,17 +946,35 @@ trait LmsTrait
     
     protected function createApprRequest($requestType, $addlData=[]) 
     {
-        $wf_stage_types = config('lms.REQUEST_STATUS');
-        $assign_role = false;        
+        $wf_stage_types = config('lms.REQUEST_TYPE');
+        $assignRequest = false;        
         $wf_stage_type = isset($wf_stage_types[$requestType]) ? $wf_stage_types[$requestType] : '';
         
+        $reqData=[];
+        $reqLogData=[];
         
-        $wt_stages = $this->lmsRepo->getWfStages($wf_stage_type);        
+        //Prepare Request Data        
+        $reqData['type'] = $wf_stage_type;
+        $reqData['status'] = config('lms.REQUEST_STATUS.NEW_REQUEST');        
+        
+        //Prepare Request Log Data
+        $reqLogData['status'] = $reqData['status'];        
+            
+        if ($requestType == 'REFUND' ) {
+            $reqData['trans_id'] = $addlData['trans_id'];
+            $reqData['amount'] = $addlData['amount'];            
+        }
+        $saveReqData = $this->lmsRepo->saveApprRequestData($reqData);
+        $req_id = $saveReqData->req_id;        
+        $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => ''], $req_id);
+        $reqLogData['req_id'] = $req_id;
+        
+        $wt_stages = $this->lmsRepo->getWfStages($wf_stage_type);
         foreach($wf_stages as $wf_stage) {
             $wf_stage_code = $wf_stage->stage_code;
             $wf_order_no = $wf_stage->order_no;
             
-            $wfData = $this->lmsRepo->getWfDetailById($wf_stage_type, $wf_stage_code);
+            $wfData = $this->lmsRepo->getWfDetailById($wf_stage_code);
             if ($wfData) {
                 $wfAppStageData = $this->lmsRepo->getRequestWfStage($wf_stage_code, $req_id);
                 if (!$wfAppStageData) {
@@ -969,46 +987,53 @@ trait LmsTrait
                 }
             }
             if ($wf_order_no == '0') {
-                $assign_role = true;
+                $result = $wf_stage;
+                $assignRequest = true;
             }
         }
         
-        if ($assign_role) {
+        if ($assignRequest) {
             //get role id by wf_stage_id
-            $data = WfStage::find($result->wf_stage_id);
-            AppAssignment::updateAppAssignById((int) $app_id, ['is_owner' => 0]);
+            $data = $result;
+            $this->lmsRepo->updateRequestAssignById((int) $req_id, ['is_owner' => 0]);
             //update assign table
-            $dataArr = [];
-            $dataArr['from_id'] = \Auth::user()->user_id;
-            if ($data->role_id == 4) {
-                //$toUserId = User::getLeadSalesManager($user_id);
-                $userData = User::getfullUserDetail($user_id);
-                if ($userData && !empty($userData->anchor_id)) {
-                    $toUserId = User::getLeadSalesManager($user_id);
-                } else {
-                    $toUserId = LeadAssign::getAssignedSalesManager($user_id);
-                }
-                $dataArr['to_id'] = $toUserId;
-                $dataArr['role_id'] = null;
-            } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
-                $toUserId = $addl_data['to_id'];
-                $dataArr['to_id'] = $toUserId;
-                $dataArr['role_id'] = null;
-            } else {
-                $dataArr['to_id'] = null;
-                $dataArr['role_id'] = $data->role_id;
+            $assignRequests=[];
+            $allReqLogData=[];
+            $assignRoles = explode(',', $data->assign_role);
+            foreach($assignRoles as $role) {
+                $assignedUsers = $this->lmsRepo->getBackendUsersByRoleId($role->role_id);
+                if (count($assignedUsers) > 0) {
+                    foreach($assignedUsers as $auser) {
+                        $dataArr = [];
+                        $dataArr['from_id'] = \Auth::user()->user_id;
+                        $dataArr['to_id'] = $auser->user_id;
+                        $dataArr['role_id'] = null;
+                        $dataArr['req_id'] = $req_id;
+                        $dataArr['assign_status'] = '0';
+                        $dataArr['assign_type'] = '2';
+                        $dataArr['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                        $dataArr['is_owner'] = 1;
+                        $assignRequests[] = $dataArr;
+                        
+                        //Save Request Log Data
+                        $allReqLogData[] = $reqLogData + ['assigned_user_id' => $auser->user_id];
+                    }
+                } 
+                /*else { 
+                    $assignRequests['from_id'] = \Auth::user()->user_id;    
+                    $assignRequests['req_id'] = $req_id;
+                    $assignRequests['assign_status'] = '0';
+                    $assignRequests['assign_type'] = '2';
+                    $assignRequests['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
+                    $assignRequests['is_owner'] = 1;                
+                    $assignRequests['to_id'] = null;
+                    $assignRequests['role_id'] = $role->role_id;
+                }*/
             }
-            $dataArr['assigned_user_id'] = $user_id;
-            $dataArr['app_id'] = $app_id;
-            $dataArr['assign_status'] = '0';
-            $dataArr['assign_type'] = '2';
-            $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';
-            $dataArr['is_owner'] = 1;
-
-            AppAssignment::saveData($dataArr);
-
+            $this->lmsRepo->assignRequest($assignRequests);
+            $this->lmsRepo->saveApprRequestLogData($allReqLogData);
             return $data;
-        }        
+        }
         
     }
 }
