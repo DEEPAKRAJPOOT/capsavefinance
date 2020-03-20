@@ -388,6 +388,7 @@ class InvoiceController extends Controller {
         $totalFunded = 0;
         $totalMargin = 0;
         $exportData = [];
+        $disbursalIds = [];
         $batchId= _getRand(12);
         $transId = _getRand(18);
 
@@ -399,7 +400,7 @@ class InvoiceController extends Controller {
                 $invoice['disburse_date'] = $disburseDate;
                 $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
-
+                $disbursalIds[] = $createDisbursal->disbursal_id; 
                 $refId = $invoice['lms_user']['virtual_acc_id'];
                 
                 if($invoice['supplier_id'] = $userid) {
@@ -473,18 +474,27 @@ class InvoiceController extends Controller {
                 }
             }
         }
-        $this->export($exportData,$batchId);
+
+        $result = $this->export($exportData, $batchId);
+        $file['file_path'] = $result['file_path'];
+        if ($file) {
+            $createBatchFileData = $this->createBatchFileData($file);
+            $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+            if ($createBatchFile) {
+                $createDisbursalBatch = $this->lmsRepo->createDisbursalBatch($createBatchFile, $batchId);
+                if($createDisbursalBatch) {
+                    $updateDisbursal = $this->lmsRepo->updateDisburse([
+                            'disbursal_batch_id' => $createDisbursalBatch->disbursal_batch_id
+                        ], $disbursalIds);
+                }
+            }
+        }
 
         Session::flash('message',trans('backend_messages.disbursed'));
-        return view('backend.invoice.confirm_invoice')
-                ->with([
-                    'customersDisbursalList' => $customersDisbursalList, 
-                    'invoiceIds' => $invoiceIds 
-                ]);;              
+        return redirect()->route('backend_get_disbursed_invoice');
     }
 
     public function export($data, $filename) {
-        ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL);
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -558,30 +568,30 @@ class InvoiceController extends Controller {
             $rows++;
         }
 
-
-        $storage_path = storage_path('app/public/');
-        // dd($storage_path);
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
+        // header('Cache-Control: max-age=1');
 
-        // If you're serving to IE over SSL, then the following may be needed
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header ('Pragma: public'); // HTTP/1.0
+        // // If you're serving to IE over SSL, then the following may be needed
+        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        // header ('Pragma: public'); // HTTP/1.0
         
-        // $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
+        if (!Storage::exists('/public/docs/bank_excel')) {
+            Storage::makeDirectory('/public/docs/bank_excel');
+        }
+        $storage_path = storage_path('app/public/docs/bank_excel');
+        $filePath = $storage_path.'/'.$filename.'.xlsx';
 
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        // $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
+        $objWriter->save($filePath);
 
-        $objWriter->save($storage_path.$filename.'.xlsx');
-        ob_end();
-        exit;
-        $objWriter->save('php://output');
+        return [ 'status' => 1,
+                'file_path' => $filePath
+                ];
     }
 }

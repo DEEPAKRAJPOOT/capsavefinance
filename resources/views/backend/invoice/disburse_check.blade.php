@@ -2,7 +2,7 @@
 @section('content')
 <div class="row">
 	<div class="col-6">
-		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}">
+		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}" target="_top">
 			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
 			@csrf
 			<div class="col-6">

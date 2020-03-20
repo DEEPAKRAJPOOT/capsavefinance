@@ -47,7 +47,7 @@ class Disbursal extends BaseModel {
 		'app_id',
 		'invoice_id',
 		'prgm_offer_id',
-		'batch_id',
+		'disbursal_batch_id',
 		'bank_account_id',
 		'disburse_date',
 		'bank_name',
