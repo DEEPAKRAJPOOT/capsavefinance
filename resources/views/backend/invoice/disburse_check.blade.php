@@ -44,12 +44,16 @@
 									<th width="4%">App ID</th>
 									<th width="10%">Ben Name</th>
 									<th width="20%">Bank Detail</th>
+									<th width="15%">Total Invoice</th>
 									<th width="15%">Total Invoice Amt.</th>
 									<th width="15%">Total Disburse Amt.</th>
-									<th width="30%">Total Actual Funded Amt.</th>
+									<th width="30%">Total Actual Disburse Amt.</th>
 								</tr>
 							</thead>
 							<tbody>
+							@php 
+							$finalDisburseAmt = 0;
+							@endphp
 								@foreach($customersDisbursalList as $customer)
 								<tr role="row" class="odd">
 									<td> {{ $customer->customer_id }}</td>
@@ -57,11 +61,15 @@
 									@php
 									if ($customer->user->is_buyer == 2) {
 										$benName = (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
+										$displayName = $benName ? '<span><b>Anchor:&nbsp;</b>'.$benName.'</span>' : '';
+
 									} else {
 										$benName =  (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+										$displayName = $benName ? '<span><b>Supplier:&nbsp;</b>'.$benName.'</span>' : '';
+
 									}
 									@endphp
-									<td> {{ $benName }}</td>
+									<td> {!! $displayName !!}</td>
 									@php
 									if ($customer->user->is_buyer == 2) {
 										$bank_name = (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
@@ -89,7 +97,13 @@
 									@endphp
 
 									<td> {!! $account !!}</td>
-
+									@php 
+									$apps = $customer->app;
+									foreach ($apps as $app) {
+										$totalInvCount = $app->invoices->count();
+									}
+									@endphp
+									<td> {{ $totalInvCount }}</td>
 									@php
 									$invoiceTotal = 0;
 									$apps = $customer->app->toArray();
@@ -139,13 +153,30 @@
 									}
 									@endphp
 									<td> <i class="fa fa-inr"></i> {{ number_format($disburseAmount) }}</td>
+									@php 
 
+									$finalDisburseAmt +=  $disburseAmount;
+									@endphp
 
 								</tr>
 								@endforeach
 							</tbody>
 						</table>
 					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="form-group">
+					<label for="marginAmount"># No of Cust.</label>
+					<input type="text" name="" class="form-control" readonly="true" value="{{ $customersDisbursalList->count() }}">
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label for="nonFactoredAmount"># Amount Disburse</label>
+					<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
 				</div>
 			</div>
 		</div>

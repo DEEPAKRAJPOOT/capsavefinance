@@ -355,7 +355,7 @@ class InvoiceController extends Controller {
 
         $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
 
-        return view('backend.invoice.confirm_invoice')
+        return view('backend.invoice.disburse_online')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList, 
                     'invoiceIds' => $invoiceIds 
@@ -420,7 +420,6 @@ class InvoiceController extends Controller {
                     $totalMargin += $margin;
                     $totalFunded += $fundedAmount;
                     $disburseAmount += round($fundedAmount, 2);
-
                 }
 
                 if($disburseType == 2) {
@@ -445,10 +444,7 @@ class InvoiceController extends Controller {
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                     }
-
                 } 
-
-
             }
             
             if ($disburseAmount) {
@@ -474,9 +470,6 @@ class InvoiceController extends Controller {
                         $marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
-
-                    
-
                 }
             }
         }
@@ -491,7 +484,7 @@ class InvoiceController extends Controller {
     }
 
     public function export($data, $filename) {
-
+        ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL);
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -566,7 +559,8 @@ class InvoiceController extends Controller {
         }
 
 
-        $storage_path = storage_path();
+        $storage_path = storage_path('/app/public/');
+        // dd($storage_path);
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
@@ -583,9 +577,11 @@ class InvoiceController extends Controller {
         // $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
 
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        // $objWriter->save($storage_path);
-        // ob_end();
-        // exit;
+        // $uploadData = Helpers::uploadAppFile($arrFileData, $appId);
+
+        $objWriter->save($storage_path.'/'.$filename.'.xlsx');
+        ob_end();
+        exit;
         $objWriter->save('php://output');
     }
 }
