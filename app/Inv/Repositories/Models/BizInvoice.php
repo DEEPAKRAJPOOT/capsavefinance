@@ -181,6 +181,44 @@ public static function updateInvoice($invoiceId,$status)
         return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['business','anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'asc')->get();
      } 
      
+     public static function getUserAllInvoice($request,$status)
+     {
+         $whr = [];
+         
+         if($request->get('supplier_id')!='' && $request->get('biz_id')=='')
+         {
+             $whr= ['anchor_id' => $request->get('anchor_id'),'supplier_id' => $request->get('supplier_id')];
+         }
+         else if($request->get('supplier_id')!='' && $request->get('biz_id')!='' && $request->get('anchor_id')!='')
+         {
+                 $whr = ['biz_id' => $request->get('biz_id'),'anchor_id' => $request->get('anchor_id'),'supplier_id' => $request->get('supplier_id')];
+          
+         }
+          else if($request->get('biz_id')!='' && $request->get('anchor_id')!='' && $request->get('supplier_id')=='')
+         {
+                 $whr = ['biz_id' => $request->get('biz_id'),'anchor_id' => $request->get('anchor_id')];
+          
+         }
+           else if($request->get('supplier_id')=='' && $request->get('biz_id')!='' && $request->get('anchor_id')=='')
+         {
+                 $whr = ['biz_id' => $request->get('biz_id')];
+          
+         }
+           else if($request->get('biz_id')=='' && $request->get('anchor_id')!='' && $request->get('supplier_id')=='')
+         {
+                 $whr = ['anchor_id' => $request->get('anchor_id')];
+          
+         }
+          
+       
+         if($request->get('app_id')!=''){
+             $whr['app_id']= $request->get('app_id');
+        }
+        //backend_get_invoice
+        $id = Auth::user()->user_id;
+        return self::where(['supplier_id' =>$id,'status_id' => $status])->where($whr)->with(['business','anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'asc')->get();
+     }  
+     
     public static function  getSingleInvoice($invId)
      {
          return self::with(['anchor','supplier','gst','pan'])->where(['invoice_id' =>$invId])->first();
@@ -198,7 +236,12 @@ public static function updateInvoice($invoiceId,$status)
          return self::with(['business'])->where(['status_id' =>$status_id])->groupBy('biz_id')->get();
          
      }  
-    
+      public static function  getUserBusinessNameApp($status_id)
+     {
+         $id = Auth::user()->user_id;
+         return self::with(['business'])->where(['supplier_id' =>$id,'status_id' =>$status_id])->groupBy('biz_id')->get();
+         
+     }
        function business()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id','biz_id');  
@@ -361,8 +404,8 @@ public static function updateInvoice($invoiceId,$status)
     }
    public static function getUserWiseInvoiceData($user_id)
     {
-        
-        return self::with('mstStatus')->where(['supplier_id' => $user_id]);
+        dd( $user_id);
+        return self::with('mstStatus')->where(['supplier_id' => $user_id])->get();
     }
     
     public static function getUserInvoiceIds($userId)
@@ -376,4 +419,12 @@ public static function updateInvoice($invoiceId,$status)
         return self::with('anchor')->where(['status_id' => $attr['status_id'],'biz_id' => $attr['biz_id']])->groupBy('anchor_id')->get();
           
     }
+    
+     public static function getUserBizAnchor($attr)
+    {
+         $id = Auth::user()->user_id;
+         return self::with('anchor')->where(['supplier_id' =>$id,'status_id' => $attr['status_id'],'biz_id' => $attr['biz_id']])->groupBy('anchor_id')->get();
+          
+    }
+     
 }

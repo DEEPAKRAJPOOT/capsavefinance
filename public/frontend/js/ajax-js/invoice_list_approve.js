@@ -11,7 +11,7 @@ try {
             searching: false,
             bSort: true,
             ajax: {
-                "url": messages.backend_get_invoice_list_approve, // json datasource
+                "url": messages.frontend_get_invoice_list_approve, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.anchor_id = $('select[name=search_anchor]').val();
@@ -28,13 +28,12 @@ try {
                 }
             },
             columns: [
-                {data: 'anchor_id'},
                 {data: 'invoice_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
                 {data: 'invoice_date'},
                 {data: 'invoice_amount'},
-                {data: 'action'}
+               
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });

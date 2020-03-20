@@ -136,10 +136,10 @@
                         <tbody>
                             <tr>
                                <td id="invoice-amount">
-                                    {{($invoice->invoice_amount) ? $invoice->invoice_amount : '' }}
+                                    {{($invoice->invoice_amount) ? number_format($invoice->invoice_amount) : '' }}
                                 </td>
                                 <td id="invoice-amount">
-                                    {{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }} <a href="#" data-toggle="modal" data-target="#myModal2"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                    {{($invoice->invoice_approve_amount) ? number_format($invoice->invoice_approve_amount) : '' }} 
 
                                 </td>
                                 <td id="invoice-date">

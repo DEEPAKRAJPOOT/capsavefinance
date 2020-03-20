@@ -2730,9 +2730,8 @@ if ($err) {
     
      //////////////////// use for invoice list/////////////////
      public function getFrontendInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
-       /// dd($invoice_data);
-        $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
+        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,7);
+        $invoice = $dataProvider->getFrontendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
    //////////////////// get use wise  invoice list/////////////////
@@ -2749,6 +2748,13 @@ if ($err) {
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
+        //////////////////// use for Approve invoice list/////////////////
+     public function getFrontendInvoiceListApprove(DataProviderInterface $dataProvider) {
+        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,8);
+        $invoice = $dataProvider->getFrontendInvoiceListApprove($this->request, $invoice_data);
+        return $invoice;
+    } 
+    
      //////////////////// use for exception case invoice list/////////////////
      public function getBackendEpList(DataProviderInterface $dataProvider) {
         $invoice_data = $this->invRepo->getAllInvoice($this->request,28);
@@ -2770,7 +2776,13 @@ if ($err) {
         $invoice = $dataProvider->getBackendInvoiceListBank($this->request, $invoice_data);
         return $invoice;
     } 
-    
+       //////////////////// use for Invoice Disbursed Que list/////////////////
+     public function getFrontendInvoiceListBank(DataProviderInterface $dataProvider) {
+       
+        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,10);
+        $invoice = $dataProvider->getFrontendInvoiceListBank($this->request, $invoice_data);
+        return $invoice;
+    }  
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
        
@@ -4027,7 +4039,20 @@ if ($err) {
         $get_user = $this->invRepo->getBizAnchor($attributes);
         return response()->json(['status' => 1, 'userList' => $get_user]);
     }
-   
+   public function getUserBizAnchor(Request $request) {
+        $attributes = $request->all();
+        $get_user = $this->invRepo->getUserBizAnchor($attributes);
+        return response()->json(['status' => 1, 'userList' => $get_user]);
+    } 
+    
+      /* get suplier & program b behalf of anchor id */
+
+    public function getUserProgramSupplier(Request $request) {
+        $attributes = $request->all();
+        $get_user = $this->invRepo->getLmsUserBehalfApplication($attributes);
+        return response()->json(['status' => 1, 'userList' => $get_user]);
+    }
+
     
     /**
      * Get Repayment Amount
