@@ -12,11 +12,11 @@
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
             </div>
             <div class="header-title">
-                <h3 class="mt-2">Manage Invoice</h3>
+                <h3 class="mt-2">Bank Invoice</h3>
 
                 <ol class="breadcrumb">
                     <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-                    <li class="active">Manage Invoice</li>
+                    <li class="active">Bank Invoice</li>
                 </ol>
             </div>
             <div class="clearfix"></div>
@@ -25,7 +25,6 @@
             <div class="col-md-12 ">
                 <div class="card">
                     <div class="card-body">
-                        @include('layouts.backend.invoice_status_links')
                         <div class="tab-content">      
                             <div class="card">
                                 <div class="card-body">                                    
@@ -64,18 +63,7 @@
     </div>
 </div>
 @endsection
-@section('jscript')
-    <style>
-    .itemBackground 
-    { 
-      border: 2px solid blanchedalmond;  
-      background-color:#5c9742;
-    }
-     .itemBackgroundColor 
-    { 
-      color:white;
-    }
-</style>   
+@section('jscript')  
 <script>
 var messages = {
     get_ajax_bank_invoice: "{{ URL::route('get_ajax_bank_invoice') }}",       
