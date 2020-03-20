@@ -825,4 +825,10 @@ use CommonRepositoryTraits;
         $this->result = Disbursal::getAllBankInvoice();
         return $this->result;
     }
+
+    public function getAllBankInvoiceCustomers($batch_id)
+    {
+        $this->result = Disbursal::getAllBankInvoiceCustomers($batch_id);
+        return $this->result;
+    }
 }

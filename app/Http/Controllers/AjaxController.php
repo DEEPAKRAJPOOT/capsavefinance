@@ -4059,4 +4059,13 @@ if ($err) {
         $this->providerResult = $dataProvider->getBankInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
+
+    public function getAjaxBankInvoiceCustomers(Request $request, DataProviderInterface $dataProvider) { 
+        $batch_id    = $request->get('batch_id');
+        $this->dataRecords = $this->invRepo->getAllBankInvoiceCustomers($batch_id);
+        $this->providerResult = $dataProvider->getBankInvoiceCustomersByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+    
 }

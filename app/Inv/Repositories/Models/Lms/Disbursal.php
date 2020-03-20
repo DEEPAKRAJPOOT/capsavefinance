@@ -279,5 +279,14 @@ class Disbursal extends BaseModel {
         $result = \DB::select("SELECT batch_id, COUNT(DISTINCT(user_id)) as total_users, SUM(disburse_amount) as total_amt FROM rta_disbursal
 		WHERE batch_id IS NOT null GROUP BY batch_id ORDER BY batch_id DESC");
         return $result;    
+	}
+	
+	public static function getAllBankInvoiceCustomers($batch_id){
+        $result = \DB::select("SELECT DISTINCT(rta_disbursal.user_id),app_id,customer_id,bank_name, acc_no, ifsc_code,  COUNT(invoice_id) as total_invoice, SUM(disburse_amount) as total_amt, concat(rta_users.f_name, ' ', rta_users.l_name) AS ben_name
+		FROM rta_disbursal 
+		JOIN rta_users ON (rta_users.user_id=rta_disbursal.user_id)
+		WHERE batch_id = ? AND batch_id IS NOT null 
+		GROUP BY rta_disbursal.user_id, app_id, customer_id, bank_name, acc_no, ifsc_code",[$batch_id]);
+        return $result;    
     }
 }

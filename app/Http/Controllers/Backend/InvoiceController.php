@@ -137,10 +137,14 @@ class InvoiceController extends Controller {
     }
 
     public function viewBankInvoice(Request $req) {
-        $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
-        return view('backend.invoice.bank_invoice')->with(['flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id]);
+        return view('backend.invoice.bank_invoice')->with(['user_id' => $user_id, 'app_id' => $app_id]);
+    }
+
+    public function viewBankInvoiceCustomers(Request $req) {
+        $batch_id = $req->get('batch_id') ?: null;
+        return view('backend.invoice.bank_invoice_customers')->with(['batch_id' => $batch_id]);
     }
 
     public function viewfailedDisbursment(Request $req) {
