@@ -944,14 +944,18 @@ trait LmsTrait
         return $data;
     }
     
-    protected function createApprRequest($requestType, $req_id, $addlData=[]) 
+    protected function createApprRequest($requestType, $addlData=[]) 
     {
         $wf_stage_types = config('lms.REQUEST_STATUS');
-                
+        $assign_role = false;        
         $wf_stage_type = isset($wf_stage_types[$requestType]) ? $wf_stage_types[$requestType] : '';
+        
+        
         $wt_stages = $this->lmsRepo->getWfStages($wf_stage_type);        
         foreach($wf_stages as $wf_stage) {
             $wf_stage_code = $wf_stage->stage_code;
+            $wf_order_no = $wf_stage->order_no;
+            
             $wfData = $this->lmsRepo->getWfDetailById($wf_stage_type, $wf_stage_code);
             if ($wfData) {
                 $wfAppStageData = $this->lmsRepo->getRequestWfStage($wf_stage_code, $req_id);
@@ -963,6 +967,9 @@ trait LmsTrait
                     ];
                     $this->lmsRepo->saveWfDetail($arrData);
                 }
+            }
+            if ($wf_order_no == '0') {
+                $assign_role = true;
             }
         }
         

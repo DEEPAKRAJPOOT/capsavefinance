@@ -52,5 +52,9 @@ class ApprovalRequest extends BaseModel {
         'updated_by',
     ];
 
+    public static function ()
+    {
+        
+    }
 }
 
