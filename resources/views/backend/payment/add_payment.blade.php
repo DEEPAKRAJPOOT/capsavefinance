@@ -89,13 +89,13 @@
                                         </div>
                                       
                                         <!--start processing fees code-->
-                                        <div class="col-md-4 processFeeElmnt">
+                                      <!--  <div class="col-md-4 processFeeElmnt">
                                             <div class="form-group INR ">
                                                 <label for="txtCreditPeriod">Transaction Amount inclusive GST ? <span class="error_message_label">*</span> </label>
                                                 <br>
                                                 <input type="radio" id="incl_gst" name="incl_gst" value="1">Yes &nbsp;&nbsp;  <input type="radio" id="incl_gst" name="incl_gst" value="0" checked>No
                                             </div>
-                                        </div>
+                                        </div>   -->
                                         <div class="col-md-4 processFeeElmnt noGstShow">
                                             <div class="form-group INR">
                                                 <label for="txtCreditPeriod">Select GST Option <span class="error_message_label">*</span> </label>

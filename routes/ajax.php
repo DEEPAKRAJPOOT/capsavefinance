@@ -125,12 +125,19 @@ Route::group(
         'as' => 'get_program_supplier',
         'uses' => 'Backend\InvoiceController@getProgramSupplier'
     ]);
-  
+     Route::post('get_user_program_supplier', [
+        'as' => 'get_user_program_supplier',
+        'uses' => 'AjaxController@getUserProgramSupplier'
+    ]);
       Route::post('get_biz_anchor', [
         'as' => 'get_biz_anchor',
         'uses' => 'AjaxController@getBizAnchor'
     ]);
-    
+   
+      Route::post('get_user_biz_anchor', [
+        'as' => 'get_user_biz_anchor',
+        'uses' => 'AjaxController@getUserBizAnchor'
+    ]); 
      Route::post('verify-otp-mobile', [
         'as' => 'verify_otp_mobile',
         'uses' => 'Backend\ApplicationController@verify_otp_mobile'
@@ -307,6 +314,13 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListApprove'
         ]
     );
+         Route::post(
+        'frontend_get_invoice_list_approve',
+        [
+        'as' => 'frontend_get_invoice_list_approve',
+        'uses' => 'AjaxController@getFrontendInvoiceListApprove'
+        ]
+    );
        Route::post(
         'backend_get_ep_list_approve',
         [
@@ -383,7 +397,13 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListBank'
         ]
     );  
-       
+        Route::post(
+        'frontend_get_invoice_list_bank',
+        [
+        'as' => 'frontend_get_invoice_list_bank',
+        'uses' => 'AjaxController@getFrontendInvoiceListBank'
+        ]
+    );  
     Route::post(
         'get-ajax-bank-invoice',
         [
