@@ -49,7 +49,7 @@ try {
             },
            columns: [
                     {data: 'customer_id'},
-                    {data: 'app_id'},
+                    {data: 'biz_entity_name'},
                     {data: 'ben_name'},
                     {data: 'bank_detail'},
                     {data: 'total_amt'},

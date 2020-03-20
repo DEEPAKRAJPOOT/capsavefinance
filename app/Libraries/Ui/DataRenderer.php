@@ -4290,9 +4290,9 @@ class DataRenderer implements DataProviderInterface
                     return $dataRecords->customer_id;
                 }) 
                 ->editColumn(
-                    'app_id',
+                    'biz_entity_name',
                     function ($dataRecords) {
-                    return \Helpers::formatIdWithPrefix($dataRecords->app_id, 'APP');
+                    return $dataRecords->biz_entity_name; // \Helpers::formatIdWithPrefix($dataRecords->app_id, 'APP');
                 }) 
                 ->editColumn(
                     'ben_name',

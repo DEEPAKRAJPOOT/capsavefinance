@@ -9,12 +9,12 @@
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
             </div>
             <div class="header-title">
-                <h3 class="mt-2">Bank Invoice Customers</h3>
+                <h3 class="mt-2">Disbursed Customers List</h3>
 
                 <ol class="breadcrumb">
                     <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
                     <li class="active"><a href="/invoice/bank-invoice">Bank Invoice</a></li>
-                    <li class="active">Bank Invoice Customers</li>
+                    <li class="active">Disbursed Customers List</li>
                 </ol>
             </div>
             <div class="clearfix"></div>
@@ -37,10 +37,10 @@
                                                                 <thead>
                                                                     <tr role="row">
                                                                         <th>Cust ID</th>
-                                                                        <th>App ID</th>
+                                                                        <th>Business Name</th>
                                                                         <th>Ben Name</th>
                                                                         <th>Bank Detail</th>
-                                                                        <th>Total Amount</th>
+                                                                        <th>Total Amount Disbursed</th>
                                                                         <th>Total Invoice</th>
                                                                         <th>Action</th>
                                                                     </tr>
