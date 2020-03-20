@@ -9,14 +9,15 @@ try {
             searching: false,
             bSort: true,
             ajax: {
-                "url": messages.get_invoice_list, // json datasource
+                "url": messages.frontend_get_invoice_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.anchor_id = $('select[name=search_anchor]').val();
                     d.supplier_id = $('select[name=search_supplier]').val();
                     d.biz_id = $('select[name=search_biz]').val();
-                    
+                    d.front = $('input[name=front]').val();
                     d._token = messages.token;
+                    d.app_id = messages.appp_id;
                 },
                 "error": function () {  // error handling
                    
@@ -25,18 +26,19 @@ try {
                 }
             },
             columns: [
+                {data: 'anchor_id'},
+                {data: 'invoice_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
-                {data: 'program_name'},
                 {data: 'invoice_date'},
-                {data: 'invoice_approve_amount'},
-                {data: 'status'}
+                {data: 'invoice_amount'},
+                {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });
 
         //Search
-        $('#searchbtn').on('click', function (e) {
+        $('.searchbtn').on('change', function (e) {
             oTable.draw();
         });                   
     });
@@ -45,3 +47,4 @@ try {
         console.log(e);
     }
 }
+

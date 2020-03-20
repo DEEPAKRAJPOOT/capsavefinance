@@ -147,6 +147,7 @@ class PaymentController extends Controller {
         $tran  = [  'gl_flag' => 1,
                     'soa_flag' => 1,
                     'user_id' =>  $request['customer_id'],
+                    'biz_id' =>  $request['biz_id'],
                     'entry_type' =>1,
                     'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
                     'trans_type'   => $request['trans_type'], 
@@ -167,7 +168,6 @@ class PaymentController extends Controller {
                     'created_at' =>  $mytime,
                     'created_by' =>  $user_id,
               ];
-            
         $res = $this->invRepo->saveRepaymentTrans($tran);
         if( $res)
         {

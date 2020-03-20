@@ -125,8 +125,11 @@ Route::group(
         'as' => 'get_program_supplier',
         'uses' => 'Backend\InvoiceController@getProgramSupplier'
     ]);
-    
-   
+  
+      Route::post('get_biz_anchor', [
+        'as' => 'get_biz_anchor',
+        'uses' => 'AjaxController@getBizAnchor'
+    ]);
     
      Route::post('verify-otp-mobile', [
         'as' => 'verify_otp_mobile',
@@ -283,6 +286,13 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceList'
         ]
     );
+        Route::post(
+        'frontend_get_invoice_list',
+        [
+        'as' => 'frontend_get_invoice_list',
+        'uses' => 'AjaxController@getFrontendInvoiceList'
+        ]
+    );
        Route::post(
         'user_wise_invoice_list',
         [
@@ -374,7 +384,30 @@ Route::group(
         ]
     );  
        
-            
+    Route::post(
+        'get-ajax-bank-invoice',
+        [
+        'as' => 'get_ajax_bank_invoice',
+        'uses' => 'AjaxController@getAjaxBankInvoice'
+        ]
+    );  
+        
+    Route::post(
+        'get-ajax-bank-invoice-customers',
+        [
+        'as' => 'get_ajax_bank_invoice_customers',
+        'uses' => 'AjaxController@getAjaxBankInvoiceCustomers'
+        ]
+    );  
+
+    Route::post(
+        'get-ajax-view-disburse-invoice',
+        [
+        'as' => 'get_ajax_view_disburse_invoice',
+        'uses' => 'AjaxController@getAjaxViewDisburseInvoice'
+        ]
+    );  
+
        Route::post(
         'backend_get_invoice_list_failed_disbursed',
         [
@@ -762,6 +795,10 @@ Route::group(
         'as' => 'front_program_list',
         'uses' => 'AjaxController@getProgramSingleList'
     ]); 
+     Route::POST('front_lms_program_list', [
+        'as' => 'front_lms_program_list',
+        'uses' => 'AjaxController@getProgramLmsSingleList'
+    ]);
     Route::POST('front_supplier_list', [
         'as' => 'front_supplier_list',
         'uses' => 'AjaxController@getSupplierList'

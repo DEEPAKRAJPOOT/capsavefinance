@@ -60,8 +60,7 @@ class InvoiceController extends Controller {
 
     public function getAllInvoice() {
 
-        $get_anchor = $this->invRepo->getLimitAllAnchor();
-
+        $get_anchor = $this->invRepo->getLmsLimitAllAnchor();
         return view('backend.invoice.upload_all_invoice')
                         ->with(['get_anchor' => $get_anchor]);
     }
@@ -71,7 +70,6 @@ class InvoiceController extends Controller {
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
-
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(7);
         $get_bus = $this->invRepo->getBusinessNameApp(7);
         return view('backend.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
@@ -134,6 +132,23 @@ class InvoiceController extends Controller {
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(10);
         $get_bus = $this->invRepo->getBusinessNameApp(10);
         return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+    }
+
+    public function viewBankInvoice(Request $req) {
+        $user_id = $req->get('user_id') ?: null;
+        $app_id = $req->get('app_id') ?: null;
+        return view('backend.invoice.bank_invoice')->with(['user_id' => $user_id, 'app_id' => $app_id]);
+    }
+
+    public function viewBankInvoiceCustomers(Request $req) {
+        $batch_id = $req->get('batch_id') ?: null;
+        return view('backend.invoice.bank_invoice_customers')->with(['batch_id' => $batch_id]);
+    }
+
+    public function viewDisburseInvoice(Request $req) {
+        $batch_id = $req->get('batch_id') ?: null;
+        $disbursed_user_id = $req->get('disbursed_user_id') ?: null;
+        return view('backend.invoice.view_disburse_invoice')->with(['batch_id' => $batch_id, 'disbursed_user_id' => $disbursed_user_id]);
     }
 
     public function viewfailedDisbursment(Request $req) {

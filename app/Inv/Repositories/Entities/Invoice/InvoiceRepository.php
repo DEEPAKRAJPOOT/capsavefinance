@@ -531,6 +531,7 @@ use CommonRepositoryTraits;
         } 
     }
     
+  
     public function getUser($uid)
     {
        
@@ -629,12 +630,12 @@ use CommonRepositoryTraits;
     }
     
 
- public function getLimitProgram($aid)
+ public function getProgramLmsSingleList($aid)
     {
      
         try
         {
-          return AppProgramLimit::getLimitProgram($aid);
+          return AppProgramLimit::getProgramLmsSingleList($aid);
         } catch (Exception $ex) {
            return $ex;
         } 
@@ -682,6 +683,17 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }  
+    
+   public function getLmsLimitAllAnchor()
+    {
+     
+        try
+        {
+          return AppProgramLimit::getLmsLimitAllAnchor();
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    }    
     
    public function getLimitSupplier($pid)
     {
@@ -799,6 +811,42 @@ use CommonRepositoryTraits;
     public function getProgramOfferByPrgmId($prgmId)
     {
         return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
-    }    
+    } 
+     public function getBizAnchor($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
 
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return BizInvoice::getBizAnchor($attributes);  
+    }  
+
+    public function getAllBankInvoice()
+    {
+        $this->result = Disbursal::getAllBankInvoice();
+        return $this->result;
+    }
+
+    public function getAllBankInvoiceCustomers($batch_id)
+    {
+        $this->result = Disbursal::getAllBankInvoiceCustomers($batch_id);
+        return $this->result;
+    }
+
+    public function  getAllDisburseInvoice($batch_id, $disbursed_user_id)
+    {
+        $this->result = Disbursal::getAllDisburseInvoice($batch_id, $disbursed_user_id);
+        return $this->result;
+    }   
 }

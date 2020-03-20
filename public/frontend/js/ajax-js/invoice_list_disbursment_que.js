@@ -2,14 +2,14 @@ try {
     var oTable;
     jQuery(document).ready(function ($) {   
         //User Listing code
-        oTable = $('#invoiceList').DataTable({
+        oTable = $('#invoiceListDisbursedQue').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 10,
             searching: false,
             bSort: true,
             ajax: {
-                "url": messages.backend_get_invoice_list, // json datasource
+                "url": messages.backend_get_invoice_list_disbursed_que, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.anchor_id = $('select[name=search_anchor]').val();
@@ -21,20 +21,24 @@ try {
                 },
                 "error": function () {  // error handling
                    
-                    $("#invoiceList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#invoiceListDisbursedQue").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
                     $("#appList_processing").css("display", "none");
                 }
             },
             columns: [
+                {data: 'invoice_checkbox'},
                 {data: 'anchor_id'},
-                {data: 'invoice_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
-                {data: 'invoice_date'},
+                 {data: 'invoice_date'},
+                {data: 'invoice_due_date'},
+                 {data: 'tenor'},
                 {data: 'invoice_amount'},
-                {data: 'action'}
+                {data: 'invoice_approve_amount'},
+                {data: 'status'},
+               
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3]}]
         });
 
         //Search

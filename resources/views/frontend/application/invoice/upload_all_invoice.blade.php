@@ -16,14 +16,7 @@
    <div class="clearfix"></div>
 </section>
 <div class="row grid-margin ">
-
-
-
-   
-   
-   
-   
-   <div class="col-md-12  mb-4">
+ <div class="col-md-12  mb-4">
       <div class="card">
          <div class="card-body">
            <div class="form-fields">
@@ -37,21 +30,23 @@
                                     
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span><span id="anc_limit" class="error" style=""></span></label>
+                                            <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
                                             @if(count($get_anchor) > 0)
                                                 <option value="">Please Select</option>
-                                                @foreach($get_anchor as $row)  
+                                                @foreach($get_anchor as $row) 
+                                                @php if(isset($row->anchorList->anchor_id)) { @endphp
                                                 <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
+                                                @php } @endphp
                                                 @endforeach
                                                
                                                 @endif
                                              </select>
-                                             					 <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
+                                                       <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
                                         </div>
                                     </div>
-									
+                  
                                    
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -60,13 +55,13 @@
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
-                                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
+                                           
                                 
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
+                                            <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label>
                                             <select readonly="readonly" class="form-control" id="supplier_id" name="supplier_id">
                                              
                                             </select>
@@ -75,71 +70,72 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span> </label>
-                                             <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
+                                            <input type="text" maxlength="10" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
+                                            <span id="msgInvoiceDupli" class="error"></span>  
                                         </div>
                                     </div> 
-									<div class="col-md-4">
+                  <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Date <span class="error_message_label">*</span> </label>
                                             <input type="text" id="invoice_date" name="invoice_date" readonly="readonly" placeholder="Invoice Date" class="getInvoiceD form-control date_of_birth datepicker-dis-fdate">
                                         </div>
                                     </div>
-									
-									<div class="col-md-4">
+                  
+                  <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice Due Date <span class="error_message_label">*</span> </label>
-                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth datepicker-dis-pdate" placeholder="Invoice Due Date">
-                                      </div>
+                                              <input type="text" id="invoice_due_date" readonly="readonly" name="invoice_due_date" class="form-control date_of_birth" placeholder="Invoice Due Date">
+                                       
+                                        </div>
                                     </div>
-									
-									<div class="col-md-4">
+                                    
+                                            
+          <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
+                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
-										 <div class="form-group">
+                     <div class="form-group">
                                             <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label">*</span></label>
-											
-		<div class="custom-file">
+                      
+    <div class="custom-file">
                <label for="email">Upload Document</label>
                <input type="file" class="custom-file-input" id="customFile" name="doc_file">
                <label class="custom-file-label" for="customFile">Choose file</label>
+                <span id="msgFile" class="text-success"></span>
             </div>
-			
-			
-			
+      
+      
+      
                                             
                                         </div>
                                     </div>
-									<div class="col-md-8">
+          <div class="col-md-8">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label">*</span> </label>
+                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
                                                <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
                                     </div>
                                     </div>
-									
-									
-									
-									
-									
-									
-                                    
-                                </div> 
-								   <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="col-md-8">
-                                            <label class="error" id="tenorMsg"></label>
-                                        </div>
-                                        <div class="text-right mt-2">
-                                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
-                                             <input type="hidden" value="" id="tenor" name="tenor">
-                                            <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
-                                            <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
-                                        </div>
-                                    </div>
-                                </div> 
-                           
+                
+    </div> 
+                <div class="row">
+                   <div class="col-md-12">
+                       <div class="col-md-8">
+                           <label class="error" id="tenorMsg"></label>
+                       </div>
+                       <div class="text-right mt-2">
+                            <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
+                           <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
+                            <input type="hidden" value="" id="tenor" name="tenor">
+                             <input type="hidden" value="" id="exception" name="exception">
+                             <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
+                            <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
+                           <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
+                       </div>
+                   </div>
+               </div> 
+
                            
                            
                           
@@ -160,12 +156,12 @@
       <div class="modal-content">
          <!-- Modal Header -->
          <div class="modal-header">
-			<h5>Edit manage list</h5>
+      <h5>Edit manage list</h5>
             <button type="button" class="close close-btns" data-dismiss="modal">×</button>
          </div>
          <!-- Modal body -->
          <div class="modal-body text-left">
-			<div class="row">
+      <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Full Name
@@ -183,7 +179,7 @@
                               </div>
                            </div>
                         </div>
-						<div class="row">
+            <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
@@ -222,12 +218,12 @@
       <div class="modal-content">
          <!-- Modal Header -->
          <div class="modal-header">
-			<h5>Add Supplier</h5>
+      <h5>Add Supplier</h5>
             <button type="button" class="close close-btns" data-dismiss="modal">×</button>
          </div>
          <!-- Modal body -->
          <div class="modal-body text-left">
-			<div class="row">
+      <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Full Name
@@ -245,7 +241,7 @@
                               </div>
                            </div>
                         </div>
-						<div class="row">
+            <div class="row">
                            <div class="col-md-6">
                               <div class="form-group">
                                  <label for="txtEmail">Email
@@ -282,34 +278,34 @@
       <div class="modal-content">
          <!-- Modal Header -->
          <div class="modal-header">
-			<h5>Assign Lead</h5>
+      <h5>Assign Lead</h5>
             <button type="button" class="close close-btns" data-dismiss="modal">×</button>
          </div>
          <!-- Modal body -->
          <div class="modal-body text-left">
-			<div class="row">
+      <div class="row">
                            <div class="col-md-12">
                               <div class="form-group">
                                  <label for="txtCreditPeriod">Select Sales Person
                                  <span class="mandatory">*</span>
                                  </label>
-								 <select class="form-control" name="nate">
-								   <option>Select</option>
-								   <option>Sales Person 1</option>
-								   <option>Sales Person 2</option>
-								   <option>Sales Person 3</option>
-								 </select>
+                 <select class="form-control" name="nate">
+                   <option>Select</option>
+                   <option>Sales Person 1</option>
+                   <option>Sales Person 2</option>
+                   <option>Sales Person 3</option>
+                 </select>
                                  
                               </div>
                            </div>
-						   
-						   <div class="col-md-12">
-						   <label>Comment</label>
-						   <textarea class="form-control" placeholder="Add Comment"></textarea>
-						   </div>
+               
+               <div class="col-md-12">
+               <label>Comment</label>
+               <textarea class="form-control" placeholder="Add Comment"></textarea>
+               </div>
 
                         </div>
-						
+            
             <button type="submit" class="btn btn-success float-right btn-sm mt-3">Submit</button>  
          </div>
       </div>
@@ -323,21 +319,27 @@
 var messages = {
     token: "{{ csrf_token() }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
-    front_program_list: "{{ URL::route('front_program_list') }}",
+    front_lms_program_list: "{{ URL::route('front_lms_program_list') }}",
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
+    check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
    };
-   
-   $('[name="invoice_approve_amount"]').on('change blur keyup', function() {
+   ///* upload image and get ,name  */
+   $('input[type="file"]'). change(function(e){
+        $("#customFile-error").hide();
+        var fileName = e. target. files[0]. name;
+        $("#msgFile").html('The file "' + fileName + '" has been selected.' );
+    });
+
+   ///////////////// invoice approve amount check here///////////
+   $(document).on('change blur keyup','#invoice_approve_amount', function() {
      var pro_limit = parseInt($("#pro_limit_hide").val());
-     var invoice_approve_amount = parseInt($("#invoice_approve_amount").val());
-   
-     if(invoice_approve_amount  > pro_limit)
+     var invoice_approve_amount = $("#invoice_approve_amount").val();
+     var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+      if(invoice_approve_amount  > pro_limit)
      {
-       
-         $("#msgProLimit").text('Invoice amount should not more than program limit');
+         $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
          $("#submit").css("pointer-events","none");
          return false;
-         
      }
      else
      {
@@ -345,7 +347,48 @@ var messages = {
          $("#submit").css("pointer-events","auto");
          return true;
      }
+     
 });
+
+ //////////// check duplicate invoice ////////////////////
+ 
+  $(document).on('change blur keyup','#invoice_no,#supplier_id', function() {
+     var invoice = $("#invoice_no").val();
+     var user_id  = $("#supplier_id").val();
+     var user_id  =  user_id.split(',');
+     var user  =  user_id[0];
+     if(user==""  || invoice=="")
+     {
+         return false;
+     }
+    
+      var postData =  ({'user_id':user,'invoice':invoice,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.check_duplicate_invoice,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                      if(data.status==1)
+                        {
+                            $("#msgInvoiceDupli").text('Invoice No already exists');
+                            $("#submit").css("pointer-events","auto");
+                            $("#submit").css("pointer-events","none");
+                            return false;
+                        }
+                        else
+                        {
+                            $("#msgInvoiceDupli").empty();
+                           return true;
+                        }
+                }
+            });
+});
+
 
    function ChangeDateFormat(date)
    {
@@ -365,12 +408,14 @@ var messages = {
         var    days = millisBetween / millisecondsPerDay;
         return  Math.floor(days);
     }
-   
+  
+
  $(document).ready(function () {
-         document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+      //////////// comma seprate value in amount   //////////////////////// 
+      
+        document.getElementById('invoice_approve_amount').addEventListener('input', event =>
         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-       
-       $("#program_id").append("<option value=''>No data found</option>");  
+        $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
@@ -378,8 +423,14 @@ var messages = {
         var first  = $('#invoice_due_date').val();
         var second = $('#invoice_date').val();
         var getDays  = findDaysWithDate(first,second);
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //As January is 0.
+        var yyyy = today.getFullYear();
+        var cDate  = dd+"/"+mm+"/"+yyyy;
+        var getOldDays  = findDaysWithDate(cDate,second);
         var tenor  = $('#tenor').val();
-     
+        var tenor_old_invoice  = $('#tenor_old_invoice').val();
      if ($('form#signupForm').validate().form()) {  
        $("#anchor_id" ).rules( "add", {
         required: true,
@@ -402,10 +453,10 @@ var messages = {
         });
         $("#invoice_no" ).rules( "add", {
         required: true,
-        minlength: 6,
+        maxlength: 20,
         messages: {
         required: "Please enter Invoice No",
-        minlength: "Please, at least 6  characters are necessary",
+        maxlength: "Maximum 20  characters are necessary",
         }
         });
         
@@ -434,13 +485,19 @@ var messages = {
         required: "Please upload Invoice Copy",
         }
         }); 
-         if(getDays < tenor)
+         if(getDays > tenor)
         {
            $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor); 
+           $("#tenorMsg").html('Invoice date & invoice due date difference should not be more than '+tenor+' days'); 
            e.preventDefault();
         }
-      
+       else if(getOldDays > tenor_old_invoice)
+        {
+          // $("#tenorMsg").show(); 
+          // $("#tenorMsg").html('Invoice date & current date difference should not be more than '+tenor_old_invoice+' days.'); 
+          /// e.preventDefault();
+          $("#exception").val(28);
+        }
          
         } else {
         /// alert();
@@ -475,7 +532,7 @@ var messages = {
       $("#anc_limit").empty();
       var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
        jQuery.ajax({
-        url: messages.front_program_list,
+        url: messages.front_lms_program_list,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
@@ -491,9 +548,11 @@ var messages = {
                         $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
                            $("#program_id").append("<option value=''>Please Select</option>");  
                             $(obj1).each(function(i,v){
-                           
+                             if(v.program!=null)
+                             {                                 
                                    $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
-                            });
+                              }                   
+                             });
                            
                         
                        
@@ -519,6 +578,7 @@ var messages = {
   $(document).on('change','.changeSupplier',function(){
       $("#invoice_date").val('');
       var program_id =  $(this).val(); 
+      var anchor_id =  $("#anchor_id").val(); 
       if(program_id=='')
       {
           return false; 
@@ -539,34 +599,40 @@ var messages = {
                 success: function (data) {
                     if(data.status==1)
                     {
-                      
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
                         var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#prgm_offer_id").val(offer_id);
+                        $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
                         $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
-                         $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                         $("#supplier_id").append("<option value=''>Please Select</option>");  
-                            $(obj1).each(function(i,v){
-                            
-                                   $("#supplier_id").append("<option value='"+v.app.user.user_id+"'>"+v.app.user.f_name+"</option>");  
+                        $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
+                        $("#supplier_id").empty();
+                        $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
+                        $(obj1).each(function(i,v){
+                                 var dApp = v.appCode;
+                                 //$("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" ("+ dApp +")</option>");
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.biz_entity_name+"&nbsp;&nbsp;("+v.customer_id+")</option>");  
                             });
                        
                     }
                     else
                     {
-                       
+                        
                                $("#supplier_id").append("<option value=''>No data found</option>");  
-                           
                       
                     }
                   
                 }
         }); }); 
     
-    
+  $(document).on('change','#supplier_id',function(){
+    var selValue = $(this).val();
+    var selValueArr = selValue.split(",");
+    $("#prgm_offer_id").val(selValueArr[2]);       
+  });
   </script> 
 @endsection
  
