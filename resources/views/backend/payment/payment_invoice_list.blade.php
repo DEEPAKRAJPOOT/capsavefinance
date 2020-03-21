@@ -190,7 +190,9 @@
                     {!! Form::hidden('total_refund_amount', $totalMarginAmount) !!}
             <div class="row">
                 <div class="form-group col-md-12 text-right">
+                    @if($totalMarginAmount > 0)
                     <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit">
+                    @endif
                     <button id="close_btn" type="button" class="btn btn-secondary btn-sm">Cancel</button>   
                 </div>
             </div>
