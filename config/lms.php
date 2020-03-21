@@ -64,5 +64,18 @@ return [
         'PENDING' => '0',
         'COMPLETED' => '1',
         'IN_PROGRESS' => '2',
+    ],
+    'REQUEST_TYPE_DISP' => [
+        '1' => 'Refund',
+        '2' => 'Adjustment',
+        '3' => 'Waveoff',
+    ],
+    'REQUEST_STATUS_DISP' => [
+        '1' => 'New Request',
+        '2' => 'Deleted',
+        '3' => 'In Process',
+        '4' => 'Rejected',
+        '5' => 'Approved',
+        '6' => 'Processed'
     ],    
 ];

@@ -4156,78 +4156,52 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'type',
             function ($data) {
-                return $link = $data->typeName;
+                return config('lms.REQUEST_TYPE_DISP.'.$data->req_type);  //$data->req_type_name;
             }
         )
         ->editColumn(
             'amount',
             function ($data) {
-                return $data->totalAmount;// date('d-M-Y',strtotime($data->trans_date));
+                return $data->amount;
             }
         )     
         ->editColumn(
             'created_at',
             function ($data) {
-                return date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
             }
         )
         ->addColumn(
             'assignee',
             function ($data) {
-                return $data->assigneeName;
+                return $data->assignee;
             }
         )
         ->addColumn(
             'assignedBy',
             function ($data) {
-                return $data->assignedByName;
+                return $data->assigned_by;
             }
         )  
         ->editColumn(
             'status',
             function ($data){
-                return $data->statusName;
+                return config('lms.REQUEST_STATUS_DISP.'.$data->status);
             }
         )   
         ->editColumn(
             'action',
             function ($data){
-                $result = ''; 
-                switch ($data->type) {
-                    case '1':
-                        $result .= '<a 
-                        data-toggle="modal" 
-                        data-target="#edit_refund_amount" 
-                        data-url="'.route('lms_edit_batch', ['action' => 'refund', 'batch_id'=>$data->batch_id ]).'"
-                        data-height="400px" 
-                        data-width="100%" 
-                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
-                    break;
-                    case '2':
-                        $result .= '<a
-                        data-toggle="modal" 
-                        data-target="#edit_adjust_amount" 
-                        data-url="'.route('lms_edit_batch', ['action' => 'adjust', 'batch_id'=>$data->batch_id]).'"
-                        data-height="400px" 
-                        data-width="100%" 
-                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
-                    break;
-                    case '3':
-                        $result .= '<a
-                        data-toggle="modal" 
-                        data-target="#edit_waveoff_amount" 
-                        data-url="'.route('lms_edit_batch', ['action' => 'waveoff', 'batch_id'=>$data->batch_id]).'"
-                        data-height="400px" 
-                        data-width="100%" 
-                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
-                        break;
-                }
+
+                $result = '<a 
+                data-toggle="modal" 
+                data-target="#lms_move_next_stage" 
+                data-url="'.route('lms_req_move_next_stage', ['req_id' => $data->req_id ]).'"
+                data-height="400px" 
+                data-width="100%" 
+                data-placement="top" title="Move to Next Stage" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
 
                 return $result;
-
-                // return '<a title="Edit Batch" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                //         <a title="Delete Batch" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                //         <a title="Move to Oops Maker" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
             }
         )  
         ->filter(function ($query) use ($request) {

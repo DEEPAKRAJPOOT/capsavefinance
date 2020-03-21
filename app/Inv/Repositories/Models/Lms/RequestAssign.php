@@ -20,7 +20,7 @@ class RequestAssign extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'request_assign_id';
+    protected $primaryKey = 'req_assign_id';
 
     /**
      * Maintain created_at and updated_at automatically

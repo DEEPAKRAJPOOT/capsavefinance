@@ -99,6 +99,7 @@ var iframe_ids = [
         'edit_waveoff_amount',
         'paymentRefundInvoice',
         'disburseInvoice',
+        'lms_move_next_stage'
     ];
 
 iframe_ids.forEach(function(id) {

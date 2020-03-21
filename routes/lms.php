@@ -182,7 +182,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Lms\CopyController@duplicateApp'
                 ]); 
             // end address
-            });            
+            });    
+            
+            Route::get('req-move-next-stage',[
+                'as' => 'lms_req_move_next_stage',
+                'uses' => 'Lms\RefundController@moveReqToNexStage'
+            ]);            
         });
         
         //end of application

@@ -101,4 +101,10 @@ class RefundController extends Controller
 	{
 		return view('lms.common.edit_request', $request->all());
 	}
+        
+	public function moveReqToNexStage(Request $request) 
+	{
+		return view('lms.common.move_next_stage');
+	}        
+        
 }
