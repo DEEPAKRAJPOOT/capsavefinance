@@ -1711,7 +1711,6 @@ class DataRenderer implements DataProviderInterface
     
     public function getAnchorList(Request $request, $user)
     {
-        
         return DataTables::of($user)
                 ->rawColumns(['anchor_id', 'checkbox', 'action', 'email','assigned'])
                 ->addColumn(
