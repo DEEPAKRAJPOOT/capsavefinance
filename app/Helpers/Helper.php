@@ -1184,4 +1184,29 @@ class Helper extends PaypalHelper
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         return $lmsRepo->isRequestOwner($reqId, $assignedUserId);    
     }
+    
+    /**
+     * Get Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getApprRequestStatus($reqId, $assignedUserId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        
+        //Get Current workflow stage
+        $wfStage = $lmsRepo->getCurrentWfStage($reqId);        
+        $wfStageId = $wfStage ? $wfStage->wf_stage_id : '';
+        
+        $whereCond=[];
+        $whereCond['req_id'] = $reqId;
+        $whereCond['assigned_user_id'] = $assignedUserId;
+        $whereCond['wf_stage_id'] = $wfStageId;
+        $apprLogData = $lmsRepo->getApprRequestLogData($whereCond);
+        $apprStatus = isset($apprLogData[0]) ? config('lms.REQUEST_STATUS_DISP.'.$apprLogData[0]->status) : '';
+        return $apprStatus;
+    }    
 }

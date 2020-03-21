@@ -4187,7 +4187,8 @@ class DataRenderer implements DataProviderInterface
             'status',
             function ($data){
                 //return config('lms.REQUEST_STATUS_DISP.'. $data->status);
-                return config('lms.REQUEST_STATUS_DISP.'. $data->req_status);            
+                //return config('lms.REQUEST_STATUS_DISP.'. $data->req_status);            
+                return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
             }
         )   
         ->editColumn(
