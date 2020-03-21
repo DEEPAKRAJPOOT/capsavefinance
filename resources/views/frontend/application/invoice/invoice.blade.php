@@ -20,72 +20,23 @@
 
             <div class="col-md-12 ">
                 <div class="card">
-                    <div class="card-body">
-
-                       <ul class="nav nav-tabs" role="tablist">
-           <li class="nav-item ">
-      <a class="nav-link @if(Route::currentRouteName()=='get_invoice') active @endif"  href="{{Route('get_invoice')}}">Pending</a>
-    </li>
-    <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_approve_invoice') active @endif"  href="{{Route('get_approve_invoice')}}">Approved</a>
-    </li>
-  <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_que_invoice') active @endif"  href="{{Route('get_disbursed_que_invoice')}}">Disbursement Queue</a>
-    </li>
-   <li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='get_sent_to_bank') active @endif" href="{{Route('get_sent_to_bank')}}">Sent to Bank</a>
-    </li>
-	<li class="nav-item">
-            <a class="nav-link @if(Route::currentRouteName()=='get_failed_disbursed_invoice') active @endif" href="{{Route('get_failed_disbursed_invoice')}}">Failed Disbursement</a>
-    </li>
-   <li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_disbursed_invoice') active @endif"  href="{{Route('get_disbursed_invoice')}}">Disbursed</a>
-    </li>
-	<li class="nav-item">
-         <a class="nav-link @if(Route::currentRouteName()=='get_repaid_invoice') active @endif" href="{{Route('get_repaid_invoice')}}">Repaid</a>
-    </li>
-   <li class="nav-item">
-      <a class="nav-link @if(Route::currentRouteName()=='get_reject_invoice') active @endif" href="{{Route('get_reject_invoice')}}">Reject</a>
-
-    </li>
-  
-   
-  </ul>
-
-                        <div class="tab-content">
+           
+  <div class="tab-content">
 
                             <div id="menu1" class=" active tab-pane "><br>
-                             <span id="moveCase" class="text-success"></span>
-                               <div class="card">
-                                    <div class="card-body">
+                            
                                         <div class="row">
-                                            <div class="col-md-1">
+                                           
+                                            <div class="col-md-7">				 
+                                              
                                             </div>
-                                            <div class="col-md-3">				 
-                                                <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                              <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                    <option value="">Select Business Name  </option>
-                                                        @foreach($get_bus as $row)
-                                                         @php if(isset($row->business->biz_id)) { @endphp
-                                                    <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                                                      @php } @endphp
-                                                    @endforeach
+                                            <div class="col-md-3">		    
 
-
-                                                </select>
-                                                <span id="anchorMsg" class="error"></span>
-
-                                            </div>
-                                            <div class="col-md-2">				 
-                                                <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
-                                                 
-                                                </select>
-
-                                            </div>
-                                            <div class="col-md-2">		    
-
-                                                <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-
+                                                <select class="form-control form-control-sm searchbtn" name="status_id">
+                                                    <option value=""> Select Invoice Status</option>  
+                                                        @foreach($status as $row)
+                                                        <option value="{{{$row->id}}}">{{{$row->status_name}}} </option>
+                                                        @endforeach
                                                 </select>
                                             </div>    
                                             <div class="col-md-2">	
@@ -109,7 +60,8 @@
                                                                             <th>Customer Detail</th>
                                                                             <th> Inv Detail</th>
                                                                             <th> Inv Amount</th>
-                                                                            <th>Action</th>
+                                                                            <th>Invoice (View/Upload)</th>
+                                                                            <th>Status</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -126,66 +78,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                            </div>
-
+                              
                         </div>
 
-
-                    </div>
                 </div>
             </div>
         </div></div>
 </div>
-<div class="modal show" id="myModal7" style="display: none;">
-    <div class="modal-dialog modal-md">
-        <div class="modal-content">
 
-            <div class="modal-header">
-                <h5>Confirm Invoice Approved Amount</h5>
-                <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-            </div>
-
-            <div class="modal-body text-left">
-                <form id="signupFormNew"  action="{{Route('update_invoice_amount')}}" method="post">
-                    @csrf	
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="txtCreditPeriod">Invoice Amount
-                                    <span class="mandatory">*</span>
-                                </label>
-                                <input type="text" class="form-control" id="invoice_amount" value="" disabled="">
-                                <input type="hidden" name="invoice_id" id="invoice_id">
-                            </div>
-                            <div class="form-group">
-                                <label for="txtCreditPeriod">Invoice Approved Amount
-                                    <span class="mandatory">*</span>
-                                </label>
-                                <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="Enter Amount">
-
-                            </div>
-
-                            <div class="form-group">
-                                <label for="txtCreditPeriod">Comment  <span class="error_message_label doc-error">*</span>
-
-                                </label>
-                                <textarea class="form-control" name="comment" id="comment" cols="4" rows="4"></textarea>
-
-                            </div>
-                        </div>
-
-
-
-                    </div>
-                    <span class="model7msg error"></span>			
-                    <input type="submit" id="UpdateInvoiceAmount" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
-                </form> 
-            </div>
-        </div>
-    </div>
-</div>
 
  @endsection
  @section('jscript')

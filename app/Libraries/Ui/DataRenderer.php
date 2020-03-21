@@ -744,9 +744,9 @@ class DataRenderer implements DataProviderInterface
      * Get Invoice list for backend
      */
     public function getFrontendInvoiceList(Request $request,$invoice)
-    {   
+    { 
         return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','invoice_upload','invoice_id','invoice_due_date'])
            
               
                  ->addColumn(
@@ -790,9 +790,8 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
-              
                  ->addColumn(
-                    'action',
+                    'invoice_upload',
                     function ($invoice) {
                      $action ="";
                       if(($invoice->file_id != 0)) {
@@ -803,6 +802,24 @@ class DataRenderer implements DataProviderInterface
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
                          }                  
                     return $action;
+                })
+                ->addColumn(            
+                    'status',
+                    function ($invoice) {                        
+                    
+                        return  $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
+                       
+                })    
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('status_id') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('status_id'));
+                            $query->where('status_id',"$search_keyword");
+                        });                        
+                    }
+                   
+                    
                 })
               ->make(true);
     } 

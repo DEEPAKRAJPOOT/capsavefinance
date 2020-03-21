@@ -75,7 +75,8 @@ class InvoiceController extends Controller {
                 $userInfo = $this->invRepo->getCustomerDetail($user_id);
                 $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(7);
                 $get_bus = $this->invRepo->getUserBusinessNameApp(7);
-                return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+                $status =  DB::table('mst_status')->where(['status_type' =>4])->get();
+                return view('frontend.application.invoice.invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
   
         }
       

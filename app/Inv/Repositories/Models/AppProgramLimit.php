@@ -182,8 +182,8 @@ class AppProgramLimit extends BaseModel {
             return AppProgramOffer::whereHas('productHas')->whereIn('anchor_id',$achor_id)->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorList')->groupBy('anchor_id')->get();
     }
       public static function getLmsLimitAllAnchor(){
-            $id = Auth::user()->user_id;
-            $user_id =    LmsUser::where('user_id',$id)->pluck('user_id');
+            ///$id = Auth::user()->user_id;
+            $user_id =    LmsUser::pluck('user_id');
             $achor_id =   User::whereIn('user_id',$user_id)->where('anchor_id','<>', null)->pluck('anchor_id');  
             return AppProgramOffer::whereHas('productHas')->whereIn('anchor_id',$achor_id)->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorList')->groupBy('anchor_id')->get();
     }

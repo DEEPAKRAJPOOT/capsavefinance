@@ -2730,7 +2730,7 @@ if ($err) {
     
      //////////////////// use for invoice list/////////////////
      public function getFrontendInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,7);
+        $invoice_data = $this->invRepo->getUserAllInvoice($this->request);
         $invoice = $dataProvider->getFrontendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
