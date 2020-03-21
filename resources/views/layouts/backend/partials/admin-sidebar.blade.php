@@ -151,6 +151,32 @@
             </div>
         </li>
     @endcan
+
+@canany(['application_pool','application_list'])
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-address-card-o"></i>
+                <span class="menu-title">Manage Application</span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu2">
+                <ul class="nav flex-column sub-menu">                    
+                @can('application_pool')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('application_pool') }}">Application pool</a>
+                        </li> 
+                @endcan 
+                @can('application_list')       
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('application_list') }}">My Application</a>
+                        </li>   
+                @endcan 
+                                        
+                </ul>
+            </div>
+
+        </li>  
+    @endcan
     
     @canany(['backend_upload_all_invoice','backend_get_invoice'])
          <li class="nav-item">

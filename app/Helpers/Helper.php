@@ -1156,6 +1156,7 @@ class Helper extends PaypalHelper
         
         $reqData = $lmsRepo->getApprRequestData($reqId);
         $reqType = $reqData ? $reqData->req_type : '';
+        $reqStatus = $reqData ? $reqData->status : '';
 
         //Get Current workflow stage
         $wfStage = $lmsRepo->getCurrentWfStage($reqId);
@@ -1166,9 +1167,13 @@ class Helper extends PaypalHelper
                 
         if ($reqType == config('lms.REQUEST_TYPE.REFUND')) {
             
-            if ($wf_stage_code == 'refund_approval') {                
-                $statusList[config('lms.REQUEST_STATUS.REJECTED')] = 'Reject';
-                $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';                
+            if ($wf_stage_code == 'refund_approval') {
+                if ($reqStatus == config('lms.REQUEST_STATUS.APPROVED')) {
+                    $statusList[config('lms.REQUEST_STATUS.PROCESSED')] = 'Refund';        
+                } else {
+                    $statusList[config('lms.REQUEST_STATUS.REJECTED')] = 'Reject';
+                    $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';                    
+                }
             }
         }        
         return $statusList;
