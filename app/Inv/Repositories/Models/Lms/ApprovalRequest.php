@@ -131,7 +131,7 @@ class ApprovalRequest extends BaseModel {
                     if ($roleData[0]->is_superadmin != 1) {
                         //$join->on('req_assign.to_id', '=', DB::raw($curUserId));
                         $join->whereIn('req_assign.to_id', $userArr);
-                        
+                        //$join->on('req_assign.is_owner', '=', DB::raw("1"));
                     } else {
                         $join->on('req_assign.is_owner', '=', DB::raw("1"));
                         $join->whereNotNull('req_assign.to_id');

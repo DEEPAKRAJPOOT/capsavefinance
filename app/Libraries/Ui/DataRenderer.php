@@ -4149,7 +4149,7 @@ class DataRenderer implements DataProviderInterface
     
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
-        ->rawColumns(['action'])
+        ->rawColumns(['assignee','assignedBy','action'])
         ->editColumn(
             'ref_code',
             function ($data) {
@@ -4177,13 +4177,13 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'assignee',
             function ($data) {
-                return $data->assignee;
+                return $data->assignee .  '<br><small>(' . $data->assignee_role . ')</small>';
             }
         )
         ->addColumn(
             'assignedBy',
             function ($data) {
-                return $data->assigned_by;
+                return $data->assigned_by.  '<br><small>(' . $data->from_role . ')</small>';
             }
         )  
         ->editColumn(
