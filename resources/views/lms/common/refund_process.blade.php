@@ -8,7 +8,7 @@
                     Form::open(
                     array(
                     'method' => 'post',
-                    'route' => 'lms_save_request_status',
+                    'route' => 'lms_process_refund',
                     'id' => 'frmSaveReqStatus',
                     )
                     ) 
@@ -18,14 +18,7 @@
 
                     @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
                     <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
-                    @endif
-
-                 <div class="form-group">
-                     {!! Form::label('status', 'Select Status', ['class' => 'control-label'] )  !!}
-                     <div class="col-lg-10">
-                         {!!  Form::select('status', $statusList, '', ['class' => 'form-control' ]) !!}
-                     </div>
-                 </div>
+                    @endif                 
 
 
                </div>
@@ -38,7 +31,7 @@
                     </div>
                     {!! Form::hidden('req_id', $reqId) !!}
                     
-                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">Submit</button> &nbsp;
+                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">Process</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">Cancel</button>   
                 </div>
             </div>
@@ -55,11 +48,11 @@
 <script>
    
 var messages = {
-    is_accept: "{{ Session::get('is_accept') }}",
-    error_code : "{{ Session::has('error_code') }}",
+    is_accept: "{{ Session::get('is_accept') }}",    
+    error_code : "{{ Session::has('error_code') }}",    
  };
-     $(document).ready(function(){
-        var targetModel = 'lms_update_request_status';
+     $(document).ready(function(){        
+        var targetModel = 'lms_view_process_refund';
         var parent =  window.parent;
         
         $('.btn-move-next-stage').click(function() {            

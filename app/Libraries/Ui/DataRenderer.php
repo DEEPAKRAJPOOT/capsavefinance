@@ -4221,16 +4221,27 @@ class DataRenderer implements DataProviderInterface
                     data-height="270px" 
                     data-width="100%" 
                     data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
-                
-                    $statusList = \Helpers::getRequestStatusList($data->req_id);                
-                    if(count($statusList) > 0) {
-                        $result .= '<a 
-                        data-toggle="modal" 
-                        data-target="#lms_update_request_status" 
-                        data-url="'.route('lms_update_request_status', ['req_id' => $data->req_id ]).'"
-                        data-height="270px" 
-                        data-width="100%" 
-                        data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                    if ($data->req_status == config('lms.REQUEST_STATUS.APPROVED')) {
+                        if ($data->req_type == config('lms.REQUEST_TYPE.REFUND')) {
+                            $result .= '<a 
+                            data-toggle="modal" 
+                            data-target="#lms_view_process_refund" 
+                            data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id ]).'"
+                            data-height="270px" 
+                            data-width="100%" 
+                            data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                        }
+                    } else {
+                        $statusList = \Helpers::getRequestStatusList($data->req_id);                
+                        if (count($statusList) > 0) {
+                            $result .= '<a 
+                            data-toggle="modal" 
+                            data-target="#lms_update_request_status" 
+                            data-url="'.route('lms_update_request_status', ['req_id' => $data->req_id ]).'"
+                            data-height="270px" 
+                            data-width="100%" 
+                            data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                        }
                     }
                 }
                 return $result;

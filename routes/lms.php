@@ -207,6 +207,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_save_request_status',
                 'uses' => 'Lms\RefundController@saveRequestStatus'
             ]); 
+              
+            Route::get('view-process-refund',[
+                'as' => 'lms_view_process_refund',
+                'uses' => 'Lms\RefundController@viewProcessRefund'
+            ]);   
+            
+            Route::post('process-refund',[
+                'as' => 'lms_process_refund',
+                'uses' => 'Lms\RefundController@processRefund'
+            ]); 
             
         });
         

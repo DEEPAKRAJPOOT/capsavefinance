@@ -159,11 +159,12 @@ class RefundController extends Controller
         public function updateRequestStatus(Request $request)
         {
             $reqId = $request->get('req_id');
-            //$reqData = $this->lmsRepo->getApprRequestData($reqId);
-            //$reqType = $reqData ? $reqData->req_type : '';
+            $reqData = $this->lmsRepo->getApprRequestData($reqId);
+            $curReqStatus = $reqData ? $reqData->status : '';
             
             $statusList = \Helpers::getRequestStatusList($reqId);
-            $statusList = ['' => 'Select Status'] + $statusList;
+            $statusList = ['' => 'Select Status'] + $statusList;                
+                           
             return view('lms.common.view_request_status')
                     ->with('reqId', $reqId)
                     ->with('statusList', $statusList);            
@@ -193,6 +194,41 @@ class RefundController extends Controller
             } catch (Exception $ex) {
                 return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
             }
-        }        
+        }
+        
+        public function viewProcessRefund(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqData = $this->lmsRepo->getApprRequestData($reqId);
+            $curReqStatus = $reqData ? $reqData->status : '';                          
+            
+            return view('lms.common.refund_process')->with('reqId', $reqId); 
+        }
+
+        public function processRefund(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqStatus = $request->get('status');
+            $comment = $request->get('comment');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                
+                $addlData=[];
+                $addlData['status'] = $reqStatus;
+                $addlData['sharing_comment'] = $comment;
+                $this->updateApprRequest($reqId, $addlData);
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }            
+        }
         
 }
