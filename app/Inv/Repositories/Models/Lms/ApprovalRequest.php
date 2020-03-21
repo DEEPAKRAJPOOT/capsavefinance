@@ -84,7 +84,9 @@ class ApprovalRequest extends BaseModel {
     
     public static function getApprRequestData($reqId)
     {
-        $result = self::select('*')
+        $result = self::from('lms_approval_request as req')
+                ->select('req.*','tr.user_id')
+                ->join('transactions as tr', 'tr.trans_id', '=', 'req.trans_id')
                 ->where('req_id', $reqId)
                 ->first();
         

@@ -198,9 +198,7 @@ class RefundController extends Controller
         
         public function viewProcessRefund(Request $request)
         {
-            $reqId = $request->get('req_id');
-            $reqData = $this->lmsRepo->getApprRequestData($reqId);
-            $curReqStatus = $reqData ? $reqData->status : '';                          
+            $reqId = $request->get('req_id');                     
             
             return view('lms.common.refund_process')->with('reqId', $reqId); 
         }
@@ -217,9 +215,20 @@ class RefundController extends Controller
                 //    Session::flash('error_code', 'no_docs_found');
                 //    return redirect()->back();                                            
                 //
+                $reqData = $this->lmsRepo->getApprRequestData($reqId);
+                $curReqStatus = $reqData ? $reqData->status : '';
+                $trAmount = $reqData ? $reqData->amount : 0;
+                $userId = $reqData ? $reqData->user_id : 0;
+                $transId = $reqData ? $reqData->trans_id : 0;
                 
+                $trData = [];                
+                $trData['amount'] = $trAmount;
+                $trData['parent_trans_id'] = $transId;
+                $ptrData = $this->createTransactionData($userId, $trData, null, $transType = 35, $entryType = 0);
+                $this->appRepo->saveTransaction($ptrData);
+
                 $addlData=[];
-                $addlData['status'] = $reqStatus;
+                $addlData['status'] = config('lms.REQUEST_STATUS.PROCESSED');
                 $addlData['sharing_comment'] = $comment;
                 $this->updateApprRequest($reqId, $addlData);
                         

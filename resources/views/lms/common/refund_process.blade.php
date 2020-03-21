@@ -9,7 +9,7 @@
                     array(
                     'method' => 'post',
                     'route' => 'lms_process_refund',
-                    'id' => 'frmSaveReqStatus',
+                    'id' => 'frmProcessRefund',
                     )
                     ) 
                     !!}            
@@ -76,11 +76,8 @@ var messages = {
             parent.$('#'+targetModel).modal('hide');
         });
         
-        $('#frmSaveReqStatus').validate({
+        $('#frmProcessRefund').validate({
             rules: {
-                status: {
-                    required: true
-                },
                 comment: {
                     required: true
                 }
