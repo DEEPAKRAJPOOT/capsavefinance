@@ -1250,7 +1250,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'payment_refund_index',
                'uses' => 'Backend\PaymentController@paymentInvoiceList'
            ]); 
-
+            Route::post('create-payment-refund', [
+                'as' => 'create_payment_refund',
+               'uses' => 'Backend\PaymentController@createPaymentRefund'
+           ]); 
          }); 
         //colender route 
 

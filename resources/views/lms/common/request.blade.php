@@ -30,7 +30,7 @@
 	                              		<table id="requestList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-                                                    <th>Batch No</th>
+                                                    <th>Ref No</th>
                                                     <th>Type</th>
 													<th>Amount</th>
                                                     <th>Date</th>
@@ -55,9 +55,10 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('edit_refund_amount','Edit Refund Amount', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('edit_adjust_amount','Edit Adjust Amount', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('edit_waveoff_amount','Edit Wave Off Amount', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('lms_move_next_stage','Move to Next Stage', 'modal-md')!!}
+{!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-md')!!}
+{!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
+{!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-md')!!}
 @endsection
 
 @section('jscript')
