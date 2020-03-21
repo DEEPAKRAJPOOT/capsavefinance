@@ -3626,7 +3626,10 @@ class DataRenderer implements DataProviderInterface
                 'action',
                 function ($data) {
                 $act = $data->action;
+                $refund='';
+                if (empty($data->req_id)) {
                 $refund = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('payment_refund_index', ['trans_id' => $data->trans_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-undo"></a>';
+                }
                 $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" href ="'.route('payment_advice_excel', ['trans_id' => $data->trans_id]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a> &nbsp; '. $refund .'';
                 return $download;
                 }

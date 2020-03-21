@@ -761,8 +761,9 @@ use CommonRepositoryTraits;
     {
        try
        {
-           return Transactions::select('transactions.*', 'users.f_name','users.m_name','users.l_name')
+           return Transactions::select('transactions.*', 'users.f_name','users.m_name','users.l_name','req.req_id')
                             ->join('users', 'transactions.user_id', '=', 'users.user_id')
+                            ->leftJoin('lms_approval_request as req', 'req.trans_id', '=', 'transactions.trans_id')
                             ->where('trans_type','=', 17)
                             ->orderBy('trans_id', 'asc');  
        } catch (Exception $ex) {
