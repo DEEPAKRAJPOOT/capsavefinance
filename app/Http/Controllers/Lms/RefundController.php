@@ -111,10 +111,10 @@ class RefundController extends Controller
             $next_stage_data = null;
             if ($request->has('back_stage')) {
                 $back_stage = '1';
-                $back_stage_data = '';
+                $back_stage_data = $this->getRequestPrevStage($reqId);
             } else {
                 $next_stage = '1';
-                $next_stage_data = '';
+                $next_stage_data = $this->getRequestNextStage($reqId);
             }
             return view('lms.common.move_next_stage')
                     ->with('reqId', $reqId)
@@ -128,7 +128,7 @@ class RefundController extends Controller
         public function acceptReqStage(Request $request)
         {
             $reqId = $request->get('req_id');
-            $isBackStage = $request->has('back_stage') ? true : false;
+            $isBackStage = $request->has('back_stage') && !empty($request->get('back_stage')) ? true : false;
             $comment = $request->get('sharing_comment');
             
             try {    
@@ -141,8 +141,10 @@ class RefundController extends Controller
                 $addlData=[];
                 $addlData['sharing_comment'] = $comment;
                 if ($isBackStage) {
+                    //dd('$isBackStage', $isBackStage, $request->all());
                     $this->moveRequestToPrevStage($reqId, $addlData);
                 } else {
+                    //dd('$isNextStage', $request->all());
                     $this->moveRequestToNextStage($reqId, $addlData);
                 }
                         
@@ -157,12 +159,12 @@ class RefundController extends Controller
         public function updateRequestStatus(Request $request)
         {
             $reqId = $request->get('req_id');
-            $reqData = $this->lsmRepo->getApprRequestData($reqId);
-            $reqType = $reqData ? $reqData->req_type : '';
+            //$reqData = $this->lmsRepo->getApprRequestData($reqId);
+            //$reqType = $reqData ? $reqData->req_type : '';
             
             $statusList = \Helpers::getRequestStatusList($reqId);
    
-            return view('lms.common.move_next_stage')
+            return view('lms.common.view_request_status')
                     ->with('reqId', $reqId)
                     ->with('status', $statusList);            
         }

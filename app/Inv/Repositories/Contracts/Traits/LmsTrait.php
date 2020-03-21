@@ -1182,6 +1182,14 @@ trait LmsTrait
             }*/
         }
         $this->lmsRepo->assignRequest($assignRequests);
+        
+        $updateReqLogData = ['is_active' => '0'];
+        $whereCond=[];
+        $whereCond['req_id'] = $reqId;
+        //$whereCond['assigned_user_id'] = \Auth::user()->user_id;
+        //$whereCond['wf_stage_id'] = $data->wf_stage_id;          
+        $this->lmsRepo->updateApprRequestLogData($whereCond, $updateReqLogData);
+        
         $this->lmsRepo->saveApprRequestLogData($allReqLogData);        
     }
 
@@ -1202,7 +1210,7 @@ trait LmsTrait
         
         $cur_wf_stage_status = config('lms.WF_STAGE_STATUS.COMPLETED');
         $updateWfStage=[];
-        $updateWfStage['wf_status'] = $cur_wf_stage_status;
+        $updateWfStage['wf_status'] = $cur_wf_stage_status;        
         $this->lmsRepo->updateWfStage($cur_wf_stage_id, $reqId, $updateWfStage);
         
         //Get Next workflow stage
@@ -1228,7 +1236,50 @@ trait LmsTrait
         
         return $nextWfStage;
     }
-     
+    
+    protected function getRequestPrevStage($reqId)
+    {
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
+        
+        //Get Previous workflow stage
+        $prevWfStage = $this->lmsRepo->getPrevWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$prevWfStage) return false;
+
+        return $prevWfStage;
+    }
+    
+    protected function getRequestNextStage($reqId)
+    {
+        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return false;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $this->lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
+        
+        //Get Previous workflow stage
+        $nextWfStage = $this->lmsRepo->getNextWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$nextWfStage) return false;
+
+        return $nextWfStage;
+    }    
     
     protected function moveRequestToPrevStage($reqId, $addlData=[])
     {
@@ -1245,13 +1296,13 @@ trait LmsTrait
         $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
         $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
         
-        //Get Next workflow stage
+        //Get Previous workflow stage
         $prevWfStage = $this->lmsRepo->getPrevWfStage($wf_stage_type, $cur_wf_order_no);
         if (!$prevWfStage) return false;
-                        
-        $prev_wf_stage_code = $nextWfStage ? $nextWfStage->stage_code : '';
-        $prev_wf_stage_id = $nextWfStage ? $nextWfStage->wf_stage_id : '';
-        $prev_wf_order_no = $nextWfStage ? $nextWfStage->order_no : '';
+        
+        $prev_wf_stage_code = $prevWfStage ? $prevWfStage->stage_code : '';
+        $prev_wf_stage_id = $prevWfStage ? $prevWfStage->wf_stage_id : '';
+        $prev_wf_order_no = $prevWfStage ? $prevWfStage->order_no : '';
         
         for ($wf_order_no=$prev_wf_order_no;$wf_order_no<=$cur_wf_order_no;$wf_order_no++) {
             $wf_stage_status = config('lms.WF_STAGE_STATUS.IN_PROGRESS');

@@ -55,9 +55,9 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('lms_move_next_stage','Move to Next Stage', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('lms_move_next_stage','Move to Next Stage', 'modal-md')!!}
+{!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-md')!!}
+{!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
 @endsection
 
 @section('jscript')

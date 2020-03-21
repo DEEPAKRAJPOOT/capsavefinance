@@ -1163,14 +1163,14 @@ class Helper extends PaypalHelper
         $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
         
         $statusList = [];
-
+                
         if ($reqType == config('lms.REQUEST_TYPE.REFUND')) {
             
-            if ($wf_stage_code == 'refund_approval') {
+            if ($wf_stage_code == 'refund_approval') {                
                 $statusList[config('lms.REQUEST_STATUS.REJECTED')] = 'Reject';
-                $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';
+                $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';                
             }
-        }
+        }        
         return $statusList;
     }
 }

@@ -20,22 +20,8 @@
                    <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
                    @endif
                    
-                   @if ($back_stage)
-                        Are you sure to move the previous stage <strong>({{ $back_stage_data ? $back_stage_data->stage_name : '' }})</strong>?<br>
-                        @php 
-                        $confirmBtn = 'Yes';
-                        $closeBtn = 'No';
-                        @endphp
-                   @else
-                        Are you sure to move the next stage <strong>({{ $next_stage_data ? $next_stage_data->stage_name : '' }})</strong>?<br>
-                        @php 
-                        $confirmBtn = 'Yes';
-                        $closeBtn = 'No';
-                        @endphp                    
-                   @endif
-
-                    
-                    
+                   
+                   
               </div>
                 <div class="col-12">
                     <div class="form-group">
@@ -45,11 +31,9 @@
                        <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
                     {!! Form::hidden('req_id', $reqId) !!}
-                    {!! Form::hidden('back_stage', $back_stage) !!}
-                <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
-                <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
-                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
-                <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
+                    
+                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">Submit</button> &nbsp;
+                <button id="close_btn" type="button" class="btn btn-secondary btn-sm">Cancel</button>   
             </div>
             </div>
                 {!!
@@ -68,9 +52,8 @@ var messages = {
     is_accept: "{{ Session::get('is_accept') }}",    
     error_code : "{{ Session::has('error_code') }}",
  };
-     $(document).ready(function(){
-        var back_stage = $("input[name=back_stage]").val(); 
-        var targetModel = back_stage != '' ? 'lms_move_prev_stage' : 'lms_move_next_stage';
+     $(document).ready(function(){        
+        var targetModel = 'lms_update_request_status';
         var parent =  window.parent;  
                 
         $('.btn-move-next-stage').click(function() {            
