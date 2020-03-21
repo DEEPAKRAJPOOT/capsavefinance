@@ -73,8 +73,8 @@ trait LmsTrait
             
             $invoiceDueDate  = $disburse->payment_due_date;
             $intAccrualStartDt = $disburse->int_accrual_start_dt;
-            $gracePeriodDate = $this->addDays($invoiceDueDate, $gracePeriod);
-            $overDueInterestDate = $this->addDays($invoiceDueDate, 1);
+            $gracePeriodDate = $this->addDays($invoiceDueDate, ($gracePeriod-1));
+            $overDueInterestDate = $this->addDays($invoiceDueDate, 0);
             $maxAccrualDate = $disburse->interests->max('interest_date');
             
             $principalAmount  = $disburse->principal_amount;
@@ -426,10 +426,10 @@ trait LmsTrait
                             $interestDue = (float)$accured_interest - $interestSettled;
                         break;
                     }
-                    $interestRefund = (float)$disbursalDetail->total_interest-(float)$accured_interest;
+                    $interestRefund = (float)$disbursalDetail->total_interest-((float)$accured_interest-(float)$penalAmount);
 
                 /* Step 1 : Interest Settlement */
-
+ 
                     if($interestDue>0 && $trans['balance_amount']>0)
                     {
                         $interestPaidAmt = ($trans['balance_amount']>=$interestDue)?$interestDue:$trans['balance_amount'];
@@ -593,28 +593,28 @@ trait LmsTrait
                 if($trans['balance_amount']<=0) break;
             }
 
-            // $getChargesDetails = Transactions::where('user_id','=',$transDetail['user_id'])
-            //             ->where('entry_type','=',0)
-            //             ->where('created_at', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
-            //             ->whereHas('trans_detail', function($query){ 
-            //                 $query->where('chrg_master_id','!=','0');
-            //             })
-            //             ->orderBy('trans_date','asc')->get();
+            $getChargesDetails = Transactions::where('user_id','=',$transDetail['user_id'])
+                        ->where('entry_type','=',0)
+                        ->where('created_at', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
+                        ->whereHas('trans_detail', function($query){ 
+                            $query->where('chrg_master_id','!=','0');
+                        })
+                        ->orderBy('trans_date','asc')->get();
             
-            // foreach ($getChargesDetails as $key => $chargeDetail) {
-            //     if($trans['balance_amount']>0){
-            //         $chargePaidAmt = ($chargeDetail->amount<=$trans['balance_amount'])?$chargeDetail->amount:$trans['balance_amount'];
-            //         $trans['balance_amount'] -= $chargePaidAmt; 
-            //         $chargesSettledData = $this->createTransactionData($transDetail['user_id'], [
-            //             'amount' => $chargePaidAmt,
-            //             'trans_date'=>$transDetail['trans_date'],
-            //             'parent_trans_id'=>$transId
-            //         ], null, $chargeDetail->trans_type, 0);
-            //         $transactionData['charges'][] = $chargesSettledData;
-            //     }
+            foreach ($getChargesDetails as $key => $chargeDetail) {
+                if($trans['balance_amount']>0){
+                    $chargePaidAmt = ($chargeDetail->amount<=$trans['balance_amount'])?$chargeDetail->amount:$trans['balance_amount'];
+                    $trans['balance_amount'] -= $chargePaidAmt; 
+                    $chargesSettledData = $this->createTransactionData($transDetail['user_id'], [
+                        'amount' => $chargePaidAmt,
+                        'trans_date'=>$transDetail['trans_date'],
+                        'parent_trans_id'=>$transId
+                    ], null, $chargeDetail->trans_type, 0);
+                    $transactionData['charges'][] = $chargesSettledData;
+                }
                 
-            //     if($trans['balance_amount']<=0) break;
-            // }
+                if($trans['balance_amount']<=0) break;
+            }
 
             if($trans['balance_amount']>0)
             { 
@@ -666,6 +666,11 @@ trait LmsTrait
                 $this->lmsRepo->saveTransaction($interestRefundValue);
             }
             
+            if(!empty($transactionData['charges']))
+            foreach($transactionData['charges'] as $chargesValue){
+                $this->lmsRepo->saveTransaction($chargesValue);
+            }
+            
             if(!empty($transactionData['nonFactoredAmt']))
             foreach($transactionData['nonFactoredAmt'] as $nonFactoredAmtValue){
                 $this->lmsRepo->saveTransaction($nonFactoredAmtValue);
@@ -676,10 +681,6 @@ trait LmsTrait
             //     $this->lmsRepo->saveTransaction($marginReleasedValue);
             // }
 
-            // if(!empty($transactionData['charges']))
-            // foreach($transactionData['charges'] as $chargesValue){
-            //     $this->lmsRepo->saveTransaction($chargesValue);
-            // }
 
             // if(!empty($transactionData['reversePayment']))
             // foreach ($transactionData['reversePayment'] as $interestRevPaymentValue){
