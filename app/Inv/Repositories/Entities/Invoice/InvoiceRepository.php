@@ -701,7 +701,16 @@ use CommonRepositoryTraits;
            return $ex;
         } 
     }
-    
+    public function getLimitProgram($aid)
+    {
+     
+        try
+        {
+          return AppProgramLimit::getLimitProgram($aid);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+    } 
    public function getLimitAllAnchor()
     {
      

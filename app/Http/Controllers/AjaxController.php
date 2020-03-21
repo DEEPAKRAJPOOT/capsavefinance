@@ -3486,7 +3486,6 @@ if ($err) {
        
          $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
          $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
-         dd($get_program);
          return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
      }
        public function getProgramLmsSingleList(Request $request)
