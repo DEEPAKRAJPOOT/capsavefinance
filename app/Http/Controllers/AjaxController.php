@@ -2730,7 +2730,7 @@ if ($err) {
     
      //////////////////// use for invoice list/////////////////
      public function getFrontendInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,7);
+        $invoice_data = $this->invRepo->getUserAllInvoice($this->request);
         $invoice = $dataProvider->getFrontendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
@@ -3486,6 +3486,7 @@ if ($err) {
        
          $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
          $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
+         dd($get_program);
          return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
      }
        public function getProgramLmsSingleList(Request $request)

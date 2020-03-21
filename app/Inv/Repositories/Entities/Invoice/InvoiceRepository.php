@@ -469,11 +469,11 @@ use CommonRepositoryTraits;
         }
          
     } 
-     public function getUserAllInvoice($request,$status)
+     public function getUserAllInvoice($request)
     {
         try
         {
-           return InvoiceModel::getUserAllInvoice($request,$status);  
+           return InvoiceModel::getUserAllInvoice($request);  
         } catch (Exception $ex) {
            return $ex;
         }
