@@ -446,20 +446,41 @@ class PaymentController extends Controller {
     if($principalSettled>0){
       $nonFactoredAmount = $repayment->amount-$principalSettled;
     }
-    
-    $addlData=[];
-    $addlData['trans_id'] = $transId;
-    $addlData['amount'] = 86.74;
-    $addlData['sharing_comment'] = 'testing';
-    $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
-    
+        
     // dd($repayment);
     return view('backend.payment.payment_invoice_list', 
       ['repaymentTrails' => $repaymentTrails, 
        'repayment'=>$repayment,
        'nonFactoredAmount' => $nonFactoredAmount,
        'amountForMargin' => $amountForMargin,
-       'marginAmountData' => $marginAmountData
+       'marginAmountData' => $marginAmountData,
+       'transId' => $transId
       ]);
   }
+  
+    public function createPaymentRefund(Request $request)
+    {
+        $transId = $request->get('trans_id');
+        $refundAmount = $request->get('total_refund_amount');
+
+        try {
+            $addlData=[];
+            $addlData['trans_id'] = $transId;
+            $addlData['amount'] = $refundAmount;
+            $addlData['sharing_comment'] = '';
+            
+            $result = $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
+            
+            if ($result) {
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+            } else {
+                Session::flash('error_code', 'create_refund');
+                return redirect()->back();                
+            }
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }    
+    }
 }

@@ -4186,9 +4186,13 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'status',
             function ($data){
-                //return config('lms.REQUEST_STATUS_DISP.'. $data->status);
-                //return config('lms.REQUEST_STATUS_DISP.'. $data->req_status);            
-                return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
+                $roleData = User::getBackendUser(\Auth::user()->user_id);
+                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
+                if (isset($roleData[0]) && $roleData[0]->is_superadmin != 1 && $isRequestOwner) {
+                    return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
+                } else {
+                    return config('lms.REQUEST_STATUS_DISP.'. $data->req_status);
+                }
             }
         )   
         ->editColumn(

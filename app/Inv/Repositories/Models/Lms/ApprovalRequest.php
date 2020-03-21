@@ -98,7 +98,7 @@ class ApprovalRequest extends BaseModel {
         $userArr = \Helpers::getChildUsersWithParent($curUserId);
         $query = self::from('lms_approval_request as req')
                 ->select('req.req_id','req.ref_code','req.amount','req.status as req_status','req.req_type',
-                'req.created_at', 'reqlog.status',
+                'req.created_at',
                 DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                                 
                 'req_assign.to_id',
@@ -109,8 +109,10 @@ class ApprovalRequest extends BaseModel {
                 //            WHEN rta_req.req_type = 2 THEN 'Adjustment'
                 //            WHEN rta_req.req_type = 3 THEN 'Waveoff'
                 //            ELSE ''
-                //        END AS req_type_name")                      
-                )
+                //        END AS req_type_name"),
+                //'reqlog.status'
+                )                                
+                /*
                 ->join('lms_approval_request_log as reqlog', function ($join) use($roleData, $curUserId, $userArr) {
                         $join->on('reqlog.req_id', '=', 'req.req_id');
                         $join->on('reqlog.is_active', '=', DB::raw("1"));
@@ -120,6 +122,8 @@ class ApprovalRequest extends BaseModel {
 
                         }                        
                 })
+                 * 
+                 */
                 ->join('lms_request_assign as req_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('req.req_id', '=', 'req_assign.req_id');
                     if ($roleData[0]->is_superadmin != 1) {
