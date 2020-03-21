@@ -141,7 +141,7 @@ class WfStage extends BaseModel {
      */
     public static function getWfDetailByOrderNo($req_type, $wf_order_no)
     {
-        $arr = self::from('wf_stage as wf')
+        $arr = self::from('lms_wf_stage as wf')
             ->select('wf.*')            
             ->where('wf.req_type', $req_type)
             ->where('wf.order_no', $wf_order_no)

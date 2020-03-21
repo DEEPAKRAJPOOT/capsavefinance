@@ -1198,13 +1198,13 @@ class Helper extends PaypalHelper
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         
         //Get Current workflow stage
-        $wfStage = $lmsRepo->getCurrentWfStage($reqId);        
-        $wfStageId = $wfStage ? $wfStage->wf_stage_id : '';
+        //$wfStage = $lmsRepo->getCurrentWfStage($reqId);        
+        //$wfStageId = $wfStage ? $wfStage->wf_stage_id : '';
         
         $whereCond=[];
         $whereCond['req_id'] = $reqId;
         $whereCond['assigned_user_id'] = $assignedUserId;
-        $whereCond['wf_stage_id'] = $wfStageId;
+        //$whereCond['wf_stage_id'] = $wfStageId;
         $apprLogData = $lmsRepo->getApprRequestLogData($whereCond);
         $apprStatus = isset($apprLogData[0]) ? config('lms.REQUEST_STATUS_DISP.'.$apprLogData[0]->status) : '';
         return $apprStatus;

@@ -4204,7 +4204,7 @@ class DataRenderer implements DataProviderInterface
                 $result = '';
                 $isLastStage = \Helpers::isReqInLastWfStage($data->req_id);
                 $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
-                if ($isRequestOwner) {
+                if ($isRequestOwner && $data->req_status != config('lms.REQUEST_STATUS.PROCESSED')) {
                     if ($isLastStage) {
                         $data_target = "#lms_move_prev_stage";
                         $route = route('lms_req_move_prev_stage', ['req_id' => $data->req_id, 'back_stage' => 1 ]);

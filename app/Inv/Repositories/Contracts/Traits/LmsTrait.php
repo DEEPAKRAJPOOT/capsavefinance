@@ -1068,7 +1068,7 @@ trait LmsTrait
         $wfStage = $this->lmsRepo->getCurrentWfStage($reqId);
         $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
         $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
-        
+                        
         //Update Request Log Data
         $updateReqLogData = ['is_active' => '0'];
         $whereCond=[];
@@ -1076,7 +1076,7 @@ trait LmsTrait
         $whereCond['assigned_user_id'] = \Auth::user()->user_id;
         $whereCond['wf_stage_id'] = $wf_stage_id;
         $this->lmsRepo->updateApprRequestLogData($whereCond, $updateReqLogData);
-        
+                        
         //Insert Request Log Data
         $reqLogData=[];
         $reqLogData['req_id'] = $reqId;
@@ -1085,21 +1085,22 @@ trait LmsTrait
         $reqLogData['assigned_user_id'] = \Auth::user()->user_id;
         $reqLogData['wf_stage_id'] = $wf_stage_id;
         $this->lmsRepo->saveApprRequestLogData($reqLogData);
-                        
-        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval'])) {
+                             
+        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval']) && config('lms.REQUEST_STATUS.PROCESSED') != $reqStatus) {
             
             //Get Assigned Request for Approval
             $whereCond=[];
             $whereCond['req_id'] = $reqId;
             $assignedReqData = $this->lmsRepo->getAssignedReqData($whereCond);            
             $cntAssignedReqStatus = count($assignedReqData);
-            
+                                     
             //Get Request Log with Status for Approval
             $whereCond=[];
             $whereCond['req_id'] = $reqId;
             $whereCond['wf_stage_id'] = $wf_stage_id;
             $apprReqLogData = $this->lmsRepo->getApprRequestLogData($whereCond);
-            $cntUpdatedReqStatus=count($apprReqLogData);
+            $cntUpdatedReqStatus=count($apprReqLogData);            
+            
             $cntApprReqStatus=0;
             foreach($apprReqLogData as $rLog) {
                 if ($rLog->status == config('lms.REQUEST_STATUS.APPROVED')) {
@@ -1328,6 +1329,6 @@ trait LmsTrait
         $updateReqData['status'] = $reqStatus;
         $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
         
-        return $nextWfStage;
+        return $prevWfStage;
     }    
 }

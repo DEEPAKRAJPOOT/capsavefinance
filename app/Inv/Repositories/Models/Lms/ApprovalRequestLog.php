@@ -116,6 +116,7 @@ class ApprovalRequestLog extends BaseModel {
         $result = self::select('*')
                 ->where($whereCond)
                 ->where('is_active', 1)
+                ->orderBy('request_log_id', 'DESC')
                 ->get();
         
         return $result ? $result : [];                
