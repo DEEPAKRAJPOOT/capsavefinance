@@ -4210,6 +4210,17 @@ class DataRenderer implements DataProviderInterface
                 data-width="100%" 
                 data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
 
+                $statusList = \Helpers::getRequestStatusList($data->req_id);
+                if(count($statusList) > 0) {
+                    $result .= '<a 
+                    data-toggle="modal" 
+                    data-target="#lms_update_request_status" 
+                    data-url="'.route('lms_update_request_status', ['req_id' => $data->req_id ]).'"
+                    data-height="400px" 
+                    data-width="100%" 
+                    data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                }
+
                 return $result;
             }
         )  

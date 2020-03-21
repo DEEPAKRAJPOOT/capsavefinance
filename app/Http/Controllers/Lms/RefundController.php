@@ -157,9 +157,10 @@ class RefundController extends Controller
         public function updateRequestStatus(Request $request)
         {
             $reqId = $request->get('req_id');
+            $reqData = $this->lsmRepo->getApprRequestData($reqId);
+            $reqType = $reqData ? $reqData->req_type : '';
             
-            
-            $statusList = [];
+            $statusList = \Helpers::getRequestStatusList($reqId);
    
             return view('lms.common.move_next_stage')
                     ->with('reqId', $reqId)

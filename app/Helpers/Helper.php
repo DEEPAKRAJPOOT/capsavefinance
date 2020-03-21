@@ -1148,5 +1148,29 @@ class Helper extends PaypalHelper
         if (!$nextWfStage) return true;
 
         return false;
-    }    
+    }
+    
+    public static function getRequestStatusList($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        
+        $reqData = $lmsRepo->getApprRequestData($reqId);
+        $reqType = $reqData ? $reqData->req_type : '';
+
+        //Get Current workflow stage
+        $wfStage = $lmsRepo->getCurrentWfStage($reqId);
+        $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
+        $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
+        
+        $statusList = [];
+
+        if ($reqType == config('lms.REQUEST_TYPE.REFUND')) {
+            
+            if ($wf_stage_code == 'refund_approval') {
+                $statusList[config('lms.REQUEST_STATUS.REJECTED')] = 'Reject';
+                $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';
+            }
+        }
+        return $statusList;
+    }
 }

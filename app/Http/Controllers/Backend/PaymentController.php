@@ -447,6 +447,12 @@ class PaymentController extends Controller {
       $nonFactoredAmount = $repayment->amount-$principalSettled;
     }
     
+    $addlData=[];
+    $addlData['trans_id'] = $transId;
+    $addlData['amount'] = 86.74;
+    $addlData['sharing_comment'] = 'testing';
+    $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
+    
     // dd($repayment);
     return view('backend.payment.payment_invoice_list', 
       ['repaymentTrails' => $repaymentTrails, 

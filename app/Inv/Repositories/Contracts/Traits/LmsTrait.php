@@ -947,29 +947,32 @@ trait LmsTrait
     protected function createApprRequest($requestType, $addlData=[]) 
     {
         $wf_stage_types = config('lms.REQUEST_TYPE');
+        
         $assignRequest = false;        
-        $wf_stage_type = isset($wf_stage_types[$requestType]) ? $wf_stage_types[$requestType] : '';
+        //$wf_stage_type = isset($wf_stage_types[$requestType]) ? $wf_stage_types[$requestType] : '';
+        $wf_stage_type = $requestType;
         
         $reqData=[];
         $reqLogData=[];
         
         //Prepare Request Data        
-        $reqData['type'] = $wf_stage_type;
+        $reqData['req_type'] = $wf_stage_type;
         $reqData['status'] = config('lms.REQUEST_STATUS.NEW_REQUEST');        
         
         //Prepare Request Log Data
         $reqLogData['status'] = $reqData['status'];        
             
-        if ($requestType == 'REFUND' ) {
+        if ($requestType == config('lms.REQUEST_TYPE.REFUND') ) {
             $reqData['trans_id'] = $addlData['trans_id'];
             $reqData['amount'] = $addlData['amount'];            
         }
+        
         $saveReqData = $this->lmsRepo->saveApprRequestData($reqData);
         $req_id = $saveReqData->req_id;        
         $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => 'REF000'.$req_id], $req_id);
         $reqLogData['req_id'] = $req_id;
         
-        $wt_stages = $this->lmsRepo->getWfStages($wf_stage_type);
+        $wf_stages = $this->lmsRepo->getWfStages($wf_stage_type);
         foreach($wf_stages as $wf_stage) {
             $wf_stage_code = $wf_stage->stage_code;
             $wf_order_no = $wf_stage->order_no;
@@ -981,7 +984,7 @@ trait LmsTrait
                     $arrData = [
                         'wf_stage_id' => $wfData->wf_stage_id,
                         'req_id' => $req_id,
-                        'wf_status' => config('lms.WF_STAGE_STATUS.IN_PROGRESS'),
+                        'wf_status' => config('lms.WF_STAGE_STATUS.PENDING'),
                     ];
                     $this->lmsRepo->saveWfDetail($arrData);
                 }
@@ -1012,11 +1015,26 @@ trait LmsTrait
                         $dataArr['assign_status'] = '0';
                         $dataArr['assign_type'] = '2';
                         $dataArr['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
-                        $dataArr['is_owner'] = 1;
+                        $dataArr['is_owner'] = 1;  
+                        
+                        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+                        $dataArr['created_by'] = Auth::user()->user_id;
+                        $dataArr['created_at'] = $curData;
+                        $dataArr['updated_by'] = Auth::user()->user_id;
+                        $dataArr['updated_at'] = $curData;
+                        
                         $assignRequests[] = $dataArr;
                         
                         //Save Request Log Data
-                        $allReqLogData[] = $reqLogData + ['assigned_user_id' => $auser->user_id, 'wf_stage_id' => $data->wf_stage_id];
+                        $allReqLogData[] = $reqLogData + [
+                            'assigned_user_id' => $auser->user_id, 
+                            'wf_stage_id' => $data->wf_stage_id,
+                            'created_by' => \Auth::user()->user_id,
+                            'created_at' => $curData,
+                            'updated_by' => \Auth::user()->user_id,
+                            'updated_at' => $curData               
+                        ];
                     }
                 } 
                 /*else { 
@@ -1131,10 +1149,25 @@ trait LmsTrait
                     $dataArr['assign_type'] = '2';
                     $dataArr['sharing_comment'] = isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '';
                     $dataArr['is_owner'] = 1;
+                    
+                    $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+
+                    $dataArr['created_by'] = \Auth::user()->user_id;
+                    $dataArr['created_at'] = $curData;
+                    $dataArr['updated_by'] = \Auth::user()->user_id;
+                    $dataArr['updated_at'] = $curData;
+                        
                     $assignRequests[] = $dataArr;
 
                     //Save Request Log Data
-                    $allReqLogData[] = $reqLogData + ['assigned_user_id' => $auser->user_id, 'wf_stage_id' => $data->wf_stage_id];
+                    $allReqLogData[] = $reqLogData + [
+                        'assigned_user_id' => $auser->user_id, 
+                        'wf_stage_id' => $data->wf_stage_id,
+                        'created_by' => \Auth::user()->user_id,
+                        'created_at' => $curData,
+                        'updated_by' => \Auth::user()->user_id,
+                        'updated_at' => $curData                          
+                    ];
                 }
             } 
             /*else { 

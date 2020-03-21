@@ -65,7 +65,16 @@ class RequestAssign extends BaseModel {
     
     public static function assignRequest($data)
     {
-        return self::create($data);     
+        //Check $reqData is not an array
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        
+        if(isset($data[0])) {
+            return self::insert($data);
+        } else {
+            return self::create($data);
+        }    
     } 
     
     public static function getAssignedReqData($reqId)

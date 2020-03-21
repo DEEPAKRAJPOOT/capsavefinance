@@ -46,6 +46,7 @@ class ApprovalRequest extends BaseModel {
         'req_id',
         'ref_code',
         'req_type',
+        'trans_id',
         'status',  
         'amount',
         'created_at',

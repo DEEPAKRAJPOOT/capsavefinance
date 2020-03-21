@@ -203,7 +203,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@updateRequestStatus'
             ]);    
             
-            Route::post('save-request-stage',[
+            Route::post('save-request-status',[
                 'as' => 'lms_save_request_status',
                 'uses' => 'Lms\RefundController@saveRequestStatus'
             ]); 
