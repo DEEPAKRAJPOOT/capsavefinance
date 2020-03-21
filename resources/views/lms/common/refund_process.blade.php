@@ -20,6 +20,7 @@
                     <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
                     @endif                 
 
+                    <p>Are you sure to process the Refund</p>
 
                </div>
                 <div class="col-12">
