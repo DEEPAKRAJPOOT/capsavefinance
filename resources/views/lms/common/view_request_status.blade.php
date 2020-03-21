@@ -8,33 +8,39 @@
                     Form::open(
                     array(
                     'method' => 'post',
-                    'route' => 'lms_accept_next_stage',
-                    'id' => 'frmMoveStage',
+                    'route' => 'lms_save_request_status',
+                    'id' => 'frmSaveReqStatus',
                     )
                     ) 
                     !!}            
             <div class="row">                
-               <div class="col-12">
-                    
-                   @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
-                   <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
-                   @endif
-                   
-                   
-                   
-              </div>
+                <div class="col-12">
+
+                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
+                    <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
+                    @endif
+
+                 <div class="form-group">
+                     {!! Form::label('status', 'Select Status', ['class' => 'control-label'] )  !!}
+                     <div class="col-lg-10">
+                         {!!  Form::select('status', $statusList, '', ['class' => 'form-control' ]) !!}
+                     </div>
+                 </div>
+
+
+               </div>
                 <div class="col-12">
                     <div class="form-group">
                        <label for="txtCreditPeriod">Comment
                        <span class="mandatory">*</span>
                        </label>
-                       <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
+                       <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
                     {!! Form::hidden('req_id', $reqId) !!}
                     
                 <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">Submit</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">Cancel</button>   
-            </div>
+                </div>
             </div>
                 {!!
                 Form::close()
@@ -57,7 +63,7 @@ var messages = {
         var parent =  window.parent;  
                 
         $('.btn-move-next-stage').click(function() {            
-            if ($('#frmMoveStage').valid()) {
+            if ($('#frmSaveReqStatus').valid()) {
                 parent.$('.isloader').show();
             }
         });
@@ -77,13 +83,13 @@ var messages = {
             parent.$('#'+targetModel).modal('hide');
         });
         
-        $('#frmMoveStage').validate({
+        $('#frmSaveReqStatus').validate({
             rules: {
-                sel_assign_role: {
+                status: {
                     required: true
                 },
-                sharing_comment: {
-                   required: true
+                comment: {
+                    required: true
                 }
             },
             messages: {

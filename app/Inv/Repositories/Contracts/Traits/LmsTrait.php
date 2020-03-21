@@ -1028,6 +1028,7 @@ trait LmsTrait
                         
                         //Save Request Log Data
                         $allReqLogData[] = $reqLogData + [
+                            'comment' => isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '',
                             'assigned_user_id' => $auser->user_id, 
                             'wf_stage_id' => $data->wf_stage_id,
                             'created_by' => \Auth::user()->user_id,
@@ -1080,7 +1081,9 @@ trait LmsTrait
         $reqLogData=[];
         $reqLogData['req_id'] = $reqId;
         $reqLogData['status'] = $reqStatus;
+        $reqLogData['comment'] = $addlData['sharing_comment'];
         $reqLogData['assigned_user_id'] = \Auth::user()->user_id;
+        $reqLogData['wf_stage_id'] = $wf_stage_id;
         $this->lmsRepo->saveApprRequestLogData($reqLogData);
                         
         if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval'])) {
@@ -1161,6 +1164,7 @@ trait LmsTrait
 
                     //Save Request Log Data
                     $allReqLogData[] = $reqLogData + [
+                        'comment' => isset($addlData['sharing_comment']) ? $addlData['sharing_comment'] : '',
                         'assigned_user_id' => $auser->user_id, 
                         'wf_stage_id' => $data->wf_stage_id,
                         'created_by' => \Auth::user()->user_id,

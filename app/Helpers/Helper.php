@@ -1173,4 +1173,10 @@ class Helper extends PaypalHelper
         }        
         return $statusList;
     }
+    
+    public static function isRequestOwner($reqId, $assignedUserId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        return $lmsRepo->isRequestOwner($reqId, $assignedUserId);    
+    }
 }

@@ -761,4 +761,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WfStage::getPrevWfStage($req_type, $wf_order_no);
     }
+    
+    public function getAssignedReqData($reqId)
+    {
+        return RequestAssign::getAssignedReqData($reqId);
+    }    
+    
+    public function isRequestOwner($reqId, $assignedUserId)
+    {
+        return RequestAssign::isRequestOwner($reqId, $assignedUserId);
+    }    
 }

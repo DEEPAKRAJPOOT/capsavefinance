@@ -163,16 +163,17 @@ class RefundController extends Controller
             //$reqType = $reqData ? $reqData->req_type : '';
             
             $statusList = \Helpers::getRequestStatusList($reqId);
-   
+            $statusList = ['' => 'Select Status'] + $statusList;
             return view('lms.common.view_request_status')
                     ->with('reqId', $reqId)
-                    ->with('status', $statusList);            
+                    ->with('statusList', $statusList);            
         }
         
         public function saveRequestStatus(Request $request)
         {
             $reqId = $request->get('req_id');
             $reqStatus = $request->get('status');
+            $comment = $request->get('comment');
             
             try {    
                 
@@ -182,12 +183,9 @@ class RefundController extends Controller
                 //
                 
                 $addlData=[];
+                $addlData['status'] = $reqStatus;
                 $addlData['sharing_comment'] = $comment;
-                if ($isBackStage) {
-                    $this->moveRequestToPrevStage($reqId, $addlData);
-                } else {
-                    $this->moveRequestToNextStage($reqId, $addlData);
-                }
+                $this->updateApprRequest($reqId, $addlData);
                         
                 Session::flash('is_accept', 1);
                 return redirect()->back();

@@ -86,5 +86,16 @@ class RequestAssign extends BaseModel {
         
         return isset($result[0]) ? $result : [];     
     }
+    
+    public static function isRequestOwner($reqId, $assignedUserId)
+    {
+        $result = self::select('*')
+                ->where('req_id', $reqId)
+                ->where('to_id', $assignedUserId)
+                ->where('is_owner',1)
+                ->first();
+        
+        return $result ? true : false;     
+    }
 }
 

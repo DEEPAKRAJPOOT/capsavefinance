@@ -111,9 +111,14 @@ class ApprovalRequest extends BaseModel {
                 //            ELSE ''
                 //        END AS req_type_name")                      
                 )
-                ->join('lms_approval_request_log as reqlog', function ($join) {
+                ->join('lms_approval_request_log as reqlog', function ($join) use($roleData, $curUserId, $userArr) {
                         $join->on('reqlog.req_id', '=', 'req.req_id');
                         $join->on('reqlog.is_active', '=', DB::raw("1"));
+                        if ($roleData[0]->is_superadmin != 1) {
+                            //$join->on('req_assign.to_id', '=', DB::raw($curUserId));
+                            $join->whereIn('reqlog.assigned_user_id', $userArr);
+
+                        }                        
                 })
                 ->join('lms_request_assign as req_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('req.req_id', '=', 'req_assign.req_id');

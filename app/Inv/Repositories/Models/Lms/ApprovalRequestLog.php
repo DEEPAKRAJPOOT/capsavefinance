@@ -46,6 +46,7 @@ class ApprovalRequestLog extends BaseModel {
         'assigned_user_id',
         'status',
         'wf_stage_id',
+        'comment',
         'is_active',
         'created_at',
         'created_by',

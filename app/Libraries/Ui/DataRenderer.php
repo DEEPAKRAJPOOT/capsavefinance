@@ -4186,41 +4186,45 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'status',
             function ($data){
-                return config('lms.REQUEST_STATUS_DISP.'. $data->status);
+                //return config('lms.REQUEST_STATUS_DISP.'. $data->status);
+                return config('lms.REQUEST_STATUS_DISP.'. $data->req_status);            
             }
         )   
         ->editColumn(
             'action',
             function ($data){
+                $result = '';
                 $isLastStage = \Helpers::isReqInLastWfStage($data->req_id);
-                if ($isLastStage) {
-                    $data_target = "#lms_move_prev_stage";
-                    $route = route('lms_req_move_prev_stage', ['req_id' => $data->req_id, 'back_stage' => 1 ]);
-                    $url_title = 'Move to Previous Stage';
-                } else {
-                    $data_target = "#lms_move_next_stage";
-                    $route = route('lms_req_move_next_stage', ['req_id' => $data->req_id ]);
-                    $url_title = 'Move to Next Stage';
-                }
-                $result = '<a 
-                data-toggle="modal" 
-                data-target="' . $data_target . '" 
-                data-url="'.$route.'"
-                data-height="270px" 
-                data-width="100%" 
-                data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
-
-                $statusList = \Helpers::getRequestStatusList($data->req_id);                
-                if(count($statusList) > 0) {
+                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
+                if ($isRequestOwner) {
+                    if ($isLastStage) {
+                        $data_target = "#lms_move_prev_stage";
+                        $route = route('lms_req_move_prev_stage', ['req_id' => $data->req_id, 'back_stage' => 1 ]);
+                        $url_title = 'Move to Previous Stage';
+                    } else {
+                        $data_target = "#lms_move_next_stage";
+                        $route = route('lms_req_move_next_stage', ['req_id' => $data->req_id ]);
+                        $url_title = 'Move to Next Stage';
+                    }
                     $result .= '<a 
                     data-toggle="modal" 
-                    data-target="#lms_update_request_status" 
-                    data-url="'.route('lms_update_request_status', ['req_id' => $data->req_id ]).'"
+                    data-target="' . $data_target . '" 
+                    data-url="'.$route.'"
                     data-height="270px" 
                     data-width="100%" 
-                    data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                    data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                
+                    $statusList = \Helpers::getRequestStatusList($data->req_id);                
+                    if(count($statusList) > 0) {
+                        $result .= '<a 
+                        data-toggle="modal" 
+                        data-target="#lms_update_request_status" 
+                        data-url="'.route('lms_update_request_status', ['req_id' => $data->req_id ]).'"
+                        data-height="270px" 
+                        data-width="100%" 
+                        data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                    }
                 }
-
                 return $result;
             }
         )  
