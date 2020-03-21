@@ -1037,7 +1037,6 @@
 
         $('.isloader').show();
          var CIN = '{{ (isset($cin_no)) ? $cin_no : "" }}';
-         var CIN = "";
         if(CIN=='')
         {
              $('.isloader').hide();

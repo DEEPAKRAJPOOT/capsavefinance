@@ -57,6 +57,7 @@ class LmsUser extends Authenticatable
     protected $fillable = [
         'user_id',
         'customer_id',
+        'app_id',
         'created_at',
         'created_by'
     ];

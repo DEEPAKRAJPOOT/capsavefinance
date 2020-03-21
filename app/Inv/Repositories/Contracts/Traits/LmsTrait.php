@@ -1019,14 +1019,17 @@ trait LmsTrait
         * disburseType = 1 for online and 2 for manually
         */
         $disbursalData = [];
+        $interest = 0;
         $now = strtotime($invoice['invoice_due_date']); // or your date as well
         $your_date = strtotime($invoice['invoice_date']);
         $datediff = abs($now - $your_date);
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-
-        $interest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
-        $disburseAmount = round($fundedAmount - $interest, 2);
+        $totalinterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+        $disburseAmount = round($fundedAmount - $totalinterest, 2);
+        if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
+            $interest = $totalinterest;
+        }
 
         $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;

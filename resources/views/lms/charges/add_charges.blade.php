@@ -413,9 +413,11 @@
           }
        else if(amount > 100)
           {
+              if(chrg_calculation_type==2)
+              {    
                alert('Percentage should not  greater than 100%');
                return false;
-
+              }
           }
         
         
