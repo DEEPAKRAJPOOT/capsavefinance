@@ -1125,4 +1125,28 @@ class Helper extends PaypalHelper
         }
         return $formatedId;
     }    
+    
+    public static function isReqInLastWfStage($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        
+        $apprReqData = $lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return true;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return true;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
+        
+        //Get Next workflow stage
+        $nextWfStage = $lmsRepo->getNextWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$nextWfStage) return true;
+
+        return false;
+    }    
 }

@@ -186,8 +186,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             Route::get('req-move-next-stage',[
                 'as' => 'lms_req_move_next_stage',
-                'uses' => 'Lms\RefundController@moveReqToNexStage'
-            ]);            
+                'uses' => 'Lms\RefundController@moveReqToNextStage'
+            ]);
+            Route::get('req-move-prev-stage',[
+                'as' => 'lms_req_move_prev_stage',
+                'uses' => 'Lms\RefundController@moveReqToNextStage'
+            ]);    
+            
+            Route::post('accept-request-stage',[
+                'as' => 'lms_accept_next_stage',
+                'uses' => 'Lms\RefundController@acceptReqStage'
+            ]);              
         });
         
         //end of application

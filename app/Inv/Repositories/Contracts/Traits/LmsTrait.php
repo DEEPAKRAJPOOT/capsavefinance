@@ -1102,29 +1102,7 @@ trait LmsTrait
         $this->lmsRepo->updateWfStage($wf_stage_id, $reqId, $updateWfStage);
                        
         return true;
-    }
-    
-    protected function isReqInLastWfStage($reqId)
-    {
-        $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
-        if(!$apprReqData) return true;
-                
-        $wf_stage_type = $apprReqData->req_type;
-        
-        //Get Current workflow stage
-        $curWfStage = $this->lmsRepo->getCurrentWfStage($reqId);
-        if (!$curWfStage) return true;
-                
-        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
-        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
-        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
-        
-        //Get Next workflow stage
-        $nextWfStage = $this->lmsRepo->getNextWfStage($wf_stage_type, $cur_wf_order_no);
-        if (!$nextWfStage) return true;
-
-        return false;
-    }
+    }    
     
     protected function assignRequest($reqId, $wfStage, $reqStatus, $addlData)
     {

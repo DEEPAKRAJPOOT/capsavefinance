@@ -102,9 +102,56 @@ class RefundController extends Controller
 		return view('lms.common.edit_request', $request->all());
 	}
         
-	public function moveReqToNexStage(Request $request) 
+	public function moveReqToNextStage(Request $request) 
 	{
-		return view('lms.common.move_next_stage');
-	}        
+            $reqId = $request->get('req_id');
+            $back_stage = '';
+            $next_stage = '';
+            $back_stage_data = null;
+            $next_stage_data = null;
+            if ($request->has('back_stage')) {
+                $back_stage = '1';
+                $back_stage_data = '';
+            } else {
+                $next_stage = '1';
+                $next_stage_data = '';
+            }
+            return view('lms.common.move_next_stage')
+                    ->with('reqId', $reqId)
+                    ->with('back_stage', $back_stage)
+                    ->with('back_stage_data', $back_stage_data)
+                    ->with('next_stage', $next_stage)
+                    ->with('next_stage_data', $next_stage_data);
+                    
+	}
+
+        public function acceptReqStage(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $isBackStage = $request->has('back_stage') ? true : false;
+            $comment = $request->get('sharing_comment');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                
+                $addlData=[];
+                $addlData['sharing_comment'] = $comment;
+                if ($isBackStage) {
+                    $this->moveRequestToPrevStage($reqId, $addlData);
+                } else {
+                    $this->moveRequestToNextStage($reqId, $addlData);
+                }
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }
         
 }

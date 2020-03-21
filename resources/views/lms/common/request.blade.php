@@ -56,6 +56,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('lms_move_next_stage','Move to Next Stage', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
