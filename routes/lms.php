@@ -196,7 +196,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('accept-request-stage',[
                 'as' => 'lms_accept_next_stage',
                 'uses' => 'Lms\RefundController@acceptReqStage'
-            ]);              
+            ]); 
+            
+            Route::get('update-request-status',[
+                'as' => 'lms_update_request_status',
+                'uses' => 'Lms\RefundController@updateRequestStatus'
+            ]);    
+            
+            Route::post('save-request-stage',[
+                'as' => 'lms_save_request_status',
+                'uses' => 'Lms\RefundController@saveRequestStatus'
+            ]); 
+            
         });
         
         //end of application

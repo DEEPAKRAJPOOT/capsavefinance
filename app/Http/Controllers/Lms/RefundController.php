@@ -154,4 +154,44 @@ class RefundController extends Controller
             }
         }
         
+        public function updateRequestStatus(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            
+            
+            $statusList = [];
+   
+            return view('lms.common.move_next_stage')
+                    ->with('reqId', $reqId)
+                    ->with('status', $statusList);            
+        }
+        
+        public function saveRequestStatus(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqStatus = $request->get('status');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                
+                $addlData=[];
+                $addlData['sharing_comment'] = $comment;
+                if ($isBackStage) {
+                    $this->moveRequestToPrevStage($reqId, $addlData);
+                } else {
+                    $this->moveRequestToNextStage($reqId, $addlData);
+                }
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }        
+        
 }

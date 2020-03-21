@@ -4208,7 +4208,7 @@ class DataRenderer implements DataProviderInterface
                 data-url="'.$route.'"
                 data-height="400px" 
                 data-width="100%" 
-                data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
 
                 return $result;
             }
