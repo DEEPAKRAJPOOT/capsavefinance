@@ -4149,11 +4149,22 @@ class DataRenderer implements DataProviderInterface
     
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
-        ->rawColumns(['assignee','assignedBy','action'])
+        ->rawColumns(['ref_code','assignee','assignedBy','action'])
         ->editColumn(
             'ref_code',
             function ($data) {
-                return $data->ref_code;
+                $result = '';
+                                           
+                $result .= '<a 
+                data-toggle="modal" 
+                data-target="#lms_view_process_refund" 
+                data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id ]).'"
+                data-height="400px" 
+                data-width="100%" 
+                data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm">' . $data->ref_code . '</a>';
+                
+                //$result .= $data->ref_code;                              
+                return $result;
             }
         )
         ->editColumn(
@@ -4194,7 +4205,7 @@ class DataRenderer implements DataProviderInterface
                 if (isset($roleData[0]) && $roleData[0]->is_superadmin != 1 && $isRequestOwner) {
                     return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
                 } else {
-                    return config('lms.REQUEST_STATUS_DISP.'. $data->req_status);
+                    return config('lms.REQUEST_STATUS_DISP.'. $data->req_status . '.SYSTEM');
                 }
             }
         )   
@@ -4221,17 +4232,22 @@ class DataRenderer implements DataProviderInterface
                     data-height="270px" 
                     data-width="100%" 
                     data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
-                    if ($data->req_status == config('lms.REQUEST_STATUS.APPROVED')) {
-                        if ($data->req_type == config('lms.REQUEST_TYPE.REFUND')) {
+     
+                    $stage = \Helpers::getRequestCurrentStage($data->req_id);
+                    //if ($data->req_status == config('lms.REQUEST_STATUS.APPROVED')) {
+                    if ($stage) {
+                        if ($data->req_type == config('lms.REQUEST_TYPE.REFUND')) {                            
                             $result .= '<a 
                             data-toggle="modal" 
                             data-target="#lms_view_process_refund" 
                             data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id ]).'"
-                            data-height="270px" 
+                            data-height="400px" 
                             data-width="100%" 
                             data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
                         }
-                    } else {
+                    }
+                    /* 
+                    else {
                         $statusList = \Helpers::getRequestStatusList($data->req_id);                
                         if (count($statusList) > 0) {
                             $result .= '<a 
@@ -4241,8 +4257,10 @@ class DataRenderer implements DataProviderInterface
                             data-height="270px" 
                             data-width="100%" 
                             data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
-                        }
+                        }                     
                     }
+                    * 
+                    */
                 }
                 return $result;
             }

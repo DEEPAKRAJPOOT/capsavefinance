@@ -71,11 +71,11 @@ return [
         '3' => 'Waveoff',
     ],
     'REQUEST_STATUS_DISP' => [
-        '1' => 'New Request',
-        '2' => 'Deleted',
-        '3' => 'In Process',
-        '4' => 'Rejected',
-        '5' => 'Approved',
-        '6' => 'Processed'
+        '1' => ['SYSTEM' => 'New Request', 'USER' => 'New Request'],
+        '2' => ['SYSTEM' => 'Deleted', 'USER' => 'Delete'],
+        '3' => ['SYSTEM' => 'In Process', 'USER' => 'In Process'],
+        '4' => ['SYSTEM' => 'Rejected', 'USER' => 'Reject'],
+        '5' => ['SYSTEM' => 'Approved', 'USER' => 'Approve'],
+        '6' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
     ],    
 ];

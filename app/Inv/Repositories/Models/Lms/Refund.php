@@ -54,10 +54,10 @@ class Refund extends BaseModel {
     ];
 
     
-    public static function getRefund($transId)
+    public static function getRefundData($transId)
     {
         $result = self::select('*')
-                ->join('variables', 'variables.id', '=', 'lms_refund.variable_id')
+                ->join('lms_variables', 'lms_variables.id', '=', 'lms_refund.variable_id')
                 ->where('lms_refund.trans_id', $transId)
                 ->get();
         return isset($result[0]) ? $result : [];

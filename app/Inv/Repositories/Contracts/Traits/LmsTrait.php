@@ -930,7 +930,7 @@ trait LmsTrait
        dd($attr);
     } 
     
-    protected function getRefundData($transId)
+    protected function getRefundData($transId, $includeTrans=true)
     {   
         $data = [];
         $result = $this->lmsRepo->getRefundData($transId);        
@@ -940,6 +940,79 @@ trait LmsTrait
             } else {
                 $data[$row->name] = $row;
             }
+        }
+        
+        if ($includeTrans) {
+            $repayment = $this->lmsRepo->getTransactions(['trans_id' => $transId, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')])->first();
+            $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id' => $transId]);
+
+            $transaction = [];
+            $transactions = [];
+
+            $transaction['TRANS_DATE'] = $repayment->trans_date;
+            $transaction['VALUE_DATE'] = $repayment->created_at;
+
+            if ($repayment->trans_detail->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
+            } else {
+                $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
+            }
+
+            if ($repayment->disburse && $repayment->disburse->invoice) {
+                $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
+            } else {
+                $transaction['INV_NO'] = '';
+            }      
+
+            if ($repayment->entry_type == '0') {
+                $transaction['DEBIT'] = $repayment->amount;
+            } else {
+                $transaction['DEBIT'] = '';
+            }
+
+            if ($repayment->entry_type == '1') {
+                $transaction['CREDIT'] = $repayment->amount;
+            } else {
+                $transaction['CREDIT'] = '';
+            }
+
+            $transactions[] = $transaction;
+
+            foreach ($repaymentTrails as $repay) {
+                $transaction = [];
+                if ($repay->trans_detail->id == 35) continue;
+                
+                $transaction['TRANS_DATE'] = $repay->trans_date;
+                $transaction['VALUE_DATE'] = $repay->created_at;
+
+                if ($repay->trans_detail->chrg_master_id != '0') {
+                    $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+                } else {
+                    $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+                }
+
+                if (isset($repay->disburse->invoice) && $repay->disburse->invoice->invoice_no) {
+                    $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
+                } else {
+                    $transaction['INV_NO'] = '';
+                }      
+
+                if ($repay->entry_type == '0') {
+                    $transaction['DEBIT'] = $repay->amount;
+                } else {
+                    $transaction['DEBIT'] = '';
+                }
+
+                if ($repay->entry_type == '1') {
+                    $transaction['CREDIT'] = $repay->amount;
+                } else {
+                    $transaction['CREDIT'] = '';
+                }
+
+                $transactions[] = $transaction;   
+            }
+
+            $data['TRANSACTIONS'] = $transactions;
         }
         return $data;
     }
@@ -1483,7 +1556,7 @@ trait LmsTrait
                 if ($variable->name == 'MARGIN') {
                     foreach($refundData[$variable->name] as $key => $item) {
                         $refund['trans_id'] = $transId;
-                        $refund['variable_id'] = $variable->variable_id;                        
+                        $refund['variable_id'] = $variable->id;                        
                         $refund['variable_type'] = $item['MARGIN_TYPE'];
                         $refund['variable_value'] = $item['MARGIN_PER_OR_FIXED'];
                         $refund['amount'] = $item['MARGIN_AMOUNT'];
@@ -1499,7 +1572,7 @@ trait LmsTrait
                     }
                 } else {
                     $refund['trans_id'] = $transId;
-                    $refund['variable_id'] = $variable->variable_id;                    
+                    $refund['variable_id'] = $variable->id;                    
                     $refund['variable_type'] = null;
                     $refund['variable_value'] = null;
                     $refund['amount'] = $refundData[$variable->name];

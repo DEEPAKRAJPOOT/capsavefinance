@@ -1162,9 +1162,11 @@ class Helper extends PaypalHelper
         $wfStage = $lmsRepo->getCurrentWfStage($reqId);
         $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
         $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
+        $statusArr = $wfStage ? explode(',', $wfStage->status) : [];
         
         $statusList = [];
-                
+        
+        /*
         if ($reqType == config('lms.REQUEST_TYPE.REFUND')) {
             
             if ($wf_stage_code == 'refund_approval') {
@@ -1175,7 +1177,14 @@ class Helper extends PaypalHelper
                     $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';                    
                 }
             }
-        }        
+        } 
+         * 
+         */
+        if (count($statusArr) > 0) {
+            foreach($statusArr as $key => $status) {
+                $statusList[$status] = config('lms.REQUEST_STATUS_DISP.'.$status . '.USER');
+            }
+        }
         return $statusList;
     }
     
@@ -1206,7 +1215,17 @@ class Helper extends PaypalHelper
         $whereCond['assigned_user_id'] = $assignedUserId;
         //$whereCond['wf_stage_id'] = $wfStageId;
         $apprLogData = $lmsRepo->getApprRequestLogData($whereCond);
-        $apprStatus = isset($apprLogData[0]) ? config('lms.REQUEST_STATUS_DISP.'.$apprLogData[0]->status) : '';
+        $apprStatus = isset($apprLogData[0]) ? config('lms.REQUEST_STATUS_DISP.'.$apprLogData[0]->status . '.SYSTEM') : '';
         return $apprStatus;
-    }    
+    }
+    
+    public static function getRequestCurrentStage($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        //Get Current workflow stage
+        $curWfStage = $lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+        
+        return $curWfStage;
+    }
 }

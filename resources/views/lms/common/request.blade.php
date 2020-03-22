@@ -58,7 +58,7 @@
 {!!Helpers::makeIframePopup('lms_move_next_stage','Move to Next Stage', 'modal-md')!!}
 {!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-md')!!}
 {!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
-{!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-md')!!}
+{!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
 @endsection
 
 @section('jscript')
