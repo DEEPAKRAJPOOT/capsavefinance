@@ -2,7 +2,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" {{-- onsubmit="return checkValidation();"--}} action="{{route('add_anchor_reg')}}" target="_top" enctype="multipart/form-data">
+           <form id="anchorForm" name="anchorForm" method="POST" onkeyup="return checkValidation();" action="{{route('add_anchor_reg')}}" target="_top" enctype="multipart/form-data">
 		@csrf
                         <div class="row">
                            <div class="col-6">
@@ -29,6 +29,7 @@
                                  <span class="mandatory">*</span>
                                  </label>
                                  <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" >
+                                 <small id="email_error"></small>
                               </div>
                            </div>
 
@@ -131,7 +132,8 @@
                                 [''=>'Please Select']+Helpers::getAllUsersByRoleId(4),
                                 '',
                                 array('id' => 'assigned_sale_mgr',
-                                'class'=>'form-control'))
+                                'class'=>'form-control',
+                                'name'=>'assigned_sale_mgr'))
                                 !!}
                               </div>
                            </div>   
@@ -167,6 +169,7 @@
         //get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        check_exist_user: "{{ URL::route('check_user') }}"
 
     };
 </script>
@@ -248,23 +251,92 @@
                      doc_file: {
                         required: true,
                         extension: "jpg,jpeg,png,pdf",
+                     },
+
+                     assigned_sale_mgr: {
+                        required: true
                      }
                   },
                   messages: {
                      doc_file: {
                         required: "Please select file",
                         extension:"Invalid file format",
+                     },
+                     assigned_sale_mgr: {
+                        required: 'Please select file'
                      }
                   }
                }
             );
 
         });
+
+
+        function checkValidation(e) {
+            let employee = document.getElementById('employee').value;
+            let phone = document.getElementById('phone').value; 
+            let pincode = document.getElementById('pin_code').value; 
+            let pattern = /^[a-zA-Z\s-, ]+$/;
+
+            if(!employee.match(pattern)) {
+               document.getElementById('employee').value = "";
+               
+            };
+
+            if(isNaN(phone)) {
+               document.getElementById('phone').value = "";
+            };
+
+            if(isNaN(pincode)) {
+               document.getElementById('pin_code').value = "";
+            };
+        }
+        
 </script>
 <script type="text/javascript">
    $(".custom-file-input").on("change", function() {
    var fileName = $(this).val().split("\\").pop();
    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
    });
+</script>
+
+<script>
+    let email_error = document.getElementById('email_error');
+    email.addEventListener('keyup', searchFunction);
+    
+
+    function searchFunction(event) {
+
+        let search = document.getElementById('email').value;
+
+        const searchUser = {
+            search: search
+        };
+
+        fetch(messages.check_exist_user, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRF-TOKEN": messages.token
+            },
+            body: JSON.stringify(searchUser)
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                
+               for(let i in data) {
+                  console.log(typeof data[i])
+               }
+                
+            
+            })
+            .catch(error => console.log(error))
+
+        event.preventDefault();
+    }
+
+
+
+
 </script>
 @endsection

@@ -18,6 +18,8 @@ use Event;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
+use App\Inv\Repositories\Models\User;
+use DB;
 
 class LeadController extends Controller {
 
@@ -695,6 +697,27 @@ class LeadController extends Controller {
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+        /**
+     * function to check live email validation
+     * @return type
+     */
+    public function checkEmailAvailability(Request $request)
+    {
+        $email = $request->input('email');
+        
+        $result = User::select('users.email')
+            ->where('email', 'LIKE', "%{$email}%")
+            ->get();
+
+        if(count ($result) > 0) {
+            return json_encode(['result'=>$result]);
+        } else {
+            return json_encode(['data'=>'NOt']);
+            
+        }
+        // return json_encode(User::find('users.email')->get()->toArray());
     }
     
 }
