@@ -42,25 +42,25 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm' ,
+                ['class'=>'form-control form-control-sm number_format' ,
                 'id'=>'account_no','placeholder'=>'Enter Account Number']) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
-        
-        
-         <div class="col-md-6">
+
+
+        <div class="col-md-6">
             <div class="form-group">
                 <label for="confim_acc_no">Confirm Account Number
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number']) !!}
-                
+                ['class'=>'form-control form-control-sm number_format', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number']) !!}
+
             </div>
         </div>
-        
-       
+
+
         <div class="col-md-6">
             <div class="form-group">
                 <label for="ifsc_code">IFSC Code
@@ -122,7 +122,19 @@ try {
 @endif
 
 <script>
+    $(document).on('input', '.number_format', function (event) {
+        // skip for arrow keys
+        if (event.which >= 37 && event.which <= 40)
+            return;
+
+        // format number
+        $(this).val(function (index, value) {
+            return value.replace(/\D/g, "");
+        });
+    });
+
     $('#confim_acc_no').val($('#account_no').val());
+    
     $(function () {
         $("form[name='bank_account']").validate({
             rules: {
@@ -140,27 +152,22 @@ try {
                     equalTo: "#account_no",
                     maxlength: 16,
                 },
-                
                 'bank_id': {
                     required: true,
                 },
-
                 'ifsc_code': {
                     required: true,
-
                 },
                 'branch_name': {
                     required: true,
-
                 },
                 'is_active': {
                     required: true,
-
                 },
             },
             messages: {
-                confim_acc_no:{
-                    equalTo:'Confirm Account Number and Account number do not match.  '
+                confim_acc_no: {
+                    equalTo: 'Confirm Account Number and Account number do not match.  '
                 }
 
             },
