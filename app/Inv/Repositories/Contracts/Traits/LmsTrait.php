@@ -44,10 +44,11 @@ trait LmsTrait
         return $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
     }   
 
-    protected function calAccrualInterest($transDate = null){
-        $disbursalData = Disbursal::whereIn('status_id',[12,13])->get();
+    protected function calAccrualInterest($transDate=null){
+        $disbursalData = Disbursal::where('disbursal_id',[24])->get();
         $currentDate = date('Y-m-d');
         $interest = 0;
+        $returnData = [];
 
         foreach ($disbursalData as $disburse) {
             $intAccrualDt = NULL;
@@ -58,7 +59,7 @@ trait LmsTrait
             $whereProgramOffer['disbursal_id'] = $disburse->disbursal_id;
             $prgmOffer = $this->lmsRepo->getProgramOffer($whereProgramOffer);
             
-            $int_type_config = 2; //$prgmOffer->payment_frequency ? $prgmOffer->payment_frequency : 1;
+            $int_type_config = $prgmOffer->payment_frequency ? $prgmOffer->payment_frequency : 1;
             
             $gracePeriod = $prgmOffer->grace_period ? $prgmOffer->grace_period : 0;
             $interestRate = $disburse->interest_rate ?? $prgmOffer->interest_rate;
@@ -73,6 +74,7 @@ trait LmsTrait
             $principalAmount  = $disburse->principal_amount;
             $settledAmount  = $disburse->settlement_amount;
             $totalInterest = $disburse->total_interest ? $disburse->total_interest :0;
+           
             $settledInterest = 0;
 
             if($int_type_config==2){
@@ -90,18 +92,18 @@ trait LmsTrait
             }else{
                 $intAccrualDt = $intAccrualStartDt;
             }
-
- 
-            /* dd(['intAccrualDt'=>$intAccrualDt, 
+            /* 
+            dump(['intAccrualDt'=>$intAccrualDt, 
                 'intAccrualStartDt'=>$intAccrualStartDt,
                 'invoiceDueDate'=>$invoiceDueDate,
                 'gracePeriod'=>$gracePeriod, 
                 'gracePeriodDate'=>$gracePeriodDate,
                 'overDueInterestDate'=>$overDueInterestDate, 
-                'maxAccrualDate'=>$maxAccrualDate]); */
-           
+                'maxAccrualDate'=>$maxAccrualDate]);
+                continue;
+            */
 
-            while (strtotime($intAccrualDt) < strtotime($currentDate) && $balancePrincipalAmt>0) {
+            while (strtotime($intAccrualDt) <= strtotime($currentDate) && $balancePrincipalAmt>0) {
                 $maxAccrualDate = Disbursal::find($disburse->disbursal_id)->interests->max('interest_date');
                 $interest_accrual_id = null;
                 
@@ -120,6 +122,13 @@ trait LmsTrait
                     if(strtotime($this->addDays($gracePeriodDate, 1)) == strtotime($intAccrualDt)){
                         $recalStartDate = $overDueInterestDate;
                         $recalEndDate = $gracePeriodDate;
+
+                        if($transDate && $overDueInterestDate && strtotime($transDate) > strtotime($overDueInterestDate)){
+                            $recalStartDate = $transDate;
+                        }else{
+                            $recalStartDate = $overDueInterestDate;
+                        }
+
                         while(strtotime($recalStartDate)<=strtotime($recalEndDate)){
                             
                             $recalinterest_accrual_id = InterestAccrual::whereDate('interest_date',$recalStartDate)
@@ -129,8 +138,13 @@ trait LmsTrait
                             $recalAccuredInterest = InterestAccrual::whereDate('interest_date', '<=', $invoiceDueDate)
                                         ->where('disbursal_id','=',$disburse->disbursal_id)
                                         ->sum('accrued_interest');
-                            
-                            $recalbalancePrincipalAmt = round(($principalAmount + $recalAccuredInterest) - ($settledAmount + $settledInterest),2);
+
+                            if($int_type_config==2){
+                                $recalbalancePrincipalAmt = round(($principalAmount + $recalAccuredInterest) - ($settledAmount + $settledInterest),2);
+                            }else{
+                                $recalbalancePrincipalAmt = round(($principalAmount - $settledAmount),2);
+                            }
+                           
 
                             $recalInterestRate  = round($currentInterestRate / 100, 2);
                             $recalinterest = round($this->calInterest($recalbalancePrincipalAmt, $recalInterestRate, 1),2);
@@ -247,8 +261,10 @@ trait LmsTrait
             $saveDisbursalData['penalty_amount'] = $penalAmount;
             $saveDisbursalData['penal_days'] = $penalDays;
             $saveDisbursalData['total_interest'] = $totalInterest;
+            $returnData[$disburse->disbursal_id] = $accuredInterest;
             $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disburse->disbursal_id]);
         }
+        return $returnData;
     }
 
     /**
