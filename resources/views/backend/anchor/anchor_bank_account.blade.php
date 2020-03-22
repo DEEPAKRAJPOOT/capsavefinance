@@ -118,6 +118,17 @@ try {
         console.log(e);
     }
 }
+
+try {
+    var p = window.parent;
+    p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
+    p.jQuery('#edit_bank_account').modal('hide');
+    p.reloadDataTable();
+} catch (e) {
+    if (typeof console !== 'undefined') {
+        console.log(e);
+    }
+}
 </script>
 @endif
 

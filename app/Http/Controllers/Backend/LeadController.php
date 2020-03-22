@@ -502,21 +502,16 @@ class LeadController extends Controller {
      */
     public function addAnchorBank(Request $request) {
         try {
-           
+            
             $bankAccount = [];
             $anchor_id = $request->get('anchor_id');
             $bank_acc_id = false;
             $bankAccount['is_default'] = 0;
             
-//            if (!empty($request->get('bank_account_id'))) {
-//                $bank_acc_id = preg_replace('#[^0-9]#', '', $request->get('bank_account_id'));
-//                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($bank_acc_id,$anchor_id)->first();
-//            }
-            if ($anchor_id != null) {
+            if (!empty($request->get('bank_account_id')) && $anchor_id != null) {
                 $bank_acc_id = preg_replace('#[^0-9]#', '', $request->get('bank_account_id'));
-                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($anchor_id)->first();
+                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($bank_acc_id,$anchor_id)->first();
             }
-            
             
             $bank_list = ['' => 'Please Select'] + $this->appRepo->getBankList()->toArray();
             return view('backend.anchor.anchor_bank_account')
