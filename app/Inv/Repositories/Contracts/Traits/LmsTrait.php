@@ -1330,5 +1330,194 @@ trait LmsTrait
         $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
         
         return $prevWfStage;
-    }    
+    }
+    
+    protected function calculateRefund($transId)
+    {
+        $totalFactoredAmount = 0;
+        $overdueInterest = 0;
+        $interestRefund = 0;
+        $totalMarginAmount = 0;
+        $nonFactoredAmount = 0;
+        $data = [];
+
+        $repayment = $this->lmsRepo->getTransactions(['trans_id' => $transId, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')])->first();
+        $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id' => $transId]);
+
+        $disbursalIds = Transactions::where('parent_trans_id', '=', $transId)
+                ->whereNotNull('disbursal_id')
+                ->where('trans_type', '=', config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
+                ->distinct('disbursal_id')
+                ->pluck('disbursal_id')
+                ->toArray();
+
+        $principalSettled = Transactions::where('parent_trans_id', '=', $transId)
+                ->whereNotNull('disbursal_id')
+                ->whereIn('trans_type', [config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'), config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
+                ->sum('amount');
+
+        $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id', $disbursalIds)
+                ->sum('invoice_approve_amount');
+        $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id', $disbursalIds)
+                        ->groupBy('margin')
+                        ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
+
+        $totalFactoredAmount = $repayment ? $repayment->amount : 0;
+
+        $transaction = [];
+        $transactions = [];
+        
+        $transaction['TRANS_DATE'] = $repayment->trans_date;
+        $transaction['VALUE_DATE'] = $repayment->created_at;
+        
+        if ($repayment->trans_detail->chrg_master_id != '0') {
+            $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
+        } else {
+            $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
+        }
+                                        
+        if ($repayment->disburse && $repayment->disburse->invoice) {
+            $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
+        } else {
+            $transaction['INV_NO'] = '';
+        }      
+        
+        if ($repayment->entry_type == '0') {
+            $transaction['DEBIT'] = $repayment->amount;
+        } else {
+            $transaction['DEBIT'] = '';
+        }
+
+        if ($repayment->entry_type == '1') {
+            $transaction['CREDIT'] = $repayment->amount;
+        } else {
+            $transaction['CREDIT'] = '';
+        }
+        
+        $transactions[] = $transaction;
+        
+        $data['TOTAL_AMT_FOR_MARGIN'] = $amountForMargin;
+        $data['TOTAL_FACTORED'] = $totalFactoredAmount;
+
+        if ($principalSettled > 0) {
+            $nonFactoredAmount = $totalFactoredAmount - $principalSettled;
+        }
+        $nonFactoredAmount = 0;
+        $data['NON_FACTORED'] = $nonFactoredAmount;
+
+        foreach ($repaymentTrails as $repay) {
+            $transaction = [];
+            $transaction['TRANS_DATE'] = $repay->trans_date;
+            $transaction['VALUE_DATE'] = $repay->created_at;
+
+            if ($repay->trans_detail->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+            } else {
+                $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+            }
+
+            if ($repay->disburse->invoice->invoice_no) {
+                $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
+            } else {
+                $transaction['INV_NO'] = '';
+            }      
+
+            if ($repay->entry_type == '0') {
+                $transaction['DEBIT'] = $repay->amount;
+            } else {
+                $transaction['DEBIT'] = '';
+            }
+
+            if ($repay->entry_type == '1') {
+                $transaction['CREDIT'] = $repay->amount;
+            } else {
+                $transaction['CREDIT'] = '';
+            }
+            
+            if ($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                $overdueInterest += $repay->amount;
+            }
+
+            if ($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_REFUND')) {
+                $interestRefund += $repay->amount;
+            }
+            
+            $transactions[] = $transaction;   
+        }
+
+        $data['TRANSACTIONS'] = $transactions;
+        $data['OVERDUE_INTEREST'] = $overdueInterest;
+        $data['INTEREST_REFUND'] = $interestRefund;
+
+        $item = [];
+        foreach ($marginAmountData as $margin) {
+            $item[] = ['MARGIN_TYPE' => 1, 'MARGIN_PER_OR_FIXED' => $margin['margin'], 'MARGIN_AMOUNT' => $margin['margin_amount']];
+            $totalMarginAmount += $margin['margin_amount'];
+        }
+
+        $data['MARGIN'] = $item;
+
+        $totalMarginAmount -= $overdueInterest;
+
+        $data['MARGIN_RELEASED'] = $totalMarginAmount;
+
+        $totalMarginAmount += $interestRefund;
+
+        //Total Refundable Amount
+        $data['TOTAL_REFUNDABLE_AMT'] = $totalMarginAmount;
+
+        return $data;
+    }
+    
+    protected function saveRefundData($transId, $refundData=[])
+    {
+        if (empty($refundData)) {
+            $refundData = $this->calculateRefund($transId);
+        }
+        
+        $saveRefundData=[];
+        $variables = $this->lmsRepo->getVariables();
+        foreach($variables as $variable) {
+            if (isset($refundData[$variable->name])) {
+                $refund=[];
+                if ($variable->name == 'MARGIN') {
+                    foreach($refundData[$variable->name] as $key => $item) {
+                        $refund['trans_id'] = $transId;
+                        $refund['variable_id'] = $variable->variable_id;                        
+                        $refund['variable_type'] = $item['MARGIN_TYPE'];
+                        $refund['variable_value'] = $item['MARGIN_PER_OR_FIXED'];
+                        $refund['amount'] = $item['MARGIN_AMOUNT'];
+                        
+                        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+
+                        $refund['created_by'] = \Auth::user()->user_id;
+                        $refund['created_at'] = $curData;
+                        $refund['updated_by'] = \Auth::user()->user_id;
+                        $refund['updated_at'] = $curData;
+                        
+                        $saveRefundData[] = $refund;
+                    }
+                } else {
+                    $refund['trans_id'] = $transId;
+                    $refund['variable_id'] = $variable->variable_id;                    
+                    $refund['variable_type'] = null;
+                    $refund['variable_value'] = null;
+                    $refund['amount'] = $refundData[$variable->name];
+                    
+                    $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                    
+                    $refund['created_by'] = \Auth::user()->user_id;
+                    $refund['created_at'] = $curData;
+                    $refund['updated_by'] = \Auth::user()->user_id;
+                    $refund['updated_at'] = $curData;
+                    
+                    $saveRefundData[] = $refund;                        
+                }                
+            }
+        }
+        
+        $result = $this->lmsRepo->saveRefundData($saveRefundData);
+        return $result;
+    }
+    
 }
