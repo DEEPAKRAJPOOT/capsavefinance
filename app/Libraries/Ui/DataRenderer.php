@@ -3808,7 +3808,10 @@ class DataRenderer implements DataProviderInterface
                 'action',
                 function ($data) {
                 $act = $data->action;
+                $refund='';
+                if (empty($data->req_id)) {
                 $refund = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('payment_refund_index', ['trans_id' => $data->trans_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-undo"></a>';
+                }
                 $download = '<a class="btn btn-action-btn btn-sm"  title="Download Excel sheet" href ="'.route('payment_advice_excel', ['trans_id' => $data->trans_id]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a> &nbsp; '. $refund .'';
                 return $download;
                 }
@@ -4328,7 +4331,7 @@ class DataRenderer implements DataProviderInterface
     
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
-        ->rawColumns(['action'])
+        ->rawColumns(['assignee','assignedBy','action'])
         ->editColumn(
             'ref_code',
             function ($data) {
@@ -4338,78 +4341,92 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'type',
             function ($data) {
-                return $link = $data->typeName;
+                return config('lms.REQUEST_TYPE_DISP.'.$data->req_type);  //$data->req_type_name;
             }
         )
         ->editColumn(
             'amount',
             function ($data) {
-                return $data->totalAmount;// date('d-M-Y',strtotime($data->trans_date));
+                return $data->amount;
             }
         )     
         ->editColumn(
             'created_at',
             function ($data) {
-                return date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
             }
         )
         ->addColumn(
             'assignee',
             function ($data) {
-                return $data->assigneeName;
+                return $data->assignee .  '<br><small>(' . $data->assignee_role . ')</small>';
             }
         )
         ->addColumn(
             'assignedBy',
             function ($data) {
-                return $data->assignedByName;
+                return $data->assigned_by.  '<br><small>(' . $data->from_role . ')</small>';
             }
         )  
         ->editColumn(
             'status',
             function ($data){
-                return $data->statusName;
+                $roleData = User::getBackendUser(\Auth::user()->user_id);
+                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
+                if (isset($roleData[0]) && $roleData[0]->is_superadmin != 1 && $isRequestOwner) {
+                    return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
+                } else {
+                    return config('lms.REQUEST_STATUS_DISP.'. $data->req_status);
+                }
             }
         )   
         ->editColumn(
             'action',
             function ($data){
-                $result = ''; 
-                switch ($data->type) {
-                    case '1':
-                        $result .= '<a 
-                        data-toggle="modal" 
-                        data-target="#edit_refund_amount" 
-                        data-url="'.route('lms_edit_batch', ['action' => 'refund', 'batch_id'=>$data->batch_id ]).'"
-                        data-height="400px" 
-                        data-width="100%" 
-                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
-                    break;
-                    case '2':
-                        $result .= '<a
-                        data-toggle="modal" 
-                        data-target="#edit_adjust_amount" 
-                        data-url="'.route('lms_edit_batch', ['action' => 'adjust', 'batch_id'=>$data->batch_id]).'"
-                        data-height="400px" 
-                        data-width="100%" 
-                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
-                    break;
-                    case '3':
-                        $result .= '<a
-                        data-toggle="modal" 
-                        data-target="#edit_waveoff_amount" 
-                        data-url="'.route('lms_edit_batch', ['action' => 'waveoff', 'batch_id'=>$data->batch_id]).'"
-                        data-height="400px" 
-                        data-width="100%" 
-                        data-placement="top" title="Edit Batch" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
-                        break;
+                $result = '';
+                $isLastStage = \Helpers::isReqInLastWfStage($data->req_id);
+                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
+                if ($isRequestOwner && $data->req_status != config('lms.REQUEST_STATUS.PROCESSED')) {
+                    if ($isLastStage) {
+                        $data_target = "#lms_move_prev_stage";
+                        $route = route('lms_req_move_prev_stage', ['req_id' => $data->req_id, 'back_stage' => 1 ]);
+                        $url_title = 'Move to Previous Stage';
+                    } else {
+                        $data_target = "#lms_move_next_stage";
+                        $route = route('lms_req_move_next_stage', ['req_id' => $data->req_id ]);
+                        $url_title = 'Move to Next Stage';
+                    }
+                    $result .= '<a 
+                    data-toggle="modal" 
+                    data-target="' . $data_target . '" 
+                    data-url="'.$route.'"
+                    data-height="270px" 
+                    data-width="100%" 
+                    data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                    if ($data->req_status == config('lms.REQUEST_STATUS.APPROVED')) {
+                        if ($data->req_type == config('lms.REQUEST_TYPE.REFUND')) {
+                            $result .= '<a 
+                            data-toggle="modal" 
+                            data-target="#lms_view_process_refund" 
+                            data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id ]).'"
+                            data-height="270px" 
+                            data-width="100%" 
+                            data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                        }
+                    } else {
+                        $statusList = \Helpers::getRequestStatusList($data->req_id);                
+                        if (count($statusList) > 0) {
+                            $result .= '<a 
+                            data-toggle="modal" 
+                            data-target="#lms_update_request_status" 
+                            data-url="'.route('lms_update_request_status', ['req_id' => $data->req_id ]).'"
+                            data-height="270px" 
+                            data-width="100%" 
+                            data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
+                        }
+                    }
                 }
-
                 return $result;
-
-                // return '<a title="Edit Batch" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                //         <a title="Delete Batch" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                //         <a title="Move to Oops Maker" href="#" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
             }
         )  
         ->filter(function ($query) use ($request) {

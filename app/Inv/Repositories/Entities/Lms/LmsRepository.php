@@ -29,6 +29,14 @@ use App\Inv\Repositories\Models\Lms\Batch;
 use App\Inv\Repositories\Models\Lms\BatchLog;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Models\Lms\ApprovalRequest;
+use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
+use App\Inv\Repositories\Models\Lms\RequestAssign;
+use App\Inv\Repositories\Models\Lms\WfStage;
+use App\Inv\Repositories\Models\Lms\RequestWfStage;
+use App\Inv\Repositories\Models\Lms\Variables;
+use App\Inv\Repositories\Models\Lms\Refund;
+use App\Inv\Repositories\Models\Master\RoleUser;
 
 /**
  * Lms Repository class
@@ -560,7 +568,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRequestList($request)
    {
-      return Batch::all();
+      return ApprovalRequest::getAllApprRequests();
    }
 
    public function createBatch()
@@ -612,5 +620,200 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
         return DisbursalBatch::create($disburseBatch);
+    }
+    
+    public function getRefundData($transId)
+    {
+        return Refund::getRefundData($transId);
+    }
+    
+    /**
+     * Get Wf stage Details 
+     *
+    */
+    public function getWfStages($reqType)
+    {
+        return WfStage::getWfStages($reqType);
+    }
+    
+    /**
+     * Get workflow detail by wf stage code
+     * 
+     * @param string $req_type 
+     * @param string $wf_stage_code
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function getWfDetailById($wf_stage_code)
+    {
+        return WfStage::getWfDetailById($wf_stage_code);
+    }
+  
+    /**
+     * Get next workflow by $wf_order_no
+     *
+     * @param string $req_type 
+     * @param string $wf_order_no
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function getNextWfStage($req_type, $wf_order_no)
+    {
+        return WfStage::getNextWfStage($req_type, $wf_order_no);
+    }        
+        
+    /**
+     * Get Workflow Detail By Order No
+     *
+     * @param string $req_type 
+     * @param integer $wf_order_no
+     *
+     * @return mixed
+     */
+    public function getWfDetailByOrderNo($req_type, $wf_order_no)
+    {
+        return WfStage::getWfDetailByOrderNo($req_type, $wf_order_no);
+    }
+    
+    /**
+     * Get Wf stage Details 
+     *
+    */
+    public function updateWfStage($wf_stage_id, $req_id, $arrData = [])
+    {
+        return RequestWfStage::updateWfStage($wf_stage_id, $req_id, $arrData);
+    }
+    
+            
+    /**
+     * Save application workflow stage
+     * 
+     * @param array $arrData
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function saveWfDetail($arrData)
+    {
+        return RequestWfStage::saveWfDetail($arrData);
+    }
+    
+    /**
+     * Get Current WfStage by req id
+     * 
+     * @param integer $req_id
+     * @return mixed
+     */    
+    public function getCurrentWfStage($req_id) 
+    {
+        return RequestWfStage::getCurrentWfStage($req_id);
+    }
+
+    /**
+     * Get request workflow stage by $wf_stage_code and $req_id
+     * 
+     * @param string $wf_stage_code
+     * @param integer $req_id
+     * 
+     * @return mixed
+     */
+    public function getRequestWfStage($wf_stage_code, $req_id) 
+    {
+        return RequestWfStage::getRequestWfStage($wf_stage_code, $req_id);
+    }
+    
+    public function updateRequestAssignById($req_id, $data)
+    {
+        return RequestAssign::updateRequestAssignById((int) $req_id, $data);
+    }
+    
+    public function assignRequest($data)
+    {
+        return RequestAssign::assignRequest($data);
+    }
+    
+    /**
+     * Get Backend Users By Role Id
+     * 
+     * @param integer $role_id
+     * @return array
+     */
+    public function getBackendUsersByRoleId($role_id, $usersNotIn=[])
+    {
+        return RoleUser::getBackendUsersByRoleId($role_id, $usersNotIn);
+    }
+    
+    public function saveApprRequestData($reqData=[], $reqId=null)
+    {
+        return ApprovalRequest::saveApprRequestData($reqData, $reqId);
+    }
+
+    /**
+     * Save Approval Request Log Data
+     * 
+     * @param array $reqLogData
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function saveApprRequestLogData($reqLogData)
+    {
+        return ApprovalRequestLog::saveApprRequestLogData($reqLogData);
+    }
+    
+    public function getApprRequestData($reqId)
+    {
+        return ApprovalRequest::getApprRequestData($reqId);
+    }
+    
+    /**
+     * Update Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * @param array $reqLogData
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function updateApprRequestLogData($whereCond, $reqLogData)
+    {
+        return ApprovalRequestLog::updateApprRequestLogData($whereCond, $reqLogData);
+    }
+    
+    /**
+     * Get Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getApprRequestLogData($whereCond)
+    {
+        return ApprovalRequestLog::getApprRequestLogData($whereCond);
+    } 
+    
+    /**
+     * Get previous workflow by $wf_order_no
+     *
+     * @param string $req_type 
+     * @param string $wf_order_no
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function getPrevWfStage($req_type, $wf_order_no)
+    {
+        return WfStage::getPrevWfStage($req_type, $wf_order_no);
+    }
+    
+    public function getAssignedReqData($reqId)
+    {
+        return RequestAssign::getAssignedReqData($reqId);
+    }    
+    
+    public function isRequestOwner($reqId, $assignedUserId)
+    {
+        return RequestAssign::isRequestOwner($reqId, $assignedUserId);
     }
 }

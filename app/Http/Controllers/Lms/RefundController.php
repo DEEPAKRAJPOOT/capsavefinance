@@ -101,4 +101,143 @@ class RefundController extends Controller
 	{
 		return view('lms.common.edit_request', $request->all());
 	}
+        
+	public function moveReqToNextStage(Request $request) 
+	{
+            $reqId = $request->get('req_id');
+            $back_stage = '';
+            $next_stage = '';
+            $back_stage_data = null;
+            $next_stage_data = null;
+            if ($request->has('back_stage')) {
+                $back_stage = '1';
+                $back_stage_data = $this->getRequestPrevStage($reqId);
+            } else {
+                $next_stage = '1';
+                $next_stage_data = $this->getRequestNextStage($reqId);
+            }
+            return view('lms.common.move_next_stage')
+                    ->with('reqId', $reqId)
+                    ->with('back_stage', $back_stage)
+                    ->with('back_stage_data', $back_stage_data)
+                    ->with('next_stage', $next_stage)
+                    ->with('next_stage_data', $next_stage_data);
+                    
+	}
+
+        public function acceptReqStage(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $isBackStage = $request->has('back_stage') && !empty($request->get('back_stage')) ? true : false;
+            $comment = $request->get('sharing_comment');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                
+                $addlData=[];
+                $addlData['sharing_comment'] = $comment;
+                if ($isBackStage) {
+                    //dd('$isBackStage', $isBackStage, $request->all());
+                    $this->moveRequestToPrevStage($reqId, $addlData);
+                } else {
+                    //dd('$isNextStage', $request->all());
+                    $this->moveRequestToNextStage($reqId, $addlData);
+                }
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }
+        
+        public function updateRequestStatus(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqData = $this->lmsRepo->getApprRequestData($reqId);
+            $curReqStatus = $reqData ? $reqData->status : '';
+            
+            $statusList = \Helpers::getRequestStatusList($reqId);
+            $statusList = ['' => 'Select Status'] + $statusList;                
+                           
+            return view('lms.common.view_request_status')
+                    ->with('reqId', $reqId)
+                    ->with('statusList', $statusList);            
+        }
+        
+        public function saveRequestStatus(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqStatus = $request->get('status');
+            $comment = $request->get('comment');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                
+                $addlData=[];
+                $addlData['status'] = $reqStatus;
+                $addlData['sharing_comment'] = $comment;
+                $this->updateApprRequest($reqId, $addlData);
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }
+        
+        public function viewProcessRefund(Request $request)
+        {
+            $reqId = $request->get('req_id');                     
+            
+            return view('lms.common.refund_process')->with('reqId', $reqId); 
+        }
+
+        public function processRefund(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqStatus = $request->get('status');
+            $comment = $request->get('comment');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                $reqData = $this->lmsRepo->getApprRequestData($reqId);
+                $curReqStatus = $reqData ? $reqData->status : '';
+                $trAmount = $reqData ? $reqData->amount : 0;
+                $userId = $reqData ? $reqData->user_id : 0;
+                $transId = $reqData ? $reqData->trans_id : 0;
+                
+                $trData = [];                
+                $trData['amount'] = $trAmount;
+                $trData['parent_trans_id'] = $transId;
+                $ptrData = $this->createTransactionData($userId, $trData, null, $transType = 35, $entryType = 0);
+                $this->appRepo->saveTransaction($ptrData);
+
+                $addlData=[];
+                $addlData['status'] = config('lms.REQUEST_STATUS.PROCESSED');
+                $addlData['sharing_comment'] = $comment;
+                $this->updateApprRequest($reqId, $addlData);
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }            
+        }
+        
 }

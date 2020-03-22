@@ -46,5 +46,36 @@ return [
     'DISBURSE_TYPE' => [
         'ONLINE' => '1',
         'OFFLINE'=>'2'
-    ]
+    ],
+    'REQUEST_TYPE' => [
+        'REFUND' => '1',
+        'ADJUSTMENT' => '2',
+        'WAVE_OFF' => '3',
+    ],
+    'REQUEST_STATUS' => [
+        'NEW_REQUEST' => '1',
+        'DELETED' => '2',
+        'IN_PROCESS' => '3',
+        'REJECTED' => '4',
+        'APPROVED' => '5',
+        'PROCESSED' => '6'
+    ],
+    'WF_STAGE_STATUS' => [
+        'PENDING' => '0',
+        'COMPLETED' => '1',
+        'IN_PROGRESS' => '2',
+    ],
+    'REQUEST_TYPE_DISP' => [
+        '1' => 'Refund',
+        '2' => 'Adjustment',
+        '3' => 'Waveoff',
+    ],
+    'REQUEST_STATUS_DISP' => [
+        '1' => 'New Request',
+        '2' => 'Deleted',
+        '3' => 'In Process',
+        '4' => 'Rejected',
+        '5' => 'Approved',
+        '6' => 'Processed'
+    ],    
 ];
