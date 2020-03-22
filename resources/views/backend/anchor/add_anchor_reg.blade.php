@@ -93,13 +93,8 @@
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control city" name="city" id="city" tabindex="7" type="text" maxlength="10" placeholder="City" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
+                                    <select name="city" id="city" class="form-control" style="width:350px">
+                                 </select>
                                  </div>
                               </div>
                            <div class="col-6">
@@ -339,4 +334,34 @@
 
 
 </script>
+
+
+
+<script type="text/javascript">
+
+    $('#state').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+        $.ajax({
+           type:"GET",
+           url:"{{url('/anchor/get-city-list')}}?state_id="+stateID,
+           success:function(res){
+            if(res){
+                $("#city").empty();
+                $.each(res,function(key,value){
+                    $("#city").append('<option value="'+key+'">'+value+'</option>');
+                });
+
+            }else{
+               $("#city").empty();
+            }
+           }
+        });
+    }else{
+        $("#city").empty();
+    }
+
+   });
+</script>
+
 @endsection

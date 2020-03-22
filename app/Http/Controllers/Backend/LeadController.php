@@ -18,6 +18,7 @@ use Event;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
+use App\Inv\Repositories\Models\Master\City as CityModel;
 use App\Inv\Repositories\Models\User;
 use DB;
 
@@ -270,9 +271,8 @@ class LeadController extends Controller {
 
     public function addAnchorReg(Request $request) {
         try {
-            //$stateList= $this->userRepo->getStateList();
-            $states = State::getStateList()->get();
-            //dd($states);
+            // $states = State::getStateList()->get();
+            $states = State::select("id","name")->get();
             return view('backend.anchor.add_anchor_reg')
             ->with(['states'=>$states]);
                      //->with('state', $stateList);
@@ -718,6 +718,19 @@ class LeadController extends Controller {
             
         }
         // return json_encode(User::find('users.email')->get()->toArray());
+    }
+
+        /**
+     * function to dropdown citylist
+     * @return type
+     */
+    public function getCityList(Request $request)
+    {
+        
+        $cities = DB::table("mst_city")
+            ->where("state_id",$request->state_id)
+            ->pluck("name");
+            return response()->json($cities);
     }
     
 }
