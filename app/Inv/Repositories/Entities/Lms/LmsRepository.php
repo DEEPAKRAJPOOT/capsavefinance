@@ -816,4 +816,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return RequestAssign::isRequestOwner($reqId, $assignedUserId);
     }
+
+    public function saveRefundData($refundData)
+    {
+        return Refund::saveRefundData($refundData);
+    }
+    
+    public function getVariables()
+    {
+        return Variables::getVariables();
+    }    
 }

@@ -47,6 +47,7 @@ class WfStage extends BaseModel {
         'order_no',
         'stage_name',  
         'assign_role',
+        'status',
         'route_name',
         'created_at',
         'created_by',

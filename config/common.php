@@ -274,7 +274,8 @@ return [
     'idprefix' => [
         'APP' => 'CAPAI',
         'VA' => 'CAPVA',
-        'CUSTID' => 'CAPCI'
+        'CUSTID' => 'CAPCI',
+        'REFUND' => 'REF'
     ],    
 ];
  

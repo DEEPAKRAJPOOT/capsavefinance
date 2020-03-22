@@ -469,6 +469,9 @@ class PaymentController extends Controller {
             $addlData['amount'] = $refundAmount;
             $addlData['sharing_comment'] = '';
             
+            $refundData = $this->calculateRefund($transId);
+            $this->saveRefundData($transId, $refundData);                        
+            
             $result = $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
             
             if ($result) {

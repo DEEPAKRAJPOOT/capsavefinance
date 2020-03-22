@@ -85,7 +85,8 @@ class RequestWfStage extends BaseModel {
      */    
     protected static function getCurrentWfStage($req_id) 
     {
-        $appData = self::select('lms_wf_stage.stage_code','lms_wf_stage.wf_stage_id','lms_wf_stage.assign_role','lms_wf_stage.order_no')
+        $appData = self::select('lms_wf_stage.stage_code','lms_wf_stage.wf_stage_id',
+                'lms_wf_stage.assign_role','lms_wf_stage.order_no','lms_wf_stage.status')
                 ->join('lms_wf_stage', 'lms_wf.wf_stage_id', '=', 'lms_wf_stage.wf_stage_id')                 
                 ->where('lms_wf.req_id', $req_id)
                 ->where('lms_wf.wf_status', '!=', 1)
