@@ -1220,5 +1220,5 @@ trait LmsTrait
      protected  function document($attr)
     {
        dd($attr);
-    }
+    } 
 }
