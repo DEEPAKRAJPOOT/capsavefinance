@@ -11,7 +11,7 @@
                     <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
                     @endif
                     
-                    @if ($currStatus == config('lms.REQUEST_STATUS.APPROVED'))                    
+                    @if ($viewFlag != '1' && $currStatus == config('lms.REQUEST_STATUS.APPROVED'))                    
                     <h5>Are you sure to process the Refund?</h5>
                     @endif                    
                                    
@@ -104,14 +104,15 @@
 
                             </tbody>
                         </table>
-                    </div>
-                    <div id="interestRefundList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>                    
+                    </div>                    
                </div>
                                
             </div>
     
+            @if ($viewFlag != '1' && $currStatus != config('lms.REQUEST_STATUS.PROCESSED'))
             <div class="row">
-                @if ($currStatus != config('lms.REQUEST_STATUS.PROCESSED'))
+                <div class="col-12">
+                
                     {!!
                      Form::open(
                      array(
@@ -126,36 +127,35 @@
                     {!! Form::hidden('process', 1) !!}
                     @endif
 
-                    <div class="col-12">
 
-                        @if (count($statusList) > 0 && $currStatus != config('lms.REQUEST_STATUS.APPROVED'))
-                        <div class="form-group">
-                            {!! Form::label('status', 'Select Status', ['class' => 'control-label'] )  !!}
-                            <div class="col-lg-10">
-                                {!!  Form::select('status', $statusList, '', ['class' => 'form-control' ]) !!}
-                            </div>
-                        </div>
-                        @endif
 
-                        <div class="form-group">
-                           <label for="txtCreditPeriod">Comment
-                           <span class="mandatory">*</span>
-                           </label>
-                           <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
-                        </div>
-
-                        {!! Form::hidden('req_id', $reqId) !!}
-
-                        <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">Submit</button> &nbsp;
-                        <button id="close_btn" type="button" class="btn btn-secondary btn-sm">Cancel</button>   
+                    @if (count($statusList) > 0 && $currStatus != config('lms.REQUEST_STATUS.APPROVED'))
+                    <div class="form-group">
+                        {!! Form::label('status', 'Select Status', ['class' => 'control-label'] )  !!}                            
+                        {!!  Form::select('status', $statusList, '', ['class' => 'form-control' ]) !!}                            
                     </div>
+                    @endif
+
+                    <div class="form-group">
+                       <label for="txtCreditPeriod">Comment
+                       <span class="mandatory">*</span>
+                       </label>
+                       <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
+                    </div>
+
+                    {!! Form::hidden('req_id', $reqId) !!}
+
+                    <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">Submit</button> &nbsp;
+                    <button id="close_btn" type="button" class="btn btn-secondary btn-sm">Cancel</button>   
+
 
                     {!!
                     Form::close()
                     !!}
-                @endif 
+                
+                </div>
             </div>
-                    
+            @endif        
         </div>
 
 

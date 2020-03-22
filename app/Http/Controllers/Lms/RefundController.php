@@ -199,6 +199,8 @@ class RefundController extends Controller
         public function viewProcessRefund(Request $request)
         {
             $reqId = $request->get('req_id');
+            $viewFlag = $request->get('view');
+            
             $reqData = $this->lmsRepo->getApprRequestData($reqId);
             $transId = $reqData ? $reqData->trans_id : '';
             $currStatus = $reqData ? $reqData->status : '';
@@ -212,7 +214,8 @@ class RefundController extends Controller
                     ->with('reqId', $reqId)
                     ->with('refundData', $refundData)
                     ->with('currStatus', $currStatus)
-                    ->with('statusList', $statusList); 
+                    ->with('statusList', $statusList)
+                    ->with('viewFlag', $viewFlag); 
         }
 
         public function processRefund(Request $request)

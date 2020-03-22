@@ -4158,7 +4158,7 @@ class DataRenderer implements DataProviderInterface
                 $result .= '<a 
                 data-toggle="modal" 
                 data-target="#lms_view_process_refund" 
-                data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id ]).'"
+                data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id, 'view' => 1 ]).'"
                 data-height="400px" 
                 data-width="100%" 
                 data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm">' . $data->ref_code . '</a>';
@@ -4233,9 +4233,10 @@ class DataRenderer implements DataProviderInterface
                     data-width="100%" 
                     data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
      
-                    $stage = \Helpers::getRequestCurrentStage($data->req_id);
+                    //$stage = \Helpers::getRequestCurrentStage($data->req_id);
+                    $statusList = \Helpers::getRequestStatusList($data->req_id);                     
                     //if ($data->req_status == config('lms.REQUEST_STATUS.APPROVED')) {
-                    if ($stage) {
+                    if (count($statusList) > 0) {
                         if ($data->req_type == config('lms.REQUEST_TYPE.REFUND')) {                            
                             $result .= '<a 
                             data-toggle="modal" 

@@ -1042,7 +1042,7 @@ trait LmsTrait
         
         $saveReqData = $this->lmsRepo->saveApprRequestData($reqData);
         $req_id = $saveReqData->req_id;        
-        $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => 'REF000'.$req_id], $req_id);
+        $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => \Helpers::formatIdWithPrefix($req_id, $type='REFUND')], $req_id);
         $reqLogData['req_id'] = $req_id;
         
         $wf_stages = $this->lmsRepo->getWfStages($wf_stage_type);

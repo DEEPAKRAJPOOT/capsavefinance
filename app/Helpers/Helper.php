@@ -1122,6 +1122,9 @@ class Helper extends PaypalHelper
         } else if ($type == 'CUSTID') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%08d', $idValue);            
+        } else if ($type == 'REFUND') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%08d', $idValue);            
         }
         return $formatedId;
     }    
@@ -1162,7 +1165,7 @@ class Helper extends PaypalHelper
         $wfStage = $lmsRepo->getCurrentWfStage($reqId);
         $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
         $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
-        $statusArr = $wfStage ? explode(',', $wfStage->status) : [];
+        $statusArr = $wfStage && !empty($wfStage->status) ? explode(',', $wfStage->status) : [];
         
         $statusList = [];
         
@@ -1180,7 +1183,7 @@ class Helper extends PaypalHelper
         } 
          * 
          */
-        if (count($statusArr) > 0) {
+        if (count($statusArr) > 0) {            
             foreach($statusArr as $key => $status) {
                 $statusList[$status] = config('lms.REQUEST_STATUS_DISP.'.$status . '.USER');
             }
