@@ -1308,6 +1308,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
         });
 
+        Route::post('ckeditor/image_upload', 'CKEditorController@upload')->name('upload_ckeditor_image');
     });
 
   });

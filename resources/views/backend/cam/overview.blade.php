@@ -360,7 +360,7 @@
 @endsection
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
-
+<script src="https://cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
 <script type="text/javascript">
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -372,7 +372,11 @@
    });
       CKEDITOR.replace('contigent_observations');
       CKEDITOR.replace('risk_comments');
-      CKEDITOR.replace('anchor_risk_comments');
+      //CKEDITOR.replace('anchor_risk_comments');
+      CKEDITOR.replace('anchor_risk_comments', {
+        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
+        filebrowserUploadMethod: 'form'
+      });
       CKEDITOR.replace('profile_of_company');
       CKEDITOR.replace('rating_rational');
 
