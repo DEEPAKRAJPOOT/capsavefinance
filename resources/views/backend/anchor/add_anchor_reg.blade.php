@@ -28,7 +28,7 @@
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" >
+                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" onkeypress="searchFunction()">
                                  <small id="email_error" style="color:red; font-size:17px"></small>
                               </div>
                            </div>
@@ -89,7 +89,7 @@
                 <div class="row">
                     <div class="col-6">
                                  <div class="form-group">
-                                    <label for="txtMobile">City
+                                    <label for="txtCity">City
                                     <span class="mandatory">*</span>
                                     </label>
 
@@ -178,6 +178,12 @@
                             })
                 });
                 $('input.comp_name').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                $('input.email').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
@@ -284,7 +290,7 @@
 <script>
                 
     let email_error = document.getElementById('email_error');
-    email.addEventListener('keyup', searchFunction);
+   //  email.addEventListener('keypress', searchFunction);
     
 
     function searchFunction(event) {
@@ -310,7 +316,7 @@
                      var searchResult = item.search(search);
                      
                      // searchResult != -1 ? email_error.textContent = `Email already present` : email_error.textContent = " ";
-                     searchResult != -1 ? search === "" ? email_error.textContent = `Required field`:  email_error.textContent = `Email already present` : email_error.textContent = " ";
+                     searchResult != -1 ? email_error.textContent = `Email already present` : email_error.textContent = "";
                   })
                
             
@@ -321,41 +327,6 @@
     }
 
 
-// 
-
-/**
-
-
-$('#email').keyup(function() {
-   var emailVal = $(this).val();
-   console.log(email);
-
-   if(emailVal){
-        $.ajax({
-           type:"GET",
-           url:"{{url('/anchor/check_user')}}?email="+emailVal,
-           success:function(res){
-              console.log(res);
-              return;
-            if(res){
-                $("#city").empty();
-                $.each(res,function(key,value){
-                    $("#city").append('<option value="'+key+'">'+value+'</option>');
-                });
-
-            }else{
-               $("#city").empty();
-            }
-           }
-        });
-    }else{
-        $("#city").empty();
-    }
-})
-
-
-
- */
 
 </script>
 
@@ -374,7 +345,7 @@ $('#email').keyup(function() {
                 $("#city").empty();
                 $.each(res,function(key,value){
                    console.log(value)
-                    $("#city").append('<option value="'+key+'">'+value+'</option>');
+                    $("#city").append('<option value="'+value+'">'+value+'</option>');
                 });
 
             }else{
