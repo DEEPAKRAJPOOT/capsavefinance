@@ -276,6 +276,6 @@ return [
         'VA' => 'CAPVA',
         'CUSTID' => 'CAPCI',
         'REFUND' => 'REF'
-    ],    
+    ]
 ];
  
