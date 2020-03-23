@@ -27,12 +27,12 @@ class CKEditorController extends Controller
             $CKEditorFuncNum = $request->input('CKEditorFuncNum');
             $url = asset('storage/uploads/'.$filenametostore); 
             $msg = 'Image successfully uploaded'; 
-            $re = "<script>window.parent.CKEDITOR.tools.callFunction(NULL, '$url', '$msg')</script>";
+            $re = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg')</script>";
             
             // Render HTML output 
-            //@header('Content-type: text/html; charset=utf-8'); 
-            //echo $re;
-            return response()->json([ 'fileName' => $filename, 'uploaded' => true, 'url' => $url, 'msg' => $msg ]);
+            @header('Content-type: text/html; charset=utf-8'); 
+            echo $re;
+            //return response()->json([ 'fileName' => $filename, 'uploaded' => true, 'url' => $url, 'msg' => $msg ]);
         }
     }
 }
