@@ -1569,5 +1569,15 @@ class UserRepository extends BaseRepositories implements UserInterface
         $status = User::updateUserRolePassword($arrData, $userId);
         return $status ?: false;
     }
-       
+    
+    /**
+     * Get all customer from lms_users
+     *
+     * @return query data
+     */
+    public function lmsGetSentToBankInvCustomer($userIds = [])
+    {
+        $result = LmsUser::lmsGetSentToBankInvCustomer($userIds);
+        return $result ?: false;
+    }       
 }

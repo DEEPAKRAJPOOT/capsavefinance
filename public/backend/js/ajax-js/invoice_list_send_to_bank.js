@@ -3,7 +3,7 @@ try {
     var oTable;
     jQuery(document).ready(function ($) {   
         //User Listing code
-        oTable = $('#invoiceListBank').DataTable({
+        oTable = $('#disbursalCustomerList').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 10,
@@ -13,35 +13,33 @@ try {
                 "url": messages.backend_get_invoice_list_bank, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.anchor_id = $('select[name=search_anchor]').val();
-                    d.supplier_id = $('select[name=search_supplier]').val();
-                    d.biz_id = $('select[name=search_biz]').val();
-                    d.front = $('input[name=front]').val();
+                    d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
-                    d.app_id = messages.appp_id;
                 },
                 "error": function () {  // error handling
-                   
-                    $("#invoiceListBank").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#appList_processing").css("display", "none");
+
+                    $("#disbursalCustomerList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#disbursalCustomerList_processing").css("display", "none");
                 }
             },
             columns: [
-                {data: 'invoice_id'},
-                {data: 'anchor_name'},
-                {data: 'supplier_name'},
-                {data: 'invoice_date'},
-                {data: 'invoice_amount'},
-              
-               
+                {data: 'customer_id'},
+                {data: 'batch_id'},
+                {data: 'customer_code'},
+                {data: 'ben_name'},
+                {data: 'bank'},
+                {data: 'total_actual_funded_amt'},
+                {data: 'total_invoice'},
+                {data: 'status'},
+                {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8]}]
         });
 
         //Search
-        $('.searchbtn').on('change', function (e) {
+        $('#searchbtn').on('click', function (e) {
             oTable.draw();
-        });                   
+        });                  
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

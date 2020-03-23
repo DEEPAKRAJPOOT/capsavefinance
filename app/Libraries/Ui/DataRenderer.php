@@ -4589,4 +4589,147 @@ class DataRenderer implements DataProviderInterface
                 })              
                 ->make(true);
     }
+
+
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetSentToBankInvCustomers(Request $request, $customer)
+    {
+        return DataTables::of($customer)
+                ->rawColumns(['customer_id', 'batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
+                ->addColumn(
+                    'customer_id',
+                    function ($customer) {
+                        $this->overDueFlag = 0;
+                        $disburseAmount = 0;
+                        $apps = $customer->app;
+                        if ($this->overDueFlag == 0) {
+                            foreach ($apps as $app) {
+                                foreach ($app->invoices as $inv) {
+                                    $invoice = $inv->toArray();
+                                    $dueDate = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); // or your date as well
+                                    $now = strtotime(date('Y-m-d'));
+                                    $datediff = ($dueDate - $now);
+                                    $days = round($datediff / (60 * 60 * 24));
+                                    if ($this->overDueFlag ==0 && $days < 0) {
+                                        $this->overDueFlag = 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        return ($this->overDueFlag == 0) ? "<input type='checkbox' class='user_id' value=".$customer->user_id.">" : '-';
+                    }
+                )
+                ->addColumn(
+                    'customer_code',
+                    function ($customer) {
+                        return $link = $customer->customer_id;
+                        // return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    }
+                )
+                ->editColumn(
+                    'batch_id',
+                    function ($customer) {
+                        return "BATCHID1222";
+                    }
+                )
+                ->addColumn(
+                    'ben_name',
+                    function ($customer) {
+
+                        if ($customer->user->is_buyer == 2) {
+                            $benName = (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
+                        } else {
+                            $benName =  (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+                        }
+                        return $benName;
+                    }
+                )     
+                ->editColumn(
+                    'bank',
+                        function ($customer) {
+                        if ($customer->user->is_buyer == 2) {
+                            $bank_name = (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
+                        } else {
+                            $bank_name = (isset($customer->bank_details->bank->bank_name)) ? $customer->bank_details->bank->bank_name : '';
+                        }
+
+
+                        if ($customer->user->is_buyer == 2) {
+                            $ifsc_code = (isset($customer->user->anchor_bank_details->ifsc_code)) ? $customer->user->anchor_bank_details->ifsc_code : '';
+                        } else {
+                            $ifsc_code = (isset($customer->bank_details->ifsc_code)) ? $customer->bank_details->ifsc_code : '';
+                        }
+
+                        if ($customer->user->is_buyer == 2) {
+                            $benAcc = (isset($customer->user->anchor_bank_details->acc_no)) ? $customer->user->anchor_bank_details->acc_no : '';
+                        } else {
+                            $benAcc = (isset($customer->bank_details->acc_no)) ? $customer->bank_details->acc_no : '';
+                        }
+
+                        $account = '';
+                        $account .= $bank_name ? '<span><b>Bank:&nbsp;</b>'.$bank_name.'</span>' : '';
+                        $account .= $ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$ifsc_code.'</span>' : '';
+                        $account .= $benAcc ? '<br><span><b>Acc. #:&nbsp;</b>'.$benAcc.'</span>' : '';
+
+                        return $account;
+
+                    }
+                )
+                ->editColumn(
+                    'total_actual_funded_amt',
+                    function ($customer) {
+                        $disburseAmount = 0;
+                        $interest = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invoice = $inv->toArray();
+                                $margin = $invoice['program_offer']['margin'];
+                                $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
+                                $disburseAmount += round($fundedAmount, 2);
+                            }
+                        }
+
+                        return '<i class="fa fa-inr"></i> '.number_format($disburseAmount);
+                })
+                ->editColumn(
+                    'total_invoice',
+                    function ($customer) {   
+                        $invCount = 0;
+                        $apps = $customer->app;
+                        foreach ($apps as $app) {
+                            foreach ($app->invoices as $inv) {
+                                $invCount++;
+                            }
+                        }                 
+                        return $invCount;
+                })                       
+                ->addColumn(
+                    'status',
+                    function ($customer) {
+                        return ($this->overDueFlag == 1) ? '<label class="badge badge-warning current-status">pending</label>' : '<label class="badge badge-success current-status">success</label>';
+                })                       
+                ->addColumn(
+                    'action',
+                    function ($customer) {
+                        $act = '';
+                        $act = '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id, 'status' => $this->overDueFlag]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        $act .= '<a  data-toggle="modal" data-target="#viewDisbursalCustomerInvoice" data-url ="' . route('lms_disbursal_invoice_view', ['user_id' => $customer->user_id, 'status' => $this->overDueFlag]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('customer_id', 'like',"%$search_keyword%");
+                        }
+                    }
+                })
+                ->make(true);
+    }
 }
