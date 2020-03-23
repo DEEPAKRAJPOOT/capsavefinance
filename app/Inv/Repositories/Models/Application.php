@@ -497,6 +497,7 @@ class Application extends BaseModel
                 })
                 ->where('app.app_id', $appId)
                 ->where('app_prgm_offer.is_active', 1)
+                ->where('doa_level.is_active', 1)
                 ->groupBy('users.user_id')
                 ->get();
                        

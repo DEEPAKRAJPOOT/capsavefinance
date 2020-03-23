@@ -239,7 +239,8 @@ return [
         '4'=>'With in 90 days from date of first disbursement ',
         '5'=>'With in 120 days from date of first disbursement',
         '6'=>'with in 180 days from date of first disbursement',
-        '7'=>'with in 360 days from date of first disbsurement'
-    ]
+        '7'=>'with in 360 days from date of first disbsurement'     
+    ],
+    'timezone' => 'Asia/Kolkata'
 ];
  

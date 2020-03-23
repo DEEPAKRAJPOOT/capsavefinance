@@ -496,7 +496,7 @@
    <div class="data mt-4">
     <table class="table" cellpadding="0" cellspacing="0">
           <tr>
-              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Brief Background of {{isset($arrCamData->contact_person) ? $arrCamData->contact_person : ''}} Management</td>
+              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Brief Background of Management</td>
           </tr>
        </table>
 
@@ -786,7 +786,7 @@
                               <tr>
                                  <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrReviewer[$i]->assignee}}
                                      <span style="font-size: 11px;"></br>Updated at </br>
-                                          {{ \Carbon\Carbon::parse($arrReviewer[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                          {{ \Helpers::convertDateTimeFormat($arrReviewer[$i]->updated_at, 'Y-m-d H:i:s', 'j F, Y h:i A') }}</span>
                                  </th>
                                  @php $i++; @endphp
                               </tr>
@@ -806,8 +806,9 @@
                                        <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;"> {{$arrApproverData[$i]->approver}}
                                         @if ($arrApproverData[$i]->status == 1) 
                                           <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp 
-                                          <span style="font-size: 11px;">Approved at </br>
-                                          {{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                          <span style="font-size: 11px;">Approved at </br>                                          
+                                          {{ \Helpers::convertDateTimeFormat($arrApproverData[$i]->updated_at, 'Y-m-d H:i:s', 'j F, Y h:i A') }}
+                                          </span>
                                        @endif 
 
                                        </th>
@@ -816,7 +817,7 @@
                                           <th class="sorting text-center" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending" style="background-color:transparent !important; color:#696969 !important;">{{$arrApproverData[$i]->approver}} 
                                           @if ($arrApproverData[$i]->status == 1)
                                            <h5 style="color:#37c936; font-size: 11px;">(Approved)</h5> @php $j++; @endphp 
-                                             <span style="font-size: 11px;">Approved at </br>{{ \Carbon\Carbon::parse($arrApproverData[$i]->updated_at)->format('h:i A, j F, Y')}}</span>
+                                             <span style="font-size: 11px;">Approved at </br>{{ \Helpers::convertDateTimeFormat($arrApproverData[$i]->updated_at, 'Y-m-d H:i:s', 'j F, Y h:i A') }}</span>
                                           @endif   
                                           </th>
                                           @php $i++; @endphp
