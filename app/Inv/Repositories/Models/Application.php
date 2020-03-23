@@ -11,6 +11,8 @@ use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use Auth;
@@ -672,5 +674,11 @@ class Application extends BaseModel
     { 
         $id = Auth::user()->user_id;
         return  User::where(['user_id' =>$id,'anchor_id' => $attr['anchor_id']])->get();
-    }  
+    } 
+    public static function chkUser() 
+    {
+       $id = Auth::user()->user_id;
+       $role_id = RoleUser::where(['user_id' => $id])->pluck('role_id');
+       return Role::whereIn('id',$role_id)->first();
+    }
 }

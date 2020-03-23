@@ -178,7 +178,7 @@ public static function updateInvoice($invoiceId,$status)
         }
         //backend_get_invoice
 
-        return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['business','anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'DESC')->get();
+        return self::where('status_id',$status)->where($whr)->with(['business','anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'DESC')->get();
      } 
      
      public static function getUserAllInvoice($request)
@@ -394,5 +394,9 @@ public static function updateInvoice($invoiceId,$status)
          return self::with('anchor')->where(['supplier_id' =>$id,'status_id' => $attr['status_id'],'biz_id' => $attr['biz_id']])->groupBy('anchor_id')->get();
           
     }
-     
+     public static function checkSingleInvoice($invNo)
+    {
+        
+        return self::where(['invoice_id' => $invNo])->first();
+    }  
 }

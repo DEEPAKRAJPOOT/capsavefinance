@@ -589,7 +589,7 @@ var messages = {
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'program_id':program_id,'_token':messages.token});
+      var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',
@@ -602,6 +602,18 @@ var messages = {
                 success: function (data) {
                     if(data.status==1)
                     {
+                         if(data.uploadAcess==0)
+                        {
+                            $("#submit").css("pointer-events","none");
+                            $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
+                          
+                        }
+                        else
+                        {
+                             $("#tenorMsg").text(" ");           
+                             $("#submit").css("pointer-events","inline");
+                            
+                        }
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;

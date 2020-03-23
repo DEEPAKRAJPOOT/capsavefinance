@@ -402,5 +402,10 @@ class Program extends BaseModel {
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\BaseRate', 'base_rate_id', 'id');
     }
+    
+    public static  function getProgram($prgm_id)
+    {
+         return self::where(['prgm_id' => $prgm_id])->first(); 
+    }
 
 }

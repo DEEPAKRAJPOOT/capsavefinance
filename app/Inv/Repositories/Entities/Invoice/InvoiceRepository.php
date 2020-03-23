@@ -897,7 +897,18 @@ use CommonRepositoryTraits;
         return $this->result;
     }
 
-    public function getAllBankInvoiceCustomers($batch_id)
+    public function checkSingleInvoice($invNo)
+    {
+        try
+        {
+            $this->result = BizInvoice::checkSingleInvoice($invNo);
+            return $this->result;
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    } 
+   public function getAllBankInvoiceCustomers($batch_id)
     {
         $this->result = Disbursal::getAllBankInvoiceCustomers($batch_id);
         return $this->result;
@@ -908,4 +919,5 @@ use CommonRepositoryTraits;
         $this->result = Disbursal::getAllDisburseInvoice($batch_id, $disbursed_user_id);
         return $this->result;
     }   
+
 }
