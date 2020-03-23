@@ -1018,7 +1018,7 @@ trait LmsTrait
 
             foreach ($repaymentTrails as $repay) {
                 $transaction = [];
-                if ($repay->trans_detail->id == 35) continue;
+                
                 
                 $transaction['TRANS_DATE'] = $repay->trans_date;
                 $transaction['VALUE_DATE'] = $repay->created_at;
