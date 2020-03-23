@@ -50,6 +50,11 @@ class Variables extends BaseModel {
         'updated_by',
     ];
 
-        
+    public static function getVariables()
+    {
+        $result = self::select('*')
+                ->get();
+        return isset($result[0]) ? $result : [];
+    }
 }
 
