@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -324,16 +325,9 @@ class InvoiceController extends Controller {
         $allrecords = array_map('intval', $allrecords);
         $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
-        $userIds = [];
-        foreach ($supplierIds as $userid) {
-            foreach ($allinvoices as $invoice) {
-                if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
-                    $userIds[] = $userid;
-                }
-            }
-        } 
-
-        $customersDisbursalList = $this->lmsRepo->lmsGetInvoiceClubCustomer($userIds, $allrecords);
+        
+        $customersDisbursalList = $this->lmsRepo->lmsGetInvoiceClubCustomer($supplierIds, $allrecords);
+        // dd($customersDisbursalList);
         return view('backend.invoice.disburse_check')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList,
@@ -386,6 +380,16 @@ class InvoiceController extends Controller {
     {
         $invoiceIds = $request->get('invoice_ids');
         $disburseDate = $request->get('disburse_date');
+        // dd($disburseDate);
+        $validator = Validator::make($request->all(), [
+           'disburse_date' => 'required'
+        ]);
+        
+        if ($validator->fails()) {
+            Session::flash('error', $validator->messages()->first());
+            return redirect()->back()->withInput();
+        }
+
         $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
         if(empty($invoiceIds)){
             return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
@@ -394,6 +398,16 @@ class InvoiceController extends Controller {
         $allrecords = array_unique($record);
         $allrecords = array_map('intval', $allrecords);
         $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+
+
+        foreach ($allinvoices as $inv) {
+            if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
+            } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
+            }
+        }
+
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 
         $fundedAmount = 0;
