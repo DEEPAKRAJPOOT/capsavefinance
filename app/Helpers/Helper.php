@@ -1231,4 +1231,11 @@ class Helper extends PaypalHelper
         
         return $curWfStage;
     }
+    
+    public static function getReqCurrentAssignee($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');    
+        $assignData = $lmsRepo->getReqCurrentAssignee($reqId);
+        return $assignData;
+    }    
 }

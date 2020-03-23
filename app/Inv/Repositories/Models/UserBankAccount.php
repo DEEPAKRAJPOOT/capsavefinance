@@ -194,10 +194,11 @@ class UserBankAccount extends BaseModel {
      * @throws InvalidDataTypeExceptions
      * @throws BlankDataExceptions 
      */
-    public static function getBankAccountDataByAnchorId($anchor_id)
+    public static function getBankAccountDataByAnchorId($acc_id,$anchor_id)
     {
 
-        $res = self::where('anchor_id','=',(int)$anchor_id)
+        $res = self::where('bank_account_id','=',(int)$acc_id)
+                ->where('anchor_id','=',(int)$anchor_id)
                 ->get();
         
         return $res ?: false;

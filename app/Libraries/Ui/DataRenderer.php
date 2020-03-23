@@ -1711,7 +1711,6 @@ class DataRenderer implements DataProviderInterface
     
     public function getAnchorList(Request $request, $user)
     {
-        
         return DataTables::of($user)
                 ->rawColumns(['anchor_id', 'checkbox', 'action', 'email','assigned'])
                 ->addColumn(
@@ -1768,8 +1767,11 @@ class DataRenderer implements DataProviderInterface
                      if(isset($users->file_path)){
                         $act .= "<a  href=". Storage::url($users->file_path) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
                      }
-                     if(isset($users)){
-                        $act .= "<a  data-toggle=\"modal\" data-target=\"#add_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Add Bank Detail\"><i class=\"fa fa-plus-square\"></i></a>";
+                     if(isset($users->bank_account_id)){
+                        $act .= "<a  data-toggle=\"modal\" data-target=\"#edit_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id,'bank_account_id'=>$users->bank_account_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Bank Detail\"><i class=\"fa fa-plus-square\"></i></a>";
+                     }
+                     if(!isset($users->bank_account_id)){
+                         $act .= "<a  data-toggle=\"modal\" data-target=\"#add_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Add Bank Detail\"><i class=\"fa fa-plus-square\"></i></a>";
                      }
 //                     if(isset($users)){
 //                        $act .= "<a  data-toggle=\"modal\" data-target=\"#add_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id, 'bank_account_id' => $bank['bank_account_id']]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Bank Detail\"><i class=\"fa fa-edit\"></i></a>";
@@ -4359,7 +4361,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'amount',
             function ($data) {
-                return $data->amount;
+                return number_format($data->amount,2);
             }
         )     
         ->editColumn(
@@ -4371,13 +4373,17 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'assignee',
             function ($data) {
-                return $data->assignee .  '<br><small>(' . $data->assignee_role . ')</small>';
+                $assignee = \Helpers::getReqCurrentAssignee($data->req_id);
+                //return $data->assignee .  '<br><small>(' . $data->assignee_role . ')</small>';
+                return $assignee ? $assignee->assignee .  '<br><small>(' . $assignee->assignee_role . ')</small>' : '';
             }
         )
         ->addColumn(
             'assignedBy',
             function ($data) {
-                return $data->assigned_by.  '<br><small>(' . $data->from_role . ')</small>';
+                $from = \Helpers::getReqCurrentAssignee($data->req_id);
+                //return $data->assigned_by.  '<br><small>(' . $data->from_role . ')</small>';
+                return $from ? $from->assigned_by .  '<br><small>(' . $from->from_role . ')</small>' : '';
             }
         )  
         ->editColumn(

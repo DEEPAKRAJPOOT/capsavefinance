@@ -1301,9 +1301,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $where array
      * @return type mixed
      */
-    public function getBankAccountDataByAnchorId($anchorId)
+    public function getBankAccountDataByAnchorId($bank_acc_id,$anchorId)
     {
-        return UserBankAccount::getBankAccountDataByAnchorId($anchorId);
+        return UserBankAccount::getBankAccountDataByAnchorId($bank_acc_id,$anchorId);
     }
 
 

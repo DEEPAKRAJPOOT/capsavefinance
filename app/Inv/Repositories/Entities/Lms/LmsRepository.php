@@ -825,5 +825,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getVariables()
     {
         return Variables::getVariables();
+    }
+    
+    /**
+     * Get Request current assignee
+     * 
+     * @param integer $reqId
+     * @return mixed
+     */
+    public function getReqCurrentAssignee($reqId)
+    {
+        return RequestAssign::getReqCurrentAssignee($reqId);
     }    
 }

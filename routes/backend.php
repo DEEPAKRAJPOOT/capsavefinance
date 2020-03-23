@@ -671,6 +671,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]); 
+
+            Route::post('check_user', [
+                'as' => 'check_user',
+                'uses' => 'Backend\LeadController@checkEmailAvailability'
+            ]);
+            
+            Route::get('get-city-list', [
+                'as' => 'get-city-list',
+                'uses' => 'Backend\LeadController@getCityList'
+            ]);
             
             //add anchor bank details
             
