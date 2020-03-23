@@ -72,7 +72,7 @@
 }
 @media print {
   @page {size: A4 portrait; margin: 0; }
-  .height{height:48px;}
+  body {margin: 0;}
 }
 </style>
 <div class=" row-offcanvas row-offcanvas-right">
