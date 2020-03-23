@@ -43,7 +43,7 @@ class Pdf
 
             return File::get($path);
         } catch (ProcessFailedException $exception) {
-            throw $exception;
+            // throw $exception;
         }
     }
 }
