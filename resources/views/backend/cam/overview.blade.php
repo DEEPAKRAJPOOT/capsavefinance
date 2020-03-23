@@ -372,7 +372,8 @@
 
       var ckeditorOptions =  {
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
+        filebrowserUploadMethod: 'form',
+        extraPlugins: 'imageuploader'
       };
 
       CKEDITOR.replace('contigent_observations', ckeditorOptions);
