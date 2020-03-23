@@ -709,14 +709,10 @@ class LeadController extends Controller {
         
         $result = User::select('users.email')
             ->where('email', 'LIKE', "%{$email}%")
-            ->get();
+            ->pluck("email");
+            return response()->json($result);
 
-        if(count ($result) > 0) {
-            return json_encode(['result'=>$result]);
-        } else {
-            return json_encode(['data'=>'NOt']);
-            
-        }
+        
         // return json_encode(User::find('users.email')->get()->toArray());
     }
 
@@ -727,10 +723,18 @@ class LeadController extends Controller {
     public function getCityList(Request $request)
     {
         
+        // $cities = DB::table("mst_city")
+        //     ->where("state_id",$request->state_id)
+        //     ->pluck("name");
+        //     return response()->json($cities);
+        
         $cities = DB::table("mst_city")
+            ->select("id","name")
             ->where("state_id",$request->state_id)
-            ->pluck("name");
+            ->pluck("name","id");
             return response()->json($cities);
     }
     
 }
+
+
