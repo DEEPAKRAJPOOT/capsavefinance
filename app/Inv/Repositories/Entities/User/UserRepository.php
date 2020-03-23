@@ -1569,5 +1569,9 @@ class UserRepository extends BaseRepositories implements UserInterface
         $status = User::updateUserRolePassword($arrData, $userId);
         return $status ?: false;
     }
+    
+    public function getExistEmailStatus($email){
+       return AnchorUser::getAnchorUsersByEmail($email);
+    }
        
 }

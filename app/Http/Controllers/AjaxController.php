@@ -4113,4 +4113,14 @@ if ($err) {
         $this->providerResult = $dataProvider->getDisburseInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+    
+    public function getExistEmailStatus(Request $req){
+        $email = $req->get('email');
+        $status = $this->userRepo->getExistEmailStatus($email);
+        if($status != false){
+            return 'true';
+        }else{
+            return 'false';
+        }
+    }
 }

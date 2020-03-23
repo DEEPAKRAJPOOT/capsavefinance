@@ -51,6 +51,7 @@
                                  <span class="mandatory">*</span>
                                  </label>
                                  <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
+                                 <span></span>
                               </div>
                            </div>
                          </div>
@@ -190,6 +191,7 @@
 
     var messages = {
         //get_lead: "{{ URL::route('get_lead') }}",
+        check_exist_email: "{{ URL::route('check_exist_email') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -197,6 +199,38 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
+            
+//            $('#email').on('blur', function(){
+//                var email = $('#email').val();
+//                if (email == '') {
+//                    email_state = false;
+//                    return;
+//                }
+//                $.ajax({
+//                    url: messages.check_exist_email,
+//                    type: 'POST',
+//                    data: {
+//                        'email_check' : 1,
+//                        'email' : email,
+//                        '_token' : messages.token,
+//                    },
+//                    success: function(response){
+//                        if (response == 'true' ) {
+//                            email_state = false;
+//                            $('#email').parent().removeClass();
+//                            $('#email').parent().addClass("form_error");
+//                            $('#email').siblings("span").text('Sorry... Email already exists');
+//                        }else if (response == 'false') {
+//                            email_state = true;
+//                            return email_state;
+////                            $('#email').parent().removeClass();
+////                            $('#email').parent().addClass("form_success");
+////                            $('#email').siblings("span").text('Email available');
+//                        }
+//                    }
+//                });
+//            });
+            
             $('#saveAnch').on('click', function (event) {
                 $('input.f_name').each(function () {
                     $(this).rules("add",
@@ -218,18 +252,18 @@
                 });
                 $('input.email').each(function () {
                     $(this).rules("add",
-                            {
-                                required: true,
-                                 email: true,
-//                                remote: {
-//                                url: messages.check_exist_user,
-//                                type: 'post',
-//                                data: {
-//                                'username': $('#email').val()
-//                                }
-//                            }
-                            
-                            })
+                    {
+                        required: true,
+                         email: true,
+                        remote: {
+                            url: messages.check_exist_email,
+                            type: 'POST',
+                            data: {
+                              'email' : email,
+                              '_token' : messages.token,
+                            }
+                        }
+                    })
                 });
                 $('input.phone').each(function () {
                     $(this).rules("add",
