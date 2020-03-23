@@ -369,32 +369,17 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-      //CKEDITOR.replace('contigent_observations');
-      //CKEDITOR.replace('risk_comments');
-      //CKEDITOR.replace('anchor_risk_comments');
-      //CKEDITOR.replace('profile_of_company');
-      //CKEDITOR.replace('rating_rational');
 
-      CKEDITOR.replace('contigent_observations', {
+      var ckeditorOptions =  {
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
         filebrowserUploadMethod: 'form'
-      });
-      CKEDITOR.replace('risk_comments', {
-        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-      });
-      CKEDITOR.replace('anchor_risk_comments', {
-        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-      });
-      CKEDITOR.replace('profile_of_company', {
-        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-      });
-      CKEDITOR.replace('rating_rational', {
-        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-      });
+      };
+
+      CKEDITOR.replace('contigent_observations', ckeditorOptions);
+      CKEDITOR.replace('risk_comments', ckeditorOptions);
+      CKEDITOR.replace('anchor_risk_comments', ckeditorOptions);
+      CKEDITOR.replace('profile_of_company', ckeditorOptions);
+      CKEDITOR.replace('rating_rational', ckeditorOptions);
 
     function showSecurityComment(val){
         if($("#othersCheckbox").is(':checked')){
