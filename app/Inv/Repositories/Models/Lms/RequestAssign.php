@@ -97,5 +97,30 @@ class RequestAssign extends BaseModel {
         
         return $result ? true : false;     
     }
+    
+    /**
+     * Get Request current assignee
+     * 
+     * @param integer $reqId
+     * @return mixed
+     */
+    public static function getReqCurrentAssignee($reqId)
+    {
+        $assignData = self::select(DB::raw("CONCAT_WS(' ', rta_to_u.f_name, rta_to_u.l_name) AS assignee"),                 
+                'to_r.name as assignee_role',
+                DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"), 
+                'from_r.name as from_role'
+                )
+                ->leftJoin('users as to_u', 'lms_request_assign.to_id', '=', 'to_u.user_id')
+                ->leftJoin('role_user as to_ru', 'lms_request_assign.to_id', '=', 'to_ru.user_id')
+                ->leftJoin('roles as to_r', 'to_ru.role_id', '=', 'to_r.id')                
+                ->leftJoin('users as from_u', 'lms_request_assign.from_id', '=', 'from_u.user_id') 
+                ->leftJoin('role_user as from_ru', 'lms_request_assign.from_id', '=', 'from_ru.user_id')
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')
+                ->where('req_id', $reqId)
+                ->where('is_owner', '1')                
+                ->first();
+        return $assignData ? $assignData : false;
+    }     
 }
 

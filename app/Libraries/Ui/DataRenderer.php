@@ -4361,7 +4361,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'amount',
             function ($data) {
-                return $data->amount;
+                return number_format($data->amount,2);
             }
         )     
         ->editColumn(
@@ -4373,13 +4373,17 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'assignee',
             function ($data) {
-                return $data->assignee .  '<br><small>(' . $data->assignee_role . ')</small>';
+                $assignee = \Helpers::getReqCurrentAssignee($data->req_id);
+                //return $data->assignee .  '<br><small>(' . $data->assignee_role . ')</small>';
+                return $assignee ? $assignee->assignee .  '<br><small>(' . $assignee->assignee_role . ')</small>' : '';
             }
         )
         ->addColumn(
             'assignedBy',
             function ($data) {
-                return $data->assigned_by.  '<br><small>(' . $data->from_role . ')</small>';
+                $from = \Helpers::getReqCurrentAssignee($data->req_id);
+                //return $data->assigned_by.  '<br><small>(' . $data->from_role . ')</small>';
+                return $from ? $from->assigned_by .  '<br><small>(' . $from->from_role . ')</small>' : '';
             }
         )  
         ->editColumn(
