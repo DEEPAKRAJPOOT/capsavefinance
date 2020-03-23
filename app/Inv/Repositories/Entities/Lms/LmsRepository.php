@@ -622,9 +622,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return DisbursalBatch::create($disburseBatch);
     }
     
-    public function getRefundData($transId)
+    public function getRefundData($transId, $variableName=null)
     {
-        return Refund::getRefundData($transId);
+        return Refund::getRefundData($transId, $variableName);
     }
     
     /**
