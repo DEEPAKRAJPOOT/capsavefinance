@@ -3029,9 +3029,48 @@ if ($err) {
     
    public function updateInvoiceApprove(Request $request)
    {
-     return  $this->invRepo->updateInvoice($request->invoice_id,$request->status);
-   
+        $get = $this->invRepo->checkSingleInvoice($request->invoice_id);  
+        $getPrgm  = $this->application->getProgram($get->program_id);
+        $chkUser  = $this->application->chkUser();
+        if( $chkUser->id==1)
+        {
+             $customer  = 1;
+        }
+        else if( $chkUser->id==11)
+        {
+             $customer  = 2;
+        }
+        else
+        {
+            $customer  = 3;
+        }
+       
+       $expl  =  explode(",",$getPrgm->invoice_approval); 
+       if(in_array($customer, $expl))
+        {
+           $uploadAcess  = 1; 
+        }
+        else
+        {
+          $uploadAcess  = 0;   
+        }
+     if($uploadAcess==1)
+     {
+       if($request->status==8)
+       {
+           $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);
+           return \Response::json(['status' => $res,'uploadAcess' => $uploadAcess]); 
+       }
+       else
+       {
+           return   $this->invRepo->updateInvoice($request->invoice_id,$request->status);
+       }
+     }
+     else {
+          return \Response::json(['uploadAcess' => $uploadAcess]); 
+      }
    }
+  
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){
         $fiLists = $this->application->getFiLists($request);
         $fis = $dataProvider->getFiListsList($this->request, $fiLists);
@@ -3505,12 +3544,42 @@ if ($err) {
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         //$get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
         $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
+        $getPrgm  = $this->application->getProgram($request['program_id']);
+        $chkUser  = $this->application->chkUser();
+        if( $chkUser->id==1)
+        {
+             $customer  = 1;
+        }
+        else if( $chkUser->id==11)
+        {
+             $customer  = 2;
+        }
+        else
+        {
+            $customer  = 3;
+        }
+        if($request['bulk']==1)
+        {
+             $expl  =  explode(",",$getPrgm->bulk_invoice_upload); 
+        }
+        else
+        {
+             $expl  =  explode(",",$getPrgm->invoice_upload);
+        }
+        if(in_array($customer, $expl))
+        {
+           $uploadAcess  = 1; 
+        }
+        else
+        {
+          $uploadAcess  = 0;   
+        }
         $all_supplier=[];
         foreach($get_supplier as $supplier) {
             $supplier->appCode = \Helpers::formatIdWithPrefix($supplier->app_id, 'APP');
             $all_supplier[] =  $supplier;       
         }
-        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier]);
+        return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier,'uploadAcess' =>$uploadAcess]);
      }
            
 

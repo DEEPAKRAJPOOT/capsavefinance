@@ -89,7 +89,7 @@ class InvoiceController extends Controller {
 
     public function getBulkInvoice() {
 
-        $getAllInvoice = $this->invRepo->getLimitAllAnchor();
+        $getAllInvoice = $this->invRepo->getLmsLimitAllAnchor();
         $get_bus = $this->invRepo->getBusinessName();
         return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice]);
     }

@@ -125,13 +125,15 @@
                            <label class="error" id="tenorMsg"></label>
                        </div>
                        <div class="text-right mt-2">
+                              
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                             <input type="hidden" value="" id="tenor" name="tenor">
                              <input type="hidden" value="" id="exception" name="exception">
                              <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
-                            <input type="reset"    class="btn btn-secondary btn-sm" value="Cancel">
-                           <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
+                             <input type="reset" id="cancel" class="btn btn-secondary btn-sm" value="Cancel">
+                             <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Submit">
+                         
                        </div>
                    </div>
                </div> 
@@ -586,7 +588,7 @@ var messages = {
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'program_id':program_id,'_token':messages.token});
+      var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',
@@ -599,6 +601,18 @@ var messages = {
                 success: function (data) {
                     if(data.status==1)
                     {
+                        if(data.uploadAcess==0)
+                        {
+                            $("#submit").css("pointer-events","none");
+                            $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
+                          
+                        }
+                        else
+                        {
+                             $("#tenorMsg").text(" ");           
+                             $("#submit").css("pointer-events","inline");
+                            
+                        }
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;

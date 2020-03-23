@@ -895,4 +895,15 @@ use CommonRepositoryTraits;
         $this->result = Disbursal::getAllBankInvoice();
         return $this->result;
     }
+    public function checkSingleInvoice($invNo)
+    {
+        try
+        {
+            $this->result = BizInvoice::checkSingleInvoice($invNo);
+            return $this->result;
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    } 
 }
