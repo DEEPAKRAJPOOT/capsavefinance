@@ -360,7 +360,6 @@
 @endsection
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
-<script src="https://cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
 <script type="text/javascript">
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
