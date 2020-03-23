@@ -12,7 +12,7 @@
                 'id' => 'editAchorForm',
                 'target' => '_top',
                 'method'=> 'POST',
-                'enctype'=>'multipart/form-data'
+                'enctype'=>'multipart/form-data',
                 )
                 )
                 !!}
@@ -254,16 +254,45 @@
                      doc_file: {
                         required: true,
                         extension: "jpg,jpeg,png,pdf",
+                     },
+                     assigned_sale_mgr: {
+                        required: true
                      }
                   },
                   messages: {
                      doc_file: {
                         required: "Please select file",
                         extension:"Invalid file format",
-                     }
+                     },
+                  },
+                  assigned_sale_mgr: {
+                     required: 'Please select file'
+                  }
                   }
                });
         });
+
+        function checkValidation(e) {
+            let employee = document.getElementById('employee').value;
+            let phone = document.getElementById('phone').value; 
+            let pincode = document.getElementById('pin_code').value; 
+            let pattern = /^[a-zA-Z\s-, ]+$/;
+
+            if(!employee.match(pattern)) {
+               document.getElementById('employee').value = "";
+               
+            };
+
+            if(isNaN(phone)) {
+               document.getElementById('phone').value = "";
+            };
+
+            if(isNaN(pincode)) {
+               document.getElementById('pin_code').value = "";
+            };
+        }
+        
+        
 $(document).ready(function(){
   $("#email").click(function(){
     $("#email").attr("readonly","readonly");  
@@ -276,4 +305,113 @@ $(document).ready(function(){
    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
    });
 </script>
+
+
+<script>
+                
+    let email_error = document.getElementById('email_error');
+    email.addEventListener('keyup', searchFunction);
+    
+
+    function searchFunction(event) {
+
+        let search = document.getElementById('email').value;
+
+        const searchUser = {
+            search: search
+        };
+
+        fetch(messages.check_exist_user, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRF-TOKEN": messages.token
+            },
+            body: JSON.stringify(searchUser)
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                
+                  data.filter(item => {
+                     var searchResult = item.search(search);
+                     
+                     // searchResult != -1 ? email_error.textContent = `Email already present` : email_error.textContent = " ";
+                     searchResult != -1 ? search === "" ? email_error.textContent = `Required field`:  email_error.textContent = `Email already present` : email_error.textContent = " ";
+                  })
+               
+            
+            })
+            .catch(error => console.log(error))
+
+        event.preventDefault();
+    }
+
+
+// 
+
+/**
+
+
+$('#email').keyup(function() {
+   var emailVal = $(this).val();
+   console.log(email);
+
+   if(emailVal){
+        $.ajax({
+           type:"GET",
+           url:"{{url('/anchor/check_user')}}?email="+emailVal,
+           success:function(res){
+              console.log(res);
+              return;
+            if(res){
+                $("#city").empty();
+                $.each(res,function(key,value){
+                    $("#city").append('<option value="'+key+'">'+value+'</option>');
+                });
+
+            }else{
+               $("#city").empty();
+            }
+           }
+        });
+    }else{
+        $("#city").empty();
+    }
+})
+
+
+
+ */
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    $('#state').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+        $.ajax({
+           type:"GET",
+           url:"{{url('/anchor/get-city-list')}}?state_id="+stateID,
+           success:function(res){
+            if(res){
+                $("#city").empty();
+                $.each(res,function(key,value){
+                    $("#city").append('<option value="'+key+'">'+value+'</option>');
+                });
+
+            }else{
+               $("#city").empty();
+            }
+           }
+        });
+    }else{
+        $("#city").empty();
+    }
+
+   });
+</script>
+
 @endsection

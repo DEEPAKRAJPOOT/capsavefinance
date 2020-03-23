@@ -1122,7 +1122,120 @@ class Helper extends PaypalHelper
         } else if ($type == 'CUSTID') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%08d', $idValue);            
+        } else if ($type == 'REFUND') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%08d', $idValue);            
         }
         return $formatedId;
+    }    
+    
+    public static function isReqInLastWfStage($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        
+        $apprReqData = $lmsRepo->getApprRequestData($reqId);
+        if(!$apprReqData) return true;
+                
+        $wf_stage_type = $apprReqData->req_type;
+        
+        //Get Current workflow stage
+        $curWfStage = $lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return true;
+                
+        $cur_wf_stage_code = $curWfStage ? $curWfStage->stage_code : '';
+        $cur_wf_stage_id = $curWfStage ? $curWfStage->wf_stage_id : '';
+        $cur_wf_order_no = $curWfStage ? $curWfStage->order_no : '';        
+        
+        //Get Next workflow stage
+        $nextWfStage = $lmsRepo->getNextWfStage($wf_stage_type, $cur_wf_order_no);
+        if (!$nextWfStage) return true;
+
+        return false;
+    }
+    
+    public static function getRequestStatusList($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        
+        $reqData = $lmsRepo->getApprRequestData($reqId);
+        $reqType = $reqData ? $reqData->req_type : '';
+        $reqStatus = $reqData ? $reqData->status : '';
+
+        //Get Current workflow stage
+        $wfStage = $lmsRepo->getCurrentWfStage($reqId);
+        $wf_stage_code = $wfStage ? $wfStage->stage_code : '';
+        $wf_stage_id = $wfStage ? $wfStage->wf_stage_id : '';
+        $statusArr = $wfStage && !empty($wfStage->status) ? explode(',', $wfStage->status) : [];
+        
+        $statusList = [];
+        
+        /*
+        if ($reqType == config('lms.REQUEST_TYPE.REFUND')) {
+            
+            if ($wf_stage_code == 'refund_approval') {
+                if ($reqStatus == config('lms.REQUEST_STATUS.APPROVED')) {
+                    $statusList[config('lms.REQUEST_STATUS.PROCESSED')] = 'Refund';        
+                } else {
+                    $statusList[config('lms.REQUEST_STATUS.REJECTED')] = 'Reject';
+                    $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';                    
+                }
+            }
+        } 
+         * 
+         */
+        if (count($statusArr) > 0) {            
+            foreach($statusArr as $key => $status) {
+                $statusList[$status] = config('lms.REQUEST_STATUS_DISP.'.$status . '.USER');
+            }
+        }
+        return $statusList;
+    }
+    
+    public static function isRequestOwner($reqId, $assignedUserId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        return $lmsRepo->isRequestOwner($reqId, $assignedUserId);    
+    }
+    
+    /**
+     * Get Approval Request Log Data
+     * 
+     * @param array $whereCond
+     * 
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getApprRequestStatus($reqId, $assignedUserId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        
+        //Get Current workflow stage
+        //$wfStage = $lmsRepo->getCurrentWfStage($reqId);        
+        //$wfStageId = $wfStage ? $wfStage->wf_stage_id : '';
+        
+        $whereCond=[];
+        $whereCond['req_id'] = $reqId;
+        $whereCond['assigned_user_id'] = $assignedUserId;
+        //$whereCond['wf_stage_id'] = $wfStageId;
+        $apprLogData = $lmsRepo->getApprRequestLogData($whereCond);
+        $apprStatus = isset($apprLogData[0]) ? config('lms.REQUEST_STATUS_DISP.'.$apprLogData[0]->status . '.SYSTEM') : '';
+        return $apprStatus;
+    }
+    
+    public static function getRequestCurrentStage($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        //Get Current workflow stage
+        $curWfStage = $lmsRepo->getCurrentWfStage($reqId);
+        if (!$curWfStage) return false;
+        
+        return $curWfStage;
+    }
+    
+    public static function getReqCurrentAssignee($reqId)
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');    
+        $assignData = $lmsRepo->getReqCurrentAssignee($reqId);
+        return $assignData;
     }    
 }

@@ -70,15 +70,10 @@
     transform: rotate(360deg);
   }
 }
-</style>
-<style media="print">
-  .height{
-    height:48px;
-  }
-   @page {
-        size: A4 portrait;
-        margin: 0;
-    }
+@media print {
+  @page {size: A4 portrait; margin: 0; }
+  body {margin: 0;}
+}
 </style>
 <div class=" row-offcanvas row-offcanvas-right">
     @if(Session::has('message'))

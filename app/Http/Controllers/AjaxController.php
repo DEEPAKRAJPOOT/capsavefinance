@@ -4166,4 +4166,20 @@ if ($err) {
         $this->providerResult = $dataProvider->getBankInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
+
+    public function getAjaxBankInvoiceCustomers(Request $request, DataProviderInterface $dataProvider) { 
+        $batch_id    = $request->get('batch_id');
+        $this->dataRecords = $this->invRepo->getAllBankInvoiceCustomers($batch_id);
+        $this->providerResult = $dataProvider->getBankInvoiceCustomersByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+    
+    public function getAjaxViewDisburseInvoice(Request $request, DataProviderInterface $dataProvider) { 
+        $batch_id = $request->get('batch_id');
+        $disbursed_user_id = $request->get('disbursed_user_id');
+        $this->dataRecords = $this->invRepo->getAllDisburseInvoice($batch_id, $disbursed_user_id);
+        $this->providerResult = $dataProvider->getDisburseInvoiceByDataProvider($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
 }

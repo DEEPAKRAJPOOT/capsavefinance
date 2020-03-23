@@ -2,7 +2,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" {{-- onsubmit="return checkValidation();"--}} action="{{route('add_anchor_reg')}}" target="_top" enctype="multipart/form-data">
+           <form id="anchorForm" name="anchorForm" method="POST" onkeyup="return checkValidation();" action="{{route('add_anchor_reg')}}" target="_top" enctype="multipart/form-data">
 		@csrf
                         <div class="row">
                            <div class="col-6">
@@ -28,7 +28,8 @@
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" >
+                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" onkeypress="searchFunction()">
+                                 <small id="email_error" style="color:red; font-size:17px"></small>
                               </div>
                            </div>
 
@@ -88,17 +89,12 @@
                 <div class="row">
                     <div class="col-6">
                                  <div class="form-group">
-                                    <label for="txtMobile">City
+                                    <label for="txtCity">City
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control city" name="city" id="city" tabindex="7" type="text" maxlength="10" placeholder="City" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
+                                    <select name="city" id="city" class="form-control" style="width:350px">
+                                 </select>
                                  </div>
                               </div>
                            <div class="col-6">
@@ -131,7 +127,8 @@
                                 [''=>'Please Select']+Helpers::getAllUsersByRoleId(4),
                                 '',
                                 array('id' => 'assigned_sale_mgr',
-                                'class'=>'form-control'))
+                                'class'=>'form-control',
+                                'name'=>'assigned_sale_mgr'))
                                 !!}
                               </div>
                            </div>   
@@ -167,6 +164,7 @@
         //get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        check_exist_user: "{{ URL::route('check_user') }}"
 
     };
 </script>
@@ -188,18 +186,10 @@
                 $('input.email').each(function () {
                     $(this).rules("add",
                             {
-                                required: true,
-                                 email: true,
-                              // remote: {
-                              // url: messages.check_exist_user,
-                              // type: 'post',
-                              // data: {
-                              // 'username': $('#email').val()
-                              //}
-                           //}
-                            
+                                required: true
                             })
                 });
+               
                 $('input.phone').each(function () {
                     $(this).rules("add",
                             {
@@ -248,18 +238,47 @@
                      doc_file: {
                         required: true,
                         extension: "jpg,jpeg,png,pdf",
+                     },
+
+                     assigned_sale_mgr: {
+                        required: true
                      }
                   },
                   messages: {
                      doc_file: {
                         required: "Please select file",
                         extension:"Invalid file format",
+                     },
+                     assigned_sale_mgr: {
+                        required: 'Please select file'
                      }
                   }
                }
             );
 
         });
+
+
+        function checkValidation(e) {
+            let employee = document.getElementById('employee').value;
+            let phone = document.getElementById('phone').value; 
+            let pincode = document.getElementById('pin_code').value; 
+            let pattern = /^[a-zA-Z\s-, ]+$/;
+
+            if(!employee.match(pattern)) {
+               document.getElementById('employee').value = "";
+               
+            };
+
+            if(isNaN(phone)) {
+               document.getElementById('phone').value = "";
+            };
+
+            if(isNaN(pincode)) {
+               document.getElementById('pin_code').value = "";
+            };
+        }
+        
 </script>
 <script type="text/javascript">
    $(".custom-file-input").on("change", function() {
@@ -267,4 +286,78 @@
    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
    });
 </script>
+
+<script>
+                
+    let email_error = document.getElementById('email_error');
+   //  email.addEventListener('keypress', searchFunction);
+    
+
+    function searchFunction(event) {
+
+        let search = document.getElementById('email').value;
+
+        const searchUser = {
+            search: search
+        };
+
+        fetch(messages.check_exist_user, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRF-TOKEN": messages.token
+            },
+            body: JSON.stringify(searchUser)
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                
+                  data.filter(item => {
+                     var searchResult = item.search(search);
+                     
+                     // searchResult != -1 ? email_error.textContent = `Email already present` : email_error.textContent = " ";
+                     searchResult != -1 ? email_error.textContent = `Email already present` : email_error.textContent = "";
+                  })
+               
+            
+            })
+            .catch(error => console.log(error))
+
+        event.preventDefault();
+    }
+
+
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    $('#state').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+        $.ajax({
+           type:"GET",
+           url:"{{url('/anchor/get-city-list')}}?state_id="+stateID,
+           success:function(res){
+            if(res){
+                $("#city").empty();
+                $.each(res,function(key,value){
+                   console.log(value)
+                    $("#city").append('<option value="'+value+'">'+value+'</option>');
+                });
+
+            }else{
+               $("#city").empty();
+            }
+           }
+        });
+    }else{
+        $("#city").empty();
+    }
+
+   });
+</script>
+
 @endsection

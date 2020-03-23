@@ -1415,7 +1415,7 @@ class ApplicationController extends Controller
             $emailData['email'] = $userData->email;
             $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
             $emailData['body'] = $htmlContent;
-            //$emailData['attachment'] = $this->pdf->render($htmlContent);
+            $emailData['attachment'] = $this->pdf->render($htmlContent);
             $emailData['subject'] ="Sanction Letter for SupplyChain";
             \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
             Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));

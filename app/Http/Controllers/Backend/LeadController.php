@@ -18,6 +18,9 @@ use Event;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
+use App\Inv\Repositories\Models\Master\City as CityModel;
+use App\Inv\Repositories\Models\User;
+use DB;
 
 class LeadController extends Controller {
 
@@ -268,9 +271,8 @@ class LeadController extends Controller {
 
     public function addAnchorReg(Request $request) {
         try {
-            //$stateList= $this->userRepo->getStateList();
-            $states = State::getStateList()->get();
-            //dd($states);
+            // $states = State::getStateList()->get();
+            $states = State::select("id","name")->get();
             return view('backend.anchor.add_anchor_reg')
             ->with(['states'=>$states]);
                      //->with('state', $stateList);
@@ -502,21 +504,16 @@ class LeadController extends Controller {
      */
     public function addAnchorBank(Request $request) {
         try {
-           
+            
             $bankAccount = [];
             $anchor_id = $request->get('anchor_id');
             $bank_acc_id = false;
             $bankAccount['is_default'] = 0;
             
-//            if (!empty($request->get('bank_account_id'))) {
-//                $bank_acc_id = preg_replace('#[^0-9]#', '', $request->get('bank_account_id'));
-//                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($bank_acc_id,$anchor_id)->first();
-//            }
-            if ($anchor_id != null) {
+            if (!empty($request->get('bank_account_id')) && $anchor_id != null) {
                 $bank_acc_id = preg_replace('#[^0-9]#', '', $request->get('bank_account_id'));
-                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($anchor_id)->first();
+                $bankAccount = $this->appRepo->getBankAccountDataByAnchorId($bank_acc_id,$anchor_id)->first();
             }
-            
             
             $bank_list = ['' => 'Please Select'] + $this->appRepo->getBankList()->toArray();
             return view('backend.anchor.anchor_bank_account')
@@ -696,5 +693,43 @@ class LeadController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+        /**
+     * function to check live email validation
+     * @return type
+     */
+    public function checkEmailAvailability(Request $request)
+    {
+        $email = $request->input('email');
+        
+        $result = User::select('users.email')
+            ->where('email', 'LIKE', "%{$email}%")
+            ->pluck("email");
+            return response()->json($result);
+
+        
+        // return json_encode(User::find('users.email')->get()->toArray());
+    }
+
+        /**
+     * function to dropdown citylist
+     * @return type
+     */
+    public function getCityList(Request $request)
+    {
+        
+        // $cities = DB::table("mst_city")
+        //     ->where("state_id",$request->state_id)
+        //     ->pluck("name");
+        //     return response()->json($cities);
+        
+        $cities = DB::table("mst_city")
+            ->select("id","name")
+            ->where("state_id",$request->state_id)
+            ->pluck("name","id");
+            return response()->json($cities);
+    }
     
 }
+
+

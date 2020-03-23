@@ -1,29 +1,79 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-<div class="card card-color mb-0">
-	<div class="card-header">
-		<a class="card-title ">
-			Are you sure you want to disburse checked invoices?
-		</a>
+@php 
+$finalDisburseAmt = 0;
+@endphp
+@foreach($customersDisbursalList as $customer)
+
+@php 
+$disburseAmount = 0;
+$interest = 0;
+$apps = $customer->app;
+foreach ($apps as $app) {
+	foreach ($app->invoices as $inv) {
+		$invoice = $inv->toArray();
+		$margin = $invoice['program_offer']['margin'];
+		$fundedAmount =  $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
+		$disburseAmount += round($fundedAmount, 2);
+	}
+}
+
+$finalDisburseAmt +=  $disburseAmount;
+@endphp
+
+
+@endforeach
+
+<div class="row">
+	<div class="col-12 row">
+
+		<div class="col-4">
+			<div class="form-group">
+				<label for="marginAmount"># No of Cust.</label>
+				<input type="text" name="" class="form-control" readonly="true" value="{{ $customersDisbursalList->count() }}">
+			</div>
+		</div>
+		<div class="col-4">
+			<div class="form-group">
+				<label for="nonFactoredAmount"># Amount Disburse</label>
+				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
+			</div>
+		</div>
 	</div>
 </div>
-<div class="row">	
-	<div class="col-3">
-		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}">
-			@csrf
+
+<div class="row">
+	<div class="col-6">
+		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}" target="_top">
 			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-			
-			<input type="submit" id="submitManualDisburse" value="Export CSV (OFFLINE)" class="btn btn-success btn-sm ml-2">
+			@csrf
+			<div class="col-6">
+				<div class="form-group">
+					<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
+					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+					 @if(Session::has('error'))
+					 <div class="error">{{ Session::get('error') }}</div>
+					  
+					@endif
+				</div>
+			</div>
+			<div class="col-6">
+				<input type="submit" id="submitManualDisburse" value="Disburse Ofline" class="btn btn-success btn-sm ml-2">
+			</div>
 		</form>
 	</div>
-	<div class="col-3">
-		<form id="manualDisburse" method="POST" action="{{ Route('disburse_online') }}">
-			@csrf
-			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-			
-			<input type="submit" id="submitManualDisburse" value="Send To Bank (ONLINE)" class="btn btn-success btn-sm ml-2">
-		</form>
-	</div>
+	<!-- <div class="col-6 row">
+		<div class="col-6"></div>
+		<div class="col-3">
+			<form id="manualDisburse" method="POST" action="{{ Route('disburse_online') }}">
+				@csrf
+				<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
+				
+				<input type="submit" id="submitManualDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2 disabled">
+			</form>
+		</div>
+	</div> -->
+
 </div>
 <div class="col-12 dataTables_wrapper mt-4">
 	<div class="overflow">
@@ -38,12 +88,16 @@
 									<th width="4%">App ID</th>
 									<th width="10%">Ben Name</th>
 									<th width="20%">Bank Detail</th>
+									<th width="15%">Total Invoice</th>
 									<th width="15%">Total Invoice Amt.</th>
 									<th width="15%">Total Disburse Amt.</th>
-									<th width="30%">Total Actual Funded Amt.</th>
+									<th width="30%">Total Actual Disburse Amt.</th>
 								</tr>
 							</thead>
 							<tbody>
+							@php 
+							$finalDisburseAmt = 0;
+							@endphp
 								@foreach($customersDisbursalList as $customer)
 								<tr role="row" class="odd">
 									<td> {{ $customer->customer_id }}</td>
@@ -51,11 +105,15 @@
 									@php
 									if ($customer->user->is_buyer == 2) {
 										$benName = (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
+										$displayName = $benName ? '<span><b>Anchor:&nbsp;</b>'.$benName.'</span>' : '';
+
 									} else {
 										$benName =  (isset($customer->bank_details->acc_name)) ? $customer->bank_details->acc_name : '';
+										$displayName = $benName ? '<span><b>Supplier:&nbsp;</b>'.$benName.'</span>' : '';
+
 									}
 									@endphp
-									<td> {{ $benName }}</td>
+									<td> {!! $displayName !!}</td>
 									@php
 									if ($customer->user->is_buyer == 2) {
 										$bank_name = (isset($customer->user->anchor_bank_details->bank->bank_name)) ? $customer->user->anchor_bank_details->bank->bank_name : '';
@@ -83,7 +141,13 @@
 									@endphp
 
 									<td> {!! $account !!}</td>
-
+									@php 
+									$apps = $customer->app;
+									foreach ($apps as $app) {
+										$totalInvCount = $app->invoices->count();
+									}
+									@endphp
+									<td> {{ $totalInvCount }}</td>
 									@php
 									$invoiceTotal = 0;
 									$apps = $customer->app->toArray();
@@ -116,24 +180,15 @@
 											$invoice = $inv->toArray();
 											$margin = $invoice['program_offer']['margin'];
 											$fundedAmount =  $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
-											
-											$now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : '');
-									        $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
-									        $datediff = abs($now - $your_date);
-
-									        $tenorDays = round($datediff / (60 * 60 * 24));
-
-									        $tInterest = $fundedAmount * $tenorDays * ($invoice['program_offer']['interest_rate'] / 360) ;                
-
-											if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
-												$interest = $tInterest;
-											}
-											$disburseAmount += round($fundedAmount - $interest, 2);
+											$disburseAmount += round($fundedAmount, 2);
 										}
 									}
 									@endphp
 									<td> <i class="fa fa-inr"></i> {{ number_format($disburseAmount) }}</td>
+									@php 
 
+									$finalDisburseAmt +=  $disburseAmount;
+									@endphp
 
 								</tr>
 								@endforeach
@@ -145,4 +200,13 @@
 		</div>
 	</div>
 </div>
+@endsection
+@section('jscript')
+
+<script type="text/javascript">
+	$(document).ready(function () {
+	    parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
+	});
+
+</script>
 @endsection

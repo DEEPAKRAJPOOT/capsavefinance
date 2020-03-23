@@ -671,6 +671,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]); 
+
+            Route::post('check_user', [
+                'as' => 'check_user',
+                'uses' => 'Backend\LeadController@checkEmailAvailability'
+            ]);
+            
+            Route::get('get-city-list', [
+                'as' => 'get-city-list',
+                'uses' => 'Backend\LeadController@getCityList'
+            ]);
             
             //add anchor bank details
             
@@ -1158,6 +1168,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_get_bank_invoice',
                'uses' => 'Backend\InvoiceController@viewBankInvoice'
             ]); 
+
+            Route::get('bank-invoice-customers', [
+                'as' => 'backend_get_bank_invoice_customers',
+               'uses' => 'Backend\InvoiceController@viewBankInvoiceCustomers'
+            ]);
+
+            Route::get('view-disburse-invoice', [
+                'as' => 'backend_view_disburse_invoice',
+               'uses' => 'Backend\InvoiceController@viewDisburseInvoice'
+            ]);
          });
          
         Route::group(['prefix' => 'document'], function () {
@@ -1240,7 +1260,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'payment_refund_index',
                'uses' => 'Backend\PaymentController@paymentInvoiceList'
            ]); 
-
+            Route::post('create-payment-refund', [
+                'as' => 'create_payment_refund',
+               'uses' => 'Backend\PaymentController@createPaymentRefund'
+           ]); 
          }); 
         //colender route 
 
@@ -1295,6 +1318,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
         });
 
+        Route::post('ckeditor/image_upload', 'CKEditorController@upload')->name('upload_ckeditor_image');
     });
 
   });

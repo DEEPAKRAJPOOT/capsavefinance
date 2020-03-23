@@ -7,20 +7,20 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
-class BatchLog extends BaseModel {
+class Variables extends BaseModel {
     /* The database table used by the model.
      *
      * @var string
      */
 
-    protected $table = 'lms_batch_log';
+    protected $table = 'lms_variables';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'batch_log_id';
+    protected $primaryKey = 'id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -42,25 +42,19 @@ class BatchLog extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'batch_log_id',
-        'batch_id',
-        'trans_id',
-        'status',        
-        'amount',
-        'approve_amount',
+        'name',
+        'label',        
         'created_at',
         'created_by',
         'updated_at',
         'updated_by',
     ];
 
-    public function batch()
+    public static function getVariables()
     {
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Batch', 'batch_id');
-    }
-
-    public function transactions()
-    {
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'trans_id');
+        $result = self::select('*')
+                ->get();
+        return isset($result[0]) ? $result : [];
     }
 }
+
