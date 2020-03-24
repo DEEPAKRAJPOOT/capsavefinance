@@ -1577,7 +1577,16 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetSentToBankInvCustomer($userIds = [])
     {
-        $result = LmsUser::lmsGetSentToBankInvCustomer($userIds);
+        // DB::enableQueryLog();
+        $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
+                ->with(['lms_user.bank_details.bank', 'invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch'])
+                ->whereHas('invoice', function($query) {
+                    $query->where('status_id', 10);
+                })
+                ->groupBy(['disbursal_batch_id', 'user_id'])
+                ->orderBy('disbursal_id', 'DESC')
+                ->get();
+        // dd(DB::getQueryLog());
         return $result ?: false;
     }       
 }

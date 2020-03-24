@@ -54,14 +54,12 @@
 															<table id="disbursalCustomerList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 																<thead>
 																	<tr role="row">
-																		<th width="1%"></th>
 																		<th width="5%">Batch ID</th>
 																		<th width="5%">Cust ID</th>
 																		<th width="13%">Ben Name</th>
 																		<th width="20%">Bank Detail</th>
-																		<th width="15%">Total Actual Funded Amt.</th>
+																		<th width="15%">Total Disburse Amt.</th>
 																		<th width="8%">Total Invoice </th>
-																		<th width="5%">Status</th>
 																		<th width="4%">Action</th>
 																	</tr>
 																</thead>
@@ -86,7 +84,8 @@
 		</div></div>
 
 </div>
-{!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Invoice', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('viewBatchSendToBankInvoice','View Invoice', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
 
 @endsection
 @section('jscript')

@@ -223,6 +223,56 @@ class InvoiceController extends Controller {
         return view('backend.invoice.view_invoice_details')->with(['invoice' => $res, 'status' => $get_status]);
     }
 
+    public function viewBatchUserInvoice(Request $request) {
+        $userId = $request->get('user_id');
+        $batchId = $request->get('disbursal_batch_id');
+
+        $invoiceData = $this->lmsRepo->getAllUserBatchInvoice(['user_id' => $userId, 'disbursal_batch_id' => $batchId]);
+        // dd($invoiceData);
+        return view('backend.invoice.view_batch_user_invoice')
+                ->with(
+                    ['user_id' => $userId, 
+                    'disbursal_batch_id' => $batchId,
+                    'userIvoices' => $invoiceData
+                ]);
+    }
+
+    public function invoiceUpdateDisbursal(Request $request) {
+        $userId = $request->get('user_id');
+        $batchId = $request->get('disbursal_batch_id');
+
+        return view('backend.invoice.update_invoice_disbursal')
+                ->with(
+                    ['user_id' => $userId, 
+                    'disbursal_batch_id' => $batchId
+                ]);
+    }
+
+    public function updateDisburseInvoice(Request $request) {
+        $userId = $request->user_id;
+        $disbursalBatchId = $request->disbursal_batch_id;
+        $transId = $request->trans_id;
+        $remarks = $request->remarks;
+
+        $apiLogData['tran_id'] = $transId;
+        $apiLogData['remark'] = $remarks;
+
+        $invoiceIds = $this->lmsRepo->findDisbursalByUserAndBatchIds(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+        $disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
+        if ($disburseApiLog) {
+            $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
+                    'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
+                ], ['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId]);
+                        
+            if ($updateDisbursal) {
+                $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+            }
+        }
+
+        Session::flash('message',trans('backend_messages.disburseMarked'));
+        return redirect()->route('backend_get_sent_to_bank');
+    }
+
     /* save bulk invoice */
 
     public function saveBulkInvoice(Request $request) {

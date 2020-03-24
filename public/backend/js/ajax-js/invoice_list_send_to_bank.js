@@ -23,17 +23,15 @@ try {
                 }
             },
             columns: [
-                {data: 'customer_id'},
                 {data: 'batch_id'},
-                {data: 'customer_code'},
+                {data: 'customer_id'},
                 {data: 'ben_name'},
                 {data: 'bank'},
                 {data: 'total_actual_funded_amt'},
                 {data: 'total_invoice'},
-                {data: 'status'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6, 7, 8]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6]}]
         });
 
         //Search
