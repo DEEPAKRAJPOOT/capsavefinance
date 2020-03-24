@@ -20,7 +20,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\InvoiceActivityLog;
 use App\Inv\Repositories\Models\Application;
-
+use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -893,7 +893,7 @@ use CommonRepositoryTraits;
 
     public function getAllBankInvoice()
     {
-        $this->result = Disbursal::getAllBankInvoice();
+        $this->result = DisbursalBatch::getAllBatches();
         return $this->result;
     }
 
