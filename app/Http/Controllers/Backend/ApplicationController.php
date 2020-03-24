@@ -1412,7 +1412,6 @@ class ApplicationController extends Controller
             $data = ['appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'download'=> false];
             $htmlContent = view('backend.app.sanctionSupply')->with($data)->with(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData])->render();
             $userData =  $this->userRepo->getUserByAppId($appId);
-            $userData->email = "ravi.awasthi@prolitus.com";
             $emailData['email'] = $userData->email;
             $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
             $emailData['body'] = $htmlContent;
