@@ -64,7 +64,7 @@
             </div>
             <div class="form-group col-md-6 float-md-right">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
-                <input type="text" class="form-control" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" maxlength="10">
+                <input type="text" class="form-control formatNum" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" maxlength="10">
             </div>
 
         </div>
@@ -160,6 +160,7 @@
             rules: {
                 'chrg_name': {
                     required: true,
+                    uniqueCharge: true
                 },
                 'chrg_desc': {
                     required: true,
