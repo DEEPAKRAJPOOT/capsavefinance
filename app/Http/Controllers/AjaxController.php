@@ -4114,13 +4114,33 @@ if ($err) {
         return $this->providerResult;
     }
     
+//    public function getExistEmailStatus(Request $req){
+//        $email = $req->get('email');
+//        $status = $this->userRepo->getExistEmailStatus($email);
+//        if($status){
+//            return 'true';
+//        }else{
+//            return 'false';
+//        }
+//    }
+    
     public function getExistEmailStatus(Request $req){
-        $email = $req->get('email');
-        $status = $this->userRepo->getExistEmailStatus($email);
-        if($status != false){
-            return 'true';
-        }else{
-            return 'false';
-        }
-    }
+       $response = [
+           'status' => false,
+           'message' => 'Some error occured. Please try again'
+       ];
+       $email = $req->get('email');
+       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $response['message'] =  'Email Id is not valid';
+          return $response;
+       }
+       $status = $this->userRepo->getExistEmailStatus($email);
+       if($status != false){
+          $response['status'] = true;
+          $response['message'] =  'Email available.';
+       }else{
+           $response['message'] =  'Sorry! Email is already in use.';
+       }
+       return $response;
+   }
 }
