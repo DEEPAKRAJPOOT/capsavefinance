@@ -100,12 +100,12 @@ class ApprovalRequest extends BaseModel {
         $userArr = \Helpers::getChildUsersWithParent($curUserId);
         $query = self::from('lms_approval_request as req')
                 ->select('req.req_id','req.ref_code','req.amount','req.status as req_status','req.req_type',
-                'req.created_at',
-                DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
-                DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                                 
-                'req_assign.to_id',
-                'req_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
-                'req_assign.req_assign_id'
+                'req.created_at'
+                //DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
+                //DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                                 
+                //'req_assign.to_id',
+                //'req_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
+                //'req_assign.req_assign_id'
                 //DB::raw("CASE
                 //            WHEN rta_req.req_type = 1 THEN 'Refund'
                 //            WHEN rta_req.req_type = 2 THEN 'Adjustment'
@@ -136,13 +136,13 @@ class ApprovalRequest extends BaseModel {
                         $join->on('req_assign.is_owner', '=', DB::raw("1"));
                         $join->whereNotNull('req_assign.to_id');
                     }
-                })
-                ->join('users as assignee_u', 'req_assign.to_id', '=', 'assignee_u.user_id')
-                ->join('users as from_u', 'req_assign.from_id', '=', 'from_u.user_id')
-                ->join('role_user as assignee_ru', 'req_assign.to_id', '=', 'assignee_ru.user_id')
-                ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
-                ->leftJoin('role_user as from_ru', 'req_assign.from_id', '=', 'from_ru.user_id')
-                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');
+                });
+                //->join('users as assignee_u', 'req_assign.to_id', '=', 'assignee_u.user_id')
+                //->join('users as from_u', 'req_assign.from_id', '=', 'from_u.user_id')
+                //->join('role_user as assignee_ru', 'req_assign.to_id', '=', 'assignee_ru.user_id')
+                //->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
+                //->leftJoin('role_user as from_ru', 'req_assign.from_id', '=', 'from_ru.user_id')
+                //->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');
 
         $query->groupBy('req.req_id');
         $result = $query->orderBy('req.req_id', 'DESC');

@@ -288,10 +288,13 @@
     let comment = $('textarea[name=comment]').val().trim();
     let security_deposit_type = $('input[name=security_deposit_type]:checked').val();
 
-    if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
+    /*if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
-    }
+    }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) > balance_limit)){
+        setError('input[name=prgm_limit_amt]', 'Limit amount can not exceed from balance amount');
+        flag = false;
+    }*/
 
     if(sub_limit.length == 0 || parseInt(sub_limit.replace(/,/g, '')) == 0){
         setError('input[name=sub_limit]', 'Please fill Limit of the Equipment');

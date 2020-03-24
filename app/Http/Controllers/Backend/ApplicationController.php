@@ -1415,7 +1415,7 @@ class ApplicationController extends Controller
             $emailData['email'] = $userData->email;
             $emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
             $emailData['body'] = $htmlContent;
-            //$emailData['attachment'] = $this->pdf->render($htmlContent);
+            $emailData['attachment'] = $this->pdf->render($htmlContent);
             $emailData['subject'] ="Sanction Letter for SupplyChain";
             \Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
             Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));
@@ -1620,6 +1620,9 @@ class ApplicationController extends Controller
     public function saveSanctionLetterSupplychain(Request $request){
         try {
             $arrFileData = $request->all();
+            $arrFileData['pdc_facility_amt'] = preg_replace('#[^0-9]+#', '', $arrFileData['pdc_facility_amt']);
+            $arrFileData['nach_facility_amt'] = preg_replace('#[^0-9]+#', '', $arrFileData['nach_facility_amt']);
+            $arrFileData['dsra_amt'] = preg_replace('#[^0-9]+#', '', $arrFileData['dsra_amt']);
             $appId = (int)$request->app_id; 
             $offerId = (int)$request->offer_id; 
             $bizId = (int) $request->get('biz_id');

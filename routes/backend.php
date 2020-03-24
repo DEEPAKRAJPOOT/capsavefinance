@@ -1091,6 +1091,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\InvoiceController@disburseOnline'
             ]);
 
+
             Route::post('/disburse-offline', [
                 'as' => 'disburse_offline',
                 'uses' => 'Backend\InvoiceController@disburseOffline'
@@ -1101,10 +1102,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
             ]); 
              
-              Route::get('backend_get_sent_to_bank', [
-                 'as' => 'backend_get_sent_to_bank',
+            Route::get('backend_get_sent_to_bank', [
+                'as' => 'backend_get_sent_to_bank',
                 'uses' => 'Backend\InvoiceController@viewSentToBankInvoice'
+            ]);
+             
+            Route::get('/view-batch-user-invoice', [
+                'as' => 'view_batch_user_invoice',
+                'uses' => 'Backend\InvoiceController@viewBatchUserInvoice'
             ]); 
+
+            Route::get('/invoice-update-disbursal', [
+                'as' => 'invoice_udpate_disbursal',
+                'uses' => 'Backend\InvoiceController@invoiceUpdateDisbursal'
+            ]);
+
+            Route::post('/update-disburse-invoice', [
+                'as' => 'updateDisburseInvoice',
+                'uses' => 'Backend\InvoiceController@updateDisburseInvoice'
+            ]);
+
                Route::get('backend_get_failed_disbursment', [
                  'as' => 'backend_get_failed_disbursment',
                 'uses' => 'Backend\InvoiceController@viewfailedDisbursment'
@@ -1318,6 +1335,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
         });
 
+        Route::post('ckeditor/image_upload', 'CKEditorController@upload')->name('upload_ckeditor_image');
     });
 
   });

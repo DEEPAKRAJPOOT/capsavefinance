@@ -1644,4 +1644,21 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function addOfferCharges($data){
         return OfferCharge::addOfferCharges($data);
     }    
+    
+    public function getProgram($prgm_id)
+    {
+        try{
+            return Program::getProgram($prgm_id);
+        } catch (Exception $ex) {
+            return $ex;
+        }
+    }
+    public function chkUser()
+    {
+        try{
+            return Application::chkUser();
+        } catch (Exception $ex) {
+            return $ex;
+        }
+    }
 }
