@@ -4507,8 +4507,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($dataRecords) {
-                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice_customers', ['batch_id' => $dataRecords->disbursal_batch_id]).'">View Customers</a>'
-                        .'<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice').'"><i class="fa fa-download"></a>';
+                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice_customers', ['batch_id' => $dataRecords->disbursal_batch_id]).'">View Customers</a>';
+                        //.'<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice').'"><i class="fa fa-download"></a>';
                     }
                 )
                 ->make(true);
@@ -4556,7 +4556,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($dataRecords) use($request) {
-                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_view_disburse_invoice', ['batch_id' => $request->get('batch_id'), 'disbursed_user_id' => $dataRecords->user_id]).'"><i class="fa fa-eye" /></a>';
+                        //return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_view_disburse_invoice', ['batch_id' => $request->get('batch_id'), 'disbursed_user_id' => $dataRecords->user_id]).'"><i class="fa fa-eye" /></a>';
+                        return '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#disburseInvoicePopUp" title="Disburse Invoice" data-url ="'.route('backend_view_disburse_invoice', ['batch_id' => $request->get('batch_id'), 'disbursed_user_id' => $dataRecords->user_id]).'" data-height="600px" data-width="100%" data-placement="top"><i class="fa fa-eye" /></a>';
                     }
                 )
                 ->make(true);
