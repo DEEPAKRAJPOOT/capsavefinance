@@ -2,12 +2,16 @@
 namespace App\Libraries\Ui;
 use DataTables;
 use Helpers;
+use DB;
+use Session;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\Application;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
@@ -591,9 +595,7 @@ class DataRenderer implements DataProviderInterface
     {   
         return DataTables::of($invoice)
                ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
-           
-               
-                 ->addColumn(
+               ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
@@ -671,10 +673,33 @@ class DataRenderer implements DataProviderInterface
            
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
+                    function ($invoice) { 
+                        $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                        if( $chkUser->id==1)
+                        {
+                             $customer  = 1;
+                        }
+                        else if( $chkUser->id==11)
+                        {
+                             $customer  = 2;
+                        }
+                        else
+                        {
+                            $customer  = 3;
+                        }
+                   
+                       $expl  =  explode(",",$invoice->program->invoice_approval); 
+                      if(in_array($customer, $expl)) 
+                      {         
                         return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
-                })
-                 ->addColumn(
+                      }
+                      else {
+                        return "";
+                      }
+                    })
+                  ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
@@ -693,7 +718,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {  
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_id.'</span>' : '';
                         return $comp_name;
                 })
                 ->addColumn(
@@ -732,10 +757,31 @@ class DataRenderer implements DataProviderInterface
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
-                         }                  
-                      $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>'
-                     . '&nbsp;<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
-                    return $action;
+                         }   
+                        
+                      $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                      $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                        if( $chkUser->id==1)
+                        {
+                             $customer  = 1;
+                        }
+                        else if( $chkUser->id==11)
+                        {
+                             $customer  = 2;
+                        }
+                        else
+                        {
+                            $customer  = 3;
+                        }
+                   
+                       $expl  =  explode(",",$invoice->program->invoice_approval); 
+                      if(in_array($customer, $expl)) 
+                      {             
+                          $action .='<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                      }
+                      return $action;
                 })
               ->make(true);
     } 

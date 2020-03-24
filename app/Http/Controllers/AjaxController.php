@@ -3546,17 +3546,24 @@ if ($err) {
         $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
         $getPrgm  = $this->application->getProgram($request['program_id']);
         $chkUser  = $this->application->chkUser();
-        if( $chkUser->id==1)
-        {
-             $customer  = 1;
-        }
-        else if( $chkUser->id==11)
-        {
-             $customer  = 2;
+        if($chkUser)
+        {     
+            if( $chkUser->id==1)
+            {
+                 $customer  = 1;
+            }
+            else if( $chkUser->id==11)
+            {
+                 $customer  = 2;
+            }
+            else
+            {
+                $customer  = 3;
+            }
         }
         else
         {
-            $customer  = 3;
+             $customer  = 3;
         }
         if($request['bulk']==1)
         {

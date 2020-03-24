@@ -34,13 +34,15 @@ class InvoiceController extends Controller {
     protected $docRepo;
     protected $lmsRepo;
     protected $userRepo;
+    protected $application;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+    public function __construct(InvAppRepoInterface $app_repo, InvAppRepoInterface $application, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
         $this->appRepo = $app_repo;
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
+        $this->application  =  $application;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
     }
@@ -260,15 +262,40 @@ class InvoiceController extends Controller {
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
         $attributes['supplier_id'] = $explode[0];
+        $explode1 = explode(',', $attributes['program_id']);
+        $attributes['program_id'] = $explode1[0];
         $appId = $explode[1];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
         $biz_id = $res->biz_id;
+        $getPrgm  = $this->application->getProgram($attributes['program_id']);
+        $chkUser  = $this->application->chkUser();
+        if( $chkUser->id==1)
+        {
+             $customer  = 1;
+        }
+        else if( $chkUser->id==11)
+        {
+             $customer  = 2;
+        }
+        else
+        {
+            $customer  = 3;
+        }
+         $expl  =  explode(",",$getPrgm->invoice_approval); 
+      
         if ($attributes['exception']) {
             $statusId = 28;
         } else {
+          if(in_array($customer, $expl))  
+          {
+            $statusId = 8;  
+          }
+          else
+          {
             $statusId = 7;
+          }
         }
 
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
