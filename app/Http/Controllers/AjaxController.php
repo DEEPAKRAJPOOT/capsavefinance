@@ -2772,9 +2772,9 @@ if ($err) {
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListBank(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,10);
-        $invoice = $dataProvider->getBackendInvoiceListBank($this->request, $invoice_data);
-        return $invoice;
+        $customersDisbursalList = $this->userRepo->lmsGetSentToBankInvCustomer();
+        $users = $dataProvider->lmsGetSentToBankInvCustomers($this->request, $customersDisbursalList);
+        return $users;
     } 
        //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getFrontendInvoiceListBank(DataProviderInterface $dataProvider) {

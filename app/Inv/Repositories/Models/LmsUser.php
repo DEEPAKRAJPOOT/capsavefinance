@@ -98,6 +98,18 @@ class LmsUser extends Authenticatable
                 ->get();
     }
 
+    public static function lmsGetSentToBankInvCustomer($userIds = [])
+    {
+        return self::with(['bank_details.bank', 'senttb_app.senttb_invoices.program_offer', 'user.anchor_bank_details.bank'])
+                ->whereHas('senttb_app')
+                ->whereHas('senttb_app.senttb_invoices', function($query) use ($userIds) {
+                    if (!empty($userIds)) {
+                        $query->whereIn('supplier_id', $userIds);
+                    }
+                })
+                ->get();
+    }
+
     public function bank_details()
     {
         return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_active' => 1, 'is_default' => 1]);
@@ -108,8 +120,18 @@ class LmsUser extends Authenticatable
         return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->whereHas('invoices');
     }
 
+    public function senttb_app()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+    }
+
     public function transaction()
     {
         return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions', 'user_id', 'user_id');
+    }
+
+    public function disbursal()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'user_id', 'user_id');
     }
 }

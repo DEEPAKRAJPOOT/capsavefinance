@@ -230,6 +230,16 @@ class Disbursal extends BaseModel {
 	{
 		  return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
 	}
+
+	public function  disbursal_batch()
+	{
+		  return $this->belongsTo('App\Inv\Repositories\Models\Lms\DisbursalBatch','disbursal_batch_id','disbursal_batch_id');
+	}
+
+	public function  lms_user()
+	{
+		  return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+	}
 	public static function   updateRepayment($attr)
 	{
 		 $res =   self::where(['invoice_id' => $attr['invoice_id']])->first();

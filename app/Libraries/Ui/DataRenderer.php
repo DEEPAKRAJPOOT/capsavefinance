@@ -4635,4 +4635,100 @@ class DataRenderer implements DataProviderInterface
                 })              
                 ->make(true);
     }
+
+
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetSentToBankInvCustomers(Request $request, $disbursal)
+    {
+        return DataTables::of($disbursal)
+                ->rawColumns(['batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
+                ->editColumn(
+                    'batch_id',
+                    function ($disbursal) {
+                        return ($disbursal->disbursal_batch->batch_id) ?? '';
+                    }
+                )
+                ->addColumn(
+                    'customer_id',
+                    function ($disbursal) {
+                        return $link = $disbursal->lms_user->customer_id;
+                        // return "<a id=\"" . $disbursal->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $disbursal->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    }
+                )
+                ->addColumn(
+                    'ben_name',
+                    function ($disbursal) {
+
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $benName = (isset($disbursal->lms_user->user->anchor_bank_details->acc_name)) ? $disbursal->lms_user->user->anchor_bank_details->acc_name : '';
+                        } else {
+                            $benName =  (isset($disbursal->lms_user->bank_details->acc_name)) ? $disbursal->lms_user->bank_details->acc_name : '';
+                        }
+                        return $benName;
+                    }
+                )     
+                ->editColumn(
+                    'bank',
+                        function ($disbursal) {
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $bank_name = (isset($disbursal->lms_user->user->anchor_bank_details->bank->bank_name)) ? $disbursal->lms_user->user->anchor_bank_details->bank->bank_name : '';
+                        } else {
+                            $bank_name = (isset($disbursal->lms_user->bank_details->bank->bank_name)) ? $disbursal->lms_user->bank_details->bank->bank_name : '';
+                        }
+
+
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $ifsc_code = (isset($disbursal->lms_user->user->anchor_bank_details->ifsc_code)) ? $disbursal->lms_user->user->anchor_bank_details->ifsc_code : '';
+                        } else {
+                            $ifsc_code = (isset($disbursal->lms_user->bank_details->ifsc_code)) ? $disbursal->lms_user->bank_details->ifsc_code : '';
+                        }
+
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $benAcc = (isset($disbursal->lms_user->user->anchor_bank_details->acc_no)) ? $disbursal->lms_user->user->anchor_bank_details->acc_no : '';
+                        } else {
+                            $benAcc = (isset($disbursal->lms_user->bank_details->acc_no)) ? $disbursal->lms_user->bank_details->acc_no : '';
+                        }
+
+                        $account = '';
+                        $account .= $bank_name ? '<span><b>Bank:&nbsp;</b>'.$bank_name.'</span>' : '';
+                        $account .= $ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$ifsc_code.'</span>' : '';
+                        $account .= $benAcc ? '<br><span><b>Acc. #:&nbsp;</b>'.$benAcc.'</span>' : '';
+
+                        return $account;
+
+                    }
+                )
+                ->editColumn(
+                    'total_actual_funded_amt',
+                    function ($disbursal) {
+
+                        return '<i class="fa fa-inr"></i> '.number_format($disbursal->total_disburse_amount);
+                })
+                ->editColumn(
+                    'total_invoice',
+                    function ($disbursal) {   
+                        return $disbursal->total_invoice;
+                })                     
+                ->addColumn(
+                    'action',
+                    function ($disbursal) {
+                        $act = '';
+                        $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('customer_id', 'like',"%$search_keyword%");
+                        }
+                    }
+                })
+                ->make(true);
+    }
 }
