@@ -1174,7 +1174,7 @@
    
    $(document).ready(function(){
       jQuery.validator.addMethod("alphanumeric", function(value, element) {
-         return this.optional(element) || /^[\w.]+$/i.test(value);
+         return this.optional(element) || /^[\w\s.]+$/i.test(value);
       }, "Letters, numbers, and underscores only please");
 
       jQuery.validator.addMethod("ratio", function(value, element) {
