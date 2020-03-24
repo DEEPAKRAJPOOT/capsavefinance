@@ -4548,7 +4548,8 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'created_at',
                     function ($dataRecords) {
-                    return $dataRecords->created_at;
+                    //return $dataRecords->created_at->format('j F Y H:i:s A'); 
+                    return ($dataRecords->created_at)? date('d-M-Y H:i:s A',strtotime($dataRecords->created_at)) : '---';
                 }) 
                 ->addColumn(
                     'action',
