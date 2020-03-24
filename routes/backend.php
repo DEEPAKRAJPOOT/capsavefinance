@@ -433,7 +433,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_qms_details',
                 'uses' => 'Backend\QmsController@showQmsDetails'
 
+            ]);   
+            
+            // delte documents 24-mar-20
+            Route::get('delete-pan-doc', [
+                'as' => 'delete_pan_doc',
+                'uses' => 'Backend\ApplicationController@deletePanDoc'
+
             ]);    
+
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 

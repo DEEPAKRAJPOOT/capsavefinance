@@ -67,7 +67,7 @@
                         </div>
                         <div id="collapse{{ $data->app_doc_id }}" class="card-body collapse p-0 show" data-parent="#accordion">
 
-                            <table class="table  overview-table" cellpadding="0" cellspacing="0" border="1">
+                            <table class="table  overview-table" id="documentTable" cellpadding="0" cellspacing="0" border="1">
                                 <tbody>
                                     <tr>
                                         @if($data->doc_id == '4')
@@ -81,7 +81,9 @@
                                         <td width="20%"><b>GST Month-Year</b></td>
                                         @endif
                                         <td width="20%"><b>File Name </b></td>
-                                        <td width="20%"><b>Upload On </b></td>
+                                        
+                                        <td width="20%"><b>Uploaded On </b></td>
+
                                         @if($data->doc_id == '35' || $data->doc_id == '36')
                                         <td width="20%"><b>Comment </b></td>
                                         @endif
@@ -98,7 +100,7 @@
                                         <td width="20%">{{ $value->finc_year }}</td>
                                         @endif
                                         @if($data->doc_id == '6')
-                                        <td width="20%">{{ ($value->gst_month != '') ? date('M',$value->gst_month) : '' }}-{{ ($value->gst_year != '') ? $value->gst_year : '' }}</td>
+                                        <td width="20%" name="dateRow">{{ ($value->gst_month != '') ? date('M',$value->gst_month) : '' }}-{{ ($value->gst_year != '') ? $value->gst_year : '' }}</td>
                                         @endif
                                         <td width="20%"> {{ (isset($value->userFile->file_name)) ? $value->userFile->file_name : ''}} </td>
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
@@ -162,4 +164,6 @@
         $('#openUploadDocument').trigger('click');
     });
 </script> 
+
+
 @endsection
