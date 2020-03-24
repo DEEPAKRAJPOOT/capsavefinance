@@ -4494,6 +4494,16 @@ class DataRenderer implements DataProviderInterface
                     function ($dataRecords) {
                     return "₹ ".number_format($dataRecords->total_amt);
                 }) 
+                ->editColumn(
+                    'created_by_user',
+                    function ($dataRecords) {
+                    return $dataRecords->created_by_user;
+                }) 
+                ->editColumn(
+                    'created_at',
+                    function ($dataRecords) {
+                    return $dataRecords->created_at;
+                }) 
                 ->addColumn(
                     'action',
                     function ($dataRecords) {

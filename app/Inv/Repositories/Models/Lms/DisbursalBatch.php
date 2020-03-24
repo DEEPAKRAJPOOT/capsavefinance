@@ -52,8 +52,9 @@ class DisbursalBatch extends BaseModel {
 	];
 
 	public static function getAllBatches(){
-        $result = \DB::select("SELECT rta_disbursal_batch.disbursal_batch_id, rta_disbursal_batch.batch_id, rta_disbursal_batch.created_by, rta_disbursal_batch.created_at, A.total_users, A.total_amt
+        $result = \DB::select("SELECT rta_disbursal_batch.disbursal_batch_id, rta_disbursal_batch.batch_id, rta_disbursal_batch.created_by, rta_disbursal_batch.created_at, A.total_users, A.total_amt, rta_users.f_name as created_by_user
 		FROM rta_disbursal_batch
+		JOIN rta_users ON (rta_users.user_id=rta_disbursal_batch.created_by)
 		JOIN (SELECT rta_disbursal.disbursal_batch_id, COUNT(DISTINCT(user_id)) as total_users, SUM(disburse_amount) as total_amt FROM rta_disbursal
 		WHERE rta_disbursal.disbursal_batch_id IS NOT null GROUP BY rta_disbursal.disbursal_batch_id) A ON (A.disbursal_batch_id=rta_disbursal_batch.disbursal_batch_id)
 		ORDER BY rta_disbursal_batch.disbursal_batch_id DESC");

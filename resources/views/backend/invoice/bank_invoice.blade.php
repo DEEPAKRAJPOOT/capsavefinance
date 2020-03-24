@@ -37,6 +37,8 @@
                                                                         <th>Batch No.</th>
                                                                         <th>Total Customers</th>
                                                                         <th>Total Amount</th>
+                                                                        <th>Created By</th>
+                                                                        <th>Created At</th>
                                                                         <th>Action</th>
                                                                     </tr>
                                                                 </thead>
