@@ -58,7 +58,7 @@ $finalDisburseAmt +=  $disburseAmount;
 				</div>
 			</div>
 			<div class="col-6">
-				<input type="submit" id="submitManualDisburse" value="Disburse Ofline" class="btn btn-success btn-sm ml-2">
+				<input type="submit" id="submitManualDisburse" value="Disburse Offline" class="btn btn-success btn-sm ml-2">
 			</div>
 		</form>
 	</div>

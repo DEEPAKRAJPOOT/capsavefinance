@@ -398,5 +398,15 @@ public static function updateInvoice($invoiceId,$status)
     {
         
         return self::where(['invoice_id' => $invNo])->first();
+    }
+
+    public static function getAllUserBatchInvoice($data)
+    {
+        return self::with('app.acceptedOffer')
+            ->whereHas('disbursal', function($query) use ($data) {
+                    $query->where($data);
+                })
+            ->where('status_id', 10)
+            ->get();
     }  
 }

@@ -2,12 +2,16 @@
 namespace App\Libraries\Ui;
 use DataTables;
 use Helpers;
+use DB;
+use Session;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\BizInvoice;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Models\Application;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
@@ -591,9 +595,7 @@ class DataRenderer implements DataProviderInterface
     {   
         return DataTables::of($invoice)
                ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
-           
-               
-                 ->addColumn(
+               ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
@@ -671,10 +673,33 @@ class DataRenderer implements DataProviderInterface
            
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
+                    function ($invoice) { 
+                        $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                        if( $chkUser->id==1)
+                        {
+                             $customer  = 1;
+                        }
+                        else if( $chkUser->id==11)
+                        {
+                             $customer  = 2;
+                        }
+                        else
+                        {
+                            $customer  = 3;
+                        }
+                   
+                       $expl  =  explode(",",$invoice->program->invoice_approval); 
+                      if(in_array($customer, $expl)) 
+                      {         
                         return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
-                })
-                 ->addColumn(
+                      }
+                      else {
+                        return "";
+                      }
+                    })
+                  ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
@@ -693,7 +718,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {  
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_id.'</span>' : '';
                         return $comp_name;
                 })
                 ->addColumn(
@@ -732,10 +757,31 @@ class DataRenderer implements DataProviderInterface
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
-                         }                  
-                      $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>'
-                     . '&nbsp;<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
-                    return $action;
+                         }   
+                        
+                      $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                      $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                        if( $chkUser->id==1)
+                        {
+                             $customer  = 1;
+                        }
+                        else if( $chkUser->id==11)
+                        {
+                             $customer  = 2;
+                        }
+                        else
+                        {
+                            $customer  = 3;
+                        }
+                   
+                       $expl  =  explode(",",$invoice->program->invoice_approval); 
+                      if(in_array($customer, $expl)) 
+                      {             
+                          $action .='<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                      }
+                      return $action;
                 })
               ->make(true);
     } 
@@ -4598,6 +4644,102 @@ class DataRenderer implements DataProviderInterface
                     function ($dataRecords) {
                     return ($dataRecords->disburse_type==1) ? 'Online' : 'Offline';
                 })              
+                ->make(true);
+    }
+
+
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsGetSentToBankInvCustomers(Request $request, $disbursal)
+    {
+        return DataTables::of($disbursal)
+                ->rawColumns(['batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
+                ->editColumn(
+                    'batch_id',
+                    function ($disbursal) {
+                        return ($disbursal->disbursal_batch->batch_id) ?? '';
+                    }
+                )
+                ->addColumn(
+                    'customer_id',
+                    function ($disbursal) {
+                        return $link = $disbursal->lms_user->customer_id;
+                        // return "<a id=\"" . $disbursal->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $disbursal->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                    }
+                )
+                ->addColumn(
+                    'ben_name',
+                    function ($disbursal) {
+
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $benName = (isset($disbursal->lms_user->user->anchor_bank_details->acc_name)) ? $disbursal->lms_user->user->anchor_bank_details->acc_name : '';
+                        } else {
+                            $benName =  (isset($disbursal->lms_user->bank_details->acc_name)) ? $disbursal->lms_user->bank_details->acc_name : '';
+                        }
+                        return $benName;
+                    }
+                )     
+                ->editColumn(
+                    'bank',
+                        function ($disbursal) {
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $bank_name = (isset($disbursal->lms_user->user->anchor_bank_details->bank->bank_name)) ? $disbursal->lms_user->user->anchor_bank_details->bank->bank_name : '';
+                        } else {
+                            $bank_name = (isset($disbursal->lms_user->bank_details->bank->bank_name)) ? $disbursal->lms_user->bank_details->bank->bank_name : '';
+                        }
+
+
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $ifsc_code = (isset($disbursal->lms_user->user->anchor_bank_details->ifsc_code)) ? $disbursal->lms_user->user->anchor_bank_details->ifsc_code : '';
+                        } else {
+                            $ifsc_code = (isset($disbursal->lms_user->bank_details->ifsc_code)) ? $disbursal->lms_user->bank_details->ifsc_code : '';
+                        }
+
+                        if ($disbursal->lms_user->user->is_buyer == 2) {
+                            $benAcc = (isset($disbursal->lms_user->user->anchor_bank_details->acc_no)) ? $disbursal->lms_user->user->anchor_bank_details->acc_no : '';
+                        } else {
+                            $benAcc = (isset($disbursal->lms_user->bank_details->acc_no)) ? $disbursal->lms_user->bank_details->acc_no : '';
+                        }
+
+                        $account = '';
+                        $account .= $bank_name ? '<span><b>Bank:&nbsp;</b>'.$bank_name.'</span>' : '';
+                        $account .= $ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$ifsc_code.'</span>' : '';
+                        $account .= $benAcc ? '<br><span><b>Acc. #:&nbsp;</b>'.$benAcc.'</span>' : '';
+
+                        return $account;
+
+                    }
+                )
+                ->editColumn(
+                    'total_actual_funded_amt',
+                    function ($disbursal) {
+
+                        return '<i class="fa fa-inr"></i> '.number_format($disbursal->total_disburse_amount);
+                })
+                ->editColumn(
+                    'total_invoice',
+                    function ($disbursal) {   
+                        return $disbursal->total_invoice;
+                })                     
+                ->addColumn(
+                    'action',
+                    function ($disbursal) {
+                        $act = '';
+                        $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('customer_id', 'like',"%$search_keyword%");
+                        }
+                    }
+                })
                 ->make(true);
     }
 }

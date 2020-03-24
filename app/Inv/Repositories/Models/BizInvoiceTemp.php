@@ -12,6 +12,8 @@ use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\InvoiceActivityLog;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Master\Role;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -129,14 +131,6 @@ public static function saveBulkTempInvoice($arrInvoice)
         $your_date = strtotime($invDate);
         $datediff = abs($now - $your_date);
         $tenor = $datediff / (60 * 60 * 24);
-        if($tenor > $attributes['tenor_old_invoice'])
-        {
-            $status_id =  28;
-        }
-        else
-        {
-            $status_id =  7;
-        }
         
             $updateTemp =  self::where('invoice_id',$attributes['id'][$i])
                     ->update(['invoice_no' => $attributes['invoice_no'][$i],
@@ -150,8 +144,41 @@ public static function saveBulkTempInvoice($arrInvoice)
             if($updateTemp)
             {
                 
-               $result =  self::where('invoice_id',$attributes['id'][$i])->first();
-              
+                $result =  self::where('invoice_id',$attributes['id'][$i])->first();
+                $getPrgm  = Program::where(['prgm_id' => $result->program_id])->first(); 
+                $id = Auth::user()->user_id;
+                $role_id = RoleUser::where(['user_id' => $id])->pluck('role_id');
+                $chkUser  =  Role::whereIn('id',$role_id)->first();
+                if( $chkUser->id==1)
+                {
+                     $customer  = 1;
+                }
+                else if( $chkUser->id==11)
+                {
+                     $customer  = 2;
+                }
+                else
+                {
+                    $customer  = 3;
+                }
+                 $expl  =  explode(",",$getPrgm->invoice_approval); 
+               if($tenor > $attributes['tenor_old_invoice'])
+                {
+                    $status_id =  28;
+                }
+                else
+                {
+                    if(in_array($customer, $expl))  
+                   {
+                       $status_id =  8;
+                    }
+                    else
+                    {
+                       $status_id =  7;
+                    }
+
+                 }
+          
                $data = new BizInvoice;
                        $data->anchor_id =  $result->anchor_id;
                         $data->supplier_id =  $result->supplier_id;
