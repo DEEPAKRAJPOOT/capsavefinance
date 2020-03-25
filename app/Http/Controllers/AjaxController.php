@@ -4168,10 +4168,8 @@ if ($err) {
       }
     }
 
-    public function getAjaxBankInvoice(Request $request, DataProviderInterface $dataProvider) { 
-        $from_date    = $request->get('from_date');
-        $to_date    = $request->get('to_date');
-        $this->dataRecords = $this->invRepo->getAllBankInvoice($from_date, $to_date);
+    public function getAjaxBankInvoice(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->invRepo->getAllBankInvoice();
         $this->providerResult = $dataProvider->getBankInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
@@ -4191,4 +4189,39 @@ if ($err) {
         $this->providerResult = $dataProvider->getDisburseInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
+    public function getExistEmailStatus(Request $req){
+       $response = [
+           'status' => false,
+           'message' => 'Some error occured. Please try again'
+       ];
+       $email = $req->get('email');
+       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $response['message'] =  'Email Id is not valid';
+          return $response;
+       }
+       $status = $this->userRepo->getExistEmailStatus($email);
+       if($status != false){
+          $response['status'] = false;
+          $response['message'] =  'Sorry! Email is already in use.';
+       }else{
+           $response['status'] = true;
+           $response['message'] =  '';
+       }
+       return $response;
+   }
+
+    public function checkUniqueCharge(Request $request) 
+    {        
+        $chargeName = $request->get('chrg_name');
+        $chargeId = $request->has('chrg_id') ? $request->get('chrg_id'): null ;
+        $result = $this->lmsRepo->checkChargeName($chargeName, $chargeId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }
+
 }

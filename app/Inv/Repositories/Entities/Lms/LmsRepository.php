@@ -876,6 +876,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function getAllUserBatchInvoice($data)
 	{
 		return BizInvoice::getAllUserBatchInvoice($data);
-	}    
+	} 
+        
+    /**
+     * Check Charge Name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function checkChargeName($chargeName, $excludeChargeId=null)
+    {
+        return Charges::checkChargeName($chargeName, $excludeChargeId);
+    }       
     
 }
