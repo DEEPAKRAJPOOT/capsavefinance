@@ -26,6 +26,11 @@
                             <div class="card">
                                 <div class="card-body"> 
                                     <div class="row" style="margin-bottom: 25px;">
+                                        <div class="col-md-2">
+                                            Please Select Date:
+                                        </div> 
+                                    </div> 
+                                    <div class="row" style="margin-bottom: 25px;">
                                             <div class="col-md-2">
                                                 <input class="form-control dateFilter" placeholder="From Date" id="from_date" name="from_date" type="text">
                                             </div>
