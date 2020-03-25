@@ -66,8 +66,9 @@
                 [''=>'Please select' ,  1 => 'Limit Amount', 
                 2 => ' Outstanding Amount',
                 3 => 'Oustanding Principal',
-                4 => 'Outstanding Interest',
-                5 => 'Overdue Amount'],
+                //4 => 'Outstanding Interest',
+                //5 => 'Overdue Amount'
+                ],
                 isset($data->chrg_applicable_id)  ?   $data->chrg_applicable_id  : null,
                 ['id' => 'chrg_tiger_id_'.$len,
                 'class'=>'form-control clsRequired ',

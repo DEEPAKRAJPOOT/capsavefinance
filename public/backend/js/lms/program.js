@@ -667,6 +667,7 @@ try {
 
         $(document).on('click', '.charge_calculation_type', function () {
             sdt = $(this).val();
+            $('.chrg_calculation_amt').val('');
             if (sdt == 1) {
                 $(this).closest('.amtpercentrow').find('.sdt').text('Amount');
                  $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtfixed').removeClass('amtpercnt');
@@ -685,7 +686,7 @@ try {
             $numpad = e.code.replace(/[^0-9]/g,'');
             $chrg_calculation_amt = $(this).val();
             $oldval = $chrg_calculation_amt.replace(/[^0-9]/g,''); 
-            $realval = $oldval + $numpad;
+            $realval = $oldval + $numpad;            
             if($(this).hasClass('amtpercnt') && parseInt($realval) > 100){
                 return false;
             }
