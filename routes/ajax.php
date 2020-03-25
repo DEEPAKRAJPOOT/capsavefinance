@@ -972,4 +972,10 @@ Route::group(
         'as' => 'check_exist_email',
         'uses' => 'AjaxController@getExistEmailStatus'
     ]);
+
+    //ajax route for check the email is exist or not
+    Route::post('check-exist-emails-anchor', [
+        'as' => 'check_exist_email_anchor',
+        'uses' => 'AjaxController@getExistEmailStatusAnchor'
+    ]);
 });

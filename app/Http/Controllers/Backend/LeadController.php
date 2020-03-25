@@ -695,23 +695,6 @@ class LeadController extends Controller {
     }
 
         /**
-     * function to check live email validation
-     * @return type
-     */
-    public function checkEmailAvailability(Request $request)
-    {
-        $email = $request->input('email');
-        
-        $result = User::select('users.email')
-            ->where('email', 'LIKE', "%{$email}%")
-            ->pluck("email");
-            return response()->json($result);
-
-        
-        // return json_encode(User::find('users.email')->get()->toArray());
-    }
-
-        /**
      * function to dropdown citylist
      * @return type
      */
