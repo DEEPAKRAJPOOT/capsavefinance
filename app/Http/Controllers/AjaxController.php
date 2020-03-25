@@ -4190,16 +4190,6 @@ if ($err) {
         return $this->providerResult;
     }
     
-//    public function getExistEmailStatus(Request $req){
-//        $email = $req->get('email');
-//        $status = $this->userRepo->getExistEmailStatus($email);
-//        if($status){
-//            return 'true';
-//        }else{
-//            return 'false';
-//        }
-//    }
-    
     public function getExistEmailStatus(Request $req){
        $response = [
            'status' => false,
@@ -4212,10 +4202,11 @@ if ($err) {
        }
        $status = $this->userRepo->getExistEmailStatus($email);
        if($status != false){
-          $response['status'] = true;
-          $response['message'] =  'Email available.';
+          $response['status'] = false;
+          $response['message'] =  'Sorry! Email is already in use.';
        }else{
-           $response['message'] =  'Sorry! Email is already in use.';
+           $response['status'] = true;
+           $response['message'] =  '';
        }
        return $response;
    }

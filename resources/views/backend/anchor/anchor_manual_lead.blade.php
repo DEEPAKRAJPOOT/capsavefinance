@@ -51,7 +51,6 @@
                                  <span class="mandatory">*</span>
                                  </label>
                                  <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
-                                 <span class="email_val"></span>
                               </div>
                            </div>
                          </div>
@@ -199,35 +198,7 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
-            
-//            $.validator.addMethod('check_email', function(value,element,param){
-//                var email = $('#email').val();
-//                $.ajax({
-//                    url: messages.check_exist_email,
-//                    type: 'POST',
-//                    data: {
-//                        'email_check' : 1,
-//                        'email' : email,
-//                        '_token' : messages.token
-//                    },
-//                    success: function(response){
-//                        if (response === 'true' ) {
-//                            email_state = false;
-//                            $('#email').parent().removeClass("error");
-//                            $('#email').parent().addClass("form_error");
-//                            $('#email').siblings("span").text('Sorry... Email already exists');
-//                            
-//                        }else if (response === 'false') {
-//                            email_state = true;
-//                            $('#email').parent().removeClass("form_error");
-//                            $('#email').parent().addClass("form_success");
-//                            $('#email').siblings("span").text('');
-//                            return email_state;
-//                        }
-//                    }
-//                });
-//            },'');
-
+           
             $(document).on('keyup', '#email', function(){
               var email = $(this).val();
               if (!email.length) {
@@ -237,7 +208,6 @@
                   url: messages.check_exist_email,
                   type: 'POST',
                   data: {
-                      'email_check' : 1,
                       'email' : email,
                       '_token' : messages.token,
                   },
@@ -276,8 +246,6 @@
                     $(this).rules("add",
                     {
                         required: true,
-//                        email: true,
-//                        check_email: '#email',
                     });
                 });
                 $('input.phone').each(function () {
