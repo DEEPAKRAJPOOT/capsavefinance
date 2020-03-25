@@ -306,7 +306,7 @@ trait LmsTrait
     protected function invoiceKnockOff($transId){
         $transDetail = Transactions::whereIn('is_settled',[0,1])->where(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->get()->first();
        
-        if($transDetail->count()>0)
+        if(!empty($transDetail) && $transDetail->count()>0)
         {
             
             $lastDisbursalId  = null;
