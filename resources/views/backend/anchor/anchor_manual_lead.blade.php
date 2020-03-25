@@ -23,7 +23,7 @@
                                  <label for="txtCreditPeriod">First Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="First Name" >
+                                 <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="First Name" onkeyup="return checkFname(this.value)">
                               </div>
                            </div>
                             <div class="col-6">
@@ -31,7 +31,7 @@
                                  <label for="txtCreditPeriod">Last Name
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="text" name="l_name" id="l_name" value="" class="form-control l_name" tabindex="1" placeholder="Last Name" >
+                                 <input type="text" name="l_name" id="l_name" value="" class="form-control l_name" tabindex="1" placeholder="Last Name" onkeyup="return checkLname(this.value)">
                               </div>
                            </div>
                             </div>
@@ -50,7 +50,7 @@
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
+                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email">
                               </div>
                            </div>
                          </div>
@@ -62,7 +62,7 @@
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control numbercls phone" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
+                                    <input class="form-control numbercls phone" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="" onkeyup="return checkMobile(this.value)">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -297,4 +297,28 @@
         });
 
 </script>
+
+<script>
+         function checkFname(e) {
+            let f_name = document.getElementById('f_name').value;
+
+            if(!isNaN(e)) {
+               document.getElementById('f_name').value = "";
+            };
+        }
+
+         function checkLname(e) {
+            let f_name = document.getElementById('l_name').value;
+
+            if(!isNaN(e)) {
+               document.getElementById('l_name').value = "";
+            };
+        }
+         function checkMobile(e) {
+            if(isNaN(e)) {
+               document.getElementById('phone').value = "";
+            };
+        }
+</script>
+
 @endsection

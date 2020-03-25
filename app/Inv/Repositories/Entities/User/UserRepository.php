@@ -1598,5 +1598,10 @@ class UserRepository extends BaseRepositories implements UserInterface
                 ->get();
         // dd(DB::getQueryLog());
         return $result ?: false;
-    }       
+    }  
+    
+    
+    public function getExistEmailStatusAnchor($email){
+        return Anchor::getExistEmailStatusAnchor($email);
+     }
 }

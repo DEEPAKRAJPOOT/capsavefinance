@@ -4224,4 +4224,26 @@ if ($err) {
         return response()->json($result); 
     }
 
+    // check email status of anchor
+    public function getExistEmailStatusAnchor(Request $req){
+        $response = [
+            'status' => false,
+            'message' => 'Some error occured. Please try again'
+        ];
+        $email = $req->get('email');
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+           $response['message'] =  'Email Id is not valid';
+           return $response;
+        }
+        $status = $this->userRepo->getExistEmailStatusAnchor($email);
+        if($status != false){
+           $response['status'] = false;
+           $response['message'] =  'Sorry! Email is already in use.';
+        }else{
+            $response['status'] = true;
+            $response['message'] =  '';
+        }
+        return $response;
+    }
+
 }

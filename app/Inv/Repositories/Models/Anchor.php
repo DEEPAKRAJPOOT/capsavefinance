@@ -232,4 +232,16 @@ public static function saveAnchor($arrAnchor = [])
     {
         return $this->hasOne('App\Inv\Repositories\Models\Program', 'anchor_id', 'anchor_id')->where(['status'=>1, 'parent_prgm_id'=> 0]);
     }
+
+        /**
+     * function for get particular user detail using email. anchor
+     * @param type $email
+     * @return type
+     */
+     public static function getExistEmailStatusAnchor($email){
+        $arrEmailUser = self::select('anchor_user.*')
+             ->where('comp_email', '=', $email)
+            ->first();
+           return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
 }
