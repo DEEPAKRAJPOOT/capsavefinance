@@ -60,7 +60,7 @@ class DisbursalBatch extends BaseModel {
 		JOIN rta_users ON (rta_users.user_id=rta_disbursal_batch.created_by)
 		JOIN (SELECT rta_disbursal.disbursal_batch_id, COUNT(DISTINCT(user_id)) as total_users, SUM(disburse_amount) as total_amt FROM rta_disbursal
 		WHERE rta_disbursal.disbursal_batch_id IS NOT null GROUP BY rta_disbursal.disbursal_batch_id) A ON (A.disbursal_batch_id=rta_disbursal_batch.disbursal_batch_id)
-		WHERE rta_disbursal_batch.created_at>? AND rta_disbursal_batch.created_at<?
+		WHERE rta_disbursal_batch.created_at>=? AND rta_disbursal_batch.created_at<=?
 		ORDER BY rta_disbursal_batch.disbursal_batch_id DESC", [$from_date, $to_date]);
         return $result;    
 	}

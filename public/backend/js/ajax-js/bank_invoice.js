@@ -10,6 +10,37 @@ try {
         $('#searchBtnBankInvoice').on('click', function (e) {
             from_date = $('input[name=from_date]').val();
             to_date = $('input[name=to_date]').val();
+
+            if(!from_date && !to_date) {
+                if ((Date.parse(from_date) >= Date.parse(to_date))) {
+                    alert("Please select date first.");
+                    return false;
+                }
+            }
+
+            if(from_date && to_date) {               
+                var enddate = from_date; //DD/MM/YYYY
+                var split = enddate.split('/');
+                var date = new Date(split[2], split[1], split[0]); //Y M D
+                var fromtimestamp = date.getTime();
+                var todate = to_date; //DD/MM/YYYY
+                var split = todate.split('/');
+                var date = new Date(split[2], split[1], split[0]); //Y M D
+                var totimestamp = date.getTime();
+                var Difference_In_Time = totimestamp - fromtimestamp;
+                var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+                //alert(Difference_In_Days);
+                if (fromtimestamp > totimestamp) {
+                    alert("To date should be greater than From date");
+                    return false;
+                }
+
+                if (Difference_In_Days > 30) {
+                    alert("No. of days should not be greater than 30");
+                    return false;
+                }
+            }
+
             if(!oTable) {
                 if(from_date && to_date) {
                     oTable = $('#bankInvoice').DataTable({
@@ -41,6 +72,8 @@ try {
                             ],
                         aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
                     });
+                } else {
+                    alert('Please select date.');
                 }
             } else {
                 oTable.draw();
