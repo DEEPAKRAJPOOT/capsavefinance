@@ -44,6 +44,8 @@ class FinancialJournalEntries extends BaseModel {
         'entry_type',
         'reference', 
         'invoice_id', 
+        'trans_id', 
+        'user_id', 
         'date',            
         'created_at',   
         'created_by',        

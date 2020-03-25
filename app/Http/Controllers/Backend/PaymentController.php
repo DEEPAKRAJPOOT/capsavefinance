@@ -23,6 +23,7 @@ use PHPExcel;
 use PHPExcel_IOFactory;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Helpers\ApportionmentHelper;
 use App\Helpers\FinanceHelper;
 use App\Inv\Repositories\Contracts\FinanceInterface;
 
@@ -178,7 +179,8 @@ class PaymentController extends Controller {
           $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.REPAYMENT'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
           if($request['trans_type']==17){
             //$this->paySettlement( $request['customer_id']);
-            $this->invoiceKnockOff($res->trans_id);
+            $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
+            $Obj->init($res->trans_id);
           }
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');
@@ -246,16 +248,16 @@ class PaymentController extends Controller {
     $nonFactoredAmount = 0;
     
     $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-    $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
+    $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
     
-    $disbursalIds = Transactions::where('parent_trans_id','=',$transId)
+    $disbursalIds = Transactions::where('repay_trans_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->where('trans_type','=',config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
     ->distinct('disbursal_id')
     ->pluck('disbursal_id')
     ->toArray();
     
-    $principalSettled = Transactions::where('parent_trans_id','=',$transId)
+    $principalSettled = Transactions::where('repay_trans_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
     ->sum('amount');
@@ -428,16 +430,16 @@ class PaymentController extends Controller {
     $nonFactoredAmount = 0;
     
     $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-    $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
+    $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
     
-    $disbursalIds = Transactions::where('parent_trans_id','=',$transId)
+    $disbursalIds = Transactions::where('repay_trans_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->where('trans_type','=',config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
     ->distinct('disbursal_id')
     ->pluck('disbursal_id')
     ->toArray();
     
-    $principalSettled = Transactions::where('parent_trans_id','=',$transId)
+    $principalSettled = Transactions::where('repay_trans_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
     ->sum('amount');
