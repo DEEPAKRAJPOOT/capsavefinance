@@ -8,6 +8,7 @@ try {
 
         // //Search
         $('#searchBtnBankInvoice').on('click', function (e) {
+            var split, date, fromtimestamp, totimestamp, Difference_In_Time, Difference_In_Days; 
             from_date = $('input[name=from_date]').val();
             to_date = $('input[name=to_date]').val();
 
@@ -19,17 +20,17 @@ try {
             }
 
             if(from_date && to_date) {               
-                var enddate = from_date; //DD/MM/YYYY
-                var split = enddate.split('/');
-                var date = new Date(split[2], split[1], split[0]); //Y M D
-                var fromtimestamp = date.getTime();
-                var todate = to_date; //DD/MM/YYYY
-                var split = todate.split('/');
-                var date = new Date(split[2], split[1], split[0]); //Y M D
-                var totimestamp = date.getTime();
-                var Difference_In_Time = totimestamp - fromtimestamp;
-                var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
-                //alert(Difference_In_Days);
+                split = from_date.split('/');
+                date = new Date(split[2], split[1], split[0]); //Y M D
+                fromtimestamp = date.getTime();
+
+                split = to_date.split('/');
+                date = new Date(split[2], split[1], split[0]); //Y M D
+                totimestamp = date.getTime();
+
+                Difference_In_Time = totimestamp - fromtimestamp;
+                Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
                 if (fromtimestamp > totimestamp) {
                     alert("To date should be greater than From date");
                     return false;
