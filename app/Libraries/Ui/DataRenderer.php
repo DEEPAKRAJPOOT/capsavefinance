@@ -4734,10 +4734,31 @@ class DataRenderer implements DataProviderInterface
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('search_keyword') != '') {
-                        if ($request->has('search_keyword')) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('customer_id', 'like',"%$search_keyword%");
+                    if ($request->get('customer_code') != '') {
+                        if ($request->has('customer_code')) {
+                            $customer_code = trim($request->get('customer_code'));
+                            $query->whereHas('lms_user', function($query1) use ($customer_code) {
+                                $query1->where('customer_id', 'like',"%$customer_code%");
+                            });
+
+                        }
+                    }
+                    if ($request->get('selected_date') != '') {
+                        if ($request->has('selected_date')) {
+                            $selected_date = trim($request->get('selected_date'));
+                            $query->whereHas('disbursal_batch', function($query1) use ($selected_date) {
+                                $query1->where('created_at', 'like',"%$selected_date%");
+                            });
+
+                        }
+                    }
+                    if ($request->get('batch_id') != '') {
+                        if ($request->has('batch_id')) {
+                            $batch_id = trim($request->get('batch_id'));
+                            $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
+                                $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
+                            });
+
                         }
                     }
                 })

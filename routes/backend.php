@@ -1105,8 +1105,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('backend_get_sent_to_bank', [
                 'as' => 'backend_get_sent_to_bank',
                 'uses' => 'Backend\InvoiceController@viewSentToBankInvoice'
+            ]); 
+            
+            Route::post('/download-batch-data', [
+                'as' => 'download_batch_data',
+                'uses' => 'Backend\InvoiceController@downloadBatchData'
             ]);
-             
+
             Route::get('/view-batch-user-invoice', [
                 'as' => 'view_batch_user_invoice',
                 'uses' => 'Backend\InvoiceController@viewBatchUserInvoice'

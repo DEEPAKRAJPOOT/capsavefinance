@@ -1587,16 +1587,43 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetSentToBankInvCustomer($userIds = [])
     {
-        // DB::enableQueryLog();
         $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
                 ->with(['lms_user.bank_details.bank', 'invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch'])
                 ->whereHas('invoice', function($query) {
                     $query->where('status_id', 10);
                 })
                 ->groupBy(['disbursal_batch_id', 'user_id'])
+                ->orderBy('disbursal_id', 'DESC');
+        return $result ?: false;
+    } 
+
+    public function lmsGetSentToBankInvToExcel($custId = null, $selectDate=null, $batchId = null)
+    {
+        $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
+                ->with(['lms_user.bank_details.bank', 'invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch', 'lms_user.user'])
+                ->whereHas('invoice', function($query) {
+                    $query->where('status_id', 10);
+                })
+                ->groupBy(['disbursal_batch_id', 'user_id'])
                 ->orderBy('disbursal_id', 'DESC')
+
+                ->whereHas('lms_user', function($query) use ($custId) {
+                    if ($custId != null) {
+                            $query->where('customer_id', 'like',"%$custId%");
+                        }
+                    })
+                ->whereHas('disbursal_batch', function($query) use ($selectDate) {
+                    if ($selectDate != null) {
+                        $query->where('created_at', 'like',"%$selectDate%");
+                    }
+                })
+                ->whereHas('disbursal_batch', function($query) use ($batchId) {
+                    if ($batchId != null) {
+                        $query->where('disbursal_batch_id', 'like',"%$batchId%");
+                    }
+                })
                 ->get();
-        // dd(DB::getQueryLog());
+
         return $result ?: false;
     }       
 }

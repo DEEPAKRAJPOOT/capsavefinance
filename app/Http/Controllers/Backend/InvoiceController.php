@@ -134,7 +134,9 @@ class InvoiceController extends Controller {
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(10);
         $get_bus = $this->invRepo->getBusinessNameApp(10);
-        return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        $batchData = $this->lmsRepo->getallBatch();
+
+        return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo, 'batchData' => $batchData]);
     }
 
     public function viewBankInvoice(Request $req) {
@@ -699,5 +701,102 @@ class InvoiceController extends Controller {
         return [ 'status' => 1,
                 'file_path' => $filePath
                 ];
+    }
+
+    /**
+     * Display a pop up iframe for disburse check
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadBatchData(Request $request)
+    {
+        $custCode = $request->get('customer_code');
+        $selectDate = $request->get('selected_date');
+        $batchId = $request->get('batch_id');
+
+        $customersDisbursalList = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
+        $result = $this->downloadExcel($customersDisbursalList);
+
+        Session::flash('message',trans('backend_messages.disbursed'));
+        return redirect()->route('backend_get_sent_to_bank');              
+    }
+
+    public function downloadExcel ($data) {
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Customer Disbursment Excel")
+                ->setSubject("Customer Disbursment Excel")
+                ->setDescription("Customer Disbursment Excel")
+                ->setKeywords("Customer Disbursment Excel")
+                ->setCategory("Customer Disbursment Excel");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Batch Id')
+                ->setCellValue('B1', 'Customer Id')
+                ->setCellValue('C1', 'Beneficary Name')
+                ->setCellValue('D1', 'Bank Name')
+                ->setCellValue('E1', 'IFSC code')
+                ->setCellValue('F1', 'Beneficary Accunt no')
+                ->setCellValue('G1', 'Total Disburse Amt')
+                ->setCellValue('H1', 'Total Invoice');
+        $rows = 2;
+
+        foreach($data as $rowData){
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $benName = (isset($rowData['lms_user']['user']['anchor_bank_details']['acc_name'])) ? $rowData['lms_user']['user']['anchor_bank_details']['acc_name'] : '';
+            } else {
+                $benName =  (isset($rowData['lms_user']['bank_details']['acc_name'])) ? $rowData['lms_user']['bank_details']['acc_name'] : '';
+            }
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $bank_name = (isset($rowData['lms_user']['user']['anchor_bank_details']['bank']['bank_name'])) ? $rowData['lms_user']['user']['anchor_bank_details']['bank']['bank_name'] : '';
+            } else {
+                $bank_name = (isset($rowData['lms_user']['bank_details']['bank']['bank_name'])) ? $rowData['lms_user']['bank_details']['bank']['bank_name'] : '';
+            }
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $ifsc_code = (isset($rowData['lms_user']['user']['anchor_bank_details']['ifsc_code'])) ? $rowData['lms_user']['user']['anchor_bank_details']['ifsc_code'] : '';
+            } else {
+                $ifsc_code = (isset($rowData['lms_user']['bank_details']['ifsc_code'])) ? $rowData['lms_user']['bank_details']['ifsc_code'] : '';
+            }
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $benAcc = (isset($rowData['lms_user']['user']['anchor_bank_details']['acc_no'])) ? $rowData['lms_user']['user']['anchor_bank_details']['acc_no'] : '';
+            } else {
+                $benAcc = (isset($rowData['lms_user']['bank_details']['acc_no'])) ? $rowData['lms_user']['bank_details']['acc_no'] : '';
+            }
+
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['disbursal_batch']['batch_id'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['lms_user']['customer_id'] ?? '')
+                ->setCellValue('C' . $rows, $benName ?? '')
+                ->setCellValue('D' . $rows, $bank_name ?? '')
+                ->setCellValue('E' . $rows, $ifsc_code ?? '')
+                ->setCellValue('F' . $rows, $benAcc ?? '')
+                ->setCellValue('G' . $rows, $rowData['total_disburse_amount'] ?? '')
+                ->setCellValue('H' . $rows, $rowData['total_invoice'] ?? '');
+
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="download_Excel.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header ('Pragma: public'); // HTTP/1.0
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
+        return true;
     }
 }
