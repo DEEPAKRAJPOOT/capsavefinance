@@ -23,6 +23,8 @@ try {
                     {data: 'batch_id'},
                     {data: 'total_users'},
                     {data: 'total_amt'},
+                    {data: 'created_by_user'},
+                    {data: 'created_at'},
                     {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]

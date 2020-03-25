@@ -1620,6 +1620,9 @@ class ApplicationController extends Controller
     public function saveSanctionLetterSupplychain(Request $request){
         try {
             $arrFileData = $request->all();
+            $arrFileData['pdc_facility_amt'] = preg_replace('#[^0-9]+#', '', $arrFileData['pdc_facility_amt']);
+            $arrFileData['nach_facility_amt'] = preg_replace('#[^0-9]+#', '', $arrFileData['nach_facility_amt']);
+            $arrFileData['dsra_amt'] = preg_replace('#[^0-9]+#', '', $arrFileData['dsra_amt']);
             $appId = (int)$request->app_id; 
             $offerId = (int)$request->offer_id; 
             $bizId = (int) $request->get('biz_id');

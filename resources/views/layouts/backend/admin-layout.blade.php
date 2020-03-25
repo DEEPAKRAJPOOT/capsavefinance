@@ -195,5 +195,12 @@
             $(ele).parent('div').find('.limit').html(msg);
         }
     </script>
+    <script>
+    var common_vars={
+        unique_charge_url:"{{ route('check_unique_charge') }}",
+        token: "{{ csrf_token() }}"
+    }
+    </script>
+    <script src="{{ asset('backend/js/number-format.js') }}"></script>    
     @yield('jscript')
 </html>

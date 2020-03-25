@@ -3546,17 +3546,24 @@ if ($err) {
         $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
         $getPrgm  = $this->application->getProgram($request['program_id']);
         $chkUser  = $this->application->chkUser();
-        if( $chkUser->id==1)
-        {
-             $customer  = 1;
-        }
-        else if( $chkUser->id==11)
-        {
-             $customer  = 2;
+        if($chkUser)
+        {     
+            if( $chkUser->id==1)
+            {
+                 $customer  = 1;
+            }
+            else if( $chkUser->id==11)
+            {
+                 $customer  = 2;
+            }
+            else
+            {
+                $customer  = 3;
+            }
         }
         else
         {
-            $customer  = 3;
+             $customer  = 3;
         }
         if($request['bulk']==1)
         {
@@ -4182,4 +4189,39 @@ if ($err) {
         $this->providerResult = $dataProvider->getDisburseInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
+    public function getExistEmailStatus(Request $req){
+       $response = [
+           'status' => false,
+           'message' => 'Some error occured. Please try again'
+       ];
+       $email = $req->get('email');
+       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $response['message'] =  'Email Id is not valid';
+          return $response;
+       }
+       $status = $this->userRepo->getExistEmailStatus($email);
+       if($status != false){
+          $response['status'] = false;
+          $response['message'] =  'Sorry! Email is already in use.';
+       }else{
+           $response['status'] = true;
+           $response['message'] =  '';
+       }
+       return $response;
+   }
+
+    public function checkUniqueCharge(Request $request) 
+    {        
+        $chargeName = $request->get('chrg_name');
+        $chargeId = $request->has('chrg_id') ? $request->get('chrg_id'): null ;
+        $result = $this->lmsRepo->checkChargeName($chargeName, $chargeId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }
+
 }

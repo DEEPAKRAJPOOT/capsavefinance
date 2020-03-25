@@ -51,7 +51,7 @@
         <script src="{{url('common/js/iframePopup.js')}}"></script>
         <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
         <script src="{{url('common/js/summernote/dist/summernote.js')}}"></script>
-        <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
+        <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>        
      <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
@@ -83,6 +83,23 @@
                    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                });
             });
+            
+            $(document).on('keypress','.float_format', function(event) {
+                let num = $(this).val();
+                if(event.which == 8 || event.which == 0){
+                    return true;
+                }
+                if(event.which < 46 || event.which > 59) {
+                    return false;
+                }
+               
+                if(event.which == 46 && $(this).val().indexOf('.') != -1) {
+                    return false;
+                }
+                if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
+                    return false;
+                }
+            });            
         });
 
         function datepickerDisFdate(){
@@ -117,6 +134,13 @@
             $(ele).parent('div').find('.limit').html(msg);
         }
     </script>
+    <script>
+    var common_vars={
+        unique_charge_url:"{{ route('check_unique_charge') }}",
+        token: "{{ csrf_token() }}"
+    }
+    </script>
+    <script src="{{ asset('backend/js/number-format.js') }}"></script>   
     @yield('jscript')
     </body>
 </html>

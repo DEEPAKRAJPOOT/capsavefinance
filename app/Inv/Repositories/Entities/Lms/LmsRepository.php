@@ -597,79 +597,79 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
    {
 	  return Batch::createBatch(1);
    }
-   
-	public static function getUserInvoiceIds($userId)
-	{
-		return BizInvoice::getUserInvoiceIds($userId);
-	}
-	
-	public function getSoaList()
-	{
-		return Transactions::getSoaList();
-	}
-	
-	public function getRepaymentAmount($userId, $transType)
-	{
-		return Transactions::getRepaymentAmount($userId, $transType);
-	}
-	
-	  public function searchBusiness($search)
-	{
-		try
-	   {
-			return Business::searchBusiness($search);
-	   } catch (Exception $ex) {
-			return $ex;
-	   }
-	   
-	}
 
-	/**
-	 * create Disburse Api Log
-	 */
-	public static function saveBatchFile($data)
-	{
-		return UserFile::create($data);
-	}
+    public static function getUserInvoiceIds($userId)
+    {
+        return BizInvoice::getUserInvoiceIds($userId);
+    }
+    
+    public function getSoaList()
+    {
+        return Transactions::getSoaList();
+    }
+    
+    public function getRepaymentAmount($userId, $transType)
+    {
+        return Transactions::getRepaymentAmount($userId, $transType);
+    }
+    
+      public function searchBusiness($search)
+    {
+        try
+       {
+            return Business::searchBusiness($search);
+       } catch (Exception $ex) {
+            return $ex;
+       }
+       
+    }
 
-	/**
-	 * create Disburse Api Log
-	 */
-	public static function createDisbursalBatch($file, $batchId = null)
-	{   
-		if (!empty($batchId)) {
-			$disburseBatch['batch_id'] = ($batchId) ?? $batchId;
-			$disburseBatch['file_id'] = ($file) ? $file->file_id : '';
-		}
-		return DisbursalBatch::create($disburseBatch);
-	}
-	
-	public function getRefundData($transId)
-	{
-		return Refund::getRefundData($transId);
-	}
-	
-	/**
-	 * Get Wf stage Details 
-	 *
-	*/
-	public function getWfStages($reqType)
-	{
-		return WfStage::getWfStages($reqType);
-	}
-	
-	/**
-	 * Get workflow detail by wf stage code
-	 * 
-	 * @param string $req_type 
-	 * @param string $wf_stage_code
-	 * @return mixed
-	 * @throws BlankDataExceptions
-	 */
-	public function getWfDetailById($wf_stage_code)
-	{
-		return WfStage::getWfDetailById($wf_stage_code);
-	}
+    /**
+     * create Disburse Api Log
+     */
+    public static function saveBatchFile($data)
+    {
+        return UserFile::create($data);
+    }
+
+    /**
+     * create Disburse Api Log
+     */
+    public static function createDisbursalBatch($file, $batchId = null)
+    {   
+        if (!empty($batchId)) {
+            $disburseBatch['batch_id'] = ($batchId) ?? $batchId;
+            $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+        }
+        return DisbursalBatch::create($disburseBatch);
+    }
+    
+    public function getRefundData($transId, $variableName=null)
+    {
+        return Refund::getRefundData($transId, $variableName);
+    }
+    
+    /**
+     * Get Wf stage Details 
+     *
+    */
+    public function getWfStages($reqType)
+    {
+        return WfStage::getWfStages($reqType);
+    }
+    
+    /**
+     * Get workflow detail by wf stage code
+     * 
+     * @param string $req_type 
+     * @param string $wf_stage_code
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function getWfDetailById($wf_stage_code)
+    {
+        return WfStage::getWfDetailById($wf_stage_code);
+    }
   
     /**
      * Get next workflow by $wf_order_no
@@ -876,6 +876,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function getAllUserBatchInvoice($data)
 	{
 		return BizInvoice::getAllUserBatchInvoice($data);
-	}    
+	} 
+        
+    /**
+     * Check Charge Name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function checkChargeName($chargeName, $excludeChargeId=null)
+    {
+        return Charges::checkChargeName($chargeName, $excludeChargeId);
+    }       
     
 }
