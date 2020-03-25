@@ -4168,8 +4168,10 @@ if ($err) {
       }
     }
 
-    public function getAjaxBankInvoice(DataProviderInterface $dataProvider) { 
-        $this->dataRecords = $this->invRepo->getAllBankInvoice();
+    public function getAjaxBankInvoice(Request $request, DataProviderInterface $dataProvider) { 
+        $from_date    = $request->get('from_date');
+        $to_date    = $request->get('to_date');
+        $this->dataRecords = $this->invRepo->getAllBankInvoice($from_date, $to_date);
         $this->providerResult = $dataProvider->getBankInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
