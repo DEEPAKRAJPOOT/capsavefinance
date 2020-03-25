@@ -110,6 +110,7 @@ function uploadFile(uploadId, ownerId, docId)
 /* check pan card verify before upload pan*/
 
 // delete options for doc file
+
 function deleteFile(uploadId, ownerId, docId)
 {
     console.log(uploadId);
