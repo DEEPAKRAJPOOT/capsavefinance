@@ -32,14 +32,37 @@
 						<div class="card">
 							<div class="card-body">       
 								<div class="row">
-									<div class="col-md-4">
+									<div class="col-md-3">
 										{!!
-										Form::text('search_keyword',
+										Form::text('customer_code',
 										null,
 										[
 										'class' => 'form-control',
 										'placeholder' => 'Search by Customer Code',
-										'id'=>'search_keyword'
+										'id'=>'customer_code'
+										])
+										!!}
+									</div>
+									<div class="col-md-3">
+
+										{!!
+					                    Form::text('selected_date',
+					                    null,
+					                    [
+					                    'class' => 'form-control',
+					                    'placeholder' => 'Date',
+					                    'id'=>'selected_date'
+					                    ])
+					                    !!}
+
+									</div>
+									<div class="col-md-3">
+										{!!
+										Form::select('batch_id',
+										array('L' => 'Large', 'S' => 'Small'),'S',
+										[
+										'class' => 'form-control',
+										'id'=>'batch_id'
 										])
 										!!}
 									</div>
@@ -106,7 +129,11 @@
 		backend_get_invoice_list_bank: "{{ URL::route('backend_get_invoice_list_bank') }}",
 		token: "{{ csrf_token() }}",
 	};
-
+	$('#selected_date').datetimepicker({
+        format: 'dd/mm/yyyy',
+        //  startDate: new Date(),
+        autoclose: true,
+        minView: 2, });
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list_send_to_bank.js') }}"></script>
 
