@@ -56,8 +56,8 @@
                             <option value="1">Limit Amount</option>
                             <option value="2">Outstanding Amount</option>
                             <option value="3">Outstanding Principal</option>
-                            <option value="4">Outstanding Interest</option>
-                            <option value="5">Overdue Amount</option>
+                            <!--<option value="4">Outstanding Interest</option>
+                            <option value="5">Overdue Amount</option>-->
                         </select>
                     </div>
                 </div>
