@@ -130,6 +130,24 @@ class Charges extends BaseModel
     }
     
     
-    
+    /**
+     * Check Charge Name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkChargeName($chargeName, $excludeChargeId=null)
+    {
+
+        $query = self::select('id')
+                ->where('chrg_name', $chargeName);
+        if (!is_null($excludeChargeId)) {
+            $query->where('id', '!=', $excludeChargeId);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }    
    
 }

@@ -4189,7 +4189,7 @@ if ($err) {
         $this->providerResult = $dataProvider->getDisburseInvoiceByDataProvider($this->request, $this->dataRecords);
         return $this->providerResult;
     }
-    
+
     public function getExistEmailStatus(Request $req){
        $response = [
            'status' => false,
@@ -4210,4 +4210,18 @@ if ($err) {
        }
        return $response;
    }
+
+    public function checkUniqueCharge(Request $request) 
+    {        
+        $chargeName = $request->get('chrg_name');
+        $chargeId = $request->has('chrg_id') ? $request->get('chrg_id'): null ;
+        $result = $this->lmsRepo->checkChargeName($chargeName, $chargeId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }
+
 }

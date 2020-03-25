@@ -960,7 +960,12 @@ Route::group(
     Route::post('get-repayment-amount', [
         'as' => 'get_repayment_amount',
         'uses' => 'AjaxController@getRepaymentAmount'
-    ]);      
+    ]);  
+
+    Route::post('check-unique-charge', [
+        'as' => 'check_unique_charge',
+        'uses' => 'AjaxController@checkUniqueCharge'
+    ]);     
 
     //ajax route for check the email is exist or not
     Route::post('check-exist-email', [
