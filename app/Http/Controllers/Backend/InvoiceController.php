@@ -717,7 +717,7 @@ class InvoiceController extends Controller {
         $customersDisbursalList = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
         $result = $this->downloadExcel($customersDisbursalList);
 
-        Session::flash('message',trans('backend_messages.disbursed'));
+        Session::flash('message',trans('backend_messages.downloadExcel'));
         return redirect()->route('backend_get_sent_to_bank');              
     }
 
