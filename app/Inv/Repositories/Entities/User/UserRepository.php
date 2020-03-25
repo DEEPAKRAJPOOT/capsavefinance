@@ -1601,7 +1601,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     }  
     
     
-    public function getExistEmailStatusAnchor($email){
-        return Anchor::getExistEmailStatusAnchor($email);
+    public function getExistEmailStatusAnchor($comp_email){
+        return Anchor::getExistEmailStatusAnchor($comp_email);
      }
 }

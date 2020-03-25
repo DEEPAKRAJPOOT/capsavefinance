@@ -238,9 +238,9 @@ public static function saveAnchor($arrAnchor = [])
      * @param type $email
      * @return type
      */
-     public static function getExistEmailStatusAnchor($email){
-        $arrEmailUser = self::select('anchor_user.*')
-             ->where('comp_email', '=', $email)
+     public static function getExistEmailStatusAnchor($comp_email){
+        $arrEmailUser = self::select('anchor.*')
+             ->where('comp_email', '=', $comp_email)
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }

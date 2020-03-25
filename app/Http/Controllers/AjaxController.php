@@ -4230,12 +4230,12 @@ if ($err) {
             'status' => false,
             'message' => 'Some error occured. Please try again'
         ];
-        $email = $req->get('email');
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $comp_email = $req->get('email');
+        if (!filter_var($comp_email, FILTER_VALIDATE_EMAIL)) {
            $response['message'] =  'Email Id is not valid';
            return $response;
         }
-        $status = $this->userRepo->getExistEmailStatusAnchor($email);
+        $status = $this->userRepo->getExistEmailStatusAnchor($comp_email);
         if($status != false){
            $response['status'] = false;
            $response['message'] =  'Sorry! Email is already in use.';
