@@ -33,14 +33,11 @@ class ApportionmentHelper{
     private $repayBeforeCharges;
     private $repayAfterCharges;
    
-    public function __construct($transId, $app_repo, $user_repo, $doc_repo, $lms_repo){
-	
-        $this->transId = $transId;
+    public function __construct($app_repo, $user_repo, $doc_repo, $lms_repo){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
-        self::init();
     }
 
     private function getTransaction($transId){
@@ -60,7 +57,8 @@ class ApportionmentHelper{
         ->get();
     }
 
-    private function init(){
+    public function init($transId){
+        $this->transId = $transId;
         self::getTransaction($this->transId);
         foreach ($this->disbursalData as $key => $disbursalDetail) {
             if($disbursalDetail->count() > 0)
@@ -148,34 +146,34 @@ class ApportionmentHelper{
         $this->paymentFreq = $prgmOffer->payment_frequency ? $prgmOffer->payment_frequency : 1;
     }
     
-    private function setRepayPenalCharges(&$disbursal){
-        $penalAmountDue = $this->penalAmount-$this->penalAmountSettled;
-        if($penalAmountDue>0 && $this->balanceRepayAmount>0)
-        {
+    // private function setRepayPenalCharges(&$disbursal){
+    //     $penalAmountDue = $this->penalAmount-$this->penalAmountSettled;
+    //     if($penalAmountDue>0 && $this->balanceRepayAmount>0)
+    //     {
             
-            if($this->balanceRepayAmount >= $penalAmountDue){
-                $overduePaidAmt = $penalAmountDue;
-            }else{
-                $overduePaidAmt = $this->balanceRepayAmount;
-            }
+    //         if($this->balanceRepayAmount >= $penalAmountDue){
+    //             $overduePaidAmt = $penalAmountDue;
+    //         }else{
+    //             $overduePaidAmt = $this->balanceRepayAmount;
+    //         }
 
-            $this->balanceRepayAmount -= $overduePaidAmt;
-            $this->disbursal['total_repaid_amt'] += $overduePaidAmt;
+    //         $this->balanceRepayAmount -= $overduePaidAmt;
+    //         $this->disbursal['total_repaid_amt'] += $overduePaidAmt;
 
-            $overdueData = $this->createTransactionData($this->transDetails->user_id, [
-                'amount' => $overduePaidAmt,
-                'trans_date'=>$this->transDetails->trans_date,
-                'disbursal_id'=>$disbursal->disbursal_id,
-                'parent_trans_id'=>$this->transDetails->trans_id
-            ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
-            $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
-        }
-    }
+    //         $overdueData = $this->createTransactionData($this->transDetails->user_id, [
+    //             'amount' => $overduePaidAmt,
+    //             'trans_date'=>$this->transDetails->trans_date,
+    //             'disbursal_id'=>$disbursal->disbursal_id,
+    //             'repay_trans_id'=>$this->transDetails->trans_id
+    //         ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
+    //         $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
+    //     }
+    // }
 
     private function setRepayBeforeCharges($userId){
         $this->repayBeforeCharges = Transactions::where('user_id','=',$userId)
         ->where('entry_type','=',0)
-        ->whereNull('parent_trans_id')
+        ->whereNull('repay_trans_id')
         ->where('created_at', '<=', DB::raw(DATE("'".$this->transDetails->trans_date."'")))
         ->whereHas('trans_detail', function($query){ 
             $query->where('chrg_master_id','!=','0');
@@ -209,8 +207,10 @@ class ApportionmentHelper{
     }
 
     private function getInterestRefundAmount(&$disbursal){
-
-       return  $disbursal->total_interest-($this->accuredInt-$this->penalAmount);
+        if(in_array($disbursal->status_id, [config('lms.STATUS_ID.DISBURSED'), config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED')])){
+            return  $disbursal->total_interest-($this->accuredInt-$this->penalAmount);
+        }
+        return 0;
     }
 
     private function settleInterestDueAmount(&$disbursal){
@@ -226,7 +226,7 @@ class ApportionmentHelper{
                 'amount' => $interestPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'parent_trans_id'=>$this->transDetails->trans_id
+                'repay_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
             
             $this->transaction['interestPaid'][$disbursal->disbursal_id] = $interestPaidData;
@@ -250,7 +250,7 @@ class ApportionmentHelper{
                 'amount' =>  $principalPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'parent_trans_id'=>$this->transDetails->trans_id
+                'repay_trans_id'=>$this->transDetails->trans_id
             ], null, ($this->isPrincipalSettle==2)?config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'):config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF'), 0);
             $this->transaction['knockOff'][$disbursal->disbursal_id] = $knockOffData;
         }
@@ -265,7 +265,7 @@ class ApportionmentHelper{
                 'amount' => $interestRefund,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'parent_trans_id'=>$this->transDetails->trans_id
+                'repay_trans_id'=>$this->transDetails->trans_id
             ], null,config('lms.TRANS_TYPE.INTEREST_REFUND'), 1);
             $this->transaction['interestRefund'][$disbursal->disbursal_id] = $refundData;
             $this->totalRefundAmount += $interestRefund;
@@ -274,14 +274,13 @@ class ApportionmentHelper{
     }
 
     private function settleRepayPenalCharges(&$disbursal){
-
         $penalAmountDue = $this->penalAmount-$this->penalAmountSettled;
 
         $pipedAmt = 0;
         if(isset($this->transaction['interestRefund'])){
-            foreach($this->transaction['interestRefund'] as $disbursalID => $disbursal){
+            foreach($this->transaction['interestRefund'] as $disbursalID => $disburs){
                 
-                $balanceRefundAmt = $disbursal['amount']-$disbursal['settled_amount'];
+                $balanceRefundAmt = $disburs['amount']-$disburs['settled_amount'];
                 $pipedAmt += $balanceRefundAmt;
                 $this->transaction['interestRefund'][$disbursalID]['settled_amount'] += $balanceRefundAmt;
                 
@@ -311,40 +310,46 @@ class ApportionmentHelper{
                 'amount' => $overduePaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'parent_trans_id'=>$this->transDetails->trans_id
+                'repay_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
             $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
         }
+    }
+
+    private function getChargeSettled($transId){
+        return Transactions::where('parent_trans_id','=',$transId)->sum('amount');
     }
     
     private function settleRepayCharges($charges){
         foreach ($charges as $key => $chargeDetail) {
 
+            $settledChargeAmount = self::getChargeSettled($chargeDetail['trans_id']);
+
+            $balanceChargeAmount = $chargeDetail['amount'] - $settledChargeAmount;
             $pipedAmt = 0;
             if(isset($this->transaction['interestRefund'])){
                 foreach($this->transaction['interestRefund'] as $disbursalID => $disbursal){
-                    
                     $balanceRefundAmt = $disbursal['amount']-$disbursal['settled_amount'];
                     $pipedAmt += $balanceRefundAmt;
                     $this->transaction['interestRefund'][$disbursalID]['settled_amount'] += $balanceRefundAmt;
-                    
-                    if($pipedAmt > 0 && $chargeDetail['amount'] <= $pipedAmt)
+                    if($pipedAmt > 0 && $balanceChargeAmount <= $pipedAmt)
                     break;
                 }
             }
                 
-            if($pipedAmt < $chargeDetail['amount'] && $this->balanceRepayAmount > 0){
-                $this->balanceRepayAmount -= $chargeDetail['amount'] - $pipedAmt;
-                $pipedAmt = $chargeDetail['amount'];
+            if($pipedAmt < $balanceChargeAmount && $this->balanceRepayAmount > 0){
+                $this->balanceRepayAmount -= $balanceChargeAmount - $pipedAmt;
+                $pipedAmt = $balanceChargeAmount;
             }
             
             if($pipedAmt>0){
-                $chargePaidAmt = ($chargeDetail['amount'] <= $pipedAmt)?$chargeDetail['amount']:$pipedAmt;
+                $chargePaidAmt = ($balanceChargeAmount <= $pipedAmt)?$balanceChargeAmount:$pipedAmt;
                 $pipedAmt -= $chargePaidAmt; 
                 $chargesSettledData = $this->createTransactionData($this->transDetails->user_id, [
                     'amount' => $chargePaidAmt,
                     'trans_date'=>$this->transDetails->trans_date,
-                    'parent_trans_id'=>$this->transDetails->trans_id
+                    'repay_trans_id'=>$this->transDetails->trans_id,
+                    'parent_trans_id'=>$chargeDetail['trans_id']
                 ], null, $chargeDetail['trans_type'], 0);
                 $this->transaction['charges'][$chargeDetail['trans_id']] = $chargesSettledData;
             }
@@ -358,6 +363,9 @@ class ApportionmentHelper{
         self::settleRepayCharges($this->repayBeforeCharges);
         foreach ($this->disbursalData as $key => $disbursalDetail) {
             if($disbursalDetail->count() > 0)
+            self::setAccuredInt($disbursalDetail);
+            self::setPenalAmount($disbursalDetail);
+            self::setPenalAmountSettled($disbursalDetail);
             self::settleRepayPenalCharges($disbursalDetail);
         }
         self::settleRepayCharges($this->repayAfterCharges);
