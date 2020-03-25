@@ -23,14 +23,14 @@
                </ul>
             </div>
          @endif
-         @if (Session::has('message') && Session::get('message'))  
+<!--         @if (Session::has('message') && Session::get('message'))  
          <div class="alert alert-success">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
                <ul>                  
                   <label class='success'>{{Session::get('message')}}</label><br>               
                </ul>
          </div>
-         @endif
+         @endif-->
    </div>
 </div>
    <form id="createLeadForm" name="createLeadForm" method="POST" action="{{route('save_backend_lead')}}">
@@ -67,7 +67,7 @@
                <span class="mandatory">*</span>
                </label>
 
-               <input class="form-control numbercls phone" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
+               <input class="form-control numbercls phone number_format" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
                <div class="failed">
                   <div style="color:#FF0000">
                      <small class="erro-sms" id="erro-sms">
@@ -127,6 +127,18 @@
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function () {
+    
+    $(document).on('input', '.number_format', function (event) {
+        // skip for arrow keys
+        if (event.which >= 37 && event.which <= 40)
+            return;
+
+        // format number
+        $(this).val(function (index, value) {
+            return value.replace(/\D/g, "");
+        });
+    });
+    
    if(messages.is_accept == 1){
       setTimeout(function() {
          parent.jQuery("#createLeadForm").modal('hide'); 
