@@ -435,13 +435,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             ]);   
             
-            // delte documents 24-mar-20
-            Route::get('delete-pan-doc', [
-                'as' => 'delete_pan_doc',
-                'uses' => 'Backend\ApplicationController@deletePanDoc'
-
-            ]);    
-
+            // delte documents 24-mar-20  
+            Route::post('promoter-document-delete', [
+                'as' => 'promoter_document_delete',
+                'uses' => 'Backend\ApplicationController@promoterDocumentDelete'
+            ]); 
 
             //start section cam
              Route::group(['prefix' => 'cam'], function () {

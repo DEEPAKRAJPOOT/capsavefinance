@@ -1753,11 +1753,11 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     
-    public function deletePanDoc($appDocFileId)
+    public function promoterDocumentDelete(Request $request)
     {
-        dd('delte file');
+        dd('delete');
         try {
-            $response = $this->docRepo->deleteDocument($appDocFileId);
+            $response = $this->docRepo->deleteFile($appDocFileId);
             
             if ($response) {
                 Session::flash('message',trans('success_messages.deleted'));

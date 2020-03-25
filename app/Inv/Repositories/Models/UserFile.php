@@ -116,6 +116,22 @@ class UserFile extends BaseModel
         
         return $inputArr;
     }
+
+
+        /**
+     * Managing information "Documents" 
+     *
+     * @param Array $attributes
+     *
+     * @return Array
+     */
+    public static function deleteFile($fileId)
+    {
+        $deleteFile = UserFile::where('file_id', $fileId)
+                ->update(['is_active' => 0, 'deleted_at' => date("Y-m-d h:m:s",time()) ]);
+        
+        return $deleteFile;
+    }
   
 }
   

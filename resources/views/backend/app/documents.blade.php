@@ -81,9 +81,7 @@
                                         <td width="20%"><b>GST Month-Year</b></td>
                                         @endif
                                         <td width="20%"><b>File Name </b></td>
-                                        
                                         <td width="20%"><b>Uploaded On </b></td>
-
                                         @if($data->doc_id == '35' || $data->doc_id == '36')
                                         <td width="20%"><b>Comment </b></td>
                                         @endif
