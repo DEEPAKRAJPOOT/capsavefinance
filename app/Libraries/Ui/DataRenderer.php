@@ -2376,7 +2376,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_calculation_amt',
                     function ($charges) {
-                    return $charges->chrg_calculation_amt;
+                    return number_format($charges->chrg_calculation_amt,2);
                 })              
                 ->addColumn(
                     'is_gst_applicable',
@@ -2794,7 +2794,7 @@ class DataRenderer implements DataProviderInterface
                                 function ($program) {
                             $act = '';
                             //if(Helpers::checkPermission('edit_anchor_reg')){
-                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id ,'program_id' => $program->prgm_id ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
+                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
                             //}
                             return $act;
                         }

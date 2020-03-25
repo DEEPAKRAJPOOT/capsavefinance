@@ -190,6 +190,7 @@
 
     var messages = {
         //get_lead: "{{ URL::route('get_lead') }}",
+        check_exist_email: "{{ URL::route('check_exist_email') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -197,6 +198,31 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
+           
+            $(document).on('keyup', '#email', function(){
+              var email = $(this).val();
+              if (!email.length) {
+                  return false;
+              }
+              $.ajax({
+                  url: messages.check_exist_email,
+                  type: 'POST',
+                  data: {
+                      'email' : email,
+                      '_token' : messages.token,
+                  },
+                  success: function(response){
+                     var nameclass = response.status ? 'success' : 'error';
+                      $('#email-error').removeClass('error success');
+                     if($('#email-error').length){
+                        $('#email-error').text(response.message).addClass(nameclass);
+                     }else{
+                         $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                     }
+                  }
+              });
+          });
+            
             $('#saveAnch').on('click', function (event) {
                 $('input.f_name').each(function () {
                     $(this).rules("add",
@@ -218,18 +244,9 @@
                 });
                 $('input.email').each(function () {
                     $(this).rules("add",
-                            {
-                                required: true,
-                                 email: true,
-//                                remote: {
-//                                url: messages.check_exist_user,
-//                                type: 'post',
-//                                data: {
-//                                'username': $('#email').val()
-//                                }
-//                            }
-                            
-                            })
+                    {
+                        required: true,
+                    });
                 });
                 $('input.phone').each(function () {
                     $(this).rules("add",

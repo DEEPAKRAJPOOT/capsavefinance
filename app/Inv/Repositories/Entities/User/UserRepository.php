@@ -1571,6 +1571,16 @@ class UserRepository extends BaseRepositories implements UserInterface
     }
     
     /**
+     * Get one user from anchor_users by email
+     *
+     * @return query data
+     */
+    public function getExistEmailStatus($email){
+       return AnchorUser::getAnchorUsersByEmail($email);
+    }
+       
+
+    /**
      * Get all customer from lms_users
      *
      * @return query data

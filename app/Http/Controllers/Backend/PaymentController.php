@@ -24,18 +24,21 @@ use PHPExcel_IOFactory;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
+use App\Helpers\FinanceHelper;
+use App\Inv\Repositories\Contracts\FinanceInterface;
 
 class PaymentController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
     use LmsTrait;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo) {
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo,FinanceInterface $finRepo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->appRepo = $appRepo;
+        $this->finRepo = $finRepo;
         $this->middleware('auth');
     }
 
@@ -102,19 +105,19 @@ class PaymentController extends Controller {
         $udata=$this->userRepo->getSingleUserDetails($request->customer_id);
         $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
         $enterAmount =  str_replace(',', '', $request->amount);
+        $finHelperObj = new FinanceHelper($this->finRepo);
+          
         foreach($getAmount as $val)
         {
-              $getAmount = $val->repayment_amount;
-            if($getAmount >= $enterAmount)
-            {
+            $getAmount = $val->repayment_amount;
+            if($getAmount >= $enterAmount) {
               $finalAmount = $getAmount - $enterAmount;
               $this->invRepo->singleRepayment($val->disbursal_id,$finalAmount);
               Session::flash('message', 'Bulk amount has been saved');
               return back();
             }
-            else
-            {       
-              $this->invRepo->singleRepayment($val->disbursal_id,0);   
+            else {       
+              $this->invRepo->singleRepayment($val->disbursal_id,0);
             }
         }
       
@@ -172,6 +175,8 @@ class PaymentController extends Controller {
         $res = $this->invRepo->saveRepaymentTrans($tran);
         if( $res)
         {
+          $appId = null;
+          $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.REPAYMENT'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
           if($request['trans_type']==17){
             //$this->paySettlement( $request['customer_id']);
             $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
