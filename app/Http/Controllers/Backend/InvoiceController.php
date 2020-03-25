@@ -34,13 +34,15 @@ class InvoiceController extends Controller {
     protected $docRepo;
     protected $lmsRepo;
     protected $userRepo;
+    protected $application;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+    public function __construct(InvAppRepoInterface $app_repo, InvAppRepoInterface $application, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
         $this->appRepo = $app_repo;
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
+        $this->application  =  $application;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
     }
@@ -223,6 +225,56 @@ class InvoiceController extends Controller {
         return view('backend.invoice.view_invoice_details')->with(['invoice' => $res, 'status' => $get_status]);
     }
 
+    public function viewBatchUserInvoice(Request $request) {
+        $userId = $request->get('user_id');
+        $batchId = $request->get('disbursal_batch_id');
+
+        $invoiceData = $this->lmsRepo->getAllUserBatchInvoice(['user_id' => $userId, 'disbursal_batch_id' => $batchId]);
+        // dd($invoiceData);
+        return view('backend.invoice.view_batch_user_invoice')
+                ->with(
+                    ['user_id' => $userId, 
+                    'disbursal_batch_id' => $batchId,
+                    'userIvoices' => $invoiceData
+                ]);
+    }
+
+    public function invoiceUpdateDisbursal(Request $request) {
+        $userId = $request->get('user_id');
+        $batchId = $request->get('disbursal_batch_id');
+
+        return view('backend.invoice.update_invoice_disbursal')
+                ->with(
+                    ['user_id' => $userId, 
+                    'disbursal_batch_id' => $batchId
+                ]);
+    }
+
+    public function updateDisburseInvoice(Request $request) {
+        $userId = $request->user_id;
+        $disbursalBatchId = $request->disbursal_batch_id;
+        $transId = $request->trans_id;
+        $remarks = $request->remarks;
+
+        $apiLogData['tran_id'] = $transId;
+        $apiLogData['remark'] = $remarks;
+
+        $invoiceIds = $this->lmsRepo->findDisbursalByUserAndBatchIds(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+        $disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
+        if ($disburseApiLog) {
+            $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
+                    'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
+                ], ['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId]);
+                        
+            if ($updateDisbursal) {
+                $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+            }
+        }
+
+        Session::flash('message',trans('backend_messages.disburseMarked'));
+        return redirect()->route('backend_get_sent_to_bank');
+    }
+
     /* save bulk invoice */
 
     public function saveBulkInvoice(Request $request) {
@@ -260,15 +312,40 @@ class InvoiceController extends Controller {
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
         $attributes['supplier_id'] = $explode[0];
+        $explode1 = explode(',', $attributes['program_id']);
+        $attributes['program_id'] = $explode1[0];
         $appId = $explode[1];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
         $biz_id = $res->biz_id;
+        $getPrgm  = $this->application->getProgram($attributes['program_id']);
+        $chkUser  = $this->application->chkUser();
+        if( $chkUser->id==1)
+        {
+             $customer  = 1;
+        }
+        else if( $chkUser->id==11)
+        {
+             $customer  = 2;
+        }
+        else
+        {
+            $customer  = 3;
+        }
+         $expl  =  explode(",",$getPrgm->invoice_approval); 
+      
         if ($attributes['exception']) {
             $statusId = 28;
         } else {
+          if(in_array($customer, $expl))  
+          {
+            $statusId = 8;  
+          }
+          else
+          {
             $statusId = 7;
+          }
         }
 
         $uploadData = Helpers::uploadAppFile($attributes, $appId);

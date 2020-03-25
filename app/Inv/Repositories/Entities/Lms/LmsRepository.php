@@ -315,10 +315,24 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			return Disbursal::whereIn('disbursal_id', $disbursalIds)
 					->update($data);
 		}
+	}
+	 /**
+	 * Get Repayments
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function updateDisburseByUserAndBatch($data, $updatingIds = [])
+	{
+		if (is_array($updatingIds)) {
+			$response =  Disbursal::where($updatingIds)
+				->update($data);
+		}
+		return ($response) ?? $response;
 	}          
 	 
 	 /**
-	 * Get Repayments
 	 *      
 	 * @param array $whereCondition | optional
 	 * @return mixed
@@ -844,5 +858,37 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getReqCurrentAssignee($reqId)
     {
         return RequestAssign::getReqCurrentAssignee($reqId);
-    }    
+    }
+
+	public function findDisbursalByUserAndBatchIds($data)
+	{
+		return Disbursal::where($data)
+				->pluck('invoice_id');
+	}
+
+	public function updateInvoicesStatus($invoiceIds, $status)
+	{
+		$response =  BizInvoice::whereIn('invoice_id', $invoiceIds)
+				->update(['status_id' => $status]);
+		return $response;
+	}
+
+	public function getAllUserBatchInvoice($data)
+	{
+		return BizInvoice::getAllUserBatchInvoice($data);
+	} 
+        
+    /**
+     * Check Charge Name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function checkChargeName($chargeName, $excludeChargeId=null)
+    {
+        return Charges::checkChargeName($chargeName, $excludeChargeId);
+    }       
+    
 }
