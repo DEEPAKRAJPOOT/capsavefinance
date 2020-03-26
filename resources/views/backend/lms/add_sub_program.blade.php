@@ -526,7 +526,7 @@
 
 
                                                                 <div class="row">
-                                                                    <div class="col-md-2">
+                                                                    <div class="col-md-4">
                                                                         {!!
                                                                         Form::checkbox('invoice_approval[]',
                                                                         1,
@@ -538,7 +538,7 @@
                                                                         !!}
                                                                         <label for="invoice_approval_0"> Admin</label>
                                                                     </div>
-                                                                    <div class="col-md-2">
+                                                                    <div class="col-md-4">
                                                                         {!!
                                                                         Form::checkbox('invoice_approval[]',
                                                                         2,
@@ -550,7 +550,7 @@
                                                                         !!}
                                                                         <label for="invoice_approval_1"> Anchor</label>
                                                                     </div>
-                                                                    <div class="col-md-4">
+                                                                   <!-- <div class="col-md-4">
                                                                         {!!
                                                                         Form::checkbox('invoice_approval[]',
                                                                         3,
@@ -560,9 +560,9 @@
 
                                                                         ])
                                                                         !!}
-                                                                        <label for="invoice_approval_2"> Customer/Supplier</label>
+                                                                        <label for="invoice_approval_2"> Customer/Supplier</label>  -->
                                                                     </div>
-                                                                    <div class="col-md-3">
+                                                                    <div class="col-md-4">
                                                                         {!!
                                                                         Form::checkbox('invoice_approval[]',
                                                                         4,

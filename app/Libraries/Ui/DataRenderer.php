@@ -2487,9 +2487,9 @@ class DataRenderer implements DataProviderInterface
                 })
                
                  ->filter(function ($query) use ($request) {
-                    if ($request->get('type') != '') {
+                   if ($request->get('user_id') != '') {
                             $query->whereHas('transaction', function ($query) use ($request) {
-                            $search_keyword = trim($request->get('type'));
+                            $search_keyword = trim($request->get('user_id'));
                             $query->where('user_id',$search_keyword);
                         });
                     }
@@ -2794,7 +2794,7 @@ class DataRenderer implements DataProviderInterface
                                 function ($program) {
                             $act = '';
                             //if(Helpers::checkPermission('edit_anchor_reg')){
-                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id ,'program_id' => $program->prgm_id ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
+                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
                             //}
                             return $act;
                         }
@@ -3619,7 +3619,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_type',
                 function ($trans) {
-                    if($trans->parent_trans_id && $trans->trans_detail->chrg_master_id!='0'){
+                    if($trans->repay_trans_id && $trans->trans_detail->chrg_master_id!='0'){
                         return $trans->oppTransName;
                     }else{
                         return $trans->transname;

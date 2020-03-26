@@ -868,3 +868,9 @@ span.multiselect-native-select select {
 table.pdl-15 tr td{
     padding-left: 15px;
 }
+.multiselect-container {
+padding: 5px 15px;
+max-height: 165px;
+overflow: auto;
+transform: translate3d(0px, 0px, 0px) !important;
+}

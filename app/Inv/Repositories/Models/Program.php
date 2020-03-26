@@ -269,7 +269,11 @@ class Program extends BaseModel {
         if (isset($where['parent_prgm_id']) && !empty($where['parent_prgm_id'])) {
             $res = $res->where('parent_prgm_id', $where['parent_prgm_id']);
         }
-
+                
+        if (isset($where['sub_program_id_nte']) && !empty($where['sub_program_id_nte'])) {
+            $res = $res->where('prgm_id', '!=', $where['sub_program_id_nte']);
+        }
+        
         if (!empty($relations)) {
             $res = $res->with($relations);
         }

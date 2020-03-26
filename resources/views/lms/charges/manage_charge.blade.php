@@ -1,5 +1,6 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -18,15 +19,10 @@
     <div class="card">
         <div class="card-body">
              <div class="row">
-                   <div class="col-md-2">
-                        <label>Type</label>
-                       
-                        <select class="form-control form-control-sm" name="type">                        
-                            <option value="">Select Customer</option>
-                            @foreach($trans as $val)
-                             <option value="{{$val->user->user_id}}">{{$val->user->f_name}} {{$val->user->l_name}}</option>
-                            @endforeach
-                        </select>
+                   <div class="col-md-5">
+                     
+                        <input type="hidden" name="user_id" value="{{($user_id)}}">
+                      
                         </div>
                         <div class="col-md-2">
                             <label class="float-left">From Date
@@ -42,7 +38,8 @@
                         <label>&nbsp;</label><br>
                         <button type="button" class="btn btn-success btn-sm searchbtn" id="searchbtn">Search</button>
                         </div>
-                        <div class="col-md-5 text-right">
+                        <div class="col-md-2">
+                             <label>&nbsp;</label><br>
                        <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges',['user_id' => request()->get('user_id')])}}" data-height="500px" data-width="100%" data-placement="top" >
                            <i class="fa fa-plus"></i>Add Manual Charge</a>
                       </div>

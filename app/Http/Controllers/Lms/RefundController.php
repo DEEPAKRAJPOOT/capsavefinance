@@ -242,7 +242,7 @@ class RefundController extends Controller
                     if ($nonFactoredAmtData > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($nonFactoredAmtData[0]) ? $nonFactoredAmtData[0]->amount : 0;
-                        $trData['parent_trans_id'] = $transId;
+                        $trData['repay_trans_id'] = $transId;
                         $transType = config('lms.TRANS_TYPE.NON_FACTORED_AMT');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
                         $this->appRepo->saveTransaction($ptrData);
@@ -253,7 +253,7 @@ class RefundController extends Controller
                     if ($intRefundAmtData > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($intRefundAmtData[0]) ? $intRefundAmtData[0]->amount : 0;
-                        $trData['parent_trans_id'] = $transId;
+                        $trData['repay_trans_id'] = $transId;
                         $transType = config('lms.TRANS_TYPE.INTEREST_REFUND');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
                         $this->appRepo->saveTransaction($ptrData);
@@ -264,7 +264,7 @@ class RefundController extends Controller
                     if ($marginReleasedAmtData > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($marginReleasedAmtData[0]) ? $marginReleasedAmtData[0]->amount : 0;
-                        $trData['parent_trans_id'] = $transId;
+                        $trData['repay_trans_id'] = $transId;
                         $transType = config('lms.TRANS_TYPE.MARGIN');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
                         $this->appRepo->saveTransaction($ptrData);
