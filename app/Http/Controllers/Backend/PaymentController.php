@@ -176,8 +176,11 @@ class PaymentController extends Controller {
         if( $res)
         {
           $appId = null;
-          $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.REPAYMENT'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
+          if(in_array($request['trans_type'], [4,5,20,24,29])){
+            $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.CHARGES'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
+          }
           if($request['trans_type']==17){
+            $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.REPAYMENT'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
             //$this->paySettlement( $request['customer_id']);
             $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
             $Obj->init($res->trans_id);
