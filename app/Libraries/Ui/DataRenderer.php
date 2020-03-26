@@ -2892,24 +2892,21 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->whereHas('user', function($query1) use ($search_keyword) {
+                                $query1->where('f_name', 'like',"%$search_keyword%")
+                                ->orWhere('l_name', 'like', "%$search_keyword%")
+                                ->orWhere('email', 'like', "%$search_keyword%");
                             });
+
                         }
                     }
-                    if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('is_assigned', 'like',
-                                        "%$by_status%");
-                            });
+                    if ($request->get('customer_id') != '') {
+                        if ($request->has('customer_id')) {
+                            $customer_id = trim($request->get('customer_id'));
+                                $query->where('customer_id', 'like',"%$customer_id%");
                         }
                     }
                 })
