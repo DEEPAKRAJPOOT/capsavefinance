@@ -1,3 +1,4 @@
+@if(!empty($arrGroupCompany))
    <div class="data mt-4">
        
 
@@ -13,7 +14,7 @@
          </tr>
             
          </table>                           
-      
+         
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -27,7 +28,7 @@
                </tr>
             </thead>
             <tbody>
-                  @if(!empty($arrGroupCompany))
+                  
                      @php $count = count($arrGroupCompany);
                       @endphp
                      @foreach($arrGroupCompany as $key=>$arr)
@@ -43,7 +44,7 @@
                           
                         </tr>
                         @endforeach
-                  @endif   
+                    
                      
                      <tr>
                            <td class="" colspan="5"><b>Total Exposure (In Mn)</b></td>
@@ -51,12 +52,13 @@
                      </tr>
             </tbody>
          </table>
-     
+         
    </div>
-   
+@endif 
 
 @include('backend.cam.deal_structure_offers')
 
+@if(isset($preCondArr) && count($preCondArr)>0)
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
         <tr>
@@ -94,7 +96,8 @@
             </tbody>
          </table>
    </div>
-
+@endif 
+@if(isset($postCondArr) && count($postCondArr)>0)
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
         <tr>
@@ -131,7 +134,7 @@
             </tbody>
          </table>
    </div>
-
+@endif 
  
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
@@ -353,6 +356,7 @@
       <!-- </div> -->
    </div>
 
+@if(isset($arrCamData->t_o_f_purpose))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
         <tr>
@@ -363,7 +367,9 @@
          <p>{!! isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : '' !!}</p>
       </div>
    </div>
+@endif
 
+@if(isset($arrCamData->t_o_f_profile_comp))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
         <tr>
@@ -374,7 +380,9 @@
          <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
       </div>
    </div>
+@endif
 
+@if(isset($arrCamData->promoter_cmnt))
    <div class="data mt-4">
     <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -385,7 +393,8 @@
          <p>{!! isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : '' !!}</p>
       </div>
    </div>
-
+@endif
+@if(!empty($arrOwnerData) && count($arrOwnerData))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
         <tr>
@@ -441,7 +450,9 @@
          </table>
       <!-- </div> -->
    </div>
+@endif
 
+@if(isset($arrCamData->rating_comment))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -452,7 +463,9 @@
          <p>{!! isset($arrCamData->rating_comment) ? $arrCamData->rating_comment : '' !!}</p>
       </div>
    </div>
+@endif
 
+@if(isset($arrCamData->rating_rational))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -463,7 +476,9 @@
          <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
       </div>
    </div>
+@endif
 
+@if(!empty($audited_years) || !empty($financeData)  || !empty($FinanceColumns))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -512,7 +527,9 @@
          -->
       <!-- </div> -->
    </div>
+@endif
 
+@if(isset($finacialDetails->financial_risk_comments))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -523,7 +540,9 @@
          <p>{!! isset($finacialDetails->financial_risk_comments) ? $finacialDetails->financial_risk_comments : '' !!}</p>
       </div>
    </div>
+@endif
 
+@if(isset($arrBankDetails->debt_position_comments))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -534,7 +553,9 @@
          <p> {!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
       </div>
    </div>
+@endif
 
+@if(isset($arrCamData->contigent_observations))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -545,7 +566,16 @@
          <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
       </div>
    </div>
+@endif
 
+@if(isset($reviewerSummaryData->cond_pos_track_rec)
+|| isset($reviewerSummaryData->cond_pos_credit_rating)
+|| isset($reviewerSummaryData->cond_pos_fin_matric)
+|| isset($reviewerSummaryData->cond_pos_establish_client)
+|| isset($reviewerSummaryData->cond_neg_competition)
+|| isset($reviewerSummaryData->cond_neg_forex_risk)
+|| isset($reviewerSummaryData->cond_neg_pbdit)
+)
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -554,6 +584,11 @@
       </table>
       <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
 
+      @if(isset($reviewerSummaryData->cond_pos_track_rec)
+      || isset($reviewerSummaryData->cond_pos_credit_rating)
+      || isset($reviewerSummaryData->cond_pos_fin_matric)
+      || isset($reviewerSummaryData->cond_pos_establish_client)
+      )
          <div class="data ">
             <table class="table" cellpadding="0" cellspacing="0">
                 <tr>
@@ -586,7 +621,12 @@
                   </tbody>
                </table>
          </div>  
+      @endif
 
+      @if(isset($reviewerSummaryData->cond_neg_competition)
+      || isset($reviewerSummaryData->cond_neg_forex_risk)
+      || isset($reviewerSummaryData->cond_neg_pbdit)
+      )
          <div class="data ">
                <table class="table" cellpadding="0" cellspacing="0">
                     <tr>
@@ -613,10 +653,12 @@
                   </tbody>
                </table>
          </div>
-
+      @endif
       <!-- </div> -->
    </div>
+@endif
 
+@if(isset($reviewerSummaryData->recommendation))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -627,7 +669,9 @@
          <p>{!! isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : '' !!} </p>
       </div>
    </div>
+@endif
 
+@if(!empty($arrReviewer[0])) 
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -705,4 +749,4 @@ if('{{$arrApproverDataCount}}' ==  '{{$j}}' && '{{$arrApproverDataCount}}' != 0)
    document.getElementById("isApproved").textContent += "approved";
 }
 </script>         
-
+@endif
