@@ -126,9 +126,39 @@
                </tr>
           </thead>
           <tbody>
+                <tr>
+                  <td><b>Anchor Name: </b> </td>
+                  <td>{{ isset($supplyOffer->anchorData) ? $supplyOffer->anchorData : null }}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Anchor Total Limit: </b> </td>
+                  <td>INR {{ isset($supplyOffer->programData->anchor_limit) ? number_format($supplyOffer->programData->anchor_limit) : null }}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Anchor Program Name: </b> </td>
+                  <td>{{ isset($supplyOffer->programData->prgm_name) ? $supplyOffer->programData->prgm_name : null }}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Anchor Program Limit: </b> </td>
+                  <td>INR {{ isset($supplyOffer->subProgramData->anchor_sub_limit) ? number_format($supplyOffer->subProgramData->anchor_sub_limit) : null }}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><b>Program Min-Max Loan Size: </b> </td>
+                  <td>INR {{ isset($supplyOffer->subProgramData->min_loan_size) ? number_format($supplyOffer->subProgramData->min_loan_size) : null }} - {{ isset($supplyOffer->subProgramData->max_loan_size) ? number_format($supplyOffer->subProgramData->max_loan_size) : null }}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
               <tr>
                   <td><b>Sub Limit: </b> </td>
-                  <td>{{$supplyOffer->prgm_limit_amt}}</td>
+                  <td>INR {{number_format($supplyOffer->prgm_limit_amt)}}</td>
                   <td><b>Documentation Fee (%): </b></td>
                   <td>{{$supplyOffer->document_fee}} %</td>
               </tr>
