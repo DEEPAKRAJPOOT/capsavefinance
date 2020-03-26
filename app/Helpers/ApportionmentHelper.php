@@ -124,7 +124,7 @@ class ApportionmentHelper{
     private function setMarginSettled(&$disbursal){
         $this->marginSettled = Transactions::where('disbursal_id','=',$disbursal->disbursal_id)
                         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
-                        ->whereNull('repay_trans_id')
+                        ->whereNotNull('repay_trans_id')
                         ->where('entry_type','=','1')
                         ->sum('amount');
     }
@@ -282,7 +282,7 @@ class ApportionmentHelper{
         $penalAmountDue = $this->penalAmount-$this->penalAmountSettled;
 
         $pipedAmt = 0;
-        if(isset($this->transaction['interestRefund'])){
+        if($penalAmountDue>0 && isset($this->transaction['interestRefund'])){
             foreach($this->transaction['interestRefund'] as $disbursalID => $disburs){
                 
                 $balanceRefundAmt = $disburs['amount']-$disburs['settled_amount'];
@@ -293,10 +293,13 @@ class ApportionmentHelper{
                 break;
             }
         }
-            
+        $principalPenalAmountDue = 0;
         if($pipedAmt < $penalAmountDue && $this->balanceRepayAmount > 0){
-            $this->balanceRepayAmount -= $penalAmountDue - $pipedAmt;
-            $pipedAmt = $penalAmountDue;
+
+            $principalPenalAmountDue = $penalAmountDue-$pipedAmt; 
+            $principalPenalAmountDue = ($this->balanceRepayAmount>=$principalPenalAmountDue)?$principalPenalAmountDue:$this->balanceRepayAmount;
+            $this->balanceRepayAmount -= $principalPenalAmountDue;
+            $pipedAmt += $principalPenalAmountDue;
         }
 
         if($penalAmountDue>0 && $pipedAmt>0)
@@ -327,8 +330,9 @@ class ApportionmentHelper{
             $settledChargeAmount = self::getChargeSettled($chargeDetail['trans_id']);
 
             $balanceChargeAmount = $chargeDetail['amount'] - $settledChargeAmount;
+
             $pipedAmt = 0;
-            if(isset($this->transaction['interestRefund'])){
+            if($balanceChargeAmount >0 && isset($this->transaction['interestRefund'])){
                 foreach($this->transaction['interestRefund'] as $disbursalID => $disbursal){
                     $balanceRefundAmt = $disbursal['amount']-$disbursal['settled_amount'];
                     $pipedAmt += $balanceRefundAmt;
@@ -337,10 +341,13 @@ class ApportionmentHelper{
                     break;
                 }
             }
-                
+            $balanceChargeAmountDue = 0;
             if($pipedAmt < $balanceChargeAmount && $this->balanceRepayAmount > 0){
-                $this->balanceRepayAmount -= $balanceChargeAmount - $pipedAmt;
-                $pipedAmt = $balanceChargeAmount;
+
+                $balanceChargeAmountDue = $balanceChargeAmount-$pipedAmt; 
+                $balanceChargeAmountDue = ($this->balanceRepayAmount>=$balanceChargeAmountDue)?$balanceChargeAmountDue:$this->balanceRepayAmount;
+                $this->balanceRepayAmount -= $balanceChargeAmountDue;
+                $pipedAmt += $balanceChargeAmountDue;
             }
             
             if($pipedAmt>0){
@@ -403,31 +410,34 @@ class ApportionmentHelper{
     private function settleMargin(&$disbursal){
         self::setMarginAmount($disbursal);
         self::setMarginSettled($disbursal);
-        $marginAmountDue = $this->marginAmount-$this->marginSettled;
+        $marginAmount = $this->marginAmount-$this->marginSettled;
 
         $pipedAmt = 0;
-        if(isset($this->transaction['interestRefund'])){
+        if($marginAmount > 0 && isset($this->transaction['interestRefund'])){
             foreach($this->transaction['interestRefund'] as $disbursalID => $disburs){
                 
                 $balanceRefundAmt = $disburs['amount']-$disburs['settled_amount'];
                 $pipedAmt += $balanceRefundAmt;
                 $this->transaction['interestRefund'][$disbursalID]['settled_amount'] += $balanceRefundAmt;
                 
-                if($pipedAmt > 0 && $marginAmountDue <= $pipedAmt)
+                if($pipedAmt > 0 && $marginAmount <= $pipedAmt)
                 break;
             }
         }
-            
-        if($pipedAmt < $marginAmountDue && $this->balanceRepayAmount > 0){
-            $this->balanceRepayAmount -= $marginAmountDue - $pipedAmt;
-            $pipedAmt = $marginAmountDue;
+        $marginAmountDue=0;
+        if($pipedAmt < $marginAmount && $this->balanceRepayAmount > 0){
+
+            $marginAmountDue = $marginAmount-$pipedAmt; 
+            $marginAmountDue = ($this->balanceRepayAmount>=$marginAmountDue)?$marginAmountDue:$this->balanceRepayAmount;
+            $this->balanceRepayAmount -= $marginAmountDue;
+            $pipedAmt += $marginAmountDue;
         }
 
         if($marginAmountDue>0 && $pipedAmt>0)
         {
             
-            if($pipedAmt >= $marginAmountDue){
-                $overduePaidAmt = $marginAmountDue;
+            if($pipedAmt >= $marginAmount){
+                $overduePaidAmt = $marginAmount;
             }else{
                 $overduePaidAmt = $pipedAmt;
             }
@@ -441,7 +451,7 @@ class ApportionmentHelper{
                 'disbursal_id'=>$disbursal->disbursal_id,
                 'repay_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.MARGIN'), 1);
-            $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
+            $this->transaction['margin'][$disbursal->disbursal_id] = $overdueData;
         }
     }
 
@@ -475,6 +485,11 @@ class ApportionmentHelper{
 
         if(!empty($this->transaction['overdue']))
         foreach ($this->transaction['overdue'] as $overdueValue) {
+            $this->lmsRepo->saveTransaction($overdueValue);
+        }
+
+        if(!empty($this->transaction['margin']))
+        foreach ($this->transaction['margin'] as $overdueValue) {
             $this->lmsRepo->saveTransaction($overdueValue);
         }
         
