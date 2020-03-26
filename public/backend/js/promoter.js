@@ -3,12 +3,11 @@
 
 function uploadFile(uploadId, ownerId, docId)
 {
-    console.log(uploadId);
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
     var app_id  = $('#app_id').val();
     if(docId == 2) { 
-          var file  = $("#panfile"+uploadId)[0].files[0];
+        var file  = $("#panfile"+uploadId)[0].files[0];
     }
     else if(docId == 31) { 
           var file  = $("#dlfile"+uploadId)[0].files[0];
@@ -113,13 +112,12 @@ function uploadFile(uploadId, ownerId, docId)
 
 function deleteFile(uploadId, ownerId, docId)
 {
-    console.log(uploadId);
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
     var app_id  = $('#app_id').val();
     if(docId == 2) { 
-          var file  = $("#panfiles"+uploadId)[0].files[0];
-    }
+        var file  = $("#panfile"+uploadId)[0].files[0];
+  }
     // else if(docId == 31) { 
     //       var file  = $("#dlfile"+uploadId)[0].files[0];
     // }
