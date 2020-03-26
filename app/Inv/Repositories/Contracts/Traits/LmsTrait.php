@@ -1067,7 +1067,11 @@ trait LmsTrait
         $interestRefundTotal = Transactions::where('repay_trans_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
         ->sum('amount');
-        
+
+        $interestRefundSettledTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
+        ->sum('settled_amount');
+
         $interestOverdueTotal = Transactions::where('repay_trans_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
         ->sum('amount');
@@ -1076,9 +1080,9 @@ trait LmsTrait
         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
         ->sum('amount');
         
-        $nonFactoredAmount = $repayment->amount+$interestRefundTotal-$repayDebitTotal-$marginTotal-$interestOverdueTotal;
+        $nonFactoredAmount = ($repayment->amount+$interestRefundTotal)-($repayDebitTotal+$interestOverdueTotal+$marginTotal);
         
-        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal;
+        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal-$interestRefundSettledTotal;
 
         return ['repaymentTrails' => $repaymentTrails, 
         'repayment'=>$repayment,
