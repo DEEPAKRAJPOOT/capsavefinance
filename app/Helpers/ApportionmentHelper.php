@@ -63,7 +63,6 @@ class ApportionmentHelper{
         foreach ($this->disbursalData as $key => $disbursalDetail) {
             if($disbursalDetail->count() > 0)
             self::settleDisbursal($disbursalDetail);
-
             $this->transaction['disbursal'][$disbursalDetail->disbursal_id] = $this->disbursal;
         }
         self::settleCharges();
@@ -448,7 +447,7 @@ class ApportionmentHelper{
     private function settleAllMargin(){
         foreach ($this->disbursalData as $key => $disbursalDetail) {
             if($disbursalDetail->count() > 0)
-            
+            self::settleMargin($disbursalDetail);
         }
     }
 

@@ -21,7 +21,8 @@
 									<th>Tran Type</th>
 									<th>Invoice No</th>
 									<th>Debit</th>
-									<th>Credit</th>
+                                    <th>Credit</th>
+                                    <th>Balance</th>
 								</tr>
                             </thead>
                             @php 
@@ -29,6 +30,7 @@
                                 $interestRefund = 0;
                                 $totalMarginAmount = 0;
                                 $nonFactoredAmount = 0;
+                                $balanceAmount = 0;
                             @endphp
                                     <tr>
                                         <td>{{date('d-m-Y',strtotime($repayment->trans_date))}}</td>
@@ -55,8 +57,16 @@
                                                 {{ number_format($repayment->amount,2) }}
                                             @endif
                                         </td>
+                                        <td> {{number_format($repayment->amount,2)}} </td>
                                     </tr>
                                 @foreach($repaymentTrails as $repay)
+                                    @php 
+                                            @if($repay->entry_type=='0')
+                                                $balanceAmount += $repay->amount;
+                                            @elseif($repay->entry_type=='1')
+                                                $balanceAmount -= $repay->amount;
+                                            @endif
+                                    @endphp
                                     <tr role="row" >
                                         <td> {{date('d-m-Y',strtotime($repay->trans_date))}}</td>
                                         <td>{{date('d-M-Y',strtotime($repay->created_at))}}</td>
@@ -82,9 +92,13 @@
                                                 {{ number_format($repay->amount,2) }}
                                             @endif
                                         </td>
+                                        <td>
+                                            {{ number_format($balanceAmount,2) }}
+                                        </td>
                                     </tr>
 
                                     @php
+
                                     if($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
                                         $overdueInterest += $repay->amount;
                                     }
@@ -95,6 +109,7 @@
                                     @endphp
                                 @endforeach
 
+{{--
                                 <!-- blank -->
                                 <tr role="row" >
                                     <td colspan="6" style="min-height: 15px"></td>
@@ -112,20 +127,21 @@
                                     <td></td>
                                 </tr>
 
+    
+    
+
                                 <!-- blank -->
                                 <tr role="row" >
                                     <td colspan="6" style="min-height: 15px"></td>
                                 </tr>
 
-                                {{--
-                                
                                 <tr role="row" >
                                     <td colspan="4">Total amt for Margin</td>
                                     <td>{{ number_format($amountForMargin,2) }}</td>
                                     <td></td>
-                                    </tr>
+                                </tr>
                                     
-                                --}}  
+                              
 
                                 @foreach($marginAmountData as $margin)
                                 <tr role="row" >
@@ -171,6 +187,8 @@
                                     <td>{{ $totalMarginAmount }}</td>
                                     <td></td>
                                 </tr>
+
+--}}
 							<tbody>
 
 							</tbody>
