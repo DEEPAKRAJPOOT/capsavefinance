@@ -28,11 +28,13 @@ class FinanceHelper {
                             $this->inputData = [];
                             $this->inputData = [ 
                                 'journal_id' => $val->journal_id,
-                                'entry_type' => $val->trans_type,       //need to update
-                                'invoice_id' => $invoice_txn_id ?? 0,       //need to update
-                                'reference' => _getRand(15),        //need to update
+                                'entry_type' => $val->trans_type,
+                                'invoice_id' => ($transConfigId == 1 ? $invoice_txn_id : null),       //need to update
+                                'trans_id' => ($transConfigId != 1 ? $invoice_txn_id : null),       //need to update
+                                'user_id' => (int)$userId ?? 0 ,
+                                'reference' => _getRand(15),
                                 'date' => \Carbon\Carbon::now()->format('Y-m-d h:i:s')
-                            ]; 
+                            ];
                             $outputQryJE = $this->finRepo->saveJournalEntries($this->inputData);
                             if(isset($outputQryJE->journal_entry_id) && !empty($outputQryJE->journal_entry_id)) {
                                 foreach($this->jiConfigData as $jikey=>$jival) {  

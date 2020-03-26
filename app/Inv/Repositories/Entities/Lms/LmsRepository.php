@@ -435,11 +435,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   
 	}   
 	
-	public static function getAllTransCharges()
+	public static function getAllTransCharges($user_id)
 	{
 		try
 	   {
-		  return ChargesTransactions::getAllTransCharges(); 
+		  return ChargesTransactions::getAllTransCharges($user_id); 
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
