@@ -124,6 +124,7 @@ class ApportionmentHelper{
     private function setMarginSettled(&$disbursal){
         $this->marginSettled = Transactions::where('disbursal_id','=',$disbursal->disbursal_id)
                         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
+                        ->whereNull('repay_trans_id')
                         ->where('entry_type','=','1')
                         ->sum('amount');
     }
@@ -439,7 +440,7 @@ class ApportionmentHelper{
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
                 'repay_trans_id'=>$this->transDetails->trans_id
-            ], null, config('lms.TRANS_TYPE.MARGIN'), 0);
+            ], null, config('lms.TRANS_TYPE.MARGIN'), 1);
             $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
         }
     }

@@ -429,44 +429,9 @@ class PaymentController extends Controller {
   public function paymentInvoiceList(Request $request)
   {
     $transId = $request->get('trans_id');
-    $totalMarginAmount = 0;
-    $nonFactoredAmount = 0;
-    $marginAmountData = [];
-    $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-    $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
+    $data = $this->calculateRefund($transId);
     
-    $disbursalIds = Transactions::where('repay_trans_id','=',$transId)
-    ->whereNotNull('disbursal_id')
-    ->where('trans_type','=',config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
-    ->distinct('disbursal_id')
-    ->pluck('disbursal_id')
-    ->toArray();
-    
-    // $principalSettled = Transactions::where('repay_trans_id','=',$transId)
-    // ->whereNotNull('disbursal_id')
-    // ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
-    // ->sum('amount');
-    
-    $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-     ->sum('invoice_approve_amount'); 
-
-    // $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-    // ->groupBy('margin')
-    // ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
-    
-    // if($principalSettled>0){
-    //   $nonFactoredAmount = $repayment->amount-$principalSettled;
-    // }
-        
-    // dd($repayment);
-    return view('backend.payment.payment_invoice_list', 
-      ['repaymentTrails' => $repaymentTrails, 
-       'repayment'=>$repayment,
-       'nonFactoredAmount' => $nonFactoredAmount,
-       'amountForMargin' => $amountForMargin,
-       'marginAmountData' => $marginAmountData,
-       'transId' => $transId
-      ]);
+    return view('backend.payment.payment_invoice_list', $data);
   }
   
     public function createPaymentRefund(Request $request)
@@ -481,6 +446,57 @@ class PaymentController extends Controller {
             $addlData['sharing_comment'] = '';
             
             $refundData = $this->calculateRefund($transId);
+            "repaymentTrails" => Illuminate\Database\Eloquent\Collection {#3379 ▶}
+            "repayment" => App\Inv\Repositories\Models\Lms\Transactions {#3374 ▶}
+            "nonFactoredAmount" => 2.8421709430404E-14
+            "interestRefund" => "69.83338"
+            "interestOverdue" => 0
+            "marginTotal" => 0
+            "refundableAmount" => 69.83338
+            "transId" => "198"
+
+/* $data['TOTAL_AMT_FOR_MARGIN'] = '';
+$data['MARGIN'] = '';
+ */
+
+        $transaction['TRANS_DATE'] = $repayment->trans_date;
+        $transaction['VALUE_DATE'] = $repayment->created_at;
+        
+        if ($repayment->trans_detail->chrg_master_id != '0') {
+            $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
+        } else {
+            $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
+        }
+                                        
+        if ($repayment->disburse && $repayment->disburse->invoice) {
+            $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
+        } else {
+            $transaction['INV_NO'] = '';
+        }      
+        
+        if ($repayment->entry_type == '0') {
+            $transaction['DEBIT'] = $repayment->amount;
+        } else {
+            $transaction['DEBIT'] = '';
+        }
+
+        if ($repayment->entry_type == '1') {
+            $transaction['CREDIT'] = $repayment->amount;
+        } else {
+            $transaction['CREDIT'] = '';
+        }
+        
+
+$data['TRANSACTIONS'] = '';
+$data['TOTAL_FACTORED'] = $refundData['repayment']->amount;
+$data['NON_FACTORED'] = $refundData['nonFactoredAmount'];
+$data['OVERDUE_INTEREST'] = $refundData['interestOverdue'];
+$data['INTEREST_REFUND'] = $refundData['interestRefund'];
+$data['MARGIN_RELEASED'] = $refundData['marginTotal'];
+$data['TOTAL_REFUNDABLE_AMT'] = $refundData['refundableAmount'];
+
+
+            dd($refundData);
             $this->saveRefundData($transId, $refundData);                        
             
             $result = $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
