@@ -62,11 +62,11 @@ class ApportionmentHelper{
         self::getTransaction($this->transId);
         foreach ($this->disbursalData as $key => $disbursalDetail) {
             if($disbursalDetail->count() > 0)
-            self::manageDisbursal($disbursalDetail);
-
+            self::settleDisbursal($disbursalDetail);
             $this->transaction['disbursal'][$disbursalDetail->disbursal_id] = $this->disbursal;
         }
         self::settleCharges();
+        self::settleAllMargin();
         self::saveTransactions();
     }
 
@@ -124,6 +124,7 @@ class ApportionmentHelper{
     private function setMarginSettled(&$disbursal){
         $this->marginSettled = Transactions::where('disbursal_id','=',$disbursal->disbursal_id)
                         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
+                        ->whereNull('repay_trans_id')
                         ->where('entry_type','=','1')
                         ->sum('amount');
     }
@@ -211,6 +212,10 @@ class ApportionmentHelper{
             return  $disbursal->total_interest-($this->accuredInt-$this->penalAmount);
         }
         return 0;
+    }
+
+    private function getChargeSettled($transId){
+        return Transactions::where('parent_trans_id','=',$transId)->sum('amount');
     }
 
     private function settleInterestDueAmount(&$disbursal){
@@ -315,10 +320,6 @@ class ApportionmentHelper{
             $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
         }
     }
-
-    private function getChargeSettled($transId){
-        return Transactions::where('parent_trans_id','=',$transId)->sum('amount');
-    }
     
     private function settleRepayCharges($charges){
         foreach ($charges as $key => $chargeDetail) {
@@ -356,22 +357,7 @@ class ApportionmentHelper{
         }
     }
 
-    private function settleCharges(){
-        self::setRepayBeforeCharges($this->transDetails->user_id);
-        self::setRepayAfterCharges($this->transDetails->user_id);
-
-        self::settleRepayCharges($this->repayBeforeCharges);
-        foreach ($this->disbursalData as $key => $disbursalDetail) {
-            if($disbursalDetail->count() > 0)
-            self::setAccuredInt($disbursalDetail);
-            self::setPenalAmount($disbursalDetail);
-            self::setPenalAmountSettled($disbursalDetail);
-            self::settleRepayPenalCharges($disbursalDetail);
-        }
-        self::settleRepayCharges($this->repayAfterCharges);
-    }
-
-    private function manageDisbursal($disbursalDetail){
+    private function settleDisbursal($disbursalDetail){
         self::setDisbursalId($disbursalDetail);
         self::setPenalDays($disbursalDetail);
         self::setPenalAmount($disbursalDetail);
@@ -397,6 +383,73 @@ class ApportionmentHelper{
         self::settleInterestDueAmount($disbursalDetail);
         self::settlePrincipalAmount($disbursalDetail);
         self::settleInterestRefund($disbursalDetail);
+    }
+
+    private function settleCharges(){
+        self::setRepayBeforeCharges($this->transDetails->user_id);
+        self::setRepayAfterCharges($this->transDetails->user_id);
+
+        self::settleRepayCharges($this->repayBeforeCharges);
+        foreach ($this->disbursalData as $key => $disbursalDetail) {
+            if($disbursalDetail->count() > 0)
+            self::setAccuredInt($disbursalDetail);
+            self::setPenalAmount($disbursalDetail);
+            self::setPenalAmountSettled($disbursalDetail);
+            self::settleRepayPenalCharges($disbursalDetail);
+        }
+        self::settleRepayCharges($this->repayAfterCharges);
+    }
+
+    private function settleMargin(&$disbursal){
+        self::setMarginAmount($disbursal);
+        self::setMarginSettled($disbursal);
+        $marginAmountDue = $this->marginAmount-$this->marginSettled;
+
+        $pipedAmt = 0;
+        if(isset($this->transaction['interestRefund'])){
+            foreach($this->transaction['interestRefund'] as $disbursalID => $disburs){
+                
+                $balanceRefundAmt = $disburs['amount']-$disburs['settled_amount'];
+                $pipedAmt += $balanceRefundAmt;
+                $this->transaction['interestRefund'][$disbursalID]['settled_amount'] += $balanceRefundAmt;
+                
+                if($pipedAmt > 0 && $marginAmountDue <= $pipedAmt)
+                break;
+            }
+        }
+            
+        if($pipedAmt < $marginAmountDue && $this->balanceRepayAmount > 0){
+            $this->balanceRepayAmount -= $marginAmountDue - $pipedAmt;
+            $pipedAmt = $marginAmountDue;
+        }
+
+        if($marginAmountDue>0 && $pipedAmt>0)
+        {
+            
+            if($pipedAmt >= $marginAmountDue){
+                $overduePaidAmt = $marginAmountDue;
+            }else{
+                $overduePaidAmt = $pipedAmt;
+            }
+
+            $pipedAmt -= $overduePaidAmt;
+            $this->disbursal['total_repaid_amt'] += $overduePaidAmt;
+
+            $overdueData = $this->createTransactionData($this->transDetails->user_id, [
+                'amount' => $overduePaidAmt,
+                'trans_date'=>$this->transDetails->trans_date,
+                'disbursal_id'=>$disbursal->disbursal_id,
+                'repay_trans_id'=>$this->transDetails->trans_id
+            ], null, config('lms.TRANS_TYPE.MARGIN'), 1);
+            $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
+        }
+    }
+
+    private function settleAllMargin(){
+        foreach ($this->disbursalData as $key => $disbursalDetail) {
+            if($disbursalDetail->count() > 0)
+            self::settleMargin($disbursalDetail);
+        }
     }
 
     private function saveTransactions(){

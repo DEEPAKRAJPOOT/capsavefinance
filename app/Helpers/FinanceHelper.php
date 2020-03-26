@@ -149,10 +149,13 @@ class FinanceHelper {
                $amt = $this->_sysFuncTenor($variable, $invoice_txn_id);
               break;
           case 'OD_INTEREST_RATE':
-               $amt = $this->sysFuncOdIntRate($variable, $invoice_txn_id);
+               $amt = $this->_sysFuncOdIntRate($variable, $invoice_txn_id);
               break;
           case 'REPAYMENT_AMOUNT':
-               $amt = $this->sysFuncRepayAmt($variable, $invoice_txn_id);
+               $amt = $this->_sysFuncRepayAmt($variable, $invoice_txn_id);
+              break;
+          case 'REPAYMENT_AMOUNT':
+               $amt = $this->_sysFuncChargeAmt($variable, $invoice_txn_id);
               break;
           default:
                $amt = 0;
@@ -171,12 +174,17 @@ class FinanceHelper {
        return (!empty($disbursalData) ? $disbursalData->tenor_days : 0);
     }
 
-    private function sysFuncOdIntRate($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
+    private function _sysFuncOdIntRate($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
        $disbursalData = Disbursal::where('invoice_id', $invoice_id)->first();
        return (!empty($disbursalData) ? $disbursalData->overdue_interest_rate : 0);
     }
 
-    private function sysFuncRepayAmt($variable, $invoice_txn_id = null, $appId = null, $userId = null, $bizId = null){
+    private function _sysFuncRepayAmt($variable, $invoice_txn_id = null, $appId = null, $userId = null, $bizId = null){
+       $transactionData = Transaction::find($invoice_txn_id);
+       return (!empty($transactionData) ? $transactionData->amount : 0);
+    }
+
+    private function _sysFuncChargeAmt($variable, $invoice_txn_id = null, $appId = null, $userId = null, $bizId = null){
        $transactionData = Transaction::find($invoice_txn_id);
        return (!empty($transactionData) ? $transactionData->amount : 0);
     }

@@ -239,7 +239,7 @@ class RefundController extends Controller
 
                     //Non Factored Amount
                     $nonFactoredAmtData = $this->lmsRepo->getRefundData($transId, 'NON_FACTORED');
-                    if ($nonFactoredAmtData > 0) {
+                    if (count($nonFactoredAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($nonFactoredAmtData[0]) ? $nonFactoredAmtData[0]->amount : 0;
                         $trData['repay_trans_id'] = $transId;
@@ -250,7 +250,7 @@ class RefundController extends Controller
                     
                     //Interest Refund Amount                    
                     $intRefundAmtData = $this->lmsRepo->getRefundData($transId, 'INTEREST_REFUND');
-                    if ($intRefundAmtData > 0) {
+                    if (count($intRefundAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($intRefundAmtData[0]) ? $intRefundAmtData[0]->amount : 0;
                         $trData['repay_trans_id'] = $transId;
@@ -261,7 +261,7 @@ class RefundController extends Controller
                     
                     //Margin Amount
                     $marginReleasedAmtData = $this->lmsRepo->getRefundData($transId, 'MARGIN_RELEASED');
-                    if ($marginReleasedAmtData > 0) {
+                    if (count($marginReleasedAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($marginReleasedAmtData[0]) ? $marginReleasedAmtData[0]->amount : 0;
                         $trData['repay_trans_id'] = $transId;
