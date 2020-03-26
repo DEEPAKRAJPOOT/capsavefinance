@@ -1749,4 +1749,28 @@ class ApplicationController extends Controller
         }
     }
 
+         /**
+     * Handling deleting PAN documents file for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function promoterDocumentDelete(Request $request)
+    {
+        dd('delete');
+        try {
+            $response = $this->docRepo->deleteFile($appDocFileId);
+            
+            if ($response) {
+                Session::flash('message',trans('success_messages.deleted'));
+                return redirect()->back();
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
 }

@@ -54,6 +54,8 @@
                         @if(count($ownerDetails) > 0) 
                         @foreach($ownerDetails as $key=>$row)    @php ($i++)
 
+                       
+
                         <div class="form-fields custom-promoter">
                             @csrf
                             <?php
@@ -288,8 +290,8 @@
                                     </div> 
                                 </div>
 
-                                <h5 class="card-title form-head-h5 mt-3">Document </h5>	
-
+                                <h5 class="card-title form-head-h5 mt-3 mb-0 pb-0">Document  <small style="color:red"> * </small></h5>	
+                                <i  style="color:red"> (minimum one document upload)</i>
                                 <div class="row mt-2 mb-4">
                                     <div class="col-md-12">
                                         <div class="prtm-full-block">       
@@ -324,9 +326,8 @@
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a data-toggle="modal" id="ppanVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['panNo']->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Pan Status)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
                                                                     </a>
-                                                                    <a  href="{{ isset($main1[$j]['panNoFile']) ? Storage::url($main1[$j]['panNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-
-
+                                                                    <a  href="{{ isset($main1[$j]['panNoFile']) ? Storage::url($main1[$j]['panNoFile']) : '' }}" title="download" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <button class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)" ><i class="fa fa-times-circle-o error"></i></button>
 
                                                                     <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
@@ -621,6 +622,7 @@
             </div>
         </div>
     </div>
+    
     {!!Helpers::makeIframePopup('modalPromoter','View PAN Card Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter1','View Driving License Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('modalPromoter2','View Voter ID  Detail', 'modal-lg')!!}
@@ -648,6 +650,7 @@
                 chk_user_pan_karza_add_more: "{{ URL::route('chk_user_pan_karza_add_more') }}",
                 chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
                 get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
+                protmoter_document_delete: "{{ url::route('promoter_document_delete') }}"
         };
         $(document).ready(function () {
          ///////////////For Amount comma Seprate///////////

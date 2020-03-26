@@ -380,4 +380,25 @@ class DocumentRepository implements DocumentInterface
         return $result ?: [];
     }    
 
+
+        /**
+     * save file method
+     *
+     * @param mixed $requests
+     */
+    
+    public function deleteFile($attributes = []){
+        /**
+         * Check Valid Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        return UserFile::deleteFile($attributes);
+    }
+
 }

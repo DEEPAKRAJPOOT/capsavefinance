@@ -433,7 +433,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_qms_details',
                 'uses' => 'Backend\QmsController@showQmsDetails'
 
-            ]);    
+            ]);   
+            
+            // delte documents 24-mar-20  
+            Route::post('promoter-document-delete', [
+                'as' => 'promoter_document_delete',
+                'uses' => 'Backend\ApplicationController@promoterDocumentDelete'
+            ]); 
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 
