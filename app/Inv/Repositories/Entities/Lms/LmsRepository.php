@@ -889,6 +889,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function checkChargeName($chargeName, $excludeChargeId=null)
     {
         return Charges::checkChargeName($chargeName, $excludeChargeId);
-    }       
+    }
+
+    public function getallBatch()
+	{
+		return DisbursalBatch::get();
+	}        
     
 }

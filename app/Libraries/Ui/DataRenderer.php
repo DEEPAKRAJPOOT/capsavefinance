@@ -2883,24 +2883,21 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->whereHas('user', function($query1) use ($search_keyword) {
+                                $query1->where('f_name', 'like',"%$search_keyword%")
+                                ->orWhere('l_name', 'like', "%$search_keyword%")
+                                ->orWhere('email', 'like', "%$search_keyword%");
                             });
+
                         }
                     }
-                    if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('is_assigned', 'like',
-                                        "%$by_status%");
-                            });
+                    if ($request->get('customer_id') != '') {
+                        if ($request->has('customer_id')) {
+                            $customer_id = trim($request->get('customer_id'));
+                                $query->where('customer_id', 'like',"%$customer_id%");
                         }
                     }
                 })
@@ -4725,10 +4722,31 @@ class DataRenderer implements DataProviderInterface
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('search_keyword') != '') {
-                        if ($request->has('search_keyword')) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('customer_id', 'like',"%$search_keyword%");
+                    if ($request->get('customer_code') != '') {
+                        if ($request->has('customer_code')) {
+                            $customer_code = trim($request->get('customer_code'));
+                            $query->whereHas('lms_user', function($query1) use ($customer_code) {
+                                $query1->where('customer_id', 'like',"%$customer_code%");
+                            });
+
+                        }
+                    }
+                    if ($request->get('selected_date') != '') {
+                        if ($request->has('selected_date')) {
+                            $selected_date = trim($request->get('selected_date'));
+                            $query->whereHas('disbursal_batch', function($query1) use ($selected_date) {
+                                $query1->where('created_at', 'like',"%$selected_date%");
+                            });
+
+                        }
+                    }
+                    if ($request->get('batch_id') != '') {
+                        if ($request->has('batch_id')) {
+                            $batch_id = trim($request->get('batch_id'));
+                            $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
+                                $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
+                            });
+
                         }
                     }
                 })
