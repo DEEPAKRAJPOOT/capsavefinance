@@ -428,7 +428,7 @@ class PaymentController extends Controller {
     $transId = $request->get('trans_id');
     $totalMarginAmount = 0;
     $nonFactoredAmount = 0;
-    
+    $marginAmountData = [];
     $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
     $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
     
@@ -439,20 +439,21 @@ class PaymentController extends Controller {
     ->pluck('disbursal_id')
     ->toArray();
     
-    $principalSettled = Transactions::where('repay_trans_id','=',$transId)
-    ->whereNotNull('disbursal_id')
-    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
-    ->sum('amount');
+    // $principalSettled = Transactions::where('repay_trans_id','=',$transId)
+    // ->whereNotNull('disbursal_id')
+    // ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
+    // ->sum('amount');
     
     $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-    ->sum('invoice_approve_amount'); 
-    $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-    ->groupBy('margin')
-    ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
+     ->sum('invoice_approve_amount'); 
+
+    // $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
+    // ->groupBy('margin')
+    // ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
     
-    if($principalSettled>0){
-      $nonFactoredAmount = $repayment->amount-$principalSettled;
-    }
+    // if($principalSettled>0){
+    //   $nonFactoredAmount = $repayment->amount-$principalSettled;
+    // }
         
     // dd($repayment);
     return view('backend.payment.payment_invoice_list', 

@@ -117,12 +117,15 @@
                                     <td colspan="6" style="min-height: 15px"></td>
                                 </tr>
 
+                                {{--
+                                
                                 <tr role="row" >
                                     <td colspan="4">Total amt for Margin</td>
                                     <td>{{ number_format($amountForMargin,2) }}</td>
                                     <td></td>
-                                </tr>
-                              
+                                    </tr>
+                                    
+                                --}}  
 
                                 @foreach($marginAmountData as $margin)
                                 <tr role="row" >
@@ -146,7 +149,7 @@
                                 @endphp
                                 <tr role="row" >
                                     <td colspan="4" style="font-weight:bold"><b>Margin Released</b></td>
-                                    <td>{{ number_format($totalMarginAmount,2) }}</td>
+                                    <td>@if($totalMarginAmount>0) {{ number_format($totalMarginAmount,2) }} @else 0.00 @endif </td>
                                     <td></td>
                                 </tr>
 
