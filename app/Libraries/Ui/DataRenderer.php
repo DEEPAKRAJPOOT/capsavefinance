@@ -2386,7 +2386,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?: 'N/A'; 
                 }) 
                 ->addColumn(
                     'chrg_desc',
@@ -2463,12 +2463,12 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?: 'N/A'; 
                 })
                 ->addColumn(
                     'effective_date',
                     function ($charges) {
-                   return $charges->transaction->trans_date ?? 'N/A';
+                   return $charges->transaction->trans_date ?: 'N/A';
                 }) 
                 ->addColumn(
                     'applicability',
@@ -2478,7 +2478,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'chrg_desc',
                     function ($charges) {
-                     return $charges->ChargeMaster->chrg_desc ?? 'N/A';
+                     return $charges->ChargeMaster->chrg_desc ?: 'N/A';
                 })
                 ->addColumn(
                     'created_at',
@@ -2525,7 +2525,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'doc_type_id',
                     function ($documents) {
-                    return $this->doc_type_ids[$documents->doc_type_id] ?? 'N/A'; 
+                    return $this->doc_type_ids[$documents->doc_type_id] ?: 'N/A'; 
                 })
                 ->addColumn(
                     'doc_name',
@@ -2875,7 +2875,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'anchor',
                     function ($customer) {
-                        $anchor = ($customer->user->anchor->comp_name) ?? '--';
+                        $anchor = ($customer->user->anchor->comp_name) ?: '--';
                         $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
                         $data = '';
                         $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
@@ -3982,7 +3982,7 @@ class DataRenderer implements DataProviderInterface
                         ->rawColumns(['is_active','action'])
                         ->addColumn(
                                 'bank_id', function ($baserates) {
-                            return $baserates->bank->bank_name ?? 'N/A';
+                            return $baserates->bank->bank_name ?: 'N/A';
                         })
                         ->addColumn(
                                 'base_rate', function ($baserates) {
@@ -4660,7 +4660,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'batch_id',
                     function ($disbursal) {
-                        return ($disbursal->disbursal_batch->batch_id) ?? '';
+                        return ($disbursal->disbursal_batch->batch_id) ?: '';
                     }
                 )
                 ->addColumn(
