@@ -4657,7 +4657,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'batch_id',
                     function ($disbursal) {
-                        return ($disbursal->disbursal_batch->batch_id) ?? '';
+                        return (isset($disbursal->disbursal_batch->batch_id)) ? $disbursal->disbursal_batch->batch_id : '';
                     }
                 )
                 ->addColumn(
