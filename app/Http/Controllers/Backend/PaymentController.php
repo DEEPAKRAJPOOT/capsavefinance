@@ -446,58 +446,82 @@ class PaymentController extends Controller {
             $addlData['sharing_comment'] = '';
             
             $refundData = $this->calculateRefund($transId);
-            "repaymentTrails" => Illuminate\Database\Eloquent\Collection {#3379 ▶}
-            "repayment" => App\Inv\Repositories\Models\Lms\Transactions {#3374 ▶}
-            "nonFactoredAmount" => 2.8421709430404E-14
-            "interestRefund" => "69.83338"
-            "interestOverdue" => 0
-            "marginTotal" => 0
-            "refundableAmount" => 69.83338
-            "transId" => "198"
+          
+            $transaction = [];
+            $transactions = [];
 
-/* $data['TOTAL_AMT_FOR_MARGIN'] = '';
-$data['MARGIN'] = '';
- */
+            $transaction['TRANS_DATE'] = $refundData['repayment']->trans_date;
+            $transaction['VALUE_DATE'] = $refundData['repayment']->created_at;
+            
+            if ($refundData['repayment']->trans_detail->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->charge->chrg_name;
+            } else {
+                $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->trans_name;
+            }
+                                            
+            if ($refundData['repayment']->disburse && $refundData['repayment']->disburse->invoice) {
+                $transaction['INV_NO'] = $refundData['repayment']->disburse->invoice->invoice_no;
+            } else {
+                $transaction['INV_NO'] = '';
+            }      
+            
+            if ($refundData['repayment']->entry_type == '0') {
+                $transaction['DEBIT'] = $refundData['repayment']->amount;
+            } else {
+                $transaction['DEBIT'] = '';
+            }
 
-        $transaction['TRANS_DATE'] = $repayment->trans_date;
-        $transaction['VALUE_DATE'] = $repayment->created_at;
+            if ($refundData['repayment']->entry_type == '1') {
+                $transaction['CREDIT'] = $refundData['repayment']->amount;
+            } else {
+                $transaction['CREDIT'] = '';
+            }
+            
+            $transactions[] = $transaction;
+
+            foreach ($refundData['repaymentTrails'] as $repay) {
+              $transaction = [];
+              $transaction['TRANS_DATE'] = $repay->trans_date;
+              $transaction['VALUE_DATE'] = $repay->created_at;
+
+              if ($repay->trans_detail->chrg_master_id != '0') {
+                  $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+              } else {
+                  $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+              }
+
+              if ($repay->disburse->invoice->invoice_no) {
+                  $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
+              } else {
+                  $transaction['INV_NO'] = '';
+              }      
+
+              if ($repay->entry_type == '0') {
+                  $transaction['DEBIT'] = $repay->amount;
+              } else {
+                  $transaction['DEBIT'] = '';
+              }
+
+              if ($repay->entry_type == '1') {
+                  $transaction['CREDIT'] = $repay->amount;
+              } else {
+                  $transaction['CREDIT'] = '';
+              }
+              
+              $transactions[] = $transaction;   
+            }
         
-        if ($repayment->trans_detail->chrg_master_id != '0') {
-            $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
-        } else {
-            $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
-        }
-                                        
-        if ($repayment->disburse && $repayment->disburse->invoice) {
-            $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
-        } else {
-            $transaction['INV_NO'] = '';
-        }      
-        
-        if ($repayment->entry_type == '0') {
-            $transaction['DEBIT'] = $repayment->amount;
-        } else {
-            $transaction['DEBIT'] = '';
-        }
+            $data['TRANSACTIONS'] = $transactions;
+            $data['TOTAL_FACTORED'] = $refundData['repayment']->amount;
+            $data['NON_FACTORED'] = $refundData['nonFactoredAmount'];
+            $data['OVERDUE_INTEREST'] = $refundData['interestOverdue'];
+            $data['INTEREST_REFUND'] = $refundData['interestRefund'];
+            $data['MARGIN_RELEASED'] = $refundData['marginTotal'];
+            $data['TOTAL_REFUNDABLE_AMT'] = $refundData['refundableAmount'];
+            //$data['TOTAL_AMT_FOR_MARGIN'] = '';
+            //$data['MARGIN'] = '';
 
-        if ($repayment->entry_type == '1') {
-            $transaction['CREDIT'] = $repayment->amount;
-        } else {
-            $transaction['CREDIT'] = '';
-        }
-        
-
-$data['TRANSACTIONS'] = '';
-$data['TOTAL_FACTORED'] = $refundData['repayment']->amount;
-$data['NON_FACTORED'] = $refundData['nonFactoredAmount'];
-$data['OVERDUE_INTEREST'] = $refundData['interestOverdue'];
-$data['INTEREST_REFUND'] = $refundData['interestRefund'];
-$data['MARGIN_RELEASED'] = $refundData['marginTotal'];
-$data['TOTAL_REFUNDABLE_AMT'] = $refundData['refundableAmount'];
-
-
-            dd($refundData);
-            $this->saveRefundData($transId, $refundData);                        
+            $this->saveRefundData($transId, $data);                        
             
             $result = $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
             

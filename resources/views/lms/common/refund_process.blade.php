@@ -57,13 +57,13 @@
                             <tr role="row" >
                                 <td colspan="6" style="min-height: 15px"></td>
                             </tr>
-
+{{--
                             <tr role="row" >
                                 <td colspan="4">Total amt for Margin</td>
                                 <td>{{ number_format($refundData['TOTAL_AMT_FOR_MARGIN']->amount,2) }}</td>
                                 <td></td>
                             </tr>
-
+                            
                             @foreach($refundData['MARGIN'] as $margin)                            
                             <tr role="row" >
                                 <td colspan="3">% Margin</td>
@@ -73,6 +73,7 @@
                             </tr>
                             @endforeach
                             
+    --}}
                             <tr role="row" >
                                 <td colspan="4">Overdue Interest</td>
                                 <td>{{ number_format($refundData['OVERDUE_INTEREST']->amount,2) }}</td>
