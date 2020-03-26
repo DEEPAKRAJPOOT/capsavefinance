@@ -51,9 +51,10 @@ class ChargeController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	 public function manageCharge(){
+	 public function manageCharge(Request $request){
+             $user_id =  $request->get('user_id');
              $transactionUser  = $this->lmsRepo->getAllUserChargeTransaction();
-             return view('lms.charges.manage_charge')->with(['trans' =>$transactionUser]);
+             return view('lms.charges.manage_charge')->with(['user_id' =>$user_id,'trans' =>$transactionUser]);
         }
 
     
@@ -166,6 +167,7 @@ class ChargeController extends Controller
                                   "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
                                   "chrg_trans_id" =>  $chrgTransId->chrg_trans_id,
                                   "amount" =>   $totalSumAmount,
+                                  "soa_flag" =>1,
                                   "gst"   => $is_gst,
                                   "cgst"   => $cgst,
                                   "sgst"   => $sgst,
