@@ -78,22 +78,23 @@ class ChargesTransactions extends BaseModel
         
     }
     
-    public static function getAllTransCharges()
+    public static function getAllTransCharges($user_id)
     {
-        
-       return  self::with(['transaction','ChargeMaster']);
+    
+       return  self::with('transaction','ChargeMaster');
         
     }
     
     public function transaction()
     {
-              return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','chrg_trans_id','chrg_trans_id');
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','chrg_trans_id','chrg_trans_id');
    
     }
     
+    
     public function ChargeMaster()
     {
-            return $this->hasOne('App\Inv\Repositories\Models\Master\Charges','id','chrg_master_id');
+       return $this->hasOne('App\Inv\Repositories\Models\Master\Charges','id','chrg_master_id');
       
     }
 }
