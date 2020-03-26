@@ -176,7 +176,7 @@ class PaymentController extends Controller {
         if( $res)
         {
           $appId = null;
-          if(in_array($request['trans_type'], [4,5,20,24,29]])){
+          if(in_array($request['trans_type'], [4,5,20,24,29])){
             $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.CHARGES'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
           }
           if($request['trans_type']==17){
