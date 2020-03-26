@@ -60,6 +60,7 @@
 																		<th width="20%">Bank Detail</th>
 																		<th width="15%">Total Disburse Amt.</th>
 																		<th width="8%">Total Invoice </th>
+                                                                                                                                                   <th> Updated By</th>
 																		<th width="4%">Action</th>
 																	</tr>
 																</thead>
@@ -93,7 +94,7 @@
 	.itemBackground 
 	{ 
 		border: 2px solid blanchedalmond;  
-		background-color:#5c9742;
+		 background-color:#138864;
 	}
 	.itemBackgroundColor 
 	{ 

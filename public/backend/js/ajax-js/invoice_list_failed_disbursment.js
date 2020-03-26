@@ -32,6 +32,7 @@ try {
                 {data: 'supplier_name'},
                 {data: 'invoice_date'},
                 {data: 'invoice_amount'},
+                {data: 'updated_at'},
                 {data: 'action'}
                
             ],
