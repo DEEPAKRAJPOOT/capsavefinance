@@ -142,7 +142,8 @@ $(document).ready(function () {
          $('input.full_name').each(function () {
             $(this).rules("add",
                      {
-                        required: true
+                        required: true,
+                        lettersonly: true 
                      })
          });
          $('input.comp_name').each(function () {
