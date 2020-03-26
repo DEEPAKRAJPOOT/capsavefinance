@@ -143,13 +143,13 @@ function deleteFile(uploadId, ownerId, file_id, docId)
         //enctype: 'multipart/form-data',
  
         success: function(r){
-            alert('delete')
+            // alert('delete')
            $(".isloader").hide();
            
            if(r.status==1)
            {
             if(docId == 2) { 
-                  $("#pandown"+uploadId).css({'display':'inline'});
+                  $("#pandown"+uploadId).css({'display':'none'});
                   $("#pandown"+uploadId).attr('href',r.file_path);
             }
             else if(docId == 31) { 
@@ -185,7 +185,8 @@ function deleteFile(uploadId, ownerId, file_id, docId)
            else
            {
                
-               alert('Something wrong! Please try again');
+
+            //    alert('Something wrong! Please try again');
            }
           
             //obj = result.result.directors;

@@ -1759,9 +1759,9 @@ class ApplicationController extends Controller
     public function promoterDocumentDelete(Request $request)
     {
         try {
+            $fileId = $request->file_id;
             $fileId = $request;
-            dd('delete');
-            $response = $this->docRepo->deleteFile($appDocFileId);
+            $response = $this->docRepo->deleteFile($fileId);
             
             if ($response) {
                 Session::flash('message',trans('success_messages.deleted'));
