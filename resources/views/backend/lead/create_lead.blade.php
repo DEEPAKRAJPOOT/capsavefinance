@@ -95,9 +95,9 @@ $messages = session()->get('message', false);
 <script>
     try {
     var p = window.parent;
-    p.jQuery('#createLeadForm"').modal('hide');
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
-    p.reloadDataTable();
+    p.jQuery("#createLeadForm").modal('hide');
+    p.oTables.draw();
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);
