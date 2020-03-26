@@ -115,8 +115,8 @@ function deleteFile(uploadId, ownerId, file_id, docId)
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
     var app_id  = $('#app_id').val();
-    alert(file_id)
-    
+    var file_id;
+
 
    
     var extension = file.name.split('.').pop().toLowerCase();
@@ -128,7 +128,7 @@ function deleteFile(uploadId, ownerId, file_id, docId)
     datafile.append('app_id', app_id);
     datafile.append('doc_id', docId);
     datafile.append('doc_file', file);
-    datafile.append('doc_file_id', file_id);
+    datafile.append('file_id', file_id);
     
     
     console.log(messages.protmoter_document_delete);
