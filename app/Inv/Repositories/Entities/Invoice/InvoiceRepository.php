@@ -891,9 +891,9 @@ use CommonRepositoryTraits;
        return BizInvoice::getUserBizAnchor($attributes);  
     }  
 
-    public function getAllBankInvoice()
+    public function getAllBankInvoice($from_date, $to_date)
     {
-        $this->result = DisbursalBatch::getAllBatches();
+        $this->result = DisbursalBatch::getAllBatches($from_date, $to_date);
         return $this->result;
     }
 
