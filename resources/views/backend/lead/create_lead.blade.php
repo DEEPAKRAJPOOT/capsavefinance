@@ -143,7 +143,7 @@ $(document).ready(function () {
             $(this).rules("add",
                      {
                         required: true,
-                        lettersonly: true 
+                        lettersonly: true , 
                      })
          });
          $('input.comp_name').each(function () {
