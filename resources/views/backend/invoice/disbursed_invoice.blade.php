@@ -143,14 +143,11 @@
 																		<tr role="row">
 																			<th><input type="checkbox" id="chkAll"></th> 
 																			<th>Invoice No</th> 
-																			<th>Anchor Name</th>
-																			<th>Customer Name</th>
-																			<th>Invoice Date</th>
-																			<th>Invoice Due Date</th>
-																			<th>Tenor</th>
-																			<th>Invoice  Amount</th>
-																			<th>Invoice Approve Amount</th>
-																			<th>Status</th>
+																			<th>Anchor Detail</th>
+																			<th>Customer Detail</th>
+																			<th>Inv. Detail</th>
+																			<th>Inv.  Amount</th>
+																			
 
 																		</tr>
 																	</thead>
