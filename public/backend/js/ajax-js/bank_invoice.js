@@ -1,33 +1,84 @@
 try {
     var oTable, oTableCustomers;
+    var from_date, to_date;
     jQuery(document).ready(function ($) {
-        oTable = $('#bankInvoice').DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 25,
-            searching: true,
-            bSort: true,
-            ajax: {
-               "url": messages.get_ajax_bank_invoice, // json datasource
-                "method": 'POST',
-                data: function (d) {
-                    d.search_keyword = $('input[name=search_keyword]').val();
-                    d._token = messages.token;
-                },
-                "error": function () {  // error handling                   
-                    $("#bankInvoice").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#leadMaster_processing").css("display", "none");
+
+        from_date = $('input[name=from_date]').val();
+        to_date = $('input[name=to_date]').val();
+
+        // //Search
+        $('#searchBtnBankInvoice').on('click', function (e) {
+            var split, date, fromtimestamp, totimestamp, Difference_In_Time, Difference_In_Days; 
+            from_date = $('input[name=from_date]').val();
+            to_date = $('input[name=to_date]').val();
+
+            if(!from_date && !to_date) {
+                if ((Date.parse(from_date) >= Date.parse(to_date))) {
+                    alert("Please select date first.");
+                    return false;
                 }
-            },
-           columns: [
-                    {data: 'batch_id'},
-                    {data: 'total_users'},
-                    {data: 'total_amt'},
-                    {data: 'created_by_user'},
-                    {data: 'created_at'},
-                    {data: 'action'}
-                ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            }
+
+            if(from_date && to_date) {               
+                split = from_date.split('/');
+                date = new Date(split[2], split[1], split[0]); //Y M D
+                fromtimestamp = date.getTime();
+
+                split = to_date.split('/');
+                date = new Date(split[2], split[1], split[0]); //Y M D
+                totimestamp = date.getTime();
+
+                Difference_In_Time = totimestamp - fromtimestamp;
+                Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
+                if (fromtimestamp > totimestamp) {
+                    alert("To date should be greater than From date");
+                    return false;
+                }
+
+                if (Difference_In_Days > 30) {
+                    alert("No. of days should not be greater than 30");
+                    return false;
+                }
+            }
+
+            if(!oTable) {
+                if(from_date && to_date) {
+                    oTable = $('#bankInvoice').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        pageLength: 25,
+                        searching: true,
+                        bSort: true,
+                        ajax: {
+                        "url": messages.get_ajax_bank_invoice, 
+                            "method": 'POST',
+                            data: function (d) {
+                                d.from_date = from_date;
+                                d.to_date = to_date;
+                                d._token = messages.token;
+                            },
+                            "error": function () {  // error handling                   
+                                $("#bankInvoice").append('<tbody class="leadMaster-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                                $("#leadMaster_processing").css("display", "none");
+                            }
+                        },
+                    columns: [
+                                {data: 'batch_id'},
+                                {data: 'total_users'},
+                                {data: 'total_amt'},
+                                {data: 'created_by_user'},
+                                {data: 'created_at'},
+                                {data: 'action'}
+                            ],
+                        aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+                    });
+                } else {
+                    alert('Please select date.');
+                }
+            } else {
+                oTable.draw();
+            }
         });
 
         oTableCustomers = $('#bankInvoiceCustomers').DataTable({
@@ -91,11 +142,6 @@ try {
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
-
-        // //Search
-        // $('#searchbtn').on('click', function (e) {
-        //     oTable.draw();
-        // });   
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

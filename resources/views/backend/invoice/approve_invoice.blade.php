@@ -163,7 +163,7 @@
     ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.approveInv', function () {
         $("#moveCase").html('');
-        if (confirm('Are you sure? You want to disbursment queue.'))
+        if (confirm('Are you sure? You want to disbursement queue.'))
         {
             var invoice_id = $(this).attr('data-id');
             var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
@@ -458,7 +458,7 @@
             alert('Please select atleast one checked');
             return false;
         }
-        if (confirm('Are you sure? You want to disbursment queue.'))
+        if (confirm('Are you sure? You want to disbursement queue.'))
         {
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});

@@ -2487,9 +2487,9 @@ class DataRenderer implements DataProviderInterface
                 })
                
                  ->filter(function ($query) use ($request) {
-                    if ($request->get('type') != '') {
+                   if ($request->get('user_id') != '') {
                             $query->whereHas('transaction', function ($query) use ($request) {
-                            $search_keyword = trim($request->get('type'));
+                            $search_keyword = trim($request->get('user_id'));
                             $query->where('user_id',$search_keyword);
                         });
                     }
@@ -4201,7 +4201,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'invoice_no',
                         function ($dataRecords) {
-                        return $dataRecords->invoice_no;
+                        return !empty($dataRecords->invoice_id) ? $dataRecords->invoice_id : $dataRecords->trans_id;
                     }) 
                     ->editColumn(
                         'debit_amount',

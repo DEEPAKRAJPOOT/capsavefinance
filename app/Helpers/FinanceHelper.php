@@ -4,6 +4,8 @@ namespace App\Helpers;
 
 use App\Inv\Repositories\Models\Financial\FinancialDisbursal as Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions as Transaction;
+use App\Inv\Repositories\Models\BizInvoice as Invoice;
+
 class FinanceHelper {
 
     private $transConfigId;
@@ -17,6 +19,13 @@ class FinanceHelper {
     }
 
     public function finExecution($transConfigId = null, $invoice_txn_id = null, $appId = null, $userId = null, $bizId = null) {
+        $invoice_no = null;
+        if ($transConfigId == 1) {
+          $invoice_data = Invoice::find($invoice_txn_id);
+          $invoice_no = $invoice_data->invoice_no;
+          $appId = $invoice_data->app_id;
+          $bizId = $invoice_data->biz_id;
+        }
         try{
             $this->transConfigId = $transConfigId;
             if(isset($transConfigId) && !empty($transConfigId)) {
@@ -29,7 +38,7 @@ class FinanceHelper {
                             $this->inputData = [ 
                                 'journal_id' => $val->journal_id,
                                 'entry_type' => $val->trans_type,
-                                'invoice_id' => ($transConfigId == 1 ? $invoice_txn_id : null),       //need to update
+                                'invoice_id' => ($transConfigId == 1 ? $invoice_no: null),
                                 'trans_id' => ($transConfigId != 1 ? $invoice_txn_id : null),       //need to update
                                 'user_id' => (int)$userId ?? 0 ,
                                 'reference' => _getRand(15),

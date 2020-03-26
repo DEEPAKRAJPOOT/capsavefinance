@@ -7,6 +7,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Carbon\Carbon;
 
 class DisbursalBatch extends BaseModel {
 	/* The database table used by the model.
@@ -51,13 +52,16 @@ class DisbursalBatch extends BaseModel {
 		'updated_by',
 	];
 
-	public static function getAllBatches(){
+	public static function getAllBatches($from_date, $to_date){
+		$from_date = Carbon::createFromFormat('d/m/Y', $from_date)->format('Y-m-d');
+		$to_date = Carbon::createFromFormat('d/m/Y', $to_date)->format('Y-m-d');
         $result = \DB::select("SELECT rta_disbursal_batch.disbursal_batch_id, rta_disbursal_batch.batch_id, rta_disbursal_batch.created_by, rta_disbursal_batch.created_at, A.total_users, A.total_amt, rta_users.f_name as created_by_user
 		FROM rta_disbursal_batch
 		JOIN rta_users ON (rta_users.user_id=rta_disbursal_batch.created_by)
 		JOIN (SELECT rta_disbursal.disbursal_batch_id, COUNT(DISTINCT(user_id)) as total_users, SUM(disburse_amount) as total_amt FROM rta_disbursal
 		WHERE rta_disbursal.disbursal_batch_id IS NOT null GROUP BY rta_disbursal.disbursal_batch_id) A ON (A.disbursal_batch_id=rta_disbursal_batch.disbursal_batch_id)
-		ORDER BY rta_disbursal_batch.disbursal_batch_id DESC");
+		WHERE rta_disbursal_batch.created_at>=? AND rta_disbursal_batch.created_at<=?
+		ORDER BY rta_disbursal_batch.disbursal_batch_id DESC", [$from_date, $to_date]);
         return $result;    
 	}
 }
