@@ -119,7 +119,7 @@ function deleteFile(uploadId, ownerId, file_id, docId)
 
 
    
-    var extension = file.name.split('.').pop().toLowerCase();
+    //var extension = file.name.split('.').pop().toLowerCase();
     var datafile = new FormData();
     
     datafile.append('_token', messages.token );
@@ -127,7 +127,7 @@ function deleteFile(uploadId, ownerId, file_id, docId)
     datafile.append('biz_id', biz_id);
     datafile.append('app_id', app_id);
     datafile.append('doc_id', docId);
-    datafile.append('doc_file', file);
+   // datafile.append('doc_file', file);
     datafile.append('file_id', file_id);
     
     
@@ -140,7 +140,7 @@ function deleteFile(uploadId, ownerId, file_id, docId)
         processData: false,
         contentType: false,
         cache: false, // To unable request pages to be cached
-        enctype: 'multipart/form-data',
+        //enctype: 'multipart/form-data',
  
         success: function(r){
             alert('delete')
