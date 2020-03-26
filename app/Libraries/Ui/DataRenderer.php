@@ -4201,7 +4201,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'invoice_no',
                         function ($dataRecords) {
-                        return $dataRecords->invoice_no;
+                        return !empty($dataRecords->invoice_id) ? $dataRecords->invoice_id : $dataRecords->trans_id;
                     }) 
                     ->editColumn(
                         'debit_amount',
