@@ -1243,7 +1243,7 @@ class DataRenderer implements DataProviderInterface
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
     { 
       return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['anchor_name','customer_detail','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
@@ -1267,7 +1267,7 @@ class DataRenderer implements DataProviderInterface
                         return $comp_name;
                 })
                 ->addColumn(
-                    'supplier_name',
+                    'customer_detail',
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
