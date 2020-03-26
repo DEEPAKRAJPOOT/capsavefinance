@@ -110,35 +110,13 @@ function uploadFile(uploadId, ownerId, docId)
 
 // delete options for doc file
 
-function deleteFile(uploadId, ownerId, docId)
+function deleteFile(uploadId, ownerId, file_id, docId)
 {
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
     var app_id  = $('#app_id').val();
-    if(docId == 2) { 
-        var file  = $("#panfile"+uploadId)[0].files[0];
-  }
-    // else if(docId == 31) { 
-    //       var file  = $("#dlfile"+uploadId)[0].files[0];
-    // }
-    // else if(docId == 30) { 
-    //      var file  = $("#voterfile"+uploadId)[0].files[0];
-    // }
-    // else if(docId == 32) { 
-    //      var file  = $("#passportfile"+uploadId)[0].files[0];
-    // }
-    // else if(docId == 22) { 
-    //     var file  = $("#photofile"+uploadId)[0].files[0];
-    // }
-    //  else if(docId == 34) { 
-    //     var file  = $("#aadharfile"+uploadId)[0].files[0];
-    // }
-    // else if(docId == 37) { 
-    //     var file  = $("#electricityfile"+uploadId)[0].files[0];
-    // }
-    // else if(docId == 38) { 
-    //     var file  = $("#telephonefile"+uploadId)[0].files[0];
-    // }
+    alert(file_id)
+    
 
    
     var extension = file.name.split('.').pop().toLowerCase();
@@ -150,6 +128,7 @@ function deleteFile(uploadId, ownerId, docId)
     datafile.append('app_id', app_id);
     datafile.append('doc_id', docId);
     datafile.append('doc_file', file);
+    datafile.append('doc_file_id', file_id);
     
     
     console.log(messages.protmoter_document_delete);
