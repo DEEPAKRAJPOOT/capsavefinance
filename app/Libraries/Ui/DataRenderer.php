@@ -87,7 +87,7 @@ class DataRenderer implements DataProviderInterface
                       $userInfo=User::getUserByAnchorId($user->UserAnchorId);
                        $achorId= $userInfo->f_name.' '.$userInfo->l_name;
                     }else{
-                      $achorId='';  
+                      $achorId='N/A';  
                     }
                     //$achorId = $user->UserAnchorId; 
                     return $achorId;
@@ -999,7 +999,7 @@ class DataRenderer implements DataProviderInterface
     { 
     
       return DataTables::of($invoice)
-                ->rawColumns(['invoice_checkbox', 'status','anchor_id'])
+                ->rawColumns(['invoice_checkbox', 'anchor_name','supplier_name','invoice_date','invoice_amount','status','anchor_id'])
 
                 ->addColumn(
                     'invoice_checkbox',
@@ -1019,49 +1019,40 @@ class DataRenderer implements DataProviderInterface
         
                         }
                 })
-                ->addColumn(
+               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
-                   ->addColumn(
+                 ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Ready for Disbursal</span></div>';
-
-                })
-                 
+              
               ->make(true);
     }  
     
@@ -1252,7 +1243,7 @@ class DataRenderer implements DataProviderInterface
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
     { 
       return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['anchor_name','customer_detail','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
@@ -1276,7 +1267,7 @@ class DataRenderer implements DataProviderInterface
                         return $comp_name;
                 })
                 ->addColumn(
-                    'supplier_name',
+                    'customer_detail',
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
@@ -2386,7 +2377,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?: 'N/A'; 
                 }) 
                 ->addColumn(
                     'chrg_desc',
@@ -2463,12 +2454,12 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
+                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?: 'N/A'; 
                 })
                 ->addColumn(
                     'effective_date',
                     function ($charges) {
-                   return $charges->transaction->trans_date ?? 'N/A';
+                   return $charges->transaction->trans_date ?: 'N/A';
                 }) 
                 ->addColumn(
                     'applicability',
@@ -2478,7 +2469,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'chrg_desc',
                     function ($charges) {
-                     return $charges->ChargeMaster->chrg_desc ?? 'N/A';
+                     return $charges->ChargeMaster->chrg_desc ?: 'N/A';
                 })
                 ->addColumn(
                     'created_at',
@@ -2525,7 +2516,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'doc_type_id',
                     function ($documents) {
-                    return $this->doc_type_ids[$documents->doc_type_id] ?? 'N/A'; 
+                    return $this->doc_type_ids[$documents->doc_type_id] ?: 'N/A'; 
                 })
                 ->addColumn(
                     'doc_name',
@@ -2875,7 +2866,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'anchor',
                     function ($customer) {
-                        $anchor = ($customer->user->anchor->comp_name) ?? '--';
+                        $anchor = ($customer->user->anchor->comp_name) ?: '--';
                         $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
                         $data = '';
                         $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
@@ -2892,24 +2883,21 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('by_email') != '') {
-                        if ($request->has('by_email')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('email', 'like', "%$by_nameOrEmail%");
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->whereHas('user', function($query1) use ($search_keyword) {
+                                $query1->where('f_name', 'like',"%$search_keyword%")
+                                ->orWhere('l_name', 'like', "%$search_keyword%")
+                                ->orWhere('email', 'like', "%$search_keyword%");
                             });
+
                         }
                     }
-                    if ($request->get('is_assign') != '') {
-                        if ($request->has('is_assign')) {
-                            $query->whereHas('user', function($query) use ($request) {
-                                $by_status = (int) trim($request->get('is_assign'));
-                                
-                                $query->where('is_assigned', 'like',
-                                        "%$by_status%");
-                            });
+                    if ($request->get('customer_id') != '') {
+                        if ($request->has('customer_id')) {
+                            $customer_id = trim($request->get('customer_id'));
+                                $query->where('customer_id', 'like',"%$customer_id%");
                         }
                     }
                 })
@@ -3982,7 +3970,7 @@ class DataRenderer implements DataProviderInterface
                         ->rawColumns(['is_active','action'])
                         ->addColumn(
                                 'bank_id', function ($baserates) {
-                            return $baserates->bank->bank_name ?? 'N/A';
+                            return $baserates->bank->bank_name ?: 'N/A';
                         })
                         ->addColumn(
                                 'base_rate', function ($baserates) {
@@ -4660,7 +4648,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'batch_id',
                     function ($disbursal) {
-                        return ($disbursal->disbursal_batch->batch_id) ?? '';
+                        return (isset($disbursal->disbursal_batch->batch_id)) ? $disbursal->disbursal_batch->batch_id : '';
                     }
                 )
                 ->addColumn(
@@ -4734,10 +4722,31 @@ class DataRenderer implements DataProviderInterface
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
-                    if ($request->get('search_keyword') != '') {
-                        if ($request->has('search_keyword')) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('customer_id', 'like',"%$search_keyword%");
+                    if ($request->get('customer_code') != '') {
+                        if ($request->has('customer_code')) {
+                            $customer_code = trim($request->get('customer_code'));
+                            $query->whereHas('lms_user', function($query1) use ($customer_code) {
+                                $query1->where('customer_id', 'like',"%$customer_code%");
+                            });
+
+                        }
+                    }
+                    if ($request->get('selected_date') != '') {
+                        if ($request->has('selected_date')) {
+                            $selected_date = trim($request->get('selected_date'));
+                            $query->whereHas('disbursal_batch', function($query1) use ($selected_date) {
+                                $query1->where('created_at', 'like',"%$selected_date%");
+                            });
+
+                        }
+                    }
+                    if ($request->get('batch_id') != '') {
+                        if ($request->has('batch_id')) {
+                            $batch_id = trim($request->get('batch_id'));
+                            $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
+                                $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
+                            });
+
                         }
                     }
                 })

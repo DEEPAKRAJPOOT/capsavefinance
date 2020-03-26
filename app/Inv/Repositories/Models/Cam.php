@@ -76,8 +76,8 @@ class Cam extends BaseModel
         't_o_f_adhoc_limit',
         't_o_f_covenants',
         't_o_f_profile_comp',
-        'risk_comments',
-        'cm_comment',
+        //'risk_comments',
+        //'cm_comment',
         'promoter_cmnt',
         'rating_rational',
         'debt_on',
@@ -112,17 +112,17 @@ class Cam extends BaseModel
             't_o_f_adhoc_limit'=>$attributes['t_o_f_adhoc_limit'],
             't_o_f_covenants'=>$attributes['t_o_f_covenants'],
             't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
-            'risk_comments'=>$attributes['risk_comments'],
+            //'risk_comments'=>$attributes['risk_comments'],
             'rating_rational'=>$attributes['rating_rational'],
             'debt_on'=>$attributes['debt_on'],
             'contigent_observations'=>$attributes['contigent_observations'],
             'created_by'=>$userId
         );
 
-        $role_id=Helpers::getUserRole(Auth::user()->user_id);
-        if(!in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])){
-            $inputArr['cm_comment']=$attributes['cm_comment'];
-        }
+        // $role_id=Helpers::getUserRole(Auth::user()->user_id);
+        // if(!in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])){
+        //     $inputArr['cm_comment']=$attributes['cm_comment'];
+        // }
 
         $cam = Cam::create($inputArr);
         return  $cam ? true : false;
@@ -153,17 +153,17 @@ class Cam extends BaseModel
             't_o_f_adhoc_limit'=>$attributes['t_o_f_adhoc_limit'],
             't_o_f_covenants'=>$attributes['t_o_f_covenants'],
             't_o_f_profile_comp'=>$attributes['t_o_f_profile_comp'],
-            'risk_comments'=>$attributes['risk_comments'],
+            //'risk_comments'=>$attributes['risk_comments'],
             'rating_rational'=>$attributes['rating_rational'],
             'debt_on'=>$attributes['debt_on'],
             'contigent_observations'=>$attributes['contigent_observations'],
             'updated_by'=>$userId,
         ];
 
-        $role_id=Helpers::getUserRole(Auth::user()->user_id);
-        if(!in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])){
-            $inputArr['cm_comment']=$attributes['cm_comment'];
-        }
+        // $role_id=Helpers::getUserRole(Auth::user()->user_id);
+        // if(!in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])){
+        //     $inputArr['cm_comment']=$attributes['cm_comment'];
+        // }
 
         $updateCamData = $cam->update($inputArr);
         return $updateCamData ? true : false;

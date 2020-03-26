@@ -24,24 +24,25 @@
             <div class="row">
                 <div class="col-md-4">
                     {!!
-                    Form::text('by_email',
+                    Form::text('search_keyword',
                     null,
                     [
                     'class' => 'form-control',
                     'placeholder' => 'Search by First name, Last name and Email',
-                    'id'=>'by_email'
+                    'id'=>'search_keyword'
                     ])
                     !!}
                 </div>
                 <div class="col-md-4">
-
                     {!!
-                    Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
+                    Form::text('customer_id',
                     null,
-                    array('id' => 'is_active',
-                    'class'=>'form-control'))
-                    !!}
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'Search by Customer Id',
+                    'id'=>'customer_id'
+                    ])
+                    !!} 
                 </div>
                 <button id="searchB" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                 

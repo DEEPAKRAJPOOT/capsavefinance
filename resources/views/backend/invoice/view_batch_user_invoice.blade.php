@@ -6,7 +6,6 @@
             <table id="fiList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                 <thead>
                     <tr role="row">
-                        <th>App ID</th>
                         <th>Invoice No</th>
                         <th>Invoice Date</th>
                         <th>Invoice Due Date</th>
@@ -26,12 +25,11 @@
 						@endphp
 
 	                    <tr role="row" class="odd">
-							<td> {{ \Helpers::formatIdWithPrefix($invoice->app->app_id, 'APP') }}</td>
 							<td> {{ $invoice->invoice_no }}</td>
 							<td> {{ \Helpers::convertDateTimeFormat($invoice->invoice_date , 'Y-m-d', 'd-m-Y') }}</td>
 							<td> {{ \Helpers::convertDateTimeFormat($invoice->invoice_due_date , 'Y-m-d', 'd-m-Y') }}</td>
 							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount) }} </td>
-							<td> <i class="fa fa-inr"></i>{{ $margin }} </td>
+							<td> </i>{{ $margin }} %</td>
 							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100)) }} </td>
 							<td><i class="fa fa-inr"></i>
 							@php

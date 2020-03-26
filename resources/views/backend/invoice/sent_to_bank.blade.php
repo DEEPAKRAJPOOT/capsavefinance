@@ -31,19 +31,46 @@
 						
 						<div class="card">
 							<div class="card-body">       
+								<form id="manualDisburse" method="POST" action="{{ Route('download_batch_data') }}">
+								@csrf
 								<div class="row">
-									<div class="col-md-4">
+									<div class="col-md-3">
 										{!!
-										Form::text('search_keyword',
+										Form::text('customer_code',
 										null,
 										[
 										'class' => 'form-control',
 										'placeholder' => 'Search by Customer Code',
-										'id'=>'search_keyword'
+										'id'=>'customer_code'
 										])
 										!!}
 									</div>
+									<div class="col-md-3">
+
+										{!!
+					                    Form::text('selected_date',
+					                    null,
+					                    [
+					                    'class' => 'form-control',
+					                    'placeholder' => 'Date',
+					                    'value' => "2013-01-08",
+					                    'id'=>'selected_date'
+					                    ])
+					                    !!}
+
+									</div>
+									<div class="col-md-3">
+										<select class="form-control" id="batch_id" name="batch_id">
+											<option value="" selected="">All</option>
+											@foreach($batchData as $batch)
+											<option value="{{ $batch->disbursal_batch_id }}">{{ $batch->batch_id }}</option>
+											@endforeach
+										</select>
+									</div>
 									<button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+									<button type="submit" class="btn  btn-success btn-sm float-right ml-4">Download Excel</button>
+									</div>
+								</form>
 									
 									<div class="col-12 dataTables_wrapper mt-4">
 										<div class="overflow">
@@ -106,7 +133,14 @@
 		backend_get_invoice_list_bank: "{{ URL::route('backend_get_invoice_list_bank') }}",
 		token: "{{ csrf_token() }}",
 	};
-
+	$('#selected_date').datetimepicker({
+		useCurrent:true,
+        format: 'yyyy-mm-dd',
+     	// startDate: new Date(),
+        autoclose: true,
+        minView: 2, 
+        defaultDate:new Date(),
+    })
 </script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list_send_to_bank.js') }}"></script>
 

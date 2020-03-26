@@ -29,7 +29,7 @@ try {
             columns: [
                 {data: 'invoice_id'},
                 {data: 'anchor_name'},
-                {data: 'supplier_name'},
+                {data: 'customer_detail'},
                 {data: 'invoice_date'},
                 {data: 'invoice_amount'},
                 {data: 'action'}

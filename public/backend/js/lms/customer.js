@@ -12,8 +12,8 @@ try {
                 url: messages.get_customer,
                 method: 'POST',
                 data: function (d) {
-                    d.by_email = $('input[name=by_email]').val();
-                    d.is_assign = $('select[name=is_assign]').val();
+                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
                 error: function () { // error handling
