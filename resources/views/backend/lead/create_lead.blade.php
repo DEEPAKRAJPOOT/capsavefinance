@@ -1,7 +1,5 @@
 @extends('layouts.backend.admin_popup_layout')
-
 @section('content')
-
 <div class="modal-body text-left">
     
    <form id="createLeadForm" name="createLeadForm" method="POST" action="{{route('save_backend_lead')}}">

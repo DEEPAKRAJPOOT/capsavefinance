@@ -107,7 +107,6 @@ class LeadController extends Controller {
         }
     }
 
-
     /**
      * Save backend lead
      * @param Request $request
