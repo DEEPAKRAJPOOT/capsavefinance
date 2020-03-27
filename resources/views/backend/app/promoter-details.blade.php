@@ -88,15 +88,16 @@
                             }
                        
                                 /* for get document file data   */
-                            foreach ($row->document as $row2) {
-                                // $main1[$key]['panNoFileStatus'] = 0;
-                                // $main1[$key]['dlNoFileStatus'] = 0;
-                                $main1[$key]['voterNoFileStatus'] = 1;
+
+                                $main1[$key]['panNoFileStatus'] = 0;
+                                $main1[$key]['dlNoFileStatus'] = 0;
+                                $main1[$key]['voterNoFileStatus'] = 0;
                                 $main1[$key]['passNoFileStatus'] = 0;
                                 $main1[$key]['photoFileStatus'] = 0;
                                 $main1[$key]['aadharFileStatus'] = 0;
                                 $main1[$key]['electricityFileStatus'] = 0;
                                 $main1[$key]['telephoneFileStatus'] = 0;
+                            foreach ($row->document as $row2) {
                                 if ($row2->doc_id == 2) {
                                     $main1[$key]['panNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['panNoFileID'] = $row2->userFile->file_id;
