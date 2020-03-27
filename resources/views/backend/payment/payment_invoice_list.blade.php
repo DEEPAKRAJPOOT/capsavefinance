@@ -59,6 +59,9 @@
                                     @php 
                                             if($repay->entry_type=='1')
                                                 $balanceAmount += $repay->amount;
+                                                if($repay->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                                                    $balanceAmount -= $repay->amount;
+                                                }
                                             elseif($repay->entry_type=='0')
                                                 $balanceAmount -= $repay->amount;
                                             

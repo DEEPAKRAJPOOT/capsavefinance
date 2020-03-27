@@ -433,12 +433,21 @@ trait LmsTrait
         /**
         * disburseType = 1 for online and 2 for manually
         */
+
+        
+        $soaFlag = 0;
+        if(isset($data['soa_flag'])){
+            $soaFlag = $data['soa_flag'];
+        }else{
+            $soaFlag = in_array($transType,[10,35])?0:1;
+        }
+
         $transactionData = [];
         // dd($data);
         $transactionData['repay_trans_id'] = $data['repay_trans_id'] ?? null;
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['gl_flag'] = 1;
-        $transactionData['soa_flag'] = in_array($transType,[10,35]) ? 0 : 1;
+        $transactionData['soa_flag'] = $soaFlag;
         $transactionData['user_id'] = $userId ?? null;
         $transactionData['disbursal_id'] = $data['disbursal_id'] ?? null;
         $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
@@ -1067,7 +1076,11 @@ trait LmsTrait
         $interestRefundTotal = Transactions::where('repay_trans_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
         ->sum('amount');
-        
+
+        $interestRefundSettledTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
+        ->sum('settled_amount');
+
         $interestOverdueTotal = Transactions::where('repay_trans_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
         ->sum('amount');
@@ -1076,7 +1089,7 @@ trait LmsTrait
         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
         ->sum('amount');
         
-        $nonFactoredAmount = $repayment->amount-($repayDebitTotal-$repayCreditTotal)-$interestRefundTotal;
+        $nonFactoredAmount = ($repayment->amount+$interestRefundTotal)-($repayDebitTotal+$interestOverdueTotal+$marginTotal+$interestRefundSettledTotal);
         
         $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal;
 

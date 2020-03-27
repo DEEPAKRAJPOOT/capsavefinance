@@ -242,7 +242,8 @@ class RefundController extends Controller
                     if (count($nonFactoredAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($nonFactoredAmtData[0]) ? $nonFactoredAmtData[0]->amount : 0;
-                        $trData['repay_trans_id'] = $transId;
+                        //$trData['repay_trans_id'] = $transId;
+                        $trData['soa_flag'] = 1;
                         $transType = config('lms.TRANS_TYPE.NON_FACTORED_AMT');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
                         $this->appRepo->saveTransaction($ptrData);
@@ -253,7 +254,8 @@ class RefundController extends Controller
                     if (count($intRefundAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($intRefundAmtData[0]) ? $intRefundAmtData[0]->amount : 0;
-                        $trData['repay_trans_id'] = $transId;
+                        //$trData['repay_trans_id'] = $transId;
+                        $trData['soa_flag'] = 1;
                         $transType = config('lms.TRANS_TYPE.INTEREST_REFUND');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
                         $this->appRepo->saveTransaction($ptrData);
@@ -264,7 +266,8 @@ class RefundController extends Controller
                     if (count($marginReleasedAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($marginReleasedAmtData[0]) ? $marginReleasedAmtData[0]->amount : 0;
-                        $trData['repay_trans_id'] = $transId;
+                        //$trData['repay_trans_id'] = $transId;
+                        $trData['soa_flag'] = 1;
                         $transType = config('lms.TRANS_TYPE.MARGIN');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
                         $this->appRepo->saveTransaction($ptrData);

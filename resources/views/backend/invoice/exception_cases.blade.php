@@ -79,6 +79,7 @@
                                                 <th> Customer Detail </th>
                                                 <th> Inv Detail </th>
                                                 <th> Inv Amount </th>
+                                                   <th> Updated By</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -117,7 +118,7 @@
     .itemBackground 
     { 
       border: 2px solid blanchedalmond;  
-      background-color:#5c9742;
+      background-color:#138864;
     }
      .itemBackgroundColor 
     { 
