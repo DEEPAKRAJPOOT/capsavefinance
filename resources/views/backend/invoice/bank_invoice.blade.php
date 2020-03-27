@@ -89,14 +89,14 @@ var messages = {
             format: 'dd/mm/yyyy',
             autoclose: true,
             minView : 2,
-            endDate: new Date()
+            //endDate: new Date()
         });
 
         $("#to_date").datetimepicker({
             format: 'dd/mm/yyyy',
             autoclose: true,
             minView : 2,
-            endDate: new Date()
+            //endDate: new Date()
         });
      
    });
