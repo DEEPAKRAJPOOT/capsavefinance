@@ -142,6 +142,8 @@ try {
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
+
+        $('#searchBtnBankInvoice').click();
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

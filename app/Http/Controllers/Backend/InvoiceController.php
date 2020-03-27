@@ -459,6 +459,7 @@ class InvoiceController extends Controller {
     {
         $invoiceIds = $request->get('invoice_ids');
         $disburseDate = $request->get('disburse_date');
+        $creatorId = Auth::user()->user_id;
         // dd($disburseDate);
         $validator = Validator::make($request->all(), [
            'disburse_date' => 'required'
@@ -508,6 +509,7 @@ class InvoiceController extends Controller {
                 $invoice['disburse_date'] = $disburseDate;
                 $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+                $disbursalId = $createDisbursal->disbursal_id; 
                 $disbursalIds[] = $createDisbursal->disbursal_id; 
                 $refId = $invoice['lms_user']['virtual_acc_id'];
                 
@@ -552,6 +554,7 @@ class InvoiceController extends Controller {
 
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+                        $updateInvoiceActivityLog = $this->invRepo->saveInvoiceActivityLog($invoice['invoice_id'], 10, 'Sent to Bank', $creatorId, null);
                     }
                 } 
             }
@@ -560,7 +563,7 @@ class InvoiceController extends Controller {
                 if($disburseType == 2) {
                     
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate], $transId, 16);
+                    $transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
                     $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
                     
                     // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
@@ -714,14 +717,8 @@ class InvoiceController extends Controller {
         $selectDate = $request->get('selected_date');
         $batchId = $request->get('batch_id');
 
-        $customersDisbursalList = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
-        $result = $this->downloadExcel($customersDisbursalList);
-
-        Session::flash('message',trans('backend_messages.downloadExcel'));
-        return redirect()->route('backend_get_sent_to_bank');              
-    }
-
-    public function downloadExcel ($data) {
+        $data = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
+        
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -733,14 +730,33 @@ class InvoiceController extends Controller {
                 ->setCategory("Customer Disbursment Excel");
     
         $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A1', 'Batch Id')
-                ->setCellValue('B1', 'Customer Id')
-                ->setCellValue('C1', 'Beneficary Name')
-                ->setCellValue('D1', 'Bank Name')
-                ->setCellValue('E1', 'IFSC code')
-                ->setCellValue('F1', 'Beneficary Accunt no')
-                ->setCellValue('G1', 'Total Disburse Amt')
-                ->setCellValue('H1', 'Total Invoice');
+                ->setCellValue('A1', 'Client Code')
+                ->setCellValue('B1', 'Debit account no.')
+                ->setCellValue('C1', 'Transaction type code')
+                ->setCellValue('D1', 'Value date')
+                ->setCellValue('E1', 'Amount')
+                ->setCellValue('F1', 'Beneficary Name')
+                ->setCellValue('G1', 'Beneficary Accunt no.')
+                ->setCellValue('H1', 'IFSC code')
+                ->setCellValue('I1', 'Customer Ref no.')
+                ->setCellValue('J1', 'Beneficary email id')
+                ->setCellValue('K1', 'Beneficiary mobile no.')
+                ->setCellValue('L1', 'Remarks')
+                ->setCellValue('M1', 'Payment Type')
+                ->setCellValue('N1', 'Purpose code')
+                ->setCellValue('O1', 'Bene a/c type')
+                ->setCellValue('P1', 'Payable Location')
+                ->setCellValue('Q1', 'Print branch name')
+                ->setCellValue('R1', 'Mode of delivery')
+                ->setCellValue('S1', 'Transaction currency')
+                ->setCellValue('T1', 'BENE_ADD1')
+                ->setCellValue('U1', 'BENE_ADD2')
+                ->setCellValue('V1', 'BENE_ADD3')
+                ->setCellValue('W1', 'BENE_ADD4')
+                ->setCellValue('X1', 'Beneficiary ID')
+                ->setCellValue('Y1', 'Remote Printing')
+                ->setCellValue('Z1', 'Print Branch Location')
+                ->setCellValue('AA1', 'Nature Of Payment');;
         $rows = 2;
 
         foreach($data as $rowData){
@@ -770,14 +786,33 @@ class InvoiceController extends Controller {
             }
 
             $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A' . $rows, $rowData['disbursal_batch']['batch_id'] ?? 'XYZ')
-                ->setCellValue('B' . $rows, $rowData['lms_user']['customer_id'] ?? '')
-                ->setCellValue('C' . $rows, $benName ?? '')
-                ->setCellValue('D' . $rows, $bank_name ?? '')
-                ->setCellValue('E' . $rows, $ifsc_code ?? '')
-                ->setCellValue('F' . $rows, $benAcc ?? '')
-                ->setCellValue('G' . $rows, $rowData['total_disburse_amount'] ?? '')
-                ->setCellValue('H' . $rows, $rowData['total_invoice'] ?? '');
+                ->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['Debit_Acct_No'] ?? '')
+                ->setCellValue('C' . $rows, $rowData['Trans_Type_Code'] ?? '')
+                ->setCellValue('D' . $rows, $rowData['disburse_date'] ?? '')
+                ->setCellValue('E' . $rows, $rowData['total_disburse_amount'] ?? '')
+                ->setCellValue('F' . $rows, $benName ?? '')
+                ->setCellValue('G' . $rows, $benAcc ?? '')
+                ->setCellValue('H' . $rows, $ifsc_code ?? '')
+                ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
+                ->setCellValue('J' . $rows, $rowData['user']['email'] ?? '')
+                ->setCellValue('K' . $rows, $rowData['user']['mobile_no'] ?? '')
+                ->setCellValue('L' . $rows, $rowData['transaction']['comment'] ?? '')
+                ->setCellValue('M' . $rows, $rowData['transaction']['mode_of_pay'] ?? '')
+                ->setCellValue('N' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('O' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('P' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Q' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('R' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('S' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('T' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('U' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('V' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('W' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('X' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Y' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Z' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? 'MPYMT');
 
             $rows++;
         }
@@ -797,6 +832,5 @@ class InvoiceController extends Controller {
         
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
         $objWriter->save('php://output');
-        return true;
     }
 }
