@@ -31,6 +31,7 @@ try {
                 {data: 'bank'},
                 {data: 'total_actual_funded_amt'},
                 {data: 'total_invoice'},
+                {data: 'updated_at'},
                 {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6]}]
