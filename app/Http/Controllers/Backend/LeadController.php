@@ -641,7 +641,7 @@ class LeadController extends Controller {
     public function saveManualAnchorLead(Request $request){
        try {
              
-            $arrAnchorVal = $request->all();            
+             $arrAnchorVal = $request->all();            
              $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
              $arrUpdateAnchor =[];
              if(!$anchUserInfo){
@@ -682,11 +682,12 @@ class LeadController extends Controller {
                 $anchLeadMailArr['url'] = $mailUrl;
                 Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                 Session::flash('message', trans('backend_messages.anchor_registration_success'));
-                return redirect()->route('get_anchor_lead_list');
+                Session::flash('operation_status',1);
+                return redirect()->route('lead_list');
             }
             }else{
             Session::flash('error', trans('error_messages.email_already_exists'));
-            return redirect()->route('get_anchor_lead_list');
+            return redirect()->back()->withInput();
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
