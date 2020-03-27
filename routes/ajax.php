@@ -6,7 +6,6 @@ Route::group(
     ['middleware' => 'auth'],
     function () {
     
-    
    //////////////////Pan card authontication//////////////////////////
     Route::post(
         'chk_user_pan_karza',

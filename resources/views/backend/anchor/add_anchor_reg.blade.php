@@ -303,6 +303,8 @@
             if(!employee.match(pattern)) {
                document.getElementById('employee').value = "";
                
+            } else if(employee.length >= 50) {
+               document.getElementById('employee').value = "";
             };
 
             if(isNaN(phone)) {

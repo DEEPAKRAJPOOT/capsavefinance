@@ -113,6 +113,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
             ]); 
             
+            Route::post('promoter-document-delete', [
+                'as' => 'promoter_document_delete',
+                'uses' => 'Backend\ApplicationController@promoterDocumentDelete'
+            ]); 
+            
             Route::post('application-save',
                 [
                 'as' => 'application_save',
@@ -433,7 +438,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_qms_details',
                 'uses' => 'Backend\QmsController@showQmsDetails'
 
-            ]);    
+            ]);   
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 
@@ -620,7 +626,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);   
         });
         
-        Route::group(['prefix' => 'anchor'], function () {
+        Route::group(['prefix' => 'anchor'], function(){
             Route::get('/', [
                 'as' => 'get_anchor_list',
                 'uses' => 'Backend\LeadController@allAnchorList'
@@ -689,10 +695,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@saveAnchorBankAccount'
             ]);
             
-            
-            
-            
-             
             Route::get('manage-program', [
                 'as' => 'manage_program',
                 'uses' => 'Backend\ProgramController@mangeProgramList'
@@ -1100,8 +1102,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('backend_get_sent_to_bank', [
                 'as' => 'backend_get_sent_to_bank',
                 'uses' => 'Backend\InvoiceController@viewSentToBankInvoice'
+            ]); 
+            
+            Route::post('/download-batch-data', [
+                'as' => 'download_batch_data',
+                'uses' => 'Backend\InvoiceController@downloadBatchData'
             ]);
-             
+
             Route::get('/view-batch-user-invoice', [
                 'as' => 'view_batch_user_invoice',
                 'uses' => 'Backend\InvoiceController@viewBatchUserInvoice'

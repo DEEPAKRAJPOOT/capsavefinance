@@ -13,7 +13,9 @@ try {
                 "url": messages.backend_get_invoice_list_bank, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.customer_code = $('input[name=customer_code]').val();
+                    d.selected_date = $('input[name=selected_date]').val();
+                    d.batch_id = $('select[name=batch_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling

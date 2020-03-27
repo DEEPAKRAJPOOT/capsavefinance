@@ -53,8 +53,6 @@ try {
 
         });
         
-     
-      
     //User Listing code
         oTables1 = $('#anchUserList').DataTable({
             processing: true,
@@ -124,9 +122,6 @@ try {
 
         });
       
-      
-      
-       
     });
 } catch (e) {
     if (typeof console !== 'undefined') {
