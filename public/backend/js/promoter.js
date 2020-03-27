@@ -102,8 +102,11 @@ function uploadFile(uploadId, ownerId, docId)
             //obj = result.result.directors;
             //var count = 0;
 //            alert(r);
+            location.reload();
+
         }
     });
+
 }
 
 /* check pan card verify before upload pan*/
@@ -149,7 +152,7 @@ function deleteFile(uploadId, ownerId, file_id, docId)
            if(r.status==1)
            {
             if(docId == 2) { 
-                  $("#pandown"+uploadId).css({'display':'none'});
+                  $("#pandown"+uploadId).css({'display':'inline'});
                   $("#pandown"+uploadId).attr('href',r.file_path);
             }
             else if(docId == 31) { 
@@ -194,6 +197,7 @@ function deleteFile(uploadId, ownerId, file_id, docId)
 //            alert(r);
         }
     });
+    location.reload();
 
 }
 

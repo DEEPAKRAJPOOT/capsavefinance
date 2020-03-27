@@ -92,36 +92,43 @@
                                 if ($row2->doc_id == 2) {
                                     $main1[$key]['panNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['panNoFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['panNoFileStatus'] = $row2->userFile->is_active;
                                 } else if ($row2->doc_id == 31) {
 
                                     $main1[$key]['dlNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['dlNoFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['dlNoFileStatus'] = $row2->userFile->is_active;
                                 } else if ($row2->doc_id == 30) {
 
                                     $main1[$key]['voterNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['voterNoFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['voterNoFileStatus'] = $row2->userFile->is_active;
                                 } else if ($row2->doc_id == 32) {
                                     $main1[$key]['passNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['passNoFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['passNoFileStatus'] = $row2->userFile->is_active;
                                 } else if ($row2->doc_id == 22) {
 
                                     $main1[$key]['photoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['photoFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['photoFileStatus'] = $row2->userFile->is_active;
                                 } else if ($row2->doc_id == 34) {
 
                                     $main1[$key]['aadharFile'] = $row2->userFile->file_path;
                                     $main1[$key]['aadharFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['aadharFileStatus'] = $row2->userFile->is_active;
                                 }else if ($row2->doc_id == 37) {
 
                                     $main1[$key]['electricityFile'] = $row2->userFile->file_path;
                                     $main1[$key]['electricityFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['electricityFileStatus'] = $row2->userFile->is_active;
                                 }else if ($row2->doc_id == 38) {
 
                                     $main1[$key]['telephoneFile'] = $row2->userFile->file_path;
                                     $main1[$key]['telephoneFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['telephoneFileStatus'] = $row2->userFile->is_active;
                                 }
                             }
-
                             ?>
                             <div class="col-md-12">
                                 <h5 class="card-title form-head">Management Information ({{isset($row->first_name) ? $i : '1'}}) </h5>
@@ -335,9 +342,13 @@
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a data-toggle="modal" id="ppanVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['panNo']->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Pan Status)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
                                                                     </a>
-                                                                    <a  href="{{ isset($main1[$j]['panNoFile']) ? Storage::url($main1[$j]['panNoFile']) : '' }}" title="download" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                    <button type="button" class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['panNoFileID']) ? $main1[$key]['panNoFileID'] : 'null' }}, 2)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                     
+                                                                    @if($main1[$key]['panNoFileStatus'] == 1)
+                                                                    <a  href="{{ isset($main1[$j]['panNoFile']) ? Storage::url($main1[$j]['panNoFile']) : '' }}" title="download" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    
+                                                                    <button type="button" class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['panNoFileID']) ? $main1[$key]['panNoFileID'] : 'null' }}, 2)" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                    @endif
+
                                                                     <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -374,9 +385,12 @@
                                                                     @if(request()->get('view_only'))
                                                                     <a data-toggle="modal" id="ddrivingVeriView{{isset($row->first_name) ? $i : '1'}}"  data-target="#modalPromoter1" data-height="400" data-width="100%" accesskey="" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $row->biz_owner_id ])}}" style="display:{{ (isset($main[$j]['dlNo']->requestId)) ? 'inline' : 'none'}}">  <button class="btn-upload btn-sm" type="button" title="View Details (Driving License)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i></button></a>
                                                                     @endif
+
+                                                                    @if($main1[$key]['dlNoFileStatus'] == 1)
                                                                     <a  href="{{ isset($main1[$j]['dlNoFile']) ? Storage::url($main1[$j]['dlNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" name="dlfiles[]" id="dlfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['dlNoFileID']) ? $main1[$key]['dlNoFileID'] : 'null' }}, 31)" ><i class="fa fa-times-circle-o error"></i></button>
-                                                                    
+                                                                    @endif
+
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                     
                                                                 </div>
@@ -410,9 +424,10 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a data-toggle="modal" id="vvoterVeriView{{isset($row->first_name) ? $i : '1'}}"  data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['voterNo']->requestId) ? 'inline' : 'none'}}">   <button class="btn-upload btn-sm" type="button" title="View Details (Voter ID)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="4"> <i class="fa fa-eye"></i></button></a>
-                                                                    <a  href="{{ isset($main1[$j]['voterNoFile']) ? Storage::url($main1[$j]['voterNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
-                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" name="voterfiles[]" id="voterfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['voterNoFileID']) ? $main1[$key]['voterNoFileID'] : 'null' }}, 30)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                     
+                                                                    <a  href="{{ isset($main1[$j]['voterNoFile']) ? Storage::url($main1[$j]['voterNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" name="voterdowns[]" id="voterdowns{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['voterNoFileID']) ? $main1[$key]['voterNoFileID'] : 'null' }}, 30)" ><i class="fa fa-times-circle-o error"></i></button>
+
                                                                     <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -448,7 +463,10 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a data-toggle="modal" id="ppassportVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $row->biz_owner_id ])}}"  style="display:{{isset($main[$j]['passNo']->requestId) ? 'inline' : 'none'}}">     <button class="btn-upload btn-sm" type="button" title="View Details (Passport)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="6"> <i class="fa fa-eye"></i></button></a>
+                                                                    
                                                                     <a  href="{{ isset($main1[$j]['passNoFile']) ? Storage::url($main1[$j]['passNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"  name="passportfiles[]" id="passportfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['passNoFileID']) ? $main1[$key]['passNoFileID'] : 'null' }}, 32)" ><i class="fa fa-times-circle-o error"></i></button>
+
                                                                     <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -473,6 +491,8 @@
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['photoFile']) ? Storage::url($main1[$j]['photoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['photoFileID']) ? $main1[$key]['photoFileID'] : 'null' }}, 22)" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                    
                                                                     <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -498,6 +518,9 @@
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['aadharFile']) ? Storage::url($main1[$j]['aadharFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['aadharFileID']) ? $main1[$key]['aadharFileID'] : 'null' }}, 34)" ><i class="fa fa-times-circle-o error"></i></button>
+                                                                    
+
                                                                     <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -519,8 +542,10 @@
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-
+                                                                
                                                                     <a  href="{{ isset($main1[$j]['electricityFile']) ? Storage::url($main1[$j]['electricityFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['electricityFileID']) ? $main1[$key]['electricityFileID'] : 'null' }}, 37)" ><i class="fa fa-times-circle-o error"></i></button>
+
                                                                     <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -543,8 +568,10 @@
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-
+                                                                
                                                                     <a  href="{{ isset($main1[$j]['telephoneFile']) ? Storage::url($main1[$j]['telephoneFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['telephoneFileID']) ? $main1[$key]['telephoneFileID'] : 'null' }}, 38)" ><i class="fa fa-times-circle-o error"></i></button>
+
                                                                     <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 

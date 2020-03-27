@@ -41,7 +41,8 @@ class UserFile extends BaseModel
         'file_encp_key',
         'file_path',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'is_active'
      ];
     
     
