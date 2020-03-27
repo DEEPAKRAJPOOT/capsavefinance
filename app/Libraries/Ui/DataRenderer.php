@@ -17,7 +17,6 @@ use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 
-
 class DataRenderer implements DataProviderInterface
 {
     use LmsTrait;

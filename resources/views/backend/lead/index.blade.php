@@ -19,7 +19,7 @@
     </section>
 
 
-<div class="card">
+    <div class="card">
         <div class="card-body">       
             <div class="row">
                 <div class="col-md-4">
@@ -65,7 +65,7 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    
+
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
@@ -100,7 +100,7 @@
 @endsection
 @section('additional_css')
 <style>
-#leadMaster_wrapper  #leadMaster_info{margin: -40px 0px 0px 164px;}
+    #leadMaster_wrapper  #leadMaster_info{margin: -40px 0px 0px 164px;}
 </style>
 @endsection
 @section('jscript')
@@ -110,7 +110,6 @@
         get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
@@ -121,10 +120,10 @@
 $operation_status = session()->get('operation_status', false);
 @endphp
 @if( $operation_status == config('common.YES'))
-    
+
 <script>
     try {
-        var p = window.parent;       
+        var p = window.parent;
         p.jQuery('#editLead').modal('hide');
         window.parent.location.reload();
     } catch (e) {

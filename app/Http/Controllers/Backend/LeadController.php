@@ -107,7 +107,6 @@ class LeadController extends Controller {
         }
     }
 
-
     /**
      * Save backend lead
      * @param Request $request
@@ -152,7 +151,7 @@ class LeadController extends Controller {
                 $userMailArr['name'] = $arrUserData['f_name'];
                 $userMailArr['password'] = $string;
                 Event::dispatch("user.registered", serialize($userMailArr));
-                Session::flash('message', 'Non Anchor Lead created successfully'); 
+                Session::flash('message', 'Non-Anchor Lead created successfully'); 
                 Session::flash('is_accept', 1);
                 return redirect()->back();                      
             }else{

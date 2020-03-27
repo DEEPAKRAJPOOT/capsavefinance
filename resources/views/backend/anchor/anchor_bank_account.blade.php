@@ -131,7 +131,6 @@ try {
 }
 </script>
 @endif
-
 <script>
     $(document).on('input', '.number_format', function (event) {
         // skip for arrow keys

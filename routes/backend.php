@@ -620,7 +620,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);   
         });
         
-        Route::group(['prefix' => 'anchor'], function () {
+        Route::group(['prefix' => 'anchor'], function(){
             Route::get('/', [
                 'as' => 'get_anchor_list',
                 'uses' => 'Backend\LeadController@allAnchorList'
@@ -689,10 +689,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@saveAnchorBankAccount'
             ]);
             
-            
-            
-            
-             
             Route::get('manage-program', [
                 'as' => 'manage_program',
                 'uses' => 'Backend\ProgramController@mangeProgramList'
