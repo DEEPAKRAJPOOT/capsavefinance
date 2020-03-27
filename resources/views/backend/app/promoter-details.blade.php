@@ -89,9 +89,9 @@
                        
                                 /* for get document file data   */
                             foreach ($row->document as $row2) {
-                                $main1[$key]['panNoFileStatus'] = 0;
-                                $main1[$key]['dlNoFileStatus'] = 0;
-                                $main1[$key]['voterNoFileStatus'] = 0;
+                                // $main1[$key]['panNoFileStatus'] = 0;
+                                // $main1[$key]['dlNoFileStatus'] = 0;
+                                $main1[$key]['voterNoFileStatus'] = 1;
                                 $main1[$key]['passNoFileStatus'] = 0;
                                 $main1[$key]['photoFileStatus'] = 0;
                                 $main1[$key]['aadharFileStatus'] = 0;
