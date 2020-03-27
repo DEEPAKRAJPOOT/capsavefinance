@@ -430,7 +430,7 @@
                                                                         $customer_checked ,
 
                                                                         ['id' => 'invoice_upload_2',
-
+                                                                         'class'=>'customer_upload',
                                                                         ])
                                                                         !!}
                                                                         <label for="invoice_upload_2"> Customer/Supplier</label>
@@ -469,7 +469,7 @@
                                                                         $invoice_upload ,
 
                                                                         ['id' => 'bulk_invoice_upload_0',
-
+                                                                      
                                                                         ])
                                                                         !!}
 
@@ -482,7 +482,7 @@
                                                                         $anchor_checked ,
 
                                                                         ['id' => 'bulk_invoice_upload_1',
-
+                                                                       
                                                                         ])
                                                                         !!}
 
@@ -497,7 +497,7 @@
                                                                         $customer_checked ,
 
                                                                         ['id' => 'bulk_invoice_upload_2',
-
+                                                                         'class'=>'customer_upload',
                                                                         ])
                                                                         !!}
 
@@ -533,7 +533,7 @@
                                                                         $admin_checked ,
 
                                                                         ['id' => 'invoice_approval_0',
-
+                                                                         'class'=>'customer_upload',
                                                                         ])
                                                                         !!}
                                                                         <label for="invoice_approval_0"> Admin</label>
@@ -545,7 +545,7 @@
                                                                         $anchor_checked ,
 
                                                                         ['id' => 'invoice_approval_1',
-
+                                                                        'class'=>'customer_upload',
                                                                         ])
                                                                         !!}
                                                                         <label for="invoice_approval_1"> Anchor</label>
@@ -569,7 +569,7 @@
                                                                         $auto_approval ,
 
                                                                         ['id' => 'invoice_approval_4',
-
+                                                                         'class'=>'customer_upload',
                                                                         ])
                                                                         !!}
                                                                         <label for="invoice_approval_4"> Auto Approval</label>
@@ -747,8 +747,34 @@
         invoiceDataCount: "{{ ($invoiceDataCount > 0) ? 'true' : 'false' }}"
     };
 
-
-
+</script>
+<script>
+   $(document).on('click','.customer_upload',function(){
+        if ($('#invoice_upload_2').is(":checked") || $('#bulk_invoice_upload_2').is(":checked"))
+        {
+            admin_app    = ($("#invoice_approval_0").is(":checked"));
+            admin_anc    = ($("#invoice_approval_1").is(":checked"));
+            admin_auto    = ($("#invoice_approval_4").is(":checked"));
+            if(admin_app==false && admin_anc==false && admin_auto==true)
+            {
+                $("#invoice_approval_4").prop("checked", false)
+                $("#invoice_approval_4").attr("disabled", true);
+                return false;
+            }
+            else
+            {
+                $("#invoice_approval_4").attr("disabled", false);
+                return true; 
+            }
+        } 
+        else
+        {
+                $("#invoice_approval_4").attr("disabled", false);
+                return true; 
+        }
+        
+       
+   })
 </script>
 <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
