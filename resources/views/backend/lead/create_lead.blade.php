@@ -1,7 +1,5 @@
 @extends('layouts.backend.admin_popup_layout')
-
 @section('content')
-
 <div class="modal-body text-left">
     
    <form id="createLeadForm" name="createLeadForm" method="POST" action="{{route('save_backend_lead')}}">
@@ -142,7 +140,8 @@ $(document).ready(function () {
          $('input.full_name').each(function () {
             $(this).rules("add",
                      {
-                        required: true
+                        required: true,
+                        lettersonly: true
                      })
          });
          $('input.comp_name').each(function () {
@@ -170,13 +169,13 @@ $(document).ready(function () {
          $('#assigned_sale_mgr').each(function () {
             $(this).rules("add",
                      {
-                        required: true,
+                        required: true
                      })
          });
          $('#is_buyer').each(function () {
             $(this).rules("add",
                      {
-                        required: true,
+                        required: true
                      })
          });   
          if($("#createLeadForm").valid()){

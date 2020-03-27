@@ -347,8 +347,6 @@ class AjaxController extends Controller {
                                        UserReqDoc::createCorpDocRequired($doc,$userKycid, $userId);
                                   }
                                 
-                                ////
-                                
                                 $this->application->saveShareHoldingForm($updateData,$response->corp_shareholding_id);
                             }
                         }    

@@ -1,3 +1,4 @@
+@if(isset($leaseOfferData) && count($leaseOfferData))
 <div class="data  col-md-12 mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
@@ -105,8 +106,9 @@
    @endforelse
 
 </div>
+@endif
 
-
+@if(isset($supplyOfferData) && count($supplyOfferData))
 <div class="data col-md-12 mt-4">
    <table class="table" cellpadding="0" cellspacing="0">
       <tr>
@@ -318,3 +320,4 @@
   @endforelse
 <!----supply chain  offer ---->
 </div>
+@endif
