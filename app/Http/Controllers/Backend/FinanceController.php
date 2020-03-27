@@ -67,6 +67,7 @@ class FinanceController extends Controller {
         $result = $this->finRepo->getAllTxns();
          $records[] = [
               'invoice_id' => "Invoice No",
+              'trans_id' => "Transaction No",
               'journal_name' => "Vch Type",
               'date' => "Invoice Date",
               'f_name' => "Ledger Name",
@@ -86,6 +87,7 @@ class FinanceController extends Controller {
            unset($value['m_name'],$value['l_name']);
            $value['f_name'] =  $ledger_name;
            $value['journal_name'] =  'Journal';
+           $value['invoice_id'] =  $value['invoice_id'] ?? '---';
            $records[] = $value->toArray();
         }
         $this->array_to_csv($records, "execl.csv");

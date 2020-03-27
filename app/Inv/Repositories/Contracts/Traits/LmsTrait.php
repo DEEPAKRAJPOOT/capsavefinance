@@ -433,12 +433,21 @@ trait LmsTrait
         /**
         * disburseType = 1 for online and 2 for manually
         */
+
+        
+        $soaFlag = 0;
+        if(isset($data['soa_flag'])){
+            $soaFlag = $data['soa_flag'];
+        }else{
+            $soaFlag = in_array($transType,[10,35])?0:1;
+        }
+
         $transactionData = [];
         // dd($data);
         $transactionData['repay_trans_id'] = $data['repay_trans_id'] ?? null;
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['gl_flag'] = 1;
-        $transactionData['soa_flag'] = in_array($transType,[10,35]) ? 0 : 1;
+        $transactionData['soa_flag'] = $soaFlag;
         $transactionData['user_id'] = $userId ?? null;
         $transactionData['disbursal_id'] = $data['disbursal_id'] ?? null;
         $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
@@ -1053,139 +1062,46 @@ trait LmsTrait
     
     protected function calculateRefund($transId)
     {
-        $totalFactoredAmount = 0;
-        $overdueInterest = 0;
-        $interestRefund = 0;
-        $totalMarginAmount = 0;
-        $nonFactoredAmount = 0;
-        $data = [];
+        $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
+        $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
 
-        $repayment = $this->lmsRepo->getTransactions(['trans_id' => $transId, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')])->first();
-        $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id' => $transId]);
-
-        $disbursalIds = Transactions::where('repay_trans_id', '=', $transId)
-                ->whereNotNull('disbursal_id')
-                ->where('trans_type', '=', config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
-                ->distinct('disbursal_id')
-                ->pluck('disbursal_id')
-                ->toArray();
-
-        $principalSettled = Transactions::where('repay_trans_id', '=', $transId)
-                ->whereNotNull('disbursal_id')
-                ->whereIn('trans_type', [config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'), config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
-                ->sum('amount');
-
-        $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id', $disbursalIds)
-                ->sum('invoice_approve_amount');
-        $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id', $disbursalIds)
-                        ->groupBy('margin')
-                        ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
-
-        $totalFactoredAmount = $repayment ? $repayment->amount : 0;
-
-        $transaction = [];
-        $transactions = [];
+        $repayDebitTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('entry_type','=','0')
+        ->sum('amount');
         
-        $transaction['TRANS_DATE'] = $repayment->trans_date;
-        $transaction['VALUE_DATE'] = $repayment->created_at;
+        $repayCreditTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('entry_type','=','1')
+        ->sum('amount');
         
-        if ($repayment->trans_detail->chrg_master_id != '0') {
-            $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
-        } else {
-            $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
-        }
-                                        
-        if ($repayment->disburse && $repayment->disburse->invoice) {
-            $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
-        } else {
-            $transaction['INV_NO'] = '';
-        }      
+        $interestRefundTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
+        ->sum('amount');
+
+        $interestRefundSettledTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
+        ->sum('settled_amount');
+
+        $interestOverdueTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+        ->sum('amount');
         
-        if ($repayment->entry_type == '0') {
-            $transaction['DEBIT'] = $repayment->amount;
-        } else {
-            $transaction['DEBIT'] = '';
-        }
-
-        if ($repayment->entry_type == '1') {
-            $transaction['CREDIT'] = $repayment->amount;
-        } else {
-            $transaction['CREDIT'] = '';
-        }
+        $marginTotal = Transactions::where('repay_trans_id','=',$transId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
+        ->sum('amount');
         
-        $transactions[] = $transaction;
+        $nonFactoredAmount = ($repayment->amount+$interestRefundTotal)-($repayDebitTotal+$interestOverdueTotal+$marginTotal+$interestRefundSettledTotal);
         
-        $data['TOTAL_AMT_FOR_MARGIN'] = $amountForMargin;
-        $data['TOTAL_FACTORED'] = $totalFactoredAmount;
+        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal;
 
-        if ($principalSettled > 0) {
-            $nonFactoredAmount = $totalFactoredAmount - $principalSettled;
-        }
-        $nonFactoredAmount = 0;
-        $data['NON_FACTORED'] = $nonFactoredAmount;
-
-        foreach ($repaymentTrails as $repay) {
-            $transaction = [];
-            $transaction['TRANS_DATE'] = $repay->trans_date;
-            $transaction['VALUE_DATE'] = $repay->created_at;
-
-            if ($repay->trans_detail->chrg_master_id != '0') {
-                $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
-            } else {
-                $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
-            }
-
-            if ($repay->disburse->invoice->invoice_no) {
-                $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
-            } else {
-                $transaction['INV_NO'] = '';
-            }      
-
-            if ($repay->entry_type == '0') {
-                $transaction['DEBIT'] = $repay->amount;
-            } else {
-                $transaction['DEBIT'] = '';
-            }
-
-            if ($repay->entry_type == '1') {
-                $transaction['CREDIT'] = $repay->amount;
-            } else {
-                $transaction['CREDIT'] = '';
-            }
-            
-            if ($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
-                $overdueInterest += $repay->amount;
-            }
-
-            if ($repay->trans_type == config('lms.TRANS_TYPE.INTEREST_REFUND')) {
-                $interestRefund += $repay->amount;
-            }
-            
-            $transactions[] = $transaction;   
-        }
-
-        $data['TRANSACTIONS'] = $transactions;
-        $data['OVERDUE_INTEREST'] = $overdueInterest;
-        $data['INTEREST_REFUND'] = $interestRefund;
-
-        $item = [];
-        foreach ($marginAmountData as $margin) {
-            $item[] = ['MARGIN_TYPE' => 1, 'MARGIN_PER_OR_FIXED' => $margin['margin'], 'MARGIN_AMOUNT' => $margin['margin_amount']];
-            $totalMarginAmount += $margin['margin_amount'];
-        }
-
-        $data['MARGIN'] = $item;
-
-        $totalMarginAmount -= $overdueInterest;
-
-        $data['MARGIN_RELEASED'] = $totalMarginAmount;
-
-        $totalMarginAmount += $interestRefund;
-
-        //Total Refundable Amount
-        $data['TOTAL_REFUNDABLE_AMT'] = $totalMarginAmount;
-
-        return $data;
+        return ['repaymentTrails' => $repaymentTrails, 
+        'repayment'=>$repayment,
+        'nonFactoredAmount' => $nonFactoredAmount,
+        'interestRefund'=>$interestRefundTotal,
+        'interestOverdue'=>$interestOverdueTotal,
+        'marginTotal'=>$marginTotal,
+        'refundableAmount'=>$refundableAmount,
+        'transId' => $transId
+        ];
     }
     
     protected function saveRefundData($transId, $refundData=[])
