@@ -35,7 +35,20 @@
 
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row"><div class="col-md-2"></div>
+                                        <div class="row">
+                                            
+                                             <div class="col-md-4">
+                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
+                                            </div>
+                                              <div class="col-md-4">
+                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                              </div> 
+                                             <div class="col-md-1">
+                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                             </div>  
+                                            <!--
+                                            
+                                            <div class="col-md-2"></div>
                                             <div class="col-md-3">				 
                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                                 <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
@@ -63,10 +76,11 @@
 
                                                 </select>
                                             </div>    
-
+                                            -->
                                             <div class="col-md-2">	          
                                                 <button type="button" id="bulkApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
                                             </div>
+                                           
                                         </div>
                                         <div class="row">
                                             <div class="col-12 dataTables_wrapper mt-4">
