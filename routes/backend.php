@@ -113,6 +113,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
             ]); 
             
+            Route::post('promoter-document-delete', [
+                'as' => 'promoter_document_delete',
+                'uses' => 'Backend\ApplicationController@promoterDocumentDelete'
+            ]); 
+            
             Route::post('application-save',
                 [
                 'as' => 'application_save',
@@ -433,7 +438,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_qms_details',
                 'uses' => 'Backend\QmsController@showQmsDetails'
 
-            ]);    
+            ]);   
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 

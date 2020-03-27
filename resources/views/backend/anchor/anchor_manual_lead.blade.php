@@ -304,13 +304,17 @@
 
             if(!isNaN(e)) {
                document.getElementById('f_name').value = "";
+            } else if(f_name.length >= 50) {
+               document.getElementById('f_name').value = "";
             };
         }
 
          function checkLname(e) {
-            let f_name = document.getElementById('l_name').value;
+            let l_name = document.getElementById('l_name').value;
 
             if(!isNaN(e)) {
+               document.getElementById('l_name').value = "";
+            } else if(l_name.length >= 50) {
                document.getElementById('l_name').value = "";
             };
         }
