@@ -218,6 +218,10 @@ class ApportionmentHelper{
         return Transactions::where('parent_trans_id','=',$transId)->sum('amount');
     }
 
+    private function getUnbookedInterest(&$disbursal){
+        return $this->accuredInt-$this->interestDue;
+    }
+
     private function settleInterestDueAmount(&$disbursal){
         
         $interestDue = self::getInterestDueAmount($disbursal);
@@ -235,6 +239,32 @@ class ApportionmentHelper{
             ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
             
             $this->transaction['interestPaid'][$disbursal->disbursal_id] = $interestPaidData;
+        }
+    }
+
+    private function settleUnbookedInterest(&$disbursal){
+        $unbookedInterest = self::getUnbookedInterest($disbursal);
+        if($unbookedInterest > 0 && $this->balanceRepayAmount>0 && $this->paymentFreq == '2')
+        {
+            $restInterestPaidAmt = ($this->balanceRepayAmount>=$unbookedInterest)?$unbookedInterest:$this->balanceRepayAmount;
+            $this->balanceRepayAmount -= $restInterestPaidAmt;
+            $this->disbursal['total_repaid_amt'] += $restInterestPaidAmt;
+
+            $this->transaction['unbookedInterestDue'][$disbursal->disbursal_id] = $this->createTransactionData($this->transDetails->user_id, [
+                'amount' => $restInterestPaidAmt,
+                'trans_date'=>$this->transDetails->trans_date,
+                'disbursal_id'=>$disbursal->disbursal_id,
+                'parent_trans_id'=>$this->transDetails->trans_id
+            ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
+
+            $interestPaidData = $this->createTransactionData($this->transDetails->user_id, [
+                'amount' => $restInterestPaidAmt,
+                'trans_date'=>$this->transDetails->trans_date,
+                'disbursal_id'=>$disbursal->disbursal_id,
+                'parent_trans_id'=>$this->transDetails->trans_id
+            ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
+
+            $transactionData['unbookedInterestPaid'][$disbursal->disbursal_id] = $interestPaidData;
         }
     }
 
@@ -386,8 +416,10 @@ class ApportionmentHelper{
             'penalty_amount'=> $this->penalAmount,
             'penal_days'=> $this->penalDays,
         ];
-        
         self::settleInterestDueAmount($disbursalDetail);
+        if($this->paymentFreq == '2'){
+            self::settleUnbookedInterest($disbursalDetail);
+        }
         self::settlePrincipalAmount($disbursalDetail);
         self::settleInterestRefund($disbursalDetail);
     }
@@ -497,6 +529,20 @@ class ApportionmentHelper{
         foreach($this->transaction['charges'] as $chargesValue){
             $this->lmsRepo->saveTransaction($chargesValue);
         }
+
+        if(!empty($this->transaction['unbookedInterestDue']))
+        foreach($this->transaction['unbookedInterestDue'] as $unbookedIntDueValue){
+            $this->lmsRepo->saveTransaction($nbookedIntDueValue);
+        }
+
+        if(!empty($this->transaction['unbookedInterestPaid']))
+        foreach($this->transaction['unbookedInterestPaid'] as $unbookedIntPaidValue){
+            $this->lmsRepo->saveTransaction($unbookedIntPaidValue);
+        }
+        
+
+
+
         
         // if(!empty($this->transaction['nonFactoredAmt']))
         // foreach($this->transaction['nonFactoredAmt'] as $nonFactoredAmtValue){
