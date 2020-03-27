@@ -2446,7 +2446,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?: 'N/A'; 
+                    return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
                 }) 
                 ->addColumn(
                     'chrg_desc',
@@ -2523,7 +2523,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_applicable_id',
                     function ($charges) {
-                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?: 'N/A'; 
+                   return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
                 })
                 ->addColumn(
                     'effective_date',
@@ -2538,7 +2538,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'chrg_desc',
                     function ($charges) {
-                     return $charges->ChargeMaster->chrg_desc ?: 'N/A';
+                     return $charges->ChargeMaster->chrg_desc ?? 'N/A';
                 })
                 ->addColumn(
                     'created_at',
