@@ -214,7 +214,6 @@
                                                            </div>
                                                         </div>
                                                         <div class="col-md-6">
-
                                                             <div class="form-group password-input">
                                                                 <label for="txtPassword">Invoice Upload <span class="error_message_label">*</span></label>
                                                                 <div class="row">
@@ -270,23 +269,12 @@
                                                                 </div>
                                                                 <label id="prgm_type-error" class="error mb-0" for="invoice_upload[]"></label>
                                                             </div>
-
-                                                           <div class="form-group">
-                                                              <label for="txtCreditPeriod">Margin (%) <span class="error_message_label">*</span></label>
-                                                              {!! Form::text('margin',
-                                                              isset($subProgramData->margin) ? $subProgramData->margin : null,
-                                                              ['class'=>'form-control valid_perc percentage','placeholder'=>'Margin',
-                                                              'id'=>'margin'])   
-                                                              !!}
-                                                           </div>
-
                                                         </div>
                                                      </div>
                                                   </div>
                                                   <div class="col-md-12">
                                                      <div class="row">
                                                         <div class="col-md-6">
-
                                                             <div class="form-group password-input">
                                                                 <label for="txtPassword">Bulk Invoice Upload <span class="error_message_label">*</span></label>
                                                                 @php   $bulk_invoice_upload = [] @endphp
@@ -391,49 +379,6 @@
                                                                         ])
                                                                         !!}
                                                                         <label for="invoice_approval_1"> Anchor</label>
-
-                                                           <div class="form-group">
-                                                              <label for="txtCreditPeriod"> Interest Borne By <span class="error_message_label">*</span> </label>
-                                                              {!!
-                                                              Form::select('interest_borne_by',
-                                                              [
-                                                              ''=>'Select', '1'=>'Anchor',   '2'=>'Customer/Supplier',
-                                                              ],
-                                                              isset($subProgramData->interest_borne_by) ? $subProgramData->interest_borne_by : null,
-                                                              ['id' => 'interest_borne_by',
-                                                              'class'=>'form-control',
-                                                              ])
-                                                              !!}
-                                                           </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                           <div class="form-group">
-                                                              <div class="row">
-                                                                 <div class="col-md-6">
-                                                                    <label for="is_adhoc_facility">Adhoc Facility<span class="error_message_label">*</span</label>
-                                                                    <div class="" style="color:black;">
-                                                                       <div class="form-check-inline">
-                                                                          <label class="form-check-label fnt">
-                                                                          {!! Form::radio('is_adhoc_facility',
-                                                                          1,
-                                                                          isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 1) ? true : false,
-                                                                          ['class'=>'form-check-input adhoc',
-                                                                          'id'=>'is_adhoc_facility'])   
-                                                                          !!}
-                                                                          Yes
-                                                                          </label>
-                                                                       </div>
-                                                                       <div class="form-check-inline">
-                                                                          <label class="form-check-label fnt">
-                                                                          {!! Form::radio('is_adhoc_facility',
-                                                                          0,
-                                                                          isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 0) ? true : false,
-                                                                          ['class'=>'form-check-input adhoc',
-                                                                          'id'=>'is_adhoc_facility'])   
-                                                                          !!}No
-                                                                          </label>
-                                                                       </div>
-
                                                                     </div>
                                                                     <label id="prgm_type-error" class="error mb-0" for="is_adhoc_facility"></label>
                                                                  </div>
@@ -457,45 +402,6 @@
                                                                         ])
                                                                         !!}
                                                                         <label for="invoice_approval_4"> Auto Approval</label>
-
-                                                                 </div>
-                                                              </div>
-                                                           </div>
-                                                        </div>
-                                                     </div>
-                                                  </div>
-                                                  <div class="col-md-12">
-                                                     <div class="row">
-                                                        <div class="col-md-6">
-                                                           <div class="row">
-                                                              <div class="col-md-6">
-                                                                 <div class="form-group">
-                                                                    <label for="txtCreditPeriod">Grace Period <span class="error_message_label">*</span></label>
-                                                                    <div class="clearfix"></div>
-                                                                    <div class="">
-                                                                       <div class="form-check-inline">
-                                                                          <label class="form-check-label fnt">
-                                                                          {!! Form::radio('is_grace_period',
-                                                                          '1',
-                                                                          isset($subProgramData->is_grace_period) && ($subProgramData->is_grace_period == 1) ? true : false,
-                                                                          ['class'=>'form-check-input grace',
-                                                                          'id'=>'is_grace_period'])   
-                                                                          !!}
-                                                                          Yes
-                                                                          </label>
-                                                                       </div>
-                                                                       <div class="form-check-inline ">
-                                                                          <label class="form-check-label fnt">
-                                                                          {!! Form::radio('is_grace_period',
-                                                                          '0',
-                                                                          isset($subProgramData->is_grace_period) && ($subProgramData->is_grace_period == 0) ? true : false,
-                                                                          ['class'=>'form-check-input grace',
-                                                                          'id'=>'is_grace_period'])   
-                                                                          !!}
-                                                                          No
-                                                                          </label>
-                                                                       </div>
-
                                                                     </div>
                                                                     <label id="prgm_type-error" class="error mb-0" for="is_grace_period"></label>
                                                                  </div>
