@@ -143,7 +143,7 @@ $(document).ready(function () {
             $(this).rules("add",
                      {
                         required: true,
-                        lettersonly: true,
+                        lettersonly: true
                      })
          });
          $('input.comp_name').each(function () {
@@ -171,13 +171,13 @@ $(document).ready(function () {
          $('#assigned_sale_mgr').each(function () {
             $(this).rules("add",
                      {
-                        required: true,
+                        required: true
                      })
          });
          $('#is_buyer').each(function () {
             $(this).rules("add",
                      {
-                        required: true,
+                        required: true
                      })
          });   
          if($("#createLeadForm").valid()){
