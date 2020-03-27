@@ -145,7 +145,8 @@ public static function updateInvoice($invoiceId,$status)
   
      public static function getAllInvoice($request,$status)
      {
-         $whr = [];
+      
+      /*  $whr = [];
          
          if($request->get('supplier_id')!='' && $request->get('biz_id')=='')
          {
@@ -175,10 +176,10 @@ public static function updateInvoice($invoiceId,$status)
        
          if($request->get('app_id')!=''){
              $whr['app_id']= $request->get('app_id');
-        }
+        }  */ 
         //backend_get_invoice
 
-        return self::where('status_id',$status)->where($whr)->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal'])->orderBy('invoice_id', 'DESC')->get();
+        return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal'])->orderBy('invoice_id', 'DESC');
      } 
      
      public static function getUserAllInvoice($request)
