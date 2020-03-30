@@ -16,8 +16,8 @@
             <div class="row">
                 <div class="col-md-12">
                    <div class="form-group">
-                      <label >Comment *</label>
-                      <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Enter comment here ." required=""></textarea>
+                      <label >Comment</label>
+                      <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Enter comment here ." ></textarea>
                    </div>
                 </div>
             </div>

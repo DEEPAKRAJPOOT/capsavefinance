@@ -126,7 +126,7 @@
                 <div class="col-md-12">
                    <div class="form-group">
                       <label for="email">Comment </label>
-                      <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Enter comment here ." ></textarea>
+                      <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Enter comment here ."></textarea>
                    </div>
                 </div>
             </div>
