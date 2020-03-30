@@ -85,16 +85,16 @@ try {
 //            $(this).handleIndustryChange();
 //        });
         $('.industry_change').on('change', function () {
-            let country_id = $(this).val();
+            var country_id = $(this).val();
             $(this).handleIndustryChange(country_id);
         });
 
 
         $(document).on('click', '.submit', function (e) {
             e.preventDefault();
-            let form = $('#addProgram');
+            var form = $('#addProgram');
 
-            let validRules = {
+            var validRules = {
                 rules: {
                     product_id: {
                         required: true
