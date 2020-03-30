@@ -62,10 +62,14 @@ class InvoiceController extends Controller {
     }
 
     public function getAllInvoice() {
-
         $get_anchor = $this->invRepo->getLmsLimitAllAnchor();
+        $id = Auth::user()->user_id;
+        $res =  $this->userRepo->getUserDetail($id);
+        $aid    =  $res->anchor_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
         return view('backend.invoice.upload_all_invoice')
-                        ->with(['get_anchor' => $get_anchor]);
+                        ->with(['get_anchor' => $get_anchor,'anchor' => $chkUser->id,'id' =>  $aid ]);
     }
 
     public function viewInvoice(Request $req) {
@@ -342,14 +346,19 @@ class InvoiceController extends Controller {
         {
             $customer  = 3;
         }
+        
          $expl  =  explode(",",$getPrgm->invoice_approval); 
-      
+        
         if ($attributes['exception']) {
             $statusId = 28;
         } else {
           if(in_array($customer, $expl))  
           {
             $statusId = 8;  
+          }
+          else if($getPrgm->invoice_approval==4)
+          {
+              $statusId = 8;   
           }
           else
           {
@@ -382,7 +391,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-            $this->invRepo->saveInvoiceActivityLog($result, 7, null, $id, null);
+            $this->invRepo->saveInvoiceActivityLog($result, $statusId, null, $id, null);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
