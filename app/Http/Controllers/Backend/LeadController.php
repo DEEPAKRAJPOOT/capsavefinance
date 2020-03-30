@@ -84,7 +84,6 @@ class LeadController extends Controller {
      * Create lead.
      */
     public function createBackendLead(Request $request) {
-        //dd('kkk');
         try {            
             return view('backend.lead.create_lead');
         } catch (Exception $ex) {
@@ -640,54 +639,53 @@ class LeadController extends Controller {
      */
     public function saveManualAnchorLead(Request $request){
        try {
-             
-             $arrAnchorVal = $request->all();            
-             $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
-             $arrUpdateAnchor =[];
-             if(!$anchUserInfo){
-              $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
+            $arrAnchorVal = $request->all();            
+            $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
+            $arrUpdateAnchor =[];
+            if(!$anchUserInfo){
+                $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
-             $arrAnchorData = [
-                'name' => trim($arrAnchorVal['f_name']),
-                 'l_name' => trim($arrAnchorVal['l_name']),
-                'biz_name' => $arrAnchorVal['comp_name'],
-                'email' => trim($arrAnchorVal['email']),
-                'phone' => $arrAnchorVal['phone'],
-                'user_type' => $arrAnchorVal['anchor_user_type'],
-                 'is_registered'=>0,
-                 'registered_type'=>0,
-                'created_by' => Auth::user()->user_id,
-                 'created_at' => \Carbon\Carbon::now(),
-                 'token' => $token,
-            ];
+                $arrAnchorData = [
+                    'name' => trim($arrAnchorVal['f_name']),
+                    'l_name' => trim($arrAnchorVal['l_name']),
+                    'biz_name' => $arrAnchorVal['comp_name'],
+                    'email' => trim($arrAnchorVal['email']),
+                    'phone' => $arrAnchorVal['phone'],
+                    'user_type' => $arrAnchorVal['anchor_user_type'],
+                    'is_registered'=>0,
+                    'registered_type'=>0,
+                    'created_by' => Auth::user()->user_id,
+                    'created_at' => \Carbon\Carbon::now(),
+                    'token' => $token,
+                ];
             
-             $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
-            $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
+                $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
+                $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
-            if($getAnchorId && $getAnchorId->anchor_id!=''){
-                $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
+                if($getAnchorId && $getAnchorId->anchor_id!=''){
+                    $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
+                }else{
+                     $arrUpdateAnchor ['anchor_id'] =$arrAnchorVal['assigned_anchor'];
+                }
+            
+                $arrUpdateAnchor = [
+                    'anchor_id' => $getAnchorId->anchor_id
+                ];
+            
+                $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
+                if($anchor_lead) {
+                    $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
+                    $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
+                    $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
+                    $anchLeadMailArr['url'] = $mailUrl;
+                    Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
+                    Session::flash('message', trans('backend_messages.anchor_registration_success'));
+                    Session::flash('operation_status',1);
+                    return redirect()->route('get_anchor_lead_list');
+                }
             }else{
-                 $arrUpdateAnchor ['anchor_id'] =$arrAnchorVal['assigned_anchor'];
-            }
-            
-//            $arrUpdateAnchor = [
-//                'anchor_id' => $getAnchorId->anchor_id
-//                ];
-            
-            $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
-            if ($anchor_lead) {
-                $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
-                $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
-                $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
-                $anchLeadMailArr['url'] = $mailUrl;
-                Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
-                Session::flash('message', trans('backend_messages.anchor_registration_success'));
-                Session::flash('operation_status',1);
-                return redirect()->route('lead_list');
-            }
-            }else{
-            Session::flash('error', trans('error_messages.email_already_exists'));
-            return redirect()->back()->withInput();
+                Session::flash('error', trans('error_messages.email_already_exists'));
+                return redirect()->back()->withInput();
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

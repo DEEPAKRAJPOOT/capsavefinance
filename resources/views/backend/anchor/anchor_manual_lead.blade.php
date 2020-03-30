@@ -195,7 +195,7 @@ $messages = session()->get('message', false);
     var p = window.parent;
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
     p.jQuery("#addAnchorFrm").modal('hide');
-    p.oTables.draw();
+    p.location.reload();
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);
@@ -265,7 +265,7 @@ $messages = session()->get('message', false);
                     $(this).rules("add",
                     {
                         required: true,
-                    });
+                    })
                 });
                 $('input.phone').each(function () {
                     $(this).rules("add",
