@@ -26,6 +26,13 @@ class ApiController
 
 
   public function tally_entry(){
+    $response = array(
+      'status' => 'failure',
+      'message' => 'Request method not allowed',
+    );
+    if (strpos(php_sapi_name(), 'cli') !== false) {
+        return $this->_setResponse($response, 405);
+    }
     $where = ['tally_updated' => 'N'];
     $txnsData = Transactions::getTransactions($where);
     $batch_id = _getRand(15);
@@ -55,8 +62,10 @@ class ApiController
       }
     }
     if (empty($insertedData)) {
-      return ($totalRecords > 1 ? $totalRecords .' Records inserted successfully' : ($totalRecords == 0 ? 'No new record found' : '1 Record inserted.'));
+      $response['message'] =  ($totalRecords > 1 ? $totalRecords .' Records inserted successfully' : ($totalRecords == 0 ? 'No new record found' : '1 Record inserted.'));
+      $response['status'] = 'success';
     }
+    return $response;
   }
 
   public function karza_webhook(Request $request){
