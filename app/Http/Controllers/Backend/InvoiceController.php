@@ -68,8 +68,10 @@ class InvoiceController extends Controller {
         $aid    =  $res->anchor_id;
         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        $get_program = $this->invRepo->getLimitProgram($aid);
+        $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
         return view('backend.invoice.upload_all_invoice')
-                        ->with(['get_anchor' => $get_anchor,'anchor' => $chkUser->id,'id' =>  $aid ]);
+                        ->with(['get_anchor' => $get_anchor,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program ]);
     }
 
     public function viewInvoice(Request $req) {
