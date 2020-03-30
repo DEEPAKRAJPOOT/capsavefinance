@@ -149,8 +149,12 @@
               <tr>
                   <td><b>Limit: </b> </td>
                   <td>INR {{number_format($supplyOffer->prgm_limit_amt)}}</td>
+                  <!--
                   <td><b>Documentation Fee (%): </b></td>
                   <td>{{$supplyOffer->document_fee}} %</td>
+                  -->
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>                  
               </tr>
               
               <tr>
@@ -174,9 +178,29 @@
               <tr>
                   <td><b>Grace Period (Days): </b></td>
                   <td>{{$supplyOffer->grace_period}}</td>
-                  <td><b>Processing Fee (%): </b></td>
-                  <td>{{$supplyOffer->processing_fee}} %</td>
+                  <!--<td><b>Processing Fee (%): </b></td>
+                  <td>{{$supplyOffer->processing_fee}} %</td>-->
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>                    
               </tr>
+                @foreach($supplyOffer->offerCharges as $key=>$offerCharge)
+                @if($key%2 == 0)
+                @php
+                if (\Request::route()->getName() == 'generate_cam_report') {
+                    $inrSymbol = ($offerCharge->chrg_type == 2)? ' (%)': ' (₹)';
+                } else {
+                    $inrSymbol = ($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)';
+                }
+                @endphp
+                <tr>                    
+                    @endif
+                    <td><b>{{$offerCharge->chargeName->chrg_name}} {!! $inrSymbol !!}: </b></td>
+                    <td>{{$offerCharge->chrg_value}}</td>
+                    @if($key%2 != 0)
+                    <td></td>
+                </tr>
+                @endif
+                @endforeach
               <tr>
                   <td><b>Comment: </b></td>
                   <td colspan="3">{{$supplyOffer->comment}}</td>

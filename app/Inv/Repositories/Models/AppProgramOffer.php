@@ -157,7 +157,7 @@ class AppProgramOffer extends BaseModel {
         if(is_null($product_id) || $product_id == ''){
             $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
         }else{
-            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges')->get();
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->get();
         }
         return $offers ? $offers : null;
     }
@@ -445,4 +445,8 @@ class AppProgramOffer extends BaseModel {
                 $result = $query->get();
         return !$result->isEmpty() ? $result : [];
     }
+    
+    public static function chargeName(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
+    }    
 }
