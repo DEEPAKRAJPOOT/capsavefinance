@@ -127,7 +127,7 @@
 																			<th>Inv. Detail</th>
 																			<th>Inv.  Amount</th>
                                                                                                                                                            <th> Updated By</th>
-																			
+																			    <th> Action</th>
 
 																		</tr>
 																	</thead>
@@ -195,7 +195,7 @@ $operation_status = session()->get('operation_status', false);
 	var messages = {
 		backend_get_invoice_list_disbursed_que: "{{ URL::route('backend_get_invoice_list_disbursed_que') }}",
 		upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
-		get_program_supplier: "{{ URL::route('get_program_supplier') }}",
+                get_program_supplier: "{{ URL::route('get_program_supplier') }}",
 		data_not_found: "{{ trans('error_messages.data_not_found') }}",
 		front_program_list: "{{ URL::route('front_program_list') }}",
 		front_supplier_list: "{{ URL::route('front_supplier_list') }}",
@@ -404,6 +404,50 @@ $operation_status = session()->get('operation_status', false);
 			}
 		});
 	});
+        
+        
+         ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('change', '.approveInv1', function () {
+        var status = $(this).val();
+        if (status == 0)
+        {
+            return false;
+        }
+       else if(status==7)
+        {
+            var st =  "Pending";
+        }
+        else if(status==8)
+        {
+            var st =  "Approve";
+        }
+        else if(status==14)
+        {
+            var st =  "Reject";
+        }
+        if (confirm('Are you sure? You want to '+st+' it.'))
+        {
+            th = this;
+            var invoice_id = $(this).attr('data-id');
+            var postData = ({'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            th = this;
+            jQuery.ajax({
+                url: messages.update_invoice_approve,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                    $(th).closest('tr').remove();
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
 
 ///////////////////////////////////////// change invoice amount////////////////
 	$(document).on('click', '#UpdateInvoiceAmount', function () {
