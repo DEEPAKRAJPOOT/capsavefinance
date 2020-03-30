@@ -28,6 +28,13 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
     );
 
 
+    Route::any('api/tally/entry',[
+        'as' => 'api_tally_entry',
+        'uses' => 'Auth\ApiController@tally_entry'
+        ]
+    );
+
+
 
      Route::group(
         ['prefix' => 'dashboard'],

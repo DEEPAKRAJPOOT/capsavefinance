@@ -77,8 +77,10 @@
                                                 </select>
                                             </div>    
                                             -->
-                                            <div class="col-md-2">	          
+                                            <div class="col-md-2">
+                                               @php if($role!=11) { @endphp
                                                 <button type="button" id="bulkApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
+                                                @php } @endphp 
                                             </div>
                                            
                                         </div>

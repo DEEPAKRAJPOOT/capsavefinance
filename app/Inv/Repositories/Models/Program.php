@@ -411,5 +411,9 @@ class Program extends BaseModel {
     {
          return self::where(['prgm_id' => $prgm_id])->first(); 
     }
+    
+    public static function getProgramByProgramName($prgm_name){
+        return self::where(['prgm_name' => $prgm_name])->get();
+    }
 
 }
