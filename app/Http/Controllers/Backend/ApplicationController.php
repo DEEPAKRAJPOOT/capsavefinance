@@ -823,8 +823,11 @@ class ApplicationController extends Controller
                         foreach ($offer_charges as $key => $chrgs) {
                           $ChargeId = $chrgs->charge_id;
                           $ChargeMasterData = $this->appRepo->getTransTypeDataByChargeId($ChargeId);
-                          $prgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
-                          $pf_amt = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+                          $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
+                          // $pf_amt = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
+                          $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
+                          if($chrgs->chrg_type == 1)
+                          $pf_amt = $chrgs->chrg_value;
                           $fData = [];
                           $fData['amount'] = $pf_amt;
                           if(isset($PrgmChrg->is_gst_applicable) && $PrgmChrg->is_gst_applicable == 1 ) {
@@ -836,13 +839,13 @@ class ApplicationController extends Controller
 
                             } else {
                               $fWGst = round((($pf_amt*9)/100),2);
-                              $fData['gst'] = $pPrgmChrg->is_gst_applicable;
-                              $fData['cgst'] = $pfWGst;
-                              $fData['sgst'] = $pfWGst;
+                              $fData['gst'] = $PrgmChrg->is_gst_applicable;
+                              $fData['cgst'] = $fWGst;
+                              $fData['sgst'] = $fWGst;
                               $totalGst = $fData['cgst'] + $fData['sgst'];
                               $fData['amount'] += $totalGst;
                             }
-                          } 
+                          }
                           $fDebitData = $this->createTransactionData($user_id, $fData, null, $ChargeId);
                           $fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
                         }
