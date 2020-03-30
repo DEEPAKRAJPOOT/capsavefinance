@@ -821,10 +821,9 @@ class ApplicationController extends Controller
                         if (empty($offer_charges))
                           continue;
                         foreach ($offer_charges as $key => $chrgs) {
-                          $ChargeId = $chrgs->charge_id;
-                          $ChargeMasterData = $this->appRepo->getTransTypeDataByChargeId($ChargeId);
+                          $ChargeMasterData = $this->appRepo->getTransTypeDataByChargeId($chrgs->charge_id);
+                          $ChargeId = $ChargeMasterData->id;
                           $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
-                          // $pf_amt = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
                           $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
                           if($chrgs->chrg_type == 1)
                           $pf_amt = $chrgs->chrg_value;
