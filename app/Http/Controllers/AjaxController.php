@@ -4099,8 +4099,8 @@ if ($err) {
     }
 
     public function getTransactions(DataProviderInterface $dataProvider) { 
-        $this->dataRecords = $this->finRepo->getTransactions();
-        $this->providerResult = $dataProvider->getTransactionsByDataProvider($this->request, $this->dataRecords);
+        $this->dataRecords = $this->finRepo->getTally();
+        $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
         return $this->providerResult;
     }
     public function lmsGetInvoiceByUser(Request $request ){

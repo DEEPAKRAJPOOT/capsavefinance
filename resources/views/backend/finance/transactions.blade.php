@@ -21,17 +21,16 @@
                             <thead>
                                 
                                 <tr role="row">
-                                    <th>Invoice No</th>
-                                    <th>Voucher Type</th>
-                                    <th>Invoice Date</th>
-                                    <th>Ledger Name</th>
-                                    <th>Debit Amount</th>
+                                    <th>Biz Id</th>
+                                    <th>Name</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
                                     <th>Reference No</th>
-                                    <th>Ref Amount</th>
-                                    <th>Credit Amount</th>
-                                    <th>Reference No</th>
-                                    <th>Cr Ref Amount</th>
+                                    <th>Journals Name</th>
+                                    <th>Mode of Pay</th>
                                     <th>Narration</th>                                    
+                                    <th>Created By</th>
+                                    <th>Txn Date</th>
                                 </tr>
                             </thead>
                             <tbody>

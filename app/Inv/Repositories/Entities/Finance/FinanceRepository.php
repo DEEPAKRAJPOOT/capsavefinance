@@ -150,6 +150,12 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
         return $this->result;
     }
 
+    public function getTally()
+    {
+        $this->result = FinancialJournalItems::getTally();
+        return $this->result;
+    }
+
     public function getAllTxns()
     {
         return FinancialJeConfig::getAllTxns();         

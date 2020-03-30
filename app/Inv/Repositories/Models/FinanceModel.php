@@ -334,5 +334,4 @@ class FinanceModel extends BaseModel
                 ->first();
        return ($result ?? null);
     }
-   
 }
