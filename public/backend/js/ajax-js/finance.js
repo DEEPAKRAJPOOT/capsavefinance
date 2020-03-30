@@ -183,17 +183,16 @@ try {
                 }
             },
            columns: [
-                    {data: 'invoice_no'},
-                    {data: 'journal_type'},
+                    {data: 'biz_id'},
+                    {data: 'fullname'},
+                    {data: 'amount'},
+                    {data: 'amount_type'},
+                    {data: 'reference'},
+                    {data: 'journals_name'},
+                    {data: 'mode_of_pay'},
+                    {data: 'narration'},
+                    {data: 'created_by'},
                     {data: 'date'},
-                    {data: 'full_name'},
-                    {data: 'debit_amount'},
-                    {data: 'reference'},
-                    {data: 'debit_amount'},
-                    {data: 'credit_amount'},
-                    {data: 'reference'},
-                    {data: 'credit_amount'},
-                    {data: 'label'},
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

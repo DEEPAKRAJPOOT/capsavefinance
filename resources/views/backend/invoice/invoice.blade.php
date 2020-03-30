@@ -36,7 +36,7 @@
                                <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-5">
+                                            <div class="col-md-3">
                                                  <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                             </div>
                                               <div class="col-md-4">
@@ -71,12 +71,12 @@
                                                 <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
 
                                                 </select>
-                                            </div>  
+                                            </div>  -->   
                                             <div class="col-md-2">	
                                              <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
                                               
                                        
-                                            </div>-->   
+                                            </div>
                                             <div class="col-md-1">	          
                                                 <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
                                                

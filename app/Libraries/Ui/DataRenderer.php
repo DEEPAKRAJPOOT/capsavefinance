@@ -4408,6 +4408,61 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
+        public function getTallyData(Request $request, $dataRecords){
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'date',
+                        function ($dataRecords) {
+                        return $dataRecords->trans_date;
+                    })
+                    ->editColumn(
+                        'biz_id',
+                        function ($dataRecords) {
+                        return $dataRecords->biz_id ?? '---';
+                    })
+                    ->editColumn(
+                        'name',
+                        function ($dataRecords) {
+                        return $dataRecords->fullname;
+                    })
+                    ->editColumn(
+                        'amount',
+                        function ($dataRecords) {
+                        return $dataRecords->amount;
+                    }) 
+                    ->editColumn(
+                        'amount_type',
+                        function ($dataRecords) {
+                        return $dataRecords->entry_type;
+                    }) 
+                    ->editColumn(
+                        'reference',
+                        function ($dataRecords) {
+                        return $dataRecords->batch_id;
+                    })   
+                    ->editColumn(
+                        'journals_name',
+                        function ($dataRecords) {
+                        return $dataRecords->trans_name;
+                    })      
+                    ->editColumn(
+                        'mode_of_pay',
+                        function ($dataRecords) {
+                        return $dataRecords->mode_of_pay;
+                    })    
+                    ->editColumn(
+                        'created_by',
+                        function ($dataRecords) {
+                        return $dataRecords->created_by;
+                    })     
+                    ->editColumn(
+                        'narration',
+                        function ($dataRecords) {
+                        return $dataRecords->comment;
+                    }) 
+                    ->make(true);
+        }
+
         public function getTransactionsByDataProvider(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
                     ->editColumn(

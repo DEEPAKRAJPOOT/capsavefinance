@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Event;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Libraries\Bsa_lib;
 use App\Libraries\Perfios_lib;
 use Storage;
@@ -22,6 +23,41 @@ class ApiController
 	function __construct(){
 		
 	}
+
+
+  public function tally_entry(){
+    $where = ['tally_updated' => 'N'];
+    $txnsData = Transactions::getTransactions($where);
+    $batch_id = _getRand(15);
+    $totalRecords = 0;
+    $insertedData = array();
+    if (!$txnsData->isEmpty()) {
+        foreach ($txnsData as $key => $txn) {
+           $tally_data = [
+            'amount' => $txn->amount,
+            'transaction_id' => $txn->trans_id,
+            'batch_id' => $batch_id,
+            'tally_at' => date('Y-m-d H:i:s'),
+          ];
+          $insertedId = FinanceModel::dataLogger($tally_data, 'tally');
+          $insertedData[] = $txn->trans_id;
+        }
+    }
+    if (!empty($insertedData)) {
+      $totalRecords = count($insertedData);
+      while (!empty($insertedData)) {
+        foreach ($insertedData as $key => $value) {
+         $is_updated = FinanceModel:: updatePerfios(['tally_updated' => 'Y'], 'transactions', $value, 'trans_id');
+         if ($is_updated) {
+            unset($insertedData[$key]);
+         }
+        }
+      }
+    }
+    if (empty($insertedData)) {
+      return ($totalRecords > 1 ? $totalRecords .' Records inserted successfully' : ($totalRecords == 0 ? 'No new record found' : '1 Record inserted.'));
+    }
+  }
 
   public function karza_webhook(Request $request){
     $allrequest = $request->all();
