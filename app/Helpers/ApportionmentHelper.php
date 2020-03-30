@@ -219,8 +219,7 @@ class ApportionmentHelper{
     }
 
     private function getUnbookedInterest(&$disbursal){
-        $interestDue = self::getInterestDueAmount($disbursal);
-        return $this->accuredInt-$interestDue;
+        return $this->accuredInt-$this->disbursal['total_interest'];
     }
 
     private function settleInterestDueAmount(&$disbursal){
@@ -230,7 +229,7 @@ class ApportionmentHelper{
         $interestPaidAmt = ($this->balanceRepayAmount>=$interestDue)?$interestDue:$this->balanceRepayAmount;
         $this->balanceRepayAmount -= $interestPaidAmt;
         $this->disbursal['total_repaid_amt'] += $interestPaidAmt;
-        if($interestPaidAmt>0){
+        if((float)$interestPaidAmt > 0){
 
             $interestPaidData = $this->createTransactionData($this->transDetails->user_id, [
                 'amount' => $interestPaidAmt,
@@ -245,27 +244,29 @@ class ApportionmentHelper{
 
     private function settleUnbookedInterest(&$disbursal){
         $unbookedInterest = self::getUnbookedInterest($disbursal);
-        if($unbookedInterest > 0 && $this->balanceRepayAmount>0 && $this->paymentFreq == '2')
+        $restInterestPaidAmt = ($this->balanceRepayAmount>=$unbookedInterest)?$unbookedInterest:$this->balanceRepayAmount;
+        if((float)$restInterestPaidAmt > 0 && $this->balanceRepayAmount>0 && $this->paymentFreq == '2')
         {
-            $restInterestPaidAmt = ($this->balanceRepayAmount>=$unbookedInterest)?$unbookedInterest:$this->balanceRepayAmount;
             $this->balanceRepayAmount -= $restInterestPaidAmt;
             $this->disbursal['total_repaid_amt'] += $restInterestPaidAmt;
-
-            $this->transaction['unbookedInterestDue'][$disbursal->disbursal_id] = $this->createTransactionData($this->transDetails->user_id, [
+            $this->disbursal['total_interest'] += $restInterestPaidAmt;
+            
+            $unbookedInterestDueData = $this->createTransactionData($this->transDetails->user_id, [
                 'amount' => $restInterestPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
                 'parent_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
-
-            $interestPaidData = $this->createTransactionData($this->transDetails->user_id, [
+            
+            $unbookedInterestPaidData = $this->createTransactionData($this->transDetails->user_id, [
                 'amount' => $restInterestPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
                 'parent_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
-
-            $this->transaction['unbookedInterestPaid'][$disbursal->disbursal_id] = $interestPaidData;
+            
+            $this->transaction['unbookedInterestDue'][$disbursal->disbursal_id] = $unbookedInterestDueData;
+            $this->transaction['unbookedInterestPaid'][$disbursal->disbursal_id] = $unbookedInterestPaidData;
         }
     }
 
@@ -411,6 +412,7 @@ class ApportionmentHelper{
             'total_repaid_amt'=>(float)$disbursalDetail->total_repaid_amt,
             'interest_refund'=>(float)$disbursalDetail->interest_refund,
             'settlement_amount'=>(float)$disbursalDetail->settlement_amount,
+            'total_interest'=>$disbursalDetail->total_interest,
             'status_id'=>$disbursalDetail->status_id,
             'surplus_amount'=>(float)$disbursalDetail->surplus_amount,
             'accured_interest'=> $this->accuredInt,

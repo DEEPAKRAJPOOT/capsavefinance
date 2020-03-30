@@ -221,7 +221,7 @@ trait LmsTrait
                     $totalInterest += $lastInterest;
                     $balancePrincipalAmt += $lastInterest; 
 
-                    if($lastInterest>0){
+                    if($lastInterest > 0){
                         $interestDue = $this->createTransactionData($disburse->user_id, [
                             'amount' => $lastInterest,
                             'trans_date'=>$this->subDays($intAccrualDt,1),
