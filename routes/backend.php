@@ -70,6 +70,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_upload_document',
                 'uses' => 'Backend\ApplicationController@uploadDocument'
             ]);
+
+            Route::get('documents/edit-upload-document', [
+                'as' => 'edit_upload_document',
+                'uses' => 'Backend\ApplicationController@editUploadDocument'
+            ]);
+
+            Route::post('documents/update-edit-upload-document', [
+                'as' => 'update_edit_upload_document',
+                'uses' => 'Backend\ApplicationController@updateEditUploadDocument'
+            ]);
             
             Route::post('documents-save', [
                 'as' => 'document_save',
@@ -1210,9 +1220,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@uploadDocument'
             ]);
 
-            Route::post('documents-save', [
+            Route::post('/documents-save', [
                 'as' => 'pp_document_save',
                 'uses' => 'Backend\DocumentController@saveDocument'
+            ]);
+
+            Route::get('/edit-upload-document', [
+                'as' => 'pp_edit_upload_document',
+                'uses' => 'Backend\ApplicationController@editUploadDocument'
+            ]);
+
+            Route::post('/update-edit-upload-document', [
+                'as' => 'pp_update_edit_upload_document',
+                'uses' => 'Backend\ApplicationController@updateEditUploadDocument'
             ]);
             
         });   

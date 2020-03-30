@@ -36,4 +36,5 @@ return [
     'send_sanction_letter_successfully' => 'Sanction letter send successfully!',
     'userAdress_add_success' => 'Address added successfully',
     'userAdress_edit_success' => 'Address updated successfully',
+    'documentUpdated' => 'Document updated successfully',
 ];
