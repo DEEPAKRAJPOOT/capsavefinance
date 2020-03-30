@@ -104,17 +104,24 @@ class InvoiceController extends Controller {
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(8);
         $get_bus = $this->invRepo->getBusinessNameApp(8);
-        return view('backend.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        return view('backend.invoice.approve_invoice')->with(['role' =>$chkUser->id,'get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
     }
 
     public function viewDisbursedInvoice(Request $req) {
+       
         $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(9);
         $get_bus = $this->invRepo->getBusinessNameApp(9);
-        return view('backend.invoice.disbursed_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        return view('backend.invoice.disbursed_invoice')->with(['role' =>$chkUser->id,'get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
     }
 
     public function viewRepaidInvoice(Request $req) {
