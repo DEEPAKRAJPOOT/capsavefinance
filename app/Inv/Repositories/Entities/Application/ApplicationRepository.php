@@ -1673,4 +1673,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             return $ex;
         }
     }
+    
+    public function getProgramByProgramName($name)
+    {
+        return Program::getProgramByProgramName($name);
+    }
 }

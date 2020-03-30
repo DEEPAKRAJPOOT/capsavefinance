@@ -36,29 +36,35 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="productList">
+                                                <label for="product_id">
                                                    Product Type
                                                     <span class="error_message_label">*</span></label>
                                                 {!! Form::select('product_id', $productList,'',['class'=>'form-control'])!!}
+                                                {!! $errors->first('product_id', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
                                         
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">
+                                                <label for="anchor_id">
                                                     {{ trans('backend.add_program.anchor_name') }}
                                                     <span class="error_message_label">*</span></label>
                                                 {!! Form::select('anchor_id', $anchorList,'',['class'=>'form-control'])!!}
+                                                {!! $errors->first('anchor_id', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
                                         
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">
+                                                <label for="prgm_name">
                                                     {{ trans('backend.add_program.program_name') }}
                                                     <span class="error_message_label">*</span>
                                                 </label>
                                                 {!! Form::text('prgm_name','', ['class'=>'form-control','placeholder'=>"Enter Programe Name"])!!}
+                                                @if(Session::has('error') && Session::get('error'))
+                                                    <label class='error'>{{Session::get('error')}}</label>
+                                                @endif
+                                                {!! $errors->first('prgm_name', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -71,17 +77,19 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod"> {{ trans('backend.add_program.industry') }}
+                                                <label for="industry_id"> {{ trans('backend.add_program.industry') }}
                                                     <span class="error_message_label">*</span></label>
                                                 {!! Form::select('industry_id', [''=>trans('backend.please_select')] + $industryList, '', ['class'=>'form-control industry_change']) !!}
+                                                {!! $errors->first('industry_id', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">
+                                                <label for="sub_industry_id">
                                                     {{ trans('backend.add_program.sub_industry') }}
                                                     <span class="error_message_label"></span> </label>
                                                 {!! Form::select('sub_industry_id', [''=>trans('backend.please_select')], '', ['class'=>'form-control sub_industry']) !!}
+                                                {!! $errors->first('sub_industry_id', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
