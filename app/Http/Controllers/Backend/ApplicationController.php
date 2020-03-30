@@ -14,6 +14,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Libraries\MobileAuth_lib;
@@ -798,97 +799,58 @@ class ApplicationController extends Controller
                         return redirect()->back();                                            
                     }
                 } else if ($currStage->stage_code == 'opps_checker') {
-                  	$capId = sprintf('%09d', $user_id);
-                  	$customerId = 'CAP'.$capId;
-                  	$lmsCustomerArray = array(
-            'user_id' => $user_id, 
-            'customer_id' => $customerId,
-						'app_id' => $app_id, 
-						'created_by' => Auth::user()->user_id
-						);
-                  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
-                  	if($createCustomer != null) {
-	                  	$capId = sprintf('%07d', $createCustomer->lms_user_id);
-	                  	$virtualId = 'CAPVA'.$capId;
-              			$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
-
-              			$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+                  $capId = sprintf('%09d', $user_id);
+                  $customerId = 'CAP'.$capId;
+                  $lmsCustomerArray = array(
+                    'user_id' => $user_id, 
+                    'customer_id' => $customerId,
+                    'app_id' => $app_id, 
+                    'created_by' => Auth::user()->user_id
+                  );
+                  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                  if($createCustomer != null) {
+                    $capId = sprintf('%07d', $createCustomer->lms_user_id);
+                    $virtualId = 'CAPVA'.$capId;
+                    $createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
+                    $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                     $userStateId = $this->appRepo->getUserAddress($app_id);
                     $companyStateId = $this->appRepo->companyAdress();
-                    // dd($companyStateId);
-						        if(isset($prcsAmt->offer)) {
-                        foreach ($prcsAmt->offer as $key => $offer) {
-                          // dd($offer);
-                          $pChargeId = config('lms')['TRANS_TYPE']['PROCESSING_FEE']; // 4
-                          $dChargeId = config('lms')['TRANS_TYPE']['DOCUMENT_FEE']; // 20
+                    if(isset($prcsAmt->offer)) {
+                      foreach ($prcsAmt->offer as $key => $offer) {
+                        $offer_charges = AppProgramOffer::getProgramOfferByAppId($app_id, $offer->prgm_offer_id);
+                        if (empty($offer_charges))
+                          continue;
+                        foreach ($offer_charges as $key => $chrgs) {
+                          $ChargeMasterData = $this->appRepo->getTransTypeDataByChargeId($chrgs->charge_id);
+                          $ChargeId = $ChargeMasterData->id;
+                          $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
+                          $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
+                          if($chrgs->chrg_type == 1)
+                          $pf_amt = $chrgs->chrg_value;
+                          $fData = [];
+                          $fData['amount'] = $pf_amt;
+                          if(isset($PrgmChrg->is_gst_applicable) && $PrgmChrg->is_gst_applicable == 1 ) {
+                            if($userStateId == $companyStateId) {
+                              $fWGst = round((($pf_amt*18)/100),2);
+                              $fData['gst'] = $PrgmChrg->is_gst_applicable;
+                              $fData['igst'] = $fWGst;
+                              $fData['amount'] += $fWGst;
 
-                          $pChargeMasterId = $this->appRepo->getTransTypeData($pChargeId);
-                          $dChargeMasterId = $this->appRepo->getTransTypeData($dChargeId);
-
-                          $pPrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $pChargeMasterId->chrg_master_id);
-                          $dPrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $dChargeMasterId->chrg_master_id);
-
-                          // $tranType = 4 for processing acc. to mst_trans_type table
-                          $pf = round((($offer->prgm_limit_amt * $offer->processing_fee)/100),2);
-                          $pfData = [];
-                          $pfData['amount'] = $pf;
-
-                          if(isset($pPrgmChrg->is_gst_applicable) && $pPrgmChrg->is_gst_applicable == 1 ) {
-                              if($userStateId == $companyStateId) {
-                                $pfWGst = round((($pf*18)/100),2);
-                                $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
-                                $pfData['igst'] = $pfWGst;
-                                $pfData['amount'] += $pfWGst;
-                                
-                              } else {
-                                $pfWGst = round((($pf*9)/100),2);
-                                $pfData['gst'] = $pPrgmChrg->is_gst_applicable;
-                                $pfData['cgst'] = $pfWGst;
-                                $pfData['sgst'] = $pfWGst;
-                                $totalGst = $pfData['cgst'] + $pfData['sgst'];
-                                $pfData['amount'] += $totalGst;
-
-                              }
-                          } 
-                          $pfDebitData = $this->createTransactionData($user_id, $pfData, null, $pChargeId);
-                          $pfDebitCreate = $this->appRepo->saveTransaction($pfDebitData);
-                          
-                          // $pfCreditData = $this->createTransactionData($user_id, $pfData, null, 4, 1);
-                          // $pfCreditCreate = $this->appRepo->saveTransaction($pfCreditData);
-
-                          // $tranType = 20 for document fee acc. to mst_trans_type table
-                          $df = round((($offer->prgm_limit_amt * $offer->document_fee)/100),2);
-                          $dfData = [];
-                          $dfData['amount'] = $df;
-
-                          if(isset($dPrgmChrg->is_gst_applicable) && $dPrgmChrg->is_gst_applicable == 1 ) {
-                              if($userStateId == $companyStateId) {
-                                $dfWGst = round((($df*18)/100),2);
-                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
-                                $dfData['igst'] = $dfWGst;
-                                $pfData['amount'] += $dfWGst;
-
-                                
-                              } else {
-                                $dfWGst = round((($df*9)/100),2);
-                                $dfData['gst'] = $dPrgmChrg->is_gst_applicable;
-                                $dfData['cgst'] = $dfWGst;
-                                $dfData['sgst'] = $dfWGst;
-                                $totalGst = $dfData['cgst'] + $dfData['sgst'];
-                                $pfData['amount'] += $totalGst;
-                              }
-                          } 
-                          $dfWGst = round((($df*18)/100),2);
-
-                          $dfDebitData = $this->createTransactionData($user_id, $dfData, null, $dChargeId);
-                          $createTransaction = $this->appRepo->saveTransaction($dfDebitData);
-
-                          // $dfCreditData = $this->createTransactionData($user_id, ['amount' => $df, 'gst' => $dfWGst], null, 20, 1);
-                          // $createTransaction = $this->appRepo->saveTransaction($dfCreditData);
+                            } else {
+                              $fWGst = round((($pf_amt*9)/100),2);
+                              $fData['gst'] = $PrgmChrg->is_gst_applicable;
+                              $fData['cgst'] = $fWGst;
+                              $fData['sgst'] = $fWGst;
+                              $totalGst = $fData['cgst'] + $fData['sgst'];
+                              $fData['amount'] += $totalGst;
+                            }
+                          }
+                          $fDebitData = $this->createTransactionData($user_id, $fData, null, $ChargeId);
+                          $fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
                         }
-                      
+                      }
                     }
-                  	}
+                  }
                 }
                 $wf_order_no = $currStage->order_no;
                 $nextStage = Helpers::getNextWfStage($wf_order_no);
@@ -1743,6 +1705,31 @@ class ApplicationController extends Controller
                   $this->appRepo->saveAppStatusLog($arrAppStatusLog);
                 Session::flash('message',trans('backend_messages.change_app_disbursed_status'));
                 return redirect()->route('cam_overview', ['app_id' => $app_id,'biz_id'=>$biz_id]);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+         /**
+     * Handling deleting PAN documents file for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function promoterDocumentDelete(Request $request)
+    {
+        try {
+            $fileId = $request->file_id;
+            $fileId = $request;
+            $response = $this->docRepo->deleteFile($fileId);
+            
+            if ($response) {
+                Session::flash('message',trans('success_messages.deleted'));
+                return redirect()->back();
+            } else {
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

@@ -1486,6 +1486,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return TransType::where('id', $transTypeId)
                 ->first();
     }
+    /**
+     * Get trans type
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getTransTypeDataByChargeId($chrg_master_id)
+    {
+        return TransType::where('chrg_master_id', $chrg_master_id)
+                ->first();
+    }
     
     /**
      * Get prgm charge data

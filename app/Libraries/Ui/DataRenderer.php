@@ -717,7 +717,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {  
                         $comp_name = '';
                         $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_id.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
                 ->addColumn(
@@ -788,6 +788,17 @@ class DataRenderer implements DataProviderInterface
                           $action .='<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                       }
                       return $action;
+                })
+                   ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
                 })
               ->make(true);
     } 
@@ -954,6 +965,17 @@ class DataRenderer implements DataProviderInterface
                       $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option><option value="14">Reject</option></select></div>';
                     return  $action;
                 })
+                 ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
+                })
               ->make(true);
     } 
     
@@ -1074,6 +1096,17 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })
+                 ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
+                })
               ->make(true);
     }  
     
@@ -1140,7 +1173,18 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
-                })      
+                }) 
+                 ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
+                })
               ->make(true);
     }  
     
@@ -1270,6 +1314,17 @@ class DataRenderer implements DataProviderInterface
                         
                       }
                 })
+                 ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
+                })
               ->make(true);
     }  
      
@@ -1355,7 +1410,17 @@ class DataRenderer implements DataProviderInterface
 
                             return $act;
                 })
-                 
+                  ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
+                })
               ->make(true);
     }  
     
@@ -1421,7 +1486,18 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
-                })     
+                })  
+                 ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
+                })
               ->make(true);
     }  
     
@@ -1479,6 +1555,17 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
+                })
+                 ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
                 })
               ->make(true);
     }  
@@ -1553,7 +1640,17 @@ class DataRenderer implements DataProviderInterface
                      return '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option><option value="8">Approved</option></select></div>';
 
                 })
-                 
+                 ->filter(function ($query) use ($request) {
+                  
+                   if ($request->get('biz_id') != '') {                        
+                        $query->whereHas('business',function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    
+                }) 
                  
               ->make(true);
     }  

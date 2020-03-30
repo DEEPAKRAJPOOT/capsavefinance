@@ -89,15 +89,25 @@ var messages = {
             format: 'dd/mm/yyyy',
             autoclose: true,
             minView : 2,
-            endDate: new Date()
+            //endDate: new Date()
         });
 
         $("#to_date").datetimepicker({
             format: 'dd/mm/yyyy',
             autoclose: true,
             minView : 2,
-            endDate: new Date()
+            //endDate: new Date()
         });
+
+        var nowDate = new Date(); 
+        var currentDate = nowDate.getDate() +'/'+ (nowDate.getMonth()+1) +'/'+ nowDate.getFullYear();
+
+        var oneMonthAddedDate = new Date();
+        oneMonthAddedDate.setMonth( oneMonthAddedDate.getMonth() + 1 );
+        var currentAddedDate  = oneMonthAddedDate.getDate() +'/'+ (oneMonthAddedDate.getMonth()+1) +'/'+ oneMonthAddedDate.getFullYear();
+
+        $("#from_date").val(currentDate);
+        $("#to_date").val(currentAddedDate);
      
    });
 </script>
