@@ -87,8 +87,7 @@
 																		<th width="20%">Bank Detail</th>
 																		<th width="15%">Total Disburse Amt.</th>
 																		<th width="8%">Total Invoice </th>
-                                                                       	<th> Updated At</th>
-																		<th width="4%">Action</th>
+                                                                       	<th> Updated At</th>                                                    <th width="4%">Action</th>
 																	</tr>
 																</thead>
 																<tbody>
