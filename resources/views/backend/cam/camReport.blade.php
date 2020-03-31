@@ -509,8 +509,11 @@
                      <td>{{$finance_col}}</td>
                      @foreach($financeData as $year => $fin_data)
                      <td align="right">
-                        @php $yearly_fin_data = getTotalFinanceData($fin_data) @endphp
-                        {{sprintf('%.2f', $yearly_fin_data[$key ] ?? '')}}
+                        @php 
+                        $yearly_fin_data = getTotalFinanceData($fin_data);
+                        $growth = $growthData[$year];
+                         @endphp
+                        {{sprintf('%.2f', isset($yearly_fin_data[$key]) ? $yearly_fin_data[$key] : (isset($growth[$key]) ? $growth[$key] : ''))}}
                         @endforeach
                      </td>
                   </tr>
