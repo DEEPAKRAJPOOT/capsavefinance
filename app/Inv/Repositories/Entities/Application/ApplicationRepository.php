@@ -1678,4 +1678,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Program::getProgramByProgramName($name);
     }
+    
+    public function getTotalLimit($biz_id,$program_id){
+        return AppProgramLimit::where('biz_id','=',$biz_id)->where('product_id','=',$program_id)->sum('limit_amt');
+    }
 }

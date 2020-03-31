@@ -15,6 +15,7 @@ try {
                     d.from_date = $('input[name="from_date"]').val();
                     d.to_date = $('input[name="to_date"]').val();
                     d.search_keyword = $('input[name=search_keyword]').val();
+                    d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -42,10 +43,54 @@ try {
 
         //Search
         $('#searchbtn').on('click', function (e) {
+            $("#client_details").html('');
+            var user_id = $.trim($("#user_id").val());
+            var biz_id = $.trim($("#biz_id").val());
+            if(biz_id == '' || user_id== ''){
+                alert('Please Select Client Name');
+                return false;
+            }
+            showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
             oTable.draw();
         });
 
     });
+
+    function showClientDetails(data){
+        $.ajax({
+            type: "POST",
+            url: messages.get_soa_client_details,
+            data: data,
+            dataType: "json",
+            success: function (res) {
+                var html = `<table class="table overview-table table-bordered" cellpadding="0" cellspacing="0" style="margin-bottom: 22px;">
+                            <tbody>
+                                <tr>
+                                    <td><b>Client Name</b></td>
+                                    <td>`+res.client_name+`</td>
+                                    <td><b>Date & Time</b></td>
+                                    <td>`+res.datetime+`</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Address</b></td>
+                                    <td>`+res.address+`</td>
+                                    <td><b>Currency</b></td>
+                                    <td>`+res.currency+`</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td><b>Limit Amt</b></td>
+                                    <td>`+res.limit_amt+`</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>`; 
+                        console.log(html);
+                $("#client_details").html(html);
+            }
+        });
+    }
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);

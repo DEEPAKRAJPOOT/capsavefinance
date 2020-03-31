@@ -3913,8 +3913,8 @@ class DataRenderer implements DataProviderInterface
 
                 if($request->get('search_keyword')!= ''){
                     $query->where(function ($query) use ($request) {
-                        $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('customer_id', 'like', "%$search_keyword%");
+                        $customer_id = trim($request->get('customer_id'));
+                        $query->where('customer_id', '=', "$customer_id");
                     });
                 }
               

@@ -977,4 +977,10 @@ Route::group(
         'as' => 'check_exist_email_anchor',
         'uses' => 'AjaxController@getExistEmailStatusAnchor'
     ]);
+
+    Route::post('get-soa-client-details',[
+        'as' => 'get_soa_client_details',
+        'uses' => 'AjaxController@getSoaClientDetails'
+    ]);
+     
 });
