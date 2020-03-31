@@ -100,7 +100,14 @@ class InvoiceController extends Controller {
 
         $getAllInvoice = $this->invRepo->getLmsLimitAllAnchor();
         $get_bus = $this->invRepo->getBusinessName();
-        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice]);
+        $id = Auth::user()->user_id;
+        $res =  $this->userRepo->getUserDetail($id);
+        $aid    =  $res->anchor_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        $get_program = $this->invRepo->getLimitProgram($aid);
+        $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
+        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program ]);
     }
 
     public function viewApproveInvoice(Request $req) {
