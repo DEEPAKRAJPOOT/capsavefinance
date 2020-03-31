@@ -236,7 +236,7 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                regex: "^[a-zA-Z_]+$",
+                                regex: "^[a-zA-Z]+$",
                                 messages: {
                                     regex: "Please enter only characters without space & special characters."
                                 }
@@ -247,7 +247,7 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                regex: "^[a-zA-Z_]+$",
+                                regex: "^[a-zA-Z]+$",
                                 messages: {
                                     regex: "Please enter only characters without space & special characters."
                                 }                                
