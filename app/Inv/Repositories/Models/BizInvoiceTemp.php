@@ -143,41 +143,30 @@ public static function saveBulkTempInvoice($arrInvoice)
             
             if($updateTemp)
             {
-                
+                $id = Auth::user()->user_id;
                 $result =  self::where('invoice_id',$attributes['id'][$i])->first();
                 $getPrgm  = Program::where(['prgm_id' => $result->program_id])->first(); 
-                $id = Auth::user()->user_id;
-                $role_id = RoleUser::where(['user_id' => $id])->pluck('role_id');
-                $chkUser  =  Role::whereIn('id',$role_id)->first();
-                if( $chkUser->id==1)
-                {
-                     $customer  = 1;
-                }
-                else if( $chkUser->id==11)
-                {
-                     $customer  = 2;
-                }
-                else
-                {
-                    $customer  = 3;
-                }
-                 $expl  =  explode(",",$getPrgm->invoice_approval); 
-               if($tenor > $attributes['tenor_old_invoice'])
+                $customer  = 4;
+                $expl  =  explode(",",$getPrgm->invoice_approval); 
+                if($tenor > $attributes['tenor_old_invoice'])
                 {
                     $status_id =  28;
                 }
                 else
                 {
                     if(in_array($customer, $expl))  
-                   {
+                    {
                        $status_id =  8;
+                    }
+                     else if($getPrgm->invoice_approval==4)
+                    {
+                        $status_id = 8;   
                     }
                     else
                     {
-                       $status_id =  7;
+                      $status_id = 7;
                     }
-
-                 }
+                }
           
                $data = new BizInvoice;
                        $data->anchor_id =  $result->anchor_id;
