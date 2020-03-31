@@ -255,7 +255,7 @@ $messages = session()->get('message', false);
                     $(this).rules("add",
                             {
                                 required: true,
-                                regex: "^[a-zA-Z_]+$",
+                                regex: "^[a-zA-Z]+$",
                                 messages: {
                                     regex: "Please enter only characters without space & special characters."
                                 }
@@ -266,7 +266,7 @@ $messages = session()->get('message', false);
                     $(this).rules("add",
                             {
                                 required: true,
-                                regex: "^[a-zA-Z_]+$",
+                                regex: "^[a-zA-Z]+$",
                                 messages: {
                                     regex: "Please enter only characters without space & special characters."
                                 }                                
