@@ -105,5 +105,5 @@ return [
      ],
      'required'=>':field is required.',
     'first_name_regex' => 'Please enter only alpha characters with/without space.',
-    'last_name_regex' => 'Please enter only alpha characters with/without space.',
+    'last_name_regex' => 'Please enter only alpha characters.',
     ];
