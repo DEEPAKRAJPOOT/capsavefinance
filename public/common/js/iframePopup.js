@@ -106,7 +106,8 @@ var iframe_ids = [
         'edit_bank_account',
         'viewBatchSendToBankInvoice',
         'invoiceDisbursalTxnUpdate',
-        'disburseInvoicePopUp'
+        'disburseInvoicePopUp',
+        'EdituploadDocument'
     ];
 
 iframe_ids.forEach(function(id) {

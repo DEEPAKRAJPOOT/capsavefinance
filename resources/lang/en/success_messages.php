@@ -37,4 +37,5 @@ return [
     'userAdress_add_success' => 'Address added successfully',
     'userAdress_edit_success' => 'Address updated successfully',
     'program_already_exist' => "This Program Already exist",
+    'documentUpdated' => 'Document updated successfully',
 ];

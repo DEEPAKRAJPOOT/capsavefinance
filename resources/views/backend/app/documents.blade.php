@@ -82,10 +82,8 @@
                                         @endif
                                         <td width="20%"><b>File Name </b></td>
                                         <td width="20%"><b>Uploaded On </b></td>
-                                        @if($data->doc_id == '35' || $data->doc_id == '36')
                                         <td width="20%"><b>Comment </b></td>
-                                        @endif
-                                        <td width="20%">Download</td>
+                                        <td width="10%">Download</td>
                                         <td align="center" width="20%">Action</td>
                                     </tr>
                                     @foreach($documentData[$data->document->doc_name] as $value)
@@ -102,13 +100,12 @@
                                         @endif
                                         <td width="20%"> {{ (isset($value->userFile->file_name)) ? $value->userFile->file_name : ''}} </td>
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
-                                        @if($data->doc_id == '35' || $data->doc_id == '36')
                                         <td width="20%"> {{ (isset($value->comment)) ? $value->comment : ''}} </td>
-                                        @endif
-                                        <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download="{{ $value->userFile->file_name }}"><i class="fa fa-download"></i></a></td>
+                                        <td width="10%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download="{{ $value->userFile->file_name }}"><i class="fa fa-download"></i></a></td>
                                         <td align="center" width="20%">
                                             @if(request()->get('view_only'))
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ Route('document_delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
+                                            <a title="Edit Comment" data-toggle="modal" data-target="#EdituploadDocument" data-url ="{{route('edit_upload_document', ['app_doc_file_id' => $value->app_doc_file_id, 'app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="float-right" ><i class="fa fa-edit"></i></a>
                                             @endif
                                         </td>
                                     </tr>
@@ -146,6 +143,7 @@
 </div>
 
 {!!Helpers::makeIframePopup('uploadDocument','Upload Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('EdituploadDocument','Edit Document', 'modal-md')!!}
 
 @endsection
 @section('jscript')

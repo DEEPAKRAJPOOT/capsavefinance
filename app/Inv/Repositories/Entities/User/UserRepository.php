@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Entities\User;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\Relationship;
 use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\BizApi;
@@ -1630,5 +1631,9 @@ class UserRepository extends BaseRepositories implements UserInterface
     
     public function getExistEmailStatusAnchor($comp_email){
         return Anchor::getExistEmailStatusAnchor($comp_email);
-     }
+    }
+
+    public function getBusinessDetails($biz_id){
+        return Business::find($biz_id);
+    }
 }

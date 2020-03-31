@@ -4210,4 +4210,33 @@ if ($err) {
         return $response;
     }
 
+    public function getSoaClientDetails(DataProviderInterface $dataProvider){
+        $user_id = $this->request->get('user_id');
+        $biz_id = $this->request->get('biz_id');
+
+        $res = [
+            'client_name' => '',
+            'datetime' => \Helpers::convertDateTimeFormat(now(), 'Y-m-d H:i:s', 'j F, Y h:i A'),
+            'address' => '',
+            'currency' => 'INR',
+            'limit_amt' => '',
+            'prepayment' => '',
+            'discount' => '',
+        ];
+
+        $bizAddress = $this->application->addressGetCustomers($user_id,$biz_id);
+        $bizAddress = $bizAddress->first();
+        if($bizAddress->count()>0){
+            $res['address'] = $bizAddress['Address'].', '.$bizAddress['City'].', '.$bizAddress['State'].', Pin-'.$bizAddress['Pincode'];
+        }
+
+        $businessDetails = $this->userRepo->getBusinessDetails($biz_id);
+        if($businessDetails->count()>0){
+            $res['client_name'] = $businessDetails->biz_entity_name;
+        }
+
+        $res['limit_amt'] = $this->application->getTotalLimit($biz_id,1);
+
+        return response()->json($res);
+    }
 }

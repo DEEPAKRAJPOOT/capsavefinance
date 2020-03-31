@@ -65,6 +65,15 @@
                                                 <span class="error_message_label">*</span>   <!-- <span id="pro_limit" class="error"></span> -->
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
+                                            @if($anchor==11)
+                                            <option value="">Please Select</option>
+                                            @if($get_program)
+                                             @foreach($get_program as $row1) 
+                                              <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}</option>
+                                                  
+                                             @endforeach
+                                              @endif
+                                            @endif
                                             </select>
                                            
                                 
@@ -426,7 +435,7 @@ var messages = {
       
         document.getElementById('invoice_approve_amount').addEventListener('input', event =>
         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-        $("#program_id").append("<option value=''>No data found</option>");  
+      ///  $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
