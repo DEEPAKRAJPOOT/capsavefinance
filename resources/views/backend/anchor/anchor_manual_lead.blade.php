@@ -24,6 +24,7 @@
                                  <span class="mandatory">*</span>
                                  </label>
                                  <input type="text" name="f_name" id="f_name" value="" class="form-control f_name" tabindex="1" placeholder="First Name" onkeyup="return checkFname(this.value)">
+                                 <p><small style="font-size: 60%;">You can include first and middlle name (e.g Varun Dudani)</small></p>
                               </div>
                            </div>
                             <div class="col-6">
@@ -236,9 +237,9 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                regex: "^[a-zA-Z]+$",
+                                regex: "^[a-zA-Z ]+$",
                                 messages: {
-                                    regex: "Please enter only characters without space & special characters."
+                                    regex: "Please enter only alpha characters with/without space."
                                 }
                                 
                             })
@@ -249,7 +250,7 @@
                                 required: true,
                                 regex: "^[a-zA-Z]+$",
                                 messages: {
-                                    regex: "Please enter only characters without space & special characters."
+                                    regex: "Please enter only alpha characters."
                                 }                                
                             })
                 });

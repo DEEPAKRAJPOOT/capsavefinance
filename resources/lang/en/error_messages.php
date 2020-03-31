@@ -104,4 +104,6 @@ return [
          'anchor_limit_number'=>'Anchor limit must be a number.'
      ],
      'required'=>':field is required.',
+    'first_name_regex' => 'Please enter only alpha characters with/without space.',
+    'last_name_regex' => 'Please enter only alpha characters with/without space.',
     ];
