@@ -478,7 +478,7 @@
    </div>
 @endif
 
-@if(!empty($audited_years) || !empty($financeData)  || !empty($FinanceColumns))
+@if(!empty($financeData)))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>

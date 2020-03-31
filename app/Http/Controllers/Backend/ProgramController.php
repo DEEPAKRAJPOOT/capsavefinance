@@ -89,7 +89,8 @@ class ProgramController extends Controller {
                     $product[$key] = $value;
                 }
             }
-            $productList = ['' => 'Please Select'] + $product;
+//            $productList = ['' => 'Please Select'] + $product;
+            $productList = $product;
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             $industryList = $this->appRepo->getIndustryDropDown()->toArray();
             return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id', 'redirectUrl', 'productList'));

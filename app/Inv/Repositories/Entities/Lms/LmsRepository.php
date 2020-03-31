@@ -895,5 +895,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return DisbursalBatch::get();
 	}        
-    
+
+	public function findDisbursalByInvoiceId($invoiceId)
+	{
+		return Disbursal::where('invoice_id', $invoiceId)
+				->get();
+	}
 }
