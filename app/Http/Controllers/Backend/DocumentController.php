@@ -88,7 +88,6 @@ class DocumentController extends Controller
         return view('backend.document.upload_document');   
     }
     
-
     public function editUploadDocument(Request $request)
     {
         $fileId = $request->get('app_doc_file_id');
