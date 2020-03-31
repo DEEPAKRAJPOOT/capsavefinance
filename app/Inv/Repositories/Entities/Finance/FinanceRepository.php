@@ -150,9 +150,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
         return $this->result;
     }
 
-    public function getTally()
+    public function getTally(array $where = array())
     {
-        $this->result = FinancialJournalItems::getTally();
+        $this->result = FinancialJournalItems::getTally($where);
         return $this->result;
     }
 

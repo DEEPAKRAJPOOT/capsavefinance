@@ -183,15 +183,15 @@
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>                    
               </tr>
-                @foreach($supplyOffer->offerCharges as $key=>$offerCharge)
-                @if($key%2 == 0)
-                @php
+                @foreach($supplyOffer->offerCharges as $key=>$offerCharge)                 
+                @php                
                 if (\Request::route()->getName() == 'generate_cam_report') {
-                    $inrSymbol = ($offerCharge->chrg_type == 2)? ' (%)': ' (₹)';
+                    $inrSymbol = ($offerCharge->chrg_type == 2)? ' (%)': ' (<span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>)';
                 } else {
                     $inrSymbol = ($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)';
                 }
-                @endphp
+                @endphp                
+                @if($key%2 == 0)
                 <tr>                    
                     @endif
                     <td><b>{{$offerCharge->chargeName->chrg_name}} {!! $inrSymbol !!}: </b></td>
