@@ -94,6 +94,7 @@
                                         <td align="center" width="20%">
                                             @if( (request()->get('view_only') && in_array($data->ppDocument->doc_type_id, [2,3])) || ($data->ppDocument->doc_type_id == 4) )
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ Route('document_delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
+                                            <a title="Edit Comment" data-toggle="modal" data-target="#EdituploadDocument" data-url ="{{route('pp_edit_upload_document', ['app_doc_file_id' => $value->app_doc_file_id, 'app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="float-right" ><i class="fa fa-edit"></i></a>
                                             @endif
                                         </td>
                                     </tr>
@@ -129,6 +130,7 @@
 </div>
 
 {!!Helpers::makeIframePopup('ppUploadDocument','Upload Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('EdituploadDocument','Edit Document', 'modal-md')!!}
 
 @endsection
 @section('jscript')
