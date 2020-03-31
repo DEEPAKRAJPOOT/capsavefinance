@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Models;
 use Carbon\Carbon;
 use DateTime;
 use Auth;
+use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\User;
@@ -145,41 +146,18 @@ public static function updateInvoice($invoiceId,$status)
   
      public static function getAllInvoice($request,$status)
      {
-      
-      /*  $whr = [];
-         
-         if($request->get('supplier_id')!='' && $request->get('biz_id')=='')
-         {
-             $whr= ['anchor_id' => $request->get('anchor_id'),'supplier_id' => $request->get('supplier_id')];
-         }
-         else if($request->get('supplier_id')!='' && $request->get('biz_id')!='' && $request->get('anchor_id')!='')
-         {
-                 $whr = ['biz_id' => $request->get('biz_id'),'anchor_id' => $request->get('anchor_id'),'supplier_id' => $request->get('supplier_id')];
-          
-         }
-          else if($request->get('biz_id')!='' && $request->get('anchor_id')!='' && $request->get('supplier_id')=='')
-         {
-                 $whr = ['biz_id' => $request->get('biz_id'),'anchor_id' => $request->get('anchor_id')];
-          
-         }
-           else if($request->get('supplier_id')=='' && $request->get('biz_id')!='' && $request->get('anchor_id')=='')
-         {
-                 $whr = ['biz_id' => $request->get('biz_id')];
-          
-         }
-           else if($request->get('biz_id')=='' && $request->get('anchor_id')!='' && $request->get('supplier_id')=='')
-         {
-                 $whr = ['anchor_id' => $request->get('anchor_id')];
-          
-         }
-          
-       
-         if($request->get('app_id')!=''){
-             $whr['app_id']= $request->get('app_id');
-        }  */ 
-        //backend_get_invoice
-
-        return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal'])->orderBy('invoice_id', 'DESC');
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        if( $chkUser->id==11)
+        {
+            $res  = User::where('user_id',$id)->first();
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal'])->orderBy('invoice_id', 'DESC');
+        }
+        else
+        {
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal'])->orderBy('invoice_id', 'DESC');
+        }
      } 
      
      public static function getUserAllInvoice($request)

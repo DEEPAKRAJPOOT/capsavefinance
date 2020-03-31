@@ -290,8 +290,14 @@ class FinanceModel extends BaseModel
 
 
     public static function dataLogger($data, $table = 'email_logger'){
-      $inserted_id = DB::table($table)->insertGetId($data);
-      return $inserted_id;
+        try {
+            $inserted_id = DB::table($table)->insertGetId($data);
+            return $inserted_id;
+        } catch (\Exception $e) {
+            if ($e->errorInfo[1] == '1062') {
+               return true;
+            }
+        }
     }
 
     public static function updatePerfios($data, $table = 'biz_perfios_log', $value = '1', $column = 'id'){
@@ -334,5 +340,4 @@ class FinanceModel extends BaseModel
                 ->first();
        return ($result ?? null);
     }
-   
 }

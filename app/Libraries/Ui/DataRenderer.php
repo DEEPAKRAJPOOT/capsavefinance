@@ -960,10 +960,16 @@ class DataRenderer implements DataProviderInterface
                ->addColumn(
                     'action',
                     function ($invoice) {
-                    $action = "";
+                     $action = "";
+                     $id = Auth::user()->user_id;
+                     $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                     $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                     if( $chkUser->id!==11)
+                     {
                       $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
                       $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option><option value="14">Reject</option></select></div>';
-                    return  $action;
+                     }
+                      return  $action;
                 })
                  ->filter(function ($query) use ($request) {
                   
@@ -1116,12 +1122,15 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                          $action = "";
+                    if( $chkUser->id!==11)
+                     {   
                          $action .='</br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option>';
                        if(in_array($customer, $expl)) 
                        {
                          $action .='<option value="8">Approve</option>';
                        }
                         $action .='<option value="14">Reject</option></select></div>';
+                     }    
                         return  $action;
                 })
                  ->filter(function ($query) use ($request) {
@@ -1349,13 +1358,18 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
+                      if( $chkUser->id!=11)
+                      {  
                        $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
                        }
                         $action .= '<option value="9">Disb Que</option></select>&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                      return $action;
+                      }  
+                        $action .= '&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                     
+                        return $action;
                 })
                  ->filter(function ($query) use ($request) {
                   
@@ -1697,6 +1711,8 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
+                       if( $chkUser->id!=11)
+                      { 
                        $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option>';
                        $action .= '<option value="7">Pending</option>';
                        if(in_array($customer, $expl)) 
@@ -1704,6 +1720,7 @@ class DataRenderer implements DataProviderInterface
                         $action .='<option value="8">Approve</option>';
                        }
                         $action .='</select></div>';
+                      }
                         return $action;
 
                 })
@@ -4388,6 +4405,61 @@ class DataRenderer implements DataProviderInterface
                             return '<a class="btn btn-action-btn btn-sm" href ="'.route('add_ji_config', ['je_config_id' => $dataRecords->je_config_id, 'ji_config_id' => $dataRecords->ji_config_id]).'"><i class="fa fa-edit">Edit</a>';
                         }
                     )
+                    ->make(true);
+        }
+
+        public function getTallyData(Request $request, $dataRecords){
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'date',
+                        function ($dataRecords) {
+                        return $dataRecords->trans_date;
+                    })
+                    ->editColumn(
+                        'biz_id',
+                        function ($dataRecords) {
+                        return $dataRecords->biz_id ?? '---';
+                    })
+                    ->editColumn(
+                        'name',
+                        function ($dataRecords) {
+                        return $dataRecords->fullname;
+                    })
+                    ->editColumn(
+                        'amount',
+                        function ($dataRecords) {
+                        return $dataRecords->amount;
+                    }) 
+                    ->editColumn(
+                        'amount_type',
+                        function ($dataRecords) {
+                        return $dataRecords->entry_type;
+                    }) 
+                    ->editColumn(
+                        'reference',
+                        function ($dataRecords) {
+                        return $dataRecords->batch_id;
+                    })   
+                    ->editColumn(
+                        'journals_name',
+                        function ($dataRecords) {
+                        return $dataRecords->trans_name;
+                    })      
+                    ->editColumn(
+                        'mode_of_pay',
+                        function ($dataRecords) {
+                        return $dataRecords->mode_of_pay;
+                    })    
+                    ->editColumn(
+                        'created_by',
+                        function ($dataRecords) {
+                        return $dataRecords->created_by;
+                    })     
+                    ->editColumn(
+                        'narration',
+                        function ($dataRecords) {
+                        return $dataRecords->comment;
+                    }) 
                     ->make(true);
         }
 

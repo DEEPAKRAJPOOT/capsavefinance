@@ -64,31 +64,40 @@ class FinanceController extends Controller {
     }
     
     public function exportTransactions(Request $request) {
-        $result = $this->finRepo->getAllTxns();
+        $result = $this->finRepo->getTally();
          $records[] = [
-              'invoice_id' => "Invoice No",
-              'trans_id' => "Transaction No",
-              'journal_name' => "Vch Type",
-              'date' => "Invoice Date",
-              'f_name' => "Ledger Name",
-              'debit_amount' => "Dr Amt",
-              'dr_ref_no' => "Ref No",
-              'dr_ref_amount' => "Ref Amt",
-              'credit_amount' => "cr Amt",
-              'cr_ref_no' => "Cr Ref No",
-              'cr_ref_amount' => "Cr Ref Amt",
-              'transtype' => "transtype",
-              'is_partner' => "is_partner",
-              'entry_type' => "entry_type",
-              'naration' => "Narration",
+            "transaction_id" => "transaction Id",
+            "batch_id" => "Batch Id",
+            "amount" => "Txn Amount",
+            "tally_at" => "Tally At",
+            "fullname" => "Name",
+            "biz_id" => "Biz Id",
+            "virtual_acc_id" => "virtual A/C Id",
+            "disbursal_id" => "Disbursal Id",
+            "trans_date" => "Txn Date",
+            "trans_name" => "Txn Name",
+            "chrg_trans_id" => "Chrg Txn Id",
+            "settled_amount" => "Settled Amount",
+            "entry_type" => "Entry Type",
+            "gst_applicable" => "GST Applicable",
+            "cgst" => "CGST",
+            "sgst" => "SGST",
+            "igst" => "IGST",
+            "tds_per" => "TDS %",
+            "is_settled" => "Is Settled",
+            "mode_of_pay" => "Payment Mode",
+            "utr_no" => "UTR NO",
+            "unr_no" => "UNR NO",
+            "cheque_no" => "CHEQUE NO",
+            "trans_by" => "Txn Type",
+            "pay_from" => "Pay From",
+            "txn_id" => "Txn Id",
+            "comment" => "Narration",
+            "created_at" => "created_at",
+            "created_by" => "Created By",
             ];
         foreach ($result as $key => $value) {
-           $ledger_name = $value['f_name']. ' '. $value['m_name'].' '. $value['l_name'];
-           unset($value['m_name'],$value['l_name']);
-           $value['f_name'] =  $ledger_name;
-           $value['journal_name'] =  'Journal';
-           $value['invoice_id'] =  $value['invoice_id'] ?? '---';
-           $records[] = $value->toArray();
+           $records[] = (array)$value;
         }
         $this->array_to_csv($records, "execl.csv");
     }
