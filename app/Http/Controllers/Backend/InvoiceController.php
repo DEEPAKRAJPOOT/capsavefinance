@@ -343,21 +343,8 @@ class InvoiceController extends Controller {
         $biz_id = $res->biz_id;
         $getPrgm  = $this->application->getProgram($attributes['program_id']);
         $chkUser  = $this->application->chkUser();
-        if( $chkUser->id==1)
-        {
-             $customer  = 1;
-        }
-        else if( $chkUser->id==11)
-        {
-             $customer  = 2;
-        }
-        else
-        {
-            $customer  = 3;
-        }
-        
-         $expl  =  explode(",",$getPrgm->invoice_approval); 
-        
+        $customer  = 4;
+        $expl  =  explode(",",$getPrgm->invoice_approval); 
         if ($attributes['exception']) {
             $statusId = 28;
         } else {
