@@ -1,5 +1,12 @@
 @extends('layouts.backend.admin-layout')
 
+@section('additional_css')
+<style>
+    .table td {
+        border: inherit !important; 
+    }
+</style>
+@endsection
 @section('content')
 
 <div class="content-wrapper">

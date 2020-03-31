@@ -60,7 +60,10 @@ try {
             data: data,
             dataType: "json",
             success: function (res) {
-                var html = `<table class="table overview-table table-bordered" cellpadding="0" cellspacing="0" style="margin-bottom: 22px;">
+                var html = `<table class="table " cellpadding="0" cellspacing="0" style="margin-bottom: 22px;border-top-style: none;
+                border-left-style: none;
+                border-right-style: none;
+                border-bottom-style: none;">
                             <tbody>
                                 <tr>
                                     <td><b>Client Name</b></td>
