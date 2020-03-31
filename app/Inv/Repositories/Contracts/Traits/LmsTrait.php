@@ -384,7 +384,7 @@ trait LmsTrait
         if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
             $interest = $totalinterest;
         }
-        $disburseAmount = round($fundedAmount - $interest, 2);
+        $disburseAmount = round($fundedAmount, 2);
 
         $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
         $disbursalData['app_id'] = $invoice['app_id'] ?? null;
