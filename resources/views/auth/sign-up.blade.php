@@ -26,6 +26,7 @@
                                     </div>
 
                                 </div>
+                                <!--
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="txtSupplierName">Middle Name
@@ -35,8 +36,7 @@
                                         <span class="text-danger error">{{$errors->first('m_name')}}</span>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
+                                -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="txtCreditPeriod">Last Name
@@ -45,7 +45,10 @@
                                         <input type="text" name="l_name" value="@if($anchorDetail){{$anchorDetail->l_name}}@else{{old('l_name')}}@endif" class="form-control" tabindex="3" placeholder="Last Name" @if($anchorDetail)readonly @else @endif >
                                         <span class="text-danger error">{{$errors->first('l_name')}} </span>
                                     </div>
-                                </div>
+                                </div>                                
+                            </div>
+                            <div class="row">
+                                
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="txtSupplierName">Business Name
