@@ -46,10 +46,7 @@ try {
             $("#client_details").html('');
             var user_id = $.trim($("#user_id").val());
             var biz_id = $.trim($("#biz_id").val());
-            if(biz_id == '' || user_id== ''){
-                alert('Please Select Client Name');
-                return false;
-            }
+            
             showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
             oTable.draw();
         });
