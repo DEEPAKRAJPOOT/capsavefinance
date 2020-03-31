@@ -32,6 +32,7 @@ $(document).ready(function(){
     			alert(errorThrown);
 			},
 			success: function(res){
+                          
 				res = res.response;
 				if(res == null){
 					$('.isloader').hide();
@@ -77,13 +78,20 @@ function setUnsetError(is_gst_manual){
 
 function fillGSTinput(datas){
 	let res ='';
+        var  active = 0;
 	let option_html = '<option value="">Select GST Number</option>';
 	$(datas).each(function(i,data){
 		if(data.authStatus == 'Active'){
+                        var active=1;
 			res += data.gstinId+',';
 			option_html += '<option value="'+data.gstinId+'">'+data.gstinId+'</option>';
 		}
 	})
+        if(active==0)
+        {
+            alert(datas[0].authStatus);
+            return false;
+        }
 	$('select[name=biz_gst_number]').html(option_html);
 	$('input[name=pan_api_res]').val(res);
 	//$('#business_information_form input[type=submit]').prop("disabled", false);
