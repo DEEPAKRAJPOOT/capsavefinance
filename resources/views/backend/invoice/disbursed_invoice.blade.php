@@ -205,8 +205,7 @@ try {
                 allInvIds.join();
             });
             $('#invoice_ids').val(allInvIds.join());
-        } else
-        {
+        } else {
             let parent_inv_ids = $('#invoice_ids').val().trim();
             let allInvIds = parent_inv_ids.split(',');
             if(!parent_inv_ids.length){
