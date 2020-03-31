@@ -48,69 +48,7 @@
                                                 <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
                                             </div>
                                             <input type="hidden" value="" name="invoice_ids" id="invoice_ids"> 
-                                            <!-- <div class="col-md-3">				 
-                                                                                           
-                                                                                          <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                                                                <option value="">Select Business Name  </option>
-                                                                                                    @foreach($get_bus as $row)
-                                                                                                     @php if(isset($row->business->biz_id)) { @endphp
-                                                                                                <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                                                                                                  @php } @endphp
-                                                                                                @endforeach
-                                            
-                                            
-                                                                                            </select>
-                                                                                            <span id="anchorMsg" class="error"></span>
-                                            
-                                                                                        </div>
-                                                                                        <div class="col-md-2">				 
-                                                                                            <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
-                                                                                             
-                                                                                            </select>
-                                            
-                                                                                        </div>
-                                                                                        <div class="col-md-2">		    
-                                            
-                                                                                            <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-                                            
-                                                                                            </select>
-                                                                                        </div>  -->   
-
                                         </div>
-                                        <!--
-                                            <div class="col-md-2">				 
-                                                    <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                                    <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                            <option value="">Select Application  </option>
-                                                            @foreach($get_bus as $row)
-                                                            <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                                                            @endforeach
-                                                    </select>
-                                                    <span id="anchorMsg" class="error"></span>
-                                            </div>
-                                            <div class="col-md-2">				 
-                                                    <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                            <option value="">Select Anchor  </option>
-                                                            @foreach($anchor_list as $row)
-                                                            @php if(isset($row->anchorOne->anchor_id)) { @endphp
-                                                            <option value="{{{$row->anchorOne->anchor_id}}}">{{{$row->anchorOne->comp_name}}}  </option>
-                                                            @php } @endphp
-                                                            @endforeach
-                                                    </select>
-                                            </div>
-                                            <div class="col-md-2">		    
-
-                                                    <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-
-                                                    </select>
-                                            </div>    
-                                            <div class="col-md-4 ml-auto text-right" id="buttonDiv">
-                                                    <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
-
-                                                    <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
-                                            </div>
-                                            <input type="hidden" value="" name="invoice_ids" id="invoice_ids">  
-                                        -->
                                     </div>
                                     <div class="row">
                                         <div class="col-12 dataTables_wrapper mt-4">
@@ -255,9 +193,29 @@ try {
         var isChecked = $("#chkAll").is(':checked');
         if (isChecked)
         {
+            let parent_inv_ids = $('#invoice_ids').val().trim();
+            let allInvIds = parent_inv_ids.split(',');
+            if(!parent_inv_ids.length){
+                allInvIds = [];
+            }
             $('input:checkbox').attr('checked', 'checked');
-        } else
-        {
+            $("input:checkbox[name=checkinvoiceid]:checked").each(function(){
+                let current_id = $(this).val();
+                allInvIds.push(current_id);
+                allInvIds.join();
+            });
+            $('#invoice_ids').val(allInvIds.join());
+        } else {
+            let parent_inv_ids = $('#invoice_ids').val().trim();
+            let allInvIds = parent_inv_ids.split(',');
+            if(!parent_inv_ids.length){
+                allInvIds = [];
+            }
+            $("input:checkbox[name=checkinvoiceid]:checked").each(function(){
+                let current_id = $(this).val();
+                allInvIds = allInvIds.filter(e => e !== current_id);
+            });
+            $('#invoice_ids').val(allInvIds.join());
             $('input:checkbox').removeAttr('checked');
         }
     });
