@@ -198,7 +198,15 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
-           
+            $.validator.addMethod(
+                    "regex",
+                    function(value, element, regexp) {
+                        var re = new RegExp(regexp);
+                        return this.optional(element) || re.test(value);
+                    },
+                    "Please check your input."
+            );
+    
             $(document).on('keyup', '#email', function(){
               var email = $(this).val();
               if (!email.length) {
@@ -227,13 +235,22 @@
                 $('input.f_name').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                regex: "^[a-zA-Z_]+$",
+                                messages: {
+                                    regex: "Please enter only characters without space & special characters."
+                                }
+                                
                             })
                 });
                  $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                regex: "^[a-zA-Z_]+$",
+                                messages: {
+                                    regex: "Please enter only characters without space & special characters."
+                                }                                
                             })
                 });
                 $('input.comp_name').each(function () {
