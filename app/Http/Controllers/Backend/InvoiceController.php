@@ -343,21 +343,8 @@ class InvoiceController extends Controller {
         $biz_id = $res->biz_id;
         $getPrgm  = $this->application->getProgram($attributes['program_id']);
         $chkUser  = $this->application->chkUser();
-        if( $chkUser->id==1)
-        {
-             $customer  = 1;
-        }
-        else if( $chkUser->id==11)
-        {
-             $customer  = 2;
-        }
-        else
-        {
-            $customer  = 3;
-        }
-        
-         $expl  =  explode(",",$getPrgm->invoice_approval); 
-        
+        $customer  = 4;
+        $expl  =  explode(",",$getPrgm->invoice_approval); 
         if ($attributes['exception']) {
             $statusId = 28;
         } else {
@@ -530,14 +517,16 @@ class InvoiceController extends Controller {
             $disburseAmount = 0;
 
             foreach ($allinvoices as $invoice) {
-                $invoice['batch_id'] = $batchId;
-                $invoice['disburse_date'] = $disburseDate;
-                $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-                $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
-                $disbursalId = $createDisbursal->disbursal_id; 
-                $disbursalIds[] = $createDisbursal->disbursal_id; 
-                $refId = $invoice['lms_user']['virtual_acc_id'];
-                
+                $disburseData = $this->lmsRepo->findDisbursalByInvoiceId($invoice['invoice_id'])->toArray();
+                if ($disburseData == null) {
+                    $invoice['batch_id'] = $batchId;
+                    $invoice['disburse_date'] = $disburseDate;
+                    $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
+                    $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+                    $disbursalId = $createDisbursal->disbursal_id; 
+                    $disbursalIds[] = $createDisbursal->disbursal_id; 
+                    $refId = $invoice['lms_user']['virtual_acc_id'];
+                }
                 if($invoice['supplier_id'] = $userid) {
 
                     $interest= 0;
@@ -588,23 +577,23 @@ class InvoiceController extends Controller {
                 if($disburseType == 2) {
                     
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
+                    $transactionData = $this->createTransactionData($userid, ['amount' => $disburseAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
                     $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
                     
                     // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
                     $intrstAmt = round($totalInterest,2);
                     if ($intrstAmt > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
+                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                        $intrstCdtTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
 
                     // Margin transaction $tranType = 10 
                     $marginAmt = round($totalMargin,2);
                     if ($marginAmt > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
+                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
                 }
