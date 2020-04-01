@@ -166,6 +166,11 @@ class DocumentRepository implements DocumentInterface
         return $result ?: false;
     }
     
+    public function getAppDocFileById($appDocFileId){
+        $result = AppDocumentFile::find($appDocFileId);
+        
+        return $result ?: false;
+    }
     /**
      * save document method
      *
@@ -183,6 +188,16 @@ class DocumentRepository implements DocumentInterface
             throw new BlankDataExceptions('No Data Found');
         }
         return UserFile::creates($attributes, $docId, $userId);
+    }
+
+    public function updateDocument($data = [], $appDocFileId){
+        if (!is_array($appDocFileId)) {
+            return AppDocumentFile::where('app_doc_file_id', $appDocFileId)
+                ->update($data);
+        } else {
+            return AppDocumentFile::whereIn('app_doc_file_id', $appDocFileId)
+                    ->update($data);
+        }
     }
     
     
@@ -379,5 +394,21 @@ class DocumentRepository implements DocumentInterface
         $result = AppDocument::findRequiredDocsByStage($userId, $appId, $wfStageCode);        
         return $result ?: [];
     }    
+
+
+        /**
+     * save file method
+     *
+     * @param mixed $requests
+     */
+    
+    public function deleteFile($attributes){
+        /**
+         * Check Valid Array
+         */
+        $fileId = $attributes->file_id;
+        
+        return UserFile::deleteFile($fileId);
+    }
 
 }

@@ -6,7 +6,6 @@ Route::group(
     ['middleware' => 'auth'],
     function () {
     
-    
    //////////////////Pan card authontication//////////////////////////
     Route::post(
         'chk_user_pan_karza',
@@ -960,6 +959,28 @@ Route::group(
     Route::post('get-repayment-amount', [
         'as' => 'get_repayment_amount',
         'uses' => 'AjaxController@getRepaymentAmount'
-    ]);      
+    ]);  
 
+    Route::post('check-unique-charge', [
+        'as' => 'check_unique_charge',
+        'uses' => 'AjaxController@checkUniqueCharge'
+    ]);     
+
+    //ajax route for check the email is exist or not
+    Route::post('check-exist-email', [
+        'as' => 'check_exist_email',
+        'uses' => 'AjaxController@getExistEmailStatus'
+    ]);
+
+    //ajax route for check the email is exist or not
+    Route::post('check-exist-emails-anchor', [
+        'as' => 'check_exist_email_anchor',
+        'uses' => 'AjaxController@getExistEmailStatusAnchor'
+    ]);
+
+    Route::post('get-soa-client-details',[
+        'as' => 'get_soa_client_details',
+        'uses' => 'AjaxController@getSoaClientDetails'
+    ]);
+     
 });

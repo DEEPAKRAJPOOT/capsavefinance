@@ -237,12 +237,41 @@ class RefundController extends Controller
                     $userId = $reqData ? $reqData->user_id : 0;
                     $transId = $reqData ? $reqData->trans_id : 0;
 
-                    $trData = [];                
-                    $trData['amount'] = $trAmount;
-                    $trData['parent_trans_id'] = $transId;
-                    $ptrData = $this->createTransactionData($userId, $trData, null, $transType = 35, $entryType = 0);
-                    $this->appRepo->saveTransaction($ptrData);
-
+                    //Non Factored Amount
+                    $nonFactoredAmtData = $this->lmsRepo->getRefundData($transId, 'NON_FACTORED');
+                    if (count($nonFactoredAmtData) > 0) {
+                        $trData = [];                
+                        $trData['amount'] = isset($nonFactoredAmtData[0]) ? $nonFactoredAmtData[0]->amount : 0;
+                        //$trData['repay_trans_id'] = $transId;
+                        $trData['soa_flag'] = 1;
+                        $transType = config('lms.TRANS_TYPE.NON_FACTORED_AMT');
+                        $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
+                        $this->appRepo->saveTransaction($ptrData);
+                    }
+                    
+                    //Interest Refund Amount                    
+                    $intRefundAmtData = $this->lmsRepo->getRefundData($transId, 'INTEREST_REFUND');
+                    if (count($intRefundAmtData) > 0) {
+                        $trData = [];                
+                        $trData['amount'] = isset($intRefundAmtData[0]) ? $intRefundAmtData[0]->amount : 0;
+                        //$trData['repay_trans_id'] = $transId;
+                        $trData['soa_flag'] = 1;
+                        $transType = config('lms.TRANS_TYPE.INTEREST_REFUND');
+                        $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
+                        $this->appRepo->saveTransaction($ptrData);
+                    }
+                    
+                    //Margin Amount
+                    $marginReleasedAmtData = $this->lmsRepo->getRefundData($transId, 'MARGIN_RELEASED');
+                    if (count($marginReleasedAmtData) > 0) {
+                        $trData = [];                
+                        $trData['amount'] = isset($marginReleasedAmtData[0]) ? $marginReleasedAmtData[0]->amount : 0;
+                        //$trData['repay_trans_id'] = $transId;
+                        $trData['soa_flag'] = 1;
+                        $transType = config('lms.TRANS_TYPE.MARGIN');
+                        $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
+                        $this->appRepo->saveTransaction($ptrData);
+                    }
                     $addlData=[];
                     $addlData['status'] = config('lms.REQUEST_STATUS.PROCESSED');
                     $addlData['sharing_comment'] = $comment;

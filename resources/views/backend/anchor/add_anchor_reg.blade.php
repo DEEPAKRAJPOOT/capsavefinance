@@ -24,12 +24,11 @@
                         </div>
                            <div class="row">
                            <div class="col-6">
-                              <div class="form-group">
+                           <div class="form-group">
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="3" placeholder="Email" onkeypress="searchFunction()">
-                                 <small id="email_error" style="color:red; font-size:17px"></small>
+                                 <input type="email" name="email" id="email" value="" class="form-control email" tabindex="4" placeholder="Email" >
                               </div>
                            </div>
 
@@ -162,14 +161,42 @@
 
     var messages = {
         //get_lead: "{{ URL::route('get_lead') }}",
+        check_exist_email: "{{ URL::route('check_exist_email_anchor') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-        check_exist_user: "{{ URL::route('check_user') }}"
 
     };
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
+
+         
+         $(document).on('keyup', '#email', function(){
+              var email = $(this).val();
+              if (!email.length) {
+                  return false;
+              }
+              $.ajax({
+                  url: messages.check_exist_email,
+                  type: 'POST',
+                  data: {
+                      'email' : email,
+                      '_token' : messages.token,
+                  },
+                  success: function(response){
+                     var nameclass = response.status ? 'success' : 'error';
+                      $('#email-error').removeClass('error success');
+                     if($('#email-error').length){
+                        $('#email-error').text(response.message).addClass(nameclass);
+                     }else{
+                         $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                     }
+                  }
+              });
+          });
+
+
+           
             $('#saveAnch').on('click', function (event) {
                 $('input.employee').each(function () {
                     $(this).rules("add",
@@ -205,7 +232,7 @@
                                 required: true
                             })
                 });
-                $('input.city').each(function () {
+                $('select.city').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
@@ -242,15 +269,23 @@
 
                      assigned_sale_mgr: {
                         required: true
+                     },
+
+                     city: {
+                        required: true
                      }
                   },
                   messages: {
                      doc_file: {
-                        required: "Please select file",
+                        required: "This field is required.",
                         extension:"Invalid file format",
                      },
                      assigned_sale_mgr: {
-                        required: 'Please select file'
+                        required: 'This field is required.'
+                     },
+
+                     city: {
+                        required: 'This field is required.'
                      }
                   }
                }
@@ -268,6 +303,8 @@
             if(!employee.match(pattern)) {
                document.getElementById('employee').value = "";
                
+            } else if(employee.length >= 50) {
+               document.getElementById('employee').value = "";
             };
 
             if(isNaN(phone)) {
@@ -286,50 +323,6 @@
    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
    });
 </script>
-
-<script>
-                
-    let email_error = document.getElementById('email_error');
-   //  email.addEventListener('keypress', searchFunction);
-    
-
-    function searchFunction(event) {
-
-        let search = document.getElementById('email').value;
-
-        const searchUser = {
-            search: search
-        };
-
-        fetch(messages.check_exist_user, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                "X-CSRF-TOKEN": messages.token
-            },
-            body: JSON.stringify(searchUser)
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                
-                  data.filter(item => {
-                     var searchResult = item.search(search);
-                     
-                     // searchResult != -1 ? email_error.textContent = `Email already present` : email_error.textContent = " ";
-                     searchResult != -1 ? email_error.textContent = `Email already present` : email_error.textContent = "";
-                  })
-               
-            
-            })
-            .catch(error => console.log(error))
-
-        event.preventDefault();
-    }
-
-
-
-</script>
-
 
 
 <script type="text/javascript">

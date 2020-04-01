@@ -1161,7 +1161,8 @@
    }
    
    $(document).on('click','.clone_covenants', function() {
-     covenants_clone_tr_html =  $('.covenants_clone_tr').html();
+     // covenants_clone_tr_html =  $('.covenants_clone_tr').html();
+     covenants_clone_tr_html = '<td><input maxlength="100" value="" type="text" name="covenants[name][]" class="input_sanc" placeholder="Enter Covenants"></td><td><input maxlength="10" value="" type="text" name="covenants[ratio][]" class="input_sanc" placeholder="Enter Minimum/Maximum ratio"></td><td><select class="select" name="covenants[ratio_applicability][]"><option selected="">Applicable</option><option>Not Applicable</option></select></td>';
      $('.FinancialCovenantsTBody').append("<tr>"+ covenants_clone_tr_html +"</tr>");
    })
    $(document).on('click','.remove_covenants', function() {
@@ -1173,7 +1174,7 @@
    
    $(document).ready(function(){
       jQuery.validator.addMethod("alphanumeric", function(value, element) {
-         return this.optional(element) || /^[\w.]+$/i.test(value);
+         return this.optional(element) || /^[\w\s.]+$/i.test(value);
       }, "Letters, numbers, and underscores only please");
 
       jQuery.validator.addMethod("ratio", function(value, element) {

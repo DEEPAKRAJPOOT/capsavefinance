@@ -29,5 +29,7 @@ return [
     'refunded' => 'Selected amount has been successfully refunded.',
     'under_approval' => 'Offer is under approval, can\'t be updated',
     'noBankAccount' => 'No Bank Account Found.',
+    'disburseMarked' => 'Successfully disburse marked .',
+    'downloadExcel' => 'Successfully download.',
 ];
 

@@ -36,10 +36,17 @@
                                <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-1">
+                                            <div class="col-md-3">
+                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                             </div>
-                                            <div class="col-md-3">				 
-                                                <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
+                                              <div class="col-md-4">
+                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                              </div> 
+                                             <div class="col-md-1">
+                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                             </div>  
+                                           <!-- <div class="col-md-3">				 
+                                               
                                               <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                                                     <option value="">Select Business Name  </option>
                                                         @foreach($get_bus as $row)
@@ -64,11 +71,11 @@
                                                 <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
 
                                                 </select>
-                                            </div>    
+                                            </div>  -->   
                                             <div class="col-md-2">	
-                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
+                                             <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
                                               
-
+                                       
                                             </div>
                                             <div class="col-md-1">	          
                                                 <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
@@ -91,6 +98,7 @@
                                                                             <th>Customer Detail</th>
                                                                             <th> Inv Detail</th>
                                                                             <th> Inv Amount</th>
+                                                                             <th> Updated By</th>
                                                                             <th>Action</th>
                                                                         </tr>
                                                                     </thead>
@@ -185,7 +193,7 @@
     .itemBackground 
     { 
       border: 2px solid blanchedalmond;  
-      background-color:#5c9742;
+      background-color:#138864;
     }
      .itemBackgroundColor 
     { 
@@ -246,8 +254,10 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                    $("#moveCase").html('Invoice successfully sent to  approve ');
-                    $(th).parent('td').parent('tr').remove();
+                   
+                     $("#moveCase").html('Invoice successfully sent to  approve ');
+                     $(th).parent('td').parent('tr').remove();
+                   
                 }
             });
         } else

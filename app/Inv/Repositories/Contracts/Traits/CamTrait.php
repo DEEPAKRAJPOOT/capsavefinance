@@ -37,20 +37,47 @@ trait CamTrait
             $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');
 
             $active_json_filename = $json_files['curr_file'];
+            $contents = array();
             if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)) {
-                      $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
-              }
-              $fy = $contents['FinancialStatement']['FY'] ?? array();
-              $financeData = [];
-              $latest_finance_year = '2000';
-              $audited_years = [];
-              if (!empty($fy)) {
-                foreach ($fy as $k => $v) {
-                  $audited_years[] = $v['year'];
-                  $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
-                  $financeData[$v['year']] = $v;
+              $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'finance').'/'. $active_json_filename)),true);
+              $contents = array_replace_recursive(json_decode(base64_decode(getFinContent()),true) , $contents);
+            }else{
+              if ($this->genBlankfinJSON) {
+                $active_json_filename = $this->getCommonFilePath('common_finance.json');
+                if (!file_exists($active_json_filename)) {
+                  $myfile = fopen($active_json_filename, "w");
+                  \File::put($active_json_filename, getFinContent());
                 }
+                $contents = json_decode(base64_decode(file_get_contents($active_json_filename)),true);
               }
+            }
+            
+            $borrower_name = $contents['FinancialStatement']['NameOfTheBorrower'] ?? '';
+            $latest_finance_year = 2010;
+            $fy = $contents['FinancialStatement']['FY'] ?? array();
+            $financeData = [];
+            $audited_years = [];
+            $curr_fin_year = date('Y') - 1;
+            if (!empty($fy)) {
+              foreach ($fy as $k => $v) {
+                if ($this->genBlankfinJSON) {
+                  $v['year'] = empty($v['year']) ? $curr_fin_year : $v['year'];
+                  $curr_fin_year--;
+                }
+                $audited_years[] = $v['year'];
+                $latest_finance_year = $latest_finance_year < $v['year'] ? $v['year'] : $latest_finance_year;
+                $financeData[$v['year']] = $v;
+              }
+            }
+            $financeData =  arrayValuesToInt($financeData);
+            $growth_data = [];
+            foreach ($audited_years as $Kolkata => $year) {
+              if (!empty($financeData[$year-1])) {
+                 $growth_data[$year] =  getGrowth($financeData[$year], $financeData[$year-1]);
+              }else{
+                 $growth_data[$year] = 0;
+              }
+            }
                 $Columns = getFinancialDetailSummaryColumns();
                 $FinanceColumns = [];
                 foreach ($Columns as $key => $cols) {
@@ -126,6 +153,11 @@ trait CamTrait
                     }
                 } 
                 $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
+                foreach($supplyOfferData as $key=>$val){
+                  $supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($val->anchor_id)->pluck('f_name')->first();
+                  $supplyOfferData[$key]['programData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id], ['*'], ['programDoc', 'programCharges'])->first();
+                  $supplyOfferData[$key]['subProgramData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
+                }
                 return [
                     'arrCamData' =>$arrCamData,
                     'arrBizData' => $arrBizData, 
@@ -135,6 +167,7 @@ trait CamTrait
                     'arrOwnerData' => $arrOwnerData,
                     'arrEntityData' => $arrEntityData,
                     'financeData' => $financeData,
+                    'growthData' => $growth_data,
                     'FinanceColumns' => $FinanceColumns,
                     'audited_years' => $audited_years,
                     'leaseOfferData' => $leaseOfferData,

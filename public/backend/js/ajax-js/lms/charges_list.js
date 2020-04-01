@@ -15,6 +15,7 @@ try {
                 "method": 'POST',
                 data: function (d) {
                     d.type = $('select[name=type]').val();
+                    d.user_id = $('input[name=user_id]').val();
                     d.from_date = $('input[name=from_date]').val();
                     d.to_date = $('input[name=to_date]').val();
                     d._token = messages.token;

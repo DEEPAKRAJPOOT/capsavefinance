@@ -20,7 +20,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\InvoiceActivityLog;
 use App\Inv\Repositories\Models\Application;
-
+use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -891,13 +891,24 @@ use CommonRepositoryTraits;
        return BizInvoice::getUserBizAnchor($attributes);  
     }  
 
-    public function getAllBankInvoice()
+    public function getAllBankInvoice($from_date, $to_date)
     {
-        $this->result = Disbursal::getAllBankInvoice();
+        $this->result = DisbursalBatch::getAllBatches($from_date, $to_date);
         return $this->result;
     }
 
-    public function getAllBankInvoiceCustomers($batch_id)
+    public function checkSingleInvoice($invNo)
+    {
+        try
+        {
+            $this->result = BizInvoice::checkSingleInvoice($invNo);
+            return $this->result;
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    } 
+   public function getAllBankInvoiceCustomers($batch_id)
     {
         $this->result = Disbursal::getAllBankInvoiceCustomers($batch_id);
         return $this->result;
@@ -908,4 +919,5 @@ use CommonRepositoryTraits;
         $this->result = Disbursal::getAllDisburseInvoice($batch_id, $disbursed_user_id);
         return $this->result;
     }   
+
 }

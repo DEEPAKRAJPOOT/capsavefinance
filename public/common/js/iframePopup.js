@@ -104,6 +104,10 @@ var iframe_ids = [
         'lms_update_request_status',
         'lms_view_process_refund',
         'edit_bank_account',
+        'viewBatchSendToBankInvoice',
+        'invoiceDisbursalTxnUpdate',
+        'disburseInvoicePopUp',
+        'EdituploadDocument'
     ];
 
 iframe_ids.forEach(function(id) {

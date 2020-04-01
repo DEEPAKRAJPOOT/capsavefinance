@@ -60,7 +60,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
-                <input type="text" class="form-control" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
+                <input type="text" class="form-control formatNum" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
             </div>
 
         </div>
@@ -171,6 +171,9 @@
             rules: {
                 'chrg_name': {
                     required: true,
+                    uniqueCharge: {
+                        chrg_id:$("#id").val()
+                    }
                 },
                 'chrg_desc': {
                     required: true,

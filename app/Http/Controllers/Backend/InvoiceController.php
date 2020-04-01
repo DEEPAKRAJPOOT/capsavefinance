@@ -34,13 +34,15 @@ class InvoiceController extends Controller {
     protected $docRepo;
     protected $lmsRepo;
     protected $userRepo;
+    protected $application;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+    public function __construct(InvAppRepoInterface $app_repo, InvAppRepoInterface $application, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
         $this->appRepo = $app_repo;
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
+        $this->application  =  $application;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
     }
@@ -60,10 +62,16 @@ class InvoiceController extends Controller {
     }
 
     public function getAllInvoice() {
-
         $get_anchor = $this->invRepo->getLmsLimitAllAnchor();
+        $id = Auth::user()->user_id;
+        $res =  $this->userRepo->getUserDetail($id);
+        $aid    =  $res->anchor_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        $get_program = $this->invRepo->getLimitProgram($aid);
+        $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
         return view('backend.invoice.upload_all_invoice')
-                        ->with(['get_anchor' => $get_anchor]);
+                        ->with(['get_anchor' => $get_anchor,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program ]);
     }
 
     public function viewInvoice(Request $req) {
@@ -90,9 +98,16 @@ class InvoiceController extends Controller {
 
     public function getBulkInvoice() {
 
-        $getAllInvoice = $this->invRepo->getLimitAllAnchor();
+        $getAllInvoice = $this->invRepo->getLmsLimitAllAnchor();
         $get_bus = $this->invRepo->getBusinessName();
-        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice]);
+        $id = Auth::user()->user_id;
+        $res =  $this->userRepo->getUserDetail($id);
+        $aid    =  $res->anchor_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        $get_program = $this->invRepo->getLimitProgram($aid);
+        $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
+        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program ]);
     }
 
     public function viewApproveInvoice(Request $req) {
@@ -102,17 +117,24 @@ class InvoiceController extends Controller {
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(8);
         $get_bus = $this->invRepo->getBusinessNameApp(8);
-        return view('backend.invoice.approve_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        return view('backend.invoice.approve_invoice')->with(['role' =>$chkUser->id,'get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
     }
 
     public function viewDisbursedInvoice(Request $req) {
+       
         $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(9);
         $get_bus = $this->invRepo->getBusinessNameApp(9);
-        return view('backend.invoice.disbursed_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        return view('backend.invoice.disbursed_invoice')->with(['role' =>$chkUser->id,'get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
     }
 
     public function viewRepaidInvoice(Request $req) {
@@ -132,7 +154,9 @@ class InvoiceController extends Controller {
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(10);
         $get_bus = $this->invRepo->getBusinessNameApp(10);
-        return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        $batchData = $this->lmsRepo->getallBatch();
+
+        return view('backend.invoice.sent_to_bank')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo, 'batchData' => $batchData]);
     }
 
     public function viewBankInvoice(Request $req) {
@@ -223,6 +247,56 @@ class InvoiceController extends Controller {
         return view('backend.invoice.view_invoice_details')->with(['invoice' => $res, 'status' => $get_status]);
     }
 
+    public function viewBatchUserInvoice(Request $request) {
+        $userId = $request->get('user_id');
+        $batchId = $request->get('disbursal_batch_id');
+
+        $invoiceData = $this->lmsRepo->getAllUserBatchInvoice(['user_id' => $userId, 'disbursal_batch_id' => $batchId]);
+        // dd($invoiceData);
+        return view('backend.invoice.view_batch_user_invoice')
+                ->with(
+                    ['user_id' => $userId, 
+                    'disbursal_batch_id' => $batchId,
+                    'userIvoices' => $invoiceData
+                ]);
+    }
+
+    public function invoiceUpdateDisbursal(Request $request) {
+        $userId = $request->get('user_id');
+        $batchId = $request->get('disbursal_batch_id');
+
+        return view('backend.invoice.update_invoice_disbursal')
+                ->with(
+                    ['user_id' => $userId, 
+                    'disbursal_batch_id' => $batchId
+                ]);
+    }
+
+    public function updateDisburseInvoice(Request $request) {
+        $userId = $request->user_id;
+        $disbursalBatchId = $request->disbursal_batch_id;
+        $transId = $request->trans_id;
+        $remarks = $request->remarks;
+
+        $apiLogData['tran_id'] = $transId;
+        $apiLogData['remark'] = $remarks;
+
+        $invoiceIds = $this->lmsRepo->findDisbursalByUserAndBatchIds(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+        $disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
+        if ($disburseApiLog) {
+            $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
+                    'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
+                ], ['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId]);
+                        
+            if ($updateDisbursal) {
+                $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+            }
+        }
+
+        Session::flash('message',trans('backend_messages.disburseMarked'));
+        return redirect()->route('backend_get_sent_to_bank');
+    }
+
     /* save bulk invoice */
 
     public function saveBulkInvoice(Request $request) {
@@ -260,15 +334,32 @@ class InvoiceController extends Controller {
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
         $attributes['supplier_id'] = $explode[0];
+        $explode1 = explode(',', $attributes['program_id']);
+        $attributes['program_id'] = $explode1[0];
         $appId = $explode[1];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
         $biz_id = $res->biz_id;
+        $getPrgm  = $this->application->getProgram($attributes['program_id']);
+        $chkUser  = $this->application->chkUser();
+        $customer  = 4;
+        $expl  =  explode(",",$getPrgm->invoice_approval); 
         if ($attributes['exception']) {
             $statusId = 28;
         } else {
+          if(in_array($customer, $expl))  
+          {
+            $statusId = 8;  
+          }
+          else if($getPrgm->invoice_approval==4)
+          {
+              $statusId = 8;   
+          }
+          else
+          {
             $statusId = 7;
+          }
         }
 
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
@@ -296,7 +387,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-            $this->invRepo->saveInvoiceActivityLog($result, 7, null, $id, null);
+            $this->invRepo->saveInvoiceActivityLog($result, $statusId, null, $id, null);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
@@ -380,6 +471,7 @@ class InvoiceController extends Controller {
     {
         $invoiceIds = $request->get('invoice_ids');
         $disburseDate = $request->get('disburse_date');
+        $creatorId = Auth::user()->user_id;
         // dd($disburseDate);
         $validator = Validator::make($request->all(), [
            'disburse_date' => 'required'
@@ -425,13 +517,16 @@ class InvoiceController extends Controller {
             $disburseAmount = 0;
 
             foreach ($allinvoices as $invoice) {
-                $invoice['batch_id'] = $batchId;
-                $invoice['disburse_date'] = $disburseDate;
-                $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-                $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
-                $disbursalIds[] = $createDisbursal->disbursal_id; 
-                $refId = $invoice['lms_user']['virtual_acc_id'];
-                
+                $disburseData = $this->lmsRepo->findDisbursalByInvoiceId($invoice['invoice_id'])->toArray();
+                if ($disburseData == null) {
+                    $invoice['batch_id'] = $batchId;
+                    $invoice['disburse_date'] = $disburseDate;
+                    $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
+                    $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
+                    $disbursalId = $createDisbursal->disbursal_id; 
+                    $disbursalIds[] = $createDisbursal->disbursal_id; 
+                    $refId = $invoice['lms_user']['virtual_acc_id'];
+                }
                 if($invoice['supplier_id'] = $userid) {
 
                     $interest= 0;
@@ -473,35 +568,57 @@ class InvoiceController extends Controller {
 
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+                        $updateInvoiceActivityLog = $this->invRepo->saveInvoiceActivityLog($invoice['invoice_id'], 10, 'Sent to Bank', $creatorId, null);
+                    }
+
+                    // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
+                    $transactionData = $this->createTransactionData($userid, ['amount' => $fundedAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
+                    $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
+                    
+                    // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
+                
+                    if ($interest > 0.00) {
+                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9);
+                        $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
+
+                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9, 1);
+                        $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                    }
+
+                    // Margin transaction $tranType = 10 
+                    if ($margin > 0.00) {
+                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $margin, 'trans_date' => $disburseDate], $transId, 10, 1);
+                        $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
                 } 
             }
-            
+            /*
             if ($disburseAmount) {
                 if($disburseType == 2) {
                     
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate], $transId, 16);
+                    $transactionData = $this->createTransactionData($userid, ['amount' => $disburseAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
                     $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
                     
                     // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
                     $intrstAmt = round($totalInterest,2);
                     if ($intrstAmt > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
+                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                        $intrstCdtTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
 
                     // Margin transaction $tranType = 10 
                     $marginAmt = round($totalMargin,2);
                     if ($marginAmt > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
+                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
                 }
             }
+            */
         }
 
         $result = $this->export($exportData, $batchId);
@@ -622,5 +739,133 @@ class InvoiceController extends Controller {
         return [ 'status' => 1,
                 'file_path' => $filePath
                 ];
+    }
+
+    /**
+     * Display a pop up iframe for disburse check
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadBatchData(Request $request)
+    {
+        $custCode = $request->get('customer_code');
+        $selectDate = $request->get('selected_date');
+        $batchId = $request->get('batch_id');
+
+        $data = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
+        
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Customer Disbursment Excel")
+                ->setSubject("Customer Disbursment Excel")
+                ->setDescription("Customer Disbursment Excel")
+                ->setKeywords("Customer Disbursment Excel")
+                ->setCategory("Customer Disbursment Excel");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Client Code')
+                ->setCellValue('B1', 'Debit account no.')
+                ->setCellValue('C1', 'Transaction type code')
+                ->setCellValue('D1', 'Value date')
+                ->setCellValue('E1', 'Amount')
+                ->setCellValue('F1', 'Beneficary Name')
+                ->setCellValue('G1', 'Beneficary Accunt no.')
+                ->setCellValue('H1', 'IFSC code')
+                ->setCellValue('I1', 'Customer Ref no.')
+                ->setCellValue('J1', 'Beneficary email id')
+                ->setCellValue('K1', 'Beneficiary mobile no.')
+                ->setCellValue('L1', 'Remarks')
+                ->setCellValue('M1', 'Payment Type')
+                ->setCellValue('N1', 'Purpose code')
+                ->setCellValue('O1', 'Bene a/c type')
+                ->setCellValue('P1', 'Payable Location')
+                ->setCellValue('Q1', 'Print branch name')
+                ->setCellValue('R1', 'Mode of delivery')
+                ->setCellValue('S1', 'Transaction currency')
+                ->setCellValue('T1', 'BENE_ADD1')
+                ->setCellValue('U1', 'BENE_ADD2')
+                ->setCellValue('V1', 'BENE_ADD3')
+                ->setCellValue('W1', 'BENE_ADD4')
+                ->setCellValue('X1', 'Beneficiary ID')
+                ->setCellValue('Y1', 'Remote Printing')
+                ->setCellValue('Z1', 'Print Branch Location')
+                ->setCellValue('AA1', 'Nature Of Payment');;
+        $rows = 2;
+
+        foreach($data as $rowData){
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $benName = (isset($rowData['lms_user']['user']['anchor_bank_details']['acc_name'])) ? $rowData['lms_user']['user']['anchor_bank_details']['acc_name'] : '';
+            } else {
+                $benName =  (isset($rowData['lms_user']['bank_details']['acc_name'])) ? $rowData['lms_user']['bank_details']['acc_name'] : '';
+            }
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $bank_name = (isset($rowData['lms_user']['user']['anchor_bank_details']['bank']['bank_name'])) ? $rowData['lms_user']['user']['anchor_bank_details']['bank']['bank_name'] : '';
+            } else {
+                $bank_name = (isset($rowData['lms_user']['bank_details']['bank']['bank_name'])) ? $rowData['lms_user']['bank_details']['bank']['bank_name'] : '';
+            }
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $ifsc_code = (isset($rowData['lms_user']['user']['anchor_bank_details']['ifsc_code'])) ? $rowData['lms_user']['user']['anchor_bank_details']['ifsc_code'] : '';
+            } else {
+                $ifsc_code = (isset($rowData['lms_user']['bank_details']['ifsc_code'])) ? $rowData['lms_user']['bank_details']['ifsc_code'] : '';
+            }
+
+            if ($rowData['lms_user']['user']['is_buyer'] == 2) {
+                $benAcc = (isset($rowData['lms_user']['user']['anchor_bank_details']['acc_no'])) ? $rowData['lms_user']['user']['anchor_bank_details']['acc_no'] : '';
+            } else {
+                $benAcc = (isset($rowData['lms_user']['bank_details']['acc_no'])) ? $rowData['lms_user']['bank_details']['acc_no'] : '';
+            }
+
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['Debit_Acct_No'] ?? '')
+                ->setCellValue('C' . $rows, $rowData['Trans_Type_Code'] ?? '')
+                ->setCellValue('D' . $rows, $rowData['disburse_date'] ?? '')
+                ->setCellValue('E' . $rows, $rowData['total_disburse_amount'] ?? '')
+                ->setCellValue('F' . $rows, $benName ?? '')
+                ->setCellValue('G' . $rows, $benAcc ?? '')
+                ->setCellValue('H' . $rows, $ifsc_code ?? '')
+                ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
+                ->setCellValue('J' . $rows, $rowData['user']['email'] ?? '')
+                ->setCellValue('K' . $rows, $rowData['user']['mobile_no'] ?? '')
+                ->setCellValue('L' . $rows, $rowData['transaction']['comment'] ?? '')
+                ->setCellValue('M' . $rows, $rowData['transaction']['mode_of_pay'] ?? '')
+                ->setCellValue('N' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('O' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('P' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Q' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('R' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('S' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('T' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('U' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('V' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('W' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('X' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Y' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Z' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? 'MPYMT');
+
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="download_Excel.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header ('Pragma: public'); // HTTP/1.0
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
     }
 }

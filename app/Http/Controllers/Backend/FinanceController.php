@@ -12,6 +12,12 @@ use App\Http\Requests\Backend\CreateJiConfigRequest;
 use App\Http\Requests\Backend\CreateJournalRequest;
 use App\Http\Requests\Backend\CreateAccountRequest;
 use App\Helpers\FinanceHelper;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use PHPExcel_Cell_DataType;
+use PHPExcel_Style_Alignment;
+use PHPExcel_Style_Border;
 
 class FinanceController extends Controller {
 
@@ -64,31 +70,53 @@ class FinanceController extends Controller {
     }
     
     public function exportTransactions(Request $request) {
-        $result = $this->finRepo->getAllTxns();
-         $records[] = [
-              'invoice_id' => "Invoice No",
-              'journal_name' => "Vch Type",
-              'date' => "Invoice Date",
-              'f_name' => "Ledger Name",
-              'debit_amount' => "Dr Amt",
-              'dr_ref_no' => "Ref No",
-              'dr_ref_amount' => "Ref Amt",
-              'credit_amount' => "cr Amt",
-              'cr_ref_no' => "Cr Ref No",
-              'cr_ref_amount' => "Cr Ref Amt",
-              'transtype' => "transtype",
-              'is_partner' => "is_partner",
-              'entry_type' => "entry_type",
-              'naration' => "Narration",
+        // $voucher_type = $request->get('type');
+        // if (!in_array($voucher_type, [1,2])) {
+        //     Session::flash('error','Invalid voucher type found.');
+        //     return back();
+        // }
+        // 1 for journal and 2 for bank
+        $where = [];
+        $result = $this->finRepo->getTally();
+         $records = [];
+         $header[] = [
+            "transaction_id" => "transaction Id",
+            "batch_id" => "Batch Id",
+            "amount" => "Txn Amount",
+            "tally_at" => "Tally At",
+            "fullname" => "Name",
+            "biz_id" => "Biz Id",
+            "virtual_acc_id" => "virtual A/C Id",
+            "disbursal_id" => "Disbursal Id",
+            "trans_date" => "Txn Date",
+            "trans_name" => "Txn Name",
+            "chrg_trans_id" => "Chrg Txn Id",
+            "settled_amount" => "Settled Amount",
+            "entry_type" => "Entry Type",
+            "gst_applicable" => "GST Applicable",
+            "cgst" => "CGST",
+            "sgst" => "SGST",
+            "igst" => "IGST",
+            "tds_per" => "TDS %",
+            "is_settled" => "Is Settled",
+            "mode_of_pay" => "Payment Mode",
+            "utr_no" => "UTR NO",
+            "unr_no" => "UNR NO",
+            "cheque_no" => "CHEQUE NO",
+            "trans_by" => "Txn Type",
+            "pay_from" => "Pay From",
+            "txn_id" => "Txn Id",
+            "comment" => "Narration",
+            "created_at" => "created At",
+            "created_by" => "Created By",
             ];
         foreach ($result as $key => $value) {
-           $ledger_name = $value['f_name']. ' '. $value['m_name'].' '. $value['l_name'];
-           unset($value['m_name'],$value['l_name']);
-           $value['f_name'] =  $ledger_name;
-           $value['journal_name'] =  'Journal';
-           $records[] = $value->toArray();
+           $records[] = (array)$value;
         }
-        $this->array_to_csv($records, "execl.csv");
+        $data = $header + $records;
+        $toExportData = ['JOURNAL'=> $data, 'PAYMENT' => $data];
+        $this->array_to_excel($toExportData, "execl.xlsx");
+        // $this->array_to_csv($toExportData, "execl.csv");
     }
 
     public function crateJeConfig(Request $request) {
@@ -297,22 +325,157 @@ class FinanceController extends Controller {
         if ($download != ""){    
             header('Content-Type: application/csv');
             header('Content-Disposition: attachement; filename="' . $download . '"');
-        }        
+        }
         ob_start();
         $f = fopen('php://output', 'w') or die("Can't open php://output");
-        $n = 0;     
         foreach ($array as $line){
-            $n++;
-            if (!fputcsv($f, $line)){
+            if (!fputcsv($f, $line,"\t")){
                continue;
             }
         }
         $str = ob_get_contents();
+        fclose($f);
         ob_end_clean();
         if ($download == ""){
             return $str;    
         }else{    
             echo $str;
         }        
+    }
+
+    public function array_to_excel($toExportData, $file_name = "") {
+        ob_start();
+        // if(empty($file_name)) {
+            $file_name = "Report - " . _getRand(15).".xlsx";
+        // }
+        $activeSheet = 0;
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->createSheet();
+        foreach ($toExportData as $title => $data) {
+            $header_cols = array_values($data[0]);
+            unset($data[0]);
+            $sheetTitle = $title;
+            $objPHPExcel->setActiveSheetIndex($activeSheet);
+            $activeSheet++;
+            $flag_array_intestazione = false;
+            $column = 0;
+            $header_row = 2;
+            $start_row = 4;
+            $row = $start_row;
+            $column = 0;
+            $flag_array_intestazione = true;
+            $floor = floor(count($header_cols)/26);
+            $reminder = count($header_cols) % 26;
+            $char = ($floor > 0 ? chr(ord("A") + $floor - 1) : '').chr(ord("A") + $reminder - 1);
+            foreach($data as $key => $item) {
+              foreach($item as $key1 => $item1) {
+                $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
+                if($flag_array_intestazione) $array_intestazione[] = $key1;
+                $column++;
+              }
+              $argb = "FFFFFFFF";
+              if ($row % 2 == 1){
+                $argb = "FFE0E0E0";
+              }
+              $styleArray = array(
+                'fill' => array(
+                  'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                  'startcolor' => array(
+                    'argb' => $argb,
+                  ),
+                ),
+              );
+              $objPHPExcel->getActiveSheet()->getStyle('A'. $row .':' . $char . $row)->applyFromArray($styleArray);
+              if($flag_array_intestazione) $flag_array_intestazione = false;
+              $column = 0;
+              $row++;
+            }
+            $end_row = $row - 1;
+            $row = $header_row;
+            $column = 0;
+            if (!empty($header_cols)) {
+                $array_intestazione = $header_cols;
+            }
+            foreach($array_intestazione as $key) {
+               $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($column, $row)->setValueExplicit($key, PHPExcel_Cell_DataType::TYPE_STRING);
+                  $column++;
+            }
+            $styleArray = array(
+              'font' => array(
+                'bold' => true,
+              ),
+              'alignment' => array(
+              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+              ),
+              'borders' => array(
+              'top' => array(
+              'style' => PHPExcel_Style_Border::BORDER_THIN,
+              ),
+              ),
+              'fill' => array(
+              'type' => PHPExcel_Style_Fill::FILL_GRADIENT_LINEAR,
+              'rotation' => 90,
+              'startcolor' => array(
+              'argb' => 'FFA0A0A0',
+              ),
+              'endcolor' => array(
+              'argb' => 'FFFFFFFF',
+              ),
+              ),
+            );
+     
+            $objPHPExcel->getActiveSheet()->mergeCells('A1:' . $char . '1');
+            $objPHPExcel->getActiveSheet()->setCellValue('A1', $file_name);
+            $objPHPExcel->getActiveSheet()->getStyle('A1')->applyFromArray($styleArray);
+     
+            $styleArray = array(
+              'font' => array(
+                'bold' => true,
+              ),
+              'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+              ),
+              'borders' => array(
+                  'top' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                  ),
+              ),
+              'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'rotation' => 90,
+                'startcolor' => array(
+                    'argb' => 'FFA0A0A0',
+                ),
+                'endcolor' => array(
+                    'argb' => 'FFFFFFFF',
+                ),
+              ),
+            );
+            $objPHPExcel->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
+     
+            foreach($array_intestazione as $key => $el) {
+                 $floor = floor(($key)/26);
+                 $reminder = ($key) % 26;
+                 $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
+                 $objPHPExcel->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
+            }
+            $styleArray = array(
+              'borders' => array(
+                'allborders' => array(
+                  'style' => PHPExcel_Style_Border::BORDER_THIN,
+                  'color' => array('argb' => 'FFFF0000'),
+                ),
+              ),
+            );
+            $objPHPExcel->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $end_row)->applyFromArray($styleArray);
+            $objPHPExcel->getActiveSheet()->setTitle($sheetTitle);
+        }
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $file_name . '"');
+        header('Cache-Control: max-age=0');
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        ob_end_flush();
+        exit; 
     }
 }

@@ -84,7 +84,7 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td></td>
                                                     @endif
-                                                    <td><b>{{$offerCharge->chargeName->chrg_name}} {{($offerCharge->chrg_type == 2)? ' (%)': ''}}: </b></td>
+                                                    <td><b>{{$offerCharge->chargeName->chrg_name}} {!!($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)'!!}: </b></td>
                                                     <td>{{$offerCharge->chrg_value}}</td>
                                                     @if($key%2 != 0)
                                                     <td></td>

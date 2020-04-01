@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Entities\User;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\Relationship;
 use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\BizApi;
@@ -1448,7 +1449,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetCustomers()
     {
-        $result = LmsUser::with('user')->orderBy('lms_user_id','DESC')->get();
+        $result = LmsUser::with('user')->orderBy('lms_user_id','DESC');
         return $result ?: false;
     }
 
@@ -1569,5 +1570,70 @@ class UserRepository extends BaseRepositories implements UserInterface
         $status = User::updateUserRolePassword($arrData, $userId);
         return $status ?: false;
     }
+    
+    /**
+     * Get one user from anchor_users by email
+     *
+     * @return query data
+     */
+    public function getExistEmailStatus($email){
+       return AnchorUser::getAnchorUsersByEmail($email);
+    }
        
+
+    /**
+     * Get all customer from lms_users
+     *
+     * @return query data
+     */
+    public function lmsGetSentToBankInvCustomer($userIds = [])
+    {
+        $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
+                ->with(['lms_user.bank_details.bank', 'invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch'])
+                ->whereHas('invoice', function($query) {
+                    $query->where('status_id', 10);
+                })
+                ->groupBy(['disbursal_batch_id', 'user_id'])
+                ->orderBy('disbursal_id', 'DESC');
+        return $result ?: false;
+    } 
+
+    public function lmsGetSentToBankInvToExcel($custId = null, $selectDate=null, $batchId = null)
+    {
+        $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
+                ->with(['lms_user.bank_details.bank', 'invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch', 'lms_user.user', 'transaction'])
+                ->whereHas('invoice', function($query) {
+                    $query->where('status_id', 10);
+                })
+                ->groupBy(['disbursal_batch_id', 'user_id'])
+                ->orderBy('disbursal_id', 'DESC')
+
+                ->whereHas('lms_user', function($query) use ($custId) {
+                    if ($custId != null) {
+                            $query->where('customer_id', 'like',"%$custId%");
+                        }
+                    })
+                ->whereHas('disbursal_batch', function($query) use ($selectDate) {
+                    if ($selectDate != null) {
+                        $query->where('created_at', 'like',"%$selectDate%");
+                    }
+                })
+                ->whereHas('disbursal_batch', function($query) use ($batchId) {
+                    if ($batchId != null) {
+                        $query->where('disbursal_batch_id', 'like',"%$batchId%");
+                    }
+                })
+                ->get();
+
+        return $result ?: false;
+    }  
+    
+    
+    public function getExistEmailStatusAnchor($comp_email){
+        return Anchor::getExistEmailStatusAnchor($comp_email);
+    }
+
+    public function getBusinessDetails($biz_id){
+        return Business::find($biz_id);
+    }
 }

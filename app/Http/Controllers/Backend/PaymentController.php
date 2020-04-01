@@ -23,18 +23,22 @@ use PHPExcel;
 use PHPExcel_IOFactory;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Helpers\ApportionmentHelper;
+use App\Helpers\FinanceHelper;
+use App\Inv\Repositories\Contracts\FinanceInterface;
 
 class PaymentController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
     use LmsTrait;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo) {
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo,FinanceInterface $finRepo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->appRepo = $appRepo;
+        $this->finRepo = $finRepo;
         $this->middleware('auth');
     }
 
@@ -101,19 +105,19 @@ class PaymentController extends Controller {
         $udata=$this->userRepo->getSingleUserDetails($request->customer_id);
         $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
         $enterAmount =  str_replace(',', '', $request->amount);
+        $finHelperObj = new FinanceHelper($this->finRepo);
+          
         foreach($getAmount as $val)
         {
-              $getAmount = $val->repayment_amount;
-            if($getAmount >= $enterAmount)
-            {
+            $getAmount = $val->repayment_amount;
+            if($getAmount >= $enterAmount) {
               $finalAmount = $getAmount - $enterAmount;
               $this->invRepo->singleRepayment($val->disbursal_id,$finalAmount);
               Session::flash('message', 'Bulk amount has been saved');
               return back();
             }
-            else
-            {       
-              $this->invRepo->singleRepayment($val->disbursal_id,0);   
+            else {       
+              $this->invRepo->singleRepayment($val->disbursal_id,0);
             }
         }
       
@@ -171,9 +175,15 @@ class PaymentController extends Controller {
         $res = $this->invRepo->saveRepaymentTrans($tran);
         if( $res)
         {
+          $appId = null;
+          if(in_array($request['trans_type'], [4,5,20,24,29])){
+            $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.CHARGES'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
+          }
           if($request['trans_type']==17){
+            $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.REPAYMENT'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
             //$this->paySettlement( $request['customer_id']);
-            $this->invoiceKnockOff($res->trans_id);
+            $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
+            $Obj->init($res->trans_id);
           }
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');
@@ -241,16 +251,16 @@ class PaymentController extends Controller {
     $nonFactoredAmount = 0;
     
     $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-    $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
+    $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
     
-    $disbursalIds = Transactions::where('parent_trans_id','=',$transId)
+    $disbursalIds = Transactions::where('repay_trans_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->where('trans_type','=',config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
     ->distinct('disbursal_id')
     ->pluck('disbursal_id')
     ->toArray();
     
-    $principalSettled = Transactions::where('parent_trans_id','=',$transId)
+    $principalSettled = Transactions::where('repay_trans_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
     ->sum('amount');
@@ -419,43 +429,9 @@ class PaymentController extends Controller {
   public function paymentInvoiceList(Request $request)
   {
     $transId = $request->get('trans_id');
-    $totalMarginAmount = 0;
-    $nonFactoredAmount = 0;
+    $data = $this->calculateRefund($transId);
     
-    $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-    $repaymentTrails = $this->lmsRepo->getTransactions(['parent_trans_id'=>$transId]);
-    
-    $disbursalIds = Transactions::where('parent_trans_id','=',$transId)
-    ->whereNotNull('disbursal_id')
-    ->where('trans_type','=',config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
-    ->distinct('disbursal_id')
-    ->pluck('disbursal_id')
-    ->toArray();
-    
-    $principalSettled = Transactions::where('parent_trans_id','=',$transId)
-    ->whereNotNull('disbursal_id')
-    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
-    ->sum('amount');
-    
-    $amountForMargin = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-    ->sum('invoice_approve_amount'); 
-    $marginAmountData = $this->userRepo->getDisbursalList()->whereIn('disbursal_id',$disbursalIds)
-    ->groupBy('margin')
-    ->select(DB::raw('(sum(invoice_approve_amount)*margin)/100 as margin_amount ,margin'))->get();
-    
-    if($principalSettled>0){
-      $nonFactoredAmount = $repayment->amount-$principalSettled;
-    }
-        
-    // dd($repayment);
-    return view('backend.payment.payment_invoice_list', 
-      ['repaymentTrails' => $repaymentTrails, 
-       'repayment'=>$repayment,
-       'nonFactoredAmount' => $nonFactoredAmount,
-       'amountForMargin' => $amountForMargin,
-       'marginAmountData' => $marginAmountData,
-       'transId' => $transId
-      ]);
+    return view('backend.payment.payment_invoice_list', $data);
   }
   
     public function createPaymentRefund(Request $request)
@@ -470,7 +446,82 @@ class PaymentController extends Controller {
             $addlData['sharing_comment'] = '';
             
             $refundData = $this->calculateRefund($transId);
-            $this->saveRefundData($transId, $refundData);                        
+          
+            $transaction = [];
+            $transactions = [];
+
+            $transaction['TRANS_DATE'] = $refundData['repayment']->trans_date;
+            $transaction['VALUE_DATE'] = $refundData['repayment']->created_at;
+            
+            if ($refundData['repayment']->trans_detail->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->charge->chrg_name;
+            } else {
+                $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->trans_name;
+            }
+                                            
+            if ($refundData['repayment']->disburse && $refundData['repayment']->disburse->invoice) {
+                $transaction['INV_NO'] = $refundData['repayment']->disburse->invoice->invoice_no;
+            } else {
+                $transaction['INV_NO'] = '';
+            }      
+            
+            if ($refundData['repayment']->entry_type == '0') {
+                $transaction['DEBIT'] = $refundData['repayment']->amount;
+            } else {
+                $transaction['DEBIT'] = '';
+            }
+
+            if ($refundData['repayment']->entry_type == '1') {
+                $transaction['CREDIT'] = $refundData['repayment']->amount;
+            } else {
+                $transaction['CREDIT'] = '';
+            }
+            
+            $transactions[] = $transaction;
+
+            foreach ($refundData['repaymentTrails'] as $repay) {
+              $transaction = [];
+              $transaction['TRANS_DATE'] = $repay->trans_date;
+              $transaction['VALUE_DATE'] = $repay->created_at;
+
+              if ($repay->trans_detail->chrg_master_id != '0') {
+                  $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+              } else {
+                  $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+              }
+
+              if ($repay->disburse->invoice->invoice_no) {
+                  $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
+              } else {
+                  $transaction['INV_NO'] = '';
+              }      
+
+              if ($repay->entry_type == '0') {
+                  $transaction['DEBIT'] = $repay->amount;
+              } else {
+                  $transaction['DEBIT'] = '';
+              }
+
+              if ($repay->entry_type == '1') {
+                  $transaction['CREDIT'] = $repay->amount;
+              } else {
+                  $transaction['CREDIT'] = '';
+              }
+              
+              $transactions[] = $transaction;   
+            }
+        
+            $data['TRANSACTIONS'] = $transactions;
+            $data['TOTAL_FACTORED'] = $refundData['repayment']->amount;
+            $data['NON_FACTORED'] = $refundData['nonFactoredAmount'];
+            $data['OVERDUE_INTEREST'] = $refundData['interestOverdue'];
+            $data['INTEREST_REFUND'] = $refundData['interestRefund'];
+            $data['MARGIN_RELEASED'] = $refundData['marginTotal'];
+            $data['TOTAL_REFUNDABLE_AMT'] = $refundData['refundableAmount'];
+            //$data['TOTAL_AMT_FOR_MARGIN'] = '';
+            //$data['MARGIN'] = '';
+
+            $this->saveRefundData($transId, $data);                        
             
             $result = $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
             

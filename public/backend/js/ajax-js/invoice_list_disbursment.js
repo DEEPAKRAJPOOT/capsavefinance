@@ -14,7 +14,7 @@ try {
                 data: function (d) {
                     d.anchor_id = $('select[name=search_anchor]').val();
                     d.supplier_id = $('select[name=search_supplier]').val();
-                    d.biz_id = $('select[name=search_biz]').val();
+                     d.biz_id = $('input[name=search_biz]').val();
                     d.front = $('input[name=front]').val();
                     d.front = $('input[name=front]').val();
                     d._token = messages.token;
@@ -29,16 +29,17 @@ try {
             columns: [
                 {data: 'invoice_id'},
                 {data: 'anchor_name'},
-                {data: 'supplier_name'},
+                {data: 'customer_detail'},
                 {data: 'invoice_date'},
                 {data: 'invoice_amount'},
+                {data: 'updated_at'},
                 {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });
 
         //Search
-        $('.searchbtn').on('change', function (e) {
+         $('#search_biz').on('click', function (e) {
             oTable.draw();
         });                   
     });

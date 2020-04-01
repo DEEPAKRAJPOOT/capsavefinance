@@ -1,5 +1,12 @@
 @extends('layouts.backend.admin-layout')
 
+@section('additional_css')
+<style>
+    .table td {
+        border: inherit !important; 
+    }
+</style>
+@endsection
 @section('content')
 
 <div class="content-wrapper">
@@ -20,6 +27,7 @@
 
     <div class="card">
         <div class="card-body">       
+            <div class="row" id="client_details"></div>   
             <div class="row">
                 <div class="col-md-3">
                     {!!
@@ -49,13 +57,24 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by Customer ID/Name',
+                    'placeholder' => 'Search by Client ID/Name',
                     'id'=>'search_keyword',
                     'autocomplete'=>'off'
                     ])
                     !!}
                 </div>
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+                {!! Form::hidden('biz_id', null, [
+                    'id'=>'biz_id'
+                ]) !!}
+
+                {!! Form::hidden('user_id', null, [
+                    'id'=>'user_id'
+                ]) !!}
+
+                {!! Form::hidden('customer_id', null, [
+                    'id'=>'customer_id'
+                ]) !!}
                 
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -108,9 +127,10 @@
 
     var messages = {
         lms_get_soa_list: "{{ URL::route('lms_get_soa_list') }}",
+        get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
+        get_customer: "{{ route('get_customer') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-
     };
     $('#from_date').datetimepicker({
         format: 'dd/mm/yyyy',
@@ -123,29 +143,43 @@
         autoclose: true,
         minView: 2, });
     
-    var path = "{{ route('get_customer') }}";
 
     $(document).ready(function(){
       var sample_data = new Bloodhound({
        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
        queryTokenizer: Bloodhound.tokenizers.whitespace,
-       prefetch:path,
+       prefetch:messages.get_customer,
        remote:{
-        url:path+'?query=%QUERY',
+        url:messages.get_customer+'?query=%QUERY',
         wildcard:'%QUERY'
        }
       });
       
     
-      $('#prefetch .form-control').typeahead(null, {
-       name: 'sample_data',
-       display: 'customer_id',
-       source:sample_data,
-       limit:10,
-       templates:{
-        suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{customer}} <small>( @{{customer_id}} )</small></div> </div>') }
-      });
+    $('#prefetch .form-control').typeahead(null, {
+        name: 'sample_data',
+        display: 'customer_id',
+        source:sample_data,
+        limit:10,
+        templates:{
+            suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
+        },
+    }).bind('typeahead:select', function(ev, suggestion) {
+        setClientDetails(suggestion)
+    }).bind('typeahead:change', function(ev, suggestion) {
+        var customer_id = $.trim($("#customer_id").val());
+        if(customer_id != suggestion)
+        setClientDetails(suggestion)
+    }).bind('typeahead:cursorchange', function(ev, suggestion) {
+        setClientDetails(suggestion)
     });
+});
+
+function setClientDetails(data){
+    $("#biz_id").val(data.biz_id);
+    $("#user_id").val(data.user_id);
+    $("#customer_id").val(data.customer_id);
+}
 </script>
 
 <script src="{{ asset('backend/js/lms/soa.js') }}" type="text/javascript"></script>

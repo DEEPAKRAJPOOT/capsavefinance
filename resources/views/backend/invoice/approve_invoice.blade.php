@@ -35,7 +35,20 @@
 
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row"><div class="col-md-2"></div>
+                                        <div class="row">
+                                            
+                                             <div class="col-md-4">
+                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
+                                            </div>
+                                              <div class="col-md-4">
+                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                              </div> 
+                                             <div class="col-md-1">
+                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                             </div>  
+                                            <!--
+                                            
+                                            <div class="col-md-2"></div>
                                             <div class="col-md-3">				 
                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                                 <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
@@ -63,10 +76,13 @@
 
                                                 </select>
                                             </div>    
-
-                                            <div class="col-md-2">	          
+                                            -->
+                                            <div class="col-md-2">
+                                               @php if($role!=11) { @endphp
                                                 <button type="button" id="bulkApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
+                                                @php } @endphp 
                                             </div>
+                                           
                                         </div>
                                         <div class="row">
                                             <div class="col-12 dataTables_wrapper mt-4">
@@ -83,6 +99,7 @@
                                                                             <th>Customer Detail</th>
                                                                             <th> Inv Detail</th>
                                                                             <th> Inv Amount</th>
+                                                                              <th> Updated By</th>
                                                                             <th>Action</th>
                                                                         </tr>
                                                                     </thead>
@@ -116,7 +133,7 @@
     .itemBackground 
     { 
         border: 2px solid blanchedalmond;  
-        background-color:#5c9742;
+         background-color:#138864;
     }
     .itemBackgroundColor 
     { 
@@ -163,7 +180,7 @@
     ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.approveInv', function () {
         $("#moveCase").html('');
-        if (confirm('Are you sure? You want to disbursment queue.'))
+        if (confirm('Are you sure? You want to disbursement queue.'))
         {
             var invoice_id = $(this).attr('data-id');
             var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
@@ -458,7 +475,7 @@
             alert('Please select atleast one checked');
             return false;
         }
-        if (confirm('Are you sure? You want to disbursment queue.'))
+        if (confirm('Are you sure? You want to disbursement queue.'))
         {
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});

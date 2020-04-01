@@ -269,7 +269,11 @@ class Program extends BaseModel {
         if (isset($where['parent_prgm_id']) && !empty($where['parent_prgm_id'])) {
             $res = $res->where('parent_prgm_id', $where['parent_prgm_id']);
         }
-
+                
+        if (isset($where['sub_program_id_nte']) && !empty($where['sub_program_id_nte'])) {
+            $res = $res->where('prgm_id', '!=', $where['sub_program_id_nte']);
+        }
+        
         if (!empty($relations)) {
             $res = $res->with($relations);
         }
@@ -401,6 +405,15 @@ class Program extends BaseModel {
     public function baseRate()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\BaseRate', 'base_rate_id', 'id');
+    }
+    
+    public static  function getProgram($prgm_id)
+    {
+         return self::where(['prgm_id' => $prgm_id])->first(); 
+    }
+    
+    public static function getProgramByProgramName($prgm_name){
+        return self::where(['prgm_name' => $prgm_name])->get();
     }
 
 }

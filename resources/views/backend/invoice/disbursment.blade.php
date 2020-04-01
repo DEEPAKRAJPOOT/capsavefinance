@@ -36,10 +36,19 @@
 
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row"><div class="col-md-4"></div>
-                                            <div class="col-md-3">				 
-                                                <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                                 <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
+                                           <div class="row">
+                                              <div class="col-md-6">
+                                                 <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
+                                            </div>
+                                              <div class="col-md-4">
+                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                              </div> 
+                                             <div class="col-md-1">
+                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                             </div>  
+                                           <!-- <div class="col-md-3">				 
+                                               
+                                              <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                                                     <option value="">Select Business Name  </option>
                                                         @foreach($get_bus as $row)
                                                          @php if(isset($row->business->biz_id)) { @endphp
@@ -52,20 +61,19 @@
                                                 <span id="anchorMsg" class="error"></span>
 
                                             </div>
-                                           <div class="col-md-2">				 
-
+                                            <div class="col-md-2">				 
                                                 <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
-
+                                                 
                                                 </select>
+
                                             </div>
                                             <div class="col-md-2">		    
 
                                                 <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
 
                                                 </select>
-                                            </div>    
-
-
+                                            </div>  -->   
+                                           
                                         </div>
                                         <div class="row">
                                             <div class="col-12 dataTables_wrapper mt-4">
@@ -81,6 +89,7 @@
                                                                             <th> Customer Detail </th>
                                                                             <th> Inv Detail </th>
                                                                             <th> Inv Amount </th>
+                                                                              <th> Updated By</th>
                                                                             <th> Action </th>
                                                                         </tr>
                                                                     </thead>
@@ -113,13 +122,15 @@
         </div></div>
 
     {!!Helpers::makeIframePopup('modalInvoiceDisbursed','Repayment Details', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('viewDisbursalCustomerInvoice','View Disbursal Customer Invoice', 'modal-lg')!!}
+   {!!Helpers::makeIframePopup('viewInterestAccrual','Interest Accrual', 'modal-lg')!!}
     @endsection
     @section('jscript')
     <style>
     .itemBackground 
     { 
       border: 2px solid blanchedalmond;  
-      background-color:#5c9742;
+      background-color:#138864;
     }
      .itemBackgroundColor 
     { 
@@ -137,6 +148,7 @@
             front_program_list: "{{ URL::route('front_program_list') }}",
             front_supplier_list: "{{ URL::route('front_supplier_list') }}",
             update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
+            lms_get_disbursal_list: "{{ URL::route('lms_get_disbursal_list') }}",
             invoice_document_save: "{{ URL::route('invoice_document_save') }}",
             update_bulk_invoice: "{{ URL::route('update_bulk_invoice') }}",
             token: "{{ csrf_token() }}",

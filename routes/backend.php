@@ -70,6 +70,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_upload_document',
                 'uses' => 'Backend\ApplicationController@uploadDocument'
             ]);
+
+            Route::get('documents/edit-upload-document', [
+                'as' => 'edit_upload_document',
+                'uses' => 'Backend\ApplicationController@editUploadDocument'
+            ]);
+
+            Route::post('documents/update-edit-upload-document', [
+                'as' => 'update_edit_upload_document',
+                'uses' => 'Backend\ApplicationController@updateEditUploadDocument'
+            ]);
             
             Route::post('documents-save', [
                 'as' => 'document_save',
@@ -111,6 +121,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('promoter-document-save', [
                 'as' => 'promoter_document_save',
                 'uses' => 'Backend\ApplicationController@promoterDocumentSave'
+            ]); 
+            
+            Route::post('promoter-document-delete', [
+                'as' => 'promoter_document_delete',
+                'uses' => 'Backend\ApplicationController@promoterDocumentDelete'
             ]); 
             
             Route::post('application-save',
@@ -433,7 +448,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_qms_details',
                 'uses' => 'Backend\QmsController@showQmsDetails'
 
-            ]);    
+            ]);   
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 
@@ -620,7 +636,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);   
         });
         
-        Route::group(['prefix' => 'anchor'], function () {
+        Route::group(['prefix' => 'anchor'], function(){
             Route::get('/', [
                 'as' => 'get_anchor_list',
                 'uses' => 'Backend\LeadController@allAnchorList'
@@ -671,11 +687,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'accept_application_pool',
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]); 
-
-            Route::post('check_user', [
-                'as' => 'check_user',
-                'uses' => 'Backend\LeadController@checkEmailAvailability'
-            ]);
             
             Route::get('get-city-list', [
                 'as' => 'get-city-list',
@@ -694,10 +705,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@saveAnchorBankAccount'
             ]);
             
-            
-            
-            
-             
             Route::get('manage-program', [
                 'as' => 'manage_program',
                 'uses' => 'Backend\ProgramController@mangeProgramList'
@@ -1091,6 +1098,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\InvoiceController@disburseOnline'
             ]);
 
+
             Route::post('/disburse-offline', [
                 'as' => 'disburse_offline',
                 'uses' => 'Backend\InvoiceController@disburseOffline'
@@ -1101,10 +1109,31 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
             ]); 
              
-              Route::get('backend_get_sent_to_bank', [
-                 'as' => 'backend_get_sent_to_bank',
+            Route::get('backend_get_sent_to_bank', [
+                'as' => 'backend_get_sent_to_bank',
                 'uses' => 'Backend\InvoiceController@viewSentToBankInvoice'
             ]); 
+            
+            Route::post('/download-batch-data', [
+                'as' => 'download_batch_data',
+                'uses' => 'Backend\InvoiceController@downloadBatchData'
+            ]);
+
+            Route::get('/view-batch-user-invoice', [
+                'as' => 'view_batch_user_invoice',
+                'uses' => 'Backend\InvoiceController@viewBatchUserInvoice'
+            ]); 
+
+            Route::get('/invoice-update-disbursal', [
+                'as' => 'invoice_udpate_disbursal',
+                'uses' => 'Backend\InvoiceController@invoiceUpdateDisbursal'
+            ]);
+
+            Route::post('/update-disburse-invoice', [
+                'as' => 'updateDisburseInvoice',
+                'uses' => 'Backend\InvoiceController@updateDisburseInvoice'
+            ]);
+
                Route::get('backend_get_failed_disbursment', [
                  'as' => 'backend_get_failed_disbursment',
                 'uses' => 'Backend\InvoiceController@viewfailedDisbursment'
@@ -1191,9 +1220,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@uploadDocument'
             ]);
 
-            Route::post('documents-save', [
+            Route::post('/documents-save', [
                 'as' => 'pp_document_save',
                 'uses' => 'Backend\DocumentController@saveDocument'
+            ]);
+
+            Route::get('/edit-upload-document', [
+                'as' => 'pp_edit_upload_document',
+                'uses' => 'Backend\ApplicationController@editUploadDocument'
+            ]);
+
+            Route::post('/update-edit-upload-document', [
+                'as' => 'pp_update_edit_upload_document',
+                'uses' => 'Backend\ApplicationController@updateEditUploadDocument'
             ]);
             
         });   

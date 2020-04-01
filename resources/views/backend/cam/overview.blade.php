@@ -310,16 +310,16 @@
                     <!-- </div> -->
                 </div>
 
-                <div class="data mt-4">
+                <!-- <div class="data mt-4">
                     <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments</h2>
-                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
+                  
                         <textarea class="form-control" id="risk_comments" name="risk_comments" rows="3" spellcheck="false">{{isset($arrCamData->risk_comments) ? $arrCamData->risk_comments : ''}}</textarea>
-                    <!-- </div> -->
+                    
                 </div>
 
                 <div class="data mt-4">
                     <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Recommendation and Comments of Credit Manager</h2>
-                    <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
+                   
                         @php 
                         $role_id=Helpers::getUserRole(Auth::user()->user_id);
                         @endphp
@@ -327,9 +327,9 @@
                         <textarea @if (in_array($role_id[0]->pivot->role_id ,[config('common.user_role')['SALES'],config('common.user_role')['CPA']])) disabled="true" @endif class="form-control" id="anchor_risk_comments" rows="3" spellcheck="false" name="cm_comment">{{ isset($arrCamData->cm_comment) ? $arrCamData->cm_comment : ''}}</textarea>
 
                         <div class="clearfix"></div>
-                    <!-- </div> -->
+                   
 
-                </div>
+                </div> -->
                  <div class="data mt-4">
                     <h2 class="sub-title bg" style="border: 1px solid #d1d1d1;">Contigent Liabilities & Auditors Observations </h2>
                     <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->

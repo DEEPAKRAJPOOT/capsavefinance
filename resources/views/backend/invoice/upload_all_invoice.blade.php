@@ -33,18 +33,26 @@
                                     
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
+                                            <label for="txtCreditPeriod">Anchor Name   <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
                                             @if(count($get_anchor) > 0)
+                                              @if($anchor==11)
+                                               @foreach($get_anchor as $row) 
+                                                    @php if(isset($row->anchorList->anchor_id)) {  
+                                                     if($id==$row->anchorList->anchor_id) { @endphp
+                                                    <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
+                                                    @php } } @endphp
+                                                    @endforeach
+                                              @else    
                                                 <option value="">Please Select</option>
-                                                @foreach($get_anchor as $row) 
-                                                @php if(isset($row->anchorList->anchor_id)) { @endphp
-                                                <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
-                                                @php } @endphp
-                                                @endforeach
-                                               
-                                                @endif
+                                                    @foreach($get_anchor as $row) 
+                                                    @php if(isset($row->anchorList->anchor_id)) { @endphp
+                                                    <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
+                                                    @php } @endphp
+                                                    @endforeach
+                                               @endif  
+                                            @endif
                                              </select>
                                              					 <!--<span><i class="fa fa-inr"></i> 50,000</span>-->
                                         </div>
@@ -57,6 +65,15 @@
                                                 <span class="error_message_label">*</span>   <!-- <span id="pro_limit" class="error"></span> -->
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
+                                            @if($anchor==11)
+                                            <option value="">Please Select</option>
+                                            @if($get_program)
+                                             @foreach($get_program as $row1) 
+                                              <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}</option>
+                                                  
+                                             @endforeach
+                                              @endif
+                                            @endif
                                             </select>
                                            
                                 
@@ -418,7 +435,7 @@ var messages = {
       
         document.getElementById('invoice_approve_amount').addEventListener('input', event =>
         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-        $("#program_id").append("<option value=''>No data found</option>");  
+      ///  $("#program_id").append("<option value=''>No data found</option>");  
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
@@ -523,9 +540,10 @@ var messages = {
     }
    });
   //////////////////// onchange anchor  id get data /////////////////
+ 
   $(document).on('change','.changeAnchor',function(){
       
-      var anchor_id =  $(this).val(); 
+      var anchor_id =  $("#anchor_id").val(); 
       if(anchor_id=='')
       {
             $("#pro_limit").empty();
@@ -589,7 +607,7 @@ var messages = {
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'program_id':program_id,'_token':messages.token});
+      var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',
@@ -602,6 +620,18 @@ var messages = {
                 success: function (data) {
                     if(data.status==1)
                     {
+                         if(data.uploadAcess==0)
+                        {
+                            $("#submit").css("pointer-events","none");
+                            $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
+                          
+                        }
+                        else
+                        {
+                             $("#tenorMsg").text(" ");           
+                             $("#submit").css("pointer-events","inline");
+                            
+                        }
                         var obj1  = data.get_supplier;
                         var obj2   =  data.limit;
                         var offer_id   =  data.offer_id;
