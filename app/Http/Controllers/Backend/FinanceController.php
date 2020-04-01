@@ -350,11 +350,11 @@ class FinanceController extends Controller {
         // }
         $activeSheet = 0;
         $objPHPExcel = new PHPExcel();
+        $objPHPExcel->createSheet();
         foreach ($toExportData as $title => $data) {
             $header_cols = array_values($data[0]);
             unset($data[0]);
             $sheetTitle = $title;
-            $objPHPExcel->createSheet();
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $flag_array_intestazione = false;
