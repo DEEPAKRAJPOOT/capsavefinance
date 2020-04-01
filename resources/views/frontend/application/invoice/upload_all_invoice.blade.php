@@ -124,7 +124,7 @@
                        <div class="col-md-8">
                            <label class="error" id="tenorMsg"></label>
                        </div>
-                       <div class="text-right mt-2">
+                       <div class="text-right mt-2" id="ApprovePro">
                               
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
@@ -150,170 +150,6 @@
       </div>
    </div>
 </div>
-
-
-
-<div class="modal" id="myModal1">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-      <h5>Edit manage list</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-      <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Full Name
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Full Name" required="">
-                              </div>
-                           </div>
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtSupplierName">Anchor
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Enter Anchor Name" required="">
-                              </div>
-                           </div>
-                        </div>
-            <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtEmail">Email
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="hidden" name="send_otp" id="send-otp" value="">
-                                 <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" disabled="">
-                              </div>
-                           </div>
-            
-                           <div class="col-md-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">Mobile
-                                    <span class="mandatory">*</span>
-                                    </label>
-                                   
-                                    <input class="form-control numbercls" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" disabled="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <input name="password" id="passwordRegistration" type="hidden" oninput="removeSpace(this);" value="nr40od5m">
-                              </div>
-                        </div>
-            <button type="submit" class="btn btn-success float-right btn-sm">Submit</button>  
-         </div>
-      </div>
-   </div>
-</div>
-
-<div class="modal" id="myModal">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-      <h5>Add Supplier</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-      <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Full Name
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Full Name" required="">
-                              </div>
-                           </div>
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtSupplierName">Business Name
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Business Name" required="">
-                              </div>
-                           </div>
-                        </div>
-            <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtEmail">Email
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="hidden" name="send_otp" id="send-otp" value="">
-                                 <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" required="">
-                              </div>
-                           </div>
-                           <div class="col-md-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">Mobile
-                                    <span class="mandatory">*</span>
-                                    </label>
-                                   
-                                    <input class="form-control numbercls" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <input name="password" id="passwordRegistration" type="hidden" oninput="removeSpace(this);" value="nr40od5m">
-                              </div>
-                        </div>
-            <button type="submit" class="btn btn-success float-right btn-sm">Submit</button>  
-         </div>
-      </div>
-   </div>
-</div>
-<div class="modal" id="myModal2">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-      <h5>Assign Lead</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-      <div class="row">
-                           <div class="col-md-12">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Select Sales Person
-                                 <span class="mandatory">*</span>
-                                 </label>
-                 <select class="form-control" name="nate">
-                   <option>Select</option>
-                   <option>Sales Person 1</option>
-                   <option>Sales Person 2</option>
-                   <option>Sales Person 3</option>
-                 </select>
-                                 
-                              </div>
-                           </div>
-               
-               <div class="col-md-12">
-               <label>Comment</label>
-               <textarea class="form-control" placeholder="Add Comment"></textarea>
-               </div>
-
-                        </div>
-            
-            <button type="submit" class="btn btn-success float-right btn-sm mt-3">Submit</button>  
-         </div>
-      </div>
-   </div>
-</div>
-
   </div>
     @endsection
     @section('jscript')
@@ -604,14 +440,15 @@ var messages = {
                     {
                         if(data.uploadAcess==0)
                         {
-                            $("#submit").css("pointer-events","none");
                             $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
-                          
+                            $("#ApprovePro").hide();
+                            
                         }
                         else
                         {
+                             $("#ApprovePro").show();
                              $("#tenorMsg").text(" ");           
-                             $("#submit").css("pointer-events","inline");
+                           
                             
                         }
                         var obj1  = data.get_supplier;
