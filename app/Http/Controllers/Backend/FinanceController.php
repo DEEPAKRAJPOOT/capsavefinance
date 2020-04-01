@@ -87,6 +87,10 @@ class FinanceController extends Controller {
             "fullname" => "Name",
             "biz_id" => "Biz Id",
             "virtual_acc_id" => "virtual A/C Id",
+            "acc_name" => "Name in Account",
+            "acc_no" => "Account No",
+            "bank_id" => "Bank Name",
+            "ifsc_code" => "IFSC Code",
             "disbursal_id" => "Disbursal Id",
             "trans_date" => "Txn Date",
             "trans_name" => "Txn Name",
@@ -350,11 +354,11 @@ class FinanceController extends Controller {
         // }
         $activeSheet = 0;
         $objPHPExcel = new PHPExcel();
+        $objPHPExcel->createSheet();
         foreach ($toExportData as $title => $data) {
             $header_cols = array_values($data[0]);
             unset($data[0]);
             $sheetTitle = $title;
-            $objPHPExcel->createSheet();
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $flag_array_intestazione = false;
