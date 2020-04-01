@@ -149,6 +149,22 @@
         please_select: "{{ trans('backend.please_select') }}",
 
     };
+    $(document).on('input', '.format_with_decimal', function(event) {
+        if(event.which >= 37 && event.which <= 40) return;
+        $(this).val(function(index, value) {
+            thisval = value.replace(/[^0-9.]/g, '');
+            let decimal_part = thisval.split('.')[0];
+            let float_part = thisval.split('.')[1];
+            formatted_num = decimal_part.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if (thisval.indexOf('.') != -1) {
+                formatted_num = formatted_num + "." + float_part.substr(0,2); 
+            }
+            if (event.originalEvent.data == '.' && thisval.indexOf('.') == -1) {
+                formatted_num = formatted_num + '.';
+            }
+           return formatted_num;
+        });
+    })
 </script>
 <script src="{{ asset('backend/assets/js/bootstrap-multiselect.js') }}"></script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
