@@ -7,7 +7,7 @@ use DB;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class CamReviewSummPrePost extends BaseModel
+class CamReviewSummRiskCmnt extends BaseModel
 {
     use Notifiable;
     /**
@@ -15,14 +15,14 @@ class CamReviewSummPrePost extends BaseModel
      *
      * @var string
      */
-    protected $table = 'cam_reviewer_prepost_cond';
+    protected $table = 'cam_reviewer_risk_cmnt';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'prepost_cond_id';
+    protected $primaryKey = 'risk_cmnt_id';
 
      /**
      * Maintain created_at and updated_at automatically
@@ -54,8 +54,8 @@ class CamReviewSummPrePost extends BaseModel
                         'cam_reviewer_summary_id',
                         'cond',
                         'timeline',
-                        'cond_type',  
-                        'is_active',             
+                        'deal_type', 
+                        'is_active',            
                         'created_by',
                         'created_at',
                         'updated_at',

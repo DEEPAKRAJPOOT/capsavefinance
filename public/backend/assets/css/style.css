@@ -9166,3 +9166,10 @@ a.aprveAppListBtn:hover {
 }
 .p-relative{position: relative;}
 .mt-8{margin-top: 3.2rem !important; }
+
+.add-ptpq-block.add-more-positive,.add-ptpq-block.add-more-negative{color:green;font-size: 20px;     position: absolute;
+  top: 5px;
+  right: -10px;}
+.remove-ptpq-block.remove-positive,.remove-ptpq-block.remove-negative{color: red;font-size: 20px;     position: absolute;
+    top: 5px;
+    right: -10px;}

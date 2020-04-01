@@ -12,4 +12,14 @@ trait CommonTrait
     { 
       return $item['cond_type']==2;
     }
+
+    function filterRiskCommentPositive($item) 
+    { 
+      return $item['deal_type']==1;
+    }
+
+    function filterRiskCommentNegative($item) 
+    { 
+      return $item['deal_type']==2;
+    }
 }

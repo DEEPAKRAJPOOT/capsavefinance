@@ -273,71 +273,76 @@
                <div class="col-md-12 mt-4">
                      <h4><small>Risk Comments</small></h4>
                      <h5><small>Deal Positives</small></h5>
-                     <table id="" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr role="row" class="odd">
-                                 <td class="" width="30%">
-                                    <input type="text" name="cond_pos_track_rec" value="{{isset($reviewerSummaryData->cond_pos_track_rec) ? $reviewerSummaryData->cond_pos_track_rec : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <textarea name="cmnt_pos_track_rec" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}</textarea>
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="" width="30%">
-                                    <input type="text" name="cond_pos_credit_rating" value="{{isset($reviewerSummaryData->cond_pos_credit_rating) ? $reviewerSummaryData->cond_pos_credit_rating : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <textarea  name="cmnt_pos_credit_rating" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}</textarea>
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="" width="30%">
-                                    <input type="text" name="cond_pos_fin_matric" value="{{isset($reviewerSummaryData->cond_pos_fin_matric) ? $reviewerSummaryData->cond_pos_fin_matric : ''}}" class="form-control form-control-sm">
-                                 </td>
-                                 <td class="">
-                                    <textarea  name="cmnt_pos_fin_matric" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}</textarea>
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="" width="30%">
-                                    <input type="text" name="cond_pos_establish_client" value="{{isset($reviewerSummaryData->cond_pos_establish_client) ? $reviewerSummaryData->cond_pos_establish_client : ''}}" class="form-control form-control-sm">  
-                                 </td>
-                                 <td class="">
-                                    <textarea  name="cmnt_pos_establish_client" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}</textarea>
-                                 </td>
-                           </tr>
-                        </tbody>
-                     </table>
+                     @if(isset($positiveRiskCmntArr) && count($positiveRiskCmntArr)>0)
+                        @foreach($positiveRiskCmntArr as $postkey =>$postval)
+                        <div class="input-group control-group row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="positive_cond[]" value="" class="form-control form-control-sm">{{$postval['cond']}}</textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="positive_timeline[]" value="" class="form-control form-control-sm">{{$postval['timeline']}}</textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                           <i class="fa fa-times-circle remove-ptpq-block  remove-positive"></i>
+                           </div>
+                        </div>
+                        @endforeach
+                     @endif
+                     <div class="after-add-more-positive">
+                        <div class="input-group control-group row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="positive_cond[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="positive_timeline[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                           <i class="fa  fa-plus-circle add-ptpq-block add-more-positive"></i>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Copy Fields -->
+                     <div class="copy-positive hide">
+                        <div class="control-group input-group row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="positive_cond[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="positive_timeline[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                              <i class="fa  fa-times-circle remove-ptpq-block remove-positive"></i>
+                           </div>
+                        </div>
+                     </div>
                      <h5 class="mt-3"><small>Deal Negatives</small></h5>
-                     <table id="" class="table table-striped dataTable no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-                        <tbody>
-                           <tr role="row" class="odd">
-                                 <td class="" width="30%">
-                                    <input type="text" name="cond_neg_competition" value="{{isset($reviewerSummaryData->cond_neg_competition) ? $reviewerSummaryData->cond_neg_competition : ''}}" class="form-control form-control-sm">  
-                                 </td>
-                                 <td class="">
-                                    <textarea name="cmnt_neg_competition" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}</textarea>
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="" width="30%">
-                                    <input type="text" name="cond_neg_forex_risk" value="{{isset($reviewerSummaryData->cond_neg_forex_risk) ? $reviewerSummaryData->cond_neg_forex_risk : ''}}" class="form-control form-control-sm">  
-                                 </td>
-                                 <td class="">
-                                    <textarea  name="cmnt_neg_forex_risk" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}</textarea>
-                                 </td>
-                           </tr>
-                           <tr role="row" class="odd">
-                                 <td class="" width="30%">
-                                    <input type="text" name="cond_neg_pbdit" value="{{isset($reviewerSummaryData->cond_neg_pbdit) ? $reviewerSummaryData->cond_neg_pbdit : ''}}" class="form-control form-control-sm">  
-                                 </td>
-                                 <td class="">
-                                    <textarea  name="cmnt_neg_pbdit" class="form-control form-control-sm">{{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}</textarea>
-                                 </td>
-                           </tr>
-                        </tbody>
-                     </table>
+                     <div class="after-add-more-negative">
+                        <div class="input-group control-group row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="negative_cond[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="negative_timeline[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                           <i class="fa  fa-plus-circle add-ptpq-block add-more-negative"></i>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Copy Fields -->
+                     <div class="copy-negative hide">
+                        <div class="control-group input-group row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="negative_cond[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="negative_timeline[]" value="" class="form-control form-control-sm"></textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                              <i class="fa  fa-times-circle remove-ptpq-block remove-negative"></i>
+                           </div>
+                        </div>
+                     </div>
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Recommendation</small></h4>
@@ -465,6 +470,26 @@ $(document).ready(function() {
       $(this).parents(".control-group").remove();
    });
 
+   // Risk Comments
+   $(".add-more-positive").click(function(){ 
+      var html = $(".copy-positive").html();
+      $(".after-add-more-positive").append(html);
+   });
+
+
+   $("body").on("click",".remove-positive",function(){ 
+      $(this).parents(".control-group").remove();
+   });
+
+   $(".add-more-negative").click(function(){ 
+      var html = $(".copy-negative").html();
+      $(".after-add-more-negative").append(html);
+   });
+
+
+   $("body").on("click",".remove-negative",function(){ 
+      $(this).parents(".control-group").remove();
+   });
 });
 </script>
 @endsection

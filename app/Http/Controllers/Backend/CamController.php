@@ -44,6 +44,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 
 date_default_timezone_set('Asia/Kolkata');
 
@@ -330,6 +331,8 @@ class CamController extends Controller
       $offerPTPQ = '';
       $preCondArr = [];
       $postCondArr = [];
+      $positiveRiskCmntArr = [];
+      $negativeRiskCmntArr = [];
       $appId = $request->get('app_id');
       $bizId = $request->get('biz_id');
       $leaseOfferData = $facilityTypeList = array();
@@ -354,6 +357,15 @@ class CamController extends Controller
           $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
         }
       } 
+      if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+        $dataRiskComments = CamReviewSummRiskCmnt::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                        ->where('is_active', 1)->get();
+        $dataRiskComments = $dataRiskComments ? $dataRiskComments->toArray() : [];
+        if(!empty($dataRiskComments)) {
+          $positiveRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentPositive"));
+          $negativeRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentNegative"));
+        }
+      } 
       $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
       foreach($supplyOfferData as $key=>$val){
         $supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($val->anchor_id)->pluck('f_name')->first();
@@ -374,7 +386,9 @@ class CamController extends Controller
         'arrStaticData' => $arrStaticData,
         'facilityTypeList' => $facilityTypeList,
         'is_editable' => $is_editable,
-        'supplyOfferData' => $supplyOfferData
+        'supplyOfferData' => $supplyOfferData,
+        'positiveRiskCmntArr' => $positiveRiskCmntArr,
+        'negativeRiskCmntArr' => $negativeRiskCmntArr
       ]);
     }
 
@@ -387,6 +401,7 @@ class CamController extends Controller
               $result = CamReviewerSummary::updateData($arrData, $userId);
               if($result){
                     $this->savePrePostConditions($request, $arrData['cam_reviewer_summary_id']);
+                    $this->saveRiskComments($request, $arrData['cam_reviewer_summary_id']);
                     Session::flash('message',trans('Reviewer Summary updated successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not updated'));
@@ -395,6 +410,7 @@ class CamController extends Controller
             $result = CamReviewerSummary::createData($arrData, $userId);
             if($result){
                     $this->savePrePostConditions($request, $result->cam_reviewer_summary_id);
+                    $this->saveRiskComments($request, $result->cam_reviewer_summary_id);
                     Session::flash('message',trans('Reviewer Summary saved successfully'));
               }else{
                     Session::flash('message',trans('Reviewer Summary not saved'));
