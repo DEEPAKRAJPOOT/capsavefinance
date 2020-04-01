@@ -63,7 +63,7 @@ class LmsUser extends Authenticatable
     ];
 
     public static function getCustomers($search){
-        return $data = self::select('customer_id', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.m_name, rta_users.l_name) AS customer") )
+        return $data = self::select('customer_id','users.user_id', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.m_name, rta_users.l_name) AS customer") )
             ->join('users', 'lms_users.user_id', '=', 'users.user_id')
             ->where(DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.m_name, rta_users.l_name)"), 'like', '%'.$search.'%')
             ->orwhere("customer_id","LIKE","%{$search}%")->get();

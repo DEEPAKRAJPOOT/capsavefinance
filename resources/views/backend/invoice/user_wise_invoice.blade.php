@@ -7,80 +7,30 @@
 @endif
 <div class="content-wrapper">
  <div class="col-md-12 ">
-        <section class="content-header">
-            <div class="header-icon">
-                <i class="fa fa-clipboard" aria-hidden="true"></i>
-            </div>
-            <div class="header-title">
-                <h3 class="mt-2">Manage Invoice</h3>
-
-                <ol class="breadcrumb">
-                    <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-                    <li class="active">Manage Invoice</li>
-                </ol>
-            </div>
-            <div class="clearfix"></div>
-        </section>
+      
         <div class="row grid-margin">
 
             <div class="col-md-12 ">
                 <div class="card">
-                    <div class="card-body">
-
-                        @include('layouts.backend.invoice_status_links')
-
+                   
                         <div class="tab-content">
 
                             <div id="menu1" class=" active tab-pane "><br>
                              <span id="moveCase" class="text-success"></span>
-                               <div class="card">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-3">				 
-                                                <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                              
-                                                <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                    <option value="">Select Business Name  </option>
-                                                        @foreach($get_bus as $row)
-                                                         @php if(isset($row->business->biz_id)) { @endphp
-                                                    <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
-                                                      @php } @endphp
-                                                    @endforeach
-
-
+                               <div class="row">
+                                   <div class="col-md-9">
+                                       
+                                       <input type="hidden" name="user_id" value="{{($user_id) ? $user_id : ''}}">
+                                   </div>
+                                                 <div class="col-md-3">
+                                                <select class="form-control form-control-sm changeBiz searchbtn" name="status_id">
+                                                    <option value=""> Select Invoice Status</option>  
+                                                        @foreach($status as $row)
+                                                        <option value="{{{$row->id}}}">{{{$row->status_name}}} </option>
+                                                        @endforeach
                                                 </select>
-                                                <span id="anchorMsg" class="error"></span>
-
                                             </div>
-                                            <div class="col-md-2">				 
-                                                <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                    <option value="">  Select Anchor </option>
-                                                    @foreach($anchor_list as $row)
-                                                    @php if(isset($row->anchor->anchor_id)) { @endphp
-                                                    <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
-                                                    @php } @endphp
-                                                    @endforeach
-                                                </select>
-
-                                            </div>
-                                            <div class="col-md-2">		    
-
-                                                <select readonly="readonly" class="form-control form-control-sm searchbtn" id="supplier_id" name="search_supplier">
-
-                                                </select>
-                                            </div>    
-                                            <div class="col-md-2">	
-                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-                                              
-
-                                            </div>
-                                            <div class="col-md-1">	          
-                                                <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Approve</button>
-                                               
-                                            
-                                            </div>
+                                           
                                         </div>
                                         <div class="row">
                                             <div class="col-12 dataTables_wrapper mt-4">
@@ -91,14 +41,14 @@
                                                                 <table id="invoiceList" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                                                     <thead>
                                                                         <tr role="row">
-                                                                            <th><input type="checkbox" id="chkAll"></th> 
+                                                                           
                                                                             <th>Inv. No.</th>
                                                                             <th>Anchor Detail</th>
                                                                             <th>Customer Detail</th>
                                                                             <th> Inv Detail</th>
                                                                             <th> Inv Amount</th>
-                                                                             <th>Upload Invoice </th> 
-                                                                            <th>Action</th>
+                                                                            <th> Status</th>
+                                                                            
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -114,15 +64,10 @@
 
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                            </div>
+                           </div>
 
                         </div>
 
-
-                    </div>
                 </div>
             </div>
         </div></div>
@@ -258,7 +203,7 @@
 </style>    
 <script>
  var messages = {
-        backend_get_invoice_list: "{{ URL::route('backend_get_invoice_list') }}",
+        user_wise_invoice_list: "{{ URL::route('user_wise_invoice_list') }}",
         upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
         get_program_supplier: "{{ URL::route('get_program_supplier') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -603,6 +548,6 @@ function uploadFile(app_id,id)
         }
     });
 </script>
-<script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/user_wise_invoice_list.js') }}"></script>
 
 @endsection

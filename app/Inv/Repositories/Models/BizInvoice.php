@@ -137,12 +137,12 @@ public static function updateInvoice($invoiceId,$status)
      
      }
     
-    /* get invoice */    
-  public static function getInvoice()
+    /* get anchor */    
+    public static function getInvoice()
     {
        return Anchor::get();
      }   
-     
+  
      public static function getAllInvoice($request,$status)
      {
          $whr = [];
@@ -178,7 +178,7 @@ public static function updateInvoice($invoiceId,$status)
         }
         //backend_get_invoice
 
-        return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'asc')->get();
+        return self::where('status_id',$status)->where($whr)->where(['created_by' => Auth::user()->user_id])->with(['business','anchor','supplier','userFile','program','program_offer'])->orderBy('invoice_id', 'asc')->get();
      } 
      
     public static function  getSingleInvoice($invId)
@@ -352,12 +352,22 @@ public static function updateInvoice($invoiceId,$status)
         return $res ?: false;
     }
     
-    public static function checkDuplicateInvoice($invNo)
+    public static function checkDuplicateInvoice($invNo,$user_id)
     {
         
-        return self::where(['invoice_no' => $invNo])->first();
+        return self::where(['invoice_no' => $invNo,'supplier_id' => $user_id])->first();
     }
-
+   public static function getUserWiseInvoiceData($user_id)
+    {
+        
+        return self::with('mstStatus')->where(['supplier_id' => $user_id]);
+    }
+    
+    function status()
+    {
+        
+    }
+   
     public static function getUserInvoiceIds($userId)
     {
         return self::where('supplier_id', $userId)

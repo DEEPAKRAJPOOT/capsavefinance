@@ -283,6 +283,13 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceList'
         ]
     );
+       Route::post(
+        'user_wise_invoice_list',
+        [
+        'as' => 'user_wise_invoice_list',
+        'uses' => 'AjaxController@getUserWiseInvoiceList'
+        ]
+    );
         Route::post(
         'backend_get_invoice_list_approve',
         [
@@ -677,8 +684,11 @@ Route::group(
         'as' => 'get_customer',
         'uses' => 'AjaxController@getCustomer'
     ]);
-
-    Route::post('lms-get-disbursal-customer', [
+      Route::post('search_business',[
+        'as' => 'search_business',
+        'uses' => 'AjaxController@searchBusiness'
+    ]);
+   Route::post('lms-get-disbursal-customer', [
         'as' => 'lms_get_disbursal_customer',
         'uses' => 'AjaxController@lmsGetDisbursalCustomer'
     ]);

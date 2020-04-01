@@ -12,9 +12,9 @@
 		<a class=" {{( $active=='address') ? 'active': null }} " href="{{route('addr_get_customer_list',[ 'user_id' => $userInfo->user_id ])}}">Address </a>
     </li>
     @endcan
-    @can('backend_get_invoice')
+    @can('user_wise_invoice')
     <li>
-        <a class=" {{ ($active=='invoice') ? 'active': null }} "  href="{{ route('backend_get_invoice', [ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ]) }}">View Invoices</a>
+        <a class=" {{ ($active=='invoice') ? 'active': null }} "  href="{{ route('user_wise_invoice', [ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ]) }}">View Invoices</a>
     </li>
     @endcan
     

@@ -31,12 +31,8 @@ try {
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},
                 {data: 'invoice_date'},
-                {data: 'invoice_due_date'},
-                 {data: 'tenor'},
                 {data: 'invoice_amount'},
-                {data: 'invoice_approve_amount'},
                 {data: 'view_upload_invoice'},
-                {data: 'status'},
                 {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]

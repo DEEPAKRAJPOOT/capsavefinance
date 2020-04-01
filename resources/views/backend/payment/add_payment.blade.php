@@ -36,29 +36,18 @@
                                 )
                                 !!}
                                     <div class="row">
-                                        <div class="col-md-4">
+                  
+                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">Select Customer Name <span class="error_message_label">*</span> </label>
-                                                <select class="form-control getCustomer" name="customer_id" id="customer_id">
-                                                    <option value=""> Please Select</option>
-                                                    @foreach($customer as $row)
-                                                    <option value="{{$row->user_id}}">{{$row->user->f_name}} {{$row->user->l_name}}/{{$row->customer_id}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                                <label for="txtCreditPeriod">Search business name <span class="error_message_label">*</span> </label>
+                                                <input type="hidden" name="customer_id" id="customer_id">
+                                                <input type="text" name="search_bus"   id="search_bus" class="form-control searchBusiness">
+                                                <ul class="business_list">
+                                                </ul>
+                                           </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="txtCreditPeriod">Transation Type <span class="error_message_label">*</span></label>
-                                                <select class="form-control trans_type" name="trans_type" id="trans_type">
-                                                    <option value="">Select Transation Type</option>
-                                                    @foreach($tranType as $key => $value)
-                                                    <option value="{{$value->id}}"> {{$value->credit_desc}} </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
+                                      
+                                        <div class="col-md-6">
                                             <div class="form-group">
 
                                                 <label for="txtCreditPeriod">Virtual Account No.<span class="error_message_label">*</span> </label>
@@ -71,6 +60,17 @@
                                                 </select> -->
                                                 <input type="text" name="virtual_acc" id="virtual_acc" readonly="readonly" class="form-control">
                                                 
+                                            </div>
+                                        </div>
+                                          <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">Transation Type <span class="error_message_label">*</span></label>
+                                                <select class="form-control trans_type" name="trans_type" id="trans_type">
+                                                    <option value="">Select Transation Type</option>
+                                                    @foreach($tranType as $key => $value)
+                                                    <option value="{{$value->id}}"> {{$value->credit_desc}} </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -87,15 +87,14 @@
                                             </div>
                                         </div>
                                       
-                                        <!--start processing fees code-->   
-                                        <!--
+                                        <!--start processing fees code-->
                                         <div class="col-md-4 processFeeElmnt">
                                             <div class="form-group INR ">
                                                 <label for="txtCreditPeriod">Transaction Amount inclusive GST ? <span class="error_message_label">*</span> </label>
                                                 <br>
                                                 <input type="radio" id="incl_gst" name="incl_gst" value="1">Yes &nbsp;&nbsp;  <input type="radio" id="incl_gst" name="incl_gst" value="0" checked>No
                                             </div>
-                                        </div>                                        
+                                        </div>
                                         <div class="col-md-4 processFeeElmnt noGstShow">
                                             <div class="form-group INR">
                                                 <label for="txtCreditPeriod">Select GST Option <span class="error_message_label">*</span> </label>
@@ -129,14 +128,13 @@
                                                 <input type="text" name="igst_amt" id="igst_amt" readonly="readonly" class="form-control" value="">
                                             </div>
                                         </div>
-                                        -->
-                                        <div class="col-md-4">
+                                        <!--<div class="col-md-4">
                                             <div class="form-group ">
                                                 <label for="txtCreditPeriod">Transaction Id<span class="error_message_label">*</span> </label>
 
                                                 <input type="text" name="txn_id" id="txn_id" class="form-control">
                                             </div>
-                                        </div>
+                                        </div>  -->
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
@@ -205,17 +203,30 @@
 </div>
 @endsection
 @section('jscript')
+<style>
+ .business_list {
+   background-color:aliceblue;  
+   border: 2px solid #f7f7f7;
+} 
+.business_list_li {
+  background-color:#f9f9f9;
+border: 1px solid antiquewhite;  
+cursor: pointer;
+
+}
+
+</style>
 <script>
     var messages = {
         get_val: "{{URL::route('get_field_val')}}",
+        search_business: "{{URL::route('search_business')}}",
         token: "{{ csrf_token() }}",
-        get_repayment_amount_url: "{{ route('get_repayment_amount') }}",
     };
 
-    $(document).ready(function() {
-        document.getElementById('amount').addEventListener('input', event =>
-            event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-    });;
+      $(document).ready(function() {
+      document.getElementById('amount').addEventListener('input', event =>
+      event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+    });
 
     $(document).on('change', '#payment_type', function() {
         $('#appendInput').empty();
@@ -364,7 +375,7 @@ if ($("#amount").valid()) {
 $(document).ready(function () {  
             $('#savePayFrm').validate( {
                   rules: {
-                    customer_id: {
+                    search_bus: {
                         required: true,
                      },
                      trans_type: {
@@ -398,25 +409,54 @@ $(document).ready(function () {
                      }
                   }
                });
-               
-            $("#trans_type").change(function(){
-               $.ajax({
-                    type: 'POST',                    
-                    url: messages.get_repayment_amount_url,
-                    data: {user_id: $("#customer_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
-                    beforeSend: function( xhr ) {
-                        $('.isloader').show();
-                    },
-                    success: function(resultData) {                        
-                        if (resultData.repayment_amount != ""){
-                            $("#amount").val(resultData.repayment_amount);                           
-                        } else {
-                            $("#amount").val("");
-                        }
-                        $('.isloader').hide();
-                    }
-               });
-            });
         });
+   $(document).on('keyup','.searchBusiness',function(){
+       $(".business_list").empty();
+       var search  =  $(this).val();
+      if(search.length > 1)
+      {
+       var postData =  ({'search':search,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.search_business,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                     if(data.status > 0) { 
+                       $(data.result).each(function(i,v){
+                            if(v.lms_user!=null)
+                            {
+
+                                  $(".business_list").append("<li class='business_list_li' data-user_id="+v.user_id+" data-virtual_acc="+v.lms_user.virtual_acc_id+">"+v.biz_entity_name+" / "+ v.lms_user.customer_id+"</li>");
+                            } 
+                           })
+                        }
+                        else
+                        {
+                            $(".business_list").append("<li class='business_list_li'>No data found</li>"); 
+                     }
+                 }
+       })  
+      }
+      else
+      {
+           return false; 
+        }
+   }) 
+   
+   $(document).on('click','.business_list_li',function(){
+       var business_name =  $(this).text();
+       var user_id =  $(this).attr('data-user_id'); 
+       var virtual_acc = $(this).attr('data-virtual_acc'); 
+       var business_name    = business_name.split("/");
+       $("#search_bus").val(business_name[0]);
+       $("#customer_id").val(user_id);
+       $("#virtual_acc").val(virtual_acc);
+       $(".business_list").empty();
+    })
 </script>
 @endsection

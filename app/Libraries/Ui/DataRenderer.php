@@ -584,14 +584,90 @@ class DataRenderer implements DataProviderInterface
                 })
               ->make(true);
     }  
+     /*      
+     * Get  User Wise Invoice list for backend
+     */
+    public function getUserWiseInvoiceList(Request $request,$invoice)
+    {   
+        return DataTables::of($invoice)
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+           
+               
+                 ->addColumn(
+                    'invoice_id',
+                    function ($invoice) use ($request)  {     
+                           if($request->front)
+                           {
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+            
+                           }
+                        else {
+                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+        
+                        }
+             })
+             
+              ->addColumn(
+                    'anchor_name',
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
+                })
+                ->addColumn(
+                    'supplier_name',
+                    function ($invoice) { 
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
+                })
+                 ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {                        
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
+                })  
+                ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        return $inv_amount;
+                })
+                ->addColumn(            
+                    'status',
+                    function ($invoice) {                        
+                    
+                        return  $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
+                       
+                })
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('status_id') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('status_id'));
+                            $query->where('status_id',"$search_keyword");
+                        });                        
+                    }
+                   
+                    
+                })
+              ->make(true);
+    } 
     
     /*      
      * Get Invoice list for backend
      */
     public function getBackendInvoiceList(Request $request,$invoice)
-    { 
+    {   
         return DataTables::of($invoice)
-               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
            
                 ->addColumn(
                     'anchor_id',
@@ -611,43 +687,40 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
+             
               ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
                  ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) { 
-                     return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                      
-                      })
-               ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                 ->addColumn(            
+                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               
                 ->addColumn(
                     'view_upload_invoice',
                     function ($invoice) {
@@ -656,13 +729,6 @@ class DataRenderer implements DataProviderInterface
                          } else  {
                              return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                          }
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-warning">Pending</span></div>';
-
                 })
                  ->addColumn(
                     'action',
@@ -682,14 +748,15 @@ class DataRenderer implements DataProviderInterface
     public function getBackendInvoiceListApprove(Request $request,$invoice)
     { 
     
-      return DataTables::of($invoice)
-               ->rawColumns(['view_upload_invoice','status','anchor_id','action','invoice_id'])
+    return DataTables::of($invoice)
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+           
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) {                        
                         return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
                 })
-                   ->addColumn(
+                 ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
@@ -702,49 +769,41 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-                ->addColumn(
+             
+              ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
-                   ->addColumn(
+                 ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                 ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
-                })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
                ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Approved</span></div>';
-
-                })
-                 ->addColumn(
                     'action',
                     function ($invoice) {
                      return '<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
@@ -826,10 +885,10 @@ class DataRenderer implements DataProviderInterface
     public function getBackendInvoiceListBank(Request $request,$invoice)
     { 
     
-      return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id'])
-                 ->addColumn(
-                    'anchor_id',
+         return DataTables::of($invoice)
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->addColumn(
+                    'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
@@ -841,49 +900,41 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-                ->addColumn(
+             
+              ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
-                   ->addColumn(
+                 ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Sent to Bank</span></div>';
-
-                })
-                 
+                        
               ->make(true);
     }  
     
@@ -895,9 +946,9 @@ class DataRenderer implements DataProviderInterface
     { 
       
         return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id','action'])
-                ->addColumn(
-                    'anchor_id',
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->addColumn(
+                    'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
@@ -909,47 +960,39 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-                ->addColumn(
+             
+              ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
-                   ->addColumn(
+                 ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
                ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
-                })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-danger">Failed </span></div>';
-
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
                   ->addColumn(
                     'action',
@@ -972,28 +1015,10 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
     { 
-     
       return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id','action'])
-                ->setRowClass(function ($invoice) {
-                      $finalDueDate =  date('d/m/Y', strtotime($invoice->invoice_due_date.' + '.$invoice->program_offer->grace_period.' days'));
-                       $date =  Carbon::now();
-                       $date =  Carbon::parse($date)->format('d/m/Y');
-                       $cdate =  strtotime(Carbon::createFromFormat('d/m/Y',$date));
-                       $gracePdate =  strtotime(Carbon::createFromFormat('d/m/Y',$finalDueDate));
-                       if($cdate > $gracePdate)
-                       {
-                          
-                           return "dateGrace";
-                      }
-                       else
-                       {
-                          
-                            return "";
-                       }
-               })
-                ->addColumn(
-                    'anchor_id',
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->addColumn(
+                    'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
@@ -1005,49 +1030,41 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-                ->addColumn(
+             
+              ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
                  ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-danger">Disbursed </span></div>';
-
-                })
-                ->addColumn(
+                   ->addColumn(
                     'action',
                     function ($invoice) use ($request) {
                      if ($request->front) {         
@@ -1070,9 +1087,9 @@ class DataRenderer implements DataProviderInterface
     { 
     
       return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id'])
-                ->addColumn(
-                    'anchor_id',
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->addColumn(
+                    'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
@@ -1084,49 +1101,40 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-                ->addColumn(
+             
+              ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
                  ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-success">Repaid </span></div>';
-
-                })
-              
               ->make(true);
     }  
     
@@ -1136,10 +1144,10 @@ class DataRenderer implements DataProviderInterface
     public function getBackendEpList(Request $request,$invoice)
     { 
     
-      return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id'])
-                ->addColumn(
-                    'anchor_id',
+       return DataTables::of($invoice)
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->addColumn(
+                    'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
@@ -1151,49 +1159,40 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-                ->addColumn(
+             
+              ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
                  ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-danger">Exception </span></div>';
-
-                })
-              
               ->make(true);
     }  
     
@@ -1205,9 +1204,9 @@ class DataRenderer implements DataProviderInterface
     { 
     
       return DataTables::of($invoice)
-               ->rawColumns(['status','anchor_id','action'])
-                ->addColumn(
-                    'anchor_id',
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->addColumn(
+                    'invoice_id',
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
@@ -1219,47 +1218,39 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-                ->addColumn(
+             
+              ->addColumn(
                     'anchor_name',
-                    function ($invoice) {                        
-                        return $invoice->anchor->comp_name ? $invoice->anchor->comp_name : '';
+                    function ($invoice) {  
+                        $comp_name = '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        return $invoice->supplier->f_name ? $invoice->supplier->f_name : '';
+                        $custo_name = '';
+                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        return $custo_name;
                 })
-                   ->addColumn(
+                 ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
-                         return $invoice->invoice_date ? $invoice->invoice_date : '';
+                        $inv_date = '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        return $inv_date;
                 })  
-                 ->addColumn(
-                    'invoice_due_date',
-                    function ($invoice) {                        
-                        return $invoice->invoice_due_date ? $invoice->invoice_due_date : '';
-                })
-                ->addColumn(
-                    'tenor',
-                    function ($invoice) {                        
-                         return $invoice->tenor ? $invoice->tenor : '';
-                })
-                ->addColumn(            
+               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                         return $invoice->invoice_amount ? number_format($invoice->invoice_amount) : '';
-                })
-                 ->addColumn(            
-                    'invoice_approve_amount',
-                    function ($invoice) {                        
-                         return $invoice->invoice_approve_amount ? number_format($invoice->invoice_approve_amount) : '';
-                })
-               ->addColumn(
-                    'status',
-                    function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<div class="d-flex inline-action-btn"><span class="badge badge-danger">Reject </span></div>';
-
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        return $inv_amount;
                 })
                  ->addColumn(
                     'action',
@@ -1281,41 +1272,60 @@ class DataRenderer implements DataProviderInterface
         /// dd($trans->disburse);
     
          return DataTables::of($trans)
-               ->rawColumns(['trans_by'])
+               ->rawColumns(['trans_by','customer_id','virtual_account_no'])
                 ->addIndexColumn()
                 
                 ->addColumn(
                     'customer_id',
                     function ($trans) {                        
-                      // return $trans->disburse ? $trans->disburse->customer_id : '';
-                        return $trans->lmsUser ? $trans->lmsUser->customer_id : '';
+                        $customer = '';
+                        $customer .= $trans->user ? '<span><b>Name:&nbsp;</b>'.$trans->user->f_name.'&nbsp;'.$trans->user->l_name.'</span>' : '';
+                        $customer .= $trans->lmsUser ? '<br><span><b>Customer Id:&nbsp;</b>'.$trans->lmsUser->customer_id.'</span>' : '';
+                         $customer .= $trans->virtual_acc_id ? '<br><span><b>Virtual Acc. No.:&nbsp;</b>'.$trans->virtual_acc_id.'</span>' : '';
+                        return $customer;
                 })
                 ->addColumn(
                     'virtual_account_no',
                     function ($trans) { 
+                        $payment = '';
+                        $payment .= $trans->trans_date ? '<span><b>Trans. Date:&nbsp;</b>'.date("Y-m-d", strtotime($trans->trans_date)).'</span>' : '';
+                        $payment .= $trans->trans_detail ? '<br><span><b>Trans. Type:&nbsp;</b>'.$trans->trans_detail->trans_name.'</span>' : '';
+                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b>'.number_format($trans->amount).'</span>' : '';
+                        return $payment;
                          return $trans->virtual_acc_id 	 ? $trans->virtual_acc_id : '';
                 })
-                   ->addColumn(
-                    'amount',
-                    function ($trans) {                        
-                         return $trans->amount ? number_format($trans->amount) : '';
-                })  
+               
                  ->addColumn(
                     'trans_by',
                     function ($trans) {  
                        if($trans->trans_by==1)
                        {
-                         return 'Manual';
+                         $type =  'Manual';
                        }
                        else if($trans->trans_by==2)
                        {
-                         return 'Excel';
+                         $type =  'Excel';
                        }
                        else
                        {
-                           return 'N/A';
+                           $type =  'N/A';
                        }
+                    $mode  = ['1' =>  'Online RTGS/NEFT','2' => 'Cheque','3' => 'NACH','4' => 'Other'];
+                    $refNo  = ['1' =>  'utr_no','2' => 'cheque_no','3' => 'unr_no','4' => 'unr_no'];
+                    $refNoShpw  = ['1' =>  'Utr No.','2' => 'Cheque No.','3' => 'Unr No.','4' => 'Other '];
+                    $rfNo = $refNo[$trans->mode_of_pay];
+                    $refNoShpw = $refNoShpw[$trans->mode_of_pay];
+                       $transaction = '';
+                       $transaction .= $trans->mode_of_pay ? '<span><b>Payment Mode:&nbsp;</b>'.$mode[$trans->mode_of_pay].'</span>' : '';
+                       $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
+                       $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
+                       return $transaction;
                 })
+                 ->addColumn(
+                    'comment',
+                    function ($trans) {                        
+                         return $trans->comment ? $trans->comment : '';
+                })  
                 ->addColumn(
                     'created_by',
                     function ($trans) {                        

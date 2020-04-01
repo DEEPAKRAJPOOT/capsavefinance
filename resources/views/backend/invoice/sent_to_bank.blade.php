@@ -35,10 +35,10 @@
     <div class="card">
         <div class="card-body">
                      <div class="row"><div class="col-md-4"></div>
-                 <div class="col-md-2">				 
+                 <div class="col-md-3">				 
                      <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                      <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
-                                                    <option value="">Select Application  </option>
+                                                    <option value="">Select Business Name </option>
                                                         @foreach($get_bus as $row)
                                                          @php if(isset($row->business->biz_id)) { @endphp
                                                     <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>
@@ -53,7 +53,7 @@
                <div class="col-md-2">				 
                                                               
                       <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                    <option value=""> Please select </option>
+                                                    <option value=""> Select Anchor </option>
                                                     @foreach($anchor_list as $row)
                                                     @php if(isset($row->anchor->anchor_id)) { @endphp
                                                     <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
@@ -68,11 +68,7 @@
                          
                     </select>
                      </div>    
-                      <div class="col-md-2">	
-                          <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-
-                   
-            </div>
+                    
               
             </div>
             <div class="row">
@@ -83,17 +79,12 @@
                                 <div class="col-sm-12">
                                     <table id="invoiceListBank" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
-                                            <tr role="row">
-                                                <th>Invoice No</th> 
-                                               <th>Anchor Name</th>
-                                                  <th>Customer Name</th>
-                                               <th>Invoice Date</th>
-                                                <th>Invoice Due Date</th>
-                                                   <th>Tenor</th>
-                                                 <th>Invoice  Amount</th>
-                                                <th>Invoice Approve Amount</th>
-                                                <th>Status</th>
-                                               
+                                             <tr role="row">
+                                            <th>Inv. No.</th>
+                                            <th>Anchor Detail</th>
+                                            <th>Customer Detail</th>
+                                            <th> Inv Detail</th>
+                                            <th> Inv Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -341,7 +332,7 @@
   });
   //////////////////// onchange anchor  id get data /////////////////
 
-  $("#supplier_id").append("<option value=''>Select customer</option>");  
+  $("#supplier_id").append("<option value=''>Select Customer</option>");  
   $(document).on('change','.changeAnchor',function(){
      var anchor_id =  $(this).val(); 
       $("#supplier_id").empty();

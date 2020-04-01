@@ -83,6 +83,7 @@ class PaymentController extends Controller {
     /* save payment details   */
     public function  savePayment(Request $request)
     {
+      
         $validatedData = $request->validate([
                 'payment_type' => 'required',
                 'trans_type' => 'required',
@@ -90,9 +91,9 @@ class PaymentController extends Controller {
                 'virtual_acc' => 'required',  
                 'date_of_payment' => 'required', 
                 'amount' => 'required', 
-                'utr_no' => 'required', 
-                'description' => 'required',
-                'txn_id' => 'required'
+               /// 'utr_no' => 'required', 
+                'description' => 'required'
+               // 'txn_id' => 'required'
           ]);
         $user_id  = Auth::user()->user_id;
         $mytime = Carbon::now(); 
