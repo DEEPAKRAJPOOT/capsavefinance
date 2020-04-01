@@ -89,7 +89,7 @@ trait LmsTrait
             }elseif($transDate && $intAccrualStartDt && strtotime($transDate)<= strtotime($intAccrualStartDt)){
                 $intAccrualDt = $transDate;
             }elseif($maxAccrualDate){
-                $intAccrualDt = $maxAccrualDate;
+                $intAccrualDt = $this->addDays($maxAccrualDate, 1);
             }else{
                 $intAccrualDt = $intAccrualStartDt;
             }
@@ -176,9 +176,17 @@ trait LmsTrait
                 /* Interest Bookin in case of Monthly on Last day of month
                    Interest will be added in pricipal amount for furture interest calculation  
                 */
-                if((strtotime($intAccrualDt) == strtotime($startOfMonthDate) || strtotime($intAccrualDt) == strtotime($overDueInterestDate))
+                if((strtotime($intAccrualDt) == strtotime($startOfMonthDate) 
+                || strtotime($intAccrualDt) == strtotime($overDueInterestDate))
+
+                
                 && strtotime($intAccrualDt) <= strtotime($overDueInterestDate) 
-                && $int_type_config == 2 ){
+
+
+                && $int_type_config == 2 
+                
+                
+                ){
 
                     if(strtotime($intAccrualDt) == strtotime($startOfMonthDate)){
                         $lastYear = Carbon::createFromFormat('Y-m-d', $intAccrualDt)
@@ -207,12 +215,14 @@ trait LmsTrait
                     $totalInterest += $lastInterest;
                     $balancePrincipalAmt += $lastInterest; 
 
-                    $interestDue = $this->createTransactionData($disburse->user_id, [
-                        'amount' => $lastInterest,
-                        'trans_date'=>$intAccrualDt,
-                        'disbursal_id'=>$disburse->disbursal_id,
-                    ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
-                    $this->lmsRepo->saveTransaction($interestDue);
+                    if($lastInterest>0){
+                        $interestDue = $this->createTransactionData($disburse->user_id, [
+                            'amount' => $lastInterest,
+                            'trans_date'=>$intAccrualDt,
+                            'disbursal_id'=>$disburse->disbursal_id,
+                        ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
+                        $this->lmsRepo->saveTransaction($interestDue);
+                    }
                 }
 
                 $calInterestRate  = (float)$currentInterestRate/100;
@@ -396,15 +406,15 @@ trait LmsTrait
                     switch ($int_type_config) {
                         case '1':
                             $interestDue = 0;
-                            $interestRefund = (float)$disbursalDetail->total_interest-(float)$accured_interest;
-                            break;
+                        break;
                         case '2':
                             $interestDue = (float)$disbursalDetail->total_interest - $interestSettled;
-                            break;
+                        break;
                         case '3':
                             $interestDue = (float)$accured_interest - $interestSettled;
-                            break;
+                        break;
                     }
+                    $interestRefund = (float)$disbursalDetail->total_interest-(float)$accured_interest;
 
                 /* Step 1 : Interest Settlement */
 
@@ -566,9 +576,11 @@ trait LmsTrait
 
             $getChargesDetails = Transactions::where('user_id','=',$transDetail['user_id'])
                         ->where('entry_type','=',0)
+                        ->where('created_at', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
                         ->whereHas('trans_detail', function($query){ 
                             $query->where('chrg_master_id','!=','0');
-                        })->orderBy('trans_date','asc')->get();
+                        })
+                        ->orderBy('trans_date','asc')->get();
             
             foreach ($getChargesDetails as $key => $chargeDetail) {
                 if($trans['balance_amount']>0){
@@ -625,16 +637,16 @@ trait LmsTrait
                 $this->lmsRepo->saveTransaction($overdueValue);
             }
             
-            if(!empty($transactionData['interestRefund']))
-            foreach ($transactionData['interestRefund'] as $interestRefundValue){
-                $this->lmsRepo->saveTransaction($interestRefundValue);
-            }
-            
             if(!empty($transactionData['interestPaid']))
             foreach($transactionData['interestPaid'] as $interestPaidValue){
                 $this->lmsRepo->saveTransaction($interestPaidValue);
             }
 
+            if(!empty($transactionData['interestRefund']))
+            foreach ($transactionData['interestRefund'] as $interestRefundValue){
+                $this->lmsRepo->saveTransaction($interestRefundValue);
+            }
+            
             if(!empty($transactionData['nonFactoredAmt']))
             foreach($transactionData['nonFactoredAmt'] as $nonFactoredAmtValue){
                 $this->lmsRepo->saveTransaction($nonFactoredAmtValue);

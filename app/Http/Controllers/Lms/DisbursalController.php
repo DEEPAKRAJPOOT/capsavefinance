@@ -160,7 +160,8 @@ class DisbursalController extends Controller
 			        $totalInterest += $interest;
 			        $totalMargin += $margin;
 			        $totalFunded += $fundedAmount;
-    				$disburseAmount += round($fundedAmount - $interest, 2);
+    				$disburseAmount += round($fundedAmount, 2);
+    				//$disburseAmount += round($fundedAmount - $interest, 2);
 
 				}
 
@@ -213,6 +214,9 @@ class DisbursalController extends Controller
 					if ($intrstAmt > 0.00) {
 						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
 						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+
+						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 					}
 
 					$marginAmt = round($totalMargin,2);
@@ -221,8 +225,7 @@ class DisbursalController extends Controller
 						$createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
 					}
 
-					// $intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
-					// $createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
+					
 
 				}
 			}

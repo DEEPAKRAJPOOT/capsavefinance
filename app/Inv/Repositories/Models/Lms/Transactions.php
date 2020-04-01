@@ -164,17 +164,17 @@ class Transactions extends BaseModel {
     }
 
     public static function get_balance($trans_code,$user_id){
-        $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+        $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
-                   // ->where('soa_flag','=',1)
+                    ->where('soa_flag','=',1)
                     ->whereNull('parent_trans_id')
                     //->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
                     ->where('entry_type','=','0')
                     ->sum('amount');
 
-         $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+         $cr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
-                   // ->where('soa_flag','=',1)
+                    ->where('soa_flag','=',1)
                     ->where('entry_type','=','1')
                     ->sum('amount');
         return $dr - $cr;
@@ -182,12 +182,12 @@ class Transactions extends BaseModel {
     
     public  function getBalanceAttribute()
     {
-        return self::get_balance($this->user_id.Carbon::parse($this->trans_date)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
+        return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
     }
 
     public static function getUserBalance($user_id){
 
-        $trans = self::select(DB::raw('max(concat_ws("",user_id, DATE_FORMAT(trans_date, "%y%m%d"), (1000000000+trans_id)))as trans_code'))->where('user_id','=',$user_id)->get();
+        $trans = self::select(DB::raw('max(concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)))as trans_code'))->where('user_id','=',$user_id)->get();
         return self::get_balance($trans[0]->trans_code, $user_id);
     }
 
@@ -309,9 +309,9 @@ class Transactions extends BaseModel {
         return self::select('transactions.*')
                     ->join('users', 'transactions.user_id', '=', 'users.user_id')
                     ->join('lms_users','users.user_id','lms_users.user_id')
-                    //->where('soa_flag','=',1)
+                    ->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
-                    ->orderBy(DB::raw("DATE_FORMAT(trans_date, '%Y-%m-%d')"), 'asc')
+                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');
     }
     
