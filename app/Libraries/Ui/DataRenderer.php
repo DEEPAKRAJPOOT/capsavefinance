@@ -2764,8 +2764,8 @@ class DataRenderer implements DataProviderInterface
                 ->rawColumns(['is_active'])
                 ->addColumn(
                     'doc_type_id',
-                    function ($documents) {
-                    return $this->doc_type_ids[$documents->doc_type_id] ?: 'N/A'; 
+                    function ($documents) {                    
+                    return $this->doc_type_ids[$documents->doc_type_id] ?? 'N/A'; 
                 })
                 ->addColumn(
                     'doc_name',

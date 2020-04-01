@@ -88,7 +88,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
-                                            <select readonly="readonly" class="form-control" id="supplier_bulk_id" >
+                                            <select readonly="readonly" class="form-control getTenor" id="supplier_bulk_id" >
                                             </select>
                                             <span id="supplier_bulk_id_msg" class="error"></span>
                                             <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
@@ -181,6 +181,7 @@
         backend_get_invoice_list: "{{ URL::route('backend_get_invoice_list') }}",
         upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
         get_program_supplier: "{{ URL::route('get_program_supplier') }}",
+        get_tenor: "{{ URL::route('get_tenor') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         front_program_list: "{{ URL::route('front_program_list') }}",
         front_supplier_list: "{{ URL::route('front_supplier_list') }}",
@@ -352,10 +353,11 @@
                     var tenor = data.tenor;
                     var tenor_old_invoice = data.tenor_old_invoice;
                     $("#prgm_offer_id").val(offer_id);
-                    $("#tenor_old_invoice").val(tenor_old_invoice);
-                    $("#tenor").val(tenor);
+                   // $("#tenor_old_invoice").val(tenor_old_invoice);
+                   // $("#tenor").val(tenor);
                     $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  ' + obj2.anchor_sub_limit + '');
                     $("#pro_limit_hide").val(obj2.anchor_sub_limit);
+                    $("#supplier_bulk_id").append("<option value=''>Please Select Customer</option>");  
                     $(obj1).each(function (i, v) {
                         var dApp = "000000" + v.app_id;
                         //$("#supplier_id").append("<option value='"+v.user_id+","+v.app.app_id+"'>"+v.f_name+"&nbsp;"+v.l_name+"("+v.app.app_id+")</option>");  
@@ -370,7 +372,33 @@
             }
         });
     });
-
+  //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('change','.getTenor',function(){
+      var program_id =  $("#program_bulk_id").val(); 
+      var anchor_id =  $("#anchor_bulk_id").val(); 
+      var supplier_id  = $(this).val();
+      if(supplier_id=='')
+      {
+          return false; 
+      }
+     var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_tenor,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                        var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
+                        $("#tenor_old_invoice").val(tenor_old_invoice);
+                        $("#tenor").val(tenor);
+                }
+        }); }); 
+   
     $(document).on('change', '#supplier_bulk_id', function () {
         if ($("#supplier_bulk_id").val() != '')
         {

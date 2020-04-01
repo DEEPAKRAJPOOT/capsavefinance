@@ -89,7 +89,7 @@ use RegistersUsers,
         $lead_type = $data['lead_type'];
         $arrData['anchor_id'] = $data['h_anchor_id'];
         $arrData['f_name'] = $data['f_name'];
-        $arrData['m_name'] = $data['m_name'];
+        //$arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
         $arrData['biz_name'] = $data['business_name'];
         $arrData['email'] = $data['email'];
