@@ -814,6 +814,10 @@ Route::group(
         'as' => 'front_program_list',
         'uses' => 'AjaxController@getProgramSingleList'
     ]); 
+      Route::POST('get_tenor', [
+        'as' => 'get_tenor',
+        'uses' => 'AjaxController@getTenor'
+    ]);  
      Route::POST('front_lms_program_list', [
         'as' => 'front_lms_program_list',
         'uses' => 'AjaxController@getProgramLmsSingleList'
