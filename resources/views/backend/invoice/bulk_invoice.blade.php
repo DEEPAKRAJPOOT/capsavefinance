@@ -319,6 +319,10 @@
 
         $("#program_bulk_id_msg").hide();
         var program_id = $(this).val();
+         if(program_id=='')
+        {
+            return false;
+        }
         var anchor_id = $("#anchor_bulk_id").val();
         $("#supplier_bulk_id").empty();
         $("#pro_limit").empty();
@@ -336,17 +340,19 @@
             success: function (data) {
                 if (data.status == 1)
                 {
-                    if (data.uploadAcess == 0)
-                    {
-                        $("#submit").css("pointer-events", "none");
-                        $("#tenorMsg").text("You don't have permission to upload invoice for this program.");
-
-                    } else
-                    {
-                        $("#tenorMsg").text(" ");
-                        $("#submit").css("pointer-events", "inline");
-
-                    }
+                     if(data.uploadAcess==0)
+                        {
+                            $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
+                            $("#submit").hide();
+                            
+                        }
+                        else
+                        {
+                             $("#submit").show();
+                             $("#tenorMsg").text(" ");           
+                           
+                            
+                        }
                     var obj1 = data.get_supplier;
                     var obj2 = data.limit;
                     var offer_id = data.offer_id;

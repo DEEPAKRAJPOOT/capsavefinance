@@ -142,9 +142,9 @@
                 <div class="row">
                    <div class="col-md-12">
                        <div class="col-md-8">
-                           <label class="error" id="tenorMsg"></label>
+                           <span  id="tenorMsg" style="color:red;"></span>
                        </div>
-                       <div class="text-right mt-2">
+                       <div class="text-right mt-2" id="ApprovePro">
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                             <input type="hidden" value="" id="tenor" name="tenor">
@@ -441,7 +441,7 @@ var messages = {
         $("#supplier_id").append("<option value=''>No data found</option>");                         
   /////// jquery validate on submit button/////////////////////
   $('#submit').on('click', function (e) {
-        $("#tenorMsg").hide();
+        $("#tenorMsg").text('');
         var first  = $('#invoice_due_date').val();
         var second = $('#invoice_date').val();
         var getDays  = findDaysWithDate(first,second);
@@ -624,14 +624,15 @@ var messages = {
                     {
                          if(data.uploadAcess==0)
                         {
-                            $("#submit").css("pointer-events","none");
                             $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
-                          
+                            $("#ApprovePro").hide();
+                            
                         }
                         else
                         {
+                             $("#ApprovePro").show();
                              $("#tenorMsg").text(" ");           
-                             $("#submit").css("pointer-events","inline");
+                           
                             
                         }
                         var obj1  = data.get_supplier;
