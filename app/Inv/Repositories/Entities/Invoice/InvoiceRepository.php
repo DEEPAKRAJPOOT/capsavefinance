@@ -890,7 +890,27 @@ use CommonRepositoryTraits;
 
        return BizInvoice::getUserBizAnchor($attributes);  
     }  
+    public function getTenor($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
 
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return AppProgramOffer::getTenor($attributes);  
+    }  
+
+    
     public function getAllBankInvoice($from_date, $to_date)
     {
         $this->result = DisbursalBatch::getAllBatches($from_date, $to_date);
