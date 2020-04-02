@@ -27,6 +27,8 @@ trait CamTrait
         try{
             $preCondArr = [];
             $postCondArr = [];
+            $positiveRiskCmntArr = [];
+            $negativeRiskCmntArr = [];
             $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
             $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
@@ -153,6 +155,17 @@ trait CamTrait
                       $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
                     }
                 } 
+
+                if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+                  $dataRiskComments = CamReviewSummRiskCmnt::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                                  ->where('is_active', 1)->get();
+                  $dataRiskComments = $dataRiskComments ? $dataRiskComments->toArray() : [];
+                  if(!empty($dataRiskComments)) {
+                    $positiveRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentPositive"));
+                    $negativeRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentNegative"));
+                  }
+                } 
+
                 $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
                 foreach($supplyOfferData as $key=>$val){
                   $supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($val->anchor_id)->pluck('f_name')->first();
@@ -182,7 +195,9 @@ trait CamTrait
                     'postCondArr' => $postCondArr,
                     'facilityTypeList'=>$facilityTypeList,
                     'arrGroupCompany' => $arrGroupCompany,
-                    'supplyOfferData' => $supplyOfferData
+                    'supplyOfferData' => $supplyOfferData,
+                    'positiveRiskCmntArr' => $positiveRiskCmntArr,
+                    'negativeRiskCmntArr' => $negativeRiskCmntArr
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

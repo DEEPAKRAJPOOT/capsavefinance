@@ -316,6 +316,21 @@
                         </div>
                      </div>
                      <h5 class="mt-3"><small>Deal Negatives</small></h5>
+                     @if(isset($negativeRiskCmntArr) && count($negativeRiskCmntArr)>0)
+                        @foreach($negativeRiskCmntArr as $postkey =>$postval)
+                        <div class="input-group control-group row">
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="negative_cond[]" value="" class="form-control form-control-sm">{{$postval['cond']}}</textarea>
+                           </div>
+                           <div class="input-group-btn col-md-6"> 
+                              <textarea name="negative_timeline[]" value="" class="form-control form-control-sm">{{$postval['timeline']}}</textarea>
+                           </div>
+                           <div class="input-group-btn "> 
+                           <i class="fa fa-times-circle remove-ptpq-block  remove-negative"></i>
+                           </div>
+                        </div>
+                        @endforeach
+                     @endif
                      <div class="after-add-more-negative">
                         <div class="input-group control-group row">
                            <div class="input-group-btn col-md-6"> 
