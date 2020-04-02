@@ -3563,7 +3563,7 @@ if ($err) {
         $res['anchor_id']  = $request['anchor_id'];
         $getTenor =   $this->invRepo->getTenor($res);
         $getOfferProgramLimit =   $this->invRepo->getAmountOfferLimit($res);
-        return response()->json(['status' => 1,'tenor' => $getTenor->tenor,'tenor_old_invoice' =>$getTenor->tenor_old_invoice,'limit' => $getOfferProgramLimit]);
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $getOfferProgramLimit]);
      }
           
 
