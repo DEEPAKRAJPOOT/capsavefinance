@@ -529,38 +529,18 @@
     <tr>
         <td align="left">
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
-                <tr>
-                    <td width="50%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        <strong> {{isset($reviewerSummaryData->cond_pos_track_rec) ? $reviewerSummaryData->cond_pos_track_rec : ''}}</strong>
-                    </td>
-                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        <strong> {{isset($reviewerSummaryData->cond_pos_credit_rating) ? $reviewerSummaryData->cond_pos_credit_rating : ''}}</strong>
-                    </td>
-                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        <strong>{{isset($reviewerSummaryData->cond_pos_fin_matric) ? $reviewerSummaryData->cond_pos_fin_matric : ''}}</strong>
-                    </td>
-                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        <strong>{{isset($reviewerSummaryData->cond_pos_establish_client) ? $reviewerSummaryData->cond_pos_establish_client : ''}} </strong>
-                    </td>
-                    <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}
-                    </td>
-                </tr>
+                @if(isset($positiveRiskCmntArr) && count($positiveRiskCmntArr)>0)
+                    @foreach($positiveRiskCmntArr as $postkey =>$postval)
+                    <tr>
+                        <td width="50%" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                            <strong>{{$postval['cond']}}</strong>
+                        </td>
+                        <td style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
+                            {{$postval['timeline']}}
+                        </td>
+                    </tr>
+                    @endforeach
+                @endif               
             </table>
         </td>
     </tr>
@@ -571,30 +551,18 @@
     <tr>
         <td>
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
-                <tr>
-                    <td width="50%" align="left" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        <strong>{{isset($reviewerSummaryData->cond_neg_competition) ? $reviewerSummaryData->cond_neg_competition : ''}}</strong>
-                    </td>
-                    <td align="left" style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td align="left" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        <strong> {{isset($reviewerSummaryData->cond_neg_forex_risk) ? $reviewerSummaryData->cond_neg_forex_risk : ''}} </strong>
-                    </td>
-                    <td align="left" style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}
-                    </td>
-                </tr>
-                <tr>
-                    <td align="left" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        <strong> {{isset($reviewerSummaryData->cond_neg_pbdit) ? $reviewerSummaryData->cond_neg_pbdit : ''}}</strong>
-                    </td>
-                    <td align="left" style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
-                        {{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}
-                    </td>
-                </tr>
+                @if(isset($negativeRiskCmntArr) && count($negativeRiskCmntArr)>0)
+                    @foreach($negativeRiskCmntArr as $postkey =>$postval)
+                    <tr>
+                        <td width="50%" align="left" style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
+                            <strong>{{$postval['cond']}}</strong>
+                        </td>
+                        <td align="left" style="padding:8px 10px;font-size: 13px;border-bottom: #ccc solid 1px;">
+                            {{$postval['timeline']}}
+                        </td>
+                    </tr>
+                    @endforeach
+                @endif                
             </table>
         </td>
     </tr>
