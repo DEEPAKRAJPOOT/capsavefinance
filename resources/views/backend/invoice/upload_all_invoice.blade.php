@@ -643,8 +643,8 @@ var messages = {
                         $("#prgm_offer_id").val(offer_id);
                      ///   $("#tenor_old_invoice").val(tenor_old_invoice);
                      ///   $("#tenor").val(tenor);
-                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
-                        $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
+                     ///   $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
+                     ////   $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                         $("#supplier_id").empty();
                         $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
                         $(obj1).each(function(i,v){
@@ -669,12 +669,11 @@ var messages = {
       var program_id =  $("#program_id").val(); 
       var anchor_id =  $("#anchor_id").val(); 
       var supplier_id  = $(this).val();
-       $("#invoice_date, #invoice_due_date").val(''); 
+       $("#invoice_date, #invoice_due_date, #invoice_approve_amount").val(''); 
       if(supplier_id=='')
       {
           return false; 
       }
-    
      var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.get_tenor,
@@ -690,6 +689,9 @@ var messages = {
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
+                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_limit_hide").val(data.limit);  
+                      
                 }
         }); }); 
     
