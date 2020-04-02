@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\Business;
 use Illuminate\Http\File;
+use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 
 class Helper extends PaypalHelper
 {
@@ -1237,5 +1238,11 @@ class Helper extends PaypalHelper
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');    
         $assignData = $lmsRepo->getReqCurrentAssignee($reqId);
         return $assignData;
-    }    
+    }
+
+    public static function getEntityNameByUserId($userId)
+    {
+       $entityName = ApprovalRequest::getEntityNameByUserId($userId);
+       return $entityName;
+    }      
 }

@@ -4690,6 +4690,18 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             }
         )
+        ->addColumn(
+            'customer_id',
+            function ($data) {
+                return $data->customer_id;  //$data->req_type_name;
+            }
+        )
+        ->addColumn(
+            'biz_entity_name',
+            function ($data) {
+                return \Helpers::getEntityNameByUserId($data->user_id);  //$data->req_type_name;
+            }
+        )            
         ->editColumn(
             'type',
             function ($data) {
