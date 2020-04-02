@@ -613,7 +613,7 @@ trait LmsTrait
                 $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
             }
 
-            if ($repay->disbursal_id && $repayment->disburse && $repayment->disburse->invoice) {
+            if ($repayment->disbursal_id && $repayment->disburse && $repayment->disburse->invoice) {
                 $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
             } else {
                 $transaction['INV_NO'] = '';
