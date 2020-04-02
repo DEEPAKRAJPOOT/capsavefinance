@@ -185,6 +185,7 @@ class ApportionmentHelper{
     private function setRepayAfterCharges($userId){
         $this->repayAfterCharges = Transactions::where('user_id','=',$userId)
         ->where('entry_type','=',0)
+        ->whereNull('repay_trans_id')
         ->where('created_at', '>', DB::raw(DATE("'".$this->transDetails->trans_date."'")))
         ->whereHas('trans_detail', function($query){ 
             $query->where('chrg_master_id','!=','0');
