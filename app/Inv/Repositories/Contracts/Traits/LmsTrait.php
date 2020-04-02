@@ -71,7 +71,7 @@ trait LmsTrait
             $interestRate = $disburse->interest_rate ?? $prgmOffer->interest_rate;
             $overdueIntRate = $disburse->overdue_interest_rate ?? $prgmOffer->overdue_interest_rate;
             
-            $invoiceDueDate  = $disburse->inv_due_date;
+            $invoiceDueDate  = $disburse->payment_due_date;
             $intAccrualStartDt = $disburse->int_accrual_start_dt;
             $gracePeriodDate = $this->addDays($invoiceDueDate, $gracePeriod);
             $overDueInterestDate = $this->addDays($invoiceDueDate, 1);
@@ -317,7 +317,7 @@ trait LmsTrait
             $disbursalData =  Disbursal::where(['user_id'=>$transDetail['user_id']])
                 //->whereIn('status_id',[config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED'),config('lms.STATUS_ID.DISBURSED')])
                 ->where('int_accrual_start_dt', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
-                ->orderBy('inv_due_date','asc')
+                ->orderBy('payment_due_date','asc')
                 ->orderBy('disbursal_id','asc')
                 ->get();
 
@@ -493,25 +493,25 @@ trait LmsTrait
                         $settlementLevel = 1;
                     }
 
-                    if($marginDueAmt>0 && $trans['balance_amount']>0)
-                    {
+                    // if($marginDueAmt>0 && $trans['balance_amount']>0)
+                    // {
 
-                        $marginPaidAmt = ($trans['balance_amount']>=$marginDueAmt)?$marginDueAmt:$trans['balance_amount'];
+                    //     $marginPaidAmt = ($trans['balance_amount']>=$marginDueAmt)?$marginDueAmt:$trans['balance_amount'];
 
-                        $trans['balance_amount'] -= $marginPaidAmt;
-                        $disbursal['total_repaid_amt'] += $marginPaidAmt;
+                    //     $trans['balance_amount'] -= $marginPaidAmt;
+                    //     $disbursal['total_repaid_amt'] += $marginPaidAmt;
                         
-                        $marginData = $this->createTransactionData($transDetail['user_id'], [
-                            'amount' =>  $marginPaidAmt,
-                            'trans_date'=>$transDetail['trans_date'],
-                            'disbursal_id'=>$disbursalDetail->disbursal_id,
-                            'parent_trans_id'=>$transId
-                        ], null, config('lms.TRANS_TYPE.MARGIN'), 1);
+                    //     $marginData = $this->createTransactionData($transDetail['user_id'], [
+                    //         'amount' =>  $marginPaidAmt,
+                    //         'trans_date'=>$transDetail['trans_date'],
+                    //         'disbursal_id'=>$disbursalDetail->disbursal_id,
+                    //         'parent_trans_id'=>$transId
+                    //     ], null, config('lms.TRANS_TYPE.acc'), 1);
 
-                        $transactionData['margin'][$disbursalDetail->disbursal_id] = $marginData;
+                    //     $transactionData['margin'][$disbursalDetail->disbursal_id] = $marginData;
                         
-                        $settlementLevel = 3;
-                    }                
+                    //     $settlementLevel = 3;
+                    // }                
 
                 /* Step 3 : ODI charges Settlement */
 
@@ -519,21 +519,28 @@ trait LmsTrait
                         $interestOverdue = (float)$penalAmount-(float)$overdueSettled;
                     }
 
-                    if($interestOverdue>0 && ($marginPaidAmt>0 || $trans['balance_amount']>0))
+                    if($interestOverdue>0 && $trans['balance_amount']>0)
                     {
-                        if($marginPaidAmt >= $interestOverdue){
+                        // if($marginPaidAmt >= $interestOverdue){
+                        //     $overduePaidAmt = $interestOverdue;
+                        // }
+                        // elseif($marginPaidAmt+$trans['balance_amount'] >= $interestOverdue ){ 
+                        //     $overduePaidAmt = $marginPaidAmt+$trans['balance_amount']-$interestOverdue;
+                        //     $trans['balance_amount'] -= $marginPaidAmt-$interestOverdue;
+                        // }else{
+                        //     $overduePaidAmt = $marginPaidAmt+$trans['balance_amount'];
+                        //     $trans['balance_amount'] = 0;
+                        //     $marginPaidAmt = 0;
+                        // }
+                        // $marginPaidAmt -= $overduePaidAmt;
+                        
+                        if($trans['balance_amount'] >= $interestOverdue){
                             $overduePaidAmt = $interestOverdue;
-                        }
-                        elseif($marginPaidAmt+$trans['balance_amount'] >= $interestOverdue ){ 
-                            $overduePaidAmt = $marginPaidAmt+$trans['balance_amount']-$interestOverdue;
-                            $trans['balance_amount'] -= $marginPaidAmt-$interestOverdue;
                         }else{
-                            $overduePaidAmt = $marginPaidAmt+$trans['balance_amount'];
-                            $trans['balance_amount'] = 0;
-                            $marginPaidAmt = 0;
+                            $overduePaidAmt = $trans['balance_amount'];
                         }
 
-                        $marginPaidAmt -= $overduePaidAmt;
+                        $trans['balance_amount'] -= $overduePaidAmt;
                         $disbursal['total_repaid_amt'] += $overduePaidAmt;
 
                         $overdueData = $this->createTransactionData($transDetail['user_id'], [
@@ -579,28 +586,28 @@ trait LmsTrait
                 if($trans['balance_amount']<=0) break;
             }
 
-            $getChargesDetails = Transactions::where('user_id','=',$transDetail['user_id'])
-                        ->where('entry_type','=',0)
-                        ->where('created_at', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
-                        ->whereHas('trans_detail', function($query){ 
-                            $query->where('chrg_master_id','!=','0');
-                        })
-                        ->orderBy('trans_date','asc')->get();
+            // $getChargesDetails = Transactions::where('user_id','=',$transDetail['user_id'])
+            //             ->where('entry_type','=',0)
+            //             ->where('created_at', '<=', DB::raw(DATE("'".$trans['trans_date']."'")))
+            //             ->whereHas('trans_detail', function($query){ 
+            //                 $query->where('chrg_master_id','!=','0');
+            //             })
+            //             ->orderBy('trans_date','asc')->get();
             
-            foreach ($getChargesDetails as $key => $chargeDetail) {
-                if($trans['balance_amount']>0){
-                    $chargePaidAmt = ($chargeDetail->amount<=$trans['balance_amount'])?$chargeDetail->amount:$trans['balance_amount'];
-                    $trans['balance_amount'] -= $chargePaidAmt; 
-                    $chargesSettledData = $this->createTransactionData($transDetail['user_id'], [
-                        'amount' => $chargePaidAmt,
-                        'trans_date'=>$transDetail['trans_date'],
-                        'parent_trans_id'=>$transId
-                    ], null, $chargeDetail->trans_type, 0);
-                    $transactionData['charges'][] = $chargesSettledData;
-                }
+            // foreach ($getChargesDetails as $key => $chargeDetail) {
+            //     if($trans['balance_amount']>0){
+            //         $chargePaidAmt = ($chargeDetail->amount<=$trans['balance_amount'])?$chargeDetail->amount:$trans['balance_amount'];
+            //         $trans['balance_amount'] -= $chargePaidAmt; 
+            //         $chargesSettledData = $this->createTransactionData($transDetail['user_id'], [
+            //             'amount' => $chargePaidAmt,
+            //             'trans_date'=>$transDetail['trans_date'],
+            //             'parent_trans_id'=>$transId
+            //         ], null, $chargeDetail->trans_type, 0);
+            //         $transactionData['charges'][] = $chargesSettledData;
+            //     }
                 
-                if($trans['balance_amount']<=0) break;
-            }
+            //     if($trans['balance_amount']<=0) break;
+            // }
 
             if($trans['balance_amount']>0)
             { 
@@ -657,15 +664,15 @@ trait LmsTrait
                 $this->lmsRepo->saveTransaction($nonFactoredAmtValue);
             }
 
-            if(!empty($transactionData['margin']))
-            foreach($transactionData['margin'] as $marginReleasedValue){
-                $this->lmsRepo->saveTransaction($marginReleasedValue);
-            }
+            // if(!empty($transactionData['margin']))
+            // foreach($transactionData['margin'] as $marginReleasedValue){
+            //     $this->lmsRepo->saveTransaction($marginReleasedValue);
+            // }
 
-            if(!empty($transactionData['charges']))
-            foreach($transactionData['charges'] as $chargesValue){
-                $this->lmsRepo->saveTransaction($chargesValue);
-            }
+            // if(!empty($transactionData['charges']))
+            // foreach($transactionData['charges'] as $chargesValue){
+            //     $this->lmsRepo->saveTransaction($chargesValue);
+            // }
 
             // if(!empty($transactionData['reversePayment']))
             // foreach ($transactionData['reversePayment'] as $interestRevPaymentValue){
