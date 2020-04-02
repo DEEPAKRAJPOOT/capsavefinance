@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="modal-body text-left">
-<div class="row">                
+<!--<div class="row">                
    <div class="col-md-12">   
          @if (Session::has('error') && Session::get('error'))  
          <div class="alert alert-danger">
@@ -32,7 +32,7 @@
          </div>
          @endif
    </div>
-</div>
+</div>-->
    <form id="createLeadForm" name="createLeadForm" method="POST" action="{{route('save_backend_lead')}}">
    @csrf
       <div class="row">
@@ -59,6 +59,9 @@
                <span class="mandatory">*</span>
                </label>
                <input type="email" name="email" id="email" value="{{ old('email') }}" class="form-control email" tabindex="3" placeholder="Email" >
+               @if (Session::has('error') && Session::get('error'))
+                    <label class='error'>{{Session::get('error')}}</label><br>
+               @endif
             </div>
          </div>
          <div class="col-6">
