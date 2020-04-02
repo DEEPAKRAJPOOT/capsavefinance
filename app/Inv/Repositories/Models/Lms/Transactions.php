@@ -178,7 +178,7 @@ class Transactions extends BaseModel {
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
                     ->whereNotNull('repay_trans_id')
-                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST_REFUND')])
                     ->where('entry_type','=','0')
                     ->sum('amount');
                     
@@ -193,7 +193,7 @@ class Transactions extends BaseModel {
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
                     ->whereNotNull('repay_trans_id')
-                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST_REFUND')])
                     ->where('entry_type','=','1')
                     ->sum('amount');
         
