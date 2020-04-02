@@ -43,6 +43,7 @@
                                                 <input type="hidden" name="customer_id" id="customer_id">
                                                 <input type="hidden" name="biz_id" id="biz_id">
                                                 <input type="text" name="search_bus"   id="search_bus" class="form-control searchBusiness">
+                                                <span id="business_name_error" style="color: red"></span>
                                                 <ul class="business_list">
                                                 </ul>
                                            </div>
@@ -71,6 +72,15 @@
                                                     @foreach($tranType as $key => $value)
                                                     <option value="{{$value->id}}"> {{$value->credit_desc}} </option>
                                                     @endforeach
+                                                </select>
+                                                <span id="trans_type_error" class="error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4" id="waiveoff_div" style="display: none">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">Waive Off On <span class="error_message_label">*</span></label>
+                                                <select class="form-control trans_type" name="waiveoff_charges" id="waiveoff_charges">
+                                                    <option value="">Select Charges</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -223,6 +233,7 @@ cursor: pointer;
         search_business: "{{URL::route('search_business')}}",
         get_repayment_amount_url: "{{ route('get_repayment_amount') }}",
         token: "{{ csrf_token() }}",
+        get_remaining_charges_url : "{{route('get_remaining_charges')}}",
     };
 
       $(document).ready(function() {
@@ -252,33 +263,44 @@ cursor: pointer;
        var gstRadio= $("#incl_gst").val();
         
         $("#trans_type").on('change',function(){
-        // ($(this).find(':selected').data('ip') == '1')? $('#paytodiv').show():$('#paytodiv').hide();
-        // if($(this).find(':selected').data('it') == '1'){ $('#taxdiv').show();  }else { $('#taxdiv').hide(); }
-        $('#cgst, #sgst, #gst').val('');
-        var tranTp=$("#trans_type").val();
-        if(tranTp==5 || tranTp==9 || tranTp==11){
-            $("#checkTranType").show();
-            $("#checkTDSPer").hide();
-        }else if(tranTp==7){
-            $("#checkTDSPer").show();
-            $("#checkTranType").hide();
-        }else{
-            $("#checkTranType").hide();
-            $("#checkTDSPer").hide();
-        }
-
-        var tranTypeVal=$("#trans_type").val();
-        if(tranTypeVal==4 || tranTypeVal==5){
-            $("#trans_amt").attr('readonly', true);
-            $(".processFeeElmnt").show();
-            $(".noGstShow").hide();
-            $(".showGSTVal").hide();
-          $(".showIGSTVal").hide();
-        }else{
-            $("#trans_amt").val("");
-            $("#trans_amt").attr('readonly', false); 
-        }
-    });
+            // ($(this).find(':selected').data('ip') == '1')? $('#paytodiv').show():$('#paytodiv').hide();
+            // if($(this).find(':selected').data('it') == '1'){ $('#taxdiv').show();  }else { $('#taxdiv').hide(); }
+            $('#cgst, #sgst, #gst').val('');
+            let user_id = $('#customer_id').val();
+            if (!user_id) {
+               $('#business_name_error').text('Please Search business name'); 
+               $('#search_bus').focus();
+                return false;
+            }
+            var tranTp=$("#trans_type").val();
+            if(tranTp==5 || tranTp==9 || tranTp==11){
+                $("#checkTranType").show();
+                $("#checkTDSPer").hide();
+            }else if(tranTp==7){
+                $("#checkTDSPer").show();
+                $("#checkTranType").hide();
+            }else{
+                $("#checkTranType").hide();
+                $("#checkTDSPer").hide();
+            }
+            if(tranTp==4 || tranTp==5){
+                $("#trans_amt").attr('readonly', true);
+                $(".processFeeElmnt").show();
+                $(".noGstShow").hide();
+                $(".showGSTVal").hide();
+                $(".showIGSTVal").hide();
+            }else{
+                $("#trans_amt").val("");
+                $("#trans_amt").attr('readonly', false); 
+            }
+            $('#waiveoff_div').hide();
+            $('#waiveoff_charges').html('<option value="">Select Charges</option>');
+            if (tranTp == 40) {
+                get_remaining_charges();
+            }else{
+                get_repayment_amount();
+            }
+        });
 
     $("input[name='incl_gst']").on('change', function () {
     if( $("input[name='incl_gst']:checked").val() == '1'){
@@ -318,63 +340,63 @@ var getGstTxt=$("#gst option:selected").text();
 getGstTxt=getGstTxt.split("-");
 getGstTxt=getGstTxt[0].toLowerCase();
 
-if ($("#amount").valid()) {
-    let cgst = $("#gst option:selected").data('cgst');
-    let sgst = $("#gst option:selected").data('sgst');
-    let igst = $("#gst option:selected").data('igst');
-    let trans_amt = $('#amount').val();
-    trans_amt=trans_amt.replace(/,/g, '');
-    var gstval=$("#gst").val();
-    if( $("input[name='incl_gst']:checked").val() == '1'){
-        if(getGstTxt=='gst'){ 
-        var cgstval=((cgst * trans_amt / 100).toFixed(2));
-        var sgstVal=((sgst * trans_amt / 100).toFixed(2));
-        cgstval =(cgstval && !isNaN(cgstval))?cgstval:'';
-        sgstVal =(sgstVal && !isNaN(sgstVal))?sgstVal:'';
-        $('#cgst_amt').val(cgstval);
-        $('#sgst_amt').val(sgstVal);
-        $('#igst_amt').val('');
-    }else if(getGstTxt=='igst'){ 
-        var igstval=((igst * trans_amt / 100).toFixed(2));                
-        igstval =(igstval && !isNaN(igstval))?igstval:'';              
-        $('#igst_amt').val(igstval);
-        $('#cgst_amt').val('');
-        $('#sgst_amt').val('');
+    if ($("#amount").valid()) {
+        let cgst = $("#gst option:selected").data('cgst');
+        let sgst = $("#gst option:selected").data('sgst');
+        let igst = $("#gst option:selected").data('igst');
+        let trans_amt = $('#amount').val();
+        trans_amt=trans_amt.replace(/,/g, '');
+        var gstval=$("#gst").val();
+        if( $("input[name='incl_gst']:checked").val() == '1'){
+            if(getGstTxt=='gst'){ 
+            var cgstval=((cgst * trans_amt / 100).toFixed(2));
+            var sgstVal=((sgst * trans_amt / 100).toFixed(2));
+            cgstval =(cgstval && !isNaN(cgstval))?cgstval:'';
+            sgstVal =(sgstVal && !isNaN(sgstVal))?sgstVal:'';
+            $('#cgst_amt').val(cgstval);
+            $('#sgst_amt').val(sgstVal);
+            $('#igst_amt').val('');
+        }else if(getGstTxt=='igst'){ 
+            var igstval=((igst * trans_amt / 100).toFixed(2));                
+            igstval =(igstval && !isNaN(igstval))?igstval:'';              
+            $('#igst_amt').val(igstval);
+            $('#cgst_amt').val('');
+            $('#sgst_amt').val('');
+        }
+            $("#notAddGST").show();
+        }else
+        {  
+            $("#notAddGST").hide();
+            $(".showGSTVal").hide();
+            $(".showIGSTVal").hide();                
+            $('#gst').val('');
+            $('#cgst').val('');
+            $('#sgst').val('');
+            $('#igst').val(''); 
+        }
+        
     }
-        $("#notAddGST").show();
-    }else
-    {  
-        $("#notAddGST").hide();
-        $(".showGSTVal").hide();
-        $(".showIGSTVal").hide();                
-        $('#gst').val('');
-        $('#cgst').val('');
-        $('#sgst').val('');
-        $('#igst').val(''); 
-    }
-    
-}
 });
 
-    $(".getCustomer").change(function(){
-               $.ajax({
-                     type: 'GET',
-                     async: false,
-                     url: messages.get_val,
-                    data: {tableName:'lms_users',whereId:'user_id',fieldVal:$('#customer_id').val(),column:'virtual_acc_id', token: messages.token},
-                     success: function(resultData) {
-                     if(resultData!=""){
-                    $("#virtual_acc").val(resultData);
-                   $("#virtual_acc-error").css("display","none");
-                     }else{
-                        $("#virtual_acc").val("");
-                        $("#virtual_acc-error").css("display","block");
-                     }
-                     }      
-               });
-            });        
+        $(".getCustomer").change(function(){
+           $.ajax({
+                 type: 'GET',
+                 async: false,
+                 url: messages.get_val,
+                data: {tableName:'lms_users',whereId:'user_id',fieldVal:$('#customer_id').val(),column:'virtual_acc_id', token: messages.token},
+                 success: function(resultData) {
+                 if(resultData!=""){
+                $("#virtual_acc").val(resultData);
+               $("#virtual_acc-error").css("display","none");
+                 }else{
+                    $("#virtual_acc").val("");
+                    $("#virtual_acc-error").css("display","block");
+                 }
+                 }      
+           });
+        });        
 });
-$(document).ready(function () {  
+        $(document).ready(function () {  
             $('#savePayFrm').validate( {
                   rules: {
                     search_bus: {
@@ -412,31 +434,15 @@ $(document).ready(function () {
                   }
                });
         });
-        
-    $("#trans_type").change(function(){
-               $.ajax({
-                    type: 'POST',                    
-                    url: messages.get_repayment_amount_url,
-                    data: {user_id: $("#customer_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
-                    beforeSend: function( xhr ) {
-                        $('.isloader').show();
-                    },
-                    success: function(resultData) {                        
-                        if (resultData.repayment_amount != ""){
-                            $("#amount").val(resultData.repayment_amount);                           
-                        } else {
-                            $("#amount").val("");
-                        }
-                        $('.isloader').hide();
-                    }
-               });
-            });    
+
+
    $(document).on('keyup','.searchBusiness',function(){
        $(".business_list").empty();
        var search  =  $(this).val();
       if(search.length > 1)
       {
        var postData =  ({'search':search,'_token':messages.token});
+       $('#business_name_error').text('');
        jQuery.ajax({
         url: messages.search_business,
                 method: 'post',
@@ -449,17 +455,15 @@ $(document).ready(function () {
                 success: function (data) {
                      if(data.status > 0) { 
                        $(data.result).each(function(i,v){
-                            if(v.lms_user!=null)
-                            {
+                        if(v.lms_user!=null) {
 
                                   $(".business_list").append("<li class='business_list_li' data-user_id="+v.user_id+" data-biz_id="+v.biz_id+" data-virtual_acc="+v.lms_user.virtual_acc_id+">"+v.biz_entity_name+" / "+ v.lms_user.customer_id+"</li>");
                             } 
                            })
                         }
-                        else
-                        {
+                        else {
                             $(".business_list").append("<li class='business_list_li'>No data found</li>"); 
-                     }
+                        }
                  }
        })  
       }
@@ -480,6 +484,65 @@ $(document).ready(function () {
        $("#virtual_acc").val(virtual_acc);
        $("#biz_id").val(biz_id);
        $(".business_list").empty();
+       get_remaining_charges();
     })
+    $(document).on('change', '#waiveoff_charges', function(e) {
+      chargeVal = $(this).val();
+      var element = $(this).find('option:selected'); 
+      var amount = element.attr("amount"); 
+      var index = element.attr("index"); 
+      if (chargeResult[index] == undefined || (chargeResult[index]['trans_id'] != chargeVal && chargeResult[index]['amount'] != amount)) {
+          $('#trans_type_error').html('Something wrong happened.');
+          get_remaining_charges()
+     }else{
+         $('#amount').val(amount); 
+     }
+    })
+
+    function get_repayment_amount() {
+        $.ajax({
+            type: 'POST',                    
+            url: messages.get_repayment_amount_url,
+            data: {user_id: $("#customer_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+            beforeSend: function( xhr ) {
+                $('.isloader').show();
+            },
+            success: function(resultData) {                        
+                if (resultData.repayment_amount != ""){
+                    $("#amount").val(resultData.repayment_amount);                           
+                } else {
+                    $("#amount").val("");
+                }
+                $('.isloader').hide();
+            }
+       });
+   }
+
+   function get_remaining_charges() {
+        $('#trans_type_error').html('');
+        if ($("#trans_type").val() != '40') {
+            return false;
+        }
+        $.ajax({
+             type: 'GET',
+             async: false,
+             url: messages.get_remaining_charges_url,
+             data: {"user_id":$("#customer_id").val(), token: messages.token},
+             success: function(data) {
+                if (data.status == 'success') {
+                    chargeResult = data.result;
+                    $(chargeResult).each(function(i,v){
+                        $('#waiveoff_div').show();
+                        $('#waiveoff_charges').append('<option index="'+ i +'" amount="'+ v.remaining +'" value="'+ v.trans_id +'">' + v.trans_name + '</option>');
+                    })
+                }else{
+                    $('#waiveoff_div').hide();
+                     $('#trans_type_error').html('No Charges are applied for the business');
+                    $('#waiveoff_charges').html('<option value="">Select Charges</option>');
+                    $('#amount').val(''); 
+                }
+             }      
+        });
+   }
 </script>
 @endsection

@@ -4252,4 +4252,16 @@ if ($err) {
 
         return response()->json($res);
     }
+
+    public function getRemainingCharges(Request $request){
+        $user_id = $request->get('user_id');
+        $res = Transactions::getAllChargesApplied(['user_id' => $user_id]);
+        $data['result'] = $res;
+        if (!empty($res)) {
+            $data['status'] = 'success';
+        }else{
+            $data['status'] = 'empty';
+        }
+        return response()->json($data);
+    }
 }

@@ -368,7 +368,20 @@ class Transactions extends BaseModel {
         return $repaymentAmount;
     }
 
- public function biz(){
+    public function biz(){
         return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
+    }
+
+    public static function getAllChargesApplied(array $where = array()) {
+        $cond = '';
+        if (!empty($where)) {
+            foreach ($where as $key => $value) {
+                $wh[] = "t1.$key = '$value'";
+            }
+           $cond = ' AND ' .implode(' AND ', $wh);
+        }
+        $query = "SELECT t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining FROM `get_all_charges` t1 LEFT JOIN get_all_charges as t2 ON t1.trans_id = t2.parent_trans_id WHERE t1.entry_type = 0 AND t1.amount != 0 ". $cond ." GROUP BY t1.trans_id";
+        $result = \DB::SELECT(\DB::raw($query));
+        return $result;
     }
 }

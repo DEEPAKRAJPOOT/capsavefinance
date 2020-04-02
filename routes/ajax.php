@@ -963,6 +963,11 @@ Route::group(
     Route::post('get-repayment-amount', [
         'as' => 'get_repayment_amount',
         'uses' => 'AjaxController@getRepaymentAmount'
+    ]); 
+
+    Route::get('get_remaining_charges', [
+        'as' => 'get_remaining_charges',
+        'uses' => 'AjaxController@getRemainingCharges'
     ]);  
 
     Route::post('check-unique-charge', [
