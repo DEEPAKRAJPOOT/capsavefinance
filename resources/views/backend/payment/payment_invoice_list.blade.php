@@ -39,7 +39,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if($repayment->disburse && $repayment->disburse->invoice  {{--  && $repayment->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF' --}} ))
+                                            @if($repayment->disbursal_id && $repayment->disburse->invoice  {{--  && $repayment->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF' --}} ))
                                                 {{$repayment->disburse->invoice->invoice_no}}
                                             @endif
                                         </td>
