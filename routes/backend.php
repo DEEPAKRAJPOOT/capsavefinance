@@ -762,6 +762,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_documents_list',
                 'uses' => 'Master\DocumentController@index'
             ]);
+
+            Route::get('/vouchers', [
+                'as' => 'get_vouchers_list',
+                'uses' => 'Master\VoucherController@index'
+            ]);
             Route::get('/add_documents', [
                 'as' => 'add_documents',
                 'uses' => 'Master\DocumentController@addDocument'

@@ -365,6 +365,9 @@
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_vouchers_list') }}">Manage Voucher</a>
+                 </li>
                  
           <!-- 
                  <li class="nav-item">
