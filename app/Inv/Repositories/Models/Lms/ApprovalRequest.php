@@ -100,7 +100,7 @@ class ApprovalRequest extends BaseModel {
         $userArr = \Helpers::getChildUsersWithParent($curUserId);
         $query = self::from('lms_approval_request as req')
                 ->select('req.req_id','req.ref_code','req.amount','req.status as req_status','req.req_type',
-                'req.created_at'
+                'req.created_at', 'lms_users.customer_id', 'lms_users.user_id'
                 //DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
                 //DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                                 
                 //'req_assign.to_id',
@@ -136,7 +136,9 @@ class ApprovalRequest extends BaseModel {
                         $join->on('req_assign.is_owner', '=', DB::raw("1"));
                         $join->whereNotNull('req_assign.to_id');
                     }
-                });
+                })
+                ->join('transactions as t', 't.trans_id', '=', 'req.trans_id')
+                ->join('lms_users', 't.user_id', '=', 'lms_users.user_id');
                 //->join('users as assignee_u', 'req_assign.to_id', '=', 'assignee_u.user_id')
                 //->join('users as from_u', 'req_assign.from_id', '=', 'from_u.user_id')
                 //->join('role_user as assignee_ru', 'req_assign.to_id', '=', 'assignee_ru.user_id')

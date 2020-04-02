@@ -31,6 +31,8 @@
 	                                        <thead>
 	                                        	<tr role="row">
                                                     <th>Ref No</th>
+                                                    <th>Entity Name</th>
+                                                    <th>Customer ID</th>
                                                     <th>Type</th>
 													<th>Amount</th>
                                                     <th>Date</th>

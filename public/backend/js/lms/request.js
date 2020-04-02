@@ -24,6 +24,8 @@ try {
                 },
                 columns: [
                     {data: 'ref_code'},
+                    {data: 'biz_entity_name'},
+                    {data: 'customer_id'},
                     {data: 'type'},
                     {data: 'amount'},
                     {data: 'created_at'},
