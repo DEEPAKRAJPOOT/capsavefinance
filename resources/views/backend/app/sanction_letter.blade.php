@@ -1093,16 +1093,23 @@
      token: "{{ csrf_token() }}",
    
    };
-   CKEDITOR.replace('delay_pymt_chrg');
-   CKEDITOR.replace('insurance');
-   CKEDITOR.replace('bank_chrg');
-   CKEDITOR.replace('legal_cost');
-   CKEDITOR.replace('po');
-   CKEDITOR.replace('pdp');
-   CKEDITOR.replace('disburs_guide');
-   CKEDITOR.replace('other_cond');
-   CKEDITOR.replace('covenants');
-   CKEDITOR.replace('rating_rational');
+   
+    var ckeditorOptions =  {
+      filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
+      filebrowserUploadMethod: 'form',
+      disallowedContent: 'img{width,height};'
+    };
+      
+   CKEDITOR.replace('delay_pymt_chrg', ckeditorOptions);
+   CKEDITOR.replace('insurance', ckeditorOptions);
+   CKEDITOR.replace('bank_chrg', ckeditorOptions);
+   CKEDITOR.replace('legal_cost', ckeditorOptions);
+   CKEDITOR.replace('po', ckeditorOptions);
+   CKEDITOR.replace('pdp', ckeditorOptions);
+   CKEDITOR.replace('disburs_guide', ckeditorOptions);
+   CKEDITOR.replace('other_cond', ckeditorOptions);
+   CKEDITOR.replace('covenants', ckeditorOptions);
+   CKEDITOR.replace('rating_rational', ckeditorOptions);
    $(document).ready(function(){
      $('#payment_type').on('change', function(){
        $('#payment_type_comment').val('');

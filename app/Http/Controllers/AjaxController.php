@@ -3550,7 +3550,22 @@ if ($err) {
         }
         return response()->json(['status' => 1,'limit' => $getProgramLimit,'offer_id' => $getOfferProgramLimit->prgm_offer_id,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice,'get_supplier' =>$get_supplier,'uploadAcess' =>$uploadAcess]);
      }
-           
+      
+
+    public function getTenor(Request $request)
+     {
+       
+        $result  =  explode(",",$request['program_id']);
+        $supplier_id  =  explode(",",$request['supplier_id']);
+        $res['prgm_id']  = $result[0];
+        $res['app_prgm_limit_id']  = $result[1];
+        $res['app_id']  = $supplier_id[1];
+        $res['anchor_id']  = $request['anchor_id'];
+        $getTenor =   $this->invRepo->getTenor($res);
+        $getOfferProgramLimit =   $this->invRepo->getAmountOfferLimit($res);
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $getOfferProgramLimit]);
+     }
+          
 
     /**
      * change program status
