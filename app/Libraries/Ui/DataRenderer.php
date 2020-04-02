@@ -708,9 +708,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_date',
                     function ($invoice) {                        
                         $inv_date = '';
-                        $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
-                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
-                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
+                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
                 ->addColumn(            
@@ -721,22 +721,21 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
-                ->addColumn(
-                    'view_upload_invoice',
-                    function ($invoice) {
-                       if(($invoice->file_id != 0)) {
-                         return '<a href="'.Storage::URL($invoice->userFile->file_path).'" download ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
-                         } else  {
-                             return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
-                         }
-                })
+              
                  ->addColumn(
                     'action',
                     function ($invoice) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>'
+                     $action ="";
+                      if(($invoice->file_id != 0)) {
+                          $action .='<a href="'.Storage::URL($invoice->userFile->file_path).'" download ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                         } else  {
+                            /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
+                           $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
+                                     <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
+                         }                  
+                      $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>'
                      . '&nbsp;<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
-
+                    return $action;
                 })
               ->make(true);
     } 
@@ -806,8 +805,10 @@ class DataRenderer implements DataProviderInterface
                ->addColumn(
                     'action',
                     function ($invoice) {
-                     return '<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
-
+                    $action = "";
+                      $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
+                      $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option><option value="14">Reject</option></select></div>';
+                    return  $action;
                 })
               ->make(true);
     } 
@@ -1285,7 +1286,7 @@ class DataRenderer implements DataProviderInterface
                     'customer_id',
                     function ($trans) {                        
                         $customer = '';
-                        $customer .= $trans->user ? '<span><b>Name:&nbsp;</b>'.$trans->user->f_name.'&nbsp;'.$trans->user->l_name.'</span>' : '';
+                        $customer .= ($trans->biz!=null) ? '<span><b>'.$trans->biz->biz_entity_name.'</span>' : '';
                         $customer .= $trans->lmsUser ? '<br><span><b>Customer Id:&nbsp;</b>'.$trans->lmsUser->customer_id.'</span>' : '';
                          $customer .= $trans->virtual_acc_id ? '<br><span><b>Virtual Acc. No.:&nbsp;</b>'.$trans->virtual_acc_id.'</span>' : '';
                         return $customer;
@@ -4247,5 +4248,34 @@ class DataRenderer implements DataProviderInterface
         })                 
      
         ->make(true);
+    }
+
+    public function getBankInvoiceByDataProvider(Request $request, $dataRecords)
+    {
+        
+        return DataTables::of($dataRecords)
+                ->editColumn(
+                    'batch_id',
+                    function ($dataRecords) {
+                    return $dataRecords->batch_id;
+                }) 
+                ->editColumn(
+                    'total_users',
+                    function ($dataRecords) {
+                    return $dataRecords->total_users;
+                }) 
+                ->editColumn(
+                    'total_amt',
+                    function ($dataRecords) {
+                    return "₹ ".number_format($dataRecords->total_amt);
+                }) 
+                ->addColumn(
+                    'action',
+                    function ($dataRecords) {
+                        return '<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice', ['batch_id' => $dataRecords->batch_id]).'">View Customers</a>'
+                        .'<a class="btn btn-action-btn btn-sm" href ="'.route('backend_get_bank_invoice').'"><i class="fa fa-download"></a>';
+                    }
+                )
+                ->make(true);
     }
 }

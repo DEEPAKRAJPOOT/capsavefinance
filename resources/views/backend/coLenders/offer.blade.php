@@ -11,6 +11,16 @@
 tr.border_bottom td {
   border-bottom:1pt solid #a19f9f;
 }
+
+.status-span {
+    font-size: 16px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.status-span span {
+    margin-right: 30px;
+}
+.status-span span:last-child{margin-right: 4px}
 </style>
 @endsection
 
@@ -21,10 +31,10 @@ tr.border_bottom td {
                 <div class="card-body">
                     @if($colenderShare)
                     <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-12 text-right status-span">
                         <span><b>Capsave (%): </b>{{$colenderShare->capsave_percent}}</span>
                         <span><b>Co-lender (%): </b>{{$colenderShare->co_lender_percent}}</span>
-                        <span><b>Co-lender Status: </b>{{$colenderShare->co_lender_status}}</span>
+                        <span><b>Co-lender Status: </b>{{($colenderShare->co_lender_status == 0)? 'Pending':(($colenderShare->co_lender_status == 1)? 'Accepted': 'Rejected')}}</span>
                     </div>
                     </div>
                     @endif

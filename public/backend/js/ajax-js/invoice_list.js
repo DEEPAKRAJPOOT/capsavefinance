@@ -32,7 +32,6 @@ try {
                 {data: 'supplier_name'},
                 {data: 'invoice_date'},
                 {data: 'invoice_amount'},
-                {data: 'view_upload_invoice'},
                 {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]

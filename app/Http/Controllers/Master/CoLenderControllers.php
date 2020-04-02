@@ -153,11 +153,11 @@ class CoLenderControllers extends Controller {
             $data = $this->appRepo->getSharedColender([
                     'app_id'=>$arrShareColenderData['app_id'],
                     'app_prgm_limit_id' =>  $arrShareColenderData['app_prgm_limit_id'],
-                    'co_lender_id'      =>  $arrShareColenderData['co_lender_id'],
+                    //'co_lender_id'      =>  $arrShareColenderData['co_lender_id'],
                     'is_active'         =>  1
                 ]);
             if($data->count()){
-                Session::flash('message', 'This colender is already associated with this offer.');
+                Session::flash('message', 'You can\'t share this application offer to more than one co-lender.');
                 return redirect()->back()->withInput($request->input());
             }else{
                 $status = $this->appRepo->saveShareToColender($arrShareColenderData);

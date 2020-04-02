@@ -1154,6 +1154,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\InvoiceController@exceptionCases'
             ]);  
             
+            Route::get('bank-invoice', [
+                'as' => 'backend_get_bank_invoice',
+               'uses' => 'Backend\InvoiceController@viewBankInvoice'
+            ]); 
          });
          
         Route::group(['prefix' => 'document'], function () {

@@ -52,17 +52,11 @@
                                                 <span id="anchorMsg" class="error"></span>
 
                                             </div>
-                                            <div class="col-md-2">				 
+                                           <div class="col-md-2">				 
 
-                                                           <select class="form-control form-control-sm changeAnchor searchbtn"  name="search_anchor">
-                                                    <option value=""> Select Anchor </option>
-                                                    @foreach($anchor_list as $row)
-                                                    @php if(isset($row->anchor->anchor_id)) { @endphp
-                                                    <option value="{{{$row->anchor->anchor_id}}}">{{{$row->anchor->comp_name}}}  </option>
-                                                    @php } @endphp
-                                                    @endforeach
+                                                <select class="form-control form-control-sm changeAnchor searchbtn" id="changeAnchor"  name="search_anchor">
+
                                                 </select>
-
                                             </div>
                                             <div class="col-md-2">		    
 
@@ -118,164 +112,6 @@
             </div>
         </div></div>
 
-
-
-
-    <div class="modal show" id="myModal5" style="display: none;">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h5>Repayment Details | Invoice Number : INV-112</h5>
-                    <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-                </div>
-                <!-- Modal body -->
-                <div class="modal-body text-left">
-                    <div class="listing-modal repayment-form-modal mb-3">
-                        <ul>
-                            <li>
-                                <div class="listing-modal-left"> Repay count: </div>
-                                <div class="listing-modal-right"> <span id="repay_count">1</span></div>
-                                <span id="overdue_percentage_raw" hidden="">16</span>
-                                <span id="remaining_overdue_raw" hidden="">110000.1328125</span>
-                            </li>
-                            <li>
-                                <!-- <span style="display:none" id="repay_count"></span> -->
-                                <div class="listing-modal-left"> Invoice Approved Amount (₹): </div>
-                                <div class="listing-modal-right"> <span id="invoice_approved_amount">₹60,000.00</span></div>
-                            </li>
-
-                            <li>
-                                <div class="listing-modal-left"> Funded Amount (₹): </div>
-                                <div class="listing-modal-right"> <span id="funded_amount">₹56,000.00</span></div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left"> Final Funded Amount (₹): </div>
-                                <div class="listing-modal-right"> <span id="final_funded_amount_repay">₹48146.00</span></div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left"> Funded Date:  </div>
-                                <div class="listing-modal-right"> <span id="funded_date_show">13-Dec-2019</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left"> Tenor (in days): </div>
-                                <div class="listing-modal-right"> <span id="term_days">90</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left"> Payment Due Date: </div>
-                                <div class="listing-modal-right"> <span id="payment_due_date" payment_due_date_raw="2019-10-17">14-March-2020</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Interest Per Annum (%): </div>
-                                <div class="listing-modal-right"> <span id="interest_percentage">12</span><span> %</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Processing Fee (%): </div>
-                                <div class="listing-modal-right"> <span id="processing_fee_repay">1</span><span> %</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Discount Type: </div>
-                                <div class="listing-modal-right"> <span id="discount_type">front end</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Grace period (in days): </div>
-                                <div class="listing-modal-right"> <span id="penal_grace">0</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Penal Interest Per Annum (%): </div>
-                                <div class="listing-modal-right"> <span id="penal_interest">0</span><span> %</span>
-                                </div>
-                            </li>
-
-                            <li>
-                                <div class="listing-modal-left">Repayment Amount: </div>
-                                <div class="listing-modal-right"> <span id="repayment_amount">₹0</span>
-
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Total Amount Repaid: </div>
-                                <div class="listing-modal-right"> <span id="already_repaid_amount">₹0</span></div>
-
-                            </li>  
-                            <li>
-                                <div class="listing-modal-left">Penal days: </div>
-                                <div class="listing-modal-right"> <span id="penal_days">41</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Penalty Amount: </div>
-                                <div class="listing-modal-right"> <span id="penalty_amount">₹0</span>
-                                </div>
-                            </li>
-
-
-
-                            <li>
-                                <div class="listing-modal-left">Principal Amount: </div>
-                                <div class="listing-modal-right"> <span id="remaining_overdue">₹60,000</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="listing-modal-left">Total Amount to Repay: </div>
-                                <div class="listing-modal-right"> <span id="remaining_repay_amount">₹0</span></div>
-                            </li>
-
-
-
-                        </ul>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="repaid_amount" class="form-control-label">Repayment Date :</label>
-                                <input type="date" class="form-control " value="">
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="repaid_amount" class="form-control-label">Repayment Amount :</label>
-                                <input type="date" class="form-control " value="">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="repaid_amount" class="form-control-label">Payment Type :</label>
-                                <select class="form-control">
-                                    <option value=""> Select Payment Type </option>
-                                    <option value="1"> Online RTGS/NEFT </option>
-                                    <option value="2"> Cheque</option>
-                                    <option value="3"> Other </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="repaid_amount" class="form-control-label">Upload Documents :</label>
-                                <input type="file" class="form-control " value="">
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="repaid_amount" class="form-control-label">Comment : </label>
-                            <textarea class="form-control" cols="4" rows="4"></textarea>
-
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Save</button> 
-                    <button type="submit" class="btn btn-secondary btn-sm mt-3 float-right" data-dismiss="modal">Close</button> 		
-
-                </div>
-            </div>
-        </div>
-    </div>
     {!!Helpers::makeIframePopup('modalInvoiceDisbursed','Repayment Details', 'modal-lg')!!}
     @endsection
     @section('jscript')
@@ -297,6 +133,7 @@
             upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
             get_program_supplier: "{{ URL::route('get_program_supplier') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
+             get_biz_anchor: "{{ URL::route('get_biz_anchor') }}",
             front_program_list: "{{ URL::route('front_program_list') }}",
             front_supplier_list: "{{ URL::route('front_supplier_list') }}",
             update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
@@ -535,6 +372,51 @@
         });
 
 
+    //////////////////// onchange Business  id get Anchor /////////////////
+
+    $("#changeAnchor").append("<option value=''>Select Anchor</option>");
+    $(document).on('change', '.changeBiz', function () {
+        var biz_id = $(this).val();
+        $("#changeAnchor").empty();
+        var postData = ({'status_id': 12, 'biz_id': biz_id, '_token': messages.token});
+        jQuery.ajax({
+            url: messages.get_biz_anchor,
+            method: 'post',
+            dataType: 'json',
+            data: postData,
+            error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+
+            },
+            success: function (data) {
+
+                if (data.status == 1)
+                {
+                    var obj1 = data.userList;
+
+                    ///////////////////// for suppllier array///////////////  
+
+                    if (obj1.length > 0)
+                    {
+                        $("#changeAnchor").append("<option value=''> Select Anchor </option>");
+                        $(obj1).each(function (i, v) {
+
+                            $("#changeAnchor").append("<option value='" + v.anchor.anchor_id + "'>" + v.anchor.comp_name + "</option>");
+
+                        });
+                    } else
+                    {
+                        $("#changeAnchor").append("<option value=''>No data found</option>");
+
+                    }
+
+
+                }
+
+
+            }
+        });
+    });
         function uploadInvoice()
         {
             $('.isloader').show();

@@ -275,4 +275,9 @@ class Disbursal extends BaseModel {
 				->whereNotNull('surplus_amount');
 	}
 	
+	public static function getAllBankInvoice(){
+        $result = \DB::select("SELECT batch_id, COUNT(DISTINCT(user_id)) as total_users, SUM(disburse_amount) as total_amt FROM rta_disbursal
+		WHERE batch_id IS NOT null GROUP BY batch_id ORDER BY batch_id DESC");
+        return $result;    
+    }
 }

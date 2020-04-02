@@ -49,6 +49,7 @@ class Transactions extends BaseModel {
         'gl_flag',
         'soa_flag',
         'user_id',
+        'biz_id',
         'chrg_trans_id',
         'virtual_acc_id',
         'disbursal_id',
@@ -146,7 +147,7 @@ class Transactions extends BaseModel {
     /*** get all transaction  **/
     public static function getAllManualTransaction()
     {
-          return self::with(['disburse','trans_detail','user'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
+          return self::with(['biz','disburse','trans_detail','user'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
     }
     
     public function disburse()
@@ -349,5 +350,7 @@ class Transactions extends BaseModel {
         return $repaymentAmount;
     }
 
-
+ public function biz(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
+    }
 }
