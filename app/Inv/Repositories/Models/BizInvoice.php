@@ -394,4 +394,9 @@ public static function updateInvoice($invoiceId,$status)
           return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
      
      }
+    public static function getRemainAmount($res) 
+    {
+        
+        return  self::where(['anchor_id'=>$res['anchor_id'],'program_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'supplier_id' => $res['user_id'],'status_id' =>12 ])->sum('invoice_approve_amount');      
+    }
 }

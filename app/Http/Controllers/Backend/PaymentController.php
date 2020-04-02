@@ -459,7 +459,7 @@ class PaymentController extends Controller {
                 $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->trans_name;
             }
                                             
-            if ($refundData['repayment']->disburse && $refundData['repayment']->disburse->invoice) {
+            if ($refundData['repayment']->disbursal_id &&  $refundData['repayment']->disburse && $refundData['repayment']->disburse->invoice) {
                 $transaction['INV_NO'] = $refundData['repayment']->disburse->invoice->invoice_no;
             } else {
                 $transaction['INV_NO'] = '';
@@ -490,7 +490,7 @@ class PaymentController extends Controller {
                   $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
               }
 
-              if ($repay->disburse->invoice->invoice_no) {
+              if ($repay->disbursal_id && $repay->disburse && $repay->disburse->invoice->invoice_no) {
                   $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
               } else {
                   $transaction['INV_NO'] = '';

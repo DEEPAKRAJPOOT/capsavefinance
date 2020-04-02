@@ -51,7 +51,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Product Program Name
-                                                <span class="error_message_label">*</span>   <!-- <span id="pro_limit" class="error"></span> -->
+                                                <span class="error_message_label">*</span>  
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
@@ -61,8 +61,8 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label>
-                                            <select readonly="readonly" class="form-control" id="supplier_id" name="supplier_id">
+                                            <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label> <span id="pro_limit" class="error"></span> 
+                                            <select readonly="readonly" class="form-control getTenor" id="supplier_id" name="supplier_id">
                                              
                                             </select>
                                         </div>
@@ -92,7 +92,7 @@
                                             
           <div class="col-md-4">
                                         <div class="form-group">
-                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
+                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label><span id="pro_remain_limit" class="error"></span> 
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
@@ -124,7 +124,7 @@
                        <div class="col-md-8">
                            <label class="error" id="tenorMsg"></label>
                        </div>
-                       <div class="text-right mt-2">
+                       <div class="text-right mt-2" id="ApprovePro">
                               
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
@@ -150,170 +150,6 @@
       </div>
    </div>
 </div>
-
-
-
-<div class="modal" id="myModal1">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-      <h5>Edit manage list</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-      <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Full Name
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Full Name" required="">
-                              </div>
-                           </div>
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtSupplierName">Anchor
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Enter Anchor Name" required="">
-                              </div>
-                           </div>
-                        </div>
-            <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtEmail">Email
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="hidden" name="send_otp" id="send-otp" value="">
-                                 <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" disabled="">
-                              </div>
-                           </div>
-            
-                           <div class="col-md-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">Mobile
-                                    <span class="mandatory">*</span>
-                                    </label>
-                                   
-                                    <input class="form-control numbercls" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" disabled="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <input name="password" id="passwordRegistration" type="hidden" oninput="removeSpace(this);" value="nr40od5m">
-                              </div>
-                        </div>
-            <button type="submit" class="btn btn-success float-right btn-sm">Submit</button>  
-         </div>
-      </div>
-   </div>
-</div>
-
-<div class="modal" id="myModal">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-      <h5>Add Supplier</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-      <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Full Name
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="employee" id="employee" value="" class="form-control" tabindex="1" placeholder="Full Name" required="">
-                              </div>
-                           </div>
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtSupplierName">Business Name
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="text" name="name" id="name" value="" class="form-control" tabindex="3" placeholder="Business Name" required="">
-                              </div>
-                           </div>
-                        </div>
-            <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtEmail">Email
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                 <input type="hidden" name="send_otp" id="send-otp" value="">
-                                 <input type="email" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email" required="">
-                              </div>
-                           </div>
-                           <div class="col-md-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">Mobile
-                                    <span class="mandatory">*</span>
-                                    </label>
-                                   
-                                    <input class="form-control numbercls" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <input name="password" id="passwordRegistration" type="hidden" oninput="removeSpace(this);" value="nr40od5m">
-                              </div>
-                        </div>
-            <button type="submit" class="btn btn-success float-right btn-sm">Submit</button>  
-         </div>
-      </div>
-   </div>
-</div>
-<div class="modal" id="myModal2">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-      <h5>Assign Lead</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-      <div class="row">
-                           <div class="col-md-12">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Select Sales Person
-                                 <span class="mandatory">*</span>
-                                 </label>
-                 <select class="form-control" name="nate">
-                   <option>Select</option>
-                   <option>Sales Person 1</option>
-                   <option>Sales Person 2</option>
-                   <option>Sales Person 3</option>
-                 </select>
-                                 
-                              </div>
-                           </div>
-               
-               <div class="col-md-12">
-               <label>Comment</label>
-               <textarea class="form-control" placeholder="Add Comment"></textarea>
-               </div>
-
-                        </div>
-            
-            <button type="submit" class="btn btn-success float-right btn-sm mt-3">Submit</button>  
-         </div>
-      </div>
-   </div>
-</div>
-
   </div>
     @endsection
     @section('jscript')
@@ -322,6 +158,7 @@ var messages = {
     token: "{{ csrf_token() }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     front_lms_program_list: "{{ URL::route('front_lms_program_list') }}",
+    get_tenor: "{{ URL::route('get_tenor') }}",
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
     check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
    };
@@ -337,6 +174,11 @@ var messages = {
      var pro_limit = parseInt($("#pro_limit_hide").val());
      var invoice_approve_amount = $("#invoice_approve_amount").val();
      var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+      if(invoice_approve_amount==0)
+     {
+         $("#invoice_approve_amount").val('');
+         return false;
+     }
       if(invoice_approve_amount  > pro_limit)
      {
          $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
@@ -603,14 +445,15 @@ var messages = {
                     {
                         if(data.uploadAcess==0)
                         {
-                            $("#submit").css("pointer-events","none");
                             $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
-                          
+                            $("#ApprovePro").hide();
+                            
                         }
                         else
                         {
+                             $("#ApprovePro").show();
                              $("#tenorMsg").text(" ");           
-                             $("#submit").css("pointer-events","inline");
+                           
                             
                         }
                         var obj1  = data.get_supplier;
@@ -619,10 +462,10 @@ var messages = {
                         var tenor   =  data.tenor;
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#prgm_offer_id").val(offer_id);
-                        $("#tenor_old_invoice").val(tenor_old_invoice);
-                        $("#tenor").val(tenor);
-                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
-                        $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
+                      //  $("#tenor_old_invoice").val(tenor_old_invoice);
+                      //  $("#tenor").val(tenor);
+                      //  $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
+                      //  $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                         $("#supplier_id").empty();
                         $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
                         $(obj1).each(function(i,v){
@@ -641,7 +484,37 @@ var messages = {
                   
                 }
         }); }); 
-    
+ //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('change','.getTenor',function(){
+      var program_id =  $("#program_id").val(); 
+      var anchor_id =  $("#anchor_id").val(); 
+      var supplier_id  = $(this).val();
+       $("#invoice_date, #invoice_due_date, #invoice_approve_amount").val(''); 
+      if(supplier_id=='')
+      {
+          return false; 
+      }
+     var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_tenor,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                       var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
+                        $("#tenor_old_invoice").val(tenor_old_invoice);
+                        $("#tenor").val(tenor);
+                        $("#pro_limit").html('Program Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_remain_limit").html('Remaining Program Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit_hide").val(data.remain_limit);  
+                      
+                }
+        }); }); 
   $(document).on('change','#supplier_id',function(){
     var selValue = $(this).val();
     var selValueArr = selValue.split(",");
