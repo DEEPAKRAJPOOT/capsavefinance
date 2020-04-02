@@ -1436,8 +1436,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
-                          $inv_amount .= $invoice->disbursal->principal_amount ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
-                            $inv_amount .= $invoice->disbursal->disburse_amount ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';
+                        $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
+                        $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(            
@@ -1452,19 +1452,13 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                        $act="";
-                     if ($request->front) {         
-                        $act .='<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="420px" data-width="100%" accesskey="" data-url ="'.route("front_invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                     }
-                     else
-                     {
-                         $act .='<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="430px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                     
-                     }
+                     /// $act .='<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="430px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                      if(($invoice->disbursal)) { 
                       $act .='</br><a data-toggle="modal"  data-height="550px" 
                             data-width="100%" 
                             data-target="#viewInterestAccrual"
-                            data-url="' . route('view_interest_accrual', ['disbursal_id' => $invoice->disbursal->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
-
+                            data-url="' . route('view_interest_accrual', ['disbursal_id' =>$invoice->disbursal->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                      }
                             return $act;
                 })
                   ->filter(function ($query) use ($request) {
