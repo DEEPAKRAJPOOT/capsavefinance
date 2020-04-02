@@ -647,7 +647,7 @@ trait LmsTrait
                 }
 
                 if ($repay->disbursal_id && isset($repay->disburse->invoice) && $repay->disburse->invoice->invoice_no) {
-                    $transaction['INV_N$repay->O'] = $repay->disburse->invoice->invoice_no;
+                    $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
                 } else {
                     $transaction['INV_NO'] = '';
                 }      
