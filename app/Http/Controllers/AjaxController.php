@@ -3559,11 +3559,14 @@ if ($err) {
         $supplier_id  =  explode(",",$request['supplier_id']);
         $res['prgm_id']  = $result[0];
         $res['app_prgm_limit_id']  = $result[1];
+        $res['user_id']  = $supplier_id[0];
         $res['app_id']  = $supplier_id[1];
         $res['anchor_id']  = $request['anchor_id'];
         $getTenor =   $this->invRepo->getTenor($res);
+        $getRemainAmount =   $this->invRepo->getRemainAmount($res);
         $getOfferProgramLimit =   $this->invRepo->getAmountOfferLimit($res);
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $getOfferProgramLimit]);
+        $limit = $getOfferProgramLimit-$getRemainAmount;
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $getOfferProgramLimit,'remain_limit' =>$limit]);
      }
           
 
