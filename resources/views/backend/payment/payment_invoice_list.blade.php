@@ -78,8 +78,9 @@
                                         </td>
                                         <td>
                                             {{-- @if($repay->disburse && $repay->disburse->invoice && $repay->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF')) --}}
+                                            @if(isset($repay->disbursal_id))
                                                 {{$repay->disburse->invoice->invoice_no}}
-                                            {{-- @endif --}}
+                                            @endif 
                                         </td>
                                         <td>
                                             @if($repay->entry_type=='0')
