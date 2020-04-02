@@ -668,9 +668,6 @@ class LeadController extends Controller {
                      $arrUpdateAnchor ['anchor_id'] =$arrAnchorVal['assigned_anchor'];
                 }
             
-                $arrUpdateAnchor = [
-                    'anchor_id' => $getAnchorId->anchor_id
-                ];
             
                 $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
                 if($anchor_lead) {
