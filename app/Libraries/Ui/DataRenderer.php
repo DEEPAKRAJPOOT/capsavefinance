@@ -87,7 +87,7 @@ class DataRenderer implements DataProviderInterface
                       $userInfo=User::getUserByAnchorId($user->UserAnchorId);
                        $achorId= $userInfo->f_name.' '.$userInfo->l_name;
                     }else{
-                      $achorId='';  
+                      $achorId='N/A';  
                     }
                     //$achorId = $user->UserAnchorId; 
                     return $achorId;

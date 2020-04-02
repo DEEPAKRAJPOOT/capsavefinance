@@ -242,7 +242,7 @@ use RegistersUsers,
      * @return \Illuminate\Http\Response
      */
     public function register(RegistrationFormRequest $request, StorageManagerInterface $storage) {
-        /// dd($request);
+//        dd($request);
 
         try {
             $data = [];
