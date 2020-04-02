@@ -115,7 +115,25 @@
 </div>
 
 @endsection
-
+@php 
+$is_accept = session()->get('is_accept', false);
+$messages = session()->get('message', false);
+@endphp
+@section('jscript')
+@if($is_accept == config('common.YES'))
+<script>
+    try {
+    var p = window.parent;
+    p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
+    p.jQuery("#createLeadForm").modal('hide');
+    p.oTables.draw();
+} catch (e) {
+    if (typeof console !== 'undefined') {
+        console.log(e);
+    }
+}
+</script>
+@endif
 @section('jscript')
 <script>
 
@@ -130,17 +148,24 @@
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function () {
-   if(messages.is_accept == 1){
-      setTimeout(function() {
-         parent.jQuery("#createLeadForm").modal('hide'); 
-         parent.oTables.draw(); 
-      }, 1000);
-   }
+//   if(messages.is_accept == 1){
+//      setTimeout(function() {
+//         parent.jQuery("#createLeadForm").modal('hide'); 
+//         parent.oTables.draw(); 
+//      }, 1000);
+//   }
+    
+    $.validator.addMethod("alphabetsnspace", function(value, element) {
+        return this.optional(element) || /^[a-zA-Z {1}]*$/.test(value);
+    });
+    
    $('#saveLead').on('click', function (event) {
          $('input.full_name').each(function () {
             $(this).rules("add",
                      {
-                        required: true
+                        required: true,
+                        alphabetsnspace: true,
+                        messages: { alphabetsnspace: "Only letters and space allowed." }
                      })
          });
          $('input.comp_name').each(function () {

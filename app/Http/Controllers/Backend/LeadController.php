@@ -152,7 +152,7 @@ class LeadController extends Controller {
                 $userMailArr['name'] = $arrUserData['f_name'];
                 $userMailArr['password'] = $string;
                 Event::dispatch("user.registered", serialize($userMailArr));
-                Session::flash('message', 'Lead created successfully'); 
+                Session::flash('message', ' Anchor registered successfully.'); 
                 Session::flash('is_accept', 1);
                 return redirect()->back();                      
             }else{
