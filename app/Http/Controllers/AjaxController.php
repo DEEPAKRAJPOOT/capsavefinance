@@ -3504,8 +3504,17 @@ if ($err) {
         $request['prgm_offer_id']  = $result[1];
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
-        //$get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
+        if($request['user']==1)
+        {
+            $id = Auth::user()->user_id;
+            $get_supplier = $this->invRepo->getUserProgramOfferByPrgmId($request['program_id'],$id);
+       
+        }
+        else
+        {
+           $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
+         
+        }
         $getPrgm  = $this->application->getProgram($request['program_id']);
         $chkUser  = $this->application->chkUser();
         if($chkUser)
