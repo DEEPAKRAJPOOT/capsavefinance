@@ -132,12 +132,12 @@ class AppProgramOffer extends BaseModel {
     }
      public static function getTenor($res)
     {
-      return  self::where(['anchor_id'=>$res['anchor_id'],'prgm_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'app_prgm_limit_id'=>$res['app_prgm_limit_id'],'is_active'=>1,'status' =>1 ])->first();      
+      return  self::where(['anchor_id'=>$res['anchor_id'],'prgm_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'is_active'=>1,'status' =>1 ])->first();      
 
     }
        public static function getAmountOfferLimit($res)
     {
-      return  self::where(['anchor_id'=>$res['anchor_id'],'prgm_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'app_prgm_limit_id'=>$res['app_prgm_limit_id'],'is_active'=>1,'status' =>1 ])->sum('prgm_limit_amt');      
+      return  self::where(['anchor_id'=>$res['anchor_id'],'prgm_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'is_active'=>1,'status' =>1 ])->sum('prgm_limit_amt');      
 
     }
 
