@@ -150,5 +150,21 @@ class ApprovalRequest extends BaseModel {
         $result = $query->orderBy('req.req_id', 'DESC');
         return $result;
     }
+    
+    /**
+     * Get Entity Name
+     * 
+     * @param integer $userId
+     * @return string
+     */
+    public static function getEntityNameByUserId($userId)
+    {
+        $result = self::from('biz')
+                ->select('biz_entity_name')
+                ->where('user_id', $userId)
+                ->orderBy('biz_id', 'ASC')
+                ->first();
+        return $result ? $result->biz_entity_name : '';
+    }    
 }
 
