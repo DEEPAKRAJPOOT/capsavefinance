@@ -70,7 +70,7 @@
                <span class="mandatory">*</span>
                </label>
 
-               <input class="form-control numbercls phone" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
+               <input class="form-control numbercls phone number_format" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
                <div class="failed">
                   <div style="color:#FF0000">
                      <small class="erro-sms" id="erro-sms">
@@ -154,6 +154,17 @@ $(document).ready(function () {
 //         parent.oTables.draw(); 
 //      }, 1000);
 //   }
+    
+    $(document).on('input', '.number_format', function (event) {
+        // skip for arrow keys
+        if (event.which >= 37 && event.which <= 40)
+            return;
+
+        // format number
+        $(this).val(function (index, value) {
+            return value.replace(/\D/g, "");
+        });
+    });
     
     $.validator.addMethod("alphabetsnspace", function(value, element) {
         return this.optional(element) || /^[a-zA-Z {1}]*$/.test(value);
