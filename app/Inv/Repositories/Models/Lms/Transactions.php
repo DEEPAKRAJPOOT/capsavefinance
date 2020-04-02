@@ -174,27 +174,29 @@ class Transactions extends BaseModel {
                     ->where('entry_type','=','0')
                     ->sum('amount');
                     
+        $dr +=  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+                    ->where('user_id','=',$user_id)
+                    ->where('soa_flag','=',1)
+                    ->whereNotNull('repay_trans_id')
+                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+                    ->where('entry_type','=','0')
+                    ->sum('amount');
+                    
         $cr =   self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
                     ->whereNull('repay_trans_id')
                     ->where('entry_type','=','1')
                     ->sum('amount');
+
         $cr +=  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
-                    ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
                     ->whereNotNull('repay_trans_id')
+                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
                     ->where('entry_type','=','1')
                     ->sum('amount');
         
-        $dr +=  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-                    ->where('user_id','=',$user_id)
-                    ->where('soa_flag','=',1)
-                    ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
-                    ->whereNotNull('repay_trans_id')
-                    ->where('entry_type','=','0')
-                    ->sum('amount');
 
         return $dr - $cr;
     }

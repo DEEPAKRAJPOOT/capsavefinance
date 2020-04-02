@@ -578,16 +578,16 @@ class InvoiceController extends Controller {
                     // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
                 
                     if ($interest > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9);
+                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 9);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9, 1);
+                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 9, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
 
                     // Margin transaction $tranType = 10 
                     if ($margin > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $margin, 'trans_date' => $disburseDate], $transId, 10, 1);
+                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $margin, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 10, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
                 } 
