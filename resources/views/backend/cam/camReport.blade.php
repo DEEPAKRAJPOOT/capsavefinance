@@ -530,7 +530,7 @@ $finFlag = false;
                      $colFlag = false;
                      function test_amt($var)
                      {
-                        return ($var > 0);
+                        return ($var != 0);
                      }
                   @endphp
                   @foreach($FinanceColumns as $key => $finance_col)
