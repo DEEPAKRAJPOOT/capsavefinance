@@ -1405,7 +1405,11 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-             
+             ->addColumn(
+                    'batch_id',
+                    function ($invoice) {  
+                       return  ($invoice->disbursal->disbursal_batch->batch_id) ? $invoice->disbursal->disbursal_batch->batch_id : '';
+                })
               ->addColumn(
                     'anchor_name',
                     function ($invoice) {  
@@ -1426,8 +1430,8 @@ class DataRenderer implements DataProviderInterface
                     'invoice_date',
                     function ($invoice) {                        
                         $inv_date = '';
-                        $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->disbursal ? '<span><b>Disburse Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->disburse_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->disbursal ? '<br><span><b>Payment Due Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->payment_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
@@ -2655,6 +2659,31 @@ class DataRenderer implements DataProviderInterface
                             ->orWhere('chrg_name', 'like', "%$search_keyword%");
                         });
                     }
+                })
+                ->make(true);
+    }
+    
+     public function getVouchersList(Request $request, $vouchers){
+        return DataTables::of($vouchers)
+                ->addColumn(
+                    'voucher_code',
+                    function ($vouchers) {
+                    return $vouchers->voucher_name .'('. (date("Y") - 1) .'-'. date('y') .')';
+                })
+                ->addColumn(
+                    'voucher_name',
+                    function ($vouchers) {
+                    return $vouchers->voucher_name;
+                })
+                ->addColumn(
+                    'transaction_type',
+                    function ($vouchers) {
+                    return $vouchers->transType->trans_name;
+                })
+                ->addColumn(
+                    'action',
+                    function ($vouchers) {
+                    return "No action";
                 })
                 ->make(true);
     }
@@ -4410,14 +4439,9 @@ class DataRenderer implements DataProviderInterface
                         return $dataRecords->trans_date;
                     })
                     ->editColumn(
-                        'biz_id',
+                        'ledger_name',
                         function ($dataRecords) {
-                        return $dataRecords->biz_id ?? '---';
-                    })
-                    ->editColumn(
-                        'name',
-                        function ($dataRecords) {
-                        return $dataRecords->fullname;
+                        return $dataRecords->ledger_name;
                     })
                     ->editColumn(
                         'amount',
@@ -4427,32 +4451,27 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'amount_type',
                         function ($dataRecords) {
-                        return $dataRecords->entry_type;
+                        return $dataRecords->is_debit_credit == '1' ? 'Credit' : 'Debit';
                     }) 
                     ->editColumn(
                         'reference',
                         function ($dataRecords) {
-                        return $dataRecords->batch_id;
+                        return $dataRecords->ref_no;
                     })   
                     ->editColumn(
                         'journals_name',
                         function ($dataRecords) {
-                        return $dataRecords->trans_name;
+                        return $dataRecords->tally_trans_type_id;
                     })      
                     ->editColumn(
                         'mode_of_pay',
                         function ($dataRecords) {
-                        return $dataRecords->mode_of_pay;
-                    })    
-                    ->editColumn(
-                        'created_by',
-                        function ($dataRecords) {
-                        return $dataRecords->created_by;
-                    })     
+                        return $dataRecords->trans_type;
+                    })       
                     ->editColumn(
                         'narration',
                         function ($dataRecords) {
-                        return $dataRecords->comment;
+                        return $dataRecords->narration;
                     }) 
                     ->make(true);
         }

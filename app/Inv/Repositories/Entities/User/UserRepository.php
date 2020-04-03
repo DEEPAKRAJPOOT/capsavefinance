@@ -28,6 +28,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use DB;
+use Auth;
 use App\Inv\Repositories\Models\CoLenderUsers;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\User;
@@ -1588,10 +1589,26 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetSentToBankInvCustomer($userIds = [])
     {
-        $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        if( $chkUser->id==11)
+        {
+            $res = User::where('user_id',$id)->first();
+            $anchor_id = $res->anchor_id;
+        }
+        else
+        {
+            $anchor_id="";
+        }
+       $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
                 ->with(['lms_user.bank_details.bank', 'invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch'])
-                ->whereHas('invoice', function($query) {
+                ->whereHas('invoice', function($query) use ($anchor_id){
                     $query->where('status_id', 10);
+                     if($anchor_id!='')
+                    {
+                       $query->where('anchor_id',$anchor_id);
+                    }
                 })
                 ->groupBy(['disbursal_batch_id', 'user_id'])
                 ->orderBy('disbursal_id', 'DESC');

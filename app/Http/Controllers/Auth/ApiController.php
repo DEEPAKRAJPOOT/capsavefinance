@@ -68,6 +68,125 @@ class ApiController
     return $response;
   }
 
+  public function tally_entry_old(){
+    $response = array(
+      'status' => 'failure',
+      'message' => 'Request method not allowed',
+    );
+    if (strpos(php_sapi_name(), 'cli') !== false) {
+        return $this->_setResponse($response, 405);
+    }
+    $where = ['is_posted_in_tally' => '0'];
+    $txnsData = Transactions::getTallyTxns($where);
+    $batch_no = _getRand(15);
+    $totalRecords = 0;
+    $insertedData = array();
+    if (!$txnsData->isEmpty()) {
+        $tbl_cols = [
+            'batch_no',
+            'transactions_id',
+            'is_debit_credit',
+            'trans_type_id',
+            'tally_trans_type_id',
+            'tally_voucher_id',
+            'tally_voucher_code',
+            'tally_voucher_name',
+            'tally_voucher_date',
+            'invoice_no',
+            'invoice_date',
+            'ledger_name',
+            'amount',
+            'ref_no',
+            'ref_amount',
+            'acc_no',
+            'ifsc_code',
+            'bank_name',
+            'cheque_amount',
+            'cross_using',
+            'trans_date',
+            'inst_no',
+            'inst_date',
+            'favoring_name',
+            'remarks',
+            'narration',
+          ];
+        $columns =  implode(', ', $tbl_cols);
+        $sql = "INSERT INTO rta_tally_entry ($columns) VALUES ";
+        $i = 0;
+        foreach ($txnsData as $key => $txn) {
+            $i++;
+           $tally_data[] = [
+            'batch_no' =>  $batch_no,
+            'transactions_id' =>  $txn->trans_id,
+            'is_debit_credit' =>  $txn->entry_type == '1' ? 'Credit' : 'Debit',
+            'trans_type_id' =>  $txn->trans_type_id,
+            'tally_trans_type_id' =>  $txn->tally_trans_type,
+            'tally_voucher_id' =>  $txn->tally_voucher_id,
+            'tally_voucher_code' =>  $txn->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+            'tally_voucher_name' =>  $txn->voucher_name,
+            'tally_voucher_date' =>  $txn->voucher_date,
+            'invoice_no' =>  0,
+            'invoice_date' =>  NULL,
+            'ledger_name' =>  $txn->f_name. ' ' . $txn->m_name .' '. $txn->l_name,
+            'amount' =>  $txn->amount,
+            'ref_no' =>  0,
+            'ref_amount' =>  0,
+            'acc_no' =>  $txn->acc_no,
+            'ifsc_code' =>  $txn->ifsc_code,
+            'bank_name' =>  $txn->bank_name,
+            'cheque_amount' =>  0,
+            'cross_using' =>  0,
+            'trans_date' =>  $txn->trans_date,
+            'trans_type' =>  $txn->mode_of_pay,
+            'inst_no' =>  NULL,
+            'inst_date' =>  NULL,
+            'favoring_name' =>  0,
+            'remarks' => $txn->comment ?? '',
+            'narration' => $txn->comment ?? '',
+          ];
+          /*
+          $values[] = "('" . implode("', '", $tally_data) . "')";
+          if ($i == 100) {
+            $query[] = $sql . implode(', ', $values);
+            $i = 0;
+            $values = array();
+          }
+          //Put it After Loop If entry in partition is required
+          if (!empty($values)) {
+            $query[] = $sql . implode(', ', $values);
+          }
+          if (!empty($query)) {
+             $res = \DB::insert($query[0]);
+             foreach ($query as  $q) {
+               \DB::insert($q);
+             }
+          }
+          */
+          $selectedData[] = $txn->trans_id;
+        }
+        try {
+          $res = \DB::table('tally_entry')->insert($tally_data);
+        } catch (\Exception $e) {
+          $errorInfo  = $e->errorInfo;
+          $res = $errorInfo;
+        }
+        if ($res === true) {
+          $totalRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
+          if ($totalRecords != count($selectedData)) {
+           $response['message'] =  'Some error occured. No Record can be posted in tally.';
+          }else{
+            $response['status'] = 'success';
+            $response['message'] =  ($totalRecords > 1 ? $totalRecords .' Records inserted successfully' : '1 Record inserted.');
+          }
+        }else{
+          $response['message'] =  ( $res[2] ?? 'DB error occured.').' No Record can be posted in tally.';
+        }
+    }else{
+      $response['message'] =  'No new record found to post in tally.';
+    }
+    return $response;
+  }
+
   public function karza_webhook(Request $request){
     $response = array(
       'status' => 'failure',

@@ -6,78 +6,75 @@
 @include('layouts.backend.partials.admin_customer_links',['active' => 'invoice'])
 @endif
 <div class="content-wrapper">
-    <div class="col-md-12 ">
-        <section class="content-header">
-            <div class="header-icon">
-                <i class="fa fa-clipboard" aria-hidden="true"></i>
-            </div>
-            <div class="header-title">
-                <h3 class="mt-2">Manage Invoice</h3>
+    <section class="content-header">
+        <div class="header-icon">
+            <i class="fa fa-clipboard" aria-hidden="true"></i>
+        </div>
+        <div class="header-title">
+            <h3 class="mt-2">Manage Invoice</h3>
 
-                <ol class="breadcrumb">
-                    <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-                    <li class="active">Manage Invoice</li>
-                </ol>
-            </div>
-            <div class="clearfix"></div>
-        </section>
-        <div class="row grid-margin">
-            <div class="col-md-12 ">
-                <div class="card">
-                    <div class="card-body">
-                        @include('layouts.backend.invoice_status_links')
-                        <div class="tab-content">
-                            <div id="menu1" class=" active tab-pane "><br>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="row">
-
-                                            <div class="col-md-5">
-                                                <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
-                                            </div> 
-                                            <div class="col-md-1">
-                                                <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
-                                            </div>  
-                                            <div class="col-md-2" id="buttonDiv">
-                                                @php if($role!=11) { @endphp
-                                                <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
-                                                @php  } @endphp
-                                                <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
-                                            </div>
-                                            <input type="hidden" value="" name="invoice_ids" id="invoice_ids"> 
-                                        </div>
-                                    </div>
+            <ol class="breadcrumb">
+                <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">Manage Invoice</li>
+            </ol>
+        </div>
+        <div class="clearfix"></div>
+    </section>
+    <div class="row grid-margin">
+        <div class="col-md-12 ">
+            <div class="card">
+                <div class="card-body">
+                    @include('layouts.backend.invoice_status_links')
+                    <div class="tab-content">
+                        <div id="menu1" class=" active tab-pane "><br>
+                            <div class="card">
+                                <div class="card-body">
                                     <div class="row">
-                                        <div class="col-12 dataTables_wrapper mt-4">
-                                            <div class="overflow">
-                                                <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                                                    <div class="row">
-                                                        <div class="col-sm-12">
-                                                            <table id="invoiceListDisbursedQue" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-                                                                <thead>
-                                                                    <tr role="row">
-                                                                        <th><input type="checkbox" id="chkAll"></th> 
-                                                                        <th>Invoice No</th> 
-                                                                        <th>Anchor Detail</th>
-                                                                        <th>Customer Detail</th>
-                                                                        <th>Inv. Detail</th>
-                                                                        <th>Inv.  Amount</th>
-                                                                        <th> Updated By</th>
-                                                                        <th> Action</th>
 
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
+                                        <div class="col-md-5">
+                                            <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                        </div> 
+                                        <div class="col-md-1">
+                                            <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                        </div>  
+                                        <div class="col-md-2" id="buttonDiv">
+                                            @php if($role!=11) { @endphp
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+                                            @php  } @endphp
+                                            <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
+                                        </div>
+                                        <input type="hidden" value="" name="invoice_ids" id="invoice_ids"> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 dataTables_wrapper mt-4">
+                                        <div class="overflow">
+                                            <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <table id="invoiceListDisbursedQue" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                                            <thead>
+                                                                <tr role="row">
+                                                                    <th><input type="checkbox" id="chkAll"></th> 
+                                                                    <th>Invoice No</th> 
+                                                                    <th>Anchor Detail</th>
+                                                                    <th>Customer Detail</th>
+                                                                    <th>Inv. Detail</th>
+                                                                    <th>Inv.  Amount</th>
+                                                                    <th> Updated By</th>
+                                                                    <th> Action</th>
 
-                                                                </tbody>
-                                                            </table>
-                                                            <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
-                                                        </div>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+
+                                                            </tbody>
+                                                        </table>
+                                                        <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </div>
@@ -118,13 +115,13 @@ $operation_status = session()->get('operation_status', false);
 @if( $operation_status == config('common.YES')) 
 <script>
 try {
-  var p = window.parent;
-  p.jQuery('#disburseInvoice').modal('hide');
-  window.parent.location.reload();
+    var p = window.parent;
+    p.jQuery('#disburseInvoice').modal('hide');
+    window.parent.location.reload();
 } catch (e) {
-  if (typeof console !== 'undefined') {
-      console.log(e);
-  }
+    if (typeof console !== 'undefined') {
+        console.log(e);
+    }
 }
 </script>
 @endif
@@ -195,11 +192,11 @@ try {
         {
             let parent_inv_ids = $('#invoice_ids').val().trim();
             let allInvIds = parent_inv_ids.split(',');
-            if(!parent_inv_ids.length){
+            if (!parent_inv_ids.length) {
                 allInvIds = [];
             }
             $('input:checkbox').attr('checked', 'checked');
-            $("input:checkbox[name=checkinvoiceid]:checked").each(function(){
+            $("input:checkbox[name=checkinvoiceid]:checked").each(function () {
                 let current_id = $(this).val();
                 allInvIds.push(current_id);
                 allInvIds.join();
@@ -208,10 +205,10 @@ try {
         } else {
             let parent_inv_ids = $('#invoice_ids').val().trim();
             let allInvIds = parent_inv_ids.split(',');
-            if(!parent_inv_ids.length){
+            if (!parent_inv_ids.length) {
                 allInvIds = [];
             }
-            $("input:checkbox[name=checkinvoiceid]:checked").each(function(){
+            $("input:checkbox[name=checkinvoiceid]:checked").each(function () {
                 let current_id = $(this).val();
                 allInvIds = allInvIds.filter(e => e !== current_id);
             });
