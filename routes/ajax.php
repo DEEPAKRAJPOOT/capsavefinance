@@ -996,5 +996,10 @@ Route::group(
         'as' => 'get_all_unsettled_trans_type',
         'uses' => 'AjaxController@getAllUnsettledTransType'
     ]);
+
+    Route::post('get-voucher-list', [
+        'as' => 'get_ajax_voucher_list',
+        'uses' => 'AjaxController@getVoucherLists'
+    ]);
      
 });

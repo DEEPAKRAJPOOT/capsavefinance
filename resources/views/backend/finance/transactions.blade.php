@@ -32,16 +32,14 @@
                             <thead>
                                 
                                 <tr role="row">
-                                    <th>Biz Id</th>
-                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Ledger Name</th>
                                     <th>Amount</th>
                                     <th>Type</th>
                                     <th>Reference No</th>
                                     <th>Journals Name</th>
                                     <th>Mode of Pay</th>
                                     <th>Narration</th>                                    
-                                    <th>Created By</th>
-                                    <th>Txn Date</th>
                                 </tr>
                             </thead>
                             <tbody>

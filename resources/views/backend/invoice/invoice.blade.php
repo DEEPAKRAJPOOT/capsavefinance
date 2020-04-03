@@ -6,8 +6,7 @@
 @include('layouts.backend.partials.admin_customer_links',['active' => 'invoice'])
 @endif
 <div class="content-wrapper">
- <div class="col-md-12 ">
-        <section class="content-header">
+  <section class="content-header">
             <div class="header-icon">
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
             </div>
@@ -126,7 +125,7 @@
                     </div>
                 </div>
             </div>
-        </div></div>
+        </div>
 </div>
 <div class="modal show" id="myModal7" style="display: none;">
     <div class="modal-dialog modal-md">

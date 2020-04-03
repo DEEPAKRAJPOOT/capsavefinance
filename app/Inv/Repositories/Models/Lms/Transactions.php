@@ -389,4 +389,17 @@ class Transactions extends BaseModel {
         $result = \DB::SELECT(\DB::raw($query));
         return $result;
     }
+    
+    public static function getTallyTxns(array $where = array()) {
+        $result = self::select('transactions.trans_id', 'transactions.repay_trans_id', 'transactions.parent_trans_id', 'transactions.user_id', 'users.f_name', 'users.m_name', 'users.l_name', 'transactions.biz_id', 'transactions.virtual_acc_id', 'transactions.disbursal_id', 'transactions.trans_date', 'transactions.trans_type', 'transactions.chrg_trans_id', 'transactions.amount', 'transactions.settled_amount', 'transactions.entry_type', 'user_bank_account.acc_name', 'user_bank_account.acc_no', 'mst_bank.bank_name', 'user_bank_account.ifsc_code' , 'transactions.is_settled', 'transactions.mode_of_pay', 'transactions.utr_no', 'transactions.unr_no', 'transactions.cheque_no', 'transactions.trans_by', 'transactions.pay_from', 'transactions.txn_id', 'transactions.is_posted_in_tally', 'transactions.comment', 'tally_voucher.trans_type_id', 'mst_trans_type.trans_name', 'mst_trans_type.credit_desc', 'mst_trans_type.debit_desc', 'mst_trans_type.tally_trans_type', 'tally_voucher.tally_voucher_id', 'tally_voucher.voucher_name', 'tally_voucher.created_at as voucher_date')
+            ->join('users', 'users.user_id', '=', 'transactions.user_id')
+            ->join('mst_trans_type', 'mst_trans_type.id', '=', 'transactions.trans_type')
+            ->join('tally_voucher', 'tally_voucher.trans_type_id', '=', 'mst_trans_type.id')
+            ->join('user_bank_account', 'user_bank_account.user_id', '=', 'transactions.user_id')
+            ->join('mst_bank', 'mst_bank.id', '=', 'user_bank_account.bank_id')
+            ->where($where)
+            ->groupBy('transactions.trans_id')
+            ->get();
+        return $result;
+    }
 }
