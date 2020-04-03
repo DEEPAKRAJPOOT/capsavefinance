@@ -481,6 +481,7 @@
 @php 
 $finFlag = false;
 @endphp
+@foreach($FinanceColumns as $key => $finance_col)
 @foreach($financeData as $year => $fin_data)
    @php       
       $yearly_fin_data = getTotalFinanceData($fin_data);
@@ -490,6 +491,7 @@ $finFlag = false;
    @if($amtval!='0' && $amtval!='0.00')
       $finFlag = true;
    @endif
+@endforeach
 @endforeach
 
 @if($finFlag)
