@@ -74,6 +74,7 @@ class ApiController
       'message' => 'Request method not allowed to execute the script.',
     );
     if (strpos(php_sapi_name(), 'cli') !== false) {
+        $response['sapi'] = php_sapi_name();
         return $this->_setResponse($response, 405);
     }
     $where = ['is_posted_in_tally' => '0'];
