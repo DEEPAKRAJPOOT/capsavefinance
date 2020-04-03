@@ -137,7 +137,7 @@ class ApiController
             'cheque_amount' =>  0,
             'cross_using' =>  0,
             'trans_date' =>  $txn->trans_date,
-            'trans_type' =>  "Online", // Mode of Payment
+            'trans_type' =>  $txn->mode_of_pay,
             'inst_no' =>  NULL,
             'inst_date' =>  NULL,
             'favoring_name' =>  0,
