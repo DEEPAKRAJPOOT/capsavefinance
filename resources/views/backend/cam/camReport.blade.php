@@ -491,12 +491,14 @@ $finFlag = false;
    @if($amtval!='0' && $amtval!='0.00')
       @php 
       $finFlag = true;
-      @endphp
       break;
+      @endphp      
    @endif
 @endforeach
    @if($finFlag)
+      @php 
       break;
+      @endphp 
    @endif
 @endforeach
 
