@@ -71,7 +71,7 @@ class ApiController
   public function tally_entry(){
     $response = array(
       'status' => 'failure',
-      'message' => 'Request method not allowed',
+      'message' => 'Request method not allowed to execute the script.',
     );
     if (strpos(php_sapi_name(), 'cli') !== false) {
         return $this->_setResponse($response, 405);
