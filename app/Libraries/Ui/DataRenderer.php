@@ -4451,17 +4451,27 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'amount_type',
                         function ($dataRecords) {
-                        return $dataRecords->is_debit_credit == '1' ? 'Credit' : 'Debit';
+                        return $dataRecords->entry_type == '1' ? 'Credit' : 'Debit';
                     }) 
                     ->editColumn(
-                        'reference',
+                        'reference_no',
                         function ($dataRecords) {
                         return $dataRecords->ref_no;
+                    })
+                    ->editColumn(
+                        'batch_no',
+                        function ($dataRecords) {
+                        return $dataRecords->batch_no;
                     })   
                     ->editColumn(
-                        'journals_name',
+                        'voucher_type',
                         function ($dataRecords) {
-                        return $dataRecords->tally_trans_type_id;
+                        return $dataRecords->voucher_type;
+                    })     
+                    ->editColumn(
+                        'voucher_code',
+                        function ($dataRecords) {
+                        return $dataRecords->voucher_code;
                     })      
                     ->editColumn(
                         'mode_of_pay',

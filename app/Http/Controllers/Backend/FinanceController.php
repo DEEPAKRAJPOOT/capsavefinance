@@ -80,21 +80,16 @@ class FinanceController extends Controller {
         $result = $this->finRepo->getTallyTxns();
          $records = [];
          $header[] = [
-            "tally_entry_id" => "Tally Id",
             "batch_no" => "Batch No",
-            "transactions_id" => "Txn Id",
-            "is_debit_credit" => "Entry Type",
-            "trans_type_id" => "trans_type_id",
-            "tally_trans_type_id" => "Tally Trans Type",
-            "tally_voucher_id" => "Voucher Id",
-            "tally_voucher_code" => "Voucher Code",
-            "tally_voucher_name" => "Voucher Name",
-            "tally_voucher_date" => "Voucher Date",
+            "entry_type" => "Entry Type",
+            "voucher_type" => "Voucher Type",
+            "voucher_code" => "Voucher Code",
+            "voucher_date" => "Voucher Date",
             "invoice_no" => "Invoice No",
             "invoice_date" => "Invoice Date",
             "ledger_name" => "Ledger Name",
             "amount" => "Amount",
-            "ref_no" => "Reference",
+            "ref_no" => "Reference No",
             "ref_amount" => "Reference Amount",
             "acc_no" => "Account No",
             "ifsc_code" => "IFSC Code",
@@ -108,15 +103,50 @@ class FinanceController extends Controller {
             "favoring_name" => "Favoring Name",
             "remarks" => "Remarks",
             "narration" => "Narration",
-            "is_updated" => "Is Posted",
+            "is_posted" => "Is Posted",
             ];
         foreach ($result as $key => $value) {
-           $records[] = (array)$value;
+            $fetchedArr = (array)$value;
+            if (strtolower($fetchedArr['voucher_type']) == 'payment') {
+                $records['PAYMENT'][] =  [
+                    "voucher_code" => $fetchedArr['voucher_code'],
+                    "voucher_type" => $fetchedArr['voucher_type'],
+                    "voucher_date" => date('Y, d F',strtotime($fetchedArr['voucher_date'])),
+                    "ledger_name" => $fetchedArr['ledger_name'],
+                    "entry_type" => $fetchedArr['entry_type'],
+                    "amount" => $fetchedArr['amount'],
+                    "ref_amount" => $fetchedArr['ref_amount'],
+                    "ref_no" => $fetchedArr['ref_no'],
+                    "trans_type" => $fetchedArr['trans_type'],
+                    "acc_no" => $fetchedArr['acc_no'],
+                    "ifsc_code" => $fetchedArr['ifsc_code'],
+                    "bank_name" => $fetchedArr['bank_name'],
+                    "cheque_amount" => $fetchedArr['cheque_amount'],
+                    "cross_using" => $fetchedArr['cross_using'],
+                    "trans_date" => $fetchedArr['trans_date'],
+                    "inst_no" => $fetchedArr['inst_no'],
+                    "inst_date" => $fetchedArr['inst_date'],
+                    "favoring_name" => $fetchedArr['favoring_name'],
+                    "remarks" => $fetchedArr['remarks'],
+                    "is_posted" => $fetchedArr['is_posted'],
+                ];
+            }else{
+                $records['JOURNAL'][] = [
+                    "batch_no" => $fetchedArr['batch_no'],
+                    "invoice_no" => $fetchedArr['invoice_no'],
+                    "voucher_type" => $fetchedArr['voucher_type'],
+                    "invoice_date" => $fetchedArr['invoice_date'],
+                    "ledger_name" => $fetchedArr['ledger_name'],
+                    "entry_type" => $fetchedArr['entry_type'],
+                    "amount" => $fetchedArr['amount'],
+                    "ref_amount" => $fetchedArr['ref_amount'],
+                    "ref_no" => $fetchedArr['ref_no'],
+                    "narration" => $fetchedArr['narration'], 
+                ]; 
+            }
         }
-        $data = $header + $records;
-        $toExportData = ['JOURNAL'=> $data, 'PAYMENT' => $data];
+        $toExportData = $records;
         $this->array_to_excel($toExportData, "execl.xlsx");
-        // $this->array_to_csv($toExportData, "execl.csv");
     }
 
     public function crateJeConfig(Request $request) {
@@ -352,25 +382,22 @@ class FinanceController extends Controller {
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->createSheet();
         foreach ($toExportData as $title => $data) {
-            $header_cols = array_values($data[0]);
-            unset($data[0]);
+            $rec_count = count($data[0]);
+            $header_cols = array_keys($data[0]);
             $sheetTitle = $title;
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
-            $flag_array_intestazione = false;
             $column = 0;
             $header_row = 2;
             $start_row = 4;
             $row = $start_row;
             $column = 0;
-            $flag_array_intestazione = true;
-            $floor = floor(count($header_cols)/26);
-            $reminder = count($header_cols) % 26;
+            $floor = floor($rec_count/26);
+            $reminder = $rec_count % 26;
             $char = ($floor > 0 ? chr(ord("A") + $floor - 1) : '').chr(ord("A") + $reminder - 1);
             foreach($data as $key => $item) {
               foreach($item as $key1 => $item1) {
                 $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($column, $row, $item1);
-                if($flag_array_intestazione) $array_intestazione[] = $key1;
                 $column++;
               }
               $argb = "FFFFFFFF";
@@ -386,17 +413,14 @@ class FinanceController extends Controller {
                 ),
               );
               $objPHPExcel->getActiveSheet()->getStyle('A'. $row .':' . $char . $row)->applyFromArray($styleArray);
-              if($flag_array_intestazione) $flag_array_intestazione = false;
               $column = 0;
               $row++;
             }
             $end_row = $row - 1;
             $row = $header_row;
             $column = 0;
-            if (!empty($header_cols)) {
-                $array_intestazione = $header_cols;
-            }
-            foreach($array_intestazione as $key) {
+            foreach($header_cols as $key) {
+               $key = ucwords(str_replace('_', ' ', $key));
                $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($column, $row)->setValueExplicit($key, PHPExcel_Cell_DataType::TYPE_STRING);
                   $column++;
             }
@@ -405,22 +429,22 @@ class FinanceController extends Controller {
                 'bold' => true,
               ),
               'alignment' => array(
-              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
               ),
               'borders' => array(
-              'top' => array(
-              'style' => PHPExcel_Style_Border::BORDER_THIN,
-              ),
+                  'top' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                  ),
               ),
               'fill' => array(
-              'type' => PHPExcel_Style_Fill::FILL_GRADIENT_LINEAR,
-              'rotation' => 90,
-              'startcolor' => array(
-              'argb' => 'FFA0A0A0',
-              ),
-              'endcolor' => array(
-              'argb' => 'FFFFFFFF',
-              ),
+                  'type' => PHPExcel_Style_Fill::FILL_GRADIENT_LINEAR,
+                  'rotation' => 90,
+                  'startcolor' => array(
+                    'argb' => 'FFA0A0A0',
+                  ),
+                  'endcolor' => array(
+                    'argb' => 'FFFFFFFF',
+                  ),
               ),
             );
      
@@ -452,14 +476,16 @@ class FinanceController extends Controller {
               ),
             );
             $objPHPExcel->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $header_row)->applyFromArray($styleArray);
-     
-            foreach($array_intestazione as $key => $el) {
+            foreach($header_cols as $key => $el) {
                  $floor = floor(($key)/26);
                  $reminder = ($key) % 26;
                  $char = ($floor > 0 ? chr(ord("A") + $floor-1) : '').chr(ord("A") + $reminder);
                  $objPHPExcel->getActiveSheet()->getColumnDimension($char)->setAutoSize(true);
             }
             $styleArray = array(
+              'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_JUSTIFY,
+              ),
               'borders' => array(
                 'allborders' => array(
                   'style' => PHPExcel_Style_Border::BORDER_THIN,
@@ -467,7 +493,7 @@ class FinanceController extends Controller {
                 ),
               ),
             );
-            $objPHPExcel->getActiveSheet()->getStyle('A'. $header_row .':' . $char . $end_row)->applyFromArray($styleArray);
+            $objPHPExcel->getActiveSheet()->getStyle('A'. $start_row .':' . $char . $end_row)->applyFromArray($styleArray);
             $objPHPExcel->getActiveSheet()->setTitle($sheetTitle);
         }
         header('Content-Type: application/vnd.ms-excel');

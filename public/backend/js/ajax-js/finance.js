@@ -184,14 +184,14 @@ try {
             },
            columns: [
                     
+                    {data: 'voucher_type'},
+                    {data: 'voucher_code'},
                     {data: 'date'},
                     {data: 'ledger_name'},
                     {data: 'amount'},
-                    {data: 'amount_type'},
-                    {data: 'reference'},
-                    {data: 'journals_name'},
+                    {data: 'entry_type'},
+                    {data: 'batch_no'},
                     {data: 'mode_of_pay'},
-                    {data: 'narration'},
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });
