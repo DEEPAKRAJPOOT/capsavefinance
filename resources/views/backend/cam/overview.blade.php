@@ -373,7 +373,6 @@
       var ckeditorOptions =  {
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
         filebrowserUploadMethod: 'form',
-        //extraPlugins: 'imageuploader',
         imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
         disallowedContent: 'img{width,height};'
       };
