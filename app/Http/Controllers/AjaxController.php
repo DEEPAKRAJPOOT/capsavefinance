@@ -4266,4 +4266,10 @@ if ($err) {
 
         return response()->json($res);
     }
+
+    public function getVoucherLists(DataProviderInterface $dataProvider) {
+         $vouchersList = $this->masterRepo->getAllVouchers();
+         $vouchers = $dataProvider->getVouchersList($this->request, $vouchersList);
+         return $vouchers;
+    }
 }
