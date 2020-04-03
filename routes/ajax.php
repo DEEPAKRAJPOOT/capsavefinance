@@ -991,5 +991,10 @@ Route::group(
         'as' => 'get_soa_client_details',
         'uses' => 'AjaxController@getSoaClientDetails'
     ]);
+
+    Route::get('get_all_unsettled_trans_type',[
+        'as' => 'get_all_unsettled_trans_type',
+        'uses' => 'AjaxController@getAllUnsettledTransType'
+    ]);
      
 });

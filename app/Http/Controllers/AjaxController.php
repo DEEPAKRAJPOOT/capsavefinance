@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\TransType;
 
 class AjaxController extends Controller {
 
@@ -4130,18 +4131,19 @@ if ($err) {
         $userId    = $request->get('user_id');
         $transType = $request->get('trans_type');
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
+        return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
         
-        $debitAmt = 0;
-        $creditAmt = 0;
+        // $debitAmt = 0;
+        // $creditAmt = 0;
         
-        if (isset($repaymentAmtData['debitAmtData']['amount'])) {
-            $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
-        }
-        if (isset($repaymentAmtData['creditAmtData']['amount'])) {
-            $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
-        }        
-        $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
-        return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
+        // if (isset($repaymentAmtData['debitAmtData']['amount'])) {
+        //     $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
+        // }
+        // if (isset($repaymentAmtData['creditAmtData']['amount'])) {
+        //     $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
+        // }        
+        // $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
+        // return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
     }
     ////////////*  get business */////
     public function searchBusiness(Request $request)
@@ -4269,7 +4271,21 @@ if ($err) {
 
     public function getRemainingCharges(Request $request){
         $user_id = $request->get('user_id');
-        $res = Transactions::getAllChargesApplied(['user_id' => $user_id]);
+        $trans_type = $request->get('trans_type');
+        $res = Transactions::getAllChargesApplied(['user_id' => $user_id,'trans_type'=>$trans_type]);
+        $data['result'] = $res;
+        if (!empty($res)) {
+            $data['status'] = 'success';
+        }else{
+            $data['status'] = 'empty';
+        }
+        return response()->json($data);
+    }
+
+    public function getAllUnsettledTransType(Request $request){
+        $user_id = $request->get('user_id');
+        $action_type = $request->get('action_type');
+        $res = TransType::getAllUnsettledTransTypes(['user_id' => $user_id],$action_type);
         $data['result'] = $res;
         if (!empty($res)) {
             $data['status'] = 'success';

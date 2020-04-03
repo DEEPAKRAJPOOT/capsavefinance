@@ -37,57 +37,70 @@
                                 !!}
                                     <div class="row">
                   
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Search business name <span class="error_message_label">*</span> </label>
-                                                <input type="hidden" name="customer_id" id="customer_id">
-                                                <input type="hidden" name="biz_id" id="biz_id">
-                                                <input type="text" name="search_bus"   id="search_bus" class="form-control searchBusiness">
-                                                <span id="business_name_error" style="color: red"></span>
-                                                <ul class="business_list">
-                                                </ul>
+                                                <input type="text" name="search_bus" id="search_bus" class="form-control searchBusiness">
                                            </div>
                                         </div>
+                                        <input type="hidden" name="customer_id" id="customer_id">
+                                        <input type="hidden" name="biz_id" id="biz_id">
+                                        <input type="hidden" name="user_id" id="user_id">
+                                        
+                                        {{-- <span id="business_name_error" style="color: red"></span>
+                                        <ul class="business_list"></ul> --}}
                                       
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
 
                                                 <label for="txtCreditPeriod">Virtual Account No.<span class="error_message_label">*</span> </label>
-
-                                                <!-- <select class="form-control" name="bank_name">
+                                                {{-- <!-- <select class="form-control" name="bank_name">
                                                     <option> Select</option>
                                                     @foreach($bank as $row)
                                                     <option value="{{$row->id}}">{{$row->bank_name}}</option>
                                                     @endforeach
-                                                </select> -->
+                                                </select> --> --}}
                                                 <input type="text" name="virtual_acc" id="virtual_acc" readonly="readonly" class="form-control">
                                                 
                                             </div>
                                         </div>
-                                          <div class="col-md-4">
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">Action Type <span class="error_message_label">*</span></label>
+                                                <select class="form-control" name="action_type" id="action_type">
+                                                    <option value="">Select Action Type</option>
+                                                    <option value="1">Payment</option>
+                                                    <option value="2">Wave Off</option>
+                                                </select>
+                                                <span id="action_type_error" class="error"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Transation Type <span class="error_message_label">*</span></label>
                                                 <select class="form-control trans_type" name="trans_type" id="trans_type">
                                                     <option value="">Select Transation Type</option>
-                                                    @foreach($tranType as $key => $value)
-                                                    <option value="{{$value->id}}"> {{$value->credit_desc}} </option>
-                                                    @endforeach
                                                 </select>
                                                 <span id="trans_type_error" class="error"></span>
                                             </div>
                                         </div>
+
                                         <div class="col-md-4" id="waiveoff_div" style="display: none">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">Waive Off On <span class="error_message_label">*</span></label>
-                                                <select class="form-control trans_type" name="waiveoff_charges" id="waiveoff_charges">
+                                                <label for="txtCreditPeriod">Transactions On <span class="error_message_label">*</span></label>
+                                                <select class="form-control" name="charges" id="charges">
                                                     <option value="">Select Charges</option>
                                                 </select>
+                                                <span id="waiveoff_charges_error" class="error"></span>
                                             </div>
                                         </div>
+
                                         <div class="col-md-4">
                                             <div class="form-group ">
                                                 <label for="txtCreditPeriod">Transaction Date<span class="error_message_label">*</span> </label>
-                                                <input type="text" name="date_of_payment" id="date_of_payment" readonly="readonly" class="form-control datepicker-dis-fdate">
+                                                <input type="text" name="date_of_payment" id="date_of_payment" readonly="readonly" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -98,7 +111,7 @@
                                             </div>
                                         </div>
                                       
-                                        <!--start processing fees code-->
+                                        {{-- <!--start processing fees code-->
                                       <!--  <div class="col-md-4 processFeeElmnt">
                                             <div class="form-group INR ">
                                                 <label for="txtCreditPeriod">Transaction Amount inclusive GST ? <span class="error_message_label">*</span> </label>
@@ -145,7 +158,7 @@
 
                                                 <input type="text" name="txn_id" id="txn_id" class="form-control">
                                             </div>
-                                        </div>  -->
+                                        </div>  --> --}}
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
@@ -227,6 +240,8 @@ cursor: pointer;
 }
 
 </style>
+<script src="{{ asset('backend\theme\assets\plugins\typeahead\handlebars.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend\theme\assets\plugins\bootstrap-tagsinput\typeahead.bundle.js') }}" type="text/javascript"></script>
 <script>
     var messages = {
         get_val: "{{URL::route('get_field_val')}}",
@@ -234,12 +249,227 @@ cursor: pointer;
         get_repayment_amount_url: "{{ route('get_repayment_amount') }}",
         token: "{{ csrf_token() }}",
         get_remaining_charges_url : "{{route('get_remaining_charges')}}",
+        get_customer: "{{ route('get_customer') }}",
+        get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}"
     };
 
-      $(document).ready(function() {
-      document.getElementById('amount').addEventListener('input', event =>
-      event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+    var userData = '';
+
+    $(document).ready(function() {
+        // document.getElementById('amount').addEventListener('input', event =>
+        // event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+
+        $("#date_of_payment").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2,
+                startDate: new Date()
+            });
+
+        var sample_data = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch:messages.get_customer,
+            remote:{
+                url:messages.get_customer+'?query=%QUERY',
+                wildcard:'%QUERY'
+            }
+        });
+        
+        $('#search_bus ').typeahead(null, {
+            name: 'sample_data',
+            display: 'customer_id',
+            source:sample_data,
+            limit:10,
+            templates:{
+                suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
+            },
+        }).bind('typeahead:select', function(ev, suggestion) {
+            setClientDetails(suggestion)
+        }).bind('typeahead:change', function(ev, suggestion) {
+            var customer_id = $.trim($("#customer_id").val());
+            if(customer_id != suggestion)
+            setClientDetails(suggestion)
+        }).bind('typeahead:cursorchange', function(ev, suggestion) {
+            setClientDetails(suggestion)
+        });
+
+        $("#action_type").on('change',function(){
+            $("#trans_type").val('');
+            $("#charges").val('');
+            $("#date_of_payment").val('');
+            $("#amount").val('');
+            userData['action_type'] = $(this).val();
+            get_all_unsettled_trans_type(userData);
+        });
+
+        $("#trans_type").on('change',function(){
+            $("#charges").val('');
+            $("#date_of_payment").val('');
+            $("#amount").val('');
+            let user_id = $('#user_id').val();
+            if (!user_id) {
+               $('#business_name_error').text('Please Search business name'); 
+               $('#search_bus').focus();
+                return false;
+            }
+            var action_type = $.trim($("#action_type").val());
+            var trans_type = $.trim($(this).val());
+
+            if(action_type=='2'){
+                get_remaining_charges();
+            }else{
+                if(trans_type==17){
+                    $('#waiveoff_div').hide();
+                    get_repayment_amount();
+                }else{
+                    get_remaining_charges();
+                }
+            }
+        });
+
+        $("#charges").on('change',function(e){
+            $("#date_of_payment").val('');
+            $("#amount").val('');
+            var element = $(this).find('option:selected'); 
+            var index = element.attr("index"); 
+            var chargeData = userData['charges'][index];
+            if(chargeData){
+                $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
+                $('#amount').val(Math.round(chargeData['remaining'],2)); 
+                $('#amount').attr('max',chargeData['remaining']);
+            }else{
+                $('#date_of_payment').datetimepicker('setStartDate', new Date());
+                $('#amount').val(0);
+            }
+        });
+        
+        $('#savePayFrm').validate( {
+                rules: {
+                search_bus: {
+                    required: true,
+                    },
+                    action_type:{
+                        required:true,
+                    },
+                    trans_type: {
+                        required: true,
+                    },
+                    charges:{
+                        required: true,
+                    },
+                    virtual_acc: {
+                        required: true,
+                    },
+                    date_of_payment:{
+                        required:true,
+                    },
+                    amount:{
+                        required:true,
+                    },
+                    payment_type:{
+                        required:true,
+                    },
+                    description:{
+                        required:true,
+                    },
+                    incl_gst:{
+                        required:$("#trans_type").val()>0?false:true,
+                    },
+                    gst:{
+                        required:$("#incl_gst:checked").val()>0?false:true,
+                        }
+                },
+                messages: {
+                customer_id: {
+                    //required: "Please select file",
+                    }
+                }
+            });
     });
+
+    function setClientDetails(data){
+        $("#action_type").val('');
+        $("#trans_type").val('');
+        $("#charges").val('');
+        $("#date_of_payment").val('');
+        $("#amount").val('');
+        this.userData = data;
+        $("#biz_id").val(data.biz_id);
+        $("#user_id").val(data.user_id);
+        $("#customer_id").val(data.customer_id);
+        $("#virtual_acc").val(data.virtual_acc_id);
+    }
+
+    function get_remaining_charges() {
+        $.ajax({
+            type: 'GET',
+            async: false,
+            url: messages.get_remaining_charges_url,
+            data: {"user_id":$("#user_id").val(), trans_type:$("#trans_type").val(), token: messages.token},
+            beforeSend: function( xhr ) {
+                $('.isloader').show();
+            },
+            success: function(res) {
+                if (res.status == 'success') {
+                    chargeResult = res.result;
+                    userData['charges'] = chargeResult;
+                    $(chargeResult).each(function(i,v){
+                        $('#waiveoff_div').show();
+                        $('#charges').html('<option value="">Select Charges</option>');
+                        $('#charges').append('<option index="'+ i +'" value="'+ v.trans_id +'">' + v.trans_name +'<small>('+v.trans_date+')</small>'+ '</option>');
+                    })
+                }else{
+                    $('#waiveoff_div').hide();
+                    $('#charges').html('<option value="">Select Charges</option>');
+                    $('#amount').val(''); 
+                }
+                $('.isloader').hide();     
+            } 
+        });
+    }
+
+    function get_all_unsettled_trans_type(data) {
+        $.ajax({
+            type: 'GET',
+            async: false,
+            url: messages.get_all_unsettled_trans_type,
+            data: {"user_id":data.user_id, action_type:data.action_type, token: messages.token},
+            beforeSend: function( xhr ) {
+                $('.isloader').show();
+            },
+            success: function(res) {
+                $('#trans_type').html('<option value="">Select Charges</option>');
+                if (res.status == 'success') {
+                    chargeResult = res.result;
+                    $(chargeResult).each(function(i,v){
+                        $('#trans_type').append('<option value="'+ v.id +'">' + v.trans_name + '</option>');
+                    })
+                }
+                $('.isloader').hide();
+            }     
+        });
+    }
+    
+    function get_repayment_amount() {
+        $.ajax({
+            type: 'POST',                    
+            url: messages.get_repayment_amount_url,
+            data: {user_id: $("#user_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+            beforeSend: function( xhr ) {
+                $('.isloader').show();
+            },
+            success: function(resultData) {                        
+                if (resultData.repayment_amount != ""){
+                    $("#amount").val(Math.round(resultData.repayment_amount,2)); 
+                    $('#amount').attr('max',resultData.repayment_amount);                          
+                } else {
+                    $("#amount").val("");
+                }
+                $('.isloader').hide();
+            }
+       });
+    }
 
     $(document).on('change', '#payment_type', function() {
         $('#appendInput').empty();
@@ -255,188 +485,89 @@ cursor: pointer;
 
         }
     });
-    $(document).ready(function(){
-        $(".processFeeElmnt").hide();
-        $(".noGstShow").hide();
-        $(".showGSTVal").hide();
-        $(".showIGSTVal").hide();
-       var gstRadio= $("#incl_gst").val();
+    
+    $(document).ready(function(){ 
         
-        $("#trans_type").on('change',function(){
-            // ($(this).find(':selected').data('ip') == '1')? $('#paytodiv').show():$('#paytodiv').hide();
-            // if($(this).find(':selected').data('it') == '1'){ $('#taxdiv').show();  }else { $('#taxdiv').hide(); }
-            $('#cgst, #sgst, #gst').val('');
-            let user_id = $('#customer_id').val();
-            if (!user_id) {
-               $('#business_name_error').text('Please Search business name'); 
-               $('#search_bus').focus();
-                return false;
-            }
-            var tranTp=$("#trans_type").val();
-            if(tranTp==5 || tranTp==9 || tranTp==11){
-                $("#checkTranType").show();
-                $("#checkTDSPer").hide();
-            }else if(tranTp==7){
-                $("#checkTDSPer").show();
-                $("#checkTranType").hide();
-            }else{
-                $("#checkTranType").hide();
-                $("#checkTDSPer").hide();
-            }
-            if(tranTp==4 || tranTp==5){
-                $("#trans_amt").attr('readonly', true);
-                $(".processFeeElmnt").show();
-                $(".noGstShow").hide();
+        /*
+        $("input[name='incl_gst']").on('change', function () {
+            if( $("input[name='incl_gst']:checked").val() == '1'){
+                $(".noGstShow").show();
                 $(".showGSTVal").hide();
                 $(".showIGSTVal").hide();
             }else{
-                $("#trans_amt").val("");
-                $("#trans_amt").attr('readonly', false); 
+                $('#gst').prop('selectedIndex',0);
+                $(".noGstShow").hide();
+                $(".showGSTVal").hide();
+                $(".showIGSTVal").hide();
             }
-            $('#waiveoff_div').hide();
-            $('#waiveoff_charges').html('<option value="">Select Charges</option>');
-            if (tranTp == 40) {
-                get_remaining_charges();
+        });
+        $("#gst").change(function(){
+            var chkAmt=$("#amount").val();
+            chkAmt=  chkAmt.replace(/,/g, '')
+            if(chkAmt!='' && chkAmt>0){      
+                if($(this).find(':selected').data('name').trim() == 'GST'){
+                    $(".noGstShow").show(); 
+                    $('.showGSTVal').show()
+                    $('.showIGSTVal').hide(); 
+                }else {
+                    $(".noGstShow").show();
+                    $('.showIGSTVal').show();
+                    $('.showGSTVal').hide(); 
+                }
             }else{
-                get_repayment_amount();
+                $('#gst').prop('selectedIndex',0);
+                alert("Please enter transaction amount.");
             }
         });
+        $("#gst, #amount, input[name='incl_gst']").on('change', function () {
+            var getGstTxt=$("#gst option:selected").text();
+            getGstTxt=getGstTxt.split("-");
+            getGstTxt=getGstTxt[0].toLowerCase();
 
-    $("input[name='incl_gst']").on('change', function () {
-    if( $("input[name='incl_gst']:checked").val() == '1'){
-        $(".noGstShow").show();
-        $(".showGSTVal").hide();
-        $(".showIGSTVal").hide();
-    }else{
-        $('#gst').prop('selectedIndex',0);
-        $(".noGstShow").hide();
-        $(".showGSTVal").hide();
-        $(".showIGSTVal").hide();
-    }
-    });
-    $("#gst").change(function(){
-        var chkAmt=$("#amount").val();
-        chkAmt=  chkAmt.replace(/,/g, '')
-        if(chkAmt!='' && chkAmt>0){      
-        if($(this).find(':selected').data('name').trim() == 'GST'){
-            $(".noGstShow").show(); 
-            $('.showGSTVal').show()
-            $('.showIGSTVal').hide(); 
-        }else {
-            $(".noGstShow").show();
-             $('.showIGSTVal').show();
-             $('.showGSTVal').hide(); 
-      }
-    }else{
-        $('#gst').prop('selectedIndex',0);
-        alert("Please enter transaction amount.");
-    }
-    
-    });
-
-    $("#gst, #amount, input[name='incl_gst']").on('change', function () {
-
-var getGstTxt=$("#gst option:selected").text();
-getGstTxt=getGstTxt.split("-");
-getGstTxt=getGstTxt[0].toLowerCase();
-
-    if ($("#amount").valid()) {
-        let cgst = $("#gst option:selected").data('cgst');
-        let sgst = $("#gst option:selected").data('sgst');
-        let igst = $("#gst option:selected").data('igst');
-        let trans_amt = $('#amount').val();
-        trans_amt=trans_amt.replace(/,/g, '');
-        var gstval=$("#gst").val();
-        if( $("input[name='incl_gst']:checked").val() == '1'){
-            if(getGstTxt=='gst'){ 
-            var cgstval=((cgst * trans_amt / 100).toFixed(2));
-            var sgstVal=((sgst * trans_amt / 100).toFixed(2));
-            cgstval =(cgstval && !isNaN(cgstval))?cgstval:'';
-            sgstVal =(sgstVal && !isNaN(sgstVal))?sgstVal:'';
-            $('#cgst_amt').val(cgstval);
-            $('#sgst_amt').val(sgstVal);
-            $('#igst_amt').val('');
-        }else if(getGstTxt=='igst'){ 
-            var igstval=((igst * trans_amt / 100).toFixed(2));                
-            igstval =(igstval && !isNaN(igstval))?igstval:'';              
-            $('#igst_amt').val(igstval);
-            $('#cgst_amt').val('');
-            $('#sgst_amt').val('');
-        }
-            $("#notAddGST").show();
-        }else
-        {  
-            $("#notAddGST").hide();
-            $(".showGSTVal").hide();
-            $(".showIGSTVal").hide();                
-            $('#gst').val('');
-            $('#cgst').val('');
-            $('#sgst').val('');
-            $('#igst').val(''); 
-        }
-        
-    }
-});
-
-        $(".getCustomer").change(function(){
-           $.ajax({
-                 type: 'GET',
-                 async: false,
-                 url: messages.get_val,
-                data: {tableName:'lms_users',whereId:'user_id',fieldVal:$('#customer_id').val(),column:'virtual_acc_id', token: messages.token},
-                 success: function(resultData) {
-                 if(resultData!=""){
-                $("#virtual_acc").val(resultData);
-               $("#virtual_acc-error").css("display","none");
-                 }else{
-                    $("#virtual_acc").val("");
-                    $("#virtual_acc-error").css("display","block");
-                 }
-                 }      
-           });
+            if ($("#amount").valid()) {
+                let cgst = $("#gst option:selected").data('cgst');
+                let sgst = $("#gst option:selected").data('sgst');
+                let igst = $("#gst option:selected").data('igst');
+                let trans_amt = $('#amount').val();
+                trans_amt=trans_amt.replace(/,/g, '');
+                var gstval=$("#gst").val();
+                if( $("input[name='incl_gst']:checked").val() == '1'){
+                    if(getGstTxt=='gst'){ 
+                    var cgstval=((cgst * trans_amt / 100).toFixed(2));
+                    var sgstVal=((sgst * trans_amt / 100).toFixed(2));
+                    cgstval =(cgstval && !isNaN(cgstval))?cgstval:'';
+                    sgstVal =(sgstVal && !isNaN(sgstVal))?sgstVal:'';
+                    $('#cgst_amt').val(cgstval);
+                    $('#sgst_amt').val(sgstVal);
+                    $('#igst_amt').val('');
+                }else if(getGstTxt=='igst'){ 
+                    var igstval=((igst * trans_amt / 100).toFixed(2));                
+                    igstval =(igstval && !isNaN(igstval))?igstval:'';              
+                    $('#igst_amt').val(igstval);
+                    $('#cgst_amt').val('');
+                    $('#sgst_amt').val('');
+                }
+                    $("#notAddGST").show();
+                }else
+                {  
+                    $("#notAddGST").hide();
+                    $(".showGSTVal").hide();
+                    $(".showIGSTVal").hide();                
+                    $('#gst').val('');
+                    $('#cgst').val('');
+                    $('#sgst').val('');
+                    $('#igst').val(''); 
+                }
+                
+            }
         });        
-});
-        $(document).ready(function () {  
-            $('#savePayFrm').validate( {
-                  rules: {
-                    search_bus: {
-                        required: true,
-                     },
-                     trans_type: {
-                        required: true,
-                     },
-                     virtual_acc: {
-                        required: true,
-                     },
-                     date_of_payment:{
-                         required:true,
-                     },
-                     amount:{
-                         required:true,
-                     },
-                     payment_type:{
-                         required:true,
-                     },
-                     description:{
-                         required:true,
-                     },
-                     incl_gst:{
-                         required:$("#trans_type").val()>0?false:true,
-                     },
-                     gst:{
-                          required:$("#incl_gst:checked").val()>0?false:true,
-                          }
-                  },
-                  messages: {
-                    customer_id: {
-                        //required: "Please select file",
-                     }
-                  }
-               });
-        });
+    */
+     
+        
+    });
 
 
-   $(document).on('keyup','.searchBusiness',function(){
+   {/* $(document).on('keyup','.searchBusiness',function(){
        $(".business_list").empty();
        var search  =  $(this).val();
       if(search.length > 1)
@@ -486,63 +617,11 @@ getGstTxt=getGstTxt[0].toLowerCase();
        $(".business_list").empty();
        get_remaining_charges();
     })
-    $(document).on('change', '#waiveoff_charges', function(e) {
-      chargeVal = $(this).val();
-      var element = $(this).find('option:selected'); 
-      var amount = element.attr("amount"); 
-      var index = element.attr("index"); 
-      if (chargeResult[index] == undefined || (chargeResult[index]['trans_id'] != chargeVal && chargeResult[index]['amount'] != amount)) {
-          $('#trans_type_error').html('Something wrong happened.');
-          get_remaining_charges()
-     }else{
-         $('#amount').val(amount); 
-     }
-    })
+    */}
+   
 
-    function get_repayment_amount() {
-        $.ajax({
-            type: 'POST',                    
-            url: messages.get_repayment_amount_url,
-            data: {user_id: $("#customer_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
-            beforeSend: function( xhr ) {
-                $('.isloader').show();
-            },
-            success: function(resultData) {                        
-                if (resultData.repayment_amount != ""){
-                    $("#amount").val(resultData.repayment_amount);                           
-                } else {
-                    $("#amount").val("");
-                }
-                $('.isloader').hide();
-            }
-       });
-   }
+     
 
-   function get_remaining_charges() {
-        $('#trans_type_error').html('');
-        if ($("#trans_type").val() != '40') {
-            return false;
-        }
-        $.ajax({
-             type: 'GET',
-             async: false,
-             url: messages.get_remaining_charges_url,
-             data: {"user_id":$("#customer_id").val(), token: messages.token},
-             success: function(data) {
-                if (data.status == 'success') {
-                    chargeResult = data.result;
-                    $(chargeResult).each(function(i,v){
-                        $('#waiveoff_div').show();
-                        $('#waiveoff_charges').append('<option index="'+ i +'" amount="'+ v.remaining +'" value="'+ v.trans_id +'">' + v.trans_name + '</option>');
-                    })
-                }else{
-                    $('#waiveoff_div').hide();
-                     $('#trans_type_error').html('No Charges are applied for the business');
-                    $('#waiveoff_charges').html('<option value="">Select Charges</option>');
-                    $('#amount').val(''); 
-                }
-             }      
-        });
-   }
+   
 </script>
 @endsection

@@ -88,6 +88,7 @@ class PaymentController extends Controller {
     public function  savePayment(Request $request)
     {
       
+      dd($request);
         $validatedData = $request->validate([
                 'payment_type' => 'required',
                 'trans_type' => 'required',
