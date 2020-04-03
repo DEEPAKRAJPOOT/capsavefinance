@@ -28,6 +28,7 @@ try {
             },
             columns: [
                 {data: 'invoice_id'},
+                {data: 'batch_id'},
                 {data: 'anchor_name'},
                 {data: 'customer_detail'},
                 {data: 'invoice_date'},
