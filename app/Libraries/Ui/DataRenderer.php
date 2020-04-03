@@ -1405,7 +1405,11 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-             
+             ->addColumn(
+                    'batch_id',
+                    function ($invoice) {  
+                       return  ($invoice->disbursal->disbursal_batch->batch_id) ? $invoice->disbursal->disbursal_batch->batch_id : '';
+                })
               ->addColumn(
                     'anchor_name',
                     function ($invoice) {  
@@ -1426,8 +1430,8 @@ class DataRenderer implements DataProviderInterface
                     'invoice_date',
                     function ($invoice) {                        
                         $inv_date = '';
-                        $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->disbursal ? '<span><b>Disburse Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->disburse_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->disbursal ? '<br><span><b>Payment Due Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->payment_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
