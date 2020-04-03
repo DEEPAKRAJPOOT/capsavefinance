@@ -851,6 +851,11 @@ use CommonRepositoryTraits;
     {
         return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
     } 
+    public function getUserProgramOfferByPrgmId($prgmId,$user_id)
+    {
+        return AppProgramOffer::getUserProgramOfferByPrgmId($prgmId,$user_id);
+    }  
+    
      public function getBizAnchor($attributes = [])
     {
        
