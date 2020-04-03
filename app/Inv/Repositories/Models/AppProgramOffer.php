@@ -441,6 +441,27 @@ class AppProgramOffer extends BaseModel {
         
         return isset($result[0]) ? $result : [];
     }
+     public static function getUserProgramOfferByPrgmId($prgmId,$user_id)
+    {
+        $result = self::select('app_prgm_offer.*','app.user_id','users.f_name','users.l_name','biz.biz_entity_name','lms_users.customer_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')                
+                ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->join('users', 'users.user_id', '=', 'app.user_id')                
+                ->join('lms_users', function ($join) {
+                    $join->on('lms_users.user_id', '=', 'users.user_id');                    
+                    $join->on('lms_users.app_id', '=', 'app.app_id');
+                })                
+                ->where('app_product.product_id', 1)
+                ->where('app_prgm_offer.prgm_id', $prgmId)
+                ->where('users.user_id', $user_id)
+                ->where('app_prgm_offer.is_approve', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->groupBy('app.user_id')        
+                ->get();
+        
+        return isset($result[0]) ? $result : [];
+    }
 
     public static function getProgramOfferByAppId($appId, $prgm_offer_id = null)
     {

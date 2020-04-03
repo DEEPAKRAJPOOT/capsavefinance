@@ -613,7 +613,7 @@ trait LmsTrait
                 $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
             }
 
-            if ($repayment->disburse && $repayment->disburse->invoice) {
+            if ($repayment->disbursal_id && $repayment->disburse && $repayment->disburse->invoice) {
                 $transaction['INV_NO'] = $repayment->disburse->invoice->invoice_no;
             } else {
                 $transaction['INV_NO'] = '';
@@ -646,7 +646,7 @@ trait LmsTrait
                     $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
                 }
 
-                if (isset($repay->disburse->invoice) && $repay->disburse->invoice->invoice_no) {
+                if ($repay->disbursal_id && isset($repay->disburse->invoice) && $repay->disburse->invoice->invoice_no) {
                     $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
                 } else {
                     $transaction['INV_NO'] = '';
@@ -1089,7 +1089,7 @@ trait LmsTrait
         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
         ->sum('amount');
         
-        $nonFactoredAmount = ($repayment->amount+$interestRefundTotal)-($repayDebitTotal+$interestOverdueTotal+$marginTotal+$interestRefundSettledTotal);
+        $nonFactoredAmount = ($repayment->amount+$interestRefundTotal)-($repayDebitTotal+$marginTotal+$interestRefundSettledTotal);
         
         $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal;
 

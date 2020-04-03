@@ -33,7 +33,7 @@ class ApiController
     if (strpos(php_sapi_name(), 'cli') !== false) {
         return $this->_setResponse($response, 405);
     }
-    $where = ['tally_updated' => 'N'];
+    $where = ['is_posted_in_tally' => '0'];
     $txnsData = Transactions::getTransactions($where);
     $batch_id = _getRand(15);
     $totalRecords = 0;
@@ -54,7 +54,7 @@ class ApiController
       $totalRecords = count($insertedData);
       while (!empty($insertedData)) {
         foreach ($insertedData as $key => $value) {
-         $is_updated = FinanceModel:: updatePerfios(['tally_updated' => 'Y'], 'transactions', $value, 'trans_id');
+         $is_updated = FinanceModel:: updatePerfios(['is_posted_in_tally' => '1'], 'transactions', $value, 'trans_id');
          if ($is_updated) {
             unset($insertedData[$key]);
          }
@@ -69,15 +69,6 @@ class ApiController
   }
 
   public function karza_webhook(Request $request){
-    $allrequest = $request->all();
-    \File::put(storage_path('app/public/user/gst_header.json'), json_encode(getallheaders()));
-    \File::put(storage_path('app/public/user/gst_data.json'), json_encode($allrequest));
-
-     $karzaMailArr['name'] = "Ravi Prakash";
-     $karzaMailArr['email'] = 'ravi.awasthi93@gmail.com';
-     $karzaMailArr['otp'] = base64_encode(json_encode($allrequest));
-     Event::dispatch("user.sendotp", serialize($karzaMailArr));
-
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed',

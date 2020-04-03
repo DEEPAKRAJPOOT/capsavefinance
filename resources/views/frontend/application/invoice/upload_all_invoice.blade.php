@@ -51,7 +51,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Product Program Name
-                                                <span class="error_message_label">*</span>   <!-- <span id="pro_limit" class="error"></span> -->
+                                                <span class="error_message_label">*</span>  
                                             </label>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             </select>
@@ -61,7 +61,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label>
+                                            <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label> <span id="pro_limit" class="error"></span> 
                                             <select readonly="readonly" class="form-control getTenor" id="supplier_id" name="supplier_id">
                                              
                                             </select>
@@ -92,7 +92,7 @@
                                             
           <div class="col-md-4">
                                         <div class="form-group">
-                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label>
+                                             <label for="txtCreditPeriod">Invoice Amount <span class="error_message_label">*</span> </label><span id="pro_remain_limit" class="error"></span> 
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
@@ -174,6 +174,11 @@ var messages = {
      var pro_limit = parseInt($("#pro_limit_hide").val());
      var invoice_approve_amount = $("#invoice_approve_amount").val();
      var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+      if(invoice_approve_amount==0)
+     {
+         $("#invoice_approve_amount").val('');
+         return false;
+     }
       if(invoice_approve_amount  > pro_limit)
      {
          $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
@@ -425,7 +430,7 @@ var messages = {
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
-      var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
+      var postData =  ({'user':1,'bulk':0,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
                 method: 'post',
@@ -500,12 +505,13 @@ var messages = {
                 
                 },
                 success: function (data) {
-                        var tenor   =  data.tenor;
+                       var tenor   =  data.tenor;
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
-                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
-                        $("#pro_limit_hide").val(data.limit);  
+                        $("#pro_limit").html('Program Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_remain_limit").html('Remaining Program Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit_hide").val(data.remain_limit);  
                       
                 }
         }); }); 
