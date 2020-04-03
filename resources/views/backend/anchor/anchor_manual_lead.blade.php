@@ -245,20 +245,23 @@
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
                 console.log(email);
+                var status = true;
                 $.ajax({
                     url: messages.check_exist_email,
                     type: 'POST',
+                    datatype: 'json',
+                    asyn: false,
                     data: {
                         'email' : email,
                         '_token' : messages.token
                     },
                     success: function(response){
-                       if(response['status'])
-                           return true;
-                       else
-                           return false;
+                       if(response['status'] === 'true'){
+                          status = false;
+                      }
                     }
                 });
+                return this.optional(element) || (status === false);
             });
             
             $('#saveAnch').on('click', function (event) {

@@ -4198,11 +4198,12 @@ if ($err) {
        $email = $req->get('email');
        $status = $this->userRepo->getUserByEmail($email);
        if($status != false){
-          $response['status'] = false;
+          $response['status'] = 'false';
        }else{
-           $response['status'] = true;
+           $response['status'] = 'true';
        }
-       return $response;
+//       return $response;
+        return response()->json( $response   );
    }
 
     public function checkUniqueCharge(Request $request) 
