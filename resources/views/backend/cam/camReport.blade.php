@@ -478,7 +478,23 @@
    </div>
 @endif
 
-@if(!empty($financeData))
+@php 
+$finFlag = false;
+@endphp
+@foreach($FinanceColumns as $key => $finance_col)
+@foreach($financeData as $year => $fin_data)
+   @php       
+      $yearly_fin_data = getTotalFinanceData($fin_data);
+      $growth = $growthData[$year];   
+      $amtval = sprintf('%.2f', isset($yearly_fin_data[$key]) ? $yearly_fin_data[$key] : (isset($growth[$key]) ? $growth[$key] : ''));
+   @endphp
+   @if($amtval!='0' && $amtval!='0.00')
+      $finFlag = true;
+   @endif
+@endforeach
+@endforeach
+
+@if($finFlag)
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>

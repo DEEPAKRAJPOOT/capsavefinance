@@ -319,6 +319,10 @@
 
         $("#program_bulk_id_msg").hide();
         var program_id = $(this).val();
+         if(program_id=='')
+        {
+            return false;
+        }
         var anchor_id = $("#anchor_bulk_id").val();
         $("#supplier_bulk_id").empty();
         $("#pro_limit").empty();
@@ -336,17 +340,19 @@
             success: function (data) {
                 if (data.status == 1)
                 {
-                    if (data.uploadAcess == 0)
-                    {
-                        $("#submit").css("pointer-events", "none");
-                        $("#tenorMsg").text("You don't have permission to upload invoice for this program.");
-
-                    } else
-                    {
-                        $("#tenorMsg").text(" ");
-                        $("#submit").css("pointer-events", "inline");
-
-                    }
+                     if(data.uploadAcess==0)
+                        {
+                            $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
+                            $("#submit").hide();
+                            
+                        }
+                        else
+                        {
+                             $("#submit").show();
+                             $("#tenorMsg").text(" ");           
+                           
+                            
+                        }
                     var obj1 = data.get_supplier;
                     var obj2 = data.limit;
                     var offer_id = data.offer_id;
@@ -355,8 +361,8 @@
                     $("#prgm_offer_id").val(offer_id);
                    // $("#tenor_old_invoice").val(tenor_old_invoice);
                    // $("#tenor").val(tenor);
-                    $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  ' + obj2.anchor_sub_limit + '');
-                    $("#pro_limit_hide").val(obj2.anchor_sub_limit);
+                   /// $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  ' + obj2.anchor_sub_limit + '');
+                   // $("#pro_limit_hide").val(obj2.anchor_sub_limit);
                     $("#supplier_bulk_id").append("<option value=''>Please Select Customer</option>");  
                     $(obj1).each(function (i, v) {
                         var dApp = "000000" + v.app_id;
@@ -381,7 +387,7 @@
       {
           return false; 
       }
-     var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
+     var postData =  ({'bulk':1,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.get_tenor,
                 method: 'post',
@@ -396,6 +402,9 @@
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
+                        $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_limit_hide").val(data.limit);  
+                      
                 }
         }); }); 
    

@@ -851,6 +851,11 @@ use CommonRepositoryTraits;
     {
         return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
     } 
+    public function getUserProgramOfferByPrgmId($prgmId,$user_id)
+    {
+        return AppProgramOffer::getUserProgramOfferByPrgmId($prgmId,$user_id);
+    }  
+    
      public function getBizAnchor($attributes = [])
     {
        
@@ -909,7 +914,44 @@ use CommonRepositoryTraits;
 
        return AppProgramOffer::getTenor($attributes);  
     }  
+  public function getAmountOfferLimit($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
 
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return AppProgramOffer::getAmountOfferLimit($attributes);  
+    } 
+   public function getRemainAmount($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+       return BizInvoice::getRemainAmount($attributes);  
+    }  
     
     public function getAllBankInvoice($from_date, $to_date)
     {

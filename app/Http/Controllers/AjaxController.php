@@ -3504,8 +3504,17 @@ if ($err) {
         $request['prgm_offer_id']  = $result[1];
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
-        //$get_supplier = $this->invRepo->getLimitSupplier($request['program_id']);
-        $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
+        if($request['user']==1)
+        {
+            $id = Auth::user()->user_id;
+            $get_supplier = $this->invRepo->getUserProgramOfferByPrgmId($request['program_id'],$id);
+       
+        }
+        else
+        {
+           $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
+         
+        }
         $getPrgm  = $this->application->getProgram($request['program_id']);
         $chkUser  = $this->application->chkUser();
         if($chkUser)
@@ -3558,10 +3567,15 @@ if ($err) {
         $result  =  explode(",",$request['program_id']);
         $supplier_id  =  explode(",",$request['supplier_id']);
         $res['prgm_id']  = $result[0];
+        $res['app_prgm_limit_id']  = $result[1];
+        $res['user_id']  = $supplier_id[0];
         $res['app_id']  = $supplier_id[1];
         $res['anchor_id']  = $request['anchor_id'];
-        $getOfferProgramLimit =   $this->invRepo->getTenor($res);
-        return response()->json(['status' => 1,'tenor' => $getOfferProgramLimit->tenor,'tenor_old_invoice' =>$getOfferProgramLimit->tenor_old_invoice]);
+        $getTenor =   $this->invRepo->getTenor($res);
+        $getRemainAmount =   $this->invRepo->getRemainAmount($res);
+        $getOfferProgramLimit =   $this->invRepo->getAmountOfferLimit($res);
+        $limit = $getOfferProgramLimit-$getRemainAmount;
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $getOfferProgramLimit,'remain_limit' =>$limit]);
      }
           
 
