@@ -2678,7 +2678,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'transaction_type',
                     function ($vouchers) {
-                    return $vouchers->transType->trans_name;
+                    return $vouchers->transType->trans_name ?? '';
                 })
                 ->addColumn(
                     'action',

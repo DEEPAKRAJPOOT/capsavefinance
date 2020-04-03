@@ -1,12 +1,12 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
- @if(Session::has('error'))
-        <div class=" alert-danger alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+ <div class="modal-body text-left">
+      @if(Session::has('error'))
+        <div class=" alert-danger alert" style="font-size: 12px;padding: 0.4rem 0.3rem" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
             {{ Session::get('error') }}
         </div>
-@endif
- <div class="modal-body text-left">
+      @endif
      <form id="voucherForm" name="voucherForm" method="POST" action="{{route('save_voucher')}}">
      @csrf
      <div class="row">
