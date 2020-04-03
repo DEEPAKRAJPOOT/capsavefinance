@@ -98,5 +98,38 @@ class TransType extends BaseModel {
         return $result?$result:'';
     }
 
+
+    public static function getAllUnsettledTransTypes(array $where = array(), int $action_type) {
+        $cond = '';
+        $trans_type = [];
+        if (!empty($where)) {
+            foreach ($where as $key => $value) {
+                $wh[] = "t1.$key = '$value'";
+            }
+           $cond = ' AND ' .implode(' AND ', $wh);   
+        }
+
+        if($action_type == 1)
+        array_push($trans_type,(int)config('lms.TRANS_TYPE.REPAYMENT'));
+        
+        $query = "SELECT t1.trans_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
+        FROM `get_all_charges` t1 
+        LEFT JOIN get_all_charges as t2 ON t1.trans_id = t2.parent_trans_id 
+        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id HAVING remaining > 0 ";
+        $result = \DB::SELECT(\DB::raw($query));
+        
+        
+
+        foreach ($result as $key => $value) {
+            array_push($trans_type,$value->trans_type);
+        }
+
+        return self::select('id','credit_desc','trans_name')
+        ->where("is_visible","=", 1)
+        ->where("is_active","=", 1)
+        ->whereIn('id',$trans_type)
+        ->orderBy("priority","asc")
+        ->get();
+    }
     
 }

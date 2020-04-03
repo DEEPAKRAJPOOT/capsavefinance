@@ -1094,11 +1094,12 @@
    
    };
    
-    var ckeditorOptions =  {
-      filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
-      filebrowserUploadMethod: 'form',
-      disallowedContent: 'img{width,height};'
-    };
+      var ckeditorOptions =  {
+        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
+        filebrowserUploadMethod: 'form',
+        imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
+        disallowedContent: 'img{width,height};'
+      };
       
    CKEDITOR.replace('delay_pymt_chrg', ckeditorOptions);
    CKEDITOR.replace('insurance', ckeditorOptions);

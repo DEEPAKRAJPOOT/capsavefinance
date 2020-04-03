@@ -251,11 +251,12 @@
     }
 </script>
 <script>
-    var ckeditorOptions =  {
-      filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token() ])}}",
-      filebrowserUploadMethod: 'form',
-      disallowedContent: 'img{width,height};'
-    };
+      var ckeditorOptions =  {
+        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
+        filebrowserUploadMethod: 'form',
+        imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
+        disallowedContent: 'img{width,height};'
+      };
     
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
