@@ -167,7 +167,11 @@ $(document).ready(function () {
     });
     
     $.validator.addMethod("alphabetsnspace", function(value, element) {
-        return this.optional(element) || /^[a-zA-Z {1}]*$/.test(value);
+        return this.optional(element) || /^[a-zA-Z ]*$/.test(value);
+    });
+    
+    $.validator.addMethod("alphabetsnspacendot", function(value, element) {
+        return this.optional(element) || /^[a-zA-Z. }]*$/.test(value);
     });
     
    $('#saveLead').on('click', function (event) {
@@ -182,7 +186,9 @@ $(document).ready(function () {
          $('input.comp_name').each(function () {
             $(this).rules("add",
                      {
-                        required: true
+                        required: true,
+                        alphabetsnspacendot: true,
+                        messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
                      })
          });
          $('input.email').each(function () {

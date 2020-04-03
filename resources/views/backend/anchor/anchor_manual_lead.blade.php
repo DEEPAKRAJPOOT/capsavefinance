@@ -62,7 +62,7 @@
                                     <span class="mandatory">*</span>
                                     </label>
 
-                                    <input class="form-control numbercls phone" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
+                                    <input class="form-control numbercls phone number_format" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
                                     <div class="failed">
                                        <div style="color:#FF0000">
                                           <small class="erro-sms" id="erro-sms">
@@ -200,46 +200,71 @@
         $(document).ready(function () {
            
             $(document).on('keyup', '#email', function(){
-              var email = $(this).val();
-              if (!email.length) {
-                  return false;
-              }
-              $.ajax({
-                  url: messages.check_exist_email,
-                  type: 'POST',
-                  data: {
-                      'email' : email,
-                      '_token' : messages.token,
-                  },
-                  success: function(response){
-                     var nameclass = response.status ? 'success' : 'error';
-                      $('#email-error').removeClass('error success');
-                     if($('#email-error').length){
-                        $('#email-error').text(response.message).addClass(nameclass);
-                     }else{
-                         $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
-                     }
-                  }
-              });
-          });
+                var email = $(this).val();
+                if (!email.length) {
+                    return false;
+                }
+                $.ajax({
+                    url: messages.check_exist_email,
+                    type: 'POST',
+                    data: {
+                        'email' : email,
+                        '_token' : messages.token,
+                    },
+                    success: function(response){
+                       var nameclass = response.status ? 'success' : 'error';
+                        $('#email-error').removeClass('error success');
+                       if($('#email-error').length){
+                          $('#email-error').text(response.message).addClass(nameclass);
+                       }else{
+                           $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                       }
+                    }
+                });
+            });
+            
+            $(document).on('input', '.number_format', function (event) {
+                // skip for arrow keys
+                if (event.which >= 37 && event.which <= 40)
+                    return;
+
+                // format number
+                $(this).val(function (index, value) {
+                    return value.replace(/\D/g, "");
+                });
+            });
+          
+            $.validator.addMethod("alphabetsonly", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z]*$/.test(value);
+            });
+            
+            $.validator.addMethod("alphabetsnspacendot", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
+            });
             
             $('#saveAnch').on('click', function (event) {
                 $('input.f_name').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                alphabetsonly: true,
+                                messages: {'alphabetsonly' : "Only letters allowed" }
                             })
                 });
                  $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                alphabetsonly: true,
+                                messages: {'alphabetsonly' : "Only letters allowed" }
                             })
                 });
                 $('input.comp_name').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                alphabetsnspacendot: true,
+                                messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
                             })
                 });
                 $('input.email').each(function () {
@@ -254,7 +279,7 @@
                                 required: true,
                                 number: true,
                                 minlength:10,
-                                maxlength:10
+                                messages: {'minlength' : "Number should be 10 digits"}
                             })
                 });
                 $('select.anchor_user_type').each(function () {
