@@ -27,17 +27,9 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         ]
     );
 
-
-    Route::any('api/tally/entry',[
-        'as' => 'api_tally_entry',
-        'uses' => 'Auth\ApiController@tally_entry'
-        ]
-    );
-
-
     Route::any('api/tally/entries',[
         'as' => 'api_tally_entries',
-        'uses' => 'Auth\ApiController@tally_entry_old'
+        'uses' => 'Auth\ApiController@tally_entry'
         ]
     );
 

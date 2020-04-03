@@ -25,7 +25,7 @@ class ApiController
 	}
 
 
-  public function tally_entry(){
+  public function tally_entry_old(){
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed',
@@ -68,7 +68,7 @@ class ApiController
     return $response;
   }
 
-  public function tally_entry_old(){
+  public function tally_entry(){
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed',
