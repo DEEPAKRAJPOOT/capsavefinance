@@ -199,29 +199,29 @@
 <script type="text/javascript">
         $(document).ready(function () {
            
-            $(document).on('keyup', '#email', function(){
-                var email = $(this).val();
-                if (!email.length) {
-                    return false;
-                }
-                $.ajax({
-                    url: messages.check_exist_email,
-                    type: 'POST',
-                    data: {
-                        'email' : email,
-                        '_token' : messages.token,
-                    },
-                    success: function(response){
-                       var nameclass = response.status ? 'success' : 'error';
-                        $('#email-error').removeClass('error success');
-                       if($('#email-error').length){
-                          $('#email-error').text(response.message).addClass(nameclass);
-                       }else{
-                           $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
-                       }
-                    }
-                });
-            });
+//            $(document).on('keyup', '#email', function(){
+//                var email = $(this).val();
+//                if (!email.length) {
+//                    return false;
+//                }
+//                $.ajax({
+//                    url: messages.check_exist_email,
+//                    type: 'POST',
+//                    data: {
+//                        'email' : email,
+//                        '_token' : messages.token,
+//                    },
+//                    success: function(response){
+//                       var nameclass = response.status ? 'success' : 'error';
+//                        $('#email-error').removeClass('error success');
+//                       if($('#email-error').length){
+//                          $('#email-error').text(response.message).addClass(nameclass);
+//                       }else{
+//                           $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+//                       }
+//                    }
+//                });
+//            });
             
             $(document).on('input', '.number_format', function (event) {
                 // skip for arrow keys
@@ -240,6 +240,25 @@
             
             $.validator.addMethod("alphabetsnspacendot", function(value, element) {
                 return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
+            });
+            
+            $.validator.addMethod("isexistemail", function(value, element) {
+                var email = value;
+                console.log(email);
+                $.ajax({
+                    url: messages.check_exist_email,
+                    type: 'POST',
+                    data: {
+                        'email' : email,
+                        '_token' : messages.token
+                    },
+                    success: function(response){
+                       if(response['status'])
+                           return true;
+                       else
+                           return false;
+                    }
+                });
             });
             
             $('#saveAnch').on('click', function (event) {
@@ -271,6 +290,9 @@
                     $(this).rules("add",
                     {
                         required: true,
+                        email: true,
+                        isexistemail: true,
+                        messages:{'isexistemail' : "This email is already exist."}
                     });
                 });
                 $('input.phone').each(function () {
