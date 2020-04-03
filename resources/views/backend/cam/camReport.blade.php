@@ -526,36 +526,20 @@ $finFlag = false;
                      <td><strong>Aud.</strong></td>
                      @endforeach
                   </tr>
-                  @php
-                     $arrAmt = [];
-                     $colFlag = false;
-                     function test_amt($var)
-                     {
-                        return ($var > 0);
-                     }
-                  @endphp
                   @foreach($FinanceColumns as $key => $finance_col)
+                  <tr>
+                     <td>{{$finance_col}}</td>
                      @foreach($financeData as $year => $fin_data)
+                     <td align="right">
                         @php 
                         $yearly_fin_data = getTotalFinanceData($fin_data);
-                        $growth = $growthData[$year];                        
-                        $arrAmt[] = isset($yearly_fin_data[$key]) ? $yearly_fin_data[$key] : (isset($growth[$key]) ? $growth[$key] : '');
-                        @endphp
-                        @if($loop->last)
-                           @php
-                           $testAmtArr  = (array_filter($arrAmt,"test_amt"));
-                           @endphp
-                           @if(!empty($testAmtArr)) 
-                           <tr>
-                           <td>{{$finance_col}}</td>
-                           @foreach($arrAmt as $kk => $vv)
-                           <td>{{sprintf('%.2f', $vv)}}</td>
-                           @endforeach 
-                           </tr>                          
-                           @endif
-                        @endif                        
-                     @endforeach
-                  @endforeach                  
+                        $growth = $growthData[$year];
+                         @endphp
+                        {{sprintf('%.2f', isset($yearly_fin_data[$key]) ? $yearly_fin_data[$key] : (isset($growth[$key]) ? $growth[$key] : ''))}}
+                        @endforeach
+                     </td>
+                  </tr>
+                  @endforeach
             </tbody>
          </table>
          <!-- 
