@@ -68,6 +68,49 @@ class ApiController
     return $response;
   }
 
+  public function tally_entry_old(){
+    $response = array(
+      'status' => 'failure',
+      'message' => 'Request method not allowed',
+    );
+    if (strpos(php_sapi_name(), 'cli') !== false) {
+        return $this->_setResponse($response, 405);
+    }
+    $where = ['is_posted_in_tally' => '0'];
+    $txnsData = Transactions::getTransactions($where);
+    $batch_id = _getRand(15);
+    $totalRecords = 0;
+    $insertedData = array();
+    if (!$txnsData->isEmpty()) {
+        foreach ($txnsData as $key => $txn) {
+           $tally_data = [
+            'amount' => $txn->amount,
+            'transaction_id' => $txn->trans_id,
+            'batch_id' => $batch_id,
+            'tally_at' => date('Y-m-d H:i:s'),
+          ];
+          $insertedId = FinanceModel::dataLogger($tally_data, 'tally');
+          $insertedData[] = $txn->trans_id;
+        }
+    }
+    if (!empty($insertedData)) {
+      $totalRecords = count($insertedData);
+      while (!empty($insertedData)) {
+        foreach ($insertedData as $key => $value) {
+         $is_updated = FinanceModel:: updatePerfios(['is_posted_in_tally' => '1'], 'transactions', $value, 'trans_id');
+         if ($is_updated) {
+            unset($insertedData[$key]);
+         }
+        }
+      }
+    }
+    if (empty($insertedData)) {
+      $response['message'] =  ($totalRecords > 1 ? $totalRecords .' Records inserted successfully' : ($totalRecords == 0 ? 'No new record found' : '1 Record inserted.'));
+      $response['status'] = 'success';
+    }
+    return $response;
+  }
+
   public function karza_webhook(Request $request){
     $response = array(
       'status' => 'failure',

@@ -107,7 +107,8 @@ var iframe_ids = [
         'viewBatchSendToBankInvoice',
         'invoiceDisbursalTxnUpdate',
         'disburseInvoicePopUp',
-        'EdituploadDocument'
+        'EdituploadDocument',
+        'addVoucherFrame'
     ];
 
 iframe_ids.forEach(function(id) {

@@ -2659,6 +2659,31 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
     
+     public function getVouchersList(Request $request, $vouchers){
+        return DataTables::of($vouchers)
+                ->addColumn(
+                    'voucher_code',
+                    function ($vouchers) {
+                    return $vouchers->voucher_name .'('. (date("Y") - 1) .'-'. date('y') .')';
+                })
+                ->addColumn(
+                    'voucher_name',
+                    function ($vouchers) {
+                    return $vouchers->voucher_name;
+                })
+                ->addColumn(
+                    'transaction_type',
+                    function ($vouchers) {
+                    return $vouchers->transType->trans_name;
+                })
+                ->addColumn(
+                    'action',
+                    function ($vouchers) {
+                    return "No action";
+                })
+                ->make(true);
+    }
+    
        public function getLmsChargeLists(Request $request, $charges){
          $this->chrg_applicable_ids = array(
             '1' => 'Limit Amount',

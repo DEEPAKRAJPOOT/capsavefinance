@@ -986,5 +986,11 @@ Route::group(
         'as' => 'get_soa_client_details',
         'uses' => 'AjaxController@getSoaClientDetails'
     ]);
+
+    Route::post('get-voucher-list', [
+        'as' => 'get_ajax_voucher_list',
+        'uses' => 'AjaxController@getVoucherLists'
+        ]
+    );
      
 });

@@ -10,6 +10,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Charges;
+use App\Inv\Repositories\Models\Master\Voucher as Vouchers;
 use App\Inv\Repositories\Models\Master\Documents;
 use App\Inv\Repositories\Models\Master\Entity;
 use App\Inv\Repositories\Models\Master\DoaLevel;
@@ -73,7 +74,10 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     return $result ?: false;
   }
 
-  
+  public function getAllVouchers()  {
+    $result = Vouchers::orderBy('voucher_name', 'ASC');
+    return $result ?: false;
+  } 
   
   
   public function saveCharges($attributes)
