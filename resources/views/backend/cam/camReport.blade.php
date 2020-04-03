@@ -489,7 +489,9 @@ $finFlag = false;
       $amtval = sprintf('%.2f', isset($yearly_fin_data[$key]) ? $yearly_fin_data[$key] : (isset($growth[$key]) ? $growth[$key] : ''));
    @endphp
    @if($amtval!='0' && $amtval!='0.00')
+      @php 
       $finFlag = true;
+      @endphp
       break;
    @endif
 @endforeach
