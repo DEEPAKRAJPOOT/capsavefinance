@@ -117,18 +117,8 @@ class KarzaController extends Controller
            {
               $res  = "";       
            }
-              
-// $status =  $get_dec['status-code'];
-          
-            ////if($status==101) { 
-              
-              return response()->json(['status' => 1, 'value' => $res]);
-                       
-         /// } else { 
-         ///   return response()->json(['status' => 0, 'value' =>  json_encode($get_dec['result'])]);
-            
-              
-         /// }  */
+           return response()->json(['status' => 1, 'value' => $res]);
+         
     }
     /**
      * Pan status verification API

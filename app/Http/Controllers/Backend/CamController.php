@@ -45,7 +45,7 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 
-date_default_timezone_set('Asia/Kolkata');
+//date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
 {
