@@ -86,4 +86,18 @@ class FinancialJournalItems extends BaseModel {
        $result = \DB::SELECT(\DB::raw($query));
        return $result;
     }
+
+    public static function getTallyTxns(array $where = array()) {
+      $query = "SELECT * FROM rta_tally_entry ";
+        $cond = '';
+        if (!empty($where)) {
+            foreach ($where as $key => $value) {
+                $wh[] = "$key = '$value'";
+            }
+           $cond = ' WHERE ' .implode(' AND ', $wh);
+        }
+        $sql = $query .$cond;
+       $result = \DB::SELECT(\DB::raw($query));
+       return $result;
+    }
 }

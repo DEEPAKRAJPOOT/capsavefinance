@@ -4435,14 +4435,9 @@ class DataRenderer implements DataProviderInterface
                         return $dataRecords->trans_date;
                     })
                     ->editColumn(
-                        'biz_id',
+                        'ledger_name',
                         function ($dataRecords) {
-                        return $dataRecords->biz_id ?? '---';
-                    })
-                    ->editColumn(
-                        'name',
-                        function ($dataRecords) {
-                        return $dataRecords->fullname;
+                        return $dataRecords->ledger_name;
                     })
                     ->editColumn(
                         'amount',
@@ -4452,32 +4447,27 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'amount_type',
                         function ($dataRecords) {
-                        return $dataRecords->entry_type;
+                        return $dataRecords->is_debit_credit == '1' ? 'Credit' : 'Debit';
                     }) 
                     ->editColumn(
                         'reference',
                         function ($dataRecords) {
-                        return $dataRecords->batch_id;
+                        return $dataRecords->ref_no;
                     })   
                     ->editColumn(
                         'journals_name',
                         function ($dataRecords) {
-                        return $dataRecords->trans_name;
+                        return $dataRecords->tally_trans_type_id;
                     })      
                     ->editColumn(
                         'mode_of_pay',
                         function ($dataRecords) {
-                        return $dataRecords->mode_of_pay;
-                    })    
-                    ->editColumn(
-                        'created_by',
-                        function ($dataRecords) {
-                        return $dataRecords->created_by;
-                    })     
+                        return $dataRecords->trans_type;
+                    })       
                     ->editColumn(
                         'narration',
                         function ($dataRecords) {
-                        return $dataRecords->comment;
+                        return $dataRecords->narration;
                     }) 
                     ->make(true);
         }

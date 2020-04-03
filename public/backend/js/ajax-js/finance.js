@@ -183,16 +183,15 @@ try {
                 }
             },
            columns: [
-                    {data: 'biz_id'},
-                    {data: 'fullname'},
+                    
+                    {data: 'date'},
+                    {data: 'ledger_name'},
                     {data: 'amount'},
                     {data: 'amount_type'},
                     {data: 'reference'},
                     {data: 'journals_name'},
                     {data: 'mode_of_pay'},
                     {data: 'narration'},
-                    {data: 'created_by'},
-                    {data: 'date'},
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

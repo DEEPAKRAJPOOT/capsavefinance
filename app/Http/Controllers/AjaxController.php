@@ -4088,12 +4088,6 @@ if ($err) {
         $applications = $dataProvider->getColenderAppList($this->request, $appList);
         return $applications;
     }
-
-    public function getTransactions(DataProviderInterface $dataProvider) { 
-        $this->dataRecords = $this->finRepo->getTally();
-        $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
-        return $this->providerResult;
-    }
     public function lmsGetInvoiceByUser(Request $request ){
         $userId = $request->get('user_id');
         $invoiceIds = $this->lmsRepo->getUserInvoiceIds($userId)->toArray();
@@ -4271,5 +4265,12 @@ if ($err) {
          $vouchersList = $this->masterRepo->getAllVouchers();
          $vouchers = $dataProvider->getVouchersList($this->request, $vouchersList);
          return $vouchers;
+    }
+
+    public function getTransactions(DataProviderInterface $dataProvider) { 
+       // $this->dataRecords = $this->finRepo->getTally(); //for rta_tally table 
+        $this->dataRecords = $this->finRepo->getTallyTxns();
+        $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
+        return $this->providerResult;
     }
 }
