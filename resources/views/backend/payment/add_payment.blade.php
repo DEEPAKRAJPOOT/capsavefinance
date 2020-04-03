@@ -111,7 +111,7 @@
                                             </div>
                                         </div>
                                       
-                                        {{-- <!--start processing fees code-->
+                                     <!--start processing fees code-->
                                       <!--  <div class="col-md-4 processFeeElmnt">
                                             <div class="form-group INR ">
                                                 <label for="txtCreditPeriod">Transaction Amount inclusive GST ? <span class="error_message_label">*</span> </label>
@@ -158,7 +158,7 @@
 
                                                 <input type="text" name="txn_id" id="txn_id" class="form-control">
                                             </div>
-                                        </div>  --> --}}
+                                        </div>  --> 
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
@@ -343,6 +343,22 @@ cursor: pointer;
                 $('#amount').val(0);
             }
         });
+
+        $("#payment_type").on('change', function() {
+            $('#appendInput').empty();
+            var status = $(this).val();
+            if (status == 1) {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+
+            } else if (status == 2) {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+
+            } else if (status == 3) {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+
+            }
+        });
+        
         
         $('#savePayFrm').validate( {
                 rules: {
@@ -471,24 +487,11 @@ cursor: pointer;
        });
     }
 
-    $(document).on('change', '#payment_type', function() {
-        $('#appendInput').empty();
-        var status = $(this).val();
-        if (status == 1) {
-            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
-
-        } else if (status == 2) {
-            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
-
-        } else if (status == 3) {
-            $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
-
-        }
-    });
-    
     $(document).ready(function(){ 
-        
-        /*
+        $(".processFeeElmnt").hide();
+        $(".noGstShow").hide();
+        $(".showGSTVal").hide();
+        $(".showIGSTVal").hide();
         $("input[name='incl_gst']").on('change', function () {
             if( $("input[name='incl_gst']:checked").val() == '1'){
                 $(".noGstShow").show();
@@ -560,68 +563,8 @@ cursor: pointer;
                 }
                 
             }
-        });        
-    */
-     
-        
+        });         
     });
-
-
-   {/* $(document).on('keyup','.searchBusiness',function(){
-       $(".business_list").empty();
-       var search  =  $(this).val();
-      if(search.length > 1)
-      {
-       var postData =  ({'search':search,'_token':messages.token});
-       $('#business_name_error').text('');
-       jQuery.ajax({
-        url: messages.search_business,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                
-                },
-                success: function (data) {
-                     if(data.status > 0) { 
-                       $(data.result).each(function(i,v){
-                        if(v.lms_user!=null) {
-
-                                  $(".business_list").append("<li class='business_list_li' data-user_id="+v.user_id+" data-biz_id="+v.biz_id+" data-virtual_acc="+v.lms_user.virtual_acc_id+">"+v.biz_entity_name+" / "+ v.lms_user.customer_id+"</li>");
-                            } 
-                           })
-                        }
-                        else {
-                            $(".business_list").append("<li class='business_list_li'>No data found</li>"); 
-                        }
-                 }
-       })  
-      }
-      else
-      {
-           return false; 
-        }
-   }) 
-   
-   $(document).on('click','.business_list_li',function(){
-       var business_name =  $(this).text();
-       var user_id =  $(this).attr('data-user_id'); 
-       var virtual_acc = $(this).attr('data-virtual_acc'); 
-       var biz_id = $(this).attr('data-biz_id'); 
-       var business_name    = business_name.split("/");
-       $("#search_bus").val(business_name[0]);
-       $("#customer_id").val(user_id);
-       $("#virtual_acc").val(virtual_acc);
-       $("#biz_id").val(biz_id);
-       $(".business_list").empty();
-       get_remaining_charges();
-    })
-    */}
-   
-
-     
-
    
 </script>
 @endsection
