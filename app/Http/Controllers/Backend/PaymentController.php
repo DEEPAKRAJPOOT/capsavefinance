@@ -152,6 +152,7 @@ class PaymentController extends Controller {
                     'user_id' =>  $request['user_id'],
                     'biz_id' =>  $request['biz_id'],
                     'entry_type' =>1,
+                    'is_waveoff' =>($request['action_type']==2)?1:0,
                     'parent_trans_id' => ($request['charges'])?$request['charges']:null,
                     'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
                     'trans_type'   => $request['trans_type'], 
