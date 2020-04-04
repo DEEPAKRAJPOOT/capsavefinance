@@ -256,14 +256,13 @@ class ApportionmentHelper{
                 'amount' => $restInterestPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'parent_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
             
             $unbookedInterestPaidData = $this->createTransactionData($this->transDetails->user_id, [
                 'amount' => $restInterestPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'parent_trans_id'=>$this->transDetails->trans_id
+                'repay_trans_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
             
             $this->transaction['unbookedInterestDue'][$disbursal->disbursal_id] = $unbookedInterestDueData;
