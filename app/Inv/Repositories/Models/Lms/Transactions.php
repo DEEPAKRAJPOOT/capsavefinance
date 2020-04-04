@@ -65,6 +65,7 @@ class Transactions extends BaseModel {
         'sgst',
         'igst',
         'entry_type',
+        'is_waveoff',
         'tds_per',
         'mode_of_pay',
         'comment',
@@ -245,13 +246,17 @@ class Transactions extends BaseModel {
     */
     public function getTransNameAttribute(){
         if($this->trans_detail->chrg_master_id!='0'){
-            if($this->entry_type == 0){
+            if($this->is_waveoff == 1){
+                return $this->trans_detail->charge->chrg_name.' Waved Off';
+            }if($this->entry_type == 0){
                 return $this->trans_detail->charge->debit_desc;
             }elseif($this->entry_type == 1){
                 return $this->trans_detail->charge->credit_desc;
             }
         }else{
-            if($this->entry_type == 0){
+            if($this->is_waveoff == 1){
+                return $this->trans_detail->trans_name.' Waved Off';
+            }elseif($this->entry_type == 0){
                 return $this->trans_detail->debit_desc;
             }elseif($this->entry_type == 1){
                 return $this->trans_detail->credit_desc;
@@ -261,13 +266,17 @@ class Transactions extends BaseModel {
 
     public function getOppTransNameAttribute(){
         if($this->trans_detail->chrg_master_id!='0'){
-            if($this->entry_type == 0){
+            if($this->is_waveoff == 1){
+                return $this->trans_detail->charge->chrg_name.' Waved Off';
+            }elseif($this->entry_type == 0){
                 return $this->trans_detail->charge->credit_desc;
             }elseif($this->entry_type == 1){
                 return $this->trans_detail->charge->debit_desc;
             }
         }else{
-            if($this->entry_type == 0){
+            if($this->is_waveoff == 1){
+                return $this->trans_detail->trans_name.' Waved Off';
+            }elseif($this->entry_type == 0){
                 return $this->trans_detail->credit_desc;
             }elseif($this->entry_type == 1){
                 return $this->trans_detail->debit_desc;

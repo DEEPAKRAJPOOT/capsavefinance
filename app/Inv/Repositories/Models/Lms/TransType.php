@@ -44,6 +44,8 @@ class TransType extends BaseModel {
     protected $fillable = [
         'user_id',
         'trans_name',
+        'credit_desc',
+        'debit_desc',
         'is_visible',
         'is_active',
         'is_taxable',
