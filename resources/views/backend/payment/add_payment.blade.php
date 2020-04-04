@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Add Manual Payment</h3>
+            <h3>Add Repayment & Wave Off</h3>
             <!-- <small>Application List</small> -->
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Payment</li>
-                <li class="active">Add Manual Payment</li>
+                <li class="active">Add Repayment & Wave Off</li>
             </ol>
         </div>
     </section>
@@ -70,8 +70,9 @@
                                                 <label for="txtCreditPeriod">Action Type <span class="error_message_label">*</span></label>
                                                 <select class="form-control" name="action_type" id="action_type">
                                                     <option value="">Select Action Type</option>
-                                                    <option value="1">Payment</option>
+                                                    <option value="1">Receipt</option>
                                                     <option value="2">Wave Off</option>
+                                                    <option value="3">TDS</option>
                                                 </select>
                                                 <span id="action_type_error" class="error"></span>
                                             </div>
@@ -177,6 +178,12 @@
                                         <div class="col-md-4 payment-methods">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 tds_certificate">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">TDS Certificate No <span class="error_message_label">*</span> </label>
+                                                <input type="text" id="tds_certificate_no" name="tds_certificate_no" class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -299,12 +306,18 @@ cursor: pointer;
             $("#date_of_payment").val('');
             $("#amount").val('');
             userData['action_type'] = $(this).val();
-            get_all_unsettled_trans_type(userData);
             
-            if($(this).val()==1){
-                $(".payment-methods").show();
-            }else{
-                $(".payment-methods").hide();
+            get_all_unsettled_trans_type(userData);
+            $(".payment-methods").hide();
+            $(".tds_certificate").hide();
+            
+            switch ($(this).val()) {
+                case 1:
+                    $(".payment-methods").show();
+                    break;
+                case 2:
+                    $(".tds_certificate").show();
+                    break;
             }
         });
 
@@ -438,12 +451,12 @@ cursor: pointer;
                     userData['charges'] = chargeResult;
                     $(chargeResult).each(function(i,v){
                         $('#waiveoff_div').show();
-                        $('#charges').html('<option value="">Select Charges</option>');
+                        $('#charges').html('<option value="">Select Transaction</option>');
                         $('#charges').append('<option index="'+ i +'" value="'+ v.trans_id +'">' + v.trans_name +'<small>('+v.trans_date+')</small>'+ '</option>');
                     })
                 }else{
                     $('#waiveoff_div').hide();
-                    $('#charges').html('<option value="">Select Charges</option>');
+                    $('#charges').html('<option value="">Select Transaction</option>');
                     $('#amount').val(''); 
                 }
                 $('.isloader').hide();     
@@ -461,7 +474,7 @@ cursor: pointer;
                 $('.isloader').show();
             },
             success: function(res) {
-                $('#trans_type').html('<option value="">Select Charges</option>');
+                $('#trans_type').html('<option value="">Select Transaction Type</option>');
                 if (res.status == 'success') {
                     chargeResult = res.result;
                     $(chargeResult).each(function(i,v){
