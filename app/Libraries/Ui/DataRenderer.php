@@ -3834,6 +3834,9 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
+            ->addColumn('repay_trans_id', function($trans){
+                return $trans->repay_trans_id;
+            })
             ->addColumn('customer_id', function($trans){
                 $data = '';
                 if($trans->lmsUser){
