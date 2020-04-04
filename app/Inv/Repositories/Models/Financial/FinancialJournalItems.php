@@ -88,7 +88,7 @@ class FinancialJournalItems extends BaseModel {
     }
 
     public static function getTallyTxns(array $where = array()) {
-      $query = "SELECT * FROM rta_tally_entry ";
+      $query = "SELECT batch_no, IF(is_debit_credit = 0 , 'Debit', 'Credit') entry_type, (CASE WHEN tally_trans_type_id = 1 THEN 'Payment' WHEN tally_trans_type_id = 2 THEN 'Payment Receipt' ELSE 'Journal' END) voucher_type, tally_voucher_code voucher_code, tally_voucher_date voucher_date, invoice_no, invoice_date, ledger_name, amount, ref_no, ref_amount, acc_no, ifsc_code, bank_name, cheque_amount, cross_using, trans_date,  (CASE WHEN trans_type = 1 THEN 'Online' WHEN trans_type = 2 THEN 'Cheque' WHEN trans_type = 3 THEN 'Cash' ELSE 'NA' END) as trans_type, inst_no, inst_date, favoring_name, remarks, narration, is_updated is_posted FROM rta_tally_entry ";
         $cond = '';
         if (!empty($where)) {
             foreach ($where as $key => $value) {
