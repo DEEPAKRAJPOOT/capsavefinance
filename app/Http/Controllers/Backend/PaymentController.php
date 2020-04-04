@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
 use App\Helpers\FinanceHelper;
 use App\Inv\Repositories\Contracts\FinanceInterface;
+use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller {
 
@@ -88,7 +89,10 @@ class PaymentController extends Controller {
     public function  savePayment(Request $request)
     {
         $validatedData = $request->validate([
-                'payment_type' => 'required',
+               'payment_type' => Rule::requiredIf(function () use ($request) {
+                    return ($request->action_type == 2)?false:true;
+                }),
+                
                 'trans_type' => 'required',
                 'customer_id' => 'required', 
                 'virtual_acc' => 'required',  
@@ -98,6 +102,7 @@ class PaymentController extends Controller {
                 'description' => 'required'
                // 'txn_id' => 'required'
           ]);
+          
         $user_id  = Auth::user()->user_id;
         $mytime = Carbon::now(); 
 
@@ -163,7 +168,7 @@ class PaymentController extends Controller {
                     'sgst' =>  $sgst,
                     'cgst' =>  $cgst,
                     'igst' =>  $igst,
-                    'mode_of_pay' =>  $request['payment_type'],
+                    'mode_of_pay' => ($request['payment_type'])?$request['payment_type']:'',
                     'comment' =>  $request['description'],
                     'utr_no' =>  $utr,
                     'txn_id' => $request['txn_id'],

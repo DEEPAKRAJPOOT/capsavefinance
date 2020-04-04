@@ -159,7 +159,7 @@
                                                 <input type="text" name="txn_id" id="txn_id" class="form-control">
                                             </div>
                                         </div>  --> 
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 payment-methods">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
                                                 @php
@@ -174,7 +174,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 payment-methods">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>
                                             </div>
@@ -301,6 +301,12 @@ cursor: pointer;
             $("#amount").val('');
             userData['action_type'] = $(this).val();
             get_all_unsettled_trans_type(userData);
+            
+            if($(this).val()==1){
+                $(".payment-methods").show();
+            }else{
+                $(".payment-methods").hide();
+            }
         });
 
         $("#trans_type").on('change',function(){
