@@ -263,7 +263,6 @@ cursor: pointer;
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
-                startDate: new Date()
             });
 
         var sample_data = new Bloodhound({
@@ -326,6 +325,7 @@ cursor: pointer;
                 get_remaining_charges();
             }else{
                 if(trans_type==17){
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
                     $('#waiveoff_div').hide();
                     get_repayment_amount();
                 }else{
