@@ -159,7 +159,7 @@
                                                 <input type="text" name="txn_id" id="txn_id" class="form-control">
                                             </div>
                                         </div>  --> 
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 payment-methods">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
                                                 @php
@@ -174,7 +174,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 payment-methods">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>
                                             </div>
@@ -263,7 +263,6 @@ cursor: pointer;
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
-                startDate: new Date()
             });
 
         var sample_data = new Bloodhound({
@@ -280,7 +279,7 @@ cursor: pointer;
             name: 'sample_data',
             display: 'customer_id',
             source:sample_data,
-            limit:10,
+            limit: 'Infinity',
             templates:{
                 suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
             },
@@ -301,6 +300,12 @@ cursor: pointer;
             $("#amount").val('');
             userData['action_type'] = $(this).val();
             get_all_unsettled_trans_type(userData);
+            
+            if($(this).val()==1){
+                $(".payment-methods").show();
+            }else{
+                $(".payment-methods").hide();
+            }
         });
 
         $("#trans_type").on('change',function(){
@@ -320,6 +325,7 @@ cursor: pointer;
                 get_remaining_charges();
             }else{
                 if(trans_type==17){
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
                     $('#waiveoff_div').hide();
                     get_repayment_amount();
                 }else{

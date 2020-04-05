@@ -1784,16 +1784,19 @@ class DataRenderer implements DataProviderInterface
                        {
                            $type =  'N/A';
                        }
-                    $mode  = ['1' =>  'Online RTGS/NEFT','2' => 'Cheque','3' => 'NACH','4' => 'Other'];
-                    $refNo  = ['1' =>  'utr_no','2' => 'cheque_no','3' => 'unr_no','4' => 'unr_no'];
-                    $refNoShpw  = ['1' =>  'Utr No.','2' => 'Cheque No.','3' => 'Unr No.','4' => 'Other '];
-                    $rfNo = $refNo[$trans->mode_of_pay];
-                    $refNoShpw = $refNoShpw[$trans->mode_of_pay];
                        $transaction = '';
-                       $transaction .= $trans->mode_of_pay ? '<span><b>Payment Mode:&nbsp;</b>'.$mode[$trans->mode_of_pay].'</span>' : '';
-                       $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
-                       $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
-                       return $transaction;
+                       
+                    if($trans->mode_of_pay){
+                        $mode  = ['1' =>  'Online RTGS/NEFT','2' => 'Cheque','3' => 'NACH','4' => 'Other'];
+                        $refNo  = ['1' =>  'utr_no','2' => 'cheque_no','3' => 'unr_no','4' => 'unr_no'];
+                        $refNoShpw  = ['1' =>  'Utr No.','2' => 'Cheque No.','3' => 'Unr No.','4' => 'Other '];
+                        $rfNo = $refNo[$trans->mode_of_pay];
+                        $refNoShpw = $refNoShpw[$trans->mode_of_pay];
+                           $transaction .= $trans->mode_of_pay ? '<span><b>Payment Mode:&nbsp;</b>'.$mode[$trans->mode_of_pay].'</span>' : '';
+                           $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
+                           $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
+                    }
+                    return $transaction;
                 })
                  ->addColumn(
                     'comment',
@@ -3831,6 +3834,9 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
+            ->addColumn('repay_trans_id', function($trans){
+                return $trans->repay_trans_id;
+            })
             ->addColumn('customer_id', function($trans){
                 $data = '';
                 if($trans->lmsUser){
