@@ -107,40 +107,43 @@ class FinanceController extends Controller {
             ];
         foreach ($result as $key => $value) {
             $fetchedArr = (array)$value;
+            $voucherDate = date('Y, d F',strtotime($fetchedArr['voucher_date']));
             if (strtolower($fetchedArr['voucher_type']) == 'payment') {
                 $records['PAYMENT'][] =  [
-                    "voucher_code" => $fetchedArr['voucher_code'],
+                    "voucher_no" => $fetchedArr['voucher_code'],
                     "voucher_type" => $fetchedArr['voucher_type'],
-                    "voucher_date" => date('Y, d F',strtotime($fetchedArr['voucher_date'])),
+                    "voucher_date" => $voucherDate,
                     "ledger_name" => $fetchedArr['ledger_name'],
-                    "entry_type" => $fetchedArr['entry_type'],
                     "amount" => $fetchedArr['amount'],
-                    "ref_amount" => $fetchedArr['ref_amount'],
-                    "ref_no" => $fetchedArr['ref_no'],
-                    "trans_type" => $fetchedArr['trans_type'],
-                    "acc_no" => $fetchedArr['acc_no'],
+                    "dr_/_cr" => $fetchedArr['entry_type'],
+                    "reference_no" => $fetchedArr['ref_no'],
+                    "reference_amount" => $fetchedArr['ref_amount'],
+                    "transaction_type" => $fetchedArr['mode_of_pay'],
+                    "a_/_c_no" => $fetchedArr['acc_no'],
                     "ifsc_code" => $fetchedArr['ifsc_code'],
                     "bank_name" => $fetchedArr['bank_name'],
                     "cheque_amount" => $fetchedArr['cheque_amount'],
                     "cross_using" => $fetchedArr['cross_using'],
-                    "trans_date" => $fetchedArr['trans_date'],
                     "inst_no" => $fetchedArr['inst_no'],
                     "inst_date" => $fetchedArr['inst_date'],
                     "favoring_name" => $fetchedArr['favoring_name'],
-                    "remarks" => $fetchedArr['remarks'],
+                    "narration" => $fetchedArr['narration'],
                     "is_posted" => $fetchedArr['is_posted'],
                 ];
             }else{
                 $records['JOURNAL'][] = [
                     "batch_no" => $fetchedArr['batch_no'],
-                    "invoice_no" => $fetchedArr['invoice_no'],
+                    "voucher_no" => $fetchedArr['voucher_code'],
                     "voucher_type" => $fetchedArr['voucher_type'],
-                    "invoice_date" => $fetchedArr['invoice_date'],
-                    "ledger_name" => $fetchedArr['ledger_name'],
-                    "entry_type" => $fetchedArr['entry_type'],
-                    "amount" => $fetchedArr['amount'],
-                    "ref_amount" => $fetchedArr['ref_amount'],
+                    "voucher_date" => $voucherDate,
+                    "dr_ledger_name" => $fetchedArr['trans_type'],
+                    "dr_amount" => $fetchedArr['amount'],
                     "ref_no" => $fetchedArr['ref_no'],
+                    "ref_amount" => $fetchedArr['amount'],
+                    "cr_ledger_name" => $fetchedArr['ledger_name'],
+                    "cr_amount" => $fetchedArr['amount'],
+                    "cr_ref_no" => $fetchedArr['ref_no'],
+                    "cr_ref_amount" => $fetchedArr['amount'],
                     "narration" => $fetchedArr['narration'], 
                 ]; 
             }

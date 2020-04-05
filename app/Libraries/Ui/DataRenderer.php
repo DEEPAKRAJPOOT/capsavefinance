@@ -4436,7 +4436,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'date',
                         function ($dataRecords) {
-                        return $dataRecords->trans_date;
+                        return $dataRecords->voucher_date;
                     })
                     ->editColumn(
                         'ledger_name',
