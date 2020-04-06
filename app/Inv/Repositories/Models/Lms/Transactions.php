@@ -65,6 +65,8 @@ class Transactions extends BaseModel {
         'sgst',
         'igst',
         'entry_type',
+        'tds_cert',
+        'is_tds',
         'is_waveoff',
         'tds_per',
         'mode_of_pay',
@@ -248,7 +250,9 @@ class Transactions extends BaseModel {
         if($this->trans_detail->chrg_master_id!='0'){
             if($this->is_waveoff == 1){
                 return $this->trans_detail->charge->chrg_name.' Waved Off';
-            }if($this->entry_type == 0){
+            }elseif($this->is_tds == 1){
+                return $this->trans_detail->charge->chrg_name.' TDS';
+            }elseif($this->entry_type == 0){
                 return $this->trans_detail->charge->debit_desc;
             }elseif($this->entry_type == 1){
                 return $this->trans_detail->charge->credit_desc;
@@ -256,6 +260,9 @@ class Transactions extends BaseModel {
         }else{
             if($this->is_waveoff == 1){
                 return $this->trans_detail->trans_name.' Waved Off';
+            }
+            if($this->is_tds == 1){
+                return $this->trans_detail->trans_name.' TDS';
             }elseif($this->entry_type == 0){
                 return $this->trans_detail->debit_desc;
             }elseif($this->entry_type == 1){
@@ -268,6 +275,8 @@ class Transactions extends BaseModel {
         if($this->trans_detail->chrg_master_id!='0'){
             if($this->is_waveoff == 1){
                 return $this->trans_detail->charge->chrg_name.' Waved Off';
+            }if($this->is_tds == 1){
+                return $this->trans_detail->charge->chrg_name.' TDS';
             }elseif($this->entry_type == 0){
                 return $this->trans_detail->charge->credit_desc;
             }elseif($this->entry_type == 1){
@@ -276,6 +285,8 @@ class Transactions extends BaseModel {
         }else{
             if($this->is_waveoff == 1){
                 return $this->trans_detail->trans_name.' Waved Off';
+            }if($this->is_tds == 1){
+                return $this->trans_detail->trans_name.' TDS';
             }elseif($this->entry_type == 0){
                 return $this->trans_detail->credit_desc;
             }elseif($this->entry_type == 1){
@@ -331,6 +342,10 @@ class Transactions extends BaseModel {
 
         if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
         $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
+
+        if($this->is_tds && $this->tds_cert)
+        $data .= ' TDS CERT No: '.$this->tds_cert ;
+
         return $data;
     }
 

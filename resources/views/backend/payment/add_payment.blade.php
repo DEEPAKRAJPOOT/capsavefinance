@@ -313,10 +313,10 @@ cursor: pointer;
             $(".tds_certificate").hide();
             
             switch ($(this).val()) {
-                case 1:
+                case "1":
                     $(".payment-methods").show();
                     break;
-                case 2:
+                case "3":
                     $(".tds_certificate").show();
                     break;
             }
@@ -335,27 +335,38 @@ cursor: pointer;
             var action_type = $.trim($("#action_type").val());
             var trans_type = $.trim($(this).val());
 
-            if(action_type=='2'){
-                if(trans_type==32){
-                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
-                    $('#waiveoff_div').hide();
-                    get_interest_paid_amount();   
-                }else{
-                    get_remaining_charges();
-                }
-            }
-            if(action_type=='1'){
-                if(trans_type==17){
-                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
-                    $('#waiveoff_div').hide();
-                    get_repayment_amount();
-                }if(trans_type==32){
-                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
-                    $('#waiveoff_div').hide();
-                    get_interest_paid_amount();   
-                }else{
-                    get_remaining_charges();
-                }
+            switch (action_type) {
+                case "1":
+                    if(trans_type==17){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_repayment_amount();
+                    }if(trans_type==32){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_interest_paid_amount();   
+                    }else{
+                        get_remaining_charges();
+                    }
+                    break;
+                case "2":
+                    if(trans_type==32){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_interest_paid_amount();   
+                    }else{
+                        get_remaining_charges();
+                    }
+                    break;
+                case "3":
+                    if(trans_type==32){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_interest_paid_amount();   
+                    }else{
+                        get_remaining_charges();
+                    }
+                    break;
             }
         });
 
@@ -368,8 +379,10 @@ cursor: pointer;
             var amt = parseFloat(chargeData['remaining']);
             if(chargeData){
                 $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#amount').val(amt.toFixed(2)); 
-                $('#amount').attr('max',chargeData['remaining']);
+                if(userData['action_type']!=3){
+                    $('#amount').val(amt.toFixed(2)); 
+                }
+                $('#amount').attr('max',amt.toFixed(2));
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 $('#amount').val(0);
@@ -426,7 +439,10 @@ cursor: pointer;
                     },
                     gst:{
                         required:$("#incl_gst:checked").val()>0?false:true,
-                        }
+                    },
+                    tds_certificate_no:{
+                        required:true,
+                    }
                 },
                 messages: {
                 customer_id: {
@@ -510,6 +526,9 @@ cursor: pointer;
             success: function(resultData) {                        
                 var amt = parseFloat(resultData.repayment_amount);
                 if (resultData.repayment_amount != ""){
+                    if(userData['action_type']!=3){
+                        $('#amount').val(amt.toFixed(2)); 
+                    }
                     $("#amount").val(amt.toFixed(2)); 
                     $('#amount').removeAttr('max');  
                 } else {
@@ -531,7 +550,7 @@ cursor: pointer;
                 if (res.status == 'success') {
                     $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
                     $('#amount').val(amt.toFixed(2));
-                    $('#amount').attr('max',res.amount);
+                    $('#amount').attr('max',amt.toFixed(2));
                 }else{
                     $('#amount').val(''); 
                 }
