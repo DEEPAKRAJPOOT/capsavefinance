@@ -12,7 +12,7 @@
             rules: {
                 'doc_file[]': {
                     required: true,
-                    extension: "jpg,png,pdf,doc,dox,xls,xlsx",
+                    extension: "jpg,png,pdf,doc,dox,xls,xlsx,msg",
                     filesize : 200000000,
                 },
                 'file_bank_id' : {
@@ -77,7 +77,7 @@
             messages: {
                 'doc_file[]': {
                     required: "Please select file",
-                    extension:"Please select jpg,png,pdf,doc,dox,xls,xlsx type format only.",
+                    extension:"Please select jpg,png,pdf,doc,dox,xls,xlsx,msg type format only.",
                     filesize:"maximum size for upload 20 MB.",
                 },
                 'file_bank_id': {

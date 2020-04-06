@@ -85,8 +85,8 @@
             <div class="row">
                 <div class="col-md-12">
                    <div class="form-group">
-                      <label for="email">Comment *</label>
-                      <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Enter comment here ." required=""></textarea>
+                      <label for="email">Comment</label>
+                      <textarea type="text" name="comment" value="" class="form-control" tabindex="1" placeholder="Enter comment here ."></textarea>
                    </div>
                 </div>
             </div>
@@ -145,7 +145,6 @@
         $('select[name=finc_year]').parent('div').hide();
         $('select[name=gst_month]').parent('div').hide();
         $('select[name=gst_year]').parent('div').hide();
-        $('textarea[name=comment]').parent('div').hide();
         if (docId != 6 && $('input[name="is_pwd_protected"]').is(':checked') && $('input[name="is_pwd_protected"]:checked').val() == '1') {
             $('#password_file_div').show();
         }

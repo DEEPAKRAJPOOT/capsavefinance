@@ -251,6 +251,13 @@
     }
 </script>
 <script>
+      var ckeditorOptions =  {
+        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
+        filebrowserUploadMethod: 'form',
+        imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
+        disallowedContent: 'img{width,height};'
+      };
+    
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
      pickTime: false,
@@ -259,6 +266,6 @@
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
- CKEDITOR.replace('debt_position_comments');
+ CKEDITOR.replace('debt_position_comments', ckeditorOptions);
 </script>
 @endsection

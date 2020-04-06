@@ -6,7 +6,6 @@ Route::group(
     ['middleware' => 'auth'],
     function () {
     
-    
    //////////////////Pan card authontication//////////////////////////
     Route::post(
         'chk_user_pan_karza',
@@ -815,6 +814,10 @@ Route::group(
         'as' => 'front_program_list',
         'uses' => 'AjaxController@getProgramSingleList'
     ]); 
+      Route::POST('get_tenor', [
+        'as' => 'get_tenor',
+        'uses' => 'AjaxController@getTenor'
+    ]);  
      Route::POST('front_lms_program_list', [
         'as' => 'front_lms_program_list',
         'uses' => 'AjaxController@getProgramLmsSingleList'
@@ -960,6 +963,11 @@ Route::group(
     Route::post('get-repayment-amount', [
         'as' => 'get_repayment_amount',
         'uses' => 'AjaxController@getRepaymentAmount'
+    ]); 
+
+    Route::get('get_remaining_charges', [
+        'as' => 'get_remaining_charges',
+        'uses' => 'AjaxController@getRemainingCharges'
     ]);  
 
     Route::post('check-unique-charge', [
@@ -972,4 +980,26 @@ Route::group(
         'as' => 'check_exist_email',
         'uses' => 'AjaxController@getExistEmailStatus'
     ]);
+
+    //ajax route for check the email is exist or not
+    Route::post('check-exist-emails-anchor', [
+        'as' => 'check_exist_email_anchor',
+        'uses' => 'AjaxController@getExistEmailStatusAnchor'
+    ]);
+
+    Route::post('get-soa-client-details',[
+        'as' => 'get_soa_client_details',
+        'uses' => 'AjaxController@getSoaClientDetails'
+    ]);
+
+    Route::get('get_all_unsettled_trans_type',[
+        'as' => 'get_all_unsettled_trans_type',
+        'uses' => 'AjaxController@getAllUnsettledTransType'
+    ]);
+
+    Route::post('get-voucher-list', [
+        'as' => 'get_ajax_voucher_list',
+        'uses' => 'AjaxController@getVoucherLists'
+    ]);
+     
 });

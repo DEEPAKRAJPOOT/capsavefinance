@@ -199,34 +199,25 @@ class DisbursalController extends Controller
 					}
 				}
 
-
-			}
-			
-			if ($disburseAmount) {
 				if($disburseType == 2) {
 					// disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $disburseAmount, 'trans_date' => $disburseDate], $transId, 16);
+					$transactionData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $fundedAmount, 'trans_date' => $disburseDate], $transId, 16);
 					$createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
-					
 					// interest transaction $tranType = 9 for interest acc. to mst_trans_type table
-					$intrstAmt = round($totalInterest,2);
-					if ($intrstAmt > 0.00) {
-						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
+				
+					if ($interest > 0.00) {
+						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9);
 						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 
-						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+						$intrstTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $interest, 'trans_date' => $disburseDate], $transId, 9, 1);
 						$createTransaction = $this->lmsRepo->saveTransaction($intrstTrnsData);
 					}
 
-					$marginAmt = round($totalMargin,2);
-					if ($marginAmt > 0.00) {
-						$marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 0);
+					if ($margin > 0.00) {
+						$marginTrnsData = $this->createTransactionData($disburseRequestData['user_id'], ['amount' => $margin, 'trans_date' => $disburseDate], $transId, 10, 0);
 						$createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
 					}
-
-					
-
 				}
 			}
 		}

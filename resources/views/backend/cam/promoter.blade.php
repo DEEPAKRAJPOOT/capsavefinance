@@ -338,6 +338,12 @@
 @endsection
 @section('jscript')
 <script>
-CKEDITOR.replace('promoter_cmnt');
+      var ckeditorOptions =  {
+        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
+        filebrowserUploadMethod: 'form',
+        imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
+        disallowedContent: 'img{width,height};'
+      };   
+CKEDITOR.replace('promoter_cmnt', ckeditorOptions);
 </script>
 @endsection

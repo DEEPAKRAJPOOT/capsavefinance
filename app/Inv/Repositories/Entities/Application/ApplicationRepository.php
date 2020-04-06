@@ -1486,6 +1486,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return TransType::where('id', $transTypeId)
                 ->first();
     }
+    /**
+     * Get trans type
+     *      
+     * @param array $whereCondition | optional
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getTransTypeDataByChargeId($chrg_master_id)
+    {
+        return TransType::where('chrg_master_id', $chrg_master_id)
+                ->first();
+    }
     
     /**
      * Get prgm charge data
@@ -1660,5 +1672,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         } catch (Exception $ex) {
             return $ex;
         }
+    }
+    
+    public function getProgramByProgramName($name)
+    {
+        return Program::getProgramByProgramName($name);
+    }
+    
+    public function getTotalLimit($biz_id,$program_id){
+        return AppProgramLimit::where('biz_id','=',$biz_id)->where('product_id','=',$program_id)->sum('limit_amt');
     }
 }

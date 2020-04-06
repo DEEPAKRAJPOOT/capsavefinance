@@ -448,7 +448,7 @@ function checkValidation(){
         setError('input[name=limit_amt]', 'Product Limit amount can not exceed from Total Credit Assessed');
         flag = false;
     }else if(parseInt(limit_amt.replace(/,/g, '')) > (parseInt(tot_limit_amt.replace(/,/g, '')) - prgmLimitTotal)){
-        setError('input[name=limit_amt]', 'Your Product limit has been expired');
+        setError('input[name=limit_amt]', 'Product Limit amount can not exceed from Total Credit Assessed');
         flag = false;
     }else{
         // TAKE REST

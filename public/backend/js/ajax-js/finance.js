@@ -183,17 +183,15 @@ try {
                 }
             },
            columns: [
-                    {data: 'invoice_no'},
-                    {data: 'journal_type'},
+                    
+                    {data: 'voucher_type'},
+                    {data: 'voucher_code'},
                     {data: 'date'},
-                    {data: 'full_name'},
-                    {data: 'debit_amount'},
-                    {data: 'reference'},
-                    {data: 'debit_amount'},
-                    {data: 'credit_amount'},
-                    {data: 'reference'},
-                    {data: 'credit_amount'},
-                    {data: 'label'},
+                    {data: 'ledger_name'},
+                    {data: 'amount'},
+                    {data: 'entry_type'},
+                    {data: 'batch_no'},
+                    {data: 'mode_of_pay'},
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

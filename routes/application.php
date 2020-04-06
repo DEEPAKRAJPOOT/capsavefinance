@@ -27,6 +27,12 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         ]
     );
 
+    Route::any('api/tally/entries',[
+        'as' => 'api_tally_entries',
+        'uses' => 'Auth\ApiController@tally_entry'
+        ]
+    );
+
 
 
      Route::group(
@@ -144,7 +150,16 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                  'as' => 'front_invoice_success_status',
                 'uses' => 'Application\InvoiceController@invoiceSuccessStatus'
             ]); 
-            
+
+            Route::get('/edit-upload-document', [
+                'as' => 'front_edit_upload_document',
+                'uses' => 'Application\ApplicationController@editUploadDocument'
+            ]);
+
+            Route::post('/update-edit-upload-document', [
+                'as' => 'front_update_edit_upload_document',
+                'uses' => 'Application\ApplicationController@updateEditUploadDocument'
+            ]);
             
             Route::post('document-save',
                 [

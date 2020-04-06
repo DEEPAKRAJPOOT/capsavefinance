@@ -130,6 +130,16 @@ class AppProgramOffer extends BaseModel {
       return  self::where(['app_prgm_limit_id'=>$oid, 'is_active'=>1,'status' =>1 ])->first();      
 
     }
+     public static function getTenor($res)
+    {
+      return  self::where(['anchor_id'=>$res['anchor_id'],'prgm_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'is_active'=>1,'status' =>1 ])->first();      
+
+    }
+       public static function getAmountOfferLimit($res)
+    {
+      return  self::where(['anchor_id'=>$res['anchor_id'],'prgm_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'is_active'=>1,'status' =>1 ])->sum('prgm_limit_amt');      
+
+    }
 
     /**
      * Get All Offer Data
@@ -157,7 +167,7 @@ class AppProgramOffer extends BaseModel {
         if(is_null($product_id) || $product_id == ''){
             $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
         }else{
-            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->get();
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->get();
         }
         return $offers ? $offers : null;
     }
@@ -431,4 +441,43 @@ class AppProgramOffer extends BaseModel {
         
         return isset($result[0]) ? $result : [];
     }
+     public static function getUserProgramOfferByPrgmId($prgmId,$user_id)
+    {
+        $result = self::select('app_prgm_offer.*','app.user_id','users.f_name','users.l_name','biz.biz_entity_name','lms_users.customer_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')                
+                ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->join('users', 'users.user_id', '=', 'app.user_id')                
+                ->join('lms_users', function ($join) {
+                    $join->on('lms_users.user_id', '=', 'users.user_id');                    
+                    $join->on('lms_users.app_id', '=', 'app.app_id');
+                })                
+                ->where('app_product.product_id', 1)
+                ->where('app_prgm_offer.prgm_id', $prgmId)
+                ->where('users.user_id', $user_id)
+                ->where('app_prgm_offer.is_approve', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->groupBy('app.user_id')        
+                ->get();
+        
+        return isset($result[0]) ? $result : [];
+    }
+
+    public static function getProgramOfferByAppId($appId, $prgm_offer_id = null)
+    {
+        $query = self::select('app_prgm_offer.app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'offer_chrg.charge_id', 'offer_chrg.chrg_value', 'offer_chrg.chrg_type', 'mst_chrg.chrg_name', 'mst_chrg.is_gst_applicable', 'mst_chrg.gst_percentage')
+                ->join('offer_chrg', 'app_prgm_offer.prgm_offer_id', '=', 'offer_chrg.prgm_offer_id')
+                ->join('mst_chrg', 'offer_chrg.charge_id', '=', 'mst_chrg.id')                
+                ->where('app_prgm_offer.is_active', '1')
+                ->where('app_prgm_offer.app_id', $appId);
+                if (!empty($prgm_offer_id)) {
+                    $query->where('app_prgm_offer.prgm_offer_id', $prgm_offer_id);
+                }
+                $result = $query->get();
+        return !$result->isEmpty() ? $result : [];
+    }
+    
+    public static function chargeName(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
+    }    
 }

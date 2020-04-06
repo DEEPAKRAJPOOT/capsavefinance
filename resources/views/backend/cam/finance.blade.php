@@ -1058,6 +1058,12 @@
    })
 </script>
 <script>
-   CKEDITOR.replace('financial_risk_comments');
+      var ckeditorOptions =  {
+        filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
+        filebrowserUploadMethod: 'form',
+        imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
+        disallowedContent: 'img{width,height};'
+      };
+   CKEDITOR.replace('financial_risk_comments', ckeditorOptions);
 </script>
 @endsection

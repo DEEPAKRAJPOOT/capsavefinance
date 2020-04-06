@@ -435,11 +435,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   
 	}   
 	
-	public static function getAllTransCharges()
+	public static function getAllTransCharges($user_id)
 	{
 		try
 	   {
-		  return ChargesTransactions::getAllTransCharges(); 
+		  return ChargesTransactions::getAllTransCharges($user_id); 
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
@@ -610,7 +610,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     
     public function getRepaymentAmount($userId, $transType)
     {
-        return Transactions::getRepaymentAmount($userId, $transType);
+        return Transactions::getUserBalance($userId);
     }
     
       public function searchBusiness($search)
@@ -889,6 +889,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function checkChargeName($chargeName, $excludeChargeId=null)
     {
         return Charges::checkChargeName($chargeName, $excludeChargeId);
-    }       
-    
+    }
+
+    public function getallBatch()
+	{
+		return DisbursalBatch::get();
+	}        
+
+	public function findDisbursalByInvoiceId($invoiceId)
+	{
+		return Disbursal::where('invoice_id', $invoiceId)
+				->get();
+	}
 }

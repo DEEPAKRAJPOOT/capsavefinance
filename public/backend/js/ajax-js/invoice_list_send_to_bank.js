@@ -13,7 +13,10 @@ try {
                 "url": messages.backend_get_invoice_list_bank, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.customer_code = $('input[name=customer_code]').val();
+                    d.selected_date = $('input[name=selected_date]').val();
+                     d.biz_id = $('input[name=search_biz]').val();
+                    d.batch_id = $('select[name=batch_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -29,13 +32,14 @@ try {
                 {data: 'bank'},
                 {data: 'total_actual_funded_amt'},
                 {data: 'total_invoice'},
+                {data: 'updated_at'},
                 {data: 'action'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0, 2, 3, 4, 5, 6]}]
         });
 
         //Search
-        $('#searchbtn').on('click', function (e) {
+        $('#search_biz').on('click', function (e) {
             oTable.draw();
         });                  
     });

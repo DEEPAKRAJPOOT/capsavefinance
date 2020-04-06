@@ -45,7 +45,7 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 
-date_default_timezone_set('Asia/Kolkata');
+//date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
 {
@@ -355,7 +355,12 @@ class CamController extends Controller
         }
       } 
       $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
-
+      foreach($supplyOfferData as $key=>$val){
+        $supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($val->anchor_id)->pluck('f_name')->first();
+        $supplyOfferData[$key]['programData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id], ['*'], ['programDoc', 'programCharges'])->first();
+        $supplyOfferData[$key]['subProgramData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
+      }
+      
       $roleData =  Helpers::getUserRole()->first();
       $is_editable = ($roleData->id == config('common.user_role.APPROVER'))?0:1;
       return view('backend.cam.reviewer_summary', [

@@ -3,6 +3,9 @@
 namespace App\Helpers;
 
 use App\Inv\Repositories\Models\Financial\FinancialDisbursal as Disbursal;
+use App\Inv\Repositories\Models\Lms\Transactions as Transaction;
+use App\Inv\Repositories\Models\BizInvoice as Invoice;
+
 class FinanceHelper {
 
     private $transConfigId;
@@ -15,7 +18,14 @@ class FinanceHelper {
         $this->finRepo = $finRepo;
     }
 
-    public function finExecution($transConfigId = null, $invoice_id = null, $appId = null, $userId = null, $bizId = null) {
+    public function finExecution($transConfigId = null, $invoice_txn_id = null, $appId = null, $userId = null, $bizId = null) {
+        $invoice_no = null;
+        if ($transConfigId == 1) {
+          $invoice_data = Invoice::find($invoice_txn_id);
+          $invoice_no = $invoice_data->invoice_no;
+          $appId = $invoice_data->app_id;
+          $bizId = $invoice_data->biz_id;
+        }
         try{
             $this->transConfigId = $transConfigId;
             if(isset($transConfigId) && !empty($transConfigId)) {
@@ -27,11 +37,13 @@ class FinanceHelper {
                             $this->inputData = [];
                             $this->inputData = [ 
                                 'journal_id' => $val->journal_id,
-                                'entry_type' => $val->trans_type,       //need to update
-                                'invoice_id' => $invoice_id ?? 0,       //need to update
-                                'reference' => _getRand(15),        //need to update
+                                'entry_type' => $val->trans_type,
+                                'invoice_id' => ($transConfigId == 1 ? $invoice_no: null),
+                                'trans_id' => ($transConfigId != 1 ? $invoice_txn_id : null),       //need to update
+                                'user_id' => (int)$userId ?? 0 ,
+                                'reference' => _getRand(15),
                                 'date' => \Carbon\Carbon::now()->format('Y-m-d h:i:s')
-                            ]; 
+                            ];
                             $outputQryJE = $this->finRepo->saveJournalEntries($this->inputData);
                             if(isset($outputQryJE->journal_entry_id) && !empty($outputQryJE->journal_entry_id)) {
                                 foreach($this->jiConfigData as $jikey=>$jival) {  
@@ -49,7 +61,7 @@ class FinanceHelper {
                                     $sysParameterStr = $val->variable_name;
                                     $sysFunctionStr = $val->sys_func_name;
                                     $amount = 0;
-                                    $amount = $this->getAmtByFormulaCal($formula, explode(',',$sysParameterStr), explode(',',$sysFunctionStr), $invoice_id, $appId, $userId, $bizId);
+                                    $amount = $this->getAmtByFormulaCal($formula, explode(',',$sysParameterStr), explode(',',$sysFunctionStr), $invoice_txn_id, $appId, $userId, $bizId);
                                     if($jival->value_type_val==1) {     //credit
                                         $this->inputData['credit_amount'] = $amount;
                                     } else {                            //debit
@@ -92,11 +104,11 @@ class FinanceHelper {
         }        
     }
 
-    private function getAmtByFormulaCal($formula=null, $sysParameterStr=null, $sysFunctionStr=null, $invoice_id=null, $appId = null, $userId = null, $bizId = null) {
+    private function getAmtByFormulaCal($formula=null, $sysParameterStr=null, $sysFunctionStr=null, $invoice_txn_id=null, $appId = null, $userId = null, $bizId = null) {
         $varFuncArr = array_combine($sysParameterStr, $sysFunctionStr);
         foreach ($varFuncArr as $variable => $function) {
            $funcName = '_'.$function;
-           $var_val = $this->$funcName($variable, $invoice_id, $appId, $userId, $bizId);
+           $var_val = $this->$funcName($variable, $invoice_txn_id, $appId, $userId, $bizId);
            $varFuncArr[$variable] = $var_val;
         }
 
@@ -125,19 +137,25 @@ class FinanceHelper {
 
     public function __call($function, $args){
         $variable = $args[0] ?? null;
-        $invoice_id = $args[1] ?? null;
+        $invoice_txn_id = $args[1] ?? null;
       switch ($variable) {
           case 'PRINCIPAL':
-              $amt = $this->_sysFuncPrincipal($variable, $invoice_id);
+              $amt = $this->_sysFuncPrincipal($variable, $invoice_txn_id);
               break;
           case 'RATE':
-               $amt = $this->_sysFuncRate($variable, $invoice_id);
+               $amt = $this->_sysFuncRate($variable, $invoice_txn_id);
               break;
           case 'TENOR':
-               $amt = $this->_sysFuncTenor($variable, $invoice_id);
+               $amt = $this->_sysFuncTenor($variable, $invoice_txn_id);
               break;
           case 'OD_INTEREST_RATE':
-               $amt = $this->sysFuncOdIntRate($variable, $invoice_id);
+               $amt = $this->_sysFuncOdIntRate($variable, $invoice_txn_id);
+              break;
+          case 'REPAYMENT_AMOUNT':
+               $amt = $this->_sysFuncRepayAmt($variable, $invoice_txn_id);
+              break;
+          case 'REPAYMENT_AMOUNT':
+               $amt = $this->_sysFuncChargeAmt($variable, $invoice_txn_id);
               break;
           default:
                $amt = 0;
@@ -156,8 +174,18 @@ class FinanceHelper {
        return (!empty($disbursalData) ? $disbursalData->tenor_days : 0);
     }
 
-    private function sysFuncOdIntRate($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
+    private function _sysFuncOdIntRate($variable, $invoice_id = null, $appId = null, $userId = null, $bizId = null){
        $disbursalData = Disbursal::where('invoice_id', $invoice_id)->first();
        return (!empty($disbursalData) ? $disbursalData->overdue_interest_rate : 0);
+    }
+
+    private function _sysFuncRepayAmt($variable, $invoice_txn_id = null, $appId = null, $userId = null, $bizId = null){
+       $transactionData = Transaction::find($invoice_txn_id);
+       return (!empty($transactionData) ? $transactionData->amount : 0);
+    }
+
+    private function _sysFuncChargeAmt($variable, $invoice_txn_id = null, $appId = null, $userId = null, $bizId = null){
+       $transactionData = Transaction::find($invoice_txn_id);
+       return (!empty($transactionData) ? $transactionData->amount : 0);
     }
 }
