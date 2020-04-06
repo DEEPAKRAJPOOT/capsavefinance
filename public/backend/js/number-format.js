@@ -21,7 +21,8 @@ var decimalPlace = 2;
             }
         });
 
-        $("input[type=text].formatNum").on('input', function(){
+        //$("input[type=text].formatNum").on('input', function(){
+        $(document).on('input', "input[type=text].formatNum", function(){            
                 //this.value = this.value.match(/^\d+\.?\d{0,2}/);	
                 if($(this).attr("decimalplace")) {
                         decimalPlaceTemp = parseInt($(this).attr("decimalplace"));
@@ -33,11 +34,13 @@ var decimalPlace = 2;
                 this.value = this.value.match(rx);				
         });
 
-        $("input[type=text].formatNum").on('focus', function(){
+        //$("input[type=text].formatNum").on('focus', function(){
+        $(document).on('focus', "input[type=text].formatNum", function(){
                 this.value = this.value.replace(/,/gi, "");
         });	
 
-        $("input[type=text].formatNum").on('blur', function(){
+        //$("input[type=text].formatNum").on('blur', function(){
+        $(document).on('blur', "input[type=text].formatNum", function(){
                 if (this.value == '') return false;
                 if($(this).attr("decimalplace")) {
                         decimalPlaceTemp = parseInt($(this).attr("decimalplace"));
@@ -87,6 +90,19 @@ var decimalPlace = 2;
                 }
             });
         });
+        
+        $(document).on('input', "input[type=text].amtpercnt", function(){            
+                //this.value = this.value.match(/^\d+\.?\d{0,2}/);	
+                if($(this).attr("decimalplace")) {
+                        decimalPlaceTemp = parseInt($(this).attr("decimalplace"));
+                } else {
+                        decimalPlaceTemp = decimalPlace;
+                }			
+                var expression = "^\\d+\\.?\\d{0,"+decimalPlaceTemp.toString()+"}";
+                var rx = new RegExp(expression, 'i');
+                this.value = this.value.match(rx);				
+        });
+        
     });    
 } catch (e) {
     if (typeof console !== 'undefined') {

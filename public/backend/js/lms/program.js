@@ -361,6 +361,7 @@ try {
             let new_line = parent_div.first().clone();
             new_line.find('.add_more').show();
             new_line.find('select[name="charge[0]"]').attr({id: 'charge_' + num, name: 'charge[' + num + '] ', 'data-rel': num}).val('').removeClass('error')
+            new_line.find('select[name="chrg_calculation_type[0]"]').attr({'data-ct_idx': num});
             new_line.find("label[class='error']").remove();
             new_line.find('.delete_btn').show();
             new_line.find('.html_append').html('');
@@ -667,32 +668,55 @@ try {
 
         $(document).on('click', '.charge_calculation_type', function () {
             sdt = $(this).val();
-            $('.chrg_calculation_amt').val('');
+            
+            //$('.chrg_calculation_amt').val('');            
+            var id = $(this).data('ct_idx');
+            $('input[name="chrg_calculation_amt['+id+']"]').val('');
             if (sdt == 1) {
                 $(this).closest('.amtpercentrow').find('.sdt').text('Amount');
-                 $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtfixed').removeClass('amtpercnt');
+                $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('formatNum').removeClass('amtpercnt');                
                 $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-percent').addClass('fa-inr')
                 $(this).closest('.amtpercentrow').find('#approved_limit_div').hide();
             } else {
                 $(this).closest('.amtpercentrow').find('.sdt').text('Percent');
                 $(this).closest('.amtpercentrow').find('.approved_limit_div').removeClass('hide');
-                $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtpercnt').removeClass('amtfixed');
+                $(this).closest('.amtpercentrow').find('.chrg_calculation_amt').addClass('amtpercnt').removeClass('formatNum');
                 $(this).closest('.amtpercentrow').find('.fa-change').removeClass('fa-inr').addClass('fa-percent');
                 $(this).closest('.amtpercentrow').find('#approved_limit_div').show();
             }
         });
         
         $(document).on('keypress', '.chrg_calculation_amt', function(e) {
+            /*
             $numpad = e.code.replace(/[^0-9]/g,'');
             $chrg_calculation_amt = $(this).val();
             $oldval = $chrg_calculation_amt.replace(/[^0-9]/g,''); 
-            $realval = $oldval + $numpad;            
+            $realval = $oldval + $numpad;         
             if($(this).hasClass('amtpercnt') && parseInt($realval) > 100){
                 return false;
             }
             return true;
+            */
         })
 
+        $(document).on('input', '.amtpercnt', function(e) {
+            
+            $chrg_calculation_amt = $(this).val().replace(/,/gi, "");
+            console.log($chrg_calculation_amt);
+            if ($(this).hasClass('amtpercnt') && parseInt($chrg_calculation_amt) > 100){
+                return false;
+            }
+            return true;
+            /*
+            $numpad = e.code.replace(/[^0-9]/g,'');
+            $realval = $oldval + $numpad;         
+            if($(this).hasClass('amtpercnt') && parseInt($realval) > 100){
+                return false;
+            }
+            return true;
+            */
+        })
+        
         $('#searchbtn').on('click', function (e) {
             oTables.draw();
         }); 
