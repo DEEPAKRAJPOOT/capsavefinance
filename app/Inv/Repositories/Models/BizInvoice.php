@@ -381,7 +381,7 @@ public static function updateInvoice($invoiceId,$status)
 
     public static function getAllUserBatchInvoice($data)
     {
-        return self::with('app.acceptedOffer')
+        return self::with('app.acceptedOffer')->with('disbursal')
             ->whereHas('disbursal', function($query) use ($data) {
                     $query->where($data);
                 })
