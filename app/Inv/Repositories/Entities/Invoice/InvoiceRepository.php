@@ -970,6 +970,18 @@ use CommonRepositoryTraits;
         }
         
     } 
+    
+    public function updateInvoiceUser($uid)
+    {
+        try
+        {
+            return BizInvoice::updateInvoiceUser($uid);
+           
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    }  
    public function getAllBankInvoiceCustomers($batch_id)
     {
         $this->result = Disbursal::getAllBankInvoiceCustomers($batch_id);
