@@ -340,9 +340,10 @@ cursor: pointer;
             var element = $(this).find('option:selected'); 
             var index = element.attr("index"); 
             var chargeData = userData['charges'][index];
+            var amt = parseFloat(chargeData['remaining']);
             if(chargeData){
                 $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#amount').val(Math.round(chargeData['remaining'],2)); 
+                $('#amount').val(amt.toFixed(2)); 
                 $('#amount').attr('max',chargeData['remaining']);
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date());
@@ -482,9 +483,10 @@ cursor: pointer;
                 $('.isloader').show();
             },
             success: function(resultData) {                        
+                var amt = parseFloat(resultData.repayment_amount);
                 if (resultData.repayment_amount != ""){
-                    $("#amount").val(Math.round(resultData.repayment_amount,2)); 
-                    $('#amount').attr('max',resultData.repayment_amount);                          
+                    $("#amount").val(amt.toFixed(2)); 
+                    $('#amount').removeAttr('max');  
                 } else {
                     $("#amount").val("");
                 }
