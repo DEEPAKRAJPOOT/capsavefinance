@@ -113,6 +113,9 @@ class TransType extends BaseModel {
 
         if($action_type == 1)
         array_push($trans_type,(int)config('lms.TRANS_TYPE.REPAYMENT'));
+        //if($action_type == 2)
+        array_push($trans_type,(int)config('lms.TRANS_TYPE.INTEREST_PAID'));
+
         
         $query = "SELECT t1.trans_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
         FROM `get_all_charges` t1 

@@ -4276,6 +4276,24 @@ if ($err) {
         return response()->json($data);
     }
 
+    public function getInterestPaidAmount(Request $request){
+        $user_id = $request->get('user_id');
+        $trans_type = $request->get('trans_type');
+        $interestPaid = Transactions::where('user_id','=',$user_id)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_PAID'))
+        ->sum('amount');
+        $interestDue = Transactions::where('user_id','=',$user_id)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->sum('amount');
+        $data['amount'] = $interestDue-$interestPaid;
+        if ($data['amount']>0) {
+            $data['status'] = 'success';
+        }else{
+            $data['status'] = 'empty';
+        }
+        return response()->json($data);   
+    }
+
     public function getAllUnsettledTransType(Request $request){
         $user_id = $request->get('user_id');
         $action_type = $request->get('action_type');
@@ -4300,5 +4318,13 @@ if ($err) {
         $this->dataRecords = $this->finRepo->getTallyTxns();
         $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
         return $this->providerResult;
+    }
+    
+    public function checkAppliedCharge(Request $request)
+    {
+        $chargeId = $request->get('chrg_id');
+        $chargeData = $this->lmsRepo->getChargeData(['charge_id' => $chargeId]);        
+        $result = $chargeData && isset($chargeData[0]) ? 1 : 0;         
+        return response()->json(['is_active' => $result]);         
     }
 }

@@ -435,11 +435,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   
 	}   
 	
-	public static function getAllTransCharges($user_id)
+	public static function getAllTransCharges()
 	{
 		try
 	   {
-		  return ChargesTransactions::getAllTransCharges($user_id); 
+		  return ChargesTransactions::getAllTransCharges(); 
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
@@ -901,4 +901,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return Disbursal::where('invoice_id', $invoiceId)
 				->get();
 	}
+        
+    /**
+     * Get charge Data
+     * 
+     * @param array $where 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function getChargeData($where)
+    {
+        return ProgramCharges::getChargeData($where);
+    }        
 }

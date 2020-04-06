@@ -90,7 +90,10 @@ class PaymentController extends Controller {
     {
         $validatedData = $request->validate([
                'payment_type' => Rule::requiredIf(function () use ($request) {
-                    return ($request->action_type == 2)?false:true;
+                    return ($request->action_type == 1)?true:false;
+                }),
+                'tds_certificate_no' => Rule::requiredIf(function() use ($request) {
+                    return ($request->action_type == 3)?true:false;
                 }),
                 
                 'trans_type' => 'required',
@@ -157,7 +160,9 @@ class PaymentController extends Controller {
                     'user_id' =>  $request['user_id'],
                     'biz_id' =>  $request['biz_id'],
                     'entry_type' =>1,
+                    'is_tds' =>($request['action_type']==3)?1:0,
                     'is_waveoff' =>($request['action_type']==2)?1:0,
+                    'tds_cert'=>($request['tds_certificate_no'])?$request['tds_certificate_no']:null,
                     'parent_trans_id' => ($request['charges'])?$request['charges']:null,
                     'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
                     'trans_type'   => $request['trans_type'], 
@@ -215,7 +220,7 @@ class PaymentController extends Controller {
                    $arr = [ 'user_id' => $request['user_id'],
                             'trans_by' => 2, 
                             'trans_type'   =>  17,
-                             'entry_type' =>1,
+                            'entry_type' =>1,
                             'trans_date' => ($request['payment_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $request['payment_date'][$i])->format('Y-m-d') : '',
                             'virtual_acc_id' => $request['virtual_acc_no'][$i],
                             'amount' => $request['amount'][$i],

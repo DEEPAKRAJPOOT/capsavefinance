@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Add Manual Payment</h3>
+            <h3>Add Repayment & Wave Off</h3>
             <!-- <small>Application List</small> -->
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Payment</li>
-                <li class="active">Add Manual Payment</li>
+                <li class="active">Add Repayment & Wave Off</li>
             </ol>
         </div>
     </section>
@@ -70,8 +70,9 @@
                                                 <label for="txtCreditPeriod">Action Type <span class="error_message_label">*</span></label>
                                                 <select class="form-control" name="action_type" id="action_type">
                                                     <option value="">Select Action Type</option>
-                                                    <option value="1">Payment</option>
+                                                    <option value="1">Receipt</option>
                                                     <option value="2">Wave Off</option>
+                                                    <option value="3">TDS</option>
                                                 </select>
                                                 <span id="action_type_error" class="error"></span>
                                             </div>
@@ -179,6 +180,12 @@
                                                 <span id="appendInput"></span>
                                             </div>
                                         </div>
+                                        <div class="col-md-4 tds_certificate">
+                                            <div class="form-group">
+                                                <label for="txtCreditPeriod">TDS Certificate No <span class="error_message_label">*</span> </label>
+                                                <input type="text" id="tds_certificate_no" name="tds_certificate_no" class="form-control">
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
@@ -250,7 +257,8 @@ cursor: pointer;
         token: "{{ csrf_token() }}",
         get_remaining_charges_url : "{{route('get_remaining_charges')}}",
         get_customer: "{{ route('get_customer') }}",
-        get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}"
+        get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
+        get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}"
     };
 
     var userData = '';
@@ -299,12 +307,18 @@ cursor: pointer;
             $("#date_of_payment").val('');
             $("#amount").val('');
             userData['action_type'] = $(this).val();
-            get_all_unsettled_trans_type(userData);
             
-            if($(this).val()==1){
-                $(".payment-methods").show();
-            }else{
-                $(".payment-methods").hide();
+            get_all_unsettled_trans_type(userData);
+            $(".payment-methods").hide();
+            $(".tds_certificate").hide();
+            
+            switch ($(this).val()) {
+                case "1":
+                    $(".payment-methods").show();
+                    break;
+                case "3":
+                    $(".tds_certificate").show();
+                    break;
             }
         });
 
@@ -321,16 +335,38 @@ cursor: pointer;
             var action_type = $.trim($("#action_type").val());
             var trans_type = $.trim($(this).val());
 
-            if(action_type=='2'){
-                get_remaining_charges();
-            }else{
-                if(trans_type==17){
-                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
-                    $('#waiveoff_div').hide();
-                    get_repayment_amount();
-                }else{
-                    get_remaining_charges();
-                }
+            switch (action_type) {
+                case "1":
+                    if(trans_type==17){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_repayment_amount();
+                    }if(trans_type==32){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_interest_paid_amount();   
+                    }else{
+                        get_remaining_charges();
+                    }
+                    break;
+                case "2":
+                    if(trans_type==32){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_interest_paid_amount();   
+                    }else{
+                        get_remaining_charges();
+                    }
+                    break;
+                case "3":
+                    if(trans_type==32){
+                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#waiveoff_div').hide();
+                        get_interest_paid_amount();   
+                    }else{
+                        get_remaining_charges();
+                    }
+                    break;
             }
         });
 
@@ -343,8 +379,10 @@ cursor: pointer;
             var amt = parseFloat(chargeData['remaining']);
             if(chargeData){
                 $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#amount').val(amt.toFixed(2)); 
-                $('#amount').attr('max',chargeData['remaining']);
+                if(userData['action_type']!=3){
+                    $('#amount').val(amt.toFixed(2)); 
+                }
+                $('#amount').attr('max',amt.toFixed(2));
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 $('#amount').val(0);
@@ -401,7 +439,10 @@ cursor: pointer;
                     },
                     gst:{
                         required:$("#incl_gst:checked").val()>0?false:true,
-                        }
+                    },
+                    tds_certificate_no:{
+                        required:true,
+                    }
                 },
                 messages: {
                 customer_id: {
@@ -437,14 +478,14 @@ cursor: pointer;
                 if (res.status == 'success') {
                     chargeResult = res.result;
                     userData['charges'] = chargeResult;
+                    $('#waiveoff_div').show();
+                    $('#charges').html('<option value="">Select Charges</option>');
                     $(chargeResult).each(function(i,v){
-                        $('#waiveoff_div').show();
-                        $('#charges').html('<option value="">Select Charges</option>');
                         $('#charges').append('<option index="'+ i +'" value="'+ v.trans_id +'">' + v.trans_name +'<small>('+v.trans_date+')</small>'+ '</option>');
                     })
                 }else{
                     $('#waiveoff_div').hide();
-                    $('#charges').html('<option value="">Select Charges</option>');
+                    $('#charges').html('<option value="">Select Transaction</option>');
                     $('#amount').val(''); 
                 }
                 $('.isloader').hide();     
@@ -462,7 +503,7 @@ cursor: pointer;
                 $('.isloader').show();
             },
             success: function(res) {
-                $('#trans_type').html('<option value="">Select Charges</option>');
+                $('#trans_type').html('<option value="">Select Transaction Type</option>');
                 if (res.status == 'success') {
                     chargeResult = res.result;
                     $(chargeResult).each(function(i,v){
@@ -485,6 +526,9 @@ cursor: pointer;
             success: function(resultData) {                        
                 var amt = parseFloat(resultData.repayment_amount);
                 if (resultData.repayment_amount != ""){
+                    if(userData['action_type']!=3){
+                        $('#amount').val(amt.toFixed(2)); 
+                    }
                     $("#amount").val(amt.toFixed(2)); 
                     $('#amount').removeAttr('max');  
                 } else {
@@ -493,6 +537,25 @@ cursor: pointer;
                 $('.isloader').hide();
             }
        });
+    }
+
+    function get_interest_paid_amount(){
+        $.ajax({
+            type: "POST",
+            url: messages.get_interest_paid_amount,
+            data: {user_id: $("#user_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+            dataType: "JSON",
+            success: function (res) {
+                var amt = parseFloat(res.amount);
+                if (res.status == 'success') {
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#amount').val(amt.toFixed(2));
+                    $('#amount').attr('max',amt.toFixed(2));
+                }else{
+                    $('#amount').val(''); 
+                }
+            }
+        });
     }
 
     $(document).ready(function(){ 
