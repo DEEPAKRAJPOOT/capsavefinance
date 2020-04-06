@@ -196,11 +196,11 @@ class FinanceController extends Controller {
 
 
                     if ($entry_type == 'debit') {
-                        $records['PAYMENT'][] = $company;
-                        $records['PAYMENT'][] = $bank;
+                        $records['PAYMENT'][] = $company_row;
+                        $records['PAYMENT'][] = $bank_row;
                     }else{
-                        $records['PAYMENT'][] = $bank;
-                        $records['PAYMENT'][] = $company;
+                        $records['PAYMENT'][] = $bank_row;
+                        $records['PAYMENT'][] = $company_row;
                     }
                         /*$records['PAYMENT'][] = [
                             "voucher_no" => $fetchedArr['voucher_code'],
