@@ -4983,7 +4983,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetSentToBankInvCustomers(Request $request, $disbursal)
     {
         return DataTables::of($disbursal)
-                ->rawColumns(['batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
+                ->rawColumns(['disburse_detail','batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
                 ->editColumn(
                     'batch_id',
                     function ($disbursal) {
@@ -5051,7 +5051,15 @@ class DataRenderer implements DataProviderInterface
                     function ($disbursal) {   
                         return $disbursal->total_invoice;
                 }) 
-                
+                 ->addColumn(
+                    'disburse_detail',
+                    function ($disbursal) {                        
+                        $inv_date = '';
+                        $inv_date .= $disbursal->disburse_date ? '<span><b>Disburse Date:&nbsp;</b>'.Carbon::parse($disbursal->disburse_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $disbursal->payment_due_date ? '<br><span><b>Payment Due Date:&nbsp;</b>'.Carbon::parse($disbursal->payment_due_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $disbursal->invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$disbursal->invoice->tenor.'</span>' : '';
+                        return $inv_date;
+                })  
                 ->addColumn(
                     'action',
                     function ($disbursal) {
