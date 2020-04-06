@@ -970,6 +970,11 @@ Route::group(
         'uses' => 'AjaxController@getRemainingCharges'
     ]);  
 
+    Route::post('get_interest_paid_amount', [
+        'as' => 'get_interest_paid_amount',
+        'uses' => 'AjaxController@getInterestPaidAmount'
+    ]);  
+
     Route::post('check-unique-charge', [
         'as' => 'check_unique_charge',
         'uses' => 'AjaxController@checkUniqueCharge'

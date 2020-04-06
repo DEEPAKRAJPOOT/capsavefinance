@@ -250,7 +250,8 @@ cursor: pointer;
         token: "{{ csrf_token() }}",
         get_remaining_charges_url : "{{route('get_remaining_charges')}}",
         get_customer: "{{ route('get_customer') }}",
-        get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}"
+        get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
+        get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}"
     };
 
     var userData = '';
@@ -322,12 +323,23 @@ cursor: pointer;
             var trans_type = $.trim($(this).val());
 
             if(action_type=='2'){
-                get_remaining_charges();
-            }else{
+                if(trans_type==32){
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#waiveoff_div').hide();
+                    get_interest_paid_amount();   
+                }else{
+                    get_remaining_charges();
+                }
+            }
+            if(action_type=='1'){
                 if(trans_type==17){
                     $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
                     $('#waiveoff_div').hide();
                     get_repayment_amount();
+                }if(trans_type==32){
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#waiveoff_div').hide();
+                    get_interest_paid_amount();   
                 }else{
                     get_remaining_charges();
                 }
@@ -437,9 +449,9 @@ cursor: pointer;
                 if (res.status == 'success') {
                     chargeResult = res.result;
                     userData['charges'] = chargeResult;
+                    $('#waiveoff_div').show();
+                    $('#charges').html('<option value="">Select Charges</option>');
                     $(chargeResult).each(function(i,v){
-                        $('#waiveoff_div').show();
-                        $('#charges').html('<option value="">Select Charges</option>');
                         $('#charges').append('<option index="'+ i +'" value="'+ v.trans_id +'">' + v.trans_name +'<small>('+v.trans_date+')</small>'+ '</option>');
                     })
                 }else{
@@ -493,6 +505,25 @@ cursor: pointer;
                 $('.isloader').hide();
             }
        });
+    }
+
+    function get_interest_paid_amount(){
+        $.ajax({
+            type: "POST",
+            url: messages.get_interest_paid_amount,
+            data: {user_id: $("#user_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+            dataType: "JSON",
+            success: function (res) {
+                var amt = parseFloat(res.amount);
+                if (res.status == 'success') {
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#amount').val(amt.toFixed(2));
+                    $('#amount').attr('max',res.amount);
+                }else{
+                    $('#amount').val(''); 
+                }
+            }
+        });
     }
 
     $(document).ready(function(){ 
