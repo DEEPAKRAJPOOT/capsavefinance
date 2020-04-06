@@ -619,49 +619,44 @@ $finFlag = false;
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Risk Comments</td>
           </tr>
       </table>
-      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
-
       @if(isset($positiveRiskCmntArr) && count($positiveRiskCmntArr)>0)
-         <div class="data ">
-            <table class="table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#138864">Deal Positives</td>
-                </tr>
-            </table>
-            @foreach($positiveRiskCmntArr as $postkey =>$postval)         
-               <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
+            <table class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+               <thead>
+               <tr role="row">
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="40%">Deal Positives</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending"></th>
+               </tr>
+               </thead>           
+               @foreach($positiveRiskCmntArr as $postkey =>$postval)         
                   <tbody>
                      <tr>
                         <td width="50%"><strong>{{$postval['cond']}}</strong></td>
                         <td width="50%">{{$postval['timeline']}}</td>
                      </tr>                     
-                  </tbody>
-               </table>          
-            @endforeach
-         </div> 
+                  </tbody>       
+               @endforeach
+            </table>
       @endif
 
       @if(isset($negativeRiskCmntArr) && count($negativeRiskCmntArr)>0)
-         <div class="data ">
-               <table class="table" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#138864">Deal Negatives</td>
-                    </tr>
-               </table>
+            <table class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+               <thead>
+               <tr role="row">
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="40%">Deal Negatives</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending"></th>
+               </tr>
+               </thead> 
                @foreach($negativeRiskCmntArr as $postkey =>$postval)
-               <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
                   <tbody>
                      <tr>
                         <td width="50%"><strong>{{$postval['cond']}}</strong></td>
                         <td width="50%">{{$postval['timeline']}}</td>
                      </tr>                     
-                  </tbody>
-               </table>
+                  </tbody>               
                @endforeach
-         </div>
-      @endif
-      <!-- </div> -->
-   </div>
+            </table>
+      @endif  
+   </div> 
 @endif
 
 @if(isset($reviewerSummaryData->recommendation))
