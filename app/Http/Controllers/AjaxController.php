@@ -4178,24 +4178,24 @@ if ($err) {
     }
 
     public function getExistEmailStatus(Request $req){
-       $response = [
-           'status' => false,
-           'message' => 'Some error occured. Please try again'
-       ];
-       $email = $req->get('email');
-       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          $response['message'] =  'Email Id is not valid';
-          return $response;
-       }
-       $status = $this->userRepo->getExistEmailStatus($email);
-       if($status != false){
-          $response['status'] = false;
-          $response['message'] =  'Sorry! Email is already in use.';
-       }else{
-           $response['status'] = true;
-           $response['message'] =  '';
-       }
-       return $response;
+        $response = [
+            'status' => false
+        ];
+        $email = $req->get('email');
+        $status = $this->userRepo->getUserByEmail(trim($email));
+        
+        if($status == false){
+            $status1 = $this->userRepo->getExistEmailStatus(trim($email));
+            if($status1 != false){
+                $response['status'] = 'false';
+            }else{
+                $response['status'] = 'true';
+            }
+        }else{
+           $response['status'] = 'false'; 
+        }
+        
+        return response()->json( $response );
    }
 
     public function checkUniqueCharge(Request $request) 
