@@ -105,7 +105,7 @@ var decimalPlace = 2;
                  this.value = 100;
             }
         });
-        
+              
     });    
 } catch (e) {
     if (typeof console !== 'undefined') {

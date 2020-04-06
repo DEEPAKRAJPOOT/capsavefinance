@@ -1002,4 +1002,8 @@ Route::group(
         'uses' => 'AjaxController@getVoucherLists'
     ]);
      
+    Route::post('check-applied-charge', [
+        'as' => 'check_applied_charge',
+        'uses' => 'AjaxController@checkAppliedCharge'
+    ]);       
 });

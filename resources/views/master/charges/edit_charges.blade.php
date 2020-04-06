@@ -129,7 +129,10 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
-
+    var messages={
+        check_applied_charge_url:"{{ route('check_applied_charge') }}",
+        token: "{{ csrf_token() }}"
+    }
     $(document).on('click', 'input[name="chrg_calculation_type"]', function (e) {
         if ($(this).val() == '2') {
             $('#approved_limit_div').show();
@@ -149,6 +152,29 @@
     })
 
     $(document).ready(function () {
+        
+        $.validator.addMethod("isChrgApplied",
+            function(value, element, params) {
+                var result = true;
+                var data = {chrg_id : params.chrg_id, _token: messages.token};
+                
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.check_applied_charge_url,
+                    data: data,
+                    success: function(data) {                         
+                        if (value == 2) {                            
+                            result = (data.is_active == 1) ? false : true;
+                        } else {
+                            result = true;
+                        }
+                    }
+                });                
+                return result;                
+            },'This charge is already applied, You can\'t make in-active.'
+        );  
+
         var is_gst_applicable = $('input[name="is_gst_applicable"]:checked');
         var chrg_calculation_type = $('input[name="chrg_calculation_type"]:checked');
 
@@ -189,6 +215,9 @@
                 },
                 'is_active': {
                     required: true,
+                    isChrgApplied: {
+                        chrg_id:$("#id").val()
+                    }                    
                 },
             },
             messages: {
