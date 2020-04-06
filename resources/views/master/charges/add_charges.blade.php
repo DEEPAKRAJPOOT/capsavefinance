@@ -40,12 +40,12 @@
                         <label for="chrg_type">Charge Calculation</label><br />
                         <div class="form-check-inline ">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input" name="chrg_calculation_type" value="1">Fixed
+                                <input type="radio" class="form-check-input charge_calculation_type" name="chrg_calculation_type" value="1">Fixed
                             </label>
                         </div>
                         <div class="form-check-inline">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input" checked name="chrg_calculation_type" value="2">Percentage
+                                <input type="radio" class="form-check-input charge_calculation_type" checked name="chrg_calculation_type" value="2">Percentage
                             </label>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
             </div>
             <div class="form-group col-md-6 float-md-right">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
-                <input type="text" class="form-control formatNum" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" maxlength="10">
+                <input type="text" class="form-control amtpercnt" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" maxlength="10">
             </div>
 
         </div>
@@ -217,6 +217,17 @@
                 },
             }
         });
+        
+        $(document).on('click', '.charge_calculation_type', function () {
+            
+            $('#chrg_calculation_amt').val('');            
+
+            if ($(this).val() == 1) {
+                 $('#chrg_calculation_amt').addClass('formatNum').removeClass('amtpercnt');                
+            } else {
+                 $('#chrg_calculation_amt').addClass('amtpercnt').removeClass('formatNum');
+            }
+        });        
     });
 </script>
 @endsection

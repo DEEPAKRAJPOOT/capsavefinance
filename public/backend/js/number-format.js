@@ -91,16 +91,19 @@ var decimalPlace = 2;
             });
         });
         
-        $(document).on('input', "input[type=text].amtpercnt", function(){            
-                //this.value = this.value.match(/^\d+\.?\d{0,2}/);	
-                if($(this).attr("decimalplace")) {
-                        decimalPlaceTemp = parseInt($(this).attr("decimalplace"));
-                } else {
-                        decimalPlaceTemp = decimalPlace;
-                }			
-                var expression = "^\\d+\\.?\\d{0,"+decimalPlaceTemp.toString()+"}";
-                var rx = new RegExp(expression, 'i');
-                this.value = this.value.match(rx);				
+        $(document).on('input', "input[type=text].amtpercnt", function(){     
+            if($(this).attr("decimalplace")) {
+                    decimalPlaceTemp = parseInt($(this).attr("decimalplace"));
+            } else {
+                    decimalPlaceTemp = decimalPlace;
+            }			
+            var expression = "^\\d+\\.?\\d{0,"+decimalPlaceTemp.toString()+"}";
+            var rx = new RegExp(expression, 'i');
+            this.value = this.value.match(rx);            
+            var amt = Number(this.value);            
+            if (amt > 100) {
+                 this.value = 100;
+            }
         });
         
     });    

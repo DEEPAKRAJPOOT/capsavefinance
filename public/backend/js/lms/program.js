@@ -698,24 +698,6 @@ try {
             return true;
             */
         })
-
-        $(document).on('input', '.amtpercnt', function(e) {
-            
-            $chrg_calculation_amt = $(this).val().replace(/,/gi, "");
-            console.log($chrg_calculation_amt);
-            if ($(this).hasClass('amtpercnt') && parseInt($chrg_calculation_amt) > 100){
-                return false;
-            }
-            return true;
-            /*
-            $numpad = e.code.replace(/[^0-9]/g,'');
-            $realval = $oldval + $numpad;         
-            if($(this).hasClass('amtpercnt') && parseInt($realval) > 100){
-                return false;
-            }
-            return true;
-            */
-        })
         
         $('#searchbtn').on('click', function (e) {
             oTables.draw();

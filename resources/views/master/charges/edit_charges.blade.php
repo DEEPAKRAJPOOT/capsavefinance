@@ -36,12 +36,12 @@
                         <label for="chrg_type">Charge Calculation</label><br />
                         <div class="form-check-inline ">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input" {{$charge_data->chrg_calculation_type == 1 ? 'checked' : ($charge_data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type" value="1">Fixed
+                                <input type="radio" class="form-check-input charge_calculation_type" {{$charge_data->chrg_calculation_type == 1 ? 'checked' : ($charge_data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type" value="1">Fixed
                             </label>
                         </div>
                         <div class="form-check-inline">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input" {{$charge_data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type" value="2">Percentage
+                                <input type="radio" class="form-check-input charge_calculation_type" {{$charge_data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type" value="2">Percentage
                             </label>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
-                <input type="text" class="form-control formatNum" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
+                <input type="text" class="form-control {{$charge_data->chrg_calculation_type == 1 ? 'formatNum' : 'amtpercnt' }}" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
             </div>
 
         </div>
@@ -212,6 +212,17 @@
                 },
             }
         });
+        
+        $(document).on('click', '.charge_calculation_type', function () {
+            
+            $('#chrg_calculation_amt').val('');            
+
+            if ($(this).val() == 1) {
+                 $('#chrg_calculation_amt').addClass('formatNum').removeClass('amtpercnt');                
+            } else {
+                 $('#chrg_calculation_amt').addClass('amtpercnt').removeClass('formatNum');
+            }
+        });         
     });
 </script>
 @endsection
