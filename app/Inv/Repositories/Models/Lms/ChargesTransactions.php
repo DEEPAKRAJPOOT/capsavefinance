@@ -78,7 +78,7 @@ class ChargesTransactions extends BaseModel
         
     }
     
-    public static function getAllTransCharges($user_id)
+    public static function getAllTransCharges()
     {
     
        return  self::with('transaction','ChargeMaster');

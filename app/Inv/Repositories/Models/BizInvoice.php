@@ -394,6 +394,11 @@ public static function updateInvoice($invoiceId,$status)
           return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
      
      }
+     
+     public static function  updateInvoiceUser($uid)
+     {
+       return self::create(['updated_by' =>$uid ]);  
+     }
     public static function getRemainAmount($res) 
     {
         

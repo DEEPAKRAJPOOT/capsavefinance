@@ -382,6 +382,7 @@ class InvoiceController extends Controller {
             'remark' => $attributes['remark'],
             'file_id' => $userFile->file_id,
             'created_by' => $id,
+            'updated_by' => $id,
             'created_at' => $date);
         $result = $this->invRepo->save($arr);
 
