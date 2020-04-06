@@ -381,7 +381,7 @@ public static function updateInvoice($invoiceId,$status)
 
     public static function getAllUserBatchInvoice($data)
     {
-        return self::with('app.acceptedOffer')
+        return self::with('app.acceptedOffer')->with('disbursal')
             ->whereHas('disbursal', function($query) use ($data) {
                     $query->where($data);
                 })
@@ -393,6 +393,11 @@ public static function updateInvoice($invoiceId,$status)
      {
           return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
      
+     }
+     
+     public static function  updateInvoiceUser($uid)
+     {
+       return self::create(['updated_by' =>$uid ]);  
      }
     public static function getRemainAmount($res) 
     {

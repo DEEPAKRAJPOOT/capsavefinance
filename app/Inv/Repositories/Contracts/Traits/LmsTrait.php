@@ -50,12 +50,14 @@ trait LmsTrait
         return $invoice['invoice_approve_amount'] - ((float)($invoice['invoice_approve_amount']*$margin)/100);
     }   
 
-    protected function calAccrualInterest($transDate=null){
-        
-        $disbursalData = Disbursal::whereIn('status_id',[12,13])->get();
-        $currentDate = $this->subDays(date('Y-m-d'),1);
+    protected function calAccrualInterest($transDate=null, $currentDate=null){
+        if(!$currentDate){
+            $currentDate = $this->subDays(date('Y-m-d'),1);
+        }
+        $disbursalData = Disbursal::whereIn('status_id',[12,13])->whereDate('int_accrual_start_dt','<=',$currentDate)->get();
         $interest = 0;
         $returnData = [];
+        echo '<br>------------------------------------------------------------<br>'.$currentDate.'<br>';
 
         foreach ($disbursalData as $disburse) {
             $intAccrualDt = NULL;

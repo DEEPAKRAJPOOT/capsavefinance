@@ -257,7 +257,8 @@ cursor: pointer;
         token: "{{ csrf_token() }}",
         get_remaining_charges_url : "{{route('get_remaining_charges')}}",
         get_customer: "{{ route('get_customer') }}",
-        get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}"
+        get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
+        get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}"
     };
 
     var userData = '';
@@ -286,7 +287,7 @@ cursor: pointer;
             name: 'sample_data',
             display: 'customer_id',
             source:sample_data,
-            limit:10,
+            limit: 'Infinity',
             templates:{
                 suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
             },
@@ -335,12 +336,23 @@ cursor: pointer;
             var trans_type = $.trim($(this).val());
 
             if(action_type=='2'){
-                get_remaining_charges();
-            }else{
+                if(trans_type==32){
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#waiveoff_div').hide();
+                    get_interest_paid_amount();   
+                }else{
+                    get_remaining_charges();
+                }
+            }
+            if(action_type=='1'){
                 if(trans_type==17){
                     $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
                     $('#waiveoff_div').hide();
                     get_repayment_amount();
+                }if(trans_type==32){
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#waiveoff_div').hide();
+                    get_interest_paid_amount();   
                 }else{
                     get_remaining_charges();
                 }
@@ -353,9 +365,10 @@ cursor: pointer;
             var element = $(this).find('option:selected'); 
             var index = element.attr("index"); 
             var chargeData = userData['charges'][index];
+            var amt = parseFloat(chargeData['remaining']);
             if(chargeData){
                 $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#amount').val(Math.round(chargeData['remaining'],2)); 
+                $('#amount').val(amt.toFixed(2)); 
                 $('#amount').attr('max',chargeData['remaining']);
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date());
@@ -449,9 +462,9 @@ cursor: pointer;
                 if (res.status == 'success') {
                     chargeResult = res.result;
                     userData['charges'] = chargeResult;
+                    $('#waiveoff_div').show();
+                    $('#charges').html('<option value="">Select Charges</option>');
                     $(chargeResult).each(function(i,v){
-                        $('#waiveoff_div').show();
-                        $('#charges').html('<option value="">Select Transaction</option>');
                         $('#charges').append('<option index="'+ i +'" value="'+ v.trans_id +'">' + v.trans_name +'<small>('+v.trans_date+')</small>'+ '</option>');
                     })
                 }else{
@@ -495,15 +508,35 @@ cursor: pointer;
                 $('.isloader').show();
             },
             success: function(resultData) {                        
+                var amt = parseFloat(resultData.repayment_amount);
                 if (resultData.repayment_amount != ""){
-                    $("#amount").val(Math.round(resultData.repayment_amount,2)); 
-                    $('#amount').attr('max',resultData.repayment_amount);                          
+                    $("#amount").val(amt.toFixed(2)); 
+                    $('#amount').removeAttr('max');  
                 } else {
                     $("#amount").val("");
                 }
                 $('.isloader').hide();
             }
        });
+    }
+
+    function get_interest_paid_amount(){
+        $.ajax({
+            type: "POST",
+            url: messages.get_interest_paid_amount,
+            data: {user_id: $("#user_id").val(), trans_type: $("#trans_type").val(), _token: messages.token},
+            dataType: "JSON",
+            success: function (res) {
+                var amt = parseFloat(res.amount);
+                if (res.status == 'success') {
+                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#amount').val(amt.toFixed(2));
+                    $('#amount').attr('max',res.amount);
+                }else{
+                    $('#amount').val(''); 
+                }
+            }
+        });
     }
 
     $(document).ready(function(){ 

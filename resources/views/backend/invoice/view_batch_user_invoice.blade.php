@@ -7,8 +7,8 @@
                 <thead>
                     <tr role="row">
                         <th>Invoice No</th>
-                        <th>Invoice Date</th>
-                        <th>Invoice Due Date</th>
+                        <th>Disbursed Date </th>
+                        <th>Payment Due Date</th>
                         <th>Invoice Amt.</th>
                         <th>Margin(%) </th>
                         <th>Disburse Amt.</th>
@@ -22,12 +22,13 @@
 					@foreach($userIvoices as $invoice)
 						@php 
 							$margin = (isset($invoice->app->acceptedOffer->margin))	? $invoice->app->acceptedOffer->margin : 0;
-						@endphp
+						        @endphp
 
 	                    <tr role="row" class="odd">
+                               
 							<td> {{ $invoice->invoice_no }}</td>
-							<td> {{ \Helpers::convertDateTimeFormat($invoice->invoice_date , 'Y-m-d', 'd-m-Y') }}</td>
-							<td> {{ \Helpers::convertDateTimeFormat($invoice->invoice_due_date , 'Y-m-d', 'd-m-Y') }}</td>
+							<td> {{ ($invoice->disbursal) ? \Helpers::convertDateTimeFormat($invoice->disbursal->disburse_date, 'Y-m-d h:i:s', 'd-m-Y') : ''}}</td>
+							<td> {{ ($invoice->disbursal) ? \Helpers::convertDateTimeFormat($invoice->disbursal->payment_due_date, 'Y-m-d', 'd-m-Y') : '' }}</td>
 							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount) }} </td>
 							<td> </i>{{ $margin }} %</td>
 							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100)) }} </td>

@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Entities\User;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\Relationship;
 use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\BizPanGst;

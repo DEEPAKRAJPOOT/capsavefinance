@@ -3834,6 +3834,9 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
+            ->addColumn('repay_trans_id', function($trans){
+                return $trans->repay_trans_id;
+            })
             ->addColumn('customer_id', function($trans){
                 $data = '';
                 if($trans->lmsUser){
@@ -4439,7 +4442,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'date',
                         function ($dataRecords) {
-                        return $dataRecords->trans_date;
+                        return $dataRecords->voucher_date;
                     })
                     ->editColumn(
                         'ledger_name',
@@ -4986,7 +4989,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetSentToBankInvCustomers(Request $request, $disbursal)
     {
         return DataTables::of($disbursal)
-                ->rawColumns(['batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
+                ->rawColumns(['disburse_detail','batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
                 ->editColumn(
                     'batch_id',
                     function ($disbursal) {
