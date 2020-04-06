@@ -32,6 +32,7 @@ try {
                 {data: 'bank'},
                 {data: 'total_actual_funded_amt'},
                 {data: 'total_invoice'},
+                {data: 'disburse_detail'},
                 {data: 'updated_at'},
                 {data: 'action'}
             ],
