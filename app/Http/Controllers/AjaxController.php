@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\TransType;
 
 class AjaxController extends Controller {
 
@@ -4088,12 +4089,6 @@ if ($err) {
         $applications = $dataProvider->getColenderAppList($this->request, $appList);
         return $applications;
     }
-
-    public function getTransactions(DataProviderInterface $dataProvider) { 
-        $this->dataRecords = $this->finRepo->getTally();
-        $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
-        return $this->providerResult;
-    }
     public function lmsGetInvoiceByUser(Request $request ){
         $userId = $request->get('user_id');
         $invoiceIds = $this->lmsRepo->getUserInvoiceIds($userId)->toArray();
@@ -4130,18 +4125,19 @@ if ($err) {
         $userId    = $request->get('user_id');
         $transType = $request->get('trans_type');
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
+        return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
         
-        $debitAmt = 0;
-        $creditAmt = 0;
+        // $debitAmt = 0;
+        // $creditAmt = 0;
         
-        if (isset($repaymentAmtData['debitAmtData']['amount'])) {
-            $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
-        }
-        if (isset($repaymentAmtData['creditAmtData']['amount'])) {
-            $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
-        }        
-        $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
-        return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
+        // if (isset($repaymentAmtData['debitAmtData']['amount'])) {
+        //     $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
+        // }
+        // if (isset($repaymentAmtData['creditAmtData']['amount'])) {
+        //     $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
+        // }        
+        // $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
+        // return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
     }
     ////////////*  get business */////
     public function searchBusiness(Request $request)
@@ -4182,24 +4178,24 @@ if ($err) {
     }
 
     public function getExistEmailStatus(Request $req){
-       $response = [
-           'status' => false,
-           'message' => 'Some error occured. Please try again'
-       ];
-       $email = $req->get('email');
-       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          $response['message'] =  'Email Id is not valid';
-          return $response;
-       }
-       $status = $this->userRepo->getExistEmailStatus($email);
-       if($status != false){
-          $response['status'] = false;
-          $response['message'] =  'Sorry! Email is already in use.';
-       }else{
-           $response['status'] = true;
-           $response['message'] =  '';
-       }
-       return $response;
+        $response = [
+            'status' => false
+        ];
+        $email = $req->get('email');
+        $status = $this->userRepo->getUserByEmail(trim($email));
+        
+        if($status == false){
+            $status1 = $this->userRepo->getExistEmailStatus(trim($email));
+            if($status1 != false){
+                $response['status'] = 'false';
+            }else{
+                $response['status'] = 'true';
+            }
+        }else{
+           $response['status'] = 'false'; 
+        }
+        
+        return response()->json( $response );
    }
 
     public function checkUniqueCharge(Request $request) 
@@ -4265,5 +4261,44 @@ if ($err) {
         $res['limit_amt'] = $this->application->getTotalLimit($biz_id,1);
 
         return response()->json($res);
+    }
+
+    public function getRemainingCharges(Request $request){
+        $user_id = $request->get('user_id');
+        $trans_type = $request->get('trans_type');
+        $res = Transactions::getAllChargesApplied(['user_id' => $user_id,'trans_type'=>$trans_type]);
+        $data['result'] = $res;
+        if (!empty($res)) {
+            $data['status'] = 'success';
+        }else{
+            $data['status'] = 'empty';
+        }
+        return response()->json($data);
+    }
+
+    public function getAllUnsettledTransType(Request $request){
+        $user_id = $request->get('user_id');
+        $action_type = $request->get('action_type');
+        $res = TransType::getAllUnsettledTransTypes(['user_id' => $user_id],$action_type);
+        $data['result'] = $res;
+        if (!empty($res)) {
+            $data['status'] = 'success';
+        }else{
+            $data['status'] = 'empty';
+        }
+        return response()->json($data);
+    }
+    
+    public function getVoucherLists(DataProviderInterface $dataProvider) {
+         $vouchersList = $this->masterRepo->getAllVouchers();
+         $vouchers = $dataProvider->getVouchersList($this->request, $vouchersList);
+         return $vouchers;
+    }
+
+    public function getTransactions(DataProviderInterface $dataProvider) { 
+       // $this->dataRecords = $this->finRepo->getTally(); //for rta_tally table 
+        $this->dataRecords = $this->finRepo->getTallyTxns();
+        $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
+        return $this->providerResult;
     }
 }

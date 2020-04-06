@@ -963,6 +963,11 @@ Route::group(
     Route::post('get-repayment-amount', [
         'as' => 'get_repayment_amount',
         'uses' => 'AjaxController@getRepaymentAmount'
+    ]); 
+
+    Route::get('get_remaining_charges', [
+        'as' => 'get_remaining_charges',
+        'uses' => 'AjaxController@getRemainingCharges'
     ]);  
 
     Route::post('check-unique-charge', [
@@ -985,6 +990,16 @@ Route::group(
     Route::post('get-soa-client-details',[
         'as' => 'get_soa_client_details',
         'uses' => 'AjaxController@getSoaClientDetails'
+    ]);
+
+    Route::get('get_all_unsettled_trans_type',[
+        'as' => 'get_all_unsettled_trans_type',
+        'uses' => 'AjaxController@getAllUnsettledTransType'
+    ]);
+
+    Route::post('get-voucher-list', [
+        'as' => 'get_ajax_voucher_list',
+        'uses' => 'AjaxController@getVoucherLists'
     ]);
      
 });

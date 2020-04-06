@@ -610,7 +610,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     
     public function getRepaymentAmount($userId, $transType)
     {
-        return Transactions::getRepaymentAmount($userId, $transType);
+        return Transactions::getUserBalance($userId);
     }
     
       public function searchBusiness($search)

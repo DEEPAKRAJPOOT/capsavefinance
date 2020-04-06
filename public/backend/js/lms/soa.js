@@ -24,11 +24,20 @@ try {
                     $("#lmsSoaList_processing").css("display", "none");
                 }
             },
+            fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                if(aData.trans_type=='Repayment'){
+                    $(nRow).css('background', 'rgba(19, 136, 100, 0.45)');
+                }
+                if(aData.repay_trans_id){
+                    $(nRow).css('background', 'rgba(19, 136, 100, 0.2)');
+                    $(nRow).css('line-height', '1');
+                }
+            },
             columns: [
                 {data: 'customer_id'},
                 // {data: 'customer_name'},
-                {data: 'trans_date'},
-                {data: 'value_date'},
+                {data: 'trans_date', width:'80px'},
+                {data: 'value_date', width:'80px'},
                 {data: 'trans_type'},
                 {data: 'batch_no'},
                 {data: 'invoice_no'},

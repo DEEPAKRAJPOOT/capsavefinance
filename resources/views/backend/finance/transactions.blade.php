@@ -32,16 +32,14 @@
                             <thead>
                                 
                                 <tr role="row">
-                                    <th>Biz Id</th>
-                                    <th>Name</th>
+                                    <th>Voucher Type</th>
+                                    <th>Voucher Code</th>
+                                    <th>Date</th>
+                                    <th>Ledger Name</th>
                                     <th>Amount</th>
-                                    <th>Type</th>
-                                    <th>Reference No</th>
-                                    <th>Journals Name</th>
+                                    <th>Entry Type</th>
+                                    <th>Batch No</th>
                                     <th>Mode of Pay</th>
-                                    <th>Narration</th>                                    
-                                    <th>Created By</th>
-                                    <th>Txn Date</th>
                                 </tr>
                             </thead>
                             <tbody>

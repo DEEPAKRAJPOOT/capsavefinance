@@ -119,9 +119,8 @@
 @endsection
 
 @section('jscript')
-
-<script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>
-<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+<script src="{{ asset('backend\theme\assets\plugins\typeahead\handlebars.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend\theme\assets\plugins\bootstrap-tagsinput\typeahead.bundle.js') }}" type="text/javascript"></script>
 
 <script>
 
@@ -160,7 +159,7 @@
         name: 'sample_data',
         display: 'customer_id',
         source:sample_data,
-        limit:10,
+        limit: 'Infinity',
         templates:{
             suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
         },

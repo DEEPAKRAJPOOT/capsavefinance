@@ -183,16 +183,15 @@ try {
                 }
             },
            columns: [
-                    {data: 'biz_id'},
-                    {data: 'fullname'},
-                    {data: 'amount'},
-                    {data: 'amount_type'},
-                    {data: 'reference'},
-                    {data: 'journals_name'},
-                    {data: 'mode_of_pay'},
-                    {data: 'narration'},
-                    {data: 'created_by'},
+                    
+                    {data: 'voucher_type'},
+                    {data: 'voucher_code'},
                     {data: 'date'},
+                    {data: 'ledger_name'},
+                    {data: 'amount'},
+                    {data: 'entry_type'},
+                    {data: 'batch_no'},
+                    {data: 'mode_of_pay'},
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
         });

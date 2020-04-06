@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 <div class="modal-body text-left">
-    
+
    <form id="createLeadForm" name="createLeadForm" method="POST" action="{{route('save_backend_lead')}}">
    @csrf
       <div class="row">
@@ -108,8 +108,7 @@ $messages = session()->get('message', false);
     var messages = {
         get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
-        token: "{{ csrf_token() }}",
-//        is_accept: "{{ Session::get('is_accept') }}",
+        token: "{{ csrf_token() }}"
     };
     
 </script>
@@ -129,25 +128,29 @@ $(document).ready(function () {
         });
     });
     
-//   if(messages.is_accept == 1){
-//      setTimeout(function() {
-//         var p = window.parent;
-//         p.jQuery("#createLeadForm").modal('hide'); 
-//         p.oTables.draw(); 
-//      }, 1000);
-//   }
+    $.validator.addMethod("alphabetsnspace", function(value, element) {
+        return this.optional(element) || /^[a-zA-Z ]*$/.test(value);
+    });
+    
+    $.validator.addMethod("alphabetsnspacendot", function(value, element) {
+        return this.optional(element) || /^[a-zA-Z. }]*$/.test(value);
+    });
+
    $('#saveLead').on('click', function (event) {
          $('input.full_name').each(function () {
             $(this).rules("add",
                      {
                         required: true,
-                        lettersonly: true
+                        alphabetsnspace: true,
+                        messages: { alphabetsnspace: "Only letters and space allowed." }
                      })
          });
          $('input.comp_name').each(function () {
             $(this).rules("add",
                      {
-                        required: true
+                        required: true,
+                        alphabetsnspacendot: true,
+                        messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
                      })
          });
          $('input.email').each(function () {

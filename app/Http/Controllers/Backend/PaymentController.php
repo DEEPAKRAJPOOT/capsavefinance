@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
 use App\Helpers\FinanceHelper;
 use App\Inv\Repositories\Contracts\FinanceInterface;
+use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller {
 
@@ -87,9 +88,11 @@ class PaymentController extends Controller {
     /* save payment details   */
     public function  savePayment(Request $request)
     {
-      
         $validatedData = $request->validate([
-                'payment_type' => 'required',
+               'payment_type' => Rule::requiredIf(function () use ($request) {
+                    return ($request->action_type == 2)?false:true;
+                }),
+                
                 'trans_type' => 'required',
                 'customer_id' => 'required', 
                 'virtual_acc' => 'required',  
@@ -99,6 +102,7 @@ class PaymentController extends Controller {
                 'description' => 'required'
                // 'txn_id' => 'required'
           ]);
+          
         $user_id  = Auth::user()->user_id;
         $mytime = Carbon::now(); 
 
@@ -150,9 +154,11 @@ class PaymentController extends Controller {
             
         $tran  = [  'gl_flag' => 1,
                     'soa_flag' => 1,
-                    'user_id' =>  $request['customer_id'],
+                    'user_id' =>  $request['user_id'],
                     'biz_id' =>  $request['biz_id'],
                     'entry_type' =>1,
+                    'is_waveoff' =>($request['action_type']==2)?1:0,
+                    'parent_trans_id' => ($request['charges'])?$request['charges']:null,
                     'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
                     'trans_type'   => $request['trans_type'], 
                     'trans_by'   => 1,
@@ -162,7 +168,7 @@ class PaymentController extends Controller {
                     'sgst' =>  $sgst,
                     'cgst' =>  $cgst,
                     'igst' =>  $igst,
-                    'mode_of_pay' =>  $request['payment_type'],
+                    'mode_of_pay' => ($request['payment_type'])?$request['payment_type']:'',
                     'comment' =>  $request['description'],
                     'utr_no' =>  $utr,
                     'txn_id' => $request['txn_id'],

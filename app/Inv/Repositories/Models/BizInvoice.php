@@ -152,11 +152,11 @@ public static function updateInvoice($invoiceId,$status)
         if( $chkUser->id==11)
         {
             $res  = User::where('user_id',$id)->first();
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
@@ -381,7 +381,7 @@ public static function updateInvoice($invoiceId,$status)
 
     public static function getAllUserBatchInvoice($data)
     {
-        return self::with('app.acceptedOffer')
+        return self::with('app.acceptedOffer')->with('disbursal')
             ->whereHas('disbursal', function($query) use ($data) {
                     $query->where($data);
                 })

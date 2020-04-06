@@ -46,7 +46,7 @@ use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 
-date_default_timezone_set('Asia/Kolkata');
+//date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
 {

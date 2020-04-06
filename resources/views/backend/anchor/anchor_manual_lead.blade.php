@@ -69,9 +69,13 @@
                                     <label for="phone">Mobile
                                     <span class="mandatory">*</span>
                                     </label>
-
-                                    <input class="form-control numbercls phone" name="phone" id="phone" value="{{ old('phone') }}" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="" onkeyup="return checkMobile(this.value)">
-                                    {!! $errors->first('phone', '<span class="error">:message</span>') !!}
+                                    <input class="form-control numbercls phone number_format" name="phone" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" required="">
+                                    <div class="failed">
+                                       <div style="color:#FF0000">
+                                          <small class="erro-sms" id="erro-sms">
+                                          </small>
+                                       </div>
+                                    </div>
                                  </div>
                               </div>
                         
@@ -111,70 +115,6 @@
                        
                 </div>
                 @endif
-<!--                     <div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtEmail">State
-                                 <span class="mandatory">*</span>
-                                 </label>
-                                  <select class="form-control state" name="state" id="state">
-                                      <option value="">please select</option>
-                                      <option value="1">state1</option>
-                                      <option value="2">state2</option>
-                                      <option value="3">state3</option>
-                                  </select>
-                              </div>
-                           </div>
-
-                           <div class="col-md-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">City
-                                    <span class="mandatory">*</span>
-                                    </label>
-
-                                    <input class="form-control city" name="city" id="city" tabindex="6" type="text" maxlength="10" placeholder="City" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                        </div>
-                <div class="row">
-                           <div class="col-md-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">Pin Code
-                                    <span class="mandatory">*</span>
-                                    </label>
-
-                                    <input class="form-control numbercls pin_code" name="pin_code" id="pin_code" tabindex="6" type="text" maxlength="6" placeholder="Pin Code" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                            <div class="col-md-6">
-                                 <div class="form-group">
-                                    <label for="txtMobile">Address
-                                    <span class="mandatory">*</span>
-                                    </label>
-
-                                    <input class="form-control comp_addr" name="comp_addr" id="comp_addr" tabindex="6" type="text"  placeholder="Address" required="">
-                                    <div class="failed">
-                                       <div style="color:#FF0000">
-                                          <small class="erro-sms" id="erro-sms">
-                                          </small>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                        </div>-->
-                
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
           {!!
         Form::close()
@@ -218,72 +158,82 @@ $messages = session()->get('message', false);
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
-            $.validator.addMethod(
-                    "regex",
-                    function(value, element, regexp) {
-                        var re = new RegExp(regexp);
-                        return this.optional(element) || re.test(value);
+            
+            $(document).on('input', '.number_format', function (event) {
+                // skip for arrow keys
+                if (event.which >= 37 && event.which <= 40)
+                    return;
+
+                // format number
+                $(this).val(function (index, value) {
+                    return value.replace(/\D/g, "");
+                });
+            });
+          
+            $.validator.addMethod("alphabetsonly", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z]*$/.test(value);
+            });
+            
+            $.validator.addMethod("alphabetsnspacendot", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
+            });
+            
+            $.validator.addMethod("isexistemail", function(value, element) {
+                var email = value;
+                console.log(email);
+                let status = false;
+                $.ajax({
+                    url: messages.check_exist_email,
+                    type: 'POST',
+                    datatype: 'json',
+                    async: false,
+                    cache: false,
+                    data: {
+                        'email' : email,
+                        '_token' : messages.token
                     },
-                    "Please check your input."
-            );
-    
-            $(document).on('keyup', '#email', function(){
-              var email = $(this).val();
-              if (!email.length) {
-                  return false;
-              }
-              $.ajax({
-                  url: messages.check_exist_email,
-                  type: 'POST',
-                  data: {
-                      'email' : email,
-                      '_token' : messages.token,
-                  },
-                  success: function(response){
-                     var nameclass = response.status ? 'success' : 'error';
-                      $('#email-error').removeClass('error success');
-                     if($('#email-error').length){
-                        $('#email-error').text(response.message).addClass(nameclass);
-                     }else{
-                         $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
-                     }
-                  }
-              });
-          });
+                    success: function(response){
+                       if(response['status'] === 'true'){
+                          status = true;
+                      }
+                    }
+                });
+                return this.optional(element) || (status === true);
+            });
             
             $('#saveAnch').on('click', function (event) {
                 $('input.f_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,
-                                regex: "^[a-zA-Z ]+$",
-                                messages: {
-                                    regex: "Please enter only alpha characters with/without space."
-                                }
-                                
+                                alphabetsonly: true,
+                                messages: {'alphabetsonly' : "Only letters allowed" }
                             })
                 });
                  $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,
-                                regex: "^[a-zA-Z]+$",
-                                messages: {
-                                    regex: "Please enter only alpha characters."
-                                }                                
+                                alphabetsonly: true,
+                                messages: {'alphabetsonly' : "Only letters allowed" }
                             })
                 });
                 $('input.comp_name').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                alphabetsnspacendot: true,
+                                messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
                             })
                 });
                 $('input.email').each(function () {
                     $(this).rules("add",
                     {
                         required: true,
-                    })
+                        email: true,
+                        isexistemail: true,
+                        messages:{'isexistemail' : "This email is already exist."}
+                    });
                 });
                 $('input.phone').each(function () {
                     $(this).rules("add",
@@ -291,7 +241,7 @@ $messages = session()->get('message', false);
                                 required: true,
                                 number: true,
                                 minlength:10,
-                                maxlength:10
+                                messages: {'minlength' : "Number should be 10 digits"}
                             })
                 });
                 $('select.anchor_user_type').each(function () {

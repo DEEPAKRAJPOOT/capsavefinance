@@ -1405,7 +1405,11 @@ class DataRenderer implements DataProviderInterface
         
                         }
              })
-             
+             ->addColumn(
+                    'batch_id',
+                    function ($invoice) {  
+                       return  ($invoice->disbursal->disbursal_batch->batch_id) ? $invoice->disbursal->disbursal_batch->batch_id : '';
+                })
               ->addColumn(
                     'anchor_name',
                     function ($invoice) {  
@@ -1426,8 +1430,8 @@ class DataRenderer implements DataProviderInterface
                     'invoice_date',
                     function ($invoice) {                        
                         $inv_date = '';
-                        $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->disbursal ? '<span><b>Disburse Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->disburse_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->disbursal ? '<br><span><b>Payment Due Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->payment_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
@@ -1780,16 +1784,19 @@ class DataRenderer implements DataProviderInterface
                        {
                            $type =  'N/A';
                        }
-                    $mode  = ['1' =>  'Online RTGS/NEFT','2' => 'Cheque','3' => 'NACH','4' => 'Other'];
-                    $refNo  = ['1' =>  'utr_no','2' => 'cheque_no','3' => 'unr_no','4' => 'unr_no'];
-                    $refNoShpw  = ['1' =>  'Utr No.','2' => 'Cheque No.','3' => 'Unr No.','4' => 'Other '];
-                    $rfNo = $refNo[$trans->mode_of_pay];
-                    $refNoShpw = $refNoShpw[$trans->mode_of_pay];
                        $transaction = '';
-                       $transaction .= $trans->mode_of_pay ? '<span><b>Payment Mode:&nbsp;</b>'.$mode[$trans->mode_of_pay].'</span>' : '';
-                       $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
-                       $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
-                       return $transaction;
+                       
+                    if($trans->mode_of_pay){
+                        $mode  = ['1' =>  'Online RTGS/NEFT','2' => 'Cheque','3' => 'NACH','4' => 'Other'];
+                        $refNo  = ['1' =>  'utr_no','2' => 'cheque_no','3' => 'unr_no','4' => 'unr_no'];
+                        $refNoShpw  = ['1' =>  'Utr No.','2' => 'Cheque No.','3' => 'Unr No.','4' => 'Other '];
+                        $rfNo = $refNo[$trans->mode_of_pay];
+                        $refNoShpw = $refNoShpw[$trans->mode_of_pay];
+                           $transaction .= $trans->mode_of_pay ? '<span><b>Payment Mode:&nbsp;</b>'.$mode[$trans->mode_of_pay].'</span>' : '';
+                           $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
+                           $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
+                    }
+                    return $transaction;
                 })
                  ->addColumn(
                     'comment',
@@ -2655,6 +2662,31 @@ class DataRenderer implements DataProviderInterface
                             ->orWhere('chrg_name', 'like', "%$search_keyword%");
                         });
                     }
+                })
+                ->make(true);
+    }
+    
+     public function getVouchersList(Request $request, $vouchers){
+        return DataTables::of($vouchers)
+                ->addColumn(
+                    'voucher_code',
+                    function ($vouchers) {
+                    return $vouchers->voucher_name .'('. (date("Y") - 1) .'-'. date('y') .')';
+                })
+                ->addColumn(
+                    'voucher_name',
+                    function ($vouchers) {
+                    return $vouchers->voucher_name;
+                })
+                ->addColumn(
+                    'transaction_type',
+                    function ($vouchers) {
+                    return $vouchers->transType->trans_name ?? '';
+                })
+                ->addColumn(
+                    'action',
+                    function ($vouchers) {
+                    return "No action";
                 })
                 ->make(true);
     }
@@ -3802,6 +3834,9 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
+            ->addColumn('repay_trans_id', function($trans){
+                return $trans->repay_trans_id;
+            })
             ->addColumn('customer_id', function($trans){
                 $data = '';
                 if($trans->lmsUser){
@@ -4407,17 +4442,12 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'date',
                         function ($dataRecords) {
-                        return $dataRecords->trans_date;
+                        return $dataRecords->voucher_date;
                     })
                     ->editColumn(
-                        'biz_id',
+                        'ledger_name',
                         function ($dataRecords) {
-                        return $dataRecords->biz_id ?? '---';
-                    })
-                    ->editColumn(
-                        'name',
-                        function ($dataRecords) {
-                        return $dataRecords->fullname;
+                        return $dataRecords->ledger_name;
                     })
                     ->editColumn(
                         'amount',
@@ -4427,32 +4457,37 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'amount_type',
                         function ($dataRecords) {
-                        return $dataRecords->entry_type;
+                        return $dataRecords->entry_type == '1' ? 'Credit' : 'Debit';
                     }) 
                     ->editColumn(
-                        'reference',
+                        'reference_no',
                         function ($dataRecords) {
-                        return $dataRecords->batch_id;
+                        return $dataRecords->ref_no;
+                    })
+                    ->editColumn(
+                        'batch_no',
+                        function ($dataRecords) {
+                        return $dataRecords->batch_no;
                     })   
                     ->editColumn(
-                        'journals_name',
+                        'voucher_type',
                         function ($dataRecords) {
-                        return $dataRecords->trans_name;
+                        return $dataRecords->voucher_type;
+                    })     
+                    ->editColumn(
+                        'voucher_code',
+                        function ($dataRecords) {
+                        return $dataRecords->voucher_code;
                     })      
                     ->editColumn(
                         'mode_of_pay',
                         function ($dataRecords) {
-                        return $dataRecords->mode_of_pay;
-                    })    
-                    ->editColumn(
-                        'created_by',
-                        function ($dataRecords) {
-                        return $dataRecords->created_by;
-                    })     
+                        return $dataRecords->trans_type;
+                    })       
                     ->editColumn(
                         'narration',
                         function ($dataRecords) {
-                        return $dataRecords->comment;
+                        return $dataRecords->narration;
                     }) 
                     ->make(true);
         }
@@ -4954,7 +4989,7 @@ class DataRenderer implements DataProviderInterface
     public function lmsGetSentToBankInvCustomers(Request $request, $disbursal)
     {
         return DataTables::of($disbursal)
-                ->rawColumns(['batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
+                ->rawColumns(['disburse_detail','batch_id','bank', 'total_actual_funded_amt' ,'status', 'action'])
                 ->editColumn(
                     'batch_id',
                     function ($disbursal) {
