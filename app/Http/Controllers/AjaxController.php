@@ -4191,19 +4191,24 @@ if ($err) {
     }
 
     public function getExistEmailStatus(Request $req){
-       $response = [
-           'status' => false
-//           'message' => 'Some error occured. Please try again'
-       ];
-       $email = $req->get('email');
-       $status = $this->userRepo->getUserByEmail($email);
-       if($status != false){
-          $response['status'] = 'false';
-       }else{
-           $response['status'] = 'true';
-       }
-//       return $response;
-        return response()->json( $response   );
+        $response = [
+            'status' => false
+        ];
+        $email = $req->get('email');
+        $status = $this->userRepo->getUserByEmail(trim($email));
+        
+        if($status == false){
+            $status1 = $this->userRepo->getExistEmailStatus(trim($email));
+            if($status1 != false){
+                $response['status'] = 'false';
+            }else{
+                $response['status'] = 'true';
+            }
+        }else{
+           $response['status'] = 'false'; 
+        }
+        
+        return response()->json( $response );
    }
 
     public function checkUniqueCharge(Request $request) 
