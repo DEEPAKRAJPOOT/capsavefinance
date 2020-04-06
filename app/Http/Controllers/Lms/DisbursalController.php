@@ -16,6 +16,8 @@ use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Helpers\FinanceHelper;
 use App\Inv\Repositories\Contracts\FinanceInterface;
+use App\Inv\Repositories\Models\Lms\Disbursal;
+
 class DisbursalController extends Controller
 {
 	use ApplicationTrait;
@@ -269,10 +271,16 @@ class DisbursalController extends Controller
      */
     public function processAccrualInterest()
     {
-        $returnData = $this->calAccrualInterest();
-        foreach($returnData as $disbursal_id => $interest) {
-            echo "<br>\nDisbursal ID#{$disbursal_id} -  Accrued Interest {$interest}";
-        }
+		$minDisbursalDate = Disbursal::whereIn('status_id',[12,13])->min('int_accrual_start_dt');
+		$currentDate = $this->subDays(date('Y-m-d'),1);
+		while(strtotime($minDisbursalDate)<=strtotime($currentDate)){
+			$returnData = $this->calAccrualInterest(null,$minDisbursalDate);
+			$minDisbursalDate = $this->addDays($minDisbursalDate, 1);
+			foreach($returnData as $disbursal_id => $interest) {
+				echo "<br>\nDisbursal ID#{$disbursal_id} -  Accrued Interest {$interest}";
+			}
+		}
+        
     }
 
     /**
