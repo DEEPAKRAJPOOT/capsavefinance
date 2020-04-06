@@ -36,12 +36,12 @@
                         <label for="chrg_type">Charge Calculation</label><br />
                         <div class="form-check-inline ">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input" {{$charge_data->chrg_calculation_type == 1 ? 'checked' : ($charge_data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type" value="1">Fixed
+                                <input type="radio" class="form-check-input charge_calculation_type" {{$charge_data->chrg_calculation_type == 1 ? 'checked' : ($charge_data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type" value="1">Fixed
                             </label>
                         </div>
                         <div class="form-check-inline">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input" {{$charge_data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type" value="2">Percentage
+                                <input type="radio" class="form-check-input charge_calculation_type" {{$charge_data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type" value="2">Percentage
                             </label>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
-                <input type="text" class="form-control formatNum" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
+                <input type="text" class="form-control {{$charge_data->chrg_calculation_type == 1 ? 'formatNum' : 'amtpercnt' }}" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
             </div>
 
         </div>
@@ -129,7 +129,10 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
-
+    var messages={
+        check_applied_charge_url:"{{ route('check_applied_charge') }}",
+        token: "{{ csrf_token() }}"
+    }
     $(document).on('click', 'input[name="chrg_calculation_type"]', function (e) {
         if ($(this).val() == '2') {
             $('#approved_limit_div').show();
@@ -149,6 +152,29 @@
     })
 
     $(document).ready(function () {
+        
+        $.validator.addMethod("isChrgApplied",
+            function(value, element, params) {
+                var result = true;
+                var data = {chrg_id : params.chrg_id, _token: messages.token};
+                
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.check_applied_charge_url,
+                    data: data,
+                    success: function(data) {                         
+                        if (value == 2) {                            
+                            result = (data.is_active == 1) ? false : true;
+                        } else {
+                            result = true;
+                        }
+                    }
+                });                
+                return result;                
+            },'This charge is already applied, You can\'t make in-active.'
+        );  
+
         var is_gst_applicable = $('input[name="is_gst_applicable"]:checked');
         var chrg_calculation_type = $('input[name="chrg_calculation_type"]:checked');
 
@@ -189,6 +215,9 @@
                 },
                 'is_active': {
                     required: true,
+                    isChrgApplied: {
+                        chrg_id:$("#id").val()
+                    }                    
                 },
             },
             messages: {
@@ -212,6 +241,17 @@
                 },
             }
         });
+        
+        $(document).on('click', '.charge_calculation_type', function () {
+            
+            $('#chrg_calculation_amt').val('');            
+
+            if ($(this).val() == 1) {
+                 $('#chrg_calculation_amt').addClass('formatNum').removeClass('amtpercnt');                
+            } else {
+                 $('#chrg_calculation_amt').addClass('amtpercnt').removeClass('formatNum');
+            }
+        });         
     });
 </script>
 @endsection

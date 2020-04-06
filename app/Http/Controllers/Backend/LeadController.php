@@ -426,7 +426,7 @@ class LeadController extends Controller {
                 if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
-                    if(trim($value[4])=='Buyer'){
+                    if(trim($value[5])=='Buyer'){
                         $userType=2;
                     }else{
                         $userType=1; 
