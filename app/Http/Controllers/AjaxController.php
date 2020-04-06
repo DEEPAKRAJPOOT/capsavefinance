@@ -4178,24 +4178,24 @@ if ($err) {
     }
 
     public function getExistEmailStatus(Request $req){
-       $response = [
-           'status' => false,
-           'message' => 'Some error occured. Please try again'
-       ];
-       $email = $req->get('email');
-       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          $response['message'] =  'Email Id is not valid';
-          return $response;
-       }
-       $status = $this->userRepo->getExistEmailStatus($email);
-       if($status != false){
-          $response['status'] = false;
-          $response['message'] =  'Sorry! Email is already in use.';
-       }else{
-           $response['status'] = true;
-           $response['message'] =  '';
-       }
-       return $response;
+        $response = [
+            'status' => false
+        ];
+        $email = $req->get('email');
+        $status = $this->userRepo->getUserByEmail(trim($email));
+        
+        if($status == false){
+            $status1 = $this->userRepo->getExistEmailStatus(trim($email));
+            if($status1 != false){
+                $response['status'] = 'false';
+            }else{
+                $response['status'] = 'true';
+            }
+        }else{
+           $response['status'] = 'false'; 
+        }
+        
+        return response()->json( $response );
    }
 
     public function checkUniqueCharge(Request $request) 
@@ -4274,6 +4274,24 @@ if ($err) {
             $data['status'] = 'empty';
         }
         return response()->json($data);
+    }
+
+    public function getInterestPaidAmount(Request $request){
+        $user_id = $request->get('user_id');
+        $trans_type = $request->get('trans_type');
+        $interestPaid = Transactions::where('user_id','=',$user_id)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_PAID'))
+        ->sum('amount');
+        $interestDue = Transactions::where('user_id','=',$user_id)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->sum('amount');
+        $data['amount'] = $interestDue-$interestPaid;
+        if ($data['amount']>0) {
+            $data['status'] = 'success';
+        }else{
+            $data['status'] = 'empty';
+        }
+        return response()->json($data);   
     }
 
     public function getAllUnsettledTransType(Request $request){
