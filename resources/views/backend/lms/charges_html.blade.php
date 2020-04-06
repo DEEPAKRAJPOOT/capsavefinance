@@ -36,9 +36,9 @@
         </div>
         <div class="form-group col-md-3">
             <label for="chrg_type">Charge Calculation</label><br />
-            <div class="form-check-inline "><label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type[{{$len}}]" value="1">Fixed</label></div>
+            <div class="form-check-inline "><label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type[{{$len}}]" value="1"  data-ct_idx="{{$len}}">Fixed</label></div>
             <div class="form-check-inline">
-                <label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type[{{$len}}]" value="2">Percentage</label>
+                <label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type[{{$len}}]" value="2" data-ct_idx="{{$len}}">Percentage</label>
             </div>
         </div>
         @if(isset($data->chrg_calculation_type))
@@ -47,8 +47,8 @@
             <a href="javascript:void(0);" class="verify-owner-no"><i class="fa-change fa {{isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}"
             aria-hidden="true"></i></a>
             {!! Form::text('chrg_calculation_amt['.$len.']', 
-                isset($data->chrg_calculation_amt)  ?  number_format($data->chrg_calculation_amt) : null, 
-                ['id'=>'chrg_calculation_amt', 'class'=>'form-control chrg_calculation_amt '.(isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'amtfixed': 'amtpercnt') : 'amtfixed').' number_format clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
+                isset($data->chrg_calculation_amt)  ?  number_format($data->chrg_calculation_amt,2) : null, 
+                ['id'=>'chrg_calculation_amt', 'class'=>'form-control chrg_calculation_amt '.(isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'formatNum': 'amtpercnt') : 'formatNum').' clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
         </div>
          @endif
         <div class="form-group approved_limit_div col-md-3 {{isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type != 2 ? 'hide' : '' }}" id="approved_limit_div">

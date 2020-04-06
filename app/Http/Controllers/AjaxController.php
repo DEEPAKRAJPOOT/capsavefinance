@@ -4319,4 +4319,12 @@ if ($err) {
         $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+    
+    public function checkAppliedCharge(Request $request)
+    {
+        $chargeId = $request->get('chrg_id');
+        $chargeData = $this->lmsRepo->getChargeData(['charge_id' => $chargeId]);        
+        $result = $chargeData && isset($chargeData[0]) ? 1 : 0;         
+        return response()->json(['is_active' => $result]);         
+    }
 }
