@@ -156,14 +156,14 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-address-card-o"></i>
-                <span class="menu-title">Manage Request</span>
+                <span class="menu-title">Manage Refund</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
             <div class="collapse" id="layoutsSubmenu2">
                 <ul class="nav flex-column sub-menu">                    
                 @can('request_list')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('request_list') }}">Request List</a>
+                        <a class="nav-link" href="{{ route('request_list') }}">Manage Refund</a>
                     </li> 
                 @endcan 
                                         
