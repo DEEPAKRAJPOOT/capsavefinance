@@ -914,5 +914,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getChargeData($where)
     {
         return ProgramCharges::getChargeData($where);
+    }
+
+    public function lmsGetCustomerRefund($ids)
+    {
+        return ApprovalRequest::whereIn('req_id', $ids)
+			   ->get();
     }        
 }

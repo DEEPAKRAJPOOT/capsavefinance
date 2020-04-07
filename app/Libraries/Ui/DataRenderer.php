@@ -4710,7 +4710,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'id',
             function ($data) {
-                return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$data->trans_id.'">';
+                return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$data->req_id.'">';
             }
         )
         ->editColumn(
