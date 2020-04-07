@@ -106,8 +106,9 @@
                 <label for="chrg_type">Charge Trigger</label>
                 <select class="form-control" name="chrg_tiger_id" id="chrg_tiger_id">
                     <option value="" selected>Select</option>
+                    <option {{$charge_data->chrg_tiger_id == 3 ? 'selected' : ''}} value="3">None</option>
                     <option {{$charge_data->chrg_tiger_id == 1 ? 'selected' : ''}} value="1">Limit Assignment</option>
-                    <option {{$charge_data->chrg_tiger_id == 2 ? 'selected' : ''}} value="2">First Invoice Disbursement</option>
+                    <option {{$charge_data->chrg_tiger_id == 2 ? 'selected' : ''}} value="2">First Invoice Disbursement</option>                    
                 </select>
             </div>
             <div class="form-group col-md-6">

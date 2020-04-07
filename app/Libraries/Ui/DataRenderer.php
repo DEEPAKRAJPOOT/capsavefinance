@@ -61,7 +61,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'id',
                     function ($user) {
-                    $link = '000'.$user->user_id;
+                    //$link = '000'.$user->user_id;
+                    $link = \Helpers::formatIdWithPrefix($user->user_id, 'LEADID');
                         return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                         
                     }
@@ -2597,7 +2598,7 @@ class DataRenderer implements DataProviderInterface
             '3' => 'Outstanding Principal',
             '4' => 'Outstanding Interest',
             '5' => 'Overdue Amount'
-        );
+        );               
         return DataTables::of($charges)
                 ->rawColumns(['is_active'])
                 ->addColumn(
@@ -2630,6 +2631,11 @@ class DataRenderer implements DataProviderInterface
                     function ($charges) {
                     return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
                 }) 
+                ->addColumn(
+                    'chrg_tiger_id',
+                    function ($charges) {
+                    return config('common.chrg_trigger_list')[$charges->chrg_tiger_id] ?? 'N/A'; 
+                })                 
                 ->addColumn(
                     'chrg_desc',
                     function ($charges) {

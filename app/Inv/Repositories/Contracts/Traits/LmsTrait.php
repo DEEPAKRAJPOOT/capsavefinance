@@ -1091,14 +1091,14 @@ trait LmsTrait
         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
         ->sum('amount');
         
-        $nonFactoredAmount = ($repayment->amount+$interestRefundTotal)-($repayDebitTotal+$marginTotal+$interestRefundSettledTotal);
+        $nonFactoredAmount = ($repayment->amount)-($repayDebitTotal+$marginTotal-$interestRefundSettledTotal);
         
-        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal;
+        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal-$interestRefundSettledTotal;
 
         return ['repaymentTrails' => $repaymentTrails, 
         'repayment'=>$repayment,
         'nonFactoredAmount' => $nonFactoredAmount,
-        'interestRefund'=>$interestRefundTotal,
+        'interestRefund'=>$interestRefundTotal-$interestRefundSettledTotal,
         'interestOverdue'=>$interestOverdueTotal,
         'marginTotal'=>$marginTotal,
         'refundableAmount'=>$refundableAmount,

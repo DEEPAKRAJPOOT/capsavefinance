@@ -30,6 +30,7 @@ try {
                     {data: 'chrg_calculation_amt'},
                     {data: 'is_gst_applicable'},
                     {data: 'chrg_applicable_id'},
+                    {data: 'chrg_tiger_id'},
                     {data: 'chrg_desc'},
                     {data: 'created_at'},
                     {data: 'created_by'},

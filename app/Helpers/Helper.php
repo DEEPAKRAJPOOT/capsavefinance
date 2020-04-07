@@ -1126,6 +1126,9 @@ class Helper extends PaypalHelper
         } else if ($type == 'REFUND') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%08d', $idValue);            
+        } else if ($type == 'LEADID') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%08d', $idValue);            
         }
         return $formatedId;
     }    
