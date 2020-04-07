@@ -34,7 +34,7 @@
                 </label>
             </div>
         </div>
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-2">
             <label for="chrg_type">Charge Calculation</label><br />
             <div class="form-check-inline "><label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type[{{$len}}]" value="1"  data-ct_idx="{{$len}}">Fixed</label></div>
             <div class="form-check-inline">
@@ -51,10 +51,10 @@
                 ['id'=>'chrg_calculation_amt', 'class'=>'form-control chrg_calculation_amt '.(isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'formatNum': 'amtpercnt') : 'formatNum').' clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
         </div>
          @endif
-        <div class="form-group approved_limit_div col-md-3 {{isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type != 2 ? 'hide' : '' }}" id="approved_limit_div">
+        <div class="form-group approved_limit_div col-md-2 {{isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type != 2 ? 'hide' : '' }}" id="approved_limit_div">
             <label for="chrg_type">Charge Applicable On</label>
             {!!
-            Form::select('chrg_tiger_id['.$len.']',
+            Form::select('chrg_applicable_id['.$len.']',
             [''=>'Please select' ,  1 => 'Limit Amount', 
             2 => ' Outstanding Amount',
             3 => 'Oustanding Principal',
@@ -62,6 +62,19 @@
             //5 => 'Overdue Amount'
             ],
             isset($data->chrg_applicable_id)  ?   $data->chrg_applicable_id  : null,
+            ['id' => 'chrg_applicable_id_'.$len,
+            'class'=>'form-control clsRequired ',
+            'required'=>'required'
+            ])
+            !!}
+        </div>
+         
+        <div class="form-group approved_limit_div col-md-2" id="approved_limit_div">
+            <label for="chrg_type">Charge Trigger</label>
+            {!!
+            Form::select('chrg_tiger_id['.$len.']',
+            [''=>'Please select']+config('common.chrg_trigger_list'),
+            isset($data->chrg_tiger_id)  ?   $data->chrg_tiger_id  : null,
             ['id' => 'chrg_tiger_id_'.$len,
             'class'=>'form-control clsRequired ',
             'required'=>'required'

@@ -320,6 +320,7 @@ class ProgramController extends Controller {
             $chrg_calculation_amt = $request->get('chrg_calculation_amt');
             $chrg_calc_min_rate = $request->get('chrg_calc_min_rate');
             $chrg_calc_max_rate = $request->get('chrg_calc_max_rate');
+            $chrg_applicable_id = $request->get('chrg_applicable_id');
             $chrg_tiger_id = $request->get('chrg_tiger_id');
             $chrg_calculation_type = $request->get('chrg_calculation_type');
             $chrg_type = $request->get('chrg_type');
@@ -337,7 +338,8 @@ class ProgramController extends Controller {
                     'gst_percentage' => isset($gst_rate[$keys]) ? $gst_rate[$keys] : null,
                     'chrg_calc_min_rate' => isset($chrg_calc_min_rate[$keys]) ? $chrg_calc_min_rate[$keys] : null,
                     'chrg_calc_max_rate' => isset($chrg_calc_max_rate[$keys]) ? $chrg_calc_max_rate[$keys] : null,
-                    'chrg_applicable_id' => isset($chrg_tiger_id[$keys]) ? $chrg_tiger_id[$keys] : null,
+                    'chrg_applicable_id' => isset($chrg_applicable_id[$keys]) ? $chrg_applicable_id[$keys] : null,
+                    'chrg_tiger_id' => isset($chrg_tiger_id[$keys]) ? $chrg_tiger_id[$keys] : null,
                     'created_at' => \carbon\Carbon::now(),
                     'created_by' => \Auth::user()->user_id
                 ];
