@@ -32,7 +32,7 @@ $finalDisburseAmt = 0;
 
 <div class="row">
 	<div class="col-6">
-		<form id="manualDisburse" method="POST" action="" target="_top">
+		<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
 			<input type="hidden" value="{{ $transIds }}" name="transaction_ids" id="transaction_ids">
 			@csrf
 			<div class="col-6">

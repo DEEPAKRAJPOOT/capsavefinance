@@ -47,6 +47,15 @@ class ApprovalRequest extends BaseModel {
         'ref_code',
         'req_type',
         'trans_id',
+        'refund_batch_id',
+        'refund_date',
+        'refund_amount',
+        'bank_account_id',
+        'bank_name',
+        'ifsc_code',
+        'acc_no',
+        'tran_id',
+        'disburse_type',
         'status',  
         'amount',
         'created_at',
@@ -64,6 +73,11 @@ class ApprovalRequest extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
+
+    public function transaction() { 
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions', 'trans_id', 'trans_id'); 
+    }
+
     public static function saveApprRequestData($reqData=[], $reqId=null)
     {
         //Check $reqData is not an array

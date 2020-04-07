@@ -5,10 +5,14 @@ use Auth;
 use Session;
 use Helpers;
 
+use PHPExcel; 
+use PHPExcel_IOFactory;
+
 use Illuminate\Http\Request;
 use App\Libraries\Idfc_lib;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
@@ -81,6 +85,206 @@ class RefundController extends Controller
                 'transIds' => $reqIds 
             ]);; 
     }
+
+    public function refundOffline(Request $request)
+    {
+        $transactionIds = $request->get('transaction_ids');
+        $disburseDate = $request->get('disburse_date');
+        $creatorId = Auth::user()->user_id;
+        $validator = Validator::make($request->all(), [
+           'disburse_date' => 'required'
+        ]);
+        
+        if ($validator->fails()) {
+            Session::flash('error', $validator->messages()->first());
+            return redirect()->back()->withInput();
+        }
+
+        $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
+        
+        if(empty($transactionIds)){
+            return redirect()->route('request_list');
+        }
+        $record = array_filter(explode(",",$transactionIds));
+        $allrecords = array_unique($record);
+        $allrecords = array_map('intval', $allrecords);
+        $allAprvls = $this->lmsRepo->getAprvlRqDataByIds($allrecords)->toArray();
+
+        foreach ($allAprvls as $aprvl) {
+            if($aprvl['transaction']['user']['is_buyer'] == 2 && empty($aprvl['transaction']['user']['anchor_bank_details'])){
+                return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
+            } elseif ($aprvl['transaction']['user']['is_buyer'] == 1 && empty($aprvl['transaction']['lms_user']['bank_details'])) {
+                return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
+            }
+        }
+
+        $disburseAmount = 0;
+        $exportData = [];
+        $aprvlRfd = [];
+        $disbursalIds = [];
+        $batchId= _getRand(12);
+        $transId = _getRand(18);
+
+        foreach ($allAprvls as $aprvl) {
+            $userid = $aprvl['transaction']['user']['user_id'];
+            $disburseAmount = round($aprvl['amount'], 5);
+            $aprvlRfd['tran_id'] = $transId;
+
+            $refId = $aprvl['transaction']['lms_user']['virtual_acc_id'];
+
+            $aprvlRfd['bank_account_id'] = ($aprvl['transaction']['user']['is_buyer'] == 2) ? $aprvl['transaction']['user']['anchor_bank_details']['bank_account_id'] : $aprvl['transaction']['lms_user']['bank_details']['bank_account_id'];
+            $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+            $aprvlRfd['bank_name'] = ($aprvl['transaction']['user']['is_buyer'] == 2) ? $aprvl['transaction']['user']['anchor_bank_details']['bank']['bank_name'] : $aprvl['transaction']['lms_user']['bank_details']['bank']['bank_name'] ;
+            $aprvlRfd['ifsc_code'] = ($aprvl['transaction']['user']['is_buyer'] == 2) ? $aprvl['transaction']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['transaction']['lms_user']['bank_details']['ifsc_code'];
+            $aprvlRfd['acc_no'] = ($aprvl['transaction']['user']['is_buyer'] == 2) ? $aprvl['transaction']['user']['anchor_bank_details']['acc_no'] : $aprvl['transaction']['lms_user']['bank_details']['acc_no'];           
+            $aprvlRfd['status'] = 7;
+            $aprvlRfd['refund_amount'] = $disburseAmount;
+            $aprvlRfd['disburse_type'] = $disburseType;
+            if (isset($aprvlRfd)) {
+                $refundDisbursed = $this->lmsRepo->updateAprvlRqst($aprvlRfd, $aprvl['req_id']);
+            }
+            if($disburseType == 2) {
+
+                $exportData[$userid]['RefNo'] = $refId;
+                $exportData[$userid]['Amount'] = $disburseAmount;
+                $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
+                $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
+                $exportData[$userid]['Debit_Mobile'] = '9876543210';
+                $exportData[$userid]['Ben_IFSC'] = $aprvlRfd['ifsc_code'];
+                $exportData[$userid]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
+                $exportData[$userid]['Ben_Name'] = $aprvlRfd['bank_name'];
+                $exportData[$userid]['Ben_BankName'] = $aprvlRfd['bank_name'];
+                $exportData[$userid]['Ben_Email'] = $aprvl['transaction']['user']['email'];
+                $exportData[$userid]['Ben_Mobile'] = $aprvl['transaction']['user']['mobile_no'];
+                $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
+                $exportData[$userid]['Remarks'] = 'test remarks';
+                $exportData[$userid]['Value_Date'] = date('Y-m-d');
+
+            } 
+        }
+
+        $result = $this->export($exportData, $batchId);
+        // dd($result);
+        // $file['file_path'] = $result['file_path'];
+        // if ($file) {
+        //     $createBatchFileData = $this->createBatchFileData($file);
+        //     $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+        //     if ($createBatchFile) {
+        //         $createDisbursalBatch = $this->lmsRepo->createDisbursalRefundBatch($createBatchFile, $batchId);
+        //         if($createDisbursalBatch) {
+        //             $updateDisbursal = $this->lmsRepo->updateDisburse([
+        //                     'disbursal_batch_id' => $createDisbursalBatch->disbursal_batch_id
+        //                 ], $disbursalIds);
+        //         }
+        //     }
+        // }
+
+        Session::flash('message',trans('backend_messages.disbursed'));
+        return redirect()->route('request_list');
+    }
+
+    public function export($data, $filename) {
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Bank Disburse Excel")
+                ->setSubject("Bank Disburse Excel")
+                ->setDescription("Bank Disburse Excel")
+                ->setKeywords("Bank Disburse Excel")
+                ->setCategory("Bank Disburse Excel");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Client Code')
+                ->setCellValue('B1', 'Debit account no.')
+                ->setCellValue('C1', 'Transaction type code')
+                ->setCellValue('D1', 'Value date')
+                ->setCellValue('E1', 'Amount')
+                ->setCellValue('F1', 'Beneficary Name')
+                ->setCellValue('G1', 'Beneficary Accunt no.')
+                ->setCellValue('H1', 'IFSC code')
+                ->setCellValue('I1', 'Customer Ref no.')
+                ->setCellValue('J1', 'Beneficary email id')
+                ->setCellValue('K1', 'Beneficiary mobile no.')
+                ->setCellValue('L1', 'Remarks')
+                ->setCellValue('M1', 'Payment Type')
+                ->setCellValue('N1', 'Purpose code')
+                ->setCellValue('O1', 'Bene a/c type')
+                ->setCellValue('P1', 'Payable Location')
+                ->setCellValue('Q1', 'Print branch name')
+                ->setCellValue('R1', 'Mode of delivery')
+                ->setCellValue('S1', 'Transaction currency')
+                ->setCellValue('T1', 'BENE_ADD1')
+                ->setCellValue('U1', 'BENE_ADD2')
+                ->setCellValue('V1', 'BENE_ADD3')
+                ->setCellValue('W1', 'BENE_ADD4')
+                ->setCellValue('X1', 'Beneficiary ID')
+                ->setCellValue('Y1', 'Remote Printing')
+                ->setCellValue('Z1', 'Print Branch Location')
+                ->setCellValue('AA1', 'Nature Of Payment');
+        $rows = 2;
+
+        foreach($data as $rowData){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['Debit_Acct_No'] ?? '')
+                ->setCellValue('C' . $rows, $rowData['Trans_Type_Code'] ?? '')
+                ->setCellValue('D' . $rows, $rowData['Value_Date'] ?? '')
+                ->setCellValue('E' . $rows, $rowData['Amount'] ?? '')
+                ->setCellValue('F' . $rows, $rowData['Ben_Name'] ?? '')
+                ->setCellValue('G' . $rows, $rowData['Ben_Acct_No'] ?? '')
+                ->setCellValue('H' . $rows, $rowData['Ben_IFSC'] ?? '')
+                ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
+                ->setCellValue('J' . $rows, $rowData['Ben_Email'] ?? '')
+                ->setCellValue('K' . $rows, $rowData['Ben_Mobile'] ?? '')
+                ->setCellValue('L' . $rows, $rowData['Remarks'] ?? '')
+                ->setCellValue('M' . $rows, $rowData['Mode_of_Pay'] ?? '')
+                ->setCellValue('N' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('O' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('P' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Q' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('R' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('S' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('T' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('U' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('V' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('W' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('X' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Y' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Z' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? '');
+
+            $rows++;
+        }
+
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        // header('Cache-Control: max-age=1');
+
+        // // If you're serving to IE over SSL, then the following may be needed
+        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        // header ('Pragma: public'); // HTTP/1.0
+        
+        if (!Storage::exists('/public/docs/bank_excel')) {
+            Storage::makeDirectory('/public/docs/bank_excel');
+        }
+        $storage_path = storage_path('app/public/docs/bank_excel');
+        $filePath = $storage_path.'/'.$filename.'.xlsx';
+
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save($filePath);
+
+        return [ 'status' => 1,
+                'file_path' => $filePath
+                ];
+    }
+
 	/**
 	 * Display a listing of the Refund Request
 	 * @return \Illuminate\Http\Response
