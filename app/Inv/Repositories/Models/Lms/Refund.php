@@ -73,7 +73,7 @@ class Refund extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }        
         
-        return self::create($refundData);
+        return self::insert($refundData);
     }
 }
 
