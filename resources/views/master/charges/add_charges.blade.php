@@ -116,6 +116,7 @@
                 <label for="chrg_tiger_id">Charge Trigger</label>
                 <select class="form-control" name="chrg_tiger_id" id="chrg_tiger_id">
                     <option value="" selected>Select</option>
+                    <option value="3">None</option>
                     <option value="1">Limit Assignment</option>
                     <option value="2">First Invoice Disbursement</option>
                 </select>
