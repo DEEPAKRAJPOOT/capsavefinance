@@ -17,6 +17,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 
 class ReviewerSummary extends Mailable
 {
@@ -65,6 +66,18 @@ class ReviewerSummary extends Mailable
               $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
             }
         } 
+
+        $positiveRiskCmntArr=[];
+        $negativeRiskCmntArr=[];
+        if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+            $dataRiskComments = CamReviewSummRiskCmnt::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                            ->where('is_active', 1)->get();
+            $dataRiskComments = $dataRiskComments ? $dataRiskComments->toArray() : [];
+            if(!empty($dataRiskComments)) {
+              $positiveRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentPositive"));
+              $negativeRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentNegative"));
+            }
+        } 
         
         //Get PreOffer Docs
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');   
@@ -104,8 +117,9 @@ class ReviewerSummary extends Mailable
             'appId' => $appId,
             'url' => 'https://'. config('proin.backend_uri'),
             'dispAppId' => $dispAppId,
-            'supplyOfferData' => $supplyOfferData
-
+            'supplyOfferData' => $supplyOfferData,
+            'positiveRiskCmntArr' => $positiveRiskCmntArr,
+            'negativeRiskCmntArr' => $negativeRiskCmntArr
         ]);        
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),

@@ -612,94 +612,51 @@ $finFlag = false;
    </div>
 @endif
 
-@if(isset($reviewerSummaryData->cond_pos_track_rec)
-|| isset($reviewerSummaryData->cond_pos_credit_rating)
-|| isset($reviewerSummaryData->cond_pos_fin_matric)
-|| isset($reviewerSummaryData->cond_pos_establish_client)
-|| isset($reviewerSummaryData->cond_neg_competition)
-|| isset($reviewerSummaryData->cond_neg_forex_risk)
-|| isset($reviewerSummaryData->cond_neg_pbdit)
-)
+@if(count($positiveRiskCmntArr) || count($negativeRiskCmntArr))
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
           <tr>
               <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Risk Comments</td>
           </tr>
       </table>
-      <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
-
-      @if(isset($reviewerSummaryData->cond_pos_track_rec)
-      || isset($reviewerSummaryData->cond_pos_credit_rating)
-      || isset($reviewerSummaryData->cond_pos_fin_matric)
-      || isset($reviewerSummaryData->cond_pos_establish_client)
-      )
-         <div class="data ">
-            <table class="table" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#138864">Deal Positives</td>
-                </tr>
+      @if(isset($positiveRiskCmntArr) && count($positiveRiskCmntArr)>0)
+            <table class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+               <thead>
+               <tr role="row">
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="40%">Deal Positives</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending"></th>
+               </tr>
+               </thead>           
+               @foreach($positiveRiskCmntArr as $postkey =>$postval)         
+                  <tbody>
+                     <tr>
+                        <td width="50%"><strong>{{$postval['cond']}}</strong></td>
+                        <td width="50%">{{$postval['timeline']}}</td>
+                     </tr>                     
+                  </tbody>       
+               @endforeach
             </table>
-               <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
-                  <tbody>
-                     <tr>
-                        <td width="50%"><strong>{{isset($reviewerSummaryData->cond_pos_track_rec) ? $reviewerSummaryData->cond_pos_track_rec : ''}}</strong></td>
-                        <td width="50%">
-                              {{isset($reviewerSummaryData->cmnt_pos_track_rec) ? $reviewerSummaryData->cmnt_pos_track_rec : ''}}
-                        </td>
-                     </tr>
-                     <tr>
-                        <td><strong>{{isset($reviewerSummaryData->cond_pos_credit_rating) ? $reviewerSummaryData->cond_pos_credit_rating : ''}}</strong></td>
-                        <td>{{isset($reviewerSummaryData->cmnt_pos_credit_rating) ? $reviewerSummaryData->cmnt_pos_credit_rating : ''}}
-                        </td>
-                     </tr>
-                     <tr>
-                        <td><strong>{{isset($reviewerSummaryData->cond_pos_fin_matric) ? $reviewerSummaryData->cond_pos_fin_matric : ''}}</strong></td>
-                        <td>{{isset($reviewerSummaryData->cmnt_pos_fin_matric) ? $reviewerSummaryData->cmnt_pos_fin_matric : ''}}
-                        </td>
-                     </tr>
-                     <tr>
-                        <td><strong>{{isset($reviewerSummaryData->cond_pos_establish_client) ? $reviewerSummaryData->cond_pos_establish_client : ''}}</strong></td>
-                        <td>{{isset($reviewerSummaryData->cmnt_pos_establish_client) ? $reviewerSummaryData->cmnt_pos_establish_client : ''}}
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
-         </div>  
       @endif
 
-      @if(isset($reviewerSummaryData->cond_neg_competition)
-      || isset($reviewerSummaryData->cond_neg_forex_risk)
-      || isset($reviewerSummaryData->cond_neg_pbdit)
-      )
-         <div class="data ">
-               <table class="table" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#138864">Deal Negatives</td>
-                    </tr>
-               </table>
-               <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0">
+      @if(isset($negativeRiskCmntArr) && count($negativeRiskCmntArr)>0)
+            <table class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+               <thead>
+               <tr role="row">
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="40%">Deal Negatives</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending"></th>
+               </tr>
+               </thead> 
+               @foreach($negativeRiskCmntArr as $postkey =>$postval)
                   <tbody>
                      <tr>
-                        <td width="50%"><strong>{{isset($reviewerSummaryData->cond_neg_competition) ? $reviewerSummaryData->cond_neg_competition : ''}}</strong></td>
-                        <td width="50%">{{isset($reviewerSummaryData->cmnt_neg_competition) ? $reviewerSummaryData->cmnt_neg_competition : ''}}
-                        </td>
-                     </tr>
-                     <tr>
-                        <td><strong>{{isset($reviewerSummaryData->cond_neg_forex_risk) ? $reviewerSummaryData->cond_neg_forex_risk : ''}}</strong></td>
-                        <td>{{isset($reviewerSummaryData->cmnt_neg_forex_risk) ? $reviewerSummaryData->cmnt_neg_forex_risk : ''}}
-                        </td>
-                     </tr>
-                     <tr>
-                        <td><strong>{{isset($reviewerSummaryData->cond_neg_pbdit) ? $reviewerSummaryData->cond_neg_pbdit : ''}}</strong></td>
-                        <td>{{isset($reviewerSummaryData->cmnt_neg_pbdit) ? $reviewerSummaryData->cmnt_neg_pbdit : ''}}
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
-         </div>
-      @endif
-      <!-- </div> -->
-   </div>
+                        <td width="50%"><strong>{{$postval['cond']}}</strong></td>
+                        <td width="50%">{{$postval['timeline']}}</td>
+                     </tr>                     
+                  </tbody>               
+               @endforeach
+            </table>
+      @endif  
+   </div> 
 @endif
 
 @if(isset($reviewerSummaryData->recommendation))
