@@ -4125,6 +4125,7 @@ if ($err) {
         $userId    = $request->get('user_id');
         $transType = $request->get('trans_type');
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
+        $repaymentAmtData = ((float)$repaymentAmtData<0)?0:$repaymentAmtData;
         return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
         
         // $debitAmt = 0;

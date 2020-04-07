@@ -445,107 +445,106 @@ class PaymentController extends Controller {
     return view('backend.payment.payment_invoice_list', $data);
   }
   
-    public function createPaymentRefund(Request $request)
-    {
-        $transId = $request->get('trans_id');
-        $refundAmount = $request->get('total_refund_amount');
+  public function createPaymentRefund(Request $request)
+  {
+    $transId = $request->get('trans_id');
+    $refundAmount = $request->get('total_refund_amount');
 
-        try {
-            $addlData=[];
-            $addlData['trans_id'] = $transId;
-            $addlData['amount'] = $refundAmount;
-            $addlData['sharing_comment'] = '';
-            
-            $refundData = $this->calculateRefund($transId);
-          
-            $transaction = [];
-            $transactions = [];
-
-            $transaction['TRANS_DATE'] = $refundData['repayment']->trans_date;
-            $transaction['VALUE_DATE'] = $refundData['repayment']->created_at;
-            
-            if ($refundData['repayment']->trans_detail->chrg_master_id != '0') {
-                $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->charge->chrg_name;
-            } else {
-                $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->trans_name;
-            }
-                                            
-            if ($refundData['repayment']->disbursal_id &&  $refundData['repayment']->disburse && $refundData['repayment']->disburse->invoice) {
-                $transaction['INV_NO'] = $refundData['repayment']->disburse->invoice->invoice_no;
-            } else {
-                $transaction['INV_NO'] = '';
-            }      
-            
-            if ($refundData['repayment']->entry_type == '0') {
-                $transaction['DEBIT'] = $refundData['repayment']->amount;
-            } else {
-                $transaction['DEBIT'] = '';
-            }
-
-            if ($refundData['repayment']->entry_type == '1') {
-                $transaction['CREDIT'] = $refundData['repayment']->amount;
-            } else {
-                $transaction['CREDIT'] = '';
-            }
-            
-            $transactions[] = $transaction;
-
-            foreach ($refundData['repaymentTrails'] as $repay) {
-              $transaction = [];
-              $transaction['TRANS_DATE'] = $repay->trans_date;
-              $transaction['VALUE_DATE'] = $repay->created_at;
-
-              if ($repay->trans_detail->chrg_master_id != '0') {
-                  $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
-              } else {
-                  $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
-              }
-
-              if ($repay->disbursal_id && $repay->disburse && $repay->disburse->invoice->invoice_no) {
-                  $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
-              } else {
-                  $transaction['INV_NO'] = '';
-              }      
-
-              if ($repay->entry_type == '0') {
-                  $transaction['DEBIT'] = $repay->amount;
-              } else {
-                  $transaction['DEBIT'] = '';
-              }
-
-              if ($repay->entry_type == '1') {
-                  $transaction['CREDIT'] = $repay->amount;
-              } else {
-                  $transaction['CREDIT'] = '';
-              }
-              
-              $transactions[] = $transaction;   
-            }
+    try {
+        $addlData=[];
+        $addlData['trans_id'] = $transId;
+        $addlData['amount'] = $refundAmount;
+        $addlData['sharing_comment'] = '';
         
-            $data['TRANSACTIONS'] = $transactions;
-            $data['TOTAL_FACTORED'] = $refundData['repayment']->amount;
-            $data['NON_FACTORED'] = $refundData['nonFactoredAmount'];
-            $data['OVERDUE_INTEREST'] = $refundData['interestOverdue'];
-            $data['INTEREST_REFUND'] = $refundData['interestRefund'];
-            $data['MARGIN_RELEASED'] = $refundData['marginTotal'];
-            $data['TOTAL_REFUNDABLE_AMT'] = $refundData['refundableAmount'];
-            //$data['TOTAL_AMT_FOR_MARGIN'] = '';
-            //$data['MARGIN'] = '';
+        $refundData = $this->calculateRefund($transId);
+      
+        $transaction = [];
+        $transactions = [];
 
-            $this->saveRefundData($transId, $data);                        
-            
-            $result = $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
-            
-            if ($result) {
-                Session::flash('is_accept', 1);
-                return redirect()->back();
-            } else {
-                Session::flash('error_code', 'create_refund');
-                return redirect()->back();                
-            }
+        $transaction['TRANS_DATE'] = $refundData['repayment']->trans_date;
+        $transaction['VALUE_DATE'] = $refundData['repayment']->created_at;
+        
+        if ($refundData['repayment']->trans_detail->chrg_master_id != '0') {
+            $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->charge->chrg_name;
+        } else {
+            $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->trans_name;
+        }
+                                        
+        if ($refundData['repayment']->disbursal_id &&  $refundData['repayment']->disburse && $refundData['repayment']->disburse->invoice) {
+            $transaction['INV_NO'] = $refundData['repayment']->disburse->invoice->invoice_no;
+        } else {
+            $transaction['INV_NO'] = '';
+        }      
+        
+        if ($refundData['repayment']->entry_type == '0') {
+            $transaction['DEBIT'] = $refundData['repayment']->amount;
+        } else {
+            $transaction['DEBIT'] = '';
+        }
 
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }    
-    }
+        if ($refundData['repayment']->entry_type == '1') {
+            $transaction['CREDIT'] = $refundData['repayment']->amount;
+        } else {
+            $transaction['CREDIT'] = '';
+        }
+        
+        $transactions[] = $transaction;
+
+        foreach ($refundData['repaymentTrails'] as $repay) {
+          $transaction = [];
+          $transaction['TRANS_DATE'] = $repay->trans_date;
+          $transaction['VALUE_DATE'] = $repay->created_at;
+
+          if ($repay->trans_detail->chrg_master_id != '0') {
+              $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+          } else {
+              $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+          }
+
+          if ($repay->disbursal_id && $repay->disburse && $repay->disburse->invoice->invoice_no) {
+              $transaction['INV_NO'] = $repay->disburse->invoice->invoice_no;
+          } else {
+              $transaction['INV_NO'] = '';
+          }      
+
+          if ($repay->entry_type == '0') {
+              $transaction['DEBIT'] = $repay->amount;
+          } else {
+              $transaction['DEBIT'] = '';
+          }
+
+          if ($repay->entry_type == '1') {
+              $transaction['CREDIT'] = $repay->amount;
+          } else {
+              $transaction['CREDIT'] = '';
+          }
+          
+          $transactions[] = $transaction;   
+        }
+    
+        $data['TRANSACTIONS'] = $transactions;
+        $data['TOTAL_FACTORED'] = $refundData['repayment']->amount;
+        $data['NON_FACTORED'] = $refundData['nonFactoredAmount'];
+        $data['OVERDUE_INTEREST'] = $refundData['interestOverdue'];
+        $data['INTEREST_REFUND'] = $refundData['interestRefund'];
+        $data['MARGIN_RELEASED'] = $refundData['marginTotal'];
+        $data['TOTAL_REFUNDABLE_AMT'] = $refundData['refundableAmount'];
+        //$data['TOTAL_AMT_FOR_MARGIN'] = '';
+        //$data['MARGIN'] = '';
+
+        $this->saveRefundData($transId, $data); 
+        $result = $this->createApprRequest(config('lms.REQUEST_TYPE.REFUND'), $addlData);
+        //$this->saveRefundTransactions($transId,);
+        if ($result) {
+            Session::flash('is_accept', 1);
+            return redirect()->back();
+        } else {
+            Session::flash('error_code', 'create_refund');
+            return redirect()->back();                
+        }
+
+    } catch (Exception $ex) {
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+    }    
+  }
 }
