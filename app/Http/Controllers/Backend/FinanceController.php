@@ -140,8 +140,10 @@ class FinanceController extends Controller {
                         "narration" => $fetchedArr['narration'], 
                     ]; 
                     if (!$is_first_n_old) {
-                       $journal[0]['cr_amount'] = $cr_amount_sum;
-                       if (strtolower($journal[0]['dr_/_cr']) == 'debit') {
+                       if (!empty($journal[0])) {
+                            $journal[0]['cr_amount'] = $cr_amount_sum;
+                        } 
+                       if (!empty($journal[0]['dr_/_cr']) && strtolower($journal[0]['dr_/_cr']) == 'debit') {
                           $journal[0]['cr_ledger_name'] = $transType;  
                        }
                        $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
