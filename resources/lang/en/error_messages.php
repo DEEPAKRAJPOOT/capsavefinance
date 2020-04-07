@@ -78,6 +78,7 @@ return [
     'send_array' => 'Please send array.',
     'invalid_data_type' => 'Invalid data type',
     'invalid_token' => 'Token is invalid.',
+    'enter_corr_otp' => 'Please enter correct otp.',
     'email_already_verified' => 'Your email already verified please login to continue.',
     'generic.failure'=>'We have encountered a technical issue due to which operation is not completed. Please try after sometime.',
     'creadential_not_valid'=>'Invalid username or password.',

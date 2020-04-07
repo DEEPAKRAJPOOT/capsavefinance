@@ -198,7 +198,7 @@ use RegistersUsers,
     public function showRegistrationForm(Request $request) {
            try{
                 $anchortoken = $request->get('token');
-                 //dd($anchorEmail);
+//                dd($anchortoken);
                 $userId = Session::has('userId') ? Session::get('userId') : 0;
                 $userArr = [];
                 $anchorDetail = [];
@@ -206,7 +206,7 @@ use RegistersUsers,
                     $userArr = $this->userRepo->find($userId);
                 }
                 $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
-                //dd($anchorLeadInfo);
+//                dd($anchorLeadInfo);
                 if(isset($anchortoken) && $anchorLeadInfo){
                     $anchorDetail = $anchorLeadInfo;
                 }else{
@@ -467,8 +467,7 @@ use RegistersUsers,
 
         $otp = $request->get('otp');
         $email = Crypt::decrypt($request->get('token'));
-
-
+        
         try {
             if (isset($otp) && !empty($otp)) {
 
@@ -503,7 +502,7 @@ use RegistersUsers,
 
                     //return redirect()->route('login_open');
                 } else {
-                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.invalid_token'));
+                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.enter_corr_otp'));
                 }
             } else {
                 return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.data_not_found'));
