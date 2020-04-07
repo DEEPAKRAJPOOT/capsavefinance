@@ -249,6 +249,7 @@
                             {
                                 required: true,
                                 number: true,
+                                minlength: 6
                             })
                 });
                 $('input.assigned_sale_mgr').each(function () {
@@ -330,15 +331,26 @@
     $('#state').on('change',function(){
     var stateID = $(this).val();
     if(stateID){
+      //  var image_id =  $(this).data('city-error');
         $.ajax({
            type:"GET",
+           data: { "approved": "True"},
            url:"{{url('/anchor/get-city-list')}}?state_id="+stateID,
-           success:function(res){
-            if(res){
+           success:function(data){
+            if(data){
                 $("#city").empty();
-                $.each(res,function(key,value){
+                $.each(data,function(key,value){
                    console.log(value)
                     $("#city").append('<option value="'+value+'">'+value+'</option>');
+
+                  //   $( "select" ).has( "label" ).css( "background-color", "red" );
+                    
+                     if ( $('#city').next("label").length > 0 ) {
+                        console.log('yes')
+                        $("#city").next().remove();
+                     } else {
+                        console.log('no')
+                     }
                 });
 
             }else{
