@@ -161,9 +161,9 @@ class FinanceController extends Controller {
                             "reference_no" => $fetchedArr['ref_no'],
                             "reference_amount" => $fetchedArr['ref_amount'],
                             "transaction_type" => '',
-                            "a_/_c_no" => '',
-                            "ifsc_code" => '',
-                            "bank_name" => '',
+                            "a_/_c_no" => $fetchedArr['acc_no'],
+                            "ifsc_code" => $fetchedArr['ifsc_code'],
+                            "bank_name" => $fetchedArr['bank_name'],
                             "cheque_amount" => '',
                             "cross_using" => '',
                             "inst_no" => '',
@@ -182,9 +182,9 @@ class FinanceController extends Controller {
                             "reference_no" => '',
                             "reference_amount" => '',
                             "transaction_type" => $fetchedArr['mode_of_pay'],
-                            "a_/_c_no" => '',
-                            "ifsc_code" => '',
-                            "bank_name" => '',
+                            "a_/_c_no" => $fetchedArr['acc_no'],
+                            "ifsc_code" => $fetchedArr['ifsc_code'],
+                            "bank_name" => $fetchedArr['bank_name'],
                             "cheque_amount" => $fetchedArr['cheque_amount'],
                             "cross_using" => $fetchedArr['cross_using'],
                             "inst_no" => $fetchedArr['inst_no'],
@@ -197,10 +197,12 @@ class FinanceController extends Controller {
 
                     if ($entry_type == 'debit') {
                         $records['PAYMENT'][] = $company_row;
+                        $bank_row['dr_/_cr'] = 'Credit';
                         $records['PAYMENT'][] = $bank_row;
                     }else{
-                        $records['PAYMENT'][] = $bank_row;
                         $records['PAYMENT'][] = $company_row;
+                        $bank_row['dr_/_cr'] = 'Dedit';
+                        $records['PAYMENT'][] = $bank_row;
                     }
                         /*$records['PAYMENT'][] = [
                             "voucher_no" => $fetchedArr['voucher_code'],

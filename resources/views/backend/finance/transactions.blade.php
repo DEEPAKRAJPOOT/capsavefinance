@@ -38,6 +38,7 @@
                                     <th>Ledger Name</th>
                                     <th>Amount</th>
                                     <th>Entry Type</th>
+                                    <th>Trans Type</th>
                                     <th>Batch No</th>
                                     <th>Mode of Pay</th>
                                 </tr>

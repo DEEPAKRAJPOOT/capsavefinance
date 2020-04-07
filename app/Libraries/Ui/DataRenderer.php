@@ -4483,6 +4483,11 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'mode_of_pay',
                         function ($dataRecords) {
+                        return $dataRecords->mode_of_pay;
+                    })        
+                    ->editColumn(
+                        'trans_type',
+                        function ($dataRecords) {
                         return $dataRecords->trans_type;
                     })       
                     ->editColumn(
