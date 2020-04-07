@@ -177,6 +177,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@refundListSentBank'
             ]);
 
+            Route::get('/refund/refunded',[
+                'as' => 'lms_refund_refunded',
+                'uses' => 'Lms\RefundController@refundListRefunded'
+            ]);
+
             // Business address
             Route::get('/address', [
                 'as' => 'addr_get_customer_list',

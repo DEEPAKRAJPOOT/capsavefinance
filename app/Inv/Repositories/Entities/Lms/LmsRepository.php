@@ -590,7 +590,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRequestList($request)
    {
-	  return ApprovalRequest::getAllApprRequests();
+
+	  return ApprovalRequest::getAllApprRequests(['status'=>(int) $request->status]);
    }
 
    public function createBatch()

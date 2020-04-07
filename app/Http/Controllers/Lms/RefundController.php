@@ -63,7 +63,15 @@ class RefundController extends Controller
 	 */
 	public function refundListSentBank(){
 		return view('lms.common.refund_sentbank');
-	}
+    }
+    /**
+	 * Display a listing of the Refund Request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function refundListRefunded(){
+		return view('lms.common.refund_refunded');
+    }
+    
 	
 	/**
 	 * Display a listing of the refund.

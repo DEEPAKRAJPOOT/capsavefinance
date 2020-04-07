@@ -14,10 +14,10 @@ try {
                     "url": messages.url, // json datasource
                     "method": 'POST',
                     data: function (d) {
+                        d.status = messages.status
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
-
                         $("#requestList").append('<tbody class="appList-error"><tr><th colspan="8">' + messages.data_not_found + '</th></tr></tbody>');
                         $("#requestList_processing").css("display", "none");
                     }

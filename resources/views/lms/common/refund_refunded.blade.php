@@ -20,7 +20,7 @@
 
     <div class="card">
         <div class="card-body">
-        @include('lms.common.partial.status_links')
+    @include('lms.common.partial.status_links')
 
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -74,7 +74,7 @@
         lms_edit_batch: "{{ URL::route('lms_edit_batch') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-        status:"6",
+        status:"8",
     };
 </script>
 <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>

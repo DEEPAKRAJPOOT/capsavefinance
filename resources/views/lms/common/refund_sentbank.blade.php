@@ -32,7 +32,7 @@
 	                              		<table id="requestList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-                                                    <th><input type="checkbox" id="chkAll"></th>
+                                                    <th><input type="checkbox" id="chkAll"></th>                                                    
                                                     <th>Ref No</th>
                                                     <th>Customer ID</th>
                                                     <th>Entity Name</th>                                                    
@@ -74,7 +74,7 @@
         lms_edit_batch: "{{ URL::route('lms_edit_batch') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-        status:"6",
+        status:"7",
     };
 </script>
 <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>

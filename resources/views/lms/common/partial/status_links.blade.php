@@ -13,11 +13,11 @@
     </li>
 
     <li class="nav-item itemBackground">
-        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_new') active @endif" href="{{Route('lms_refund_sentbank')}}">Sent to Bank</a>
+        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_sentbank') active @endif" href="{{Route('lms_refund_sentbank')}}">Sent to Bank</a>
     </li>
 
     <li class="nav-item itemBackground">
-        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_new') active @endif" href="{{Route('lms_refund_sentbank')}}">Refunded</a>
+        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_refunded') active @endif" href="{{Route('lms_refund_refunded')}}">Refunded</a>
     </li>
 
 </ul>

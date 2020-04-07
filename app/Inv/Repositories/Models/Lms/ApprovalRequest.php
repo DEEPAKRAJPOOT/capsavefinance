@@ -93,7 +93,7 @@ class ApprovalRequest extends BaseModel {
         return $result ? $result : null;
     }
     
-    public static function getAllApprRequests()
+    public static function getAllApprRequests($data)
     {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $curUserId = \Auth::user()->user_id;
@@ -138,14 +138,14 @@ class ApprovalRequest extends BaseModel {
                     }
                 })
                 ->join('transactions as t', 't.trans_id', '=', 'req.trans_id')
-                ->join('lms_users', 't.user_id', '=', 'lms_users.user_id');
+                ->join('lms_users', 't.user_id', '=', 'lms_users.user_id')
                 //->join('users as assignee_u', 'req_assign.to_id', '=', 'assignee_u.user_id')
                 //->join('users as from_u', 'req_assign.from_id', '=', 'from_u.user_id')
                 //->join('role_user as assignee_ru', 'req_assign.to_id', '=', 'assignee_ru.user_id')
                 //->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 //->leftJoin('role_user as from_ru', 'req_assign.from_id', '=', 'from_ru.user_id')
                 //->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');
-
+                ->where($data);
         $query->groupBy('req.req_id');
         $result = $query->orderBy('req.req_id', 'DESC');
         return $result;
