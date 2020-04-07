@@ -10,7 +10,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Application;
-use App\Inv\Repositories\Models\InvoiceActivityLog;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Master\Role;
@@ -189,7 +189,7 @@ public static function saveBulkTempInvoice($arrInvoice)
                         $data->created_by =  $result->created_by;
                         $data->created_at =  $result->created_at;
                $insert = $data->save();
-               InvoiceActivityLog::saveInvoiceActivityLog($data->invoice_id,$status_id,null,$id,null);
+               InvoiceStatusLog::saveInvoiceStatusLog($data->invoice_id,$status_id);
             }
             
        }  

@@ -244,7 +244,10 @@ class InvoiceController extends Controller {
         $invoice_id = $request->get('invoice_id');
         $res = $this->invRepo->getSingleInvoice($invoice_id);
         $get_status = DB::table('mst_status')->where('status_type', 4)->get();
-        return view('backend.invoice.view_invoice_details')->with(['invoice' => $res, 'status' => $get_status]);
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        return view('backend.invoice.view_invoice_details')->with(['invoice' => $res, 'status' => $get_status,'role'=> $chkUser->id]);
     }
 
     public function viewBatchUserInvoice(Request $request) {
@@ -388,7 +391,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-            $this->invRepo->saveInvoiceActivityLog($result, $statusId, null, $id, null);
+            $this->invRepo->saveInvoiceStatusLog($result, $statusId);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

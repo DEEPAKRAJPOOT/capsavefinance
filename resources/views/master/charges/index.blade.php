@@ -45,6 +45,7 @@
                                     <th>Charge Amt/Per</th>
                                     <th>GST Applicable</th>
                                     <th>Applicability</th>
+                                    <th>Charge Trigger</th>
                                     <th>Description</th>
                                     <th>Created At</th>
                                     <th>Created By</th>

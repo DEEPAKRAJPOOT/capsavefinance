@@ -67,6 +67,7 @@ class ApportionmentHelper{
         }
         self::settleCharges();
         self::settleAllMargin();
+        self::settleNonFactoredAmt();
         self::saveTransactions();
     }
 
@@ -496,6 +497,17 @@ class ApportionmentHelper{
             self::settleMargin($disbursalDetail);
         }
     }
+    
+    private function settleNonFactoredAmt(){
+        if($this->balanceRepayAmount>0){
+            $nonFactoredData = $this->createTransactionData($this->transDetails->user_id, [
+                'amount' => $this->balanceRepayAmount,
+                'trans_date'=>$this->transDetails->trans_date,
+                'repay_trans_id'=>$this->transDetails->trans_id
+            ], null, config('lms.TRANS_TYPE.NON_FACTORED_AMT'), 0);
+            $this->transaction['nonFactoredAmt'][] = $nonFactoredData;
+        }
+    }
 
     private function saveTransactions(){
         
@@ -544,15 +556,9 @@ class ApportionmentHelper{
             $this->lmsRepo->saveTransaction($chargesValue);
         }
 
-       
-        
-
-
-
-        
-        // if(!empty($this->transaction['nonFactoredAmt']))
-        // foreach($this->transaction['nonFactoredAmt'] as $nonFactoredAmtValue){
-        //     $this->lmsRepo->saveTransaction($nonFactoredAmtValue);
-        // }
+        if(!empty($this->transaction['nonFactoredAmt']))
+        foreach($this->transaction['nonFactoredAmt'] as $nonFactoredAmtValue){
+            $this->lmsRepo->saveTransaction($nonFactoredAmtValue);
+        }
     }
 }

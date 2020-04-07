@@ -233,7 +233,7 @@ class InvoiceController extends Controller {
 
         if ($result) {
 
-            $this->invRepo->saveInvoiceActivityLog($result, 7, null, $id, null);
+            $this->invRepo->saveInvoiceStatusLog($result, $statusId);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

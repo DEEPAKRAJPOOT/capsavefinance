@@ -61,7 +61,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'id',
                     function ($user) {
-                    $link = '000'.$user->user_id;
+                    //$link = '000'.$user->user_id;
+                    $link = \Helpers::formatIdWithPrefix($user->user_id, 'LEADID');
                         return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                         
                     }
@@ -749,7 +750,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })
@@ -954,7 +955,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })
@@ -1099,7 +1100,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })
@@ -1208,7 +1209,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 }) 
@@ -1335,7 +1336,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })      
@@ -1449,7 +1450,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })     
@@ -1539,7 +1540,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })  
@@ -1686,7 +1687,7 @@ class DataRenderer implements DataProviderInterface
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->user ? '<span><b>Name:&nbsp;</b>'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
                         return $inv_amount;
                 })     
@@ -1852,16 +1853,9 @@ class DataRenderer implements DataProviderInterface
                ->addColumn(
                     'status',
                     function ($invoice) {
-                      $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
-                      if($invoice->status_id!=0) {
-                      return '<button type="button" class="'.$color[$invoice->status_id] .' btn-sm">'.$invoice->activity_name.'</button>';
-                      }
-                      else if($invoice->status_id==0 && $invoice->updated_by!=null)
-                      {
-                            return '<button type="button" class="badge badge-warning btn-sm">'.$invoice->activity_name.'</button>';
-                      }
-
-                })
+                      
+                            return '<button type="button" class="badge badge-warning btn-sm">'.$invoice->status->status_name.'</button>';
+               })
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
@@ -2597,7 +2591,7 @@ class DataRenderer implements DataProviderInterface
             '3' => 'Outstanding Principal',
             '4' => 'Outstanding Interest',
             '5' => 'Overdue Amount'
-        );
+        );               
         return DataTables::of($charges)
                 ->rawColumns(['is_active'])
                 ->addColumn(
@@ -2630,6 +2624,11 @@ class DataRenderer implements DataProviderInterface
                     function ($charges) {
                     return $this->chrg_applicable_ids[$charges->chrg_applicable_id] ?? 'N/A'; 
                 }) 
+                ->addColumn(
+                    'chrg_tiger_id',
+                    function ($charges) {
+                    return config('common.chrg_trigger_list')[$charges->chrg_tiger_id] ?? 'N/A'; 
+                })                 
                 ->addColumn(
                     'chrg_desc',
                     function ($charges) {
