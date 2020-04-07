@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\Lms\WfStage;
 use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
+use App\Inv\Repositories\Models\Lms\RefundBatch;
 use App\Inv\Repositories\Models\Master\RoleUser;
 
 /**
@@ -938,5 +939,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			return ApprovalRequest::whereIn('req_id', $reqId)
 					->update($data);
 		}
-	}        
+	}
+
+	public static function createRefundBatch($file, $data = [])
+    {   
+    	$disburseBatch = [];
+        if ($data) {
+            $disburseBatch['batch_id'] = ($data['batch_id']) ?? null;
+            $disburseBatch['batch_tye'] = ($data['batch_type']) ?? null;
+            $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+        }
+        return RefundBatch::create($disburseBatch);
+    }        
 }

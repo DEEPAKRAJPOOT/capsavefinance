@@ -165,22 +165,23 @@ class RefundController extends Controller
         }
 
         $result = $this->export($exportData, $batchId);
-        // dd($result);
-        // $file['file_path'] = $result['file_path'];
-        // if ($file) {
-        //     $createBatchFileData = $this->createBatchFileData($file);
-        //     $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
-        //     if ($createBatchFile) {
-        //         $createDisbursalBatch = $this->lmsRepo->createDisbursalRefundBatch($createBatchFile, $batchId);
-        //         if($createDisbursalBatch) {
-        //             $updateDisbursal = $this->lmsRepo->updateDisburse([
-        //                     'disbursal_batch_id' => $createDisbursalBatch->disbursal_batch_id
-        //                 ], $disbursalIds);
-        //         }
-        //     }
-        // }
+        $file['file_path'] = ($result['file_path']) ?? null;
+        if ($file) {
+            $createBatchFileData = $this->createBatchFileData($file);
+            $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+            if ($createBatchFile) {
+                $data['batch_id'] = $batchId;
+                $data['batch_type'] = 2;
+                $createBatch = $this->lmsRepo->createRefundBatch($createBatchFile, $data);
+                if($createBatch) {
+                    $updateDisbursal = $this->lmsRepo->updateAprvlRqst([
+                            'refund_batch_id' => $createBatch->refund_batch_id
+                        ], $allrecords);
+                }
+            }
+        }
 
-        Session::flash('message',trans('backend_messages.disbursed'));
+        Session::flash('message',trans('backend_messages.proccessed'));
         return redirect()->route('request_list');
     }
 
