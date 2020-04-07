@@ -47,6 +47,13 @@ class RefundController extends Controller
      * Display a listing of the Refund Request
      * @return \Illuminate\Http\Response
      */
+    public function refundListApproved(){
+        return view('lms.common.refund_approved');
+    }
+    /**
+     * Display a listing of the Refund Request
+     * @return \Illuminate\Http\Response
+     */
     public function refundListRequest(){
         return view('lms.common.refund_request');
     }

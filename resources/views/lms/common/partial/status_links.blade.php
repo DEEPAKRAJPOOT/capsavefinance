@@ -6,11 +6,18 @@
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_pending') active @endif"  href="{{Route('lms_refund_pending')}}">Pending</a>
     </li>
     <li class="nav-item itemBackground">
-        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_que') active @endif"  href="{{Route('request_list')}}">Refund Queue</a>
+        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_approved') active @endif"  href="{{Route('lms_refund_approved')}}">Approved</a>
+    </li>
+    <li class="nav-item itemBackground">
+        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='request_list') active @endif"  href="{{Route('request_list')}}">Refund Queue</a>
     </li>
 
     <li class="nav-item itemBackground">
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_new') active @endif" href="{{Route('lms_refund_sentbank')}}">Sent to Bank</a>
+    </li>
+
+    <li class="nav-item itemBackground">
+        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_new') active @endif" href="{{Route('lms_refund_sentbank')}}">Refunded</a>
     </li>
 
 </ul>

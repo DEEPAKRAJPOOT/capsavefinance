@@ -162,6 +162,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@refundListPending'
             ]);
 
+            Route::get('/refund/approved',[
+                'as' => 'lms_refund_approved',
+                'uses' => 'Lms\RefundController@refundListApproved'
+            ]);
+
             Route::get('/refund/request',[
                 'as' => 'request_list',
                 'uses' => 'Lms\RefundController@refundListRequest'
