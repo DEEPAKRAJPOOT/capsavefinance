@@ -7,20 +7,20 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
-class Refund extends BaseModel {
+class RefundTransactions extends BaseModel {
     /* The database table used by the model.
      *
      * @var string
      */
 
-    protected $table = 'lms_refund';
+    protected $table = 'lms_refund_transactions';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'refund_id';
+    protected $primaryKey = 'refund_trans_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -42,38 +42,21 @@ class Refund extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'trans_id',
-        'variable_id',      
-        'variable_type',
-        'variable_value',
-        'amount',
-        'created_at',
+        'refund_trans_id',  
+        'req_id',  
+        'trans_id',  
+        'created_at',  
         'created_by',
-        'updated_at',
-        'updated_by',
     ];
-
     
-    public static function getRefundData($transId, $variableName=null)
-    {
-        $query = self::select('*')
-                ->join('lms_variables', 'lms_variables.id', '=', 'lms_refund.variable_id')
-                ->where('lms_refund.trans_id', $transId);
-        if (!is_null($variableName)) {
-            $query->where('lms_variables.name', $variableName);
-        }
-        $result = $query->get();
-        return isset($result[0]) ? $result : [];
-    }
-    
-    public static function saveRefundData($refundData)
+    public static function saveRefundTransactionData($data)
     {
         //Check $refundData is not an array
-        if (!is_array($refundData)) {
+        if (!is_array($data)) {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }        
         
-        return self::create($refundData);
+        return self::insert($data);
     }
 }
 
