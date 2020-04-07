@@ -4707,7 +4707,13 @@ class DataRenderer implements DataProviderInterface
     
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
-        ->rawColumns(['ref_code','assignee','assignedBy','action'])
+        ->rawColumns(['id','ref_code','assignee','assignedBy','action'])
+        ->editColumn(
+            'id',
+            function ($data) {
+                return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$data->trans_id.'">';
+            }
+        )
         ->editColumn(
             'ref_code',
             function ($data) {

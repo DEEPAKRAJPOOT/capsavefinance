@@ -19,7 +19,9 @@
 
 
     <div class="card">
-        <div class="card-body">       
+        <div class="card-body">
+        @include('lms.common.partial.status_links')
+
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -30,6 +32,7 @@
 	                              		<table id="requestList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
+                                                    <th><input type="checkbox" id="chkAll"></th> 
                                                     <th>Ref No</th>
                                                     <th>Customer ID</th>
                                                     <th>Entity Name</th>                                                    

@@ -29,12 +29,33 @@ class RefundController extends Controller
 		$this->middleware('checkBackendLeadAccess');
 	}
 
+    /**
+     * Display a listing of the Refund Request
+     * @return \Illuminate\Http\Response
+     */
+    public function refundListNew(){
+        return view('lms.common.refund_list');
+    }
+    /**
+     * Display a listing of the Refund Request
+     * @return \Illuminate\Http\Response
+     */
+    public function refundListPending(){
+        return view('lms.common.refund_pending');
+    }
+    /**
+     * Display a listing of the Refund Request
+     * @return \Illuminate\Http\Response
+     */
+    public function refundListRequest(){
+        return view('lms.common.refund_request');
+    }
 	/**
 	 * Display a listing of the Refund Request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function requestList(){
-		return view('lms.common.request');
+	public function refundListSentBank(){
+		return view('lms.common.refund_sentbank');
 	}
 	
 	/**

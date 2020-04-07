@@ -152,9 +152,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@editBatch'
             ]);
 
+            Route::get('/refund/list',[
+                'as' => 'lms_refund_new',
+                'uses' => 'Lms\RefundController@refundListNew'
+            ]);
+
+            Route::get('/refund/pending',[
+                'as' => 'lms_refund_pending',
+                'uses' => 'Lms\RefundController@refundListPending'
+            ]);
+
             Route::get('/refund/request',[
                 'as' => 'request_list',
-                'uses' => 'Lms\RefundController@requestList'
+                'uses' => 'Lms\RefundController@refundListRequest'
+            ]);
+
+            Route::get('/refund/sentbank',[
+                'as' => 'lms_refund_sentbank',
+                'uses' => 'Lms\RefundController@refundListSentBank'
             ]);
 
             // Business address

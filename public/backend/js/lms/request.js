@@ -23,6 +23,7 @@ try {
                     }
                 },
                 columns: [
+                    {data: 'id'},
                     {data: 'ref_code'},
                     {data: 'customer_id'},
                     {data: 'biz_entity_name'},                    
