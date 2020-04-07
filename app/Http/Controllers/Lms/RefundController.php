@@ -57,6 +57,30 @@ class RefundController extends Controller
     public function refundListRequest(){
         return view('lms.common.refund_request');
     }
+    /**
+     * Display a listing of the Refund Request
+     * @return \Illuminate\Http\Response
+     */
+    public function refundConfirm(Request $request){
+        $disburseType = $request->get('disburse_type');
+        $reqIds = $request->get('transaction_ids');
+        if(empty($reqIds)) {
+            Session::flash('message', trans('backend_messages.noSelectedInvoice'));
+            Session::flash('operation_status', 1);
+            
+            return redirect()->route('request_list');
+        }
+        $record = array_filter(explode(",",$reqIds));
+        $allrecords = array_unique($record);
+        $allrecords = array_map('intval', $allrecords);
+
+        $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
+        return view('lms.common.refund_confirm')
+            ->with([
+                'data' => $data,
+                'transIds' => $reqIds 
+            ]);; 
+    }
 	/**
 	 * Display a listing of the Refund Request
 	 * @return \Illuminate\Http\Response
