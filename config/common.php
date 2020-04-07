@@ -275,7 +275,13 @@ return [
         'APP' => 'CAPAI',
         'VA' => 'CAPVA',
         'CUSTID' => 'CAPCI',
-        'REFUND' => 'REF'
+        'REFUND' => 'REF',
+        'LEADID' => 'CAP'
+    ],
+    'chrg_trigger_list' => [
+        '3' => 'None',
+        '1' => 'Limit Assignment',
+        '2' => 'First Invoice Disbursement',
     ]
 ];
  
