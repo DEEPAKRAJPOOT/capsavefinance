@@ -704,7 +704,7 @@ trait LmsTrait
         $reqLogData['req_id'] = $req_id;
         
         if($reqData['trans_id'] && $req_id){
-            $this->saveRefundTransactions($reqData['trans_id'], $req_id);
+            RefundTransactions::saveRefundTransactions($reqData['trans_id'], $req_id);
         }
 
         $wf_stages = $this->lmsRepo->getWfStages($wf_stage_type);
@@ -791,24 +791,20 @@ trait LmsTrait
         
     }
 
-    protected function saveRefundTransactions(int $trans_id, int $req_id){
-
-        $transactions = Transactions::select('trans_id')->where('repay_trans_id','=',$trans_id)
-                        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
-                        ->get();
+    protected function finalRefundTransactions(int $trans_id, int $req_id)
+    {
+        $transactions = RefundTransactions::getRefundTransactions($req_id);
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-
         foreach ($transactions as $key => $trans) {
-          $data = [  
-            'req_id'  => $req_id,
-            'trans_id'  =>  $trans->trans_id, 
-            'created_by' => Auth::user()->user_id,
-            'created_at' => $curData
-          ]; 
-          RefundTransactions::saveRefundTransactionData($data);
+           $refundData = $this->createTransactionData($trans->user_id, [
+                'amount' => $trans->amount,
+                'trans_date'=>$curData,
+                'disbursal_id'=>$trans->disbursal_id,
+            ], null, $trans->trans_type, 0);
+            Transactions::saveTransaction($refundData);
         }
-      }
-    
+    }
+
     protected function updateApprRequest($reqId, $addlData=[]) 
     {        
         $apprReqData = $this->lmsRepo->getApprRequestData($reqId);

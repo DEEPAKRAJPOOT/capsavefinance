@@ -58,7 +58,9 @@ return [
         'IN_PROCESS' => '3',
         'REJECTED' => '4',
         'APPROVED' => '5',
-        'PROCESSED' => '6'
+        'REFUND_QUEUE' => '6',
+        'SEND_TO_BANK' => '7',
+        'PROCESSED' => '8'
     ],
     'WF_STAGE_STATUS' => [
         'PENDING' => '0',
