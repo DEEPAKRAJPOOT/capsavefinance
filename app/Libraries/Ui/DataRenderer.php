@@ -320,13 +320,21 @@ class DataRenderer implements DataProviderInterface
                             }
                             if(Helpers::checkPermission('send_case_confirmBox')){
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
-                                $roleData = Helpers::getUserRole();                                
-                                if ($currentStage && $currentStage->order_no <= 16 ) {
-                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
-                                }
-                                
-                                if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
-                                    $act = $act . '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                $roleData = Helpers::getUserRole();     
+                                $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
+                                if ($currentStage && $currentStage->order_no <= 16 ) {                                                                                                           
+                                    $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                    if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
+                                        if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
+                                            $act = $act . $moveToBackStageUrl;
+                                        }
+                                    } else {
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';    
+
+                                        if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
+                                            $act = $act . $moveToBackStageUrl;
+                                        }
+                                    }
                                 }
                             }
                             
@@ -4509,6 +4517,32 @@ class DataRenderer implements DataProviderInterface
                         'narration',
                         function ($dataRecords) {
                         return $dataRecords->narration;
+                    }) 
+                    ->make(true);
+        }
+
+        public function getTallyBatchData(Request $request, $dataRecords){
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'created_at',
+                        function ($dataRecords) {
+                        return $dataRecords->created_at;
+                    })
+                    ->editColumn(
+                        'batch_no',
+                        function ($dataRecords) {
+                        return $dataRecords->batch_no;
+                    })
+                    ->editColumn(
+                        'records_in_batch',
+                        function ($dataRecords) {
+                        return $dataRecords->record_cnt;
+                    }) 
+                    ->editColumn(
+                        'action',
+                        function ($dataRecords) {
+                        $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns').'?batch_no='.$dataRecords->batch_no.'">Download Report</a>';
+                        return $btn;
                     }) 
                     ->make(true);
         }
