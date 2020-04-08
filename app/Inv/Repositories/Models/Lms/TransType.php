@@ -113,7 +113,7 @@ class TransType extends BaseModel {
 
         if($action_type == 1)
         array_push($trans_type,(int)config('lms.TRANS_TYPE.REPAYMENT'));
-        //if($action_type == 2)
+        if(in_array($action_type, [2,3]))
         array_push($trans_type,(int)config('lms.TRANS_TYPE.INTEREST_PAID'));
 
         
