@@ -253,21 +253,24 @@ class ApportionmentHelper{
             $this->disbursal['total_repaid_amt'] += $restInterestPaidAmt;
             $this->disbursal['total_interest'] += $restInterestPaidAmt;
             
-            $unbookedInterestDueData = $this->createTransactionData($this->transDetails->user_id, [
-                'amount' => $restInterestPaidAmt,
-                'trans_date'=>$this->transDetails->trans_date,
-                'disbursal_id'=>$disbursal->disbursal_id,
-            ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
-            
-            $unbookedInterestPaidData = $this->createTransactionData($this->transDetails->user_id, [
-                'amount' => $restInterestPaidAmt,
-                'trans_date'=>$this->transDetails->trans_date,
-                'disbursal_id'=>$disbursal->disbursal_id,
-                'repay_trans_id'=>$this->transDetails->trans_id
-            ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
-            
-            $this->transaction['unbookedInterestDue'][$disbursal->disbursal_id] = $unbookedInterestDueData;
-            $this->transaction['unbookedInterestPaid'][$disbursal->disbursal_id] = $unbookedInterestPaidData;
+            if($restInterestPaidAmt>0){
+                $unbookedInterestDueData = $this->createTransactionData($this->transDetails->user_id, [
+                    'amount' => $restInterestPaidAmt,
+                    'trans_date'=>$this->transDetails->trans_date,
+                    'disbursal_id'=>$disbursal->disbursal_id,
+                ], null, config('lms.TRANS_TYPE.INTEREST'), 0);
+                $this->transaction['unbookedInterestDue'][$disbursal->disbursal_id] = $unbookedInterestDueData;
+            }
+
+            if($restInterestPaidAmt>0){
+                $unbookedInterestPaidData = $this->createTransactionData($this->transDetails->user_id, [
+                    'amount' => $restInterestPaidAmt,
+                    'trans_date'=>$this->transDetails->trans_date,
+                    'disbursal_id'=>$disbursal->disbursal_id,
+                    'repay_trans_id'=>$this->transDetails->trans_id
+                ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);   
+                $this->transaction['unbookedInterestPaid'][$disbursal->disbursal_id] = $unbookedInterestPaidData;
+            }
         }
     }
 
@@ -347,13 +350,15 @@ class ApportionmentHelper{
             $pipedAmt -= $overduePaidAmt;
             $this->disbursal['total_repaid_amt'] += $overduePaidAmt;
 
-            $overdueData = $this->createTransactionData($this->transDetails->user_id, [
-                'amount' => $overduePaidAmt,
-                'trans_date'=>$this->transDetails->trans_date,
-                'disbursal_id'=>$disbursal->disbursal_id,
-                'repay_trans_id'=>$this->transDetails->trans_id
-            ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
-            $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
+            if((float)$overduePaidAmt>0){
+                $overdueData = $this->createTransactionData($this->transDetails->user_id, [
+                    'amount' => $overduePaidAmt,
+                    'trans_date'=>$this->transDetails->trans_date,
+                    'disbursal_id'=>$disbursal->disbursal_id,
+                    'repay_trans_id'=>$this->transDetails->trans_id
+                ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
+                $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
+            }
         }
     }
     

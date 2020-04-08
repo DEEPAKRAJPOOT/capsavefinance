@@ -17,7 +17,7 @@
                <div class="col-12">
                     
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
-                   <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
+                   <label class='error'>You cannot move this application to next stage as offer still not created.</label><br>
                    @endif
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_approved')
@@ -56,7 +56,11 @@
                     $closeBtn = 'Cancel';
                     @endphp
                    @else
+                    @if ($nextStage && $nextStage->stage_code == 'disbursed_or_in_lms')
+                    Are you sure to move in <strong>LMS</strong>?<br>
+                    @else
                     Are you sure to move the next stage <strong>({{ isset($roles[$next_role_id]) ? $roles[$next_role_id] : '' }})</strong>?<br>
+                    @endif
                     @php 
                     $confirmBtn = 'Yes';
                     $closeBtn = 'No';

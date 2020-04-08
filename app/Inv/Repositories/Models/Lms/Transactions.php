@@ -243,6 +243,12 @@ class Transactions extends BaseModel {
        return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
     }
 
+
+    public function refundTransaction()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
+    }
+
     /**
     * Get Transaction Type and Charge Name 
     */
@@ -328,8 +334,12 @@ class Transactions extends BaseModel {
     }
 
     public function getBatchNoAttribute(){
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]))
-        return $this->txn_id;
+        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
+            return $this->txn_id;
+        }
+        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.INTEREST_REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.MARGIN') ]) && !$this->repay_trans_id && $this->refundTransaction != null){
+            return $this->refundTransaction->request->batch->batch_id;
+        }
     }
 
     public function getNarrationAttribute(){
