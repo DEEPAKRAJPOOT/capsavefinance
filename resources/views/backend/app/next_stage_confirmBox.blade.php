@@ -17,7 +17,7 @@
                <div class="col-12">
                     
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
-                   <label class='error'>You cannot move this application to next stage as limit assessment is not done.</label><br>
+                   <label class='error'>You cannot move this application to next stage as offer still not created.</label><br>
                    @endif
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_approved')
