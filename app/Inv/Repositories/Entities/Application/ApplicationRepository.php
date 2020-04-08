@@ -1255,15 +1255,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getSTLDocs($whereCondition, $appProductIds)
     {
         return DocumentMaster::select('id as doc_id')
-                ->join('prgm_doc', 'prgm_doc.doc_id', '=', 'mst_doc.id')
-                ->join('app_prgm_offer', 'app_prgm_offer.prgm_id', '=', 'prgm_doc.prgm_id')
-                ->where('prgm_doc.is_active', 1)
-                ->where('app_prgm_offer.is_active', 1)                
                 ->where($whereCondition)
                 ->whereHas('product_document', function ($query) use ($appProductIds) {
                     $query->whereIn('product_id', $appProductIds);
                 })
-                ->where('mst_doc.is_active', 1)
+                ->where('is_active', 1)
                 ->get();
     }
 

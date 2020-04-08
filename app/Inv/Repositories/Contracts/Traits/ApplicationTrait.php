@@ -35,16 +35,21 @@ trait ApplicationTrait
                 $finalDocs[$key]['product_document'] = $this->appRepo->getDocumentProduct($value->doc_id);
             }                    
         } else {
-            $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();      
+            $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();
+            $prodIds = [];
+            foreach($appProductIds as $prodId) {
+                if ($prodId != 1) {
+                    $prodIds[] = $prodId;
+                }
+            }
+            
             if($prgmDocsWhere['stage_code'] == 'upload_pre_sanction_doc'){
-                $whereCondition['mst_doc.doc_type_id'] =  2;
-                $whereCondition['app_prgm_offer.app_id'] =  $prgmDocsWhere['app_id'];
-                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
+                $whereCondition['doc_type_id'] =  2;                
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $prodIds)->toArray();
             }
             else  {
-                $whereCondition['mst_doc.doc_type_id'] =  3;
-                $whereCondition['app_prgm_offer.app_id'] =  $prgmDocsWhere['app_id'];
-                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
+                $whereCondition['doc_type_id'] =  3;                
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $prodIds)->toArray();
             }
 
             $merged = array_merge($prgmDocs, $preDocs);
