@@ -1247,5 +1247,12 @@ class Helper extends PaypalHelper
     {
        $entityName = ApprovalRequest::getEntityNameByUserId($userId);
        return $entityName;
-    }      
+    }  
+
+    public static function hasSupplyChainOffer($appId)
+    {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');    
+        $offerData = $appRepo->getPrgmLimitByAppId($appId);
+        return $offerData && isset($offerData->offer);
+    }    
 }

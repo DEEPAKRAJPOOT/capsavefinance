@@ -180,6 +180,10 @@ class ApprovalRequest extends BaseModel {
                 ->orderBy('biz_id', 'ASC')
                 ->first();
         return $result ? $result->biz_entity_name : '';
-    }    
+    }  
+    
+    public function batch(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundBatch', 'refund_batch_id', 'refund_batch_id');
+    }
 }
 

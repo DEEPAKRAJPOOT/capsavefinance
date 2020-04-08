@@ -915,6 +915,11 @@ Route::group(
         'uses' => 'AjaxController@getTransactions'
         ]
     );   
+    Route::post('get-batches', [
+        'as' => 'get_ajax_batches',
+        'uses' => 'AjaxController@getBatches'
+        ]
+    );   
 
     Route::post('get-group-company-exposure', [
         'as' => 'get_group_company_exposure',

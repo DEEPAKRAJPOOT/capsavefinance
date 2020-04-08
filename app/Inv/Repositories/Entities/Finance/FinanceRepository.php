@@ -150,17 +150,18 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
         return $this->result;
     }
 
-    public function getTally(array $where = array()) {
-        $this->result = FinancialJournalItems::getTally($where);
-        return $this->result;
-    }
-
     public function getTallyTxns(array $where = array()) {
         $this->result = FinancialJournalItems::getTallyTxns($where);
         return $this->result;
     }
+    
+    public function getAllBatches(array $where = array()) {
+        $this->result = FinancialJournalItems::getAllBatches($where);
+        return $this->result;
+    }
 
-    public function getAllTxns() {
-        return FinancialJeConfig::getAllTxns();         
+    public function getLatestBatch(array $where = array()) {
+        $this->result = FinancialJournalItems::getLatestBatch($where);
+        return $this->result;
     }
 }

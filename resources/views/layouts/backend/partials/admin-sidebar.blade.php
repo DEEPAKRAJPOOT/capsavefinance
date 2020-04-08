@@ -455,6 +455,9 @@
             <div class="collapse" id="layoutsSubmenuFinance">
                 <ul class="nav flex-column sub-menu">  
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('get_tally_batches') }}">Tally Batch</a>
+                    </li>  
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_fin_transactions') }}">Transactions</a>
                     </li>   
                     <li class="nav-item">
