@@ -501,7 +501,7 @@ class RefundController extends Controller
                     $trAmount = $reqData ? $reqData->amount : 0;
                     $userId = $reqData ? $reqData->user_id : 0;
                     $transId = $reqData ? $reqData->trans_id : 0;
-
+                    /*
                     //Non Factored Amount
                     $nonFactoredAmtData = $this->lmsRepo->getRefundData($transId, 'NON_FACTORED');
                     if (count($nonFactoredAmtData) > 0) {
@@ -536,9 +536,9 @@ class RefundController extends Controller
                         $transType = config('lms.TRANS_TYPE.MARGIN');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
                         $this->appRepo->saveTransaction($ptrData);
-                    }
+                    }*/
                     $addlData=[];
-                    $addlData['status'] = config('lms.REQUEST_STATUS.PROCESSED');
+                    $addlData['status'] = config('lms.REQUEST_STATUS.REFUND_QUEUE');
                     $addlData['sharing_comment'] = $comment;
                     $this->updateApprRequest($reqId, $addlData);
                 } else {

@@ -75,9 +75,11 @@ return [
     'REQUEST_STATUS_DISP' => [
         '1' => ['SYSTEM' => 'New Request', 'USER' => 'New Request'],
         '2' => ['SYSTEM' => 'Deleted', 'USER' => 'Delete'],
-        '3' => ['SYSTEM' => 'In Process', 'USER' => 'In Process'],
+        '3' => ['SYSTEM' => 'Pending', 'USER' => 'Pending'],
         '4' => ['SYSTEM' => 'Rejected', 'USER' => 'Reject'],
         '5' => ['SYSTEM' => 'Approved', 'USER' => 'Approve'],
-        '6' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
+        '6' => ['SYSTEM' => 'Refund Queue', 'USER' => 'Refund Queue'],
+        '7' => ['SYSTEM' => 'Sent to Bank', 'USER' => 'Sent to Bank'],
+        '8' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
     ],    
 ];

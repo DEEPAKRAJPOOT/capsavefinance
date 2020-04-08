@@ -835,7 +835,7 @@ trait LmsTrait
         $reqLogData['wf_stage_id'] = $wf_stage_id;
         $this->lmsRepo->saveApprRequestLogData($reqLogData);
                              
-        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval']) && config('lms.REQUEST_STATUS.PROCESSED') != $reqStatus) {
+        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval']) && config('lms.REQUEST_STATUS.REFUND_QUEUE') != $reqStatus) {
             
             //Get Assigned Request for Approval
             $whereCond=[];
@@ -867,7 +867,7 @@ trait LmsTrait
         $updateReqData['status'] = $reqStatus;
         $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
                 
-        $wf_stage_status = config('lms.REQUEST_STATUS.PROCESSED') == $reqStatus ? config('lms.WF_STAGE_STATUS.COMPLETED') : config('lms.WF_STAGE_STATUS.IN_PROGRESS');
+        $wf_stage_status = config('lms.REQUEST_STATUS.REFUND_QUEUE') == $reqStatus ? config('lms.WF_STAGE_STATUS.COMPLETED') : config('lms.WF_STAGE_STATUS.IN_PROGRESS');
         $updateWfStage=[];
         $updateWfStage['wf_status'] = $wf_stage_status;        
         $this->lmsRepo->updateWfStage($wf_stage_id, $reqId, $updateWfStage);
