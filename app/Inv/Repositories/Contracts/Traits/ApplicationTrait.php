@@ -36,13 +36,20 @@ trait ApplicationTrait
             }                    
         } else {
             $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();
+            $prodIds = [];
+            foreach($appProductIds as $prodId) {
+                if ($prodId != 1) {
+                    $prodIds[] = $prodId;
+                }
+            }
+            
             if($prgmDocsWhere['stage_code'] == 'upload_pre_sanction_doc'){
-                $whereCondition['doc_type_id'] =  2;
-                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
+                $whereCondition['doc_type_id'] =  2;                
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $prodIds)->toArray();
             }
             else  {
-                $whereCondition['doc_type_id'] =  3;
-                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
+                $whereCondition['doc_type_id'] =  3;                
+                $preDocs = $this->appRepo->getSTLDocs($whereCondition, $prodIds)->toArray();
             }
 
             $merged = array_merge($prgmDocs, $preDocs);

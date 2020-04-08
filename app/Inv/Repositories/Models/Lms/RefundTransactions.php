@@ -47,6 +47,8 @@ class RefundTransactions extends BaseModel {
         'refund_trans_id',  
         'req_id',  
         'trans_id',  
+        'new_trans_id',
+        'req_amount',
         'created_at',  
         'created_by',
     ];
@@ -54,19 +56,24 @@ class RefundTransactions extends BaseModel {
 
     public static function saveRefundTransactions(int $trans_id, int $req_id){
 
-        $transactions = Transactions::select('trans_id')->where('repay_trans_id','=',$trans_id)
-                        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
-                        ->get();
+        $transactions = Transactions::select('trans_id','amount','settled_amount')
+        ->where('repay_trans_id','=',$trans_id)
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
+        ->get();
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
 
         foreach ($transactions as $key => $trans) {
-            $data = [  
-            'req_id'  => $req_id,
-            'trans_id'  =>  $trans->trans_id, 
-            'created_by' => Auth::user()->user_id,
-            'created_at' => $curData
-            ]; 
-            self::saveRefundTransactionData($data);
+            $amt = (float)$trans->amount-(float)$trans->settled_amount;
+            if($amt>0){   
+                $data = [  
+                    'req_id'  => $req_id,
+                    'trans_id'  =>  $trans->trans_id, 
+                    'req_amount' => $amt,
+                    'created_by' => Auth::user()->user_id,
+                    'created_at' => $curData
+                ]; 
+                self::saveRefundTransactionData($data);
+            }
         }
     }
 

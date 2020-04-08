@@ -564,8 +564,8 @@ class Application extends BaseModel
         
         $prgmDocs = self::select('prgm_doc.doc_id')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
-                ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
-                ->join('prgm_doc', 'prgm_doc.prgm_id', '=', 'app_prgm_limit.prgm_id')
+                //->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ->join('prgm_doc', 'prgm_doc.prgm_id', '=', 'app_prgm_offer.prgm_id')
                 ->join('mst_doc', 'mst_doc.id', '=', 'prgm_doc.doc_id')
                 ->join('wf_stage', 'prgm_doc.wf_stage_id', '=', 'wf_stage.wf_stage_id')
                 ->where($whereCondition)

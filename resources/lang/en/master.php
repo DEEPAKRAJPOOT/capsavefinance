@@ -48,7 +48,6 @@ return [
         'title' => 'Title field is required.',
     ],
 
-    
    //User sign up form lang file
         'register_as'=>'Register As',
         'individual'=>'Individual',

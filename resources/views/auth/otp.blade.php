@@ -5,22 +5,22 @@
     <div class="row justify-content-center align-items-center m-0">
         <div class="col-md-6 form-design">
             <div id="reg-box">
-<!--                <div class="content-wrap height-auto">
-                    <div class="login-section">  
-                        <div class="thanks-conent text-center marT50">
-                            <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
-                        </div>  
-                    </div>
-                </div>-->
+                <!--                <div class="content-wrap height-auto">
+                                    <div class="login-section">  
+                                        <div class="thanks-conent text-center marT50">
+                                            <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
+                                        </div>  
+                                    </div>
+                                </div>-->
                 <form class="registerForm" autocomplete="off" enctype="multipart/form-data" method="POST" action="{{ route('verify_otp') }}" id="registerForm">
                     {{ csrf_field() }}
                     <div class="section-header">
                         <h4 class="section-title"> Enter One Time (OTP) </h4>
                     </div>
                     <div class="thanks-conent text-center marT50">
-                            <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
+                        <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
                     </div> 
-                    
+
                     <div class="  form-fields">
                         <div class="row">
                             <div class="col-md-12">
@@ -28,7 +28,6 @@
                                     <label for="txtCreditPeriod">Enter OTP
                                         <span class="mandatory">*</span>
                                     </label>
-
 
                                     <input type="text" class="form-control"  placeholder="Enter OTP"  name="otp" id="otp" required>
 
