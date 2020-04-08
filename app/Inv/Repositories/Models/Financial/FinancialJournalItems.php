@@ -88,16 +88,17 @@ class FinancialJournalItems extends BaseModel {
     }
 
     public static function getTallyTxns(array $where = array()) {
-      $query = "SELECT batch_no, IF(is_debit_credit = 0 , 'Debit', 'Credit') entry_type, trans_type, (CASE WHEN tally_trans_type_id = 1 THEN 'Payment' WHEN tally_trans_type_id = 2 THEN 'Payment Receipt' ELSE 'Journal' END) voucher_type, tally_voucher_code voucher_code, tally_voucher_date voucher_date, invoice_no, invoice_date, ledger_name, amount, ref_no, ref_amount, acc_no, ifsc_code, bank_name, cheque_amount, cross_using, (CASE WHEN mode_of_pay = 1 THEN 'Online' WHEN mode_of_pay = 2 THEN 'Cheque' WHEN mode_of_pay = 3 THEN 'Cash' ELSE 'NA' END) as mode_of_pay, inst_no, inst_date, favoring_name, remarks, narration, is_updated is_posted FROM rta_tally_entry ORDER BY voucher_date, trans_type ASC";
-        $cond = '';
+      $query = "SELECT batch_no, IF(is_debit_credit = 0 , 'Debit', 'Credit') entry_type, trans_type, (CASE WHEN tally_trans_type_id = 1 THEN 'Payment' WHEN tally_trans_type_id = 2 THEN 'Payment Receipt' ELSE 'Journal' END) voucher_type, tally_voucher_code voucher_code, tally_voucher_date voucher_date, invoice_no, invoice_date, ledger_name, amount, ref_no, ref_amount, acc_no, ifsc_code, bank_name, cheque_amount, cross_using, (CASE WHEN mode_of_pay = 1 THEN 'Online' WHEN mode_of_pay = 2 THEN 'Cheque' WHEN mode_of_pay = 3 THEN 'Cash' ELSE 'NA' END) as mode_of_pay, inst_no, inst_date, favoring_name, remarks, narration, is_updated is_posted FROM rta_tally_entry ";
+        $cond = 'WHERE tally_trans_type_id IN (1,2,3) ';
         if (!empty($where)) {
             foreach ($where as $key => $value) {
                 $wh[] = "$key = '$value'";
             }
-           $cond = ' WHERE ' .implode(' AND ', $wh);
+           $cond .= ' AND ' .implode(' AND ', $wh);
         }
         $sql = $query .$cond;
-       $result = \DB::SELECT(\DB::raw($query));
-       return $result;
+        $sql .= " ORDER BY voucher_date, trans_type ASC ";
+        $result = \DB::SELECT(\DB::raw($sql));
+        return $result;
     }
 }

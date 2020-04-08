@@ -4073,7 +4073,11 @@ if ($err) {
 
     public function lmsGetRequestList(DataProviderInterface $dataProvider){
         $requestData = $this->lmsRepo->getRequestList($this->request);
-        $data = $dataProvider->getRequestList($this->request, $requestData);
+        if(in_array($this->request->status,[7,8])){
+            $data = $dataProvider->getApprovedRefundList($this->request, $requestData);
+        }else{
+            $data = $dataProvider->getRequestList($this->request, $requestData);
+        }
         return $data;
     }
     
@@ -4125,6 +4129,7 @@ if ($err) {
         $userId    = $request->get('user_id');
         $transType = $request->get('trans_type');
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
+        $repaymentAmtData = ((float)$repaymentAmtData<0)?0:$repaymentAmtData;
         return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
         
         // $debitAmt = 0;

@@ -152,9 +152,49 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@editBatch'
             ]);
 
+            Route::get('/refund/list',[
+                'as' => 'lms_refund_new',
+                'uses' => 'Lms\RefundController@refundListNew'
+            ]);
+
+            Route::get('/refund/pending',[
+                'as' => 'lms_refund_pending',
+                'uses' => 'Lms\RefundController@refundListPending'
+            ]);
+
+            Route::get('/refund/approved',[
+                'as' => 'lms_refund_approved',
+                'uses' => 'Lms\RefundController@refundListApproved'
+            ]);
+
             Route::get('/refund/request',[
                 'as' => 'request_list',
-                'uses' => 'Lms\RefundController@requestList'
+                'uses' => 'Lms\RefundController@refundListRequest'
+            ]);
+
+            Route::get('/refund/confirm',[
+                'as' => 'refund_confirm',
+                'uses' => 'Lms\RefundController@refundConfirm'
+            ]);
+            
+            Route::post('/refund-offline', [
+                'as' => 'refund_offline',
+                'uses' => 'Lms\RefundController@refundOffline'
+            ]);
+
+            Route::get('refund/download-sentbank-data', [
+                'as' => 'download_sentbank',
+                'uses' => 'Lms\RefundController@downloadSentBank'
+            ]);
+
+            Route::get('/refund/sentbank',[
+                'as' => 'lms_refund_sentbank',
+                'uses' => 'Lms\RefundController@refundListSentBank'
+            ]);
+
+            Route::get('/refund/refunded',[
+                'as' => 'lms_refund_refunded',
+                'uses' => 'Lms\RefundController@refundListRefunded'
             ]);
 
             // Business address

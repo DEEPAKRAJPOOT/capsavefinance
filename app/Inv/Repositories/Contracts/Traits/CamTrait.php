@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Master\Group;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 
 trait CamTrait
 {
@@ -26,6 +27,8 @@ trait CamTrait
         try{
             $preCondArr = [];
             $postCondArr = [];
+            $positiveRiskCmntArr = [];
+            $negativeRiskCmntArr = [];
             $arrRequest['biz_id'] = $bizId = $request->get('biz_id');
             $arrRequest['app_id'] = $appId = $request->get('app_id');
             $json_files = $this->getLatestFileName($appId,'finance', 'json');
@@ -152,6 +155,17 @@ trait CamTrait
                       $postCondArr = array_filter($dataPrePostCond, array($this, "filterPostCond"));
                     }
                 } 
+
+                if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
+                  $dataRiskComments = CamReviewSummRiskCmnt::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
+                                  ->where('is_active', 1)->get();
+                  $dataRiskComments = $dataRiskComments ? $dataRiskComments->toArray() : [];
+                  if(!empty($dataRiskComments)) {
+                    $positiveRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentPositive"));
+                    $negativeRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentNegative"));
+                  }
+                } 
+
                 $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
                 foreach($supplyOfferData as $key=>$val){
                   $supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($val->anchor_id)->pluck('f_name')->first();
@@ -181,7 +195,9 @@ trait CamTrait
                     'postCondArr' => $postCondArr,
                     'facilityTypeList'=>$facilityTypeList,
                     'arrGroupCompany' => $arrGroupCompany,
-                    'supplyOfferData' => $supplyOfferData
+                    'supplyOfferData' => $supplyOfferData,
+                    'positiveRiskCmntArr' => $positiveRiskCmntArr,
+                    'negativeRiskCmntArr' => $negativeRiskCmntArr
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -232,5 +248,46 @@ trait CamTrait
         //   CamReviewSummPrePost::insert($arrData);
         // }
         
+    }
+
+    protected function saveRiskComments($request, $cam_reviewer_summary_id)
+    {
+        $updateData = [];
+        $updateData['is_active'] = 0;
+        $updateData['updated_by'] = Auth::user()->user_id;
+        $updResult = CamReviewSummRiskCmnt::where('cam_reviewer_summary_id', $cam_reviewer_summary_id)
+                        ->whereIn('deal_type', [1,2]);
+        $updResult->update($updateData);
+        $arrData =[];
+        if(isset($request->positive_cond)) {
+            foreach($request->positive_cond as $key=>$val){
+                if($request->positive_cond[$key] != null) {
+                    $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
+                    $arrData[$key]['cond'] = $request->positive_cond[$key];
+                    $arrData[$key]['timeline'] = $request->positive_timeline[$key];
+                    $arrData[$key]['deal_type'] = 1;
+                    $arrData[$key]['is_active'] = 1;
+                    $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                    $arrData[$key]['created_by'] = Auth::user()->user_id;
+                }
+            }  
+            CamReviewSummRiskCmnt::insert($arrData);          
+        }
+
+        $arrData =[];
+        if(isset($request->negative_cond)) {
+          foreach($request->negative_cond as $key=>$val){
+              if($request->negative_cond[$key] != null) {
+                  $arrData[$key]['cam_reviewer_summary_id'] = $cam_reviewer_summary_id;
+                  $arrData[$key]['cond'] = $request->negative_cond[$key];
+                  $arrData[$key]['timeline'] = $request->negative_timeline[$key];
+                  $arrData[$key]['deal_type'] = 2;
+                  $arrData[$key]['is_active'] = 1;
+                  $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                  $arrData[$key]['created_by'] = Auth::user()->user_id;
+              }
+          }    
+          CamReviewSummRiskCmnt::insert($arrData);        
+        }        
     }
 }

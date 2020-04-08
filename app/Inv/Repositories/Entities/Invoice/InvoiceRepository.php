@@ -18,7 +18,7 @@ use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
-use App\Inv\Repositories\Models\InvoiceActivityLog;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 
@@ -174,12 +174,12 @@ use CommonRepositoryTraits;
     }
     
      /* save invoice activity log  */
-      public function saveInvoiceActivityLog($invoice_id,$status_id=0,$activity_name,$created_by,$updatedBy)
+      public function saveInvoiceStatusLog($invoice_id,$status_id)
     {
        
          try
         {
-          return InvoiceActivityLog::saveInvoiceActivityLog($invoice_id,$status_id,$activity_name,$created_by,$updatedBy);  
+          return InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id);  
         } catch (Exception $ex) {
            return $ex;
         }
@@ -483,7 +483,7 @@ use CommonRepositoryTraits;
     {
         try
         {
-           return InvoiceActivityLog::getAllActivityInvoiceLog($invId);  
+           return InvoiceStatusLog::getAllActivityInvoiceLog($invId);  
         } catch (Exception $ex) {
            return $ex;
         }

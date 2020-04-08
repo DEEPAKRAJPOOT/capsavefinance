@@ -126,6 +126,7 @@ class FinanceController extends Controller {
                     $j = [
                         "batch_no" => $fetchedArr['batch_no'],
                         "voucher_no" => $fetchedArr['voucher_code'],
+                        "trans_type" => $fetchedArr['trans_type'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" => $voucherDate,
                         "dr_/_cr" => $fetchedArr['entry_type'],
@@ -140,17 +141,24 @@ class FinanceController extends Controller {
                         "narration" => $fetchedArr['narration'], 
                     ]; 
                     if (!$is_first_n_old) {
-                       if (!empty($journal[0])) {
-                            $journal[0]['cr_amount'] = $cr_amount_sum;
-                        } 
-                       if (!empty($journal[0]['dr_/_cr']) && strtolower($journal[0]['dr_/_cr']) == 'debit') {
-                          $journal[0]['cr_ledger_name'] = $transType;  
-                       }
-                       $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
-                       $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
+                        if (!empty($journal[0])) {
+                           $journal[0]['cr_amount'] = $cr_amount_sum;
+                           if (strtolower($journal[0]['dr_/_cr']) == 'debit') {
+                              $journal[0]['cr_ledger_name'] = $journal[0]['trans_type'];  
+                           }
+                           unset($journal[0]['trans_type']);
+                           $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
+                           $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
+                        }else{
+                           $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
+                           $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
+                        }
                        $journal = array();
                     }
                     $cr_amount_sum += ($entry_type == 'debit' ? $fetchedArr['amount'] : 0);
+                    if (!empty($journal)) {
+                     unset($j['trans_type']);
+                    }
                     $journal[] = $j; 
                 }else{
                      $company_row = [
