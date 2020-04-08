@@ -136,7 +136,7 @@ class FinanceController extends Controller {
                         "cr_amount" => ($entry_type == 'credit' ? $fetchedArr['amount'] : ''),
                         "cr_ref_no" => $fetchedArr['ref_no'],
                         "cr_ref_amount" => $fetchedArr['amount'],
-                        "narration" => $fetchedArr['narration'], 
+                        "narration" => "Being ".$fetchedArr['trans_type']." booked for ".$voucherDate ." " . $fetchedArr['batch_no'] 
                     ]; 
                     if (!$is_first_n_old) {
                         if (!empty($journal[0])) {
@@ -144,7 +144,6 @@ class FinanceController extends Controller {
                            if (strtolower($journal[0]['dr_/_cr']) == 'debit') {
                               $journal[0]['cr_ledger_name'] = $journal[0]['trans_type'];  
                            }
-                           unset($journal[0]['trans_type']);
                            $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
                            $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
                         }else{
@@ -154,9 +153,6 @@ class FinanceController extends Controller {
                        $journal = array();
                     }
                     $cr_amount_sum += ($entry_type == 'debit' ? $fetchedArr['amount'] : 0);
-                    if (!empty($journal)) {
-                     unset($j['trans_type']);
-                    }
                     $journal[] = $j; 
                 }else{
                      $company_row = [
@@ -282,6 +278,10 @@ class FinanceController extends Controller {
             ];
         }
         $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
+        foreach ($records['JOURNAL'] as $key => $value) {
+          unset($records['JOURNAL'][$key]['trans_type']);
+          unset($records['JOURNAL'][$key]['batch_no']);
+        }
         $toExportData = $records;
         $this->array_to_excel($toExportData, "execl.xlsx");
     }
