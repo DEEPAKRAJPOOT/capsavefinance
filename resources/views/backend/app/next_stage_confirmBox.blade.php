@@ -56,7 +56,11 @@
                     $closeBtn = 'Cancel';
                     @endphp
                    @else
+                    @if ($nextStage && $nextStage->stage_code == 'lms')
+                    Are you sure to move in <strong>LMS</strong>?<br>
+                    @else
                     Are you sure to move the next stage <strong>({{ isset($roles[$next_role_id]) ? $roles[$next_role_id] : '' }})</strong>?<br>
+                    @endif
                     @php 
                     $confirmBtn = 'Yes';
                     $closeBtn = 'No';

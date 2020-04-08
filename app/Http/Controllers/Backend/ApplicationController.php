@@ -725,6 +725,7 @@ class ApplicationController extends Controller
 				$roleDropDown = $this->userRepo->getAllRole()->toArray();
 			}
 			$appData = $this->appRepo->getAppData($app_id);
+                        
 			return view('backend.app.next_stage_confirmBox')
 				->with('app_id', $app_id)
 				->with('biz_id', $appData->biz_id)
@@ -733,7 +734,8 @@ class ApplicationController extends Controller
 				->with('assign_case', $assign_case)    
 				->with('curr_role_id', $curr_role_id)
 				->with('next_role_id', $next_role_id)
-				->with('biz_id', $appData->biz_id);
+				->with('biz_id', $appData->biz_id)
+                                ->with('nextStage', $nextStage);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 		}
@@ -823,6 +825,8 @@ class ApplicationController extends Controller
 						return redirect()->back();                                            
 					}
 				} else if ($currStage->stage_code == 'opps_checker') {
+                                  $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+                                  if($prcsAmt && isset($prcsAmt->offer)) {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
 				  $lmsCustomerArray = array(
@@ -836,10 +840,10 @@ class ApplicationController extends Controller
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
 					$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
-					$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+					//$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
 					$userStateId = $this->appRepo->getUserAddress($app_id);
 					$companyStateId = $this->appRepo->companyAdress();
-					if(isset($prcsAmt->offer)) {
+					//if(isset($prcsAmt->offer)) {
 					  foreach ($prcsAmt->offer as $key => $offer) {
 						$offer_charges = AppProgramOffer::getProgramOfferByAppId($app_id, $offer->prgm_offer_id);
 						if (empty($offer_charges))
@@ -873,13 +877,14 @@ class ApplicationController extends Controller
 						  $fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
 						}
 					  }
-					}
+					//}
 				  }
+                                  }
 				}
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
 				$roleArr = [$nextStage->role_id];
-				
+                                
 				if ($nextStage->stage_code == 'approver') {
 					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id);
 					if (count($apprAuthUsers) == 0) {
@@ -903,7 +908,7 @@ class ApplicationController extends Controller
 					$assign = true;
 					$wf_status = 1;
 				}
-				
+
 				if ($nextStage->stage_code == 'upload_post_sanction_doc') {
 					$prgmDocsWhere = [];
 					$prgmDocsWhere['stage_code'] = 'upload_post_sanction_doc';
