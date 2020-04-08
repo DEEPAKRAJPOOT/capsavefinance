@@ -189,25 +189,26 @@ class RefundController extends Controller
         $downloadFlag = 1;
         $exportData = [];
         $filename = 'download-excel';
+
         foreach ($allAprvls as $aprvl) {
             $userid = $aprvl['transaction']['user']['user_id'];
             $disburseAmount = round($aprvl['amount'], 5);
 
-            $exportData[$userid]['RefNo'] = $aprvl['transaction']['lms_user']['virtual_acc_id'];
-            $exportData[$userid]['Amount'] = round($aprvl['amount'], 5);
-            $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
-            $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
-            $exportData[$userid]['Debit_Mobile'] = '9876543210';
-            $exportData[$userid]['Ben_IFSC'] = $aprvl['ifsc_code'];
-            $exportData[$userid]['Ben_Acct_No'] = $aprvl['acc_no'];
-            $exportData[$userid]['Ben_BankName'] = $aprvl['bank_name'];
-            $exportData[$userid]['Ben_Name'] = $aprvl['transaction']['user']['f_name'].' '.$aprvl['transaction']['user']['l_name'];
-            $exportData[$userid]['Ben_Email'] = $aprvl['transaction']['user']['email'];
-            $exportData[$userid]['Ben_Mobile'] = $aprvl['transaction']['user']['mobile_no'];
-            $exportData[$userid]['Mode_of_Pay'] = 'IFT';
-            $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
-            $exportData[$userid]['Remarks'] = 'test remarks';
-            $exportData[$userid]['Value_Date'] = date('Y-m-d');
+            $exportData[$aprvl['req_id']]['RefNo'] = $aprvl['transaction']['lms_user']['virtual_acc_id'];
+            $exportData[$aprvl['req_id']]['Amount'] = round($aprvl['amount'], 5);
+            $exportData[$aprvl['req_id']]['Debit_Acct_No'] = '12334445511111';
+            $exportData[$aprvl['req_id']]['Debit_Acct_Name'] = 'testing name';
+            $exportData[$aprvl['req_id']]['Debit_Mobile'] = '9876543210';
+            $exportData[$aprvl['req_id']]['Ben_IFSC'] = $aprvl['ifsc_code'];
+            $exportData[$aprvl['req_id']]['Ben_Acct_No'] = $aprvl['acc_no'];
+            $exportData[$aprvl['req_id']]['Ben_BankName'] = $aprvl['bank_name'];
+            $exportData[$aprvl['req_id']]['Ben_Name'] = $aprvl['transaction']['user']['f_name'].' '.$aprvl['transaction']['user']['l_name'];
+            $exportData[$aprvl['req_id']]['Ben_Email'] = $aprvl['transaction']['user']['email'];
+            $exportData[$aprvl['req_id']]['Ben_Mobile'] = $aprvl['transaction']['user']['mobile_no'];
+            $exportData[$aprvl['req_id']]['Mode_of_Pay'] = 'IFT';
+            $exportData[$aprvl['req_id']]['Nature_of_Pay'] = 'MPYMT';
+            $exportData[$aprvl['req_id']]['Remarks'] = 'test remarks';
+            $exportData[$aprvl['req_id']]['Value_Date'] = date('Y-m-d');
         }
         $result = $this->export($exportData, $filename, $downloadFlag);
 

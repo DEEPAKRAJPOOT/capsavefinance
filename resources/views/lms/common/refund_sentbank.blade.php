@@ -23,6 +23,16 @@
         @include('lms.common.partial.status_links')
 
             <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-2" id="buttonDiv">
+                            <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Download Excel</a>
+                        </div>
+                        <input type="hidden" value="" name="transaction_ids" id="transaction_ids"> 
+                    </div>
+                </div>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -53,6 +63,8 @@
                         </div>
                     </div>
                 </div>
+                </div>
+
             </div>
         </div>
     </div>
