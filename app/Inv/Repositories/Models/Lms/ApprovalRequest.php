@@ -114,7 +114,7 @@ class ApprovalRequest extends BaseModel {
         $userArr = \Helpers::getChildUsersWithParent($curUserId);
         $query = self::from('lms_approval_request as req')
                 ->select('req.req_id','req.ref_code','req.amount','req.status as req_status','req.req_type',
-                'req.created_at', 'lms_users.customer_id', 'lms_users.user_id'
+                'req.created_at', 'lms_users.customer_id', 'lms_users.user_id','req.bank_name','req.ifsc_code','req.acc_no','ref_batch.batch_id','req.updated_at','req.trans_id','req.refund_batch_id'
                 //DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
                 //DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                                 
                 //'req_assign.to_id',
@@ -140,6 +140,7 @@ class ApprovalRequest extends BaseModel {
                 })
                  * 
                  */
+                ->leftjoin('lms_refund_batch as ref_batch', 'req.refund_batch_id', '=','ref_batch.refund_batch_id')
                 ->join('lms_request_assign as req_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('req.req_id', '=', 'req_assign.req_id');
                     if ($roleData[0]->is_superadmin != 1) {
