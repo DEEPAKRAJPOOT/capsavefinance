@@ -69,7 +69,7 @@ class RefundController extends Controller
         $disburseType = $request->get('disburse_type');
         $reqIds = $request->get('transaction_ids');
         if(empty($reqIds)) {
-            Session::flash('message', trans('backend_messages.noSelectedInvoice'));
+            Session::flash('message', trans('backend_messages.noSelectedCustomer'));
             Session::flash('operation_status', 1);
             
             return redirect()->route('request_list');
@@ -103,6 +103,7 @@ class RefundController extends Controller
         $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Offline i.e 2
         
         if(empty($transactionIds)){
+            die("here");
             return redirect()->route('request_list');
         }
         $record = array_filter(explode(",",$transactionIds));
