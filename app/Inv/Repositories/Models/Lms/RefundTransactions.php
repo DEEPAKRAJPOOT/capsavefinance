@@ -81,7 +81,7 @@ class RefundTransactions extends BaseModel {
 
     protected function getRefundTransactions(int $req_id){
         return  self::select('*')
-                        ->join('transactions','transactions.trans_id','refund_transactions.trans_id')
+                        ->join('transactions','transactions.trans_id','lms_refund_transactions.trans_id')
                         ->where('req_id','=',$req_id)
                         ->get();   
     }

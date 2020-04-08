@@ -555,5 +555,35 @@ class RefundController extends Controller
                 return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
             }            
         }
+
+        public function refundUpdateDisbursal(Request $request){
+            $trans_id = $request->get('trans_id');
+            $batchId = $request->get('refund_batch_id');
+            $req_id = $request->get('req_id');
+
+            return view('lms.common.update_refund_disbursal')
+                    ->with(
+                        ['trans_id' => $trans_id, 
+                        'refund_batch_id' => $batchId,
+                        'req_id' => $req_id
+                    ]);
+        }
         
+        public function updateDisburseRefund(Request $request) {
+            $refundBatchId = $request->refund_batch_id;
+            $transId = $request->trans_id;
+            $transNo = $request->trans_no;
+            $remarks = $request->remarks;
+            $req_id = $request->req_id;
+            $apiLogData = [];
+            $apiLogData['tran_id'] = $transNo;
+            $apiLogData['comment'] = $remarks;
+            $apiLogData['status'] = 8;
+            
+            $this->lmsRepo->updateAprvlRqst($apiLogData,$req_id);
+            $this->finalRefundTransactions($transId, $req_id);
+
+            Session::flash('message',trans('backend_messages.disburseMarked'));
+            return redirect()->route('lms_refund_sentbank');
+        }
 }

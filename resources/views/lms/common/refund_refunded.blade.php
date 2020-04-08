@@ -20,7 +20,7 @@
 
     <div class="card">
         <div class="card-body">
-    @include('lms.common.partial.status_links')
+        @include('lms.common.partial.status_links')
 
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -29,19 +29,16 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="requestList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+	                              		<table id="approvedList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
-	                                        	<tr role="row">
-                                                    <th><input type="checkbox" id="chkAll"></th>
+	                                        	<tr role="row">                                                    
                                                     <th>Ref No</th>
+                                                    <th>Batch Id</th>
                                                     <th>Customer ID</th>
-                                                    <th>Entity Name</th>                                                    
-                                                    <th>Type</th>
+                                                    <th>Entity Name</th>     
+                                                    <th>Bank Detail</th>
 													<th>Amount</th>
-                                                    <th>Date</th>
-                                                    <th>Assignee</th>	
-                                                    <th>Assigned By</th>
-                                                    <th>Status</th>
+                                                    <th>Updated At</th>
                                                     <th>Action</th>
 												</tr>
 	                                        </thead>
@@ -50,7 +47,7 @@
 	                                        </tbody>
                                     	</table>
 							  		</div>
-                            		<div id="requestList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            		<div id="approvedList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -64,6 +61,7 @@
 {!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-md')!!}
 {!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
 {!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

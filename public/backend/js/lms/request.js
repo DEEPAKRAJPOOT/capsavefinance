@@ -38,7 +38,38 @@ try {
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
         }
-
+        if($('#approvedList').length){
+            oTable = $('#approvedList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                searching: false,
+                bSort: true,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.status = messages.status
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+                        $("#approvedList").append('<tbody class="appList-error"><tr><th colspan="8">' + messages.data_not_found + '</th></tr></tbody>');
+                        $("#approvedList_processing").css("display", "none");
+                    }
+                },
+                columns: [
+                    {data: 'ref_code'},
+                    {data: 'batch_id'},
+                    {data: 'customer_id'},
+                    {data: 'biz_entity_name'},                    
+                    {data: 'banck_detail'},
+                    {data: 'amount'},
+                    {data: 'updated_at'},
+                    {data: 'action'}
+                ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
         /*        
         //Search
         $('#searchbtn').on('click', function (e) {
