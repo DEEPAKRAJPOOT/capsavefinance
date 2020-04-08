@@ -6,6 +6,7 @@ use Auth;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Master\Status;
 class InvoiceStatusLog extends BaseModel {
     /* The database table used by the model.
@@ -45,6 +46,7 @@ class InvoiceStatusLog extends BaseModel {
     protected $fillable = [
                 'invoice_id',
                 'status_id',
+                'invoice_amt',
                 'comm_txt',
                 'created_by',
                 'updated_by',
@@ -63,7 +65,16 @@ class InvoiceStatusLog extends BaseModel {
        }
       public static function getAllActivityInvoiceLog($inv)
        {
-           return self::with('status','invoiceLog')->where(['invoice_id' => $inv])->orderBy('invoice_log_id', 'desc')->get();
+           return self::with('status','user')->where(['invoice_id' => $inv])->orderBy('invoice_log_id', 'desc')->get();
+       }
+         /* invoice  status log  */
+      public static function  saveInvoiceLog($invoice_id,$status_id,$amount,$comment)
+      {
+         
+           $id = Auth::user()->user_id;
+           $created_at  = Carbon::now(); 
+           $arr  =  ['invoice_id' => $invoice_id,'status_id' => $status_id,'invoice_amt' => $amount,'comm_txt' =>$comment,'created_at' =>$created_at,'created_by' => $id]; 
+           return  self::insert($arr);  
        }
       
        public function status()
@@ -75,4 +86,9 @@ class InvoiceStatusLog extends BaseModel {
        {
            return $this->belongsTo('App\Inv\Repositories\Models\InvoiceLog','invoice_id','invoice_id');  
        }
+       
+      function user()
+     {
+       return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id');
+     }
 }

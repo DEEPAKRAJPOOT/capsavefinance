@@ -209,6 +209,7 @@
                                         <thead>
                                             <tr role="row">
                                               <th>Sr. No.</th>
+                                               <th>Amount </th>
                                                 <th>Comment </th> 
                                                 <th>Status</th>
                                                 <th>Timestamp</th>

@@ -16,7 +16,6 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
-use App\Inv\Repositories\Models\InvoiceLog;
 
 class BizInvoice extends BaseModel
 {
@@ -124,8 +123,7 @@ public static function saveBulkInvoice($arrInvoice)
         $updated_at  = Carbon::now()->toDateTimeString();
         $id = Auth::user()->user_id;    
         $result =  User::getSingleUserDetails($id);
-        $name =  "Update by ".$result->f_name." ".$result->l_name;
-        InvoiceLog::saveInvoiceLog($invoiceId,$amount,$comment);
+        InvoiceStatusLog::saveInvoiceLog($invoiceId,7,$amount,$comment);
         return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
        
     } 
