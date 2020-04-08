@@ -82,7 +82,7 @@ class FinancialJournalItems extends BaseModel {
            $cond .= ' AND ' .implode(' AND ', $wh);
         }
         $sql = $query .$cond;
-        $sql .= " ORDER BY voucher_date, trans_type ASC ";
+        $sql .= " ORDER BY voucher_date, trans_type,  is_debit_credit ASC ";
         $result = \DB::SELECT(\DB::raw($sql));
         return $result;
     }

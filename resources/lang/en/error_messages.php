@@ -57,7 +57,6 @@ return [
     'app.incomplete' =>'Please upload all documents carefully.',
     'minlen_password' => 'Passwords must be at least 6 characters.',
     
-   
     //Admin Error Messages
     'admin' => [
         'req_old_password' => 'Old password is required.',
