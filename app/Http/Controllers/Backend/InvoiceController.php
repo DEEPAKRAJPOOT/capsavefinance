@@ -532,7 +532,7 @@ class InvoiceController extends Controller {
                     $refId = $invoice['lms_user']['virtual_acc_id'];
                 }
                 if($invoice['supplier_id'] = $userid) {
-
+                    $this->invRepo->saveInvoiceStatusLog($invoice['invoice_id'], 10);
                     $interest= 0;
                     $margin= 0;
 
