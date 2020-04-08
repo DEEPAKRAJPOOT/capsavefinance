@@ -123,12 +123,10 @@ class RefundController extends Controller
         $aprvlRfd = [];
         $disbursalIds = [];
         $batchId= _getRand(12);
-        $transId = _getRand(18);
 
         foreach ($allAprvls as $aprvl) {
             $userid = $aprvl['transaction']['user']['user_id'];
             $disburseAmount = round($aprvl['amount'], 5);
-            $aprvlRfd['tran_id'] = $transId;
 
             $refId = $aprvl['transaction']['lms_user']['virtual_acc_id'];
 
