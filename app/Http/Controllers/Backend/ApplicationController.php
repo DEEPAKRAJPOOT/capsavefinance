@@ -709,15 +709,16 @@ class ApplicationController extends Controller
 			$curr_role_id = $currentStage ? $currentStage->role_id : null;
 			
 			//$last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
-			$wf_order_no = $currentStage->order_no;
+			$wf_order_no = $currentStage ? $currentStage->order_no : null;
 			$nextStage = Helpers::getNextWfStage($wf_order_no);  
 			$next_role_id = $nextStage ? $nextStage->role_id : null;
-			
-			if ($assign_case) {
+			$roleDropDown = [];
+                        
+			if ($assign_case && $currentStage) {
 				$rolesArr = explode(',', $currentStage->assign_role);
 				//$roles = $this->userRepo->getRoleByArray($rolesArr);
 				$roles = $this->appRepo->getBackStageUsers($app_id, $rolesArr);
-				$roleDropDown = [];
+				
 				foreach($roles as $role) {
 					$roleDropDown[$role->id . '-' . $role->user_id] = $role->assignee_role . ' (' . $role->assignee. ')';
 				}
@@ -754,7 +755,7 @@ class ApplicationController extends Controller
 			$assign_case = $request->get('assign_case');
 			$sharing_comment = $request->get('sharing_comment');
 			$curr_role_id = $request->get('curr_role_id');
-			
+			$movedInLms = false;
 						
 			$addl_data = [];
 			$addl_data['sharing_comment'] = $sharing_comment;
@@ -879,6 +880,7 @@ class ApplicationController extends Controller
 					  }
 					//}
 				  }
+                                  $movedInLms=true;
                                   }
 				}
 				$wf_order_no = $currStage->order_no;
@@ -920,10 +922,13 @@ class ApplicationController extends Controller
 				} 
 				
 				Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
+                                if ($movedInLms) {
+                                    //Helpers::updateCurrentWfStage('disbursed_or_in_lms', $app_id, $wf_status=1);
+                                }
 			}
 
 
-			$application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
+			$application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]);                                                                         
 			Session::flash('is_accept', 1);
 			return redirect()->back();
 		   
@@ -1720,7 +1725,7 @@ class ApplicationController extends Controller
 			 $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
 			 $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;            
 			 Helpers::updateWfStage('opps_checker', $app_id, $wf_status = 1, $assign_case=true, $addl_data);
-			 Helpers::updateCurrentWfStage('disbursed', $app_id, $wf_status=1);
+			 Helpers::updateCurrentWfStage('disbursed_or_in_lms', $app_id, $wf_status=1);
 
 			if($appStatus){
 				$getAppDetails = $this->appRepo->getAppData($app_id);
