@@ -22,8 +22,8 @@
         <div class="card-body">
         @include('lms.common.partial.status_links')
 
-            <div class="row">
             <div class="card">
+            <div class="row">
                 <div class="card-body">
                     <div class="row">
 
