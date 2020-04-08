@@ -1144,10 +1144,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'invoice_udpate_disbursal',
                 'uses' => 'Backend\InvoiceController@invoiceUpdateDisbursal'
             ]);
+            
+            Route::get('/refund-update-disbursal', [
+                'as' => 'refund_udpate_disbursal',
+                'uses' => 'Lms\RefundController@refundUpdateDisbursal'
+            ]);
 
+        
             Route::post('/update-disburse-invoice', [
                 'as' => 'updateDisburseInvoice',
                 'uses' => 'Backend\InvoiceController@updateDisburseInvoice'
+            ]);
+
+            Route::post('/update-disburse-refund', [
+                'as' => 'updateDisburseRefund',
+                'uses' => 'Lms\RefundController@updateDisburseRefund'
             ]);
 
                Route::get('backend_get_failed_disbursment', [

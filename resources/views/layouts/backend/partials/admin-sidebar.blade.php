@@ -263,7 +263,7 @@
             </div>
         </li>
     
-        @canany(['payment_list','payment_list'])
+        @canany(['payment_list','payment_advice'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-credit-card" aria-hidden="true"></i>

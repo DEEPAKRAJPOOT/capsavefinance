@@ -1839,27 +1839,43 @@ class DataRenderer implements DataProviderInterface
     { 
        
       return DataTables::of($invoice)
-               ->rawColumns(['anchor_id','action','status','comment'])
+               ->rawColumns(['anchor_id','action','status','comment','update'])
                 ->addIndexColumn()
-               
+               ->addColumn(
+                    'amount',
+                    function ($invoice) {
+                      
+                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : '__________'; 
+             })
                 ->addColumn(
                     'comment',
                     function ($invoice) { 
-                      $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
-                        if($invoice->status_id==0 && $invoice->updated_by==null) {
-                              return $invoice->activity_name;
-                      }
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : '__________'; 
                 })
                ->addColumn(
                     'status',
                     function ($invoice) {
-                      
-                            return '<button type="button" class="badge badge-warning btn-sm">'.$invoice->status->status_name.'</button>';
-               })
+                           $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger",'28' =>"badge badge-danger"];
+                                 
+                           if($invoice->invoice_amt=='')
+                           {
+                              return '<button type="button" class="'.$color[$invoice->status->id].' btn-sm">'.$invoice->status->status_name.'</button>';
+                           }
+                           else
+                           {
+                             return '__________';
+                           }
+                  })
+                  ->addColumn(
+                    'update',
+                    function ($invoice) {
+                          return '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
+                           
+                  })
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
-                       return $invoice->created_at->format('j F Y H:i:s A'); 
+                       return $invoice->created_at->format('j F Y H:i:s'); 
                 })
                  
                  
@@ -4730,9 +4746,119 @@ class DataRenderer implements DataProviderInterface
         ->make(true);
     }
     
+    public function getApprovedRefundList(Request $request, $data){
+        return DataTables::of($data)
+        ->rawColumns(['id','ref_code','assignee','banck_detail','action'])
+        ->editColumn(
+            'id',
+            function ($data) {
+                return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$data->req_id.'">';
+            }
+        )
+        ->editColumn(
+            'ref_code',
+            function ($data) {
+                $result = '';
+                                           
+                $result .= '<a 
+                data-toggle="modal" 
+                data-target="#lms_view_process_refund" 
+                data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id, 'view' => 1 ]).'"
+                data-height="400px" 
+                data-width="100%" 
+                data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm">' . $data->ref_code . '</a>';
+                
+                //$result .= $data->ref_code;                              
+                return $result;
+            }
+        )
+        ->addColumn(
+            'customer_id',
+            function ($data) {
+                return $data->customer_id;  //$data->req_type_name;
+            }
+        )
+        ->addColumn(
+            'biz_entity_name',
+            function ($data) {
+                return \Helpers::getEntityNameByUserId($data->user_id);  //$data->req_type_name;
+            }
+        )            
+        ->editColumn(
+            'amount',
+            function ($data) {
+                return number_format($data->amount,2);
+            }
+        )    
+        ->editColumn(
+            'batch_id',  function ($data) {
+                return $data->batch_id;
+            }
+        )
+        ->editColumn(
+            'banck_detail', function ($dataRecords) {
+                $account = '';
+                $account .= $dataRecords->bank_name ? '<span><b>Bank:&nbsp;</b>'.$dataRecords->bank_name.'</span>' : '';
+                $account .= $dataRecords->ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$dataRecords->ifsc_code.'</span>' : '';
+                $account .= $dataRecords->acc_no ? '<br><span><b>Acc. #:&nbsp;</b>'.$dataRecords->acc_no.'</span>' : '';
+                return $account;
+            }
+        )
+        ->editColumn(
+            'updated_at', function ($data) {
+                return $data->updated_at;
+            }
+        )
+        ->editColumn(
+            'status',
+            function ($data){
+                /*$roleData = User::getBackendUser(\Auth::user()->user_id);
+                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
+                if (isset($roleData[0]) && $roleData[0]->is_superadmin != 1 && $isRequestOwner) {
+                    return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
+                } else {
+                }*/
+                return config('lms.REQUEST_STATUS_DISP.'. $data->req_status . '.SYSTEM');
+            }
+        )   
+        ->editColumn(
+            'action',
+            function ($data){
+                $result = '';
+                if ((int)$data->req_status == (int)config('lms.REQUEST_STATUS.SEND_TO_BANK') ) {
+                    $result = '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('refund_udpate_disbursal', ['trans_id' => $data->trans_id,  'refund_batch_id' => $data->refund_batch_id,'req_id'=>$data->req_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
+                }
+                return $result;
+            }
+        )  
+        ->filter(function ($query) use ($request) {
+
+           /*  if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+            //if($request->get('user_ids')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $query->whereIn('user_id',$request->user_ids);
+                });
+            //} */
+          
+        })                 
+     
+        ->make(true);
+    }
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
-        ->rawColumns(['ref_code','assignee','assignedBy','action'])
+        ->rawColumns(['id','ref_code','assignee','assignedBy','action'])
+        ->editColumn(
+            'id',
+            function ($data) {
+                return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$data->req_id.'">';
+            }
+        )
         ->editColumn(
             'ref_code',
             function ($data) {
@@ -4799,13 +4925,13 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'status',
             function ($data){
-                $roleData = User::getBackendUser(\Auth::user()->user_id);
+                /*$roleData = User::getBackendUser(\Auth::user()->user_id);
                 $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
                 if (isset($roleData[0]) && $roleData[0]->is_superadmin != 1 && $isRequestOwner) {
                     return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
                 } else {
-                    return config('lms.REQUEST_STATUS_DISP.'. $data->req_status . '.SYSTEM');
-                }
+                }*/
+                return config('lms.REQUEST_STATUS_DISP.'. $data->req_status . '.SYSTEM');
             }
         )   
         ->editColumn(
@@ -4814,7 +4940,7 @@ class DataRenderer implements DataProviderInterface
                 $result = '';
                 $isLastStage = \Helpers::isReqInLastWfStage($data->req_id);
                 $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
-                if ($isRequestOwner && $data->req_status != config('lms.REQUEST_STATUS.PROCESSED')) {
+                if ($isRequestOwner && $data->req_status < config('lms.REQUEST_STATUS.REFUND_QUEUE') ) {
                     if ($isLastStage) {
                         $data_target = "#lms_move_prev_stage";
                         $route = route('lms_req_move_prev_stage', ['req_id' => $data->req_id, 'back_stage' => 1 ]);

@@ -110,7 +110,7 @@
                                
             </div>
     
-            @if ($viewFlag != '1' && $currStatus != config('lms.REQUEST_STATUS.PROCESSED'))
+            @if ($viewFlag != '1' && $currStatus != config('lms.REQUEST_STATUS.REFUND_QUEUE'))
             <div class="row">
                 <div class="col-12">
                 

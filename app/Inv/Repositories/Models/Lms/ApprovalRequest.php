@@ -47,6 +47,15 @@ class ApprovalRequest extends BaseModel {
         'ref_code',
         'req_type',
         'trans_id',
+        'refund_batch_id',
+        'refund_date',
+        'refund_amount',
+        'bank_account_id',
+        'bank_name',
+        'ifsc_code',
+        'acc_no',
+        'tran_id',
+        'disburse_type',
         'status',  
         'amount',
         'created_at',
@@ -64,6 +73,11 @@ class ApprovalRequest extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
+
+    public function transaction() { 
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions', 'trans_id', 'trans_id'); 
+    }
+
     public static function saveApprRequestData($reqData=[], $reqId=null)
     {
         //Check $reqData is not an array
@@ -93,14 +107,14 @@ class ApprovalRequest extends BaseModel {
         return $result ? $result : null;
     }
     
-    public static function getAllApprRequests()
+    public static function getAllApprRequests($data)
     {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $curUserId = \Auth::user()->user_id;
         $userArr = \Helpers::getChildUsersWithParent($curUserId);
         $query = self::from('lms_approval_request as req')
                 ->select('req.req_id','req.ref_code','req.amount','req.status as req_status','req.req_type',
-                'req.created_at', 'lms_users.customer_id', 'lms_users.user_id'
+                'req.created_at', 'lms_users.customer_id', 'lms_users.user_id','req.bank_name','req.ifsc_code','req.acc_no','ref_batch.batch_id','req.updated_at','req.trans_id','req.refund_batch_id'
                 //DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
                 //DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                                 
                 //'req_assign.to_id',
@@ -126,6 +140,7 @@ class ApprovalRequest extends BaseModel {
                 })
                  * 
                  */
+                ->leftjoin('lms_refund_batch as ref_batch', 'req.refund_batch_id', '=','ref_batch.refund_batch_id')
                 ->join('lms_request_assign as req_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('req.req_id', '=', 'req_assign.req_id');
                     if ($roleData[0]->is_superadmin != 1) {
@@ -138,14 +153,14 @@ class ApprovalRequest extends BaseModel {
                     }
                 })
                 ->join('transactions as t', 't.trans_id', '=', 'req.trans_id')
-                ->join('lms_users', 't.user_id', '=', 'lms_users.user_id');
+                ->join('lms_users', 't.user_id', '=', 'lms_users.user_id')
                 //->join('users as assignee_u', 'req_assign.to_id', '=', 'assignee_u.user_id')
                 //->join('users as from_u', 'req_assign.from_id', '=', 'from_u.user_id')
                 //->join('role_user as assignee_ru', 'req_assign.to_id', '=', 'assignee_ru.user_id')
                 //->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 //->leftJoin('role_user as from_ru', 'req_assign.from_id', '=', 'from_ru.user_id')
                 //->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');
-
+                ->where($data);
         $query->groupBy('req.req_id');
         $result = $query->orderBy('req.req_id', 'DESC');
         return $result;

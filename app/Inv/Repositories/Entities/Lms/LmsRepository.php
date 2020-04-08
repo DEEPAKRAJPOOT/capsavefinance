@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\Lms\WfStage;
 use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
+use App\Inv\Repositories\Models\Lms\RefundBatch;
 use App\Inv\Repositories\Models\Master\RoleUser;
 
 /**
@@ -590,7 +591,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRequestList($request)
    {
-	  return ApprovalRequest::getAllApprRequests();
+
+	  return ApprovalRequest::getAllApprRequests(['status'=>(int) $request->status]);
    }
 
    public function createBatch()
@@ -913,5 +915,46 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getChargeData($where)
     {
         return ProgramCharges::getChargeData($where);
+    }
+
+    public function lmsGetCustomerRefund($ids)
+    {
+        return ApprovalRequest::whereIn('req_id', $ids)
+			   ->get();
+    } 
+
+    public function getAprvlRqDataByIds($ids = [])
+    {	
+    	if (empty($ids)) {
+	        return ApprovalRequest::with(['transaction.user.anchor_bank_details.bank', 'transaction.lmsUser.bank_details.bank'])
+	        	->where('status', 7)
+			   	->get();
+    	} else {
+    		return ApprovalRequest::whereIn('req_id', $ids)
+			   	->with(['transaction.user.anchor_bank_details.bank', 'transaction.lmsUser.bank_details.bank'])
+			   	->get();
+    	}
+    }
+
+	public static function updateAprvlRqst($data, $reqId)
+	{
+		if (!is_array($reqId)) {
+			return ApprovalRequest::where('req_id', $reqId)
+				->update($data);
+		} else {
+			return ApprovalRequest::whereIn('req_id', $reqId)
+					->update($data);
+		}
+	}
+
+	public static function createRefundBatch($file, $data = [])
+    {   
+    	$disburseBatch = [];
+        if ($data) {
+            $disburseBatch['batch_id'] = ($data['batch_id']) ?? null;
+            $disburseBatch['batch_tye'] = ($data['batch_type']) ?? null;
+            $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+        }
+        return RefundBatch::create($disburseBatch);
     }        
 }
