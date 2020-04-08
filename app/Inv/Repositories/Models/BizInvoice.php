@@ -15,7 +15,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
-use App\Inv\Repositories\Models\InvoiceActivityLog;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 
 class BizInvoice extends BaseModel
 {
@@ -75,6 +75,7 @@ class BizInvoice extends BaseModel
         'prgm_offer_id',
         'file_id',
         'status_id',
+        'status_update_time',
         'remark',
         'created_by',
         'created_at',
@@ -105,11 +106,12 @@ public static function saveBulkInvoice($arrInvoice)
     } 
     
         
-public static function updateInvoice($invoiceId,$status)
+  public static function updateInvoice($invoiceId,$status)
     {
+        $updated_at  = Carbon::now()->toDateTimeString();
         $id = Auth::user()->user_id;
-        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,$status,null,$id,null);
-        return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status]);
+        InvoiceStatusLog::saveInvoiceStatusLog($invoiceId,$status);
+        return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status,'status_update_time' => $updated_at,'updated_by' =>$id]);
        
     } 
     
@@ -118,12 +120,11 @@ public static function updateInvoice($invoiceId,$status)
         $invoiceId  =    $attributes['invoice_id'];
         $amount     =  str_replace(',','', $attributes['approve_invoice_amount']);  
         $comment    =    $attributes['comment'];
-        $id = Auth::user()->user_id;
+        $updated_at  = Carbon::now()->toDateTimeString();
+        $id = Auth::user()->user_id;    
         $result =  User::getSingleUserDetails($id);
-        $name =  "Update by ".$result->f_name." ".$result->l_name;
-        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,$comment,$id,null);
-        InvoiceActivityLog::saveInvoiceActivityLog($invoiceId,0,$name,null,$id);
-        return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount]);
+        InvoiceStatusLog::saveInvoiceLog($invoiceId,7,$amount,$comment);
+        return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
        
     } 
     
@@ -152,11 +153,11 @@ public static function updateInvoice($invoiceId,$status)
         if( $chkUser->id==11)
         {
             $res  = User::where('user_id',$id)->first();
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','user','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
@@ -266,6 +267,14 @@ public static function updateInvoice($invoiceId,$status)
      
      }
     
+      function Invoiceuser()
+     {
+       return $this->belongsTo('App\Inv\Repositories\Models\User','updated_by','user_id');
+     }
+       function user()
+     {
+            return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
+    }
     
     public static function getUser($uid)
     {
@@ -381,7 +390,7 @@ public static function updateInvoice($invoiceId,$status)
 
     public static function getAllUserBatchInvoice($data)
     {
-        return self::with('app.acceptedOffer')
+        return self::with('app.acceptedOffer')->with('disbursal')
             ->whereHas('disbursal', function($query) use ($data) {
                     $query->where($data);
                 })
@@ -389,10 +398,9 @@ public static function updateInvoice($invoiceId,$status)
             ->get();
     } 
     
-      function user()
+     public static function  updateInvoiceUser($uid)
      {
-          return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
-     
+       return self::create(['updated_by' =>$uid ]);  
      }
     public static function getRemainAmount($res) 
     {

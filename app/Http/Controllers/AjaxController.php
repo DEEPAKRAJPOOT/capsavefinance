@@ -4073,7 +4073,11 @@ if ($err) {
 
     public function lmsGetRequestList(DataProviderInterface $dataProvider){
         $requestData = $this->lmsRepo->getRequestList($this->request);
-        $data = $dataProvider->getRequestList($this->request, $requestData);
+        if(in_array($this->request->status,[7,8])){
+            $data = $dataProvider->getApprovedRefundList($this->request, $requestData);
+        }else{
+            $data = $dataProvider->getRequestList($this->request, $requestData);
+        }
         return $data;
     }
     
@@ -4125,6 +4129,7 @@ if ($err) {
         $userId    = $request->get('user_id');
         $transType = $request->get('trans_type');
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
+        $repaymentAmtData = ((float)$repaymentAmtData<0)?0:$repaymentAmtData;
         return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
         
         // $debitAmt = 0;
@@ -4276,6 +4281,24 @@ if ($err) {
         return response()->json($data);
     }
 
+    public function getInterestPaidAmount(Request $request){
+        $user_id = $request->get('user_id');
+        $trans_type = $request->get('trans_type');
+        $interestPaid = Transactions::where('user_id','=',$user_id)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_PAID'))
+        ->sum('amount');
+        $interestDue = Transactions::where('user_id','=',$user_id)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->sum('amount');
+        $data['amount'] = $interestDue-$interestPaid;
+        if ($data['amount']>0) {
+            $data['status'] = 'success';
+        }else{
+            $data['status'] = 'empty';
+        }
+        return response()->json($data);   
+    }
+
     public function getAllUnsettledTransType(Request $request){
         $user_id = $request->get('user_id');
         $action_type = $request->get('action_type');
@@ -4296,9 +4319,19 @@ if ($err) {
     }
 
     public function getTransactions(DataProviderInterface $dataProvider) { 
-       // $this->dataRecords = $this->finRepo->getTally(); //for rta_tally table 
-        $this->dataRecords = $this->finRepo->getTallyTxns();
+        $latestBatchData = $this->finRepo->getLatestBatch();
+        $latest_batch_no = NULL;
+        if (!empty($latestBatchData)) {
+            $latest_batch_no = $latestBatchData->batch_no;
+        }
+        $this->dataRecords = $this->finRepo->getTallyTxns(['batch_no' => $latest_batch_no]);
         $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getBatches(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllBatches();
+        $this->providerResult = $dataProvider->getTallyBatchData($this->request, $this->dataRecords);
         return $this->providerResult;
     }
     

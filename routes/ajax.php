@@ -915,6 +915,11 @@ Route::group(
         'uses' => 'AjaxController@getTransactions'
         ]
     );   
+    Route::post('get-batches', [
+        'as' => 'get_ajax_batches',
+        'uses' => 'AjaxController@getBatches'
+        ]
+    );   
 
     Route::post('get-group-company-exposure', [
         'as' => 'get_group_company_exposure',
@@ -968,6 +973,11 @@ Route::group(
     Route::get('get_remaining_charges', [
         'as' => 'get_remaining_charges',
         'uses' => 'AjaxController@getRemainingCharges'
+    ]);  
+
+    Route::post('get_interest_paid_amount', [
+        'as' => 'get_interest_paid_amount',
+        'uses' => 'AjaxController@getInterestPaidAmount'
     ]);  
 
     Route::post('check-unique-charge', [

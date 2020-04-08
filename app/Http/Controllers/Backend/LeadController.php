@@ -676,7 +676,7 @@ class LeadController extends Controller {
                     $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
                     $anchLeadMailArr['url'] = $mailUrl;
                     Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
-                    Session::flash('message', trans('backend_messages.anchor_registration_success'));
+                    Session::flash('message', trans('backend_messages.anchor_lead_created'));
                     Session::flash('operation_status',1);
                     return redirect()->route('get_anchor_lead_list');
                 }

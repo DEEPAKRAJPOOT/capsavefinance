@@ -22,9 +22,11 @@
                             <option value="2">BANK</option>
                         </select> -->
                     </div>
+                    @if(!empty($latest_batch_no))
                     <div class="col-sm-6" style="text-align: right">
-                        <a href="{{route('export_txns')}}" class="btn btn-success col-sm-2" id="export_txns">Export</a>
+                        <a href="{{route('export_txns')}}?batch_no={{$latest_batch_no}}" class="btn btn-success col-sm-2" id="export_txns">Export</a>
                     </div>
+                    @endif
                 </div>
                 <div class="col-sm-12">
                     <div class="table-responsive">
@@ -38,6 +40,7 @@
                                     <th>Ledger Name</th>
                                     <th>Amount</th>
                                     <th>Entry Type</th>
+                                    <th>Trans Type</th>
                                     <th>Batch No</th>
                                     <th>Mode of Pay</th>
                                 </tr>

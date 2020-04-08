@@ -35,11 +35,12 @@
                      </div> 
                     
                   <div class="col-md-6">
+                    
                                   @php 
                                    $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger",'28' =>"badge badge-danger"];
                                    @endphp
                                    @foreach($status as $row)
-                                   @if($row->id==$invoice->status_id && $row->id!=7)
+                                   @if($row->id==$invoice->status_id)
                                    <button type="button" class="{{$color[$row->id]}} btn-sm float-right" style="font-size: revert;">{{$row->status_name}}
                                     </button>
                                     @endif
@@ -150,11 +151,11 @@
                            <tr>
                             
                               <td id="invoice-amount">
-                                 {{($invoice->invoice_amount) ? $invoice->invoice_amount : '' }}
+                                 {{($invoice->invoice_amount) ? number_format($invoice->invoice_amount) : '' }}
                               </td>
                               <td id="invoice-amount">
-                                    {{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }} <a href="#" data-toggle="modal" data-target="#myModal2">
-                                        @php if($invoice->status_id==7) { @endphp
+                                    {{($invoice->invoice_approve_amount) ? number_format($invoice->invoice_approve_amount) : '' }} <a href="#" data-toggle="modal" data-target="#myModal2">
+                                        @php if($invoice->status_id==7 && $role==1) { @endphp
                                         <i class="fa fa-pencil" aria-hidden="true"></i>
                                          @php  } @endphp
                                        </a>
@@ -208,8 +209,10 @@
                                         <thead>
                                             <tr role="row">
                                               <th>Sr. No.</th>
+                                               <th>Amount </th>
                                                 <th>Comment </th> 
                                                 <th>Status</th>
+                                                <th>Updated by</th>
                                                 <th>Timestamp</th>
                                             </tr>
                                         </thead>
@@ -231,376 +234,6 @@
    </div> 
 </div>
 
-
-
-
-
-
-
-
-
-
-<div class="modal" id="myModal3">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-			<h5>Disburse Invoice</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-			<div class="row">
-                           <div class="col-md-6">
-                              <div class="form-group">
-                                 <label for="txtCreditPeriod">Invoice Amount
-                                 
-                                 </label>
-								<input type="text" class="form-control " value="60,000" disabled="">
-                                 
-                              </div>
-							 
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Interest Rate (%) 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="14%" disabled="">
-                                 
-                              </div>
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Processing Fee 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="0" disabled="">
-                                 
-                              </div>
-                           </div>
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Margin Rate(%) 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="10%" disabled="">
-                                 
-                              </div>
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Funded Amount : 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="₹56,000" disabled="">
-                                 
-                              </div>
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Final Funded Amount  : 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="₹48146" disabled="">
-                                 
-                              </div>
-                           </div>
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Limit Offered  : 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="₹1,000,0000" disabled="">
-                                 
-                              </div>
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Limit available for disburse : 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="₹99,40,000" disabled="">
-                                 
-                              </div>
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Tenor (Days): 
-                                 
-                                 </label>
-								<input type="text" class="form-control" value="90" disabled="">
-                                 
-                              </div>
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Fund Date: 
-                                 
-                                 </label>
-								<input type="date" class="form-control" value="2019-12-13">
-                                 
-                              </div>
-                           </div>
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Processing Fee: (₹150,000.00) 
-                                 
-                                 </label>
-								<input type="date" class="form-control" value="">
-                                 
-                              </div>
-                           </div>
-						   
-						   <div class="col-md-6">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Payment Receipt: 
-                                 
-                                 </label>
-								<input type="file" class="form-control" value="">
-                                 
-                              </div>
-                           </div>
-						   
-						  
-
-                        </div>
-			     <button type="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Disburse</button> 
-				 <button type="submit" class="btn btn-secondary btn-sm mt-3 float-right" data-dismiss="modal">Close</button> 		
-            
-         </div>
-      </div>
-   </div>
-</div>
-
-
-
-
-<div class="modal" id="myModal4">
-   <div class="modal-dialog modal-md">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-			<h5>Invoice Confirmation</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-			<div class="row">
-                          
-						   
-						  
-						   
-						 
-						  
-						   
-						   <div class="col-md-12">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Payment Receipt:  <span class="error_message_label doc-error">*</span>
-                                 
-                                 </label>
-								<input type="file" class="form-control" value="">
-                                 
-                              </div>
-                           </div>
-						   <div class="col-md-12">
-                          
-							   <div class="form-group">
-                                 <label for="txtCreditPeriod">Comment  <span class="error_message_label doc-error">*</span>
-                                 
-                                 </label>
-								<textarea class="form-control" cols="4" rows="4"></textarea>
-                                 
-                              </div>
-                           </div>
-						   
-						  
-
-                        </div>
-			     <button type="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Save</button> 
-				 <button type="submit" class="btn btn-secondary btn-sm mt-3 float-right" data-dismiss="modal">Close</button> 		
-            
-         </div>
-      </div>
-   </div>
-</div>
-
-
-
-<div class="modal" id="myModal5">
-   <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-         <!-- Modal Header -->
-         <div class="modal-header">
-			<h5>Repayment Details | Invoice Number : INV-112</h5>
-            <button type="button" class="close close-btns" data-dismiss="modal">×</button>
-         </div>
-         <!-- Modal body -->
-         <div class="modal-body text-left">
-			<div class="listing-modal repayment-form-modal mb-3">
-                                    <ul>
-                                        <li>
-                                            <div class="listing-modal-left"> Repay count: </div>
-                                            <div class="listing-modal-right"> <span id="repay_count">1</span></div>
-                                            <span id="overdue_percentage_raw" hidden="">16</span>
-                                            <span id="remaining_overdue_raw" hidden="">110000.1328125</span>
-                                        </li>
-                                        <li>
-                                            <!-- <span style="display:none" id="repay_count"></span> -->
-                                            <div class="listing-modal-left"> Invoice Approved Amount (₹): </div>
-                                            <div class="listing-modal-right"> <span id="invoice_approved_amount">₹60,000.00</span></div>
-                                        </li>
-
-                                        <li>
-                                            <div class="listing-modal-left"> Funded Amount (₹): </div>
-                                            <div class="listing-modal-right"> <span id="funded_amount">₹56,000.00</span></div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left"> Final Funded Amount (₹): </div>
-                                            <div class="listing-modal-right"> <span id="final_funded_amount_repay">₹48146.00</span></div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left"> Funded Date:  </div>
-                                            <div class="listing-modal-right"> <span id="funded_date_show">13-Dec-2019</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left"> Tenor (in days): </div>
-                                            <div class="listing-modal-right"> <span id="term_days">90</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left"> Payment Due Date: </div>
-                                            <div class="listing-modal-right"> <span id="payment_due_date" payment_due_date_raw="2019-10-17">14-March-2020</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Interest Per Annum (%): </div>
-                                            <div class="listing-modal-right"> <span id="interest_percentage">12</span><span> %</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Processing Fee (%): </div>
-                                            <div class="listing-modal-right"> <span id="processing_fee_repay">1</span><span> %</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Discount Type: </div>
-                                            <div class="listing-modal-right"> <span id="discount_type">front end</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Grace period (in days): </div>
-                                            <div class="listing-modal-right"> <span id="penal_grace">0</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Penal Interest Per Annum (%): </div>
-                                            <div class="listing-modal-right"> <span id="penal_interest">0</span><span> %</span>
-                                            </div>
-                                        </li>
-                                      
-                                        <li>
-                                            <div class="listing-modal-left">Repayment Amount: </div>
-                                            <div class="listing-modal-right"> <span id="repayment_amount">₹0</span>
-                                                
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Total Amount Repaid: </div>
-                                            <div class="listing-modal-right"> <span id="already_repaid_amount">₹0</span></div>
-                                          
-                                        </li>  
-                                         <li>
-                                            <div class="listing-modal-left">Penal days: </div>
-                                            <div class="listing-modal-right"> <span id="penal_days">41</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Penalty Amount: </div>
-                                            <div class="listing-modal-right"> <span id="penalty_amount">₹0</span>
-                                            </div>
-                                        </li>
-
-                                        
-                                        
-                                        <li>
-                                            <div class="listing-modal-left">Principal Amount: </div>
-                                            <div class="listing-modal-right"> <span id="remaining_overdue">₹60,000</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="listing-modal-left">Total Amount to Repay: </div>
-                                            <div class="listing-modal-right"> <span id="remaining_repay_amount">₹0</span></div>
-                                        </li>
-                                        
-                                        
-                                       
-                                    </ul>
-                                </div>
-								<div class="row">
-								<div class="col-md-6">
-								<div class="form-group">
-                                    <label for="repaid_amount" class="form-control-label">Repayment Date :</label>
-                                <input type="date" class="form-control " value="">
-                                </div>
-                                </div>
-								
-								<div class="col-md-6">
-								<div class="form-group">
-                                    <label for="repaid_amount" class="form-control-label">Repayment Amount :</label>
-                                <input type="date" class="form-control " value="">
-                               </div>
-                                </div>
-								<div class="col-md-6">
-								<div class="form-group">
-                                    <label for="repaid_amount" class="form-control-label">Payment Type :</label>
-                               <select class="form-control">
-                                        <option value=""> Select Payment Type </option>
-                                        <option value="1"> Online RTGS/NEFT </option>
-                                        <option value="2"> Cheque</option>
-                                        <option value="3"> Other </option>
-                                    </select>
-                               </div>
-                                </div>
-								<div class="col-md-6">
-								<div class="form-group">
-                                    <label for="repaid_amount" class="form-control-label">Upload Documents :</label>
-                                <input type="file" class="form-control " value="">
-                               </div>
-                                </div>
-								<div class="col-md-12">
-                                    <label for="repaid_amount" class="form-control-label">Comment : </label>
-                               <textarea class="form-control" cols="4" rows="4"></textarea>
-                               
-                                </div>
-								</div>
-			     <button type="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Save</button> 
-				 <button type="submit" class="btn btn-secondary btn-sm mt-3 float-right" data-dismiss="modal">Close</button> 		
-            
-         </div>
-      </div>
-   </div>
-</div>
 <div class="modal show" id="myModal2" style="display: none;">
    <div class="modal-dialog modal-md">
       <div class="modal-content">

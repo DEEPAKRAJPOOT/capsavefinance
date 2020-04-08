@@ -58,7 +58,9 @@ return [
         'IN_PROCESS' => '3',
         'REJECTED' => '4',
         'APPROVED' => '5',
-        'PROCESSED' => '6'
+        'REFUND_QUEUE' => '6',
+        'SEND_TO_BANK' => '7',
+        'PROCESSED' => '8'
     ],
     'WF_STAGE_STATUS' => [
         'PENDING' => '0',
@@ -73,9 +75,11 @@ return [
     'REQUEST_STATUS_DISP' => [
         '1' => ['SYSTEM' => 'New Request', 'USER' => 'New Request'],
         '2' => ['SYSTEM' => 'Deleted', 'USER' => 'Delete'],
-        '3' => ['SYSTEM' => 'In Process', 'USER' => 'In Process'],
+        '3' => ['SYSTEM' => 'Pending', 'USER' => 'Pending'],
         '4' => ['SYSTEM' => 'Rejected', 'USER' => 'Reject'],
         '5' => ['SYSTEM' => 'Approved', 'USER' => 'Approve'],
-        '6' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
+        '6' => ['SYSTEM' => 'Refund Queue', 'USER' => 'Refund Queue'],
+        '7' => ['SYSTEM' => 'Sent to Bank', 'USER' => 'Sent to Bank'],
+        '8' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
     ],    
 ];

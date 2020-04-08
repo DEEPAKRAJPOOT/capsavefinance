@@ -190,6 +190,7 @@ try {
                     {data: 'ledger_name'},
                     {data: 'amount'},
                     {data: 'entry_type'},
+                    {data: 'trans_type'},
                     {data: 'batch_no'},
                     {data: 'mode_of_pay'},
                 ],

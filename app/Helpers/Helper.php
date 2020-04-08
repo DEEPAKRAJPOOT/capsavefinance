@@ -1178,7 +1178,7 @@ class Helper extends PaypalHelper
             
             if ($wf_stage_code == 'refund_approval') {
                 if ($reqStatus == config('lms.REQUEST_STATUS.APPROVED')) {
-                    $statusList[config('lms.REQUEST_STATUS.PROCESSED')] = 'Refund';        
+                    $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Refund';        
                 } else {
                     $statusList[config('lms.REQUEST_STATUS.REJECTED')] = 'Reject';
                     $statusList[config('lms.REQUEST_STATUS.APPROVED')] = 'Approve';                    

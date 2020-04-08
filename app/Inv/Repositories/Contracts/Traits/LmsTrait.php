@@ -12,6 +12,7 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Helpers\ApportionmentHelper;
+use App\Inv\Repositories\Models\Lms\RefundTransactions;
 
 trait LmsTrait
 {
@@ -702,6 +703,10 @@ trait LmsTrait
         $saveReqData = $this->lmsRepo->saveApprRequestData(['ref_code' => \Helpers::formatIdWithPrefix($req_id, $type='REFUND')], $req_id);
         $reqLogData['req_id'] = $req_id;
         
+        if($reqData['trans_id'] && $req_id){
+            RefundTransactions::saveRefundTransactions($reqData['trans_id'], $req_id);
+        }
+
         $wf_stages = $this->lmsRepo->getWfStages($wf_stage_type);
         foreach($wf_stages as $wf_stage) {
             $wf_stage_code = $wf_stage->stage_code;
@@ -785,7 +790,21 @@ trait LmsTrait
         }
         
     }
-    
+
+    protected function finalRefundTransactions(int $trans_id, int $req_id)
+    {
+        $transactions = RefundTransactions::getRefundTransactions($req_id);
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        foreach ($transactions as $key => $trans) {
+           $refundData = $this->createTransactionData($trans->user_id, [
+                'amount' => $trans->amount,
+                'trans_date'=>$curData,
+                'disbursal_id'=>$trans->disbursal_id,
+            ], null, $trans->trans_type, 0);
+            Transactions::saveTransaction($refundData);
+        }
+    }
+
     protected function updateApprRequest($reqId, $addlData=[]) 
     {        
         $apprReqData = $this->lmsRepo->getApprRequestData($reqId);
@@ -816,7 +835,7 @@ trait LmsTrait
         $reqLogData['wf_stage_id'] = $wf_stage_id;
         $this->lmsRepo->saveApprRequestLogData($reqLogData);
                              
-        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval']) && config('lms.REQUEST_STATUS.PROCESSED') != $reqStatus) {
+        if (in_array($wf_stage_code, ['refund_approval', 'adjustment_approval']) && config('lms.REQUEST_STATUS.REFUND_QUEUE') != $reqStatus) {
             
             //Get Assigned Request for Approval
             $whereCond=[];
@@ -848,7 +867,7 @@ trait LmsTrait
         $updateReqData['status'] = $reqStatus;
         $this->lmsRepo->saveApprRequestData($updateReqData, $reqId);
                 
-        $wf_stage_status = config('lms.REQUEST_STATUS.PROCESSED') == $reqStatus ? config('lms.WF_STAGE_STATUS.COMPLETED') : config('lms.WF_STAGE_STATUS.IN_PROGRESS');
+        $wf_stage_status = config('lms.REQUEST_STATUS.REFUND_QUEUE') == $reqStatus ? config('lms.WF_STAGE_STATUS.COMPLETED') : config('lms.WF_STAGE_STATUS.IN_PROGRESS');
         $updateWfStage=[];
         $updateWfStage['wf_status'] = $wf_stage_status;        
         $this->lmsRepo->updateWfStage($wf_stage_id, $reqId, $updateWfStage);
@@ -1091,14 +1110,19 @@ trait LmsTrait
         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
         ->sum('amount');
         
-        $nonFactoredAmount = ($repayment->amount+$interestRefundTotal)-($repayDebitTotal+$marginTotal+$interestRefundSettledTotal);
+        $nonFactoredAmount = Transactions::where('repay_trans_id','=',$transId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
+        ->sum('amount');
+        if($nonFactoredAmount==0){
+            $nonFactoredAmount = ($repayment->amount)-($repayDebitTotal+$marginTotal-$interestRefundSettledTotal);
+        }
         
-        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal;
+        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal-$interestRefundSettledTotal;
 
         return ['repaymentTrails' => $repaymentTrails, 
         'repayment'=>$repayment,
         'nonFactoredAmount' => $nonFactoredAmount,
-        'interestRefund'=>$interestRefundTotal,
+        'interestRefund'=>$interestRefundTotal-$interestRefundSettledTotal,
         'interestOverdue'=>$interestOverdueTotal,
         'marginTotal'=>$marginTotal,
         'refundableAmount'=>$refundableAmount,

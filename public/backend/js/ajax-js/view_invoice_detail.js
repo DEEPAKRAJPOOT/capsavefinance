@@ -25,8 +25,10 @@ try {
             },
             columns: [
                 {data: 'DT_RowIndex'},
+                {data: 'amount'},
                 {data: 'comment'},
                 {data: 'status'},
+                {data: 'update'},
                 {data: 'timestamp'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
