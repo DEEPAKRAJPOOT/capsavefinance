@@ -121,9 +121,6 @@
         !!}
          </div>
      
-
-
-
 @endsection
 @php 
 $operation_status = session()->get('operation_status', false);
