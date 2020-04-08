@@ -28,6 +28,7 @@ try {
                 {data: 'amount'},
                 {data: 'comment'},
                 {data: 'status'},
+                {data: 'update'},
                 {data: 'timestamp'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]

@@ -1839,18 +1839,18 @@ class DataRenderer implements DataProviderInterface
     { 
        
       return DataTables::of($invoice)
-               ->rawColumns(['anchor_id','action','status','comment'])
+               ->rawColumns(['anchor_id','action','status','comment','update'])
                 ->addIndexColumn()
                ->addColumn(
                     'amount',
                     function ($invoice) {
                       
-                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : ''; 
+                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : '__________'; 
              })
                 ->addColumn(
                     'comment',
                     function ($invoice) { 
-                     return ($invoice->comm_txt) ? $invoice->comm_txt : ''; 
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : '__________'; 
                 })
                ->addColumn(
                     'status',
@@ -1863,13 +1863,19 @@ class DataRenderer implements DataProviderInterface
                            }
                            else
                            {
-                             return '<button type="button" class="'.$color[$invoice->status->id].' btn-sm">Update By '.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'</button>';
+                             return '__________';
                            }
+                  })
+                  ->addColumn(
+                    'update',
+                    function ($invoice) {
+                          return '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
+                           
                   })
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
-                       return $invoice->created_at->format('j F Y H:i:s A'); 
+                       return $invoice->created_at->format('j F Y H:i:s'); 
                 })
                  
                  

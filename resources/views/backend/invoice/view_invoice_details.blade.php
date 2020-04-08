@@ -151,10 +151,10 @@
                            <tr>
                             
                               <td id="invoice-amount">
-                                 {{($invoice->invoice_amount) ? $invoice->invoice_amount : '' }}
+                                 {{($invoice->invoice_amount) ? number_format($invoice->invoice_amount) : '' }}
                               </td>
                               <td id="invoice-amount">
-                                    {{($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' }} <a href="#" data-toggle="modal" data-target="#myModal2">
+                                    {{($invoice->invoice_approve_amount) ? number_format($invoice->invoice_approve_amount) : '' }} <a href="#" data-toggle="modal" data-target="#myModal2">
                                         @php if($invoice->status_id==7 && $role==1) { @endphp
                                         <i class="fa fa-pencil" aria-hidden="true"></i>
                                          @php  } @endphp
@@ -212,6 +212,7 @@
                                                <th>Amount </th>
                                                 <th>Comment </th> 
                                                 <th>Status</th>
+                                                <th>Updated by</th>
                                                 <th>Timestamp</th>
                                             </tr>
                                         </thead>
