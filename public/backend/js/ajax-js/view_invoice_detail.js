@@ -25,6 +25,7 @@ try {
             },
             columns: [
                 {data: 'DT_RowIndex'},
+                {data: 'amount'},
                 {data: 'comment'},
                 {data: 'status'},
                 {data: 'timestamp'}
