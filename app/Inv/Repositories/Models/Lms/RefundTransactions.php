@@ -50,16 +50,7 @@ class RefundTransactions extends BaseModel {
         'created_at',  
         'created_by',
     ];
-    
-    public static function saveRefundTransactionData($data)
-    {
-        //Check $refundData is not an array
-        if (!is_array($data)) {
-            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
-        }        
-        
-        return self::insert($data);
-    }
+
 
     public static function saveRefundTransactions(int $trans_id, int $req_id){
 
@@ -84,5 +75,39 @@ class RefundTransactions extends BaseModel {
                         ->join('transactions','transactions.trans_id','lms_refund_transactions.trans_id')
                         ->where('req_id','=',$req_id)
                         ->get();   
+    }
+
+    public function request(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\ApprovalRequest', 'req_id', 'req_id');
+    }
+
+    public static function saveRefundTransactionData($transactions,$whereCondition=[])
+    {
+        if (!is_array($transactions)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        if(empty($whereCondition)){
+            if (!isset($transactions['created_at'])) {
+                $transactions['created_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+            }
+            if (!isset($transactions['created_by'])) {
+                $transactions['created_by'] = \Auth::user()->user_id;
+            }        
+        }else{
+            if (!isset($transactions['created_at'])) {
+                $transactions['updated_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+            }
+            if (!isset($transactions['created_by'])) {
+                $transactions['updated_by'] = \Auth::user()->user_id;
+            }
+        }
+        
+        if (!empty($whereCondition)) {
+            return self::where($whereCondition)->update($transactions);
+        } else if (!isset($transactions[0])) {
+            return self::create($transactions);
+        } else {            
+            return self::insert($transactions);
+        }
     }
 }
