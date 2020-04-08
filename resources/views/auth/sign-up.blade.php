@@ -6,7 +6,7 @@
         <div class="col-md-6 form-design">
 
             <div id="reg-box">
-                <form class="registerForm form form-cls" autocomplete="on" enctype="multipart/form-data" method="POST" action="{{ route('user_register_open') }}" id="registerForm">
+                <form class="registerForm form form-cls" autocomplete="on" enctype="multipart/form-data" method="POST" action="{{ route('user_register_save') }}" id="registerForm">
 
                     {{ csrf_field() }}
 

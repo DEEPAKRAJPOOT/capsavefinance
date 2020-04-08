@@ -44,7 +44,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 
     Route::post('register',
         [
-        'as' => 'user_register_open',
+        'as' => 'user_register_save',
         'uses' => 'Auth\RegisterController@register'
     ]);
     
