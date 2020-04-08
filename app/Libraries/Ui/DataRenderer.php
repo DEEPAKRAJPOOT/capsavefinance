@@ -1839,27 +1839,43 @@ class DataRenderer implements DataProviderInterface
     { 
        
       return DataTables::of($invoice)
-               ->rawColumns(['anchor_id','action','status','comment'])
+               ->rawColumns(['anchor_id','action','status','comment','update'])
                 ->addIndexColumn()
-               
+               ->addColumn(
+                    'amount',
+                    function ($invoice) {
+                      
+                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : '__________'; 
+             })
                 ->addColumn(
                     'comment',
                     function ($invoice) { 
-                      $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger"];
-                        if($invoice->status_id==0 && $invoice->updated_by==null) {
-                              return $invoice->activity_name;
-                      }
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : '__________'; 
                 })
                ->addColumn(
                     'status',
                     function ($invoice) {
-                      
-                            return '<button type="button" class="badge badge-warning btn-sm">'.$invoice->status->status_name.'</button>';
-               })
+                           $color  = ['0' =>'','7'=>"badge badge-warning",'8' => "badge badge-success",'9' =>"badge badge-success",'10' =>"badge badge-success",'11' => "badge badge-danger",'12' => "badge badge-danger",'13' =>"badge badge-success",'14' => "badge badge-danger",'28' =>"badge badge-danger"];
+                                 
+                           if($invoice->invoice_amt=='')
+                           {
+                              return '<button type="button" class="'.$color[$invoice->status->id].' btn-sm">'.$invoice->status->status_name.'</button>';
+                           }
+                           else
+                           {
+                             return '__________';
+                           }
+                  })
+                  ->addColumn(
+                    'update',
+                    function ($invoice) {
+                          return '&nbsp;'.$invoice->user->f_name.'&nbsp;'.$invoice->user->l_name.'';
+                           
+                  })
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
-                       return $invoice->created_at->format('j F Y H:i:s A'); 
+                       return $invoice->created_at->format('j F Y H:i:s'); 
                 })
                  
                  
