@@ -4315,9 +4315,19 @@ if ($err) {
     }
 
     public function getTransactions(DataProviderInterface $dataProvider) { 
-       // $this->dataRecords = $this->finRepo->getTally(); //for rta_tally table 
-        $this->dataRecords = $this->finRepo->getTallyTxns();
+        $latestBatchData = $this->finRepo->getLatestBatch();
+        $latest_batch_no = NULL;
+        if (!empty($latestBatchData)) {
+            $latest_batch_no = $latestBatchData->batch_no;
+        }
+        $this->dataRecords = $this->finRepo->getTallyTxns(['batch_no' => $latest_batch_no]);
         $this->providerResult = $dataProvider->getTallyData($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+
+    public function getBatches(DataProviderInterface $dataProvider) { 
+        $this->dataRecords = $this->finRepo->getAllBatches();
+        $this->providerResult = $dataProvider->getTallyBatchData($this->request, $this->dataRecords);
         return $this->providerResult;
     }
     

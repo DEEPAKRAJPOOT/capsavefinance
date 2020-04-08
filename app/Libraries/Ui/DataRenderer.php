@@ -4497,6 +4497,32 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
+        public function getTallyBatchData(Request $request, $dataRecords){
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'created_at',
+                        function ($dataRecords) {
+                        return $dataRecords->created_at;
+                    })
+                    ->editColumn(
+                        'batch_no',
+                        function ($dataRecords) {
+                        return $dataRecords->batch_no;
+                    })
+                    ->editColumn(
+                        'records_in_batch',
+                        function ($dataRecords) {
+                        return $dataRecords->record_cnt;
+                    }) 
+                    ->editColumn(
+                        'action',
+                        function ($dataRecords) {
+                        $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns').'?batch_no='.$dataRecords->batch_no.'">Download Report</a>';
+                        return $btn;
+                    }) 
+                    ->make(true);
+        }
+
         public function getTransactionsByDataProvider(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
                     ->editColumn(

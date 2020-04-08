@@ -297,6 +297,7 @@ class FinanceModel extends BaseModel
             if ($e->errorInfo[1] == '1062') {
                return true;
             }
+            dd($e->errorInfo);
         }
     }
 

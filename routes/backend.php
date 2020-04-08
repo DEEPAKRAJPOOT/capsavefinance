@@ -1367,6 +1367,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_fin_transactions',
                 'uses' => 'Backend\FinanceController@getFinTransactions'
             ]);
+            Route::get('fin-batches', [
+                'as' => 'get_tally_batches',
+                'uses' => 'Backend\FinanceController@getFinBatches'
+            ]);
             Route::get('export_txns', [
                 'as' => 'export_txns',
                 'uses' => 'Backend\FinanceController@exportTransactions'

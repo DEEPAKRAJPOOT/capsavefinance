@@ -62,7 +62,7 @@ class FinanceController extends Controller {
             ->with([
             'accountData'=> $accountData,
             'accountId'=> $accountId
-            ]);;;
+            ]);
     }    
 
     public function getFinVariable() {
@@ -70,14 +70,12 @@ class FinanceController extends Controller {
     }
     
     public function exportTransactions(Request $request) {
-        // $voucher_type = $request->get('type');
-        // if (!in_array($voucher_type, [1,2])) {
-        //     Session::flash('error','Invalid voucher type found.');
-        //     return back();
-        // }
-        // 1 for journal and 2 for bank
+        $batch_no = $request->get('batch_no') ?? NULL;
         $where = [];
-        $result = $this->finRepo->getTallyTxns();
+        if (!empty($batch_no)) {
+            $where = ['batch_no' => $batch_no];
+        }
+        $result = $this->finRepo->getTallyTxns($where);
          $records = [];
          $header[] = [
             "batch_no" => "Batch No",
@@ -118,7 +116,7 @@ class FinanceController extends Controller {
         if (!empty($result)) {
            foreach ($result as $key => $value) {
                 $new[] = $fetchedArr = (array)$value;
-                $voucherDate = date('Y, d F',strtotime($fetchedArr['voucher_date']));
+                $voucherDate = date('d/m/Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                 $entry_type = strtolower($fetchedArr['entry_type']);
                 $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
@@ -240,7 +238,8 @@ class FinanceController extends Controller {
                 $transType = $fetchedArr['trans_type'];
                 $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
             }
-        }else{
+        }
+        if (empty($records['PAYMENT'])) {
             $records['PAYMENT'][] =  [
                 "voucher_no" => '',
                 "voucher_type" => '',
@@ -262,6 +261,9 @@ class FinanceController extends Controller {
                 "remarks" => '',
                 "narration" => '',
             ];
+        }
+
+        if (empty($records['JOURNAL'])) {
             $records['JOURNAL'][] =  [
                 "batch_no" => '',
                 "voucher_no" => '',
@@ -483,7 +485,16 @@ class FinanceController extends Controller {
     }
 
     public function getFinTransactions() {
-        return view('backend.finance.transactions');
+        $latestBatchData = $this->finRepo->getLatestBatch();
+        $latest_batch_no = NULL;
+        if (!empty($latestBatchData)) {
+            $latest_batch_no = $latestBatchData->batch_no;
+        }
+        return view('backend.finance.transactions', compact('latest_batch_no'));
+    }
+
+    public function getFinBatches() {
+        return view('backend.finance.batches');
     }
 
     public function array_to_csv($array, $download = "") {
