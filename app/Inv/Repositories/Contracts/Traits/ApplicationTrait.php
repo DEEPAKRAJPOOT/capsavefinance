@@ -35,13 +35,15 @@ trait ApplicationTrait
                 $finalDocs[$key]['product_document'] = $this->appRepo->getDocumentProduct($value->doc_id);
             }                    
         } else {
-            $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();
+            $prgmDocs = $this->appRepo->getProgramDocs($prgmDocsWhere)->toArray();      
             if($prgmDocsWhere['stage_code'] == 'upload_pre_sanction_doc'){
-                $whereCondition['doc_type_id'] =  2;
+                $whereCondition['mst_doc.doc_type_id'] =  2;
+                $whereCondition['app_prgm_offer.app_id'] =  $prgmDocsWhere['app_id'];
                 $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
             }
             else  {
-                $whereCondition['doc_type_id'] =  3;
+                $whereCondition['mst_doc.doc_type_id'] =  3;
+                $whereCondition['app_prgm_offer.app_id'] =  $prgmDocsWhere['app_id'];
                 $preDocs = $this->appRepo->getSTLDocs($whereCondition, $appProductIds)->toArray();
             }
 
