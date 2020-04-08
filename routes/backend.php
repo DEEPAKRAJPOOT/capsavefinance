@@ -407,8 +407,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@saveAssignRcu'
             ]);
             
-
-             Route::get('fircu/assign-rcu', [
+            Route::get('fircu/assign-rcu', [
                 'as' => 'show_assign_rcu',
                 'uses' => 'Backend\FiRcuController@showAssignRcu'
             ]);
@@ -565,7 +564,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'approve_offer',
                     'uses' => 'Backend\CamController@approveOffer'
                 ]);
-
 
                 Route::get('cam-report', [
                     'as' => 'cam_report',
