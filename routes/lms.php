@@ -182,6 +182,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@refundOffline'
             ]);
 
+            Route::get('refund/download-sentbank-data', [
+                'as' => 'download_sentbank',
+                'uses' => 'Lms\RefundController@downloadSentBank'
+            ]);
+
             Route::get('/refund/sentbank',[
                 'as' => 'lms_refund_sentbank',
                 'uses' => 'Lms\RefundController@refundListSentBank'

@@ -100,7 +100,7 @@ class RefundController extends Controller
             return redirect()->back()->withInput();
         }
 
-        $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
+        $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Offline i.e 2
         
         if(empty($transactionIds)){
             return redirect()->route('request_list');
@@ -152,8 +152,8 @@ class RefundController extends Controller
                 $exportData[$userid]['Debit_Mobile'] = '9876543210';
                 $exportData[$userid]['Ben_IFSC'] = $aprvlRfd['ifsc_code'];
                 $exportData[$userid]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
-                $exportData[$userid]['Ben_Name'] = $aprvlRfd['bank_name'];
                 $exportData[$userid]['Ben_BankName'] = $aprvlRfd['bank_name'];
+                $exportData[$userid]['Ben_Name'] = $aprvl['transaction']['user']['f_name'].' '.$aprvl['transaction']['user']['l_name'];
                 $exportData[$userid]['Ben_Email'] = $aprvl['transaction']['user']['email'];
                 $exportData[$userid]['Ben_Mobile'] = $aprvl['transaction']['user']['mobile_no'];
                 $exportData[$userid]['Mode_of_Pay'] = 'IFT';
@@ -185,7 +185,37 @@ class RefundController extends Controller
         return redirect()->route('request_list');
     }
 
-    public function export($data, $filename) {
+    public function downloadSentBank()
+    {
+        $allAprvls = $this->lmsRepo->getAprvlRqDataByIds()->toArray();
+        $downloadFlag = 1;
+        $exportData = [];
+        $filename = 'download-excel';
+        foreach ($allAprvls as $aprvl) {
+            $userid = $aprvl['transaction']['user']['user_id'];
+            $disburseAmount = round($aprvl['amount'], 5);
+
+            $exportData[$userid]['RefNo'] = $aprvl['transaction']['lms_user']['virtual_acc_id'];
+            $exportData[$userid]['Amount'] = round($aprvl['amount'], 5);
+            $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
+            $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
+            $exportData[$userid]['Debit_Mobile'] = '9876543210';
+            $exportData[$userid]['Ben_IFSC'] = $aprvl['ifsc_code'];
+            $exportData[$userid]['Ben_Acct_No'] = $aprvl['acc_no'];
+            $exportData[$userid]['Ben_BankName'] = $aprvl['bank_name'];
+            $exportData[$userid]['Ben_Name'] = $aprvl['transaction']['user']['f_name'].' '.$aprvl['transaction']['user']['l_name'];
+            $exportData[$userid]['Ben_Email'] = $aprvl['transaction']['user']['email'];
+            $exportData[$userid]['Ben_Mobile'] = $aprvl['transaction']['user']['mobile_no'];
+            $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+            $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
+            $exportData[$userid]['Remarks'] = 'test remarks';
+            $exportData[$userid]['Value_Date'] = date('Y-m-d');
+        }
+        $result = $this->export($exportData, $filename, $downloadFlag);
+
+    }
+
+    public function export($data, $filename, $downloadFlag = 0) {
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -271,19 +301,23 @@ class RefundController extends Controller
         // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
         // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         // header ('Pragma: public'); // HTTP/1.0
-        
-        if (!Storage::exists('/public/docs/bank_excel')) {
-            Storage::makeDirectory('/public/docs/bank_excel');
-        }
-        $storage_path = storage_path('app/public/docs/bank_excel');
-        $filePath = $storage_path.'/'.$filename.'.xlsx';
+        if ($downloadFlag == 0) {
+            if (!Storage::exists('/public/docs/bank_excel')) {
+                Storage::makeDirectory('/public/docs/bank_excel');
+            }
+            $storage_path = storage_path('app/public/docs/bank_excel');
+            $filePath = $storage_path.'/'.$filename.'.xlsx';
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save($filePath);
+            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter->save($filePath);
 
-        return [ 'status' => 1,
+            return [ 'status' => 1,
                 'file_path' => $filePath
-                ];
+            ];
+        } else {
+            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter->save('php://output');
+        }
     }
 
 	/**

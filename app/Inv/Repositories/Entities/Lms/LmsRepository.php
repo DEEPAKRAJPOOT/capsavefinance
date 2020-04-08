@@ -923,11 +923,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   ->get();
     } 
 
-    public function getAprvlRqDataByIds($ids)
-    {
-        return ApprovalRequest::whereIn('req_id', $ids)
-			   ->with(['transaction.user.anchor_bank_details.bank', 'transaction.lmsUser.bank_details.bank'])
-			   ->get();
+    public function getAprvlRqDataByIds($ids = [])
+    {	
+    	if (empty($ids)) {
+	        return ApprovalRequest::with(['transaction.user.anchor_bank_details.bank', 'transaction.lmsUser.bank_details.bank'])
+	        	->where('status', 7)
+			   	->get();
+    	} else {
+    		return ApprovalRequest::whereIn('req_id', $ids)
+			   	->with(['transaction.user.anchor_bank_details.bank', 'transaction.lmsUser.bank_details.bank'])
+			   	->get();
+    	}
     }
 
 	public static function updateAprvlRqst($data, $reqId)
