@@ -143,11 +143,15 @@ class PaymentController extends Controller {
             'created_at' => $mytime,
             'created_by' => $user_id,
         ];
-        $paymentId = Payment::insertPayments($paymentData);
-        if (!is_int($paymentId)) {
-          Session::flash('error', $paymentId);
-          return back();
+        $paymentId = NULL;
+        if (in_array($request->action_type, [1,2,3])) {
+          $paymentId = Payment::insertPayments($paymentData);
+          if (!is_int($paymentId)) {
+            Session::flash('error', $paymentId);
+            return back();
+          }
         }
+        
         $udata=$this->userRepo->getSingleUserDetails($request->customer_id);
         $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
         $enterAmount =  str_replace(',', '', $request->amount);
