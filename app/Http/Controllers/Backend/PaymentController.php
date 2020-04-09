@@ -136,7 +136,7 @@ class PaymentController extends Controller {
             'utr_no' => $utr ?? NULL,
             'unr_no' => $unr ?? NULL,
             'cheque_no' => $check ?? NULL,
-            'tds_certificate_no' => $request->tds_certificate_no,
+            'tds_certificate_no' => $request->tds_certificate_no ?? '',
             'description' => $request->description,
             'is_settled' => '0',
             'is_manual' => '1',
