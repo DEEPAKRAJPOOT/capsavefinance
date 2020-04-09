@@ -1370,7 +1370,7 @@ class DataRenderer implements DataProviderInterface
                        $action = "";
                       if( $chkUser->id!=11)
                       {  
-                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
@@ -1721,7 +1721,7 @@ class DataRenderer implements DataProviderInterface
                        $action = "";
                        if( $chkUser->id!=11)
                       { 
-                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
                        $action .= '<option value="7">Pending</option>';
                        if(in_array($customer, $expl)) 
                        {

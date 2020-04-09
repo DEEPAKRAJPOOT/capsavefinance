@@ -386,11 +386,19 @@ function uploadFile(app_id,id)
         {
             return false;
         }
-        if (status == 7)
+        else if (status == 7)
         {
             var st = "Pending";
         }
-        if (status == 14)
+        else if (status == 8)
+        {
+            var st = "Approve";
+        }
+        else if (status == 9)
+        {
+            var st = "Disbursement Queue";
+        }
+       else if (status == 14)
         {
             var st = "Reject";
         }

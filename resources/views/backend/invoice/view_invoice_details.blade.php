@@ -291,29 +291,6 @@
             token: "{{ csrf_token() }}",
  };
  
-$(document).ready(function(){
- ///////////// use for amount comma seprate//////////////////////////   
-document.getElementById('invoice_approve_amount').addEventListener('input', event =>
-event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-
-});
-    
-///////////////////////////////////////// change invoice amount////////////////
-$(document).on('click','#UpdateInvoiceAmount',function(){
-    
-    var amount = parseFloat($("#invoice_amount").val().replace(/,/g, ''));
-        var approveAmount = parseFloat($("#invoice_approve_amount").val().replace(/,/g, ''));
-        if (approveAmount > amount)
-        {
-            $(".model7msg").show();
-            $(".model7msg").html('Invoice Approve Amount should not greater amount');
-            return false;
-        } else
-        {
-            $(".model7msg").hide();
-            return true;
-        }
- });
 </script>
 <script src="{{ asset('backend/js/ajax-js/view_invoice_detail.js') }}"></script>
 @endsection
