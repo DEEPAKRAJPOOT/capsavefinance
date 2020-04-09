@@ -163,7 +163,7 @@
                 <ul class="nav flex-column sub-menu">                    
                 @can('request_list')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('request_list') }}">Manage Refund</a>
+                        <a class="nav-link" href="{{ route('lms_refund_new') }}">Manage Refund</a>
                     </li> 
                 @endcan 
                                         
