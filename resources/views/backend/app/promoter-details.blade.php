@@ -711,388 +711,18 @@
                 chk_user_pan_karza_add_more: "{{ URL::route('chk_user_pan_karza_add_more') }}",
                 chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
                 get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
-                protmoter_document_delete: "{{ url::route('promoter_document_delete') }}"
+                protmoter_document_delete: "{{ url::route('promoter_document_delete') }}",
+                promoter_detail_save: "{{ url::route('promoter_detail_save') }}",
+                appurl = '{{URL::route("verify_mobile") }}',
+                otpSend = '{{URL::route("sent_otp_mobile") }}',
+                otpurl = '{{URL::route("verify_otp_mobile") }}',
+                _token = "{{ csrf_token() }}",
+                appId = "{{ $appId }}"
+ 
+        
         };
-        $(document).ready(function () {
-         ///////////////For Amount comma Seprate///////////
-        $(".networth").each(function(){
-            var id   =  $(this).attr('id');
-           document.getElementById(id).addEventListener('input', event =>
-           event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-           return true;
-        })
-        
-        
-        $('.submit').on('click', function (event) {
-        var button = $(this).attr("data-type");
-        $('input.first_name').each(function () {
-        $(this).rules("add",
-        {
-        required: true
-        })
-        });
-        $('input.date_of_birth').each(function () {
-        $(this).rules("add",
-        {
-        required: true
-        })
-        });
-        if(button=='next')
-      { 
-                $('select.gender').each(function () {
-                $(this).rules("add",
-                {
-                required: true
-                })
-                });
-
-                $('input.pan_no').each(function () {
-                $(this).rules("add",
-                {
-                required: true
-                })
-                });
-                //   $('input.designation').each(function () {
-                // $(this).rules("add",
-                // {
-                // required: true
-                // })
-                // });
-                $('input.mobileveri').each(function () {
-                $(this).rules("add",
-                {
-                required: true,
-                        number: true,
-                })
-                });
-
-                $('textarea.address').each(function () {
-                $(this).rules("add",
-                {
-                required: true
-                })
-                });
-       } 
-       else
-       {
-           $('select.gender').each(function () {
-                $(this).rules("add",
-                {
-                required: false
-                })
-                });
-
-                $('input.pan_no').each(function () {
-                $(this).rules("add",
-                {
-                required: false
-                })
-                });
-               
-                $('input.mobileveri').each(function () {
-                $(this).rules("add",
-                {
-                required: false,
-                        number: false,
-                })
-                });
-
-                $('textarea.address').each(function () {
-                $(this).rules("add",
-                {
-                required: false
-                })
-                });
-       }
-      
-        if ($('form#signupForm').validate().form()) {
-        var panCount = 0;
-        var promoCount = 0;
-        var mobileVeriCount = 0;
-        var total = 0;
-        var DlLength = $('input[name="dlfile[]"]').length;
-        var total = 0;
-       if(button=='next')
-       {  
-        ///// for upload one in three id proff..............
-        for (i = 1; i <= DlLength; i++)
-        {
-
-
-        var dlVal = $("#dldown" + i).attr('href');
-        var vtVal = $("#voterdown" + i).attr('href');
-        var adVal = $("#aadhardown" + i).attr('href');
-         var elVal = $("#electricitydown" + i).attr('href');
-          var teVal = $("#telephonedown" + i).attr('href');
-        if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")
-        {
-        alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
-        $("#verifydl" + i).focus();
-        return false;
-        }
-
-        }
-
-        //// for pan verify///
-        $(".pan_no").each(function (k, v) {
-        panCount++;
-        var result = $("#pan_verify" + panCount).text();
-        if (result == "Verify")
-        {
-        $('#failurepanverify' + panCount).show();
-        $('#pan_no' + panCount).focus();
-        e.preventDefault();
-        return false;
-        }
-
-        });
-        
-          //// for mobile verify///
-        $(".findMobileverify").each(function (k, v) {
-         mobileVeriCount++;   
-         var mobileVeri =   $(this).text();
-         if($.trim(mobileVeri)!="Verified Successfully")
-         {
-             
-              $("#v5failurepanverify"+mobileVeriCount).html('<i class="fa fa-close" aria-hidden="true"></i><i>Not verified</i>');
-              e.preventDefault();
-              return false;
-         }
-        
-        
-        });
-      
-               ///// validation for where is checked then shareholder is mandaterory/////
-        $(".is_promoter").each(function (k, v) {
-        promoCount++;
-        var is_promoter = $("#is_promoter" + promoCount).val();
-        if (is_promoter == 1)
-        {
-           
-            var shareHolder = $("#share_per" + promoCount).val();
-            if (shareHolder == '')
-            {
-                $("#shareCheck" + promoCount).text('This field is required.');
-                e.preventDefault();
-                return false;
-            }
-            else if (shareHolder == 0 || shareHolder > 100)
-            {
-                $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
-                e.preventDefault();
-                return false;
-            }
-
-            else
-            {
-                $("#shareCheck" + promoCount).text('');
-                return true;
-            }
-
-        }
-       
-        });
-      
-
-        ////// Combination of Shareholding (%) should  not exceed more than 100 %///////////
-            $(".share_per").each(function (k, v) { 
-                if($(this).val()!='')
-                {
-                    total += parseFloat($(this).val());
-                }
-            });
-           
-            if(total > 100)
-            {
-
-                alert('Combination of Shareholding (%) should  not exceed more than 100 %');
-                e.preventDefault();
-               return false;
-           }
-       }
-        var form = $("#signupForm");
-        $('.isloader').show();
-        $.ajax({
-        type: "POST",
-                url: '{{Route('promoter_detail_save')}}',
-                data: form.serialize(), // serializes the form's elements.
-                cache: false,
-                success: function (res)
-                {
-                
-                  $('.isloader').hide();
-                 window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
-                  
-               if (res.status == 1)
-               {
-                   
-                    if(button=='next')
-                    {  
-                          window.location.href = "{{ route('documents', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
-                    }
-                    else
-                    {
-                         window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
-                    }
-                }
-                else {
-                alert("Something went wrong, please try again !");
-                }
-               
-                },
-                error: function (error)
-                {
-                console.log(error);
-                }
-
-        });
-        } else {
-        console.log("does not validate");
-        }
-        })
-
-                $('form#signupForm').validate();
-        });
-        function FileDetails(clicked_id) {
-        // GET THE FILE INPUT.
-        var fi = document.getElementById('file_' + clicked_id);
-        // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
-        if (fi.files.length > 0) {
-
-        // THE TOTAL FILE COUNT.
-        var x = 'filePath_' + clicked_id;
-        //var x = document.getElementById(id);alert(id);
-        document.getElementById(x).innerHTML = '';
-        // RUN A LOOP TO CHECK EACH SELECTED FILE.
-        for (var i = 0; i <= fi.files.length - 1; i++) {
-
-        var fname = fi.files.item(i).name; // THE NAME OF THE FILE.
-        var fsize = fi.files.item(i).size; // THE SIZE OF THE FILE.
-        // SHOW THE EXTRACTED DETAILS OF THE FILE.
-        document.getElementById(x).innerHTML =
-                '<div class="file-name" id="fileId"> ' +
-                fname + '' + '<button type="button"  class="close-file" onclick="myDelete()" > x' + '</button>' + '</div>';
-        }
-        } else {
-        alert('Please select a file.');
-        }
-        }
-
-        function myDelete() {
-        document.getElementById("fileId").remove();
-        }
-
-    /////////////shareholder keyup for checking is_promoter is checked or not/////////////////
-        $(document).on('keyup', '.share_per', function(){
-        var shareHolder = $(this).val();
-        var promoCount = $(this).attr('data-id');
-        var is_promoter = $("#is_promoter" + promoCount).val();
-       
-        if (is_promoter == 1)
-        {
-               
-                if (shareHolder == '')
-                {
-                        $("#shareCheck" + promoCount).text('This field is required.');
-                        return false;
-                }
-                else if (shareHolder == 0 || shareHolder > 100)
-                {
-                        $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
-                        return false;
-                }
-                else
-                {
-                        $("#shareCheck" + promoCount).text('');
-                        return true;
-                }
-
-
-
-        }
-        else
-        {
-               
-                 $("#shareCheck" + promoCount).text('');
-                return true;
-        }
-        });
-        
-     /////// for is promoter checking checkbox//////////////////////
-      $(document).on('click', '.is_promoter', function () {
-        var res = $(this).val();
-        var count = $(this).attr('data-id');
-      
-        if (res==1)
-        { 
-                $(this).val(0);
-                $("#isShareCheck"+count).val(0);
-                $("#shareCheck"+count).text('');
-              
-                return true;
-        }
-        else
-        {
-                $(this).val(1);
-                $("#isShareCheck"+count).val(1);
-                if($("#share_per"+count).val()=='')
-                {
-                  $("#shareCheck"+count).text('This field is required.');
-                 }
-                 return true;
-        }
-        });
-       
-        
-       ////////////////// new form create by add promoter/////////////////
-       
-        $(document).on('click', '#btnAddMore', function () {
-        var rowcount = parseInt($("#rowcount").val());
-        if (rowcount > 0)
-        {
-        var x = rowcount + 1;
-        }
-         else if(rowcount==0)
-        {
-             var x = 1;
-        }
-        else
-        {
-        var x = 2;
-        }
-        $("#rowcount").val(x);
-            if(x==1)
-           {
-               var close  = "";
-           }
-           else
-           {
-                var close  = "<button class='close clsdiv' type='button'>x</button>";
-           }
-           $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'>"+close+"<h5 class='card-title form-head'>Management Information (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' class='d-block'> Name  <span class='mandatory'>*</span><span class='pull-right d-flex align-items-center'><input type='checkbox' name='is_promoter[]' data-id='"+x+"'  id='is_promoter"+x+"'  value='0' class='is_promoter mr-2'><span class='white-space-nowrap'>Is Promoter</span></span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='hidden' name='isShareCheck[]' id='isShareCheck"+ x +"' value='0'><input type='text'  id='share_per" + x + "' data-id='" + x + "' maxlength='6' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option><option value='3'>Other</option></select></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><a href='javascript:void(0);' class='verify-owner-no'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'><input name='response[]' id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Designation</label><input type='text' name='designation[]'  id='designation" + x + "' value='' class='form-control designation'  placeholder='Enter Designation'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-8'><div class='form-group'><label for='txtCreditPeriod'>Address<span class='mandatory'>*</span></label><textarea  style='height: 35px;' class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address'"+ x +"'></textarea></div></div></div><div class='row'><div class='col-md-12'><div class='form-group'><label for='txtCreditPeriod'>Comment</label><textarea class='form-control textarea' placeholder='Enter Comment' name='comment[]' id='comment"+x+"'></textarea></div></div></div></div><span id='disableDocumentPart"+x+"' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'> <div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' ><div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div></div> </div></div></div>"); 
-           x++;
-        datepickerDisFdate();
-       
-        });
-        
-        
-          
-    //////////CIN webservice for get promoter details start here//////////////////////////////////////        
-        $(document).on('click', '.clsdiv', function () {
-        $(this).parent().parent().remove();
-        var rowcount = parseInt($("#rowcount").val());
-         if (rowcount > 0)
-        {
-          var x = rowcount - 1;
-        }
-        $("#rowcount").val(x);
-       
-        });
-        
-        
-         //////////CIN webservice for get promoter details start here//////////////////////////////////////        
-        
-        jQuery(document).ready(function () {
+       //////////Get Promoter detail by Cin Number//////////  
+      jQuery(document).ready(function () {
        var countOwnerRow = $("#rowcount").val();
         if (countOwnerRow > 0)
         {
@@ -1156,7 +786,8 @@
                 }
         });
         });
-        /* save promoter details after cin number api hit */
+        
+         /* save promoter details after cin number api hit */
         function  savePromoter(data, bizId, appId)
         {
 
@@ -1183,567 +814,368 @@
                 }
         });
         }
+ 
+ ///* upload image and get ,name  */
+   $('input[type="file"]'). change(function(e){
+        $("#customFile-error").hide();
+        var fileName = e. target. files[0]. name;
+        $("#msgFile").html('The file "' + fileName + '" has been selected.' );
+    });
 
+   ///////////////// invoice approve amount check here///////////
+   $(document).on('change blur keyup','#invoice_approve_amount', function() {
+     var pro_limit = parseInt($("#pro_limit_hide").val());
+     var invoice_approve_amount = $("#invoice_approve_amount").val();
+     var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+     if(invoice_approve_amount==0)
+     {
+         $("#invoice_approve_amount").val('');
+         return false;
+     }
+      if(invoice_approve_amount  > pro_limit)
+     {
+         $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
+         $("#submit").css("pointer-events","none");
+         return false;
+     }
+     else
+     {
+         $("#msgProLimit").empty();
+         $("#submit").css("pointer-events","auto");
+         return true;
+     }
+     
+});
 
-    ///////////////Promotor web service for pan verified start here//////////////////////////
-        $(document).on('click', '.promoter_pan_verify', function () {
-        var count = $(this).attr('data-id');
-        var PAN = $("#pan_no" + count).val();
-        var bizId = $('input[name=biz_id]').val();
-        var name = $("#first_name" + count).val();
-        var dob = $("#date_of_birth" + count).val();
-        var appId   =  $("#app_id").val();
-        var ownerid = $('#ownerid' + count).val();
-        var consent = "Y";
-        var key = "NX1nBICr7TNEisJ";
-        var dataStore = ({'consent': consent, 'pan': PAN,'app_id' : appId,'ownerid':ownerid, 'biz_id' : bizId,'_token': messages.token,'name':name, 'dob':dob});
-        var postData = dataStore;
-        $('#pan_verify' + count).text('Waiting...');
-        jQuery.ajax({
-        url: messages.chk_user_pan_karza,
-                /// var dataStore = {'pan': 'BVZPS1846R','name':'Omkar Milind Shirhatti','dob':'17/08/1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
-
+ //////////// check duplicate invoice ////////////////////
+ 
+  $(document).on('change blur keyup','#invoice_no,#supplier_id', function() {
+     var invoice = $("#invoice_no").val();
+     var user_id  = $("#supplier_id").val();
+     var user_id  =  user_id.split(',');
+     var user  =  user_id[0];
+     if(user==""  || invoice=="")
+     {
+         return false;
+     }
+    
+      var postData =  ({'user_id':user,'invoice':invoice,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.check_duplicate_invoice,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
                 error: function (xhr, status, errorThrown) {
                 alert(errorThrown);
-                $('#pan_verify' + count).text('Verify');
-                },
-                success: function (data) {
-              
-                if (data['status'] == 1)
-                {
-                $("#veripan"+count).val(PAN);   
-                $('#pan_no' + count).attr('readonly', true);
-                $('#pan_verify' + count).css('pointer-events', 'none');
-                $('#ppanStatusVeriView' + count).css('display', 'inline');
-                $('#pan_verify' + count).text('Verified')
-                $('#successpanverify' + count).show();
-                $('#failurepanverify' + count).hide();
-               /// $("#submit").attr("disabled", false);
-                } else {
-                $('#pan_verify' + count).text('Verify');
-                $('#successpanverify' + count).hide();
-                $('#failurepanverify' + count).show();
-              ///  $("#submit").attr("disabled", true);
-                }
-                }
-        });
-        });
-        
-    ///////////////Promotor web service for pan verified for add more start here//////////////////////////
-        $(document).on('click', '.promoter_pan_verify_add_more', function () {
-        var count = $(this).attr('data-id');
-        var PAN = $("#pan_no" + count).val();
-        var bizId = $('input[name=biz_id]').val();
-        var name = $("#first_name" + count).val();
-        var dob = $("#date_of_birth" + count).val();
-        var appId   =  $("#app_id").val();
-        var ownerid = $('#ownerid' + count).val();
-        var consent = "Y";
-        var key = "NX1nBICr7TNEisJ";
-        var dataStore = ({'consent': consent, 'pan': PAN,'app_id' : appId,'ownerid':ownerid, 'biz_id' : bizId,'_token': messages.token,'name':name, 'dob':dob});
-        var postData = dataStore;
-        $('#pan_verify' + count).text('Waiting...');
-        jQuery.ajax({
-        url: messages.chk_user_pan_karza_add_more,
-                /// var dataStore = {'pan': 'BVZPS1846R','name':'Omkar Milind Shirhatti','dob':'17/08/1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
-
-               method: 'post',
-               dataType: 'json',
-               data: postData,
-               error: function (xhr, status, errorThrown) {
-               alert(errorThrown);
-               $('#pan_verify' + count).text('Verify');
-               },
-               success: function (data) {
-             
-               if (data.status == 1)
-               {
-               $("#veripan"+count).val(PAN);  
-               $('#response'+count).val(data.value);
-               $('#pan_no'+ count).attr('readonly', true);
-               $('#pan_verify'+ count).text('Verified')
-               $('#successpanverify' + count).show();
-               $('#failurepanverify' + count).hide();
-              /// $("#submit").attr("disabled", false);
-               } else {
-               $('#pan_verify' + count).text('Verify');
-               $('#successpanverify' + count).hide();
-               $('#failurepanverify' + count).show();
-             ///  $("#submit").attr("disabled", true);
-               }
-               }
-        });
-        });
-        /////////////////Karja Api pan status /////////////////////////////////////
-
-        $(document).on('click', '.veripan', function () {
-        var count = $(this).attr('data-id');
-        var bizId = $('input[name=biz_id]').val();
-        var app_id = $('#app_id').val();
-        var ownerid = $('#ownerid' + count).val();
-        if (ownerid)
-        {
-        var ownerid = ownerid;
-        }
-        else
-        {
-        var ownerid = 0;
-        }
-        var PAN = $("#veripan" + count).val();
-        var name = $("#first_name" + count).val();
-        var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'pan': PAN, 'name':name, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
-        var postData = dataStore;
-        $('#ppan' + count).text('Waiting...');
-        jQuery.ajax({
-
-        url: messages.chk_user_pan_status_karza,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                $('#ppan' + count).text('Verify');
-                },
-                success: function (data) {
-                if (data['status'] == 1)
-                {
                 
-                $('#veripan' + count).attr('readonly', true);
-                $('#ppan' + count).text('Verified');
-                $('#ppan' + count).css('pointer-events', 'none');
-                $('#ppanVeriView' + count).css('display', 'inline');
-                $('#v1successpanverify' + count).show();
-                $('#v1failurepanverify' + count).hide();
-               /// $("#submit").attr("disabled", false);
-                } else{
-                $('#ppan' + count).text('Verify');
-                $('#v1successpanverify' + count).hide();
-                $('#v1failurepanverify' + count).show();
-                // $("#submit").attr("disabled", true);
-                }
-
-
-                }
-        });
-        });
-        ///////////////////////DL api ///////////////
-        $(document).on('click', '.veridl', function () {
-        var count = $(this).attr('data-id');
-        var bizId = $('input[name=biz_id]').val();
-        var app_id = $('#app_id').val();
-        var ownerid = $('#ownerid' + count).val();
-        if (ownerid > 0)
-        {
-        var ownerid = ownerid;
-        }
-        else
-        {
-        var ownerid = 0;
-        }
-
-        var PAN = $("#verifydl" + count).val();
-        var dl_no = $("#verifydl" + count).val();
-        var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'dl_no': dl_no, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
-        ////var dataStore = {'dl_no': 'MH01 20090091406','dob':'12-06-1987','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id};
-
-        var postData = dataStore;
-        $('#ddriving' + count).text('Waiting...');
-        jQuery.ajax({
-        url: messages.chk_user_dl_karza,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                $('#ddriving' + count).text('Verify');
                 },
                 success: function (data) {
-                if (data['status'] == 1)
-                {
-                $('#verifydl' + count).attr('readonly', true);
-                $('#ddriving' + count).text('Verified');
-                $('#ddriving' + count).css('pointer-events', 'none');
-                $('#ddrivingVeriView' + count).css('display', 'inline');
-                $('#v2successpanverify' + count).show();
-                $('#v2failurepanverify' + count).hide();
-                $("#submit").attr("disabled", false);
-                } else{
-                $('#ddriving' + count).text('Verify');
-                $('#v2successpanverify' + count).hide();
-                $('#v2failurepanverify' + count).show();
-                /// $("#submit").attr("disabled", true);
+                      if(data.status==1)
+                        {
+                            $("#msgInvoiceDupli").text('Invoice No already exists');
+                            $("#submit").css("pointer-events","auto");
+                            $("#submit").css("pointer-events","none");
+                            return false;
+                        }
+                        else
+                        {
+                            $("#msgInvoiceDupli").empty();
+                           return true;
+                        }
                 }
+            });
+});
 
 
-                }
-        });
-        });
-        /////////////////Karja Api Voter Card/////////////////////////////////////
+   function ChangeDateFormat(date)
+   {
+            var datearray = date.split("/");
+            return  newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
 
+   }
 
-        $(document).on('click', '.verivoter', function () {
-        var count = $(this).attr('data-id');
-        var voterId = $("#verifyvoter" + count).val();
-        var bizId = $('input[name=biz_id]').val();
-        var app_id = $('#app_id').val();
-        var ownerid = $('#ownerid' + count).val();
-        if (ownerid)
-        {
-        var ownerid = ownerid;
-        }
-        else
-        {
-        var ownerid = 0;
-        }
-        var dataStore = {'epic_no':voterId, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id };
-        ///  var dataStore = {'epic_no': 'SHA4722088','_token': messages.token,'biz_id':bizId,'ownerid':ownerid,'app_id':app_id };
-        var postData = dataStore;
-        $('#vvoter' + count).text('Waiting...');
-        jQuery.ajax({
-        url: messages.chk_user_voterid_karza,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                $('#vvoter' + count).text('Verify');
-                },
-                success: function (data) {
+    function findDaysWithDate(firstDate,secondDate)
+    {
+        var firstDate  =   ChangeDateFormat(firstDate);
+        var secondDate  =  ChangeDateFormat(secondDate);
+        var startDay = new Date(firstDate);
+        var endDay = new Date(secondDate);
+        var millisecondsPerDay = 1000 * 60 * 60 * 24;
+        var  millisBetween = startDay.getTime() - endDay.getTime();
+        var    days = millisBetween / millisecondsPerDay;
+        return  Math.floor(days);
+    }
+  
 
-                if (data['status'] > 0)
-                {
-                $('#verifyvoter' + count).attr('readonly', true);
-                $('#vvoter' + count).text('Verified');
-                $('#vvoter' + count).css('pointer-events', 'none');
-                $('#vvoterVeriView' + count).show();
-                $('#v3successpanverify' + count).show();
-                $('#v3failurepanverify' + count).hide();
-                $("#submit").attr("disabled", false);
-                } else{
-                $('#vvoter' + count).text('Verify');
-                $('#v3successpanverify' + count).hide();
-                $('#v3failurepanverify' + count).show();
-                /// $("#submit").attr("disabled", true);
-                }
-
-
-                }
-        });
-        });
-        /////////////////Karja Api Passport Card/////////////////////////////////////
-
-
-        $(document).on('click', '.veripass', function ()  {
-        var count = $(this).attr('data-id');
-        var voterId = $("#verifypassport" + count).val();
-        var bizId = $('input[name=biz_id]').val();
-        var app_id = $('#app_id').val();
-        var ownerid = $('#ownerid' + count).val();
-        if (ownerid)
-        {
-        var ownerid = ownerid;
-        }
-        else
-        {
-        var ownerid = 0;
-        }
-        var file = $("#verifypassport" + count).val();
-        var dob = $("#date_of_birth" + count).val();
-        var dataStore = {'fileNo': file, 'dob':dob, '_token': messages.token, 'biz_id':bizId, 'ownerid':ownerid, 'app_id':app_id};
-        //var dataStore = {'fileNo': 'BO3072344560818','dob':'17/08/1987','_token': messages.token };
-        var postData = dataStore;
-        $('#ppassport' + count).text('Waiting...');
-        jQuery.ajax({
-
-        url: messages.chk_user_passport_karza,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                $('#ppassport' + count).text('Verify');
-                },
-                success: function (data) {
-                if (data['status'] == 1)
-                {
-
-                $('#verifypassport' + count).attr('readonly', true);
-                $('#ppassport' + count).text('Verified');
-                $('#ppassport' + count).css('pointer-events', 'none');
-                $('#ppassportVeriView' + count).css('display', 'inline');
-                $('#v4successpanverify' + count).show();
-                $('#v4failurepanverify' + count).hide();
-                $("#submit").attr("disabled", false);
-                } else{
-                $('#ppassport' + count).text('Verify');
-                $('#v4successpanverify' + count).hide();
-                $('#v4failurepanverify' + count).show();
-                ///$("#submit").attr("disabled", true);
-                }
-
-
-                }
-        });
-        });
-        $(document).on('click', '.viewDocument', function(){
-        var data_id = $(this).data('id');
-        var data_type = $(this).data('type');
-        var ownerid = $("#ownerid" + data_id).val();
-        var postData = ({'ownerid':ownerid, 'type':data_type});
-        if (data_type == 3) { if ($("#ppan" + data_id).html() == 'Verify')  {  $("#v1failurepanverify" + data_id).show(); return false; }   }
-        else if (data_type == 5) { if ($("#ddriving" + data_id).html() == 'Verify')  {  $("#v2failurepanverify" + data_id).show(); return false; }  }
-        else if (data_type == 4) { if ($("#vvoter" + data_id).html() == 'Verify')  {  $("#v3failurepanverify" + data_id).show(); return false; }  }
-        else if (data_type == 6) { if ($("#ppassport" + data_id).html() == 'Verify')  {  $("#v4failurepanverify" + data_id).show(); return false; }  }
-
-
-        jQuery.ajax({
-        url: messages.get_user_pan_response_karza,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                },
-                success: function (data)
-                {
-                if (data_type == 3) { var firstVerify = 'View PAN Card Detail'; var showalert = 'PAN Card Detail'; }
-                if (data_type == 5) { var firstVerify = 'View Driving License Detail'; var showalert = 'Driving License Detail'; }
-                if (data_type == 4) { var firstVerify = 'View Voter ID  Detail'; var showalert = 'Voter ID Detail'; }
-                if (data_type == 6) { var firstVerify = 'View Passport Detail'; var showalert = 'Passport Detail'; }
-                //else { var firstVerify  = 'Something went wrong!'; }
-                if (data.status == 1)
-                {
-                $('#myModal' + data_id).modal('show');
-                $("#getBizApiRes" + data_id).html(data.res);
-                $("#dynamicTitle" + data_id).html(firstVerify);
-                }
-                else if (data.status == 2)
-                {
-                alert('Verification not found due to some stuck response from Api');
-               }
-                else
-                {
-                alert('Please verify ' + showalert);
-                }
-
-                }
-        });
-        });
-        
-    </script>
-    <style>
-        .error{ 
-            color:red;
-        }
-    </style>
-    <script src="{{ url('backend/js/promoter.js') }}"></script>
-    <script type="text/javascript">
-       appurl = '{{URL::route("verify_mobile") }}';
-       otpSend = '{{URL::route("sent_otp_mobile") }}';
-       otpurl = '{{URL::route("verify_otp_mobile") }}';
-       _token = "{{ csrf_token() }}";
-       appId = "{{ $appId }}";</script>
-    <script>
-        
-          //////////////////////for otp verified///////////////////
-          
-        $(document).on('click', '.verify_otp', function () { 
-        var count    = $(this).attr('data-id');
-        var  mobile_no  =  $("#mobile_no"+count).val();
-        var biz_owner_id    = $("#ownerid"+count).val();
-        var appId   =  $("#app_id").val();
-        var otp =  $("#verify_otp_no"+count).val();
-        if(otp=='')
-        {
-            $("#v6failurepanverify"+count).html('<i>Please enter OTP</i>');
-            return false;
-        }
-        $("#v5failurepanverify"+count).html(''); 
-        data = {_token, otp,request_id, appId, biz_owner_id};
-        $.ajax({
-                url  : otpurl,
-                type :'POST',
-                data : data,
-                beforeSend: function() {
-                $(".isloader").show();
-                },
-                dataType : 'json',
-                success:function(result) {
-                   $(".isloader").css('display', 'none');
-                  if(result.status==1) {
-                     $("#verify_mobile_otp_no"+count).hide();
-                     $("#toggleOtp"+count).hide();
-                     $("#pOtpVeriView"+count).show();
-                   }
-                   else
-                   {
-                        $("#v6failurepanverify"+count).html('<i>Not Verified</i>');      
-                   }
-                },
-                error:function(error) {
-                    var html = '<i>Please enter correct OTP</i>';
-                    $("#v6failurepanverify"+count).html(html);
-                      },
-                complete: function() {
-                $(".isloader").hide();
-                },
-        })
-        });
-        
-        
-        ////////////////////send opt on mobile/////////////////
-        
-        $(document).on('click', '.sen_otp_to_mobile', function () {
-        var count  = $(this).attr('data-id');  
-        var biz_owner_id    = $("#ownerid"+count).val();
-        var appId   =  $("#app_id").val();
-        var  mobile_no  =  $("#mobile_no"+count).val();
-        if (mobile_no=='') {
-            $("#v5failurepanverify"+count).html('<i>Please enter correct mobile no.</i>');
-              return false;
-        }
-        else if(mobile_no.length < 10)
-        {
-             $("#v5failurepanverify"+count).html('<i> Enter 10 digit mobile no.</i>');
-              return false;
-        }
-        data = {_token, mobile_no, appId, biz_owner_id};
-        $.ajax({
-        url  : otpSend,
-                type :'POST',
-                data : data,
-                beforeSend: function() {
-                $(".isloader").show();
-                },
-                dataType : 'json',
-                success:function(result) {
-                   if(result.status==1)
-                   {
-                    $("#v5failurepanverify"+count).html('<i>'+result.message+'</i>');
-                    request_id = result.request_id;
-                    $("#toggleOtp"+count).show();
-                    $("#verify_mobile_otp_no"+count).html("Resend OTP");
-                }
-                else
-                {
-                    $("#v5failurepanverify"+count).html('<i>Please enter correct mobile no.</i>');
-                    
-                 } 
-                },
-                error:function(error) {
-                var html = '<i>Please enter correct mobile no</i>';
-                $("#v6failurepanverify"+count).html(html);
-               },
-                complete: function() {
-                    $(".isloader").hide();
-                },
-        })
-        });
+ $(document).ready(function () {
+      //////////// comma seprate value in amount   //////////////////////// 
       
-       //////////////////////for mobile verified///////////////////
+        document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+        event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+      ///  $("#program_id").append("<option value=''>No data found</option>");  
+        $("#supplier_id").append("<option value=''>No data found</option>");                         
+  /////// jquery validate on submit button/////////////////////
+  $('#submit').on('click', function (e) {
+        $("#tenorMsg").text('');
+        var first  = $('#invoice_due_date').val();
+        var second = $('#invoice_date').val();
+        var getDays  = findDaysWithDate(first,second);
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //As January is 0.
+        var yyyy = today.getFullYear();
+        var cDate  = dd+"/"+mm+"/"+yyyy;
+        var getOldDays  = findDaysWithDate(cDate,second);
+        var tenor  = $('#tenor').val();
+        var tenor_old_invoice  = $('#tenor_old_invoice').val();
+     if ($('form#signupForm').validate().form()) {  
+       $("#anchor_id" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter Anchor name",
+        }
+        });
        
-        $(document).on('click', '.verify_mobile_no', function () {
-        var count  = $(this).attr('data-id');  
-        var appId   =  $("#app_id").val();
-        var  biz_owner_id    = $("#ownerid"+count).val();
-        var  mobile_no  =  $("#mobile_no"+count).val();
-         if (mobile_no=='') {
-            $("#v5failurepanverify"+count).html('<i>Please enter mobile no.</i>');
-              return false;
+      $("#supplier_id" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please Select Supplier Name",
         }
-        else if(mobile_no.length < 10)
+        });
+          $("#program_id" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please Select Product Program Name",
+        }
+        });
+        $("#invoice_no" ).rules( "add", {
+        required: true,
+        maxlength: 20,
+        messages: {
+        required: "Please enter Invoice No",
+        maxlength: "Maximum 20  characters are necessary",
+        }
+        });
+        
+        $("#invoice_due_date" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter Invoice Due Date",
+        }
+        }); 
+        $("#invoice_date" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter Invoice Date",
+        }
+        }); 
+        
+        $("#invoice_approve_amount" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter Invoice Approve Amount",
+        }
+        }); 
+        $("#customFile" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please upload Invoice Copy",
+        }
+        }); 
+         if(getDays > tenor)
         {
-             $("#v5failurepanverify"+count).html('<i> Enter 10 digit mobile no.</i>');
-              return false;
+           $("#tenorMsg").show(); 
+           $("#tenorMsg").html('Invoice date & invoice due date difference should not be more than '+tenor+' days'); 
+           e.preventDefault();
         }
-         $("#v5failurepanverify"+count).hide();
-         $("#v5successpanverify"+count).hide();
-        data = {_token, mobile_no, appId, biz_owner_id};
-        $.ajax({
-        url  : appurl,
-                type :'POST',
-                data : data,
-                beforeSend: function() {
-                $(".isloader").show();
+       else if(getOldDays > tenor_old_invoice)
+        {
+          // $("#tenorMsg").show(); 
+          // $("#tenorMsg").html('Invoice date & current date difference should not be more than '+tenor_old_invoice+' days.'); 
+          /// e.preventDefault();
+          $("#exception").val(28);
+        }
+         
+        } else {
+        /// alert();
+        }  
+     });         
+  });  
+  
+  ////////////// get due date depend on tenor date ///////////
+   $(document).on('keyup change','.getInvoiceD',function(){
+        var date = $(this).val(); 
+        if($("#program_id").val()!='' && date!='')
+      {
+       
+        var date = ChangeDateFormat(date);
+        var oldDate = new Date(date);
+        var days  = parseInt($('#tenor').val());
+        var nextday =new Date(oldDate.getFullYear(),oldDate.getMonth(),oldDate.getDate()+days);
+        var dueDate  = (nextday.getDate()+'/'+(nextday.getMonth()+1)+'/'+nextday.getFullYear());
+        $("#invoice_due_date").val(dueDate);
+    }
+   });
+  //////////////////// onchange anchor  id get data /////////////////
+ 
+  $(document).on('change','.changeAnchor',function(){
+      
+      var anchor_id =  $("#anchor_id").val(); 
+      if(anchor_id=='')
+      {
+            $("#pro_limit").empty();
+             $("#pro_limit_hide").empty();
+      }
+      $("#program_id").empty();
+      $("#anc_limit").empty();
+      var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.front_program_list,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
                 },
-                dataType : 'json',
-                success:function(result) {
-                    $(".isloader").hide();
-                    var html = result['message'];
-                 
-                    if (result.status==1) {
-                        $(this).hide();
-                        $("#v5successpanverify"+count).show();
-                        $("#v5successpanverify"+count).html('<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>'); 
-                        $("#verify_mobile_no"+count).text('Verified');
-                        $("#mobile_no"+count).attr('readonly','readonly');
-                        $("#verify_mobile_no"+count).hide();
-                         request_id = result.request_id;
-                        $("#verify_mobile_otp_no"+count).css('pointer-events','auto');
-                        $("#pMobileVeriView"+count).show();
+                success: function (data) {
+                    if(data.status==1)
+                    {
+                        var obj1  = data.get_program;
+                        var obj2   =  data.limit;
+                        $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
+                           $("#program_id").append("<option value=''>Please Select</option>");  
+                            $(obj1).each(function(i,v){
+                             if(v.program!=null)
+                             {                                 
+                                   $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
+                              }                   
+                             });
+                           
+                        
+                       
                     }
                     else
                     {
-                         $("#v5failurepanverify"+count).show();
-                         var html = '<i>Please enter correct mobile no.</i>';
-                         $("#v5failurepanverify"+count).html(html);
+                       
+                               $("#program_id").append("<option value=''>No data found</option>");  
+                           
+                      
                     }
+                  
+                }
+        }); }); 
+   
+    //////// String value not allowed in  amount filed//////////////////////
+ $(document).on('keypress','#invoice_approve_amount',function(event){       
+  if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+    event.preventDefault();
+  }
+});
+  //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('change','.changeSupplier',function(){
+      $("#invoice_date").val('');
+      var program_id =  $(this).val(); 
+      var anchor_id =  $("#anchor_id").val(); 
+      if(program_id=='')
+      {
+          return false; 
+      }
+      $("#supplier_id").empty();
+      $("#pro_limit").empty();
+      $("#pro_limit_hide").empty();
+      var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.front_supplier_list,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
                 },
-                error:function(error) {
-                $("#v5failurepanverify"+count).show();
-                var html = '<i>Please enter correct mobile no.</i>';
-                $("#v5failurepanverify"+count).html(html);
-             },
-                complete: function() {
-                    $(".isloader").hide();
+                success: function (data) {
+                    if(data.status==1)
+                    {
+                         if(data.uploadAcess==0)
+                        {
+                            $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
+                            $("#ApprovePro").hide();
+                            
+                        }
+                        else
+                        {
+                             $("#ApprovePro").show();
+                             $("#tenorMsg").text(" ");           
+                           
+                            
+                        }
+                        var obj1  = data.get_supplier;
+                        var obj2   =  data.limit;
+                        var offer_id   =  data.offer_id;
+                        var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
+                        $("#prgm_offer_id").val(offer_id);
+                     ///   $("#tenor_old_invoice").val(tenor_old_invoice);
+                     ///   $("#tenor").val(tenor);
+                     ///   $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
+                     ////   $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
+                        $("#supplier_id").empty();
+                        $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
+                        $(obj1).each(function(i,v){
+                                 var dApp = v.appCode;
+                                 //$("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" ("+ dApp +")</option>");
+                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.biz_entity_name+"&nbsp;&nbsp;("+v.customer_id+")</option>");  
+                            });
+                       
+                    }
+                    else
+                    {
+                        
+                               $("#supplier_id").append("<option value=''>No data found</option>");  
+                      
+                    }
+                  
+                }
+        }); }); 
+   
+  //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('change','.getTenor',function(){
+      var program_id =  $("#program_id").val(); 
+      var anchor_id =  $("#anchor_id").val(); 
+      var supplier_id  = $(this).val();
+       $("#invoice_date, #invoice_due_date, #invoice_approve_amount").val(''); 
+      if(supplier_id=='')
+      {
+          return false; 
+      }
+     var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_tenor,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
                 },
-        })
-        });
-        $(document).on('click', '#modalMobile .close', function() {
-        $('#modalMobile').hide();
-        });
-        
-        $(document).on('click', '#modalOtp .close', function() {
-        $('#modalOtp').hide();
-        });
-        
-        
-        
-        $(document).on('keypress', '.share_per', function(e){
-        $char = e.keyCode || e.which;
-      
-        if (($char < 48 && $char!=46) || $char > 57) {
-            return false;
-        }
-            return true;
-        })
-        
-        $(document).on('keypress', '.networth', function(e){
-        $char = e.keyCode || e.which;
-        if ($char < 48 || $char > 57) {
-            return false;
-        }
-           var id   =  $(this).attr('id');
-           document.getElementById(id).addEventListener('input', event =>
-           event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
-           return true;
-        })
-        
-        
-          $(document).on('keypress', '.mobileveri', function(e){
-        $char = e.keyCode || e.which;
-        if ($char < 48 || $char > 57) {
-            return false;
-        }
-            return true;
-        })
+                success: function (data) {
+                        var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
+                        $("#tenor_old_invoice").val(tenor_old_invoice);
+                        $("#tenor").val(tenor);
+                        $("#pro_limit").html('Program Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_remain_limit").html('Remaining Program Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit_hide").val(data.remain_limit);  
+                      
+                }
+        }); }); 
+    
+  $(document).on('change','#supplier_id',function(){
+    var selValue = $(this).val();
+    var selValueArr = selValue.split(",");
+    $("#prgm_offer_id").val(selValueArr[2]);       
+  });   
     </script>
+   <script src="{{ asset('backend/js/promoter.js') }}"></script>      
     @endsection
