@@ -105,10 +105,10 @@
                            <td class="" tabindex="0" rowspan="1" colspan="1" width="12%">Name of Bank/NBFC</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Fund based Facility</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
-                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-8" value="{{$debtPosition->fund_date ?? '' }}" name="fund_date" id="fund_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->fund_date ?? '' }}" name="fund_date" id="fund_date" placeholder="Date"> (Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Non-fund based Facility</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
-                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-8" value="{{$debtPosition->nonfund_date ?? '' }}" name="nonfund_date" id="nonfund_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->nonfund_date ?? '' }}" name="nonfund_date" id="nonfund_date" placeholder="Date"> (Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
                         </tr>  
 
