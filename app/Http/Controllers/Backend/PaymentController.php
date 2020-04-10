@@ -40,7 +40,8 @@ class PaymentController extends Controller {
         $this->userRepo = $user_repo;
         $this->appRepo = $appRepo;
         $this->finRepo = $finRepo;
-        $this->middleware('auth');
+        //$this->middleware('auth');
+        $this->middleware('checkBackendLeadAccess');
     }
 
    
@@ -88,6 +89,11 @@ class PaymentController extends Controller {
     /* save payment details   */
     public function  savePayment(Request $request)
     {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        
         $validatedData = $request->validate([
                'payment_type' => Rule::requiredIf(function () use ($request) {
                     return ($request->action_type == 1)?true:false;

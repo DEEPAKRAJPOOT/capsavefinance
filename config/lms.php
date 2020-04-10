@@ -81,5 +81,9 @@ return [
         '6' => ['SYSTEM' => 'Refund Queue', 'USER' => 'Refund Queue'],
         '7' => ['SYSTEM' => 'Sent to Bank', 'USER' => 'Sent to Bank'],
         '8' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
-    ],    
+    ],
+    'EOD_BATCH_PROCESS_STATUS' => [
+        'EOD_TRANS_MARKED' => 1,
+        'NO_BAL_MATCHED' => 2
+    ]
 ];

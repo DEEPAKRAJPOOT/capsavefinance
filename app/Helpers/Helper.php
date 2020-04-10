@@ -1254,5 +1254,17 @@ class Helper extends PaypalHelper
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');    
         $offerData = $appRepo->getPrgmLimitByAppId($appId);
         return $offerData && isset($offerData->offer);
-    }    
+    }  
+    
+    
+    public static function checkEodBatchProcess()
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $whereCond=[];
+        $whereCond['end_datetime'] = \Carbon\Carbon::now()->toDateString();
+        $eodBatchProcess = $lmsRepo->getEodBatchProcess($whereCond);        
+        if (!$eodBatchProcess) return false;
+        return $eodBatchProcess && in_array($eodBatchProcess->status, config('lms.EOD_BATCH_PROCESS_STATUS'));
+    }  
+    
 }

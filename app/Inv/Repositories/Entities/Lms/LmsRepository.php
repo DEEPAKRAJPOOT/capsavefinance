@@ -38,6 +38,7 @@ use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
 use App\Inv\Repositories\Models\Lms\RefundBatch;
 use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Lms\EodBatchProcess;
 
 /**
  * Lms Repository class
@@ -956,5 +957,28 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
         return RefundBatch::create($disburseBatch);
-    }        
+    }
+    
+    /**
+     * Save Eod Batch Process Data
+     * 
+     * @param array $data
+     * @param integer $eodBatchProcessId
+     * @return mixed
+     */
+    public function saveEodBatchProcess($data, $eodBatchProcessId=null)
+    {
+        return EodBatchProcess::saveEodBatchProcess($data, $eodBatchProcessId);
+    }
+    
+    /**
+     * Get Eod Batch Process Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getEodBatchProcess($whereCond=[])
+    {
+        return EodBatchProcess::getEodBatchProcess($whereCond);
+    }
 }

@@ -43,8 +43,8 @@ class InvoiceController extends Controller {
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->application  =  $application;
-        $this->middleware('auth');
-        //$this->middleware('checkBackendLeadAccess');
+        //$this->middleware('auth');
+        $this->middleware('checkBackendLeadAccess');
     }
 
     /* Invoice upload page  */
@@ -333,7 +333,12 @@ class InvoiceController extends Controller {
 
     /*   save invoice */
 
-    public function saveInvoice(Request $request) {
+    public function saveInvoice(Request $request) {        
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        dd('I am here');
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
         $attributes['supplier_id'] = $explode[0];
