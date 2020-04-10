@@ -16,7 +16,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DashboardController@index'
             ]);
         });
-        
+
         Route::group(['prefix' => 'application'], function () {
             Route::get('/', [
                 'as' => 'application_list',
@@ -1262,12 +1262,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
         });   
         
-          Route::group(['prefix' => 'payment'], function () {
-               Route::get('payment_list', [
+        Route::group(['prefix' => 'payment'], function () {
+            Route::get('payment_list', [
                  'as' => 'payment_list',
                 'uses' => 'Backend\PaymentController@paymentList'
+            ]);
+
+            Route::get('unsettled_payments', [
+                 'as' => 'unsettled_payments',
+                'uses' => 'Backend\PaymentController@unsettledPayment'
             ]); 
-             Route::get('excel_payment_list', [
+            
+            Route::get('excel_payment_list', [
                  'as' => 'excel_payment_list',
                 'uses' => 'Backend\PaymentController@excelPaymentList'
             ]);   
