@@ -10,9 +10,14 @@ use Helpers;
 use PHPExcel; 
 use PHPExcel_IOFactory;
 use Illuminate\Support\Facades\Validator;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 
 class ApportionmentController extends Controller
 {
+
+    public function __construct(InvLmsRepoInterface $lms_repo ){
+		$this->lmsRepo = $lms_repo;
+	}
     /**
      * View Unsettled Transactions of User
      * @param Request $request
@@ -73,7 +78,7 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getUnsettledTrans($userId){
-
+        $this->lmsRepo->getTransactions();
     }
 
     /**

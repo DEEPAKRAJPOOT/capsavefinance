@@ -68,43 +68,41 @@ class Transactions extends BaseModel {
         'created_by'
     ];
 
-    
+    public function payment(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Payment','payment_id','payment_id');
+    } 
 
+    public function invoiceDisbursed(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiveDisbursed','invoice_disbursed_id','invoice_disbursed_id');
+    }
+        
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
     
-    public function disburse()
-    {
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal','disbursal_id','disbursal_id');
-    }      
-    
-    public function trans_detail()
-    {
+    public function transType(){
        return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
     }   
-
-    public function user(){
-        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+  
+    public function refundTransaction(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
     }
 
-    
-    /** 
-       * @Author: Rent Alpha
-       * @Date: 2020-02-20 10:53:40 
-       * @Desc:  function for get user details from lms user table using user id 
-       */      
-      public function lmsUser()
-      {
-         return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
-      }
-  
-  
-      public function refundTransaction()
-      {
-         return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
-      }
-
-      public function biz(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
+    public function getOutstandingAttribute(){
+        $settledAmt = self::where('parent_trans_id','=',$this->trans_id)->sum('amount');
+        return $this->amount-$settledAmt;
     }
+
+    public function getTransNameAttribute(){
+        if($this->entry_type == 0){
+            return $this->trans_detail->debit_desc;
+        }elseif($this->entry_type == 1){
+            return $this->trans_detail->credit_desc;
+        }
+    }
+
+
+
 
 
     /**
@@ -121,10 +119,10 @@ class Transactions extends BaseModel {
         }
         
         if (!isset($transactions['created_at'])) {
-            $transactions['created_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+            $transactions['created_at'] = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
         }
         if (!isset($transactions['created_by'])) {
-            $transactions['created_at'] = \Auth::user()->user_id;
+            $transactions['created_by'] = \Auth::user()->user_id;
         }        
         
         if (!empty($whereCondition)) {
@@ -136,9 +134,6 @@ class Transactions extends BaseModel {
         }
     }
 
-
-    
-    
     /**
      * Get Transactions
      *      
@@ -161,8 +156,14 @@ class Transactions extends BaseModel {
         $result = $query->get();
         return $result;
     }
+
     
-    
+
+
+
+
+
+
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)
     {
@@ -249,33 +250,7 @@ class Transactions extends BaseModel {
         return self::where($whereCondition)->update($data);
     }
 
-    /**
-    * Get Transaction Type and Charge Name 
-    */
-    public function getTransNameAttribute(){
-        if($this->trans_detail->chrg_master_id!='0'){
-            if($this->is_waveoff == 1){
-                return $this->trans_detail->charge->chrg_name.' Waved Off';
-            }elseif($this->is_tds == 1){
-                return $this->trans_detail->charge->chrg_name.' TDS';
-            }elseif($this->entry_type == 0){
-                return $this->trans_detail->charge->debit_desc;
-            }elseif($this->entry_type == 1){
-                return $this->trans_detail->charge->credit_desc;
-            }
-        }else{
-            if($this->is_waveoff == 1){
-                return $this->trans_detail->trans_name.' Waved Off';
-            }
-            if($this->is_tds == 1){
-                return $this->trans_detail->trans_name.' TDS';
-            }elseif($this->entry_type == 0){
-                return $this->trans_detail->debit_desc;
-            }elseif($this->entry_type == 1){
-                return $this->trans_detail->credit_desc;
-            }
-        }
-    }
+
 
     public function getOppTransNameAttribute(){
         if($this->trans_detail->chrg_master_id!='0'){
