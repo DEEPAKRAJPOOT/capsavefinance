@@ -38,7 +38,7 @@
                   </div>
                   <div class="col-md-6 text-right">
                       <label>&nbsp;</label><br>
-                      <button type="button" id="move_to_settle" class="btn btn-success btn-sm move_to_settle">Move to Settle</button>
+                      <!-- <button type="button" id="move_to_settle" class="btn btn-success btn-sm move_to_settle">Move to Settle</button> -->
                   </div>
                 </div>
                 <div class="row">
