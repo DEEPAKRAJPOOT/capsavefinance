@@ -313,13 +313,7 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListApprove'
         ]
     );
-         Route::post(
-        'frontend_get_invoice_list_approve',
-        [
-        'as' => 'frontend_get_invoice_list_approve',
-        'uses' => 'AjaxController@getFrontendInvoiceListApprove'
-        ]
-    );
+        
        Route::post(
         'backend_get_ep_list_approve',
         [
