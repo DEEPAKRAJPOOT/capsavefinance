@@ -115,20 +115,20 @@
        $("#anchor_id" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please enter Anchor name",
+        required: "Please enter anchor name",
         }
         });
        
       $("#supplier_id" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please Select Supplier Name",
+        required: "Please select supplier name",
         }
         });
           $("#program_id" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please Select Product Program Name",
+        required: "Please select product program name",
         }
         });
         $("#invoice_no" ).rules( "add", {
@@ -143,26 +143,32 @@
         $("#invoice_due_date" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please enter Invoice Due Date",
+        required: "Please enter invoice due date",
         }
         }); 
         $("#invoice_date" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please enter Invoice Date",
+        required: "Please enter invoice date",
         }
         }); 
         
         $("#invoice_approve_amount" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please enter Invoice Approve Amount",
+        required: "Please enter invoice approve amount",
         }
         }); 
         $("#customFile" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please upload Invoice Copy",
+        required: "Please upload invoice copy",
+        }
+        }); 
+         $("#remark" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter remark",
         }
         }); 
          if(getDays > tenor)

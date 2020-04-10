@@ -3606,7 +3606,9 @@ if ($err) {
  
     function uploadInvoice(Request $request) {
       
-       $extension = $request['doc_file']->getClientOriginalExtension();
+        dd($request);
+        
+       /*$extension = $request['doc_file']->getClientOriginalExtension();
        if($extension!="csv" || $extension!="csv")
        {
             return response()->json(['status' => 2]); 
@@ -3731,6 +3733,8 @@ if ($err) {
                   else {
                         return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
                     }
+         
+        */
      }
     function twoDateDiff($fdate,$tdate)
     {

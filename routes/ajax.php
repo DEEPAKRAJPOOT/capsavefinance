@@ -829,7 +829,8 @@ Route::group(
     Route::POST('check_duplicate_invoice', [
         'as' => 'check_duplicate_invoice',
         'uses' => 'AjaxController@checkDuplicateInvoice'
-    ]);            
+    ]);    
+  
     Route::POST('upload_invoice_csv', [
         'as' => 'upload_invoice_csv',
         'uses' => 'AjaxController@uploadInvoice'

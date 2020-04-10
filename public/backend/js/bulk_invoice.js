@@ -1,9 +1,18 @@
  ///* upload image and get ,name  */
-    $('input[type="file"]').change(function (e) {
+    $('input[name="file_id"]').change(function (e) {
         $("#customFile_msg").html('');
         var fileName = e.target.files[0].name;
         $("#msgFile").html('The file "' + fileName + '" has been selected.');
     });
+    
+    ///* upload image and get ,name  */
+    $('input[name="file_image_id"]').change(function (e) {
+        $("#customImageFile_msg").html('');
+        var fileName = e.target.files[0].name;
+        $("#msgImageFile").html('The file "' + fileName + '" has been selected.');
+    });
+    
+    
     $(document).ready(function () {
         $(".finalButton").hide();
         $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
@@ -354,32 +363,27 @@
             $("#anchor_bulk_id_msg").text('Please Select Anchor Name');
             return false;
         }
-        if ($("#program_bulk_id").val() == '')
+       else if ($("#program_bulk_id").val() == '')
         {
             $("#program_bulk_id_msg").show();
             $("#program_bulk_id_msg").text("Please Select Product Program Name");
             return false;
         }
-        if ($("#supplier_bulk_id").val() == '')
+       else if ($("#customImageFile").val() == '')
         {
-            $("#supplier_bulk_id_msg").show();
-            $("#supplier_bulk_id_msg").text("Please Select Supplier Name");
+            $("#customImageFile_msg").show();
+            $("#customImageFile_msg").text("Please Select Invoice Copy Zip File");
             return false;
         }
-        if ($("#pay_calculation_on").val() == '')
-        {
-            $("#pay_calculation_on_msg").show();
-            $("#pay_calculation_on_msg").text("Please Select Payment Calculation");
-            return false;
-        }
-        if ($("#customFile").val() == '')
+      else   if ($("#customFile").val() == '')
         {
             $("#customFile_msg").show();
             $("#customFile_msg").text("Please Select Csv file");
             return false;
         } else
         {
-            if (confirm("Are you sure? You want to upload CSV")) {
+            return true;
+           /* if (confirm("Are you sure? You want to upload CSV")) {
                 $(".invoiceAppendData").empty();
                 var file = $("#customFile")[0].files[0];
                 var datafile = new FormData();
@@ -470,7 +474,7 @@
             } else
             {
                 return false;
-            }
+            }  */
         }
     });
 
