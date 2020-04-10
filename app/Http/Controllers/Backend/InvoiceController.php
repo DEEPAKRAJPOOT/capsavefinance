@@ -303,6 +303,10 @@ class InvoiceController extends Controller {
     /* save bulk invoice */
 
     public function saveBulkInvoice(Request $request) {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
         $attributes = $request->all();
         $res = $this->invRepo->saveBulk($attributes);
         if ($res) {
