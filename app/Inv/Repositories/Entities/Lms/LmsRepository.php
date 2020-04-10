@@ -956,5 +956,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
         return RefundBatch::create($disburseBatch);
-    }        
+	} 
+	
+	
+
+
+	public static function getListUnsettledTrans(){
+		
+	}
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
@@ -44,68 +45,38 @@ class Transactions extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'payment_id',
         'parent_trans_id',
-        'invoice_disbursed_id',
+        'repay_trans_id',
+        'gl_flag',
+        'soa_flag',
         'user_id',
+        'biz_id',
+        'chrg_trans_id',
+        'virtual_acc_id',
+        'disbursal_id',
         'trans_date',
         'trans_type',
+        'trans_by',
+        'pay_from',
         'amount',
-        'entry_type',
+        'settled_amount',
         'gst',
         'cgst',
         'sgst',
         'igst',
+        'entry_type',
+        'tds_cert',
+        'is_tds',
+        'is_waveoff',
         'tds_per',
-        'gl_flag',
-        'soa_flag',
-        'trans_by',
-        'pay_from',
-        'is_settled',
-        'is_posted_in_tally',
+        'mode_of_pay',
         'comment',
+        'utr_no',
+        'cheque_no',
+        'txn_id',        
         'created_at',
-        'created_by'
+        'created_by',
     ];
-
-    
-
-    
-    public function disburse()
-    {
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal','disbursal_id','disbursal_id');
-    }      
-    
-    public function trans_detail()
-    {
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
-    }   
-
-    public function user(){
-        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
-    }
-
-    
-    /** 
-       * @Author: Rent Alpha
-       * @Date: 2020-02-20 10:53:40 
-       * @Desc:  function for get user details from lms user table using user id 
-       */      
-      public function lmsUser()
-      {
-         return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
-      }
-  
-  
-      public function refundTransaction()
-      {
-         return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
-      }
-
-      public function biz(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
-    }
-
 
     /**
      * Save Transactions
@@ -183,6 +154,19 @@ class Transactions extends BaseModel {
           return self::with(['biz','disburse','trans_detail','user'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
     }
     
+    public function disburse()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal','disbursal_id','disbursal_id');
+    }      
+    
+    public function trans_detail()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
+    }   
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
 
     public static function get_balance($trans_code,$user_id){
 
@@ -247,6 +231,22 @@ class Transactions extends BaseModel {
     public static function updateTransaction($whereCondition, $data)
     {
         return self::where($whereCondition)->update($data);
+    }
+
+    /** 
+       * @Author: Rent Alpha
+       * @Date: 2020-02-20 10:53:40 
+       * @Desc:  function for get user details from lms user table using user id 
+       */      
+    public function lmsUser()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
+    }
+
+
+    public function refundTransaction()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
     }
 
     /**
@@ -404,7 +404,10 @@ class Transactions extends BaseModel {
         return $repaymentAmount;
     }
 
-    
+    public function biz(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
+    }
+
     public static function getAllChargesApplied(array $where = array()) {
         $cond = '';
         if (!empty($where)) {
