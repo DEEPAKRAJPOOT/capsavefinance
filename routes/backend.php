@@ -16,7 +16,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DashboardController@index'
             ]);
         });
-
+        
         Route::group(['prefix' => 'application'], function () {
             Route::get('/', [
                 'as' => 'application_list',
