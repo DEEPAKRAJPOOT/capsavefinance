@@ -630,7 +630,7 @@ $finFlag = false;
                @foreach($positiveRiskCmntArr as $postkey =>$postval)         
                   <tbody>
                      <tr>
-                        <td width="50%"><strong>{{$postval['cond']}}</strong></td>
+                        <td width="50%">{{$postval['cond']}}</td>
                         <td width="50%">{{$postval['timeline']}}</td>
                      </tr>                     
                   </tbody>       
@@ -649,7 +649,7 @@ $finFlag = false;
                @foreach($negativeRiskCmntArr as $postkey =>$postval)
                   <tbody>
                      <tr>
-                        <td width="50%"><strong>{{$postval['cond']}}</strong></td>
+                        <td width="50%">{{$postval['cond']}}</td>
                         <td width="50%">{{$postval['timeline']}}</td>
                      </tr>                     
                   </tbody>               

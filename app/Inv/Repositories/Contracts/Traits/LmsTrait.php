@@ -796,12 +796,21 @@ trait LmsTrait
         $transactions = RefundTransactions::getRefundTransactions($req_id);
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         foreach ($transactions as $key => $trans) {
-           $refundData = $this->createTransactionData($trans->user_id, [
-                'amount' => $trans->amount,
-                'trans_date'=>$curData,
-                'disbursal_id'=>$trans->disbursal_id,
-            ], null, $trans->trans_type, 0);
-            Transactions::saveTransaction($refundData);
+            if($trans->req_amount>0){
+                $refundData = $this->createTransactionData($trans->user_id, [
+                    'amount' => $trans->req_amount,
+                    'trans_date'=>$curData,
+                    'disbursal_id'=>$trans->disbursal_id,
+                    'soa_flag'=>1
+                ], null, $trans->trans_type, 0);
+                $trans_data =  Transactions::saveTransaction($refundData);
+                if($trans_data){
+                    $updateData = [
+                        'new_trans_id'=> $trans_data->trans_id
+                    ];
+                    RefundTransactions::saveRefundTransactionData($updateData,['refund_trans_id'=>$trans->refund_trans_id]);
+                }
+            }
         }
     }
 

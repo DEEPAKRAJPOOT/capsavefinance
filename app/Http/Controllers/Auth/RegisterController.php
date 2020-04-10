@@ -79,7 +79,6 @@ use RegistersUsers,
      */
     protected function create(array $data) {
 
-
         $arrData = [];
         $arrAnchUser=[];
         $arrDetailData = [];
@@ -198,7 +197,6 @@ use RegistersUsers,
     public function showRegistrationForm(Request $request) {
            try{
                 $anchortoken = $request->get('token');
-//                dd($anchortoken);
                 $userId = Session::has('userId') ? Session::get('userId') : 0;
                 $userArr = [];
                 $anchorDetail = [];
@@ -206,7 +204,6 @@ use RegistersUsers,
                     $userArr = $this->userRepo->find($userId);
                 }
                 $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
-//                dd($anchorLeadInfo);
                 if(isset($anchortoken) && $anchorLeadInfo){
                     $anchorDetail = $anchorLeadInfo;
                 }else{
@@ -242,7 +239,6 @@ use RegistersUsers,
      * @return \Illuminate\Http\Response
      */
     public function register(RegistrationFormRequest $request, StorageManagerInterface $storage) {
-//        dd($request);
 
         try {
             $data = [];
@@ -340,8 +336,7 @@ use RegistersUsers,
             $tokenarr['token'] = $token;
             $userArr = $this->userRepo->getUserByEmailforOtp($email);
         }
-
-
+    
         if (isset($userArr)) {
             /* if ($userId > 0) {
               $userArr = $this->userRepo->find($userId);

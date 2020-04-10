@@ -120,7 +120,11 @@ class FinanceController extends Controller {
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                 $entry_type = strtolower($fetchedArr['entry_type']);
                 $is_first_n_old = (empty($transType) || empty($transDate) || ($transType == $fetchedArr['trans_type'] && $transDate == $trans_date));
+                $j_is_first_or_old = NULL;
                 if (strtolower($fetchedArr['voucher_type']) == 'journal') {
+                    $jj = $fetchedArr;
+                    $j_is_first_or_old  = $is_first_n_old;
+                    // echo "------------$j_is_first_or_old------------<br>";
                     $j = [
                         "batch_no" => $fetchedArr['batch_no'],
                         "voucher_no" => $fetchedArr['voucher_code'],
@@ -132,31 +136,24 @@ class FinanceController extends Controller {
                         "dr_amount" => $fetchedArr['amount'],
                         "ref_no" => $fetchedArr['ref_no'],
                         "ref_amount" => $fetchedArr['amount'],
-                        "cr_ledger_name" => ($entry_type == 'credit' ? $fetchedArr['ledger_name'] : ''),
+                        "cr_ledger_name" => ($entry_type == 'credit' ? $fetchedArr['ledger_name'] : $fetchedArr['trans_type']),
                         "cr_amount" => ($entry_type == 'credit' ? $fetchedArr['amount'] : ''),
                         "cr_ref_no" => $fetchedArr['ref_no'],
                         "cr_ref_amount" => $fetchedArr['amount'],
-                        "narration" => $fetchedArr['narration'], 
-                    ]; 
+                        "narration" => "Being ".$fetchedArr['trans_type']." booked for ".$voucherDate ." " . $fetchedArr['batch_no'] 
+                    ];
                     if (!$is_first_n_old) {
                         if (!empty($journal[0])) {
                            $journal[0]['cr_amount'] = $cr_amount_sum;
                            if (strtolower($journal[0]['dr_/_cr']) == 'debit') {
                               $journal[0]['cr_ledger_name'] = $journal[0]['trans_type'];  
                            }
-                           unset($journal[0]['trans_type']);
-                           $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
-                           $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
-                        }else{
                            $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
                            $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
                         }
                        $journal = array();
                     }
                     $cr_amount_sum += ($entry_type == 'debit' ? $fetchedArr['amount'] : 0);
-                    if (!empty($journal)) {
-                     unset($j['trans_type']);
-                    }
                     $journal[] = $j; 
                 }else{
                      $company_row = [
@@ -180,7 +177,7 @@ class FinanceController extends Controller {
                             "remarks" => $fetchedArr['narration'],
                             "narration" => 'Bein payment towards invoice no ----',
                         ];
-                        $bank_row = [
+                    $bank_row = [
                             "voucher_no" => $fetchedArr['voucher_code'],
                             "voucher_type" => $fetchedArr['voucher_type'],
                             "voucher_date" => '',
@@ -201,8 +198,6 @@ class FinanceController extends Controller {
                             "remarks" => $fetchedArr['narration'],
                             "narration" => $fetchedArr['narration'],
                         ];
-
-
                     if ($entry_type == 'debit') {
                         $records['PAYMENT'][] = $company_row;
                         $bank_row['dr_/_cr'] = 'Credit';
@@ -212,31 +207,24 @@ class FinanceController extends Controller {
                         $bank_row['dr_/_cr'] = 'Dedit';
                         $records['PAYMENT'][] = $bank_row;
                     }
-                        /*$records['PAYMENT'][] = [
-                            "voucher_no" => $fetchedArr['voucher_code'],
-                            "voucher_type" => $fetchedArr['voucher_type'],
-                            "voucher_date" => $voucherDate,
-                            "ledger_name" => $fetchedArr['ledger_name'],
-                            "amount" => $fetchedArr['amount'],
-                            "dr_/_cr" => $fetchedArr['entry_type'],
-                            "reference_no" => $fetchedArr['ref_no'],
-                            "reference_amount" => $fetchedArr['ref_amount'],
-                            "transaction_type" => $fetchedArr['mode_of_pay'],
-                            "a_/_c_no" => $fetchedArr['acc_no'],
-                            "ifsc_code" => $fetchedArr['ifsc_code'],
-                            "bank_name" => $fetchedArr['bank_name'],
-                            "cheque_amount" => $fetchedArr['cheque_amount'],
-                            "cross_using" => $fetchedArr['cross_using'],
-                            "inst_no" => $fetchedArr['inst_no'],
-                            "inst_date" => $fetchedArr['inst_date'],
-                            "favoring_name" => $fetchedArr['favoring_name'],
-                            "remarks" => $fetchedArr['narration'],
-                            "narration" => $fetchedArr['narration'],
-                            "is_posted" => $fetchedArr['is_posted'],
-                        ];*/
                 }
                 $transType = $fetchedArr['trans_type'];
                 $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
+            }
+        }
+
+        if (!empty($journal[0])) {
+            if (isset($j_is_first_or_old) && $j_is_first_or_old) {
+               $journal[0]['cr_amount'] = $cr_amount_sum;
+               if (strtolower($journal[0]['dr_/_cr']) == 'debit') {
+                  $journal[0]['cr_ledger_name'] = $journal[0]['trans_type'];  
+               }
+               $cr_amount_sum = ($entry_type == 'credit' ? $fetchedArr['amount'] : 0); 
+               $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
+               $journal = array();
+            }else{
+                $journal[0]['cr_amount'] = $cr_amount_sum;
+                $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
             }
         }
         if (empty($records['PAYMENT'])) {
@@ -281,7 +269,10 @@ class FinanceController extends Controller {
                 "narration" => '' 
             ];
         }
-        $records['JOURNAL'] = array_merge($records['JOURNAL'],$journal);
+        foreach ($records['JOURNAL'] as $key => $value) {
+          unset($records['JOURNAL'][$key]['trans_type']);
+          unset($records['JOURNAL'][$key]['batch_no']);
+        }
         $toExportData = $records;
         $this->array_to_excel($toExportData, "execl.xlsx");
     }

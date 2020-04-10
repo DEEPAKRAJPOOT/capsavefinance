@@ -695,7 +695,6 @@ class LeadController extends Controller {
      */
     public function getCityList(Request $request)
     {
-        
         // $cities = DB::table("mst_city")
         //     ->where("state_id",$request->state_id)
         //     ->pluck("name");

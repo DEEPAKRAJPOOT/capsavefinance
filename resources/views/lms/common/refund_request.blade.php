@@ -77,6 +77,23 @@
 {!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
 {!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
 @endsection
+   
+@php 
+$operation_status = session()->get('operation_status', false);
+@endphp
+@if( $operation_status == config('common.YES')) 
+<script>
+try {
+    var p = window.parent;
+    p.jQuery('#disburseInvoice').modal('hide');
+    window.parent.location.reload();
+} catch (e) {
+    if (typeof console !== 'undefined') {
+        console.log(e);
+    }
+}
+</script>
+@endif
 
 @section('jscript')
 <script>

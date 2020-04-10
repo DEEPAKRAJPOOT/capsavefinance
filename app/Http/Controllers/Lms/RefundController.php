@@ -69,10 +69,9 @@ class RefundController extends Controller
         $disburseType = $request->get('disburse_type');
         $reqIds = $request->get('transaction_ids');
         if(empty($reqIds)) {
-            Session::flash('message', trans('backend_messages.noSelectedInvoice'));
+            Session::flash('message', trans('backend_messages.noSelectedCustomer'));
             Session::flash('operation_status', 1);
-            
-            return redirect()->route('request_list');
+            return view('lms.common.refund_request');
         }
         $record = array_filter(explode(",",$reqIds));
         $allrecords = array_unique($record);
@@ -83,7 +82,7 @@ class RefundController extends Controller
             ->with([
                 'data' => $data,
                 'transIds' => $reqIds 
-            ]);; 
+            ]); 
     }
 
     public function refundOffline(Request $request)
