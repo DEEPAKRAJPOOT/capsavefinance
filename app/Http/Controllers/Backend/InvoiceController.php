@@ -872,4 +872,9 @@ class InvoiceController extends Controller {
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
         $objWriter->save('php://output');
     }
+    
+    public function uploadBulkCsvInvoice(Request $request)
+    {
+       dd($request);  
+    }
 }

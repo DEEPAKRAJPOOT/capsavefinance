@@ -133,8 +133,8 @@
                                     </div>
 					<div class="col-md-8">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label"></span> </label>
-                                               <textarea class="form-control" name="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
+                                            <label for="txtCreditPeriod">Remarks <span class="error_message_label">*</span> </label>
+                                            <textarea class="form-control remark" name="remark" id="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
                                     </div>
                                     </div>
                 

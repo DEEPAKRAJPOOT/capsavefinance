@@ -2,7 +2,6 @@
 @section('additional_css')
 @endsection
 @section('content')
-
 <div class="content-wrapper">
     <div class="col-md-12 ">
         <section class="content-header">
@@ -29,13 +28,10 @@
 
                             <!-- Modal body -->
                             <div class="modal-body ">
-
-
-                                <div class="row">
-
-
-
-                                    <div class="col-md-6">
+                           <form id="signupImageForm" action="{{Route('upload_bulk_csv_Invoice')}}" method="post" enctype='multipart/form-data'> 
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-6">
                                         <div class="form-group">
                                 <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
                                             <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
@@ -87,11 +83,16 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Customer Name <span class="error_message_label">*</span></label>
-                                            <select readonly="readonly" class="form-control getTenor" id="supplier_bulk_id" >
-                                            </select>
-                                            <span id="supplier_bulk_id_msg" class="error"></span>
-                                            <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
+                                         <label for="txtCreditPeriod">Upload Invoice Copy
+                                             <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(Please upload zip file*)</span></label>
+                                        <div class="custom-file  ">
+
+                                            <input type="file" accept=".csv"   class="custom-file-input fileUpload" id="customImageFile" name="file_image_id">
+                                            <label class="custom-file-label" for="customFile">Choose file</label>
+                                            <span id="customImageFile_msg" class="error"></span>
+                                            <span id="msgImageFile" class="text-success"></span>
+                                        </div>
+                                         <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
                                         </div>
                                     </div>
 
@@ -110,19 +111,16 @@
                                     <div class="col-md-2">
                                         <label for="txtCreditPeriod"> <span class="error_message_label"></span></label>
                                         <div class="custom-file  ">
-                                            <a  id="submit" class="btn btn-success float-right btn-sm mt-3 ml-2">Upload</a>
+                                            <input type="submit"  id="submit" class="btn btn-success float-right btn-sm mt-3 ml-2" value="Upload">
                                         </div>
 
                                     </div>							
 
                                     <div class="clearfix">
                                     </div>
-                                </div>	
-
-
-
-
-                            </div>
+                                </div>
+                             </form>
+                                </div>
                             <form id="signupForm" action="{{Route('backend_save_bulk_invoice')}}" method="post"> 
                                 @csrf
                                 <div class="row">
