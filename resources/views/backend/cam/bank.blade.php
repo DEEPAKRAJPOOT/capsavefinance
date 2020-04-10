@@ -160,13 +160,13 @@
                         </tr>  
 
                         <tr class="control-group-tlbl">
-                           <td width="12%"><input type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
                            <td width="12%"><input type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
                            <td width="12%"><input type="text" name="facility_amt[]" value="" class="form-control form-control-sm" /></td>
                            <td width="12%"><input type="text" name="facility_os_amt[]" value="" class="form-control form-control-sm" /></td>
                            <td width="">
                               <div class="input-group-btn">
-                                 <input type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
+                                 <input type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
                                  <i class="fa fa-plus-circle add-ptpq-block add-more-post"></i>
                               <div>
                            </td>
@@ -175,13 +175,13 @@
                         <!-- Copy Fields -->
                         <tbody class="copy-post hide">
                            <tr class="control-group-tlbl">
-                              <td width="12%"><input type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
                               <td width="12%"><input type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
                               <td width="12%"><input type="text" name="facility_amt[]" value="" class="form-control form-control-sm" /></td>
                               <td width="12%"><input type="text" name="facility_os_amt[]" value="" class="form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
-                                    <input type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
+                                    <input type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
                                  <div>
                               </td>
