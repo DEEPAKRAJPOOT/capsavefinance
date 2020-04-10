@@ -2748,12 +2748,7 @@ if ($err) {
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
-        //////////////////// use for Approve invoice list/////////////////
-     public function getFrontendInvoiceListApprove(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,8);
-        $invoice = $dataProvider->getFrontendInvoiceListApprove($this->request, $invoice_data);
-        return $invoice;
-    } 
+        
     
      //////////////////// use for exception case invoice list/////////////////
      public function getBackendEpList(DataProviderInterface $dataProvider) {

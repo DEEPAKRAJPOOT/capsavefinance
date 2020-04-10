@@ -995,55 +995,7 @@ class DataRenderer implements DataProviderInterface
               ->make(true);
     } 
     
-       /*      
-     * Get Invoice list for backend
-     */
-    public function getFrontendInvoiceListApprove(Request $request,$invoice)
-    { 
-    
-    return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
-               ->addColumn(
-                    'invoice_id',
-                    function ($invoice) use ($request)  {     
-                          return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-               }) 
-              ->addColumn(
-                    'anchor_name',
-                    function ($invoice) {  
-                        $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
-                        return $comp_name;
-                })
-                ->addColumn(
-                    'supplier_name',
-                    function ($invoice) { 
-                        $custo_name = '';
-                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br><span><b>Business Name:&nbsp;</b>'.$invoice->business->biz_entity_name.'</span>' : '';
-                        return $custo_name;
-                })
-                  ->addColumn(
-                    'invoice_date',
-                    function ($invoice) {                        
-                        $inv_date = '';
-                        $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
-                        return $inv_date;
-                })  
-             ->addColumn(            
-                    'invoice_amount',
-                    function ($invoice) {                        
-                        $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
-                        return $inv_amount;
-                })
-              
-              ->make(true);
-    } 
+       
    /*      
      * Get Invoice list for backend
      */
@@ -1236,55 +1188,7 @@ class DataRenderer implements DataProviderInterface
     }  
     
     
-    /*      
-     * Get Invoice list for backend
-     */
-    public function getFrontendInvoiceListBank(Request $request,$invoice)
-    { 
-    
-         return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
-               ->addColumn(
-                    'invoice_id',
-                    function ($invoice) use ($request)  {     
-                          return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-               })
-             ->addColumn(
-                    'anchor_name',
-                    function ($invoice) {  
-                        $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
-                        return $comp_name;
-                })
-                ->addColumn(
-                    'supplier_name',
-                    function ($invoice) { 
-                        $custo_name = '';
-                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
-                        return $custo_name;
-                })
-                  ->addColumn(
-                    'invoice_date',
-                    function ($invoice) {                        
-                        $inv_date = '';
-                        $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
-                        return $inv_date;
-                })  
-              ->addColumn(            
-                    'invoice_amount',
-                    function ($invoice) {                        
-                        $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
-                        return $inv_amount;
-                })
-                        
-              ->make(true);
-    }  
+   
      /*      
      * Get Invoice list for backend
      */
