@@ -153,11 +153,11 @@ public static function saveBulkInvoice($arrInvoice)
         if( $chkUser->id==11)
         {
             $res  = User::where('user_id',$id)->first();
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
@@ -255,9 +255,9 @@ public static function saveBulkInvoice($arrInvoice)
      
      }
 
-     function disbursal()
+     function invoice_disbursed()
      {
-          return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal', 'invoice_id','invoice_id');  
+          return $this->hasOne('App\Inv\Repositories\Models\Lms\InvoiceDisbursed', 'invoice_id','invoice_id');  
      
      }
     
@@ -390,8 +390,8 @@ public static function saveBulkInvoice($arrInvoice)
 
     public static function getAllUserBatchInvoice($data)
     {
-        return self::with('app.acceptedOffer')->with('disbursal')
-            ->whereHas('disbursal', function($query) use ($data) {
+        return self::with('app.acceptedOffer')->with('invoice_disbursed')
+            ->whereHas('invoice_disbursed', function($query) use ($data) {
                     $query->where($data);
                 })
             ->where('status_id', 10)
