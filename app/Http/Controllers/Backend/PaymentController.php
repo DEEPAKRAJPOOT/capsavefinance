@@ -76,13 +76,14 @@ class PaymentController extends Controller {
           return view('backend.payment.excel_bulk_payment')->with(['customer' => $result]);
     }
        ///////////* change date format ********////////////////   
-     function validateDate($date, $format = 'd/m/Y')
-     { 
-     
+     function validateDate($date, $format = 'd/m/Y') { 
        return  $d = \DateTime::createFromFormat($format, $date);
      }
+
+     public function unsettledPayment() {
+       return view('backend.payment.post_payment');
+     }
      
-    
     /* save payment details   */
     public function  savePayment(Request $request)
     {
