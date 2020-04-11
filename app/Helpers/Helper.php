@@ -291,6 +291,27 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
+    
+    public static function uploadInvoiceFile($attributes, $batch_id)
+    {
+       $userId = Auth::user()->user_id;
+       $inputArr = []; 
+       if ($attributes['file_id']) {
+            if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
+                Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
+            }
+            $path = Storage::disk('public')->put('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_id'], null);
+            $inputArr['file_path'] = $path;
+        }   
+        $inputArr['file_type'] = $attributes['file_id']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['file_id']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['file_id']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
 
     /**
      * uploading document data
