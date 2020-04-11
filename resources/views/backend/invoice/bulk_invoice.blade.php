@@ -87,7 +87,7 @@
                                              <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(Please upload zip file*)</span></label>
                                         <div class="custom-file  ">
 
-                                            <input type="file" accept=".csv"   class="custom-file-input fileUpload" id="customImageFile" name="file_image_id">
+                                            <input type="file"   class="custom-file-input fileUpload" id="customImageFile" name="file_image_id">
                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                             <span id="customImageFile_msg" class="error"></span>
                                             <span id="msgImageFile" class="text-success"></span>

@@ -875,6 +875,26 @@ class InvoiceController extends Controller {
     
     public function uploadBulkCsvInvoice(Request $request)
     {
-       dd($request);  
+      
+        $attributes = $request->all();
+        $date = Carbon::now();
+        $id = Auth::user()->user_id;
+        $batch_id =  self::createBatchNumber($date);
+        $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id);
+        dd($uploadData);
+        $userFile = $this->docRepo->saveFile($uploadData);
+       
+         
+       if ($request['file_id']) {
+            if (!Storage::exists('/public/user/invoice'.$batch_id)) {
+                Storage::makeDirectory('/public/user/invoice'.$batch_id, 0775, true);
+            }
+            $path = Storage::disk('public')->put('/user/' . $userId . '/invoice', $request['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }  
+    }
+     public static function createBatchNumber($date)
+    {
+          return $unique_code = $date->format('YmdHisu');
     }
 }

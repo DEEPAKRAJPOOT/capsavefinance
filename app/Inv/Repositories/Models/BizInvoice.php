@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Inv\Repositories\Models;
-
 use Carbon\Carbon;
 use DateTime;
 use Auth;
