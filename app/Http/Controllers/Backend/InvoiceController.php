@@ -874,13 +874,12 @@ class InvoiceController extends Controller {
     }
     
     public function uploadBulkCsvInvoice(Request $request)
-    {
-      
-        $attributes = $request->all();
+    {   $attributes = $request->all();
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $batch_id =  self::createBatchNumber($date);
-        $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id);
+        $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id);
+        ///$uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id);
         dd($uploadData);
         $userFile = $this->docRepo->saveFile($uploadData);
        

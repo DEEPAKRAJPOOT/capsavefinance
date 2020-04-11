@@ -27,6 +27,7 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\Business;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
+use ZanySoft\Zip\Zip;
 
 class Helper extends PaypalHelper
 {
@@ -300,9 +301,13 @@ class Helper extends PaypalHelper
             if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_id'], null);
-            $inputArr['file_path'] = $path;
-        }   
+                $extension = $attributes['file_id']->getClientOriginalExtension();
+                $name   = $attributes['file_id']->getClientOriginalName();
+                $name  =  explode('.',$name);
+                $filename =  $name[0].'.'.$extension;
+             $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_id'], $filename); 
+             $inputArr['file_path'] = $path;
+            }   
         $inputArr['file_type'] = $attributes['file_id']->getClientMimeType();
         $inputArr['file_name'] = $attributes['file_id']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['file_id']->getClientSize();
@@ -313,6 +318,34 @@ class Helper extends PaypalHelper
         return $inputArr;
     }
 
+      public static function uploadZipInvoiceFile($attributes, $batch_id)
+    {
+       $userId = Auth::user()->user_id;
+       $inputArr = []; 
+       if ($attributes['file_image_id']) {
+            if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
+                Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
+            }
+                $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
+                $zipName   = $attributes['file_image_id']->getClientOriginalName();
+                $zipName  =  explode('.',$zipName);
+                $zipFilename =  $zipName[0].'.'.$zipExtension;
+                $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_image_id'], $zipFilename); 
+                ///return $is_valid = Zip::check($path);
+                Zip::open(storage_path($path));
+                Zip::extractTo(storage_path("/public/user/' . $userId . '/invoice/' . $batch_id"));
+                $inputArr['file_path'] = $path;
+             }   
+        $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
+    
     /**
      * uploading document data
      *

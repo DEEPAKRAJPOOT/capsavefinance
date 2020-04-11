@@ -100,7 +100,7 @@
                                         <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
                                         <div class="custom-file  ">
 
-                                            <input type="file" accept=".csv"   class="custom-file-input fileUpload" id="customFile" name="file_id">
+                                            <input type="file"   class="custom-file-input fileUpload" id="customFile" name="file_id">
                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                             <span id="customFile_msg" class="error"></span>
                                             <span id="msgFile" class="text-success"></span>
