@@ -292,7 +292,7 @@ class Helper extends PaypalHelper
         return $inputArr;
     }
     
-    public static function uploadInvoiceFile($attributes, $batch_id)
+    public static function uploadInvoiceFile($attributes, $batch_id, $filename)
     {
        $userId = Auth::user()->user_id;
        $inputArr = []; 
@@ -300,7 +300,7 @@ class Helper extends PaypalHelper
             if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_id'], null);
+            $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_id'], $filename);
             $inputArr['file_path'] = $path;
         }   
         $inputArr['file_type'] = $attributes['file_id']->getClientMimeType();
