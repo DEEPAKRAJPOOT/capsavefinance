@@ -4451,6 +4451,38 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
+        public function getToSettlePayments(Request $request, $dataRecords){
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'user_name',
+                        function ($dataRecords) {
+                            $full_name = $dataRecords->getUserName->f_name .' '.$dataRecords->getUserName->m_name . ' '. $dataRecords->getUserName->l_name;
+                        return $full_name;
+                    })
+                    ->editColumn(
+                        'business_name',
+                        function ($dataRecords) {
+                        return $dataRecords->getBusinessName->biz_entity_name;
+                    })
+                    ->editColumn(
+                        'virtual_account',
+                        function ($dataRecords) {
+                        return $dataRecords->virtual_acc;
+                    })
+                    ->editColumn(
+                        'amount',
+                        function ($dataRecords) {
+                        return $dataRecords->amount;
+                    }) 
+                    ->editColumn(
+                        'action',
+                        function ($dataRecords) {
+                        $btn = '<input type="checkbox" name="payment_ids[]" class="payment_ids" value="'.$dataRecords->payment_id.'" title="Move to Settled Status.">';
+                        return $btn;
+                    }) 
+                    ->make(true);
+        }
+
         public function getTransactionsByDataProvider(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
                     ->editColumn(

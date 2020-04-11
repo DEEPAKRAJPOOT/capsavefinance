@@ -293,7 +293,7 @@ class Helper extends PaypalHelper
         return $inputArr;
     }
     
-    public static function uploadInvoiceFile($attributes, $batch_id)
+    public static function uploadInvoiceFile($attributes, $batch_id, $filename)
     {
        $userId = Auth::user()->user_id;
        $inputArr = []; 
@@ -301,6 +301,7 @@ class Helper extends PaypalHelper
             if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
             }
+
                 $extension = $attributes['file_id']->getClientOriginalExtension();
                 $name   = $attributes['file_id']->getClientOriginalName();
                 $name  =  explode('.',$name);
@@ -308,6 +309,7 @@ class Helper extends PaypalHelper
              $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_id'], $filename); 
              $inputArr['file_path'] = $path;
             }   
+
         $inputArr['file_type'] = $attributes['file_id']->getClientMimeType();
         $inputArr['file_name'] = $attributes['file_id']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['file_id']->getClientSize();
@@ -331,9 +333,11 @@ class Helper extends PaypalHelper
                 $zipName  =  explode('.',$zipName);
                 $zipFilename =  $zipName[0].'.'.$zipExtension;
                 $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_image_id'], $zipFilename); 
-                ///return $is_valid = Zip::check($path);
-                Zip::open(storage_path($path));
-                Zip::extractTo(storage_path("/public/user/' . $userId . '/invoice/' . $batch_id"));
+                $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/'.$zipFilename);
+                $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/'.$zipFilename);
+                $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id);
+                $zip =  Zip::open($open_path);
+                $zip->extract($extract_path);
                 $inputArr['file_path'] = $path;
              }   
         $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();

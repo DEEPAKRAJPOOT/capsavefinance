@@ -878,9 +878,10 @@ class InvoiceController extends Controller {
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $batch_id =  self::createBatchNumber($date);
+
         $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id);
         ///$uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id);
-        dd($uploadData);
+      dd($uploadData);
         $userFile = $this->docRepo->saveFile($uploadData);
        
          
