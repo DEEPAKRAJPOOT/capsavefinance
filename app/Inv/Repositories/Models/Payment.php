@@ -6,6 +6,8 @@ use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\User;
 
 class Payment extends BaseModel {
     /* The database table used by the model.
@@ -93,7 +95,7 @@ class Payment extends BaseModel {
         try {
             $insertId = self::create($arr)->payment_id;
             $resp['code'] = $insertId;  
-            $resp['message'] = 'Voucher inserted successfuly';  
+            $resp['message'] = 'Payment inserted successfuly';  
         } catch (\Exception $e) {
             $errorInfo  = $e->errorInfo;
             $resp['status'] = 'error';  
@@ -101,6 +103,41 @@ class Payment extends BaseModel {
             $resp['message'] = preg_replace('#[^A-Za-z./\s\_]+#', '', $errorInfo[2]) ?? 'Some DB Error occured. Try again.';  
         }
         return $resp['status'] == 'success' ? $resp['code'] : $resp['message'];
+    }
+
+    public function getBusinessName() {
+       return $this->hasOne(Business::class, 'biz_id');
+    }
+
+    public function getUserName() {
+       return $this->hasOne(User::class, 'user_id');
+    }
+
+
+    public static function getPaymentModeAttribute() {
+        $payment_type = $this->payment_type;
+        $payModes = config('payment.type') ?? [];
+        $mode_of_pay = $payModes[$payment_type] ?? NULL;
+        return $mode_of_pay;
+    }
+
+    public static function getTransNameAttribute() {
+        $payment_type = $this->payment_type;
+        switch ($payment_type) {
+            case '1':
+                $attr = $this->utr_no;
+                break;
+            case '2':
+                $attr = $this->cheque_no;
+                break;
+            case '3':
+               $attr = $this->unr_no;
+                break;
+            default:
+               $attr = '';
+                break;
+        }
+        return $attr;
     }
      
 }
