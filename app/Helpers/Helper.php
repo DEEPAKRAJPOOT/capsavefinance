@@ -348,17 +348,24 @@ class Helper extends PaypalHelper
         return $inputArr;
     }
     
-     public static function ImageChk($file_name,$batch_id,$zipBatch)
+     public static function ImageChk($file_name,$batch_id)
     {
         $userId = Auth::user()->user_id;
+        $inputArr = [];
         if (Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$file_name))
          {
             $pathToFile = storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$file_name);
-            dd(pathinfo($pathToFile));
+            $attributes =  pathinfo($pathToFile);
+            $inputArr['file_path'] = $attributes['dirname'];
+            $inputArr['file_type'] = $attributes['extension'];
+            $inputArr['file_name'] = $attributes['basename'];
+            $inputArr['file_size'] = filesize($pathToFile);
+            $inputArr['file_encp_key'] =  md5('2');
+            return $inputArr;
          }
          else
          {
-             return 0;
+             return false;
          }
         
     }

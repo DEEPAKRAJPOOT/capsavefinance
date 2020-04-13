@@ -875,12 +875,14 @@ class InvoiceController extends Controller {
     }
     
     public function uploadBulkCsvInvoice(Request $request)
-    {   
-       $attributes = $request->all();
-       $batch_id =  self::createBatchNumber(6);
-       $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
-       $userFile = $this->docRepo->saveFile($uploadData);  ///Upload csv
-       $userFile['batch_no'] =  $batch_id;
+    {  
+        $date = Carbon::now();
+        $id = Auth::user()->user_id; 
+        $attributes = $request->all();
+        $batch_id =  self::createBatchNumber(6);
+        $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
+        $userFile = $this->docRepo->saveFile($uploadData);  ///Upload csv
+        $userFile['batch_no'] =  $batch_id;
        if($userFile)
        {
            $resFile =  $this->invRepo->saveInvoiceBatch($userFile);
@@ -898,6 +900,7 @@ class InvoiceController extends Controller {
                     $csvPath = storage_path('app/public/'.$userFile->file_path);
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
+                    $key=0;
                     while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
                     {   
                         $cusomer_id  =   $data[0]; 
@@ -906,8 +909,32 @@ class InvoiceController extends Controller {
                         $inv_due_date  =   $data[3]; 
                         $amount  =   $data[4]; 
                         $file_name  =   $data[5];
-                        $getImage =  Helpers::ImageChk($file_name,$batch_id,$zipBatch);
-                       dd($getImage);
+                        $getImage =  Helpers::ImageChk($file_name,$batch_id);
+                        if($getImage)
+                        {
+                            $FileId = NUll;
+                        }
+                        else
+                        {
+                            $FileDetail = $this->docRepo->saveFile($getImage); 
+                            $FileId  = $FileDetail->file_id;
+                        }
+                        $data[$key]['anchor_id']=$userId;
+                        $data[$key]['supplier_id']=$business->biz_id;
+                        $data[$key]['program_id']=2;
+                        $data[$key]['app_id']=1;
+                        $data[$key]['biz_id']=1;
+                        $data[$key]['invoice_no']=$inv_no;
+                        $data[$key]['tenor']=5;
+                        $data[$key]['invoice_due_date']=Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
+                        $data[$key]['invoice_date']=Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
+                        $data[$key]['pay_calculation_on']=1;
+                        $data[$key]['invoice_approve_amount']=$amount;
+                        $data[$key]['status']=0;
+                        $data[$key]['file_id']= $FileId;
+                        $data[$key]['created_by']= $id;
+                        $data[$key]['created_at']= $date;
+                        $key++;
                     } 
                     
                   }
