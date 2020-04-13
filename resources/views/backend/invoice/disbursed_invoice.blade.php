@@ -2,6 +2,12 @@
 @section('additional_css')
 @endsection
 @section('content')
+
+@php 
+$flag = (isset($flag)) ? $flag :     0;
+$role = (isset($role)) ? $role :     11;
+@endphp
+
 @if($flag == 1)
 @include('layouts.backend.partials.admin_customer_links',['active' => 'invoice'])
 @endif
