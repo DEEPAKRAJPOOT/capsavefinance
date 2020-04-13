@@ -78,7 +78,7 @@
                                         -->
                                         <div class="col-md-2">
                                             @php if($role!=11) { @endphp
-                                            <button type="button" id="bulkApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
+                                            <button type="button" id="bulkDisburseApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-disabled btn-app">Send to Disbursement</button>
                                             @php } @endphp 
                                         </div>
 

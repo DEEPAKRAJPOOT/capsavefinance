@@ -47,6 +47,36 @@
             return false;
         }
     });
+    
+    
+     ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('click', '.disburseInv', function () {
+        $("#moveCase").html('');
+        if (confirm('Are you sure? You want to disbursement queue.'))
+        {
+            var invoice_id = $(this).attr('data-id');
+            var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
+            th = this;
+            jQuery.ajax({
+                url: messages.update_invoice_approve,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                   
+                     $("#moveCase").html('Invoice successfully sent to  disbursement queue ');
+                     $(th).parent('td').parent('tr').remove();
+                   
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
     //////////////////// onchange anchor  id get data /////////////////
 
     $("#supplier_id").append("<option value=''>Select Customer</option>");
@@ -321,6 +351,49 @@ function uploadFile(app_id,id)
             return false;
         }
         if (confirm('Are you sure? You want to approve it.'))
+        {
+            var status = $(this).attr('data-status');
+            var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
+            jQuery.ajax({
+                url: messages.update_bulk_invoice,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+
+                },
+                success: function (data) {
+                    if (data == 1)
+                    {
+                        
+                        location.reload();
+                    }
+
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+    
+    //////////////////////////// for bulk disburse queue invoice////////////////////
+
+
+    $(document).on('click', '#bulkDisburseApprove', function () {
+        $("#moveCase").html('');
+        var arr = [];
+        i = 0;
+        th = this;
+        $(".chkstatus:checked").each(function () {
+            arr[i++] = $(this).val();
+        });
+        if (arr.length == 0) {
+            alert('Please select atleast one checked');
+            return false;
+        }
+        if (confirm('Are you sure? You want to disbursement queue.'))
         {
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
