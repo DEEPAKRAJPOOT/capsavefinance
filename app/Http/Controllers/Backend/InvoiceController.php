@@ -921,6 +921,7 @@ class InvoiceController extends Controller {
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
                     $key=0;
+                    $ins = [];
                     while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
                     {   
                         $cusomer_id  =   $data[0]; 
@@ -932,31 +933,32 @@ class InvoiceController extends Controller {
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
                         if($getImage)
                         {
-                            $FileId = NUll;
+                           $FileDetail = $this->docRepo->saveFile($getImage); 
+                           $FileId  = $FileDetail->file_id; 
                         }
                         else
                         {
-                            $FileDetail = $this->docRepo->saveFile($getImage); 
-                            $FileId  = $FileDetail->file_id;
+                            $FileId = NUll;
                         }
-                        $data[$key]['anchor_id']=$userId;
-                        $data[$key]['supplier_id']=$business->biz_id;
-                        $data[$key]['program_id']=2;
-                        $data[$key]['app_id']=1;
-                        $data[$key]['biz_id']=1;
-                        $data[$key]['invoice_no']=$inv_no;
-                        $data[$key]['tenor']=5;
-                        $data[$key]['invoice_due_date']=Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
-                        $data[$key]['invoice_date']=Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
-                        $data[$key]['pay_calculation_on']=1;
-                        $data[$key]['invoice_approve_amount']=$amount;
-                        $data[$key]['status']=0;
-                        $data[$key]['file_id']= $FileId;
-                        $data[$key]['created_by']= $id;
-                        $data[$key]['created_at']= $date;
+                       
+                        $ins[$key]['anchor_id'] = $id;
+                        $ins[$key]['supplier_id'] = $id;
+                        $ins[$key]['program_id'] = 2;
+                        $ins[$key]['app_id'] = 1;
+                        $ins[$key]['biz_id'] = 1;
+                        $ins[$key]['invoice_no'] = $inv_no;
+                        $ins[$key]['tenor'] = 5;
+                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
+                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
+                        $ins[$key]['pay_calculation_on'] = 1;
+                        $ins[$key]['invoice_approve_amount'] = $amount;
+                        $ins[$key]['status'] = 0;
+                        $ins[$key]['file_id'] =  $FileId;
+                        $ins[$key]['created_by'] =  $id;
+                        $ins[$key]['created_at'] =  $date;
                         $key++;
                     } 
-                    
+                    dd($ins);
                   }
               }
            }
