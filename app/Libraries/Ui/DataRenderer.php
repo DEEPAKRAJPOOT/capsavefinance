@@ -600,7 +600,7 @@ class DataRenderer implements DataProviderInterface
      * Get  User Wise Invoice list for backend
      */
     public function getUserWiseInvoiceList(Request $request,$invoice)
-    {   
+    {  
         return DataTables::of($invoice)
                ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
@@ -637,20 +637,40 @@ class DataRenderer implements DataProviderInterface
                     'invoice_date',
                     function ($invoice) {                        
                         $inv_date = '';
+                       if($invoice->mstStatus->id!=12) { 
                         $inv_date .= $invoice->invoice_date ? '<span><b>Inv. Date:&nbsp;</b>'.$invoice->invoice_date.'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Inv. Due Date:&nbsp;</b>'.$invoice->invoice_due_date.'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor IN Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                       }
+                       else
+                       {
+                           
+                        $inv_date .= $invoice->disbursal ? '<span><b>Disburse Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->disburse_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->disbursal ? '<br><span><b>Payment Due Date:&nbsp;</b>'.Carbon::parse($invoice->disbursal->payment_due_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                       
+                       }
                         return $inv_date;
                 })  
                 ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
+                      if($invoice->mstStatus->id!=12) 
+                      {   
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                      }
+                      else
+                      {
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
+                        $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';
+                       
+                      }
                         return $inv_amount;
                 })
-                ->addColumn(            
+                 ->addColumn(            
                     'status',
                     function ($invoice) {                        
                     

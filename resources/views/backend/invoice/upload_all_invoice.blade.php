@@ -342,7 +342,6 @@ var messages = {
     front_program_list: "{{ URL::route('front_program_list') }}",
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
     get_tenor: "{{ URL::route('get_tenor') }}",
-    
     check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
    };
  

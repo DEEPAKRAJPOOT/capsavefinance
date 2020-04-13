@@ -5,19 +5,37 @@
 <div class="content-wrapper">
 	<div class="row grid-margin mt-3">
 		<div class="  col-md-12  ">
-			<section class="content-header">
-				<div class="header-icon">
-					<i class="fa fa-clipboard" aria-hidden="true"></i>
-				</div>
-				<div class="header-title">
-					<h3 class="mt-2">Bank Account</h3>
-					<ol class="breadcrumb">
-						<li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-						<li class="active">Bank Account</li>
-					</ol>
-				</div>
-				<div class="clearfix"></div>
-			</section>
+                     <div class="card">
+			     <div class="card-body">
+                    <div class="table-responsive ps ps--theme_default w-100">
+                        <table class="table  table-td-right">
+                            <tbody>
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Full Name</b></td>
+                                    <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td> 
+                                    <td class="text-left" width="30%"><b>Email</b></td>
+                                    <td>{{$userInfo->email}}	</td> 
+                                </tr>
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Mobile</b></td>
+                                    <td>{{$userInfo->mobile_no}} </td> 
+                                </tr>
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Total Limit</b></td>
+                                    <td>{{ $userInfo->total_limit }} </td> 
+                                    <td class="text-left" width="30%"><b>Available Limit</b></td>
+                                    <td>{{  $userInfo->consume_limit }} </td> 
+                                </tr>
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Utilize Limit</b></td>
+                                    <td>{{ $userInfo->utilize_limit }} </td> 
+                                    <td class="text-left" width="30%"><b>Sales Manager</b></td>
+                                    <td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>	
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="head-sec">
@@ -87,7 +105,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div></div>
 	</div>
 </div>
 @endsection

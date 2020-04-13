@@ -42,14 +42,14 @@ class InvoiceBulkBatch extends BaseModel
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = true;
+    public $userstamps = false;
     
     /**
      * The attributes that are mass assignable.
@@ -75,20 +75,21 @@ class InvoiceBulkBatch extends BaseModel
      *
      * @return boolean
      */
-    public static function saveBatchInvoice($path)
-    {
-         $date = Carbon::now();
-         $id = Auth::user()->user_id;
-         $batch_id =  self::createBatchNumber($date);
-         $arrInvoiceVal = self::create(['batch_id' =>$batch_id,'file_no' => $path,'created_by' =>  $id,
-                'created_at' =>  $date]);
-        return ($arrInvoiceVal->batch_id ?: false);
-    } 
-    
-   public static function createBatchNumber($date)
-    {
-          return $unique_code = $date->format('YmdHisu');
+    public static function saveInvoiceBatch($res)
+    {   
+        $date = Carbon::now();
+        $id = Auth::user()->user_id;
+        return  self::create(['batch_no' =>$res->batch_no,'file_id' =>$res->file_id,'type_id' => 1,'invoice_zip_file_name' =>$res->file_name,'created_by' =>  $id,
+               'created_at' =>  $date]);
     }
     
-
+   public static function saveInvoiceZipBatch($res)
+    {   
+        $date = Carbon::now();
+        $id = Auth::user()->user_id;
+        return  self::create(['batch_no' =>$res['batch_no'],'type_id' => 2,'parent_bulk_batch_id' => $res['parent_bulk_batch_id'],'invoice_zip_file_name' =>$res['file_name'],'created_by' =>  $id,
+               'created_at' =>  $date]);
+    }
+      
+ 
 }

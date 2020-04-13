@@ -2743,7 +2743,6 @@ if ($err) {
 
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
