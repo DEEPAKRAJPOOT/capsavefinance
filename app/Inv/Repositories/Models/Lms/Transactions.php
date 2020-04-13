@@ -77,9 +77,13 @@ class Transactions extends BaseModel {
     }
         
     public function user(){
-        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Users','user_id','user_id');
     }
     
+    public function lmsUser(){
+        return $this->belongsTo('App\Inv\Repositories\Models\LmUsersUser','user_id','user_id');
+    }
+
     public function transType(){
        return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
     }   

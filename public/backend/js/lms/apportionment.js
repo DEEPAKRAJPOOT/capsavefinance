@@ -49,11 +49,11 @@ class Apportionment {
         var data = this.data;
         var columns = this.dataTableColumns(id);
         return $("#"+id).DataTable({
-            processing: true,
+            processing: false,
             serverSide: true,
             pageLength: '*',
             searching: false,
-            bSort: true,
+            bSort: false,
             bPaginate: false,
             info: false,
             ajax: {
@@ -74,11 +74,31 @@ class Apportionment {
             },
             columns: columns,
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
-            rowCallback: function( row, data, index ) {
-                $("input[name='payment["+data['trans_id']+"]']").val(10);
+            drawCallback: function( settings ) {
+                if(id == 'unsettledTransactions'){
+
+                    $(".pay").each(function (index, element) {
+                        if(paymentAmt>0){
+                            let value =  parseFloat($(this).attr('max'));
+                            let id = $(this).attr('id');
+                            if(paymentAmt>=value){
+                                $(this).val(value);
+                                $(this).attr('readonly',false)
+                                $("input[name='check["+id+"]']").prop("checked", true);
+                                paymentAmt = paymentAmt-value;
+                            }else{
+                                $(this).val(paymentAmt);
+                                $(this).attr('readonly',false)
+                                $("input[name='check["+id+"]']").prop("checked", true);
+                                paymentAmt= 0;
+                            }
+                        }
+                    });
+                }
             }
         });
     }
+    
 }
 
 var apport =  new Apportionment(messages);

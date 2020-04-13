@@ -1455,6 +1455,10 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $result ?: false;
     }
 
+    public function lmsGetCustomer($userId){
+        return LmsUser::where('user_id','=', $userId);
+    }
+
     /**
      * Get all customer from lms_users
      *

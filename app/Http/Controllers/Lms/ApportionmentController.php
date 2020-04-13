@@ -11,14 +11,17 @@ use PHPExcel_IOFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Contracts\Ui\DataProviderInterface;
+use Carbon\Carbon;
 
 class ApportionmentController extends Controller
 {
 
-    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider){
+    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo){
         $this->lmsRepo = $lms_repo;
         $this->dataProvider = $dataProvider;
+        $this->userRepo = $user_repo;
 	}
     /**
      * View Unsettled Transactions of User
@@ -27,11 +30,18 @@ class ApportionmentController extends Controller
      */
     public function viewUnsettledTrans(Request $request){
         try {
-            $userId = $request->user_id;
+            // $userId = $request->user_id;
+            // $paymentId = $request->payment_id;
+            $userId = 542;
+            $paymentId = 1;
             $userDetails = $this->getUserDetails($userId); 
-
+            dd($userDetails);
+            $payment = $this->getPaymentDetails($paymentId); 
             return view('lms.apportionment.unsettledTransactions')
-                ->with('userDetails', $userDetails);
+            ->with('paymentId', $paymentId)  
+            ->with('userId', $userId)
+            ->with('payment',$payment) 
+            ->with('userDetails', $userDetails);
 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -107,7 +117,9 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getUserDetails($userId){
-
+        return $this->userRepo->lmsGetCustomer($userId);
+        return $data = $this->userRepo->find($userId);
+        dd($data);
     }
 
     /**
@@ -116,7 +128,14 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getPaymentDetails($paymentId){
-
+        $payment = $this->lmsRepo->getPaymentDetail($paymentId);
+        
+        return [
+            'amount'=> "₹ ".number_format($payment->amount,2),
+            'date_of_payment'=> Carbon::parse($payment->date_of_payment)->format('d-m-Y'), 
+            'paymentmode'=> $payment->paymentmode,
+            'transactionno'=> $payment->transactionno,
+        ];
     }
 
     /**
