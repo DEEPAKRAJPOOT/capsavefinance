@@ -11,7 +11,6 @@
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>
-                                    <th>Outstanding Amt</th>
                                     <th>Payment Date</th>
                                     <th>Pay</th>
                                     <th>Select</th>

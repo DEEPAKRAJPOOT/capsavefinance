@@ -1,22 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\lms;
+namespace App\Http\Controllers\Lms;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Auth;
 use Session;
 use Helpers;
 use PHPExcel; 
 use PHPExcel_IOFactory;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Contracts\Ui\DataProviderInterface;
 
 class ApportionmentController extends Controller
 {
 
-    public function __construct(InvLmsRepoInterface $lms_repo ){
-		$this->lmsRepo = $lms_repo;
+    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider){
+        $this->lmsRepo = $lms_repo;
+        $this->dataProvider = $dataProvider;
 	}
     /**
      * View Unsettled Transactions of User
@@ -77,8 +79,8 @@ class ApportionmentController extends Controller
      * @param int $userId
      * @return \Illuminate\Http\Response
      */
-    private function getUnsettledTrans($userId){
-        $this->lmsRepo->getTransactions();
+    private function getUnsettledTrans(int $userId){
+        return $this->lmsRepo->getUnsettledTrans($userId);
     }
 
     /**
@@ -87,9 +89,18 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getSettledTrans($userId){
-
+        return $this->lmsRepo->getSettledTrans($userId);
     }
 
+    /**
+     * Get Refund Transactions
+     * @param int $userId
+     * @return \Illuminate\Http\Response
+     */
+    private function getRefundTrans($userId){
+        return $this->lmsRepo->getRefundTrans($userId);
+    }
+    
     /**
      * Get User Details
      * @param int $userId
@@ -100,12 +111,33 @@ class ApportionmentController extends Controller
     }
 
     /**
+     * Get Payment Details
+     * @param int $userId
+     * @return \Illuminate\Http\Response
+     */
+    private function getPaymentDetails($paymentId){
+
+    }
+
+    /**
      * View Unsettled Transactions of User
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function listUnsettledTrans(Request $request){
-
+        try {
+            $userId = $request->user_id;
+            $paymentId = $request->payment_id;
+            
+            $payment_date = null;
+            $payment = $this->lmsRepo->getPaymentDetail($paymentId);    
+            if(!empty($payment)){
+                $transactions = $this->getUnsettledTrans($userId);
+                return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 
     
@@ -115,7 +147,13 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function listSettledTrans(Request $request){
-
+        try {
+            $userId = $request->user_id;  
+            $transactions = $this->getSettledTrans($userId);
+            return $this->dataProvider->getSettledTrans($request,$transactions);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 
     /**
@@ -124,6 +162,12 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function listRefundTrans(Request $request){
-
+        try {
+            $userId = $request->user_id;
+            $transactions = $this->getRefundTrans($userId);
+            return $this->dataProvider->getRefundTrans($request,$transactions);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 }

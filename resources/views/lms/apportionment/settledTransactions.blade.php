@@ -1,5 +1,13 @@
 @extends('layouts.backend.admin-layout')
 
+@section('additional_css')
+<style>
+    .Lh-3{
+        line-height:2.5;
+    }
+</style>
+@endsection
+
 @section('content')
 
 <div class="content-wrapper">
@@ -18,12 +26,11 @@
             </ol>
         </div>
     </section>
-
-
     <div class="card">
-        <div class="card-body">       
+        <div class="card-body">   
+            @include('lms.apportionment.common.userDetails')
             <div class="row">
-                @include('lms.apportionment.common.listUnsettledTransactions')
+                @include('lms.apportionment.common.listSettledTransactions')
             </div>
         </div>
     </div>
@@ -35,14 +42,12 @@
 <script>
 
     var messages = {
-        get_customer: "{{ URL::route('apport_settled_list') }}",
+        url: "{{ URL::route('apport_settled_list') }}",
+        user_id: "542",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>
 @endsection
-
-
-
-

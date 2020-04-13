@@ -5263,4 +5263,114 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+
+
+     /*
+     * 
+     * Get All Unsettled Transactions
+     */
+    public function getUnsettledTrans(Request $request, $trans,$payment)
+    {
+        return DataTables::of($trans,$payment)
+            ->rawColumns(['select', 'pay'])
+            ->addColumn('disb_date', function($trans){
+                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+            })
+            ->addColumn('invoice_no', function($trans){
+                return $trans->invoice_disbursed_id;
+            })
+            ->addColumn('trans_type', function($trans){
+                return $trans->transName;
+            })
+            ->addColumn('total_repay_amt', function($trans){
+                return "₹ ".number_format($trans->amount,2);
+            })
+            ->addColumn('outstanding_amt', function($trans){
+                return "₹ ".number_format($trans->outstanding,2);
+            })
+            ->addColumn('payment_date', function($payment){
+                return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
+            })
+            ->addColumn('pay', function($trans){
+                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                return $result;
+            })
+           
+            ->make(true);
+    }
+
+    /*
+     * 
+     * Get All Settled Transactions
+     */
+    public function getSettledTrans(Request $request, $trans)
+    {
+        return DataTables::of($trans)
+            ->rawColumns(['select', 'pay'])
+            ->addColumn('disb_date', function($trans){
+                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+            })
+            ->addColumn('invoice_no', function($trans){
+                return $trans->invoice_disbursed_id;
+            })
+            ->addColumn('trans_type', function($trans){
+                return $trans->transName;
+            })
+            ->addColumn('total_repay_amt', function($trans){
+                return "₹ ".number_format($trans->amount,2);
+            })
+            ->addColumn('payment_date', function($trans){
+                return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+            })
+            ->addColumn('pay', function($trans){
+                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->make(true);
+    }
+
+    /*
+     * 
+     * Get All Refund Transactions
+     */
+    public function getRefundTrans(Request $request, $trans)
+    {
+        return DataTables::of($trans)
+            ->rawColumns(['select', 'pay'])
+            ->addColumn('disb_date', function($trans){
+                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+            })
+            ->addColumn('invoice_no', function($trans){
+                return $trans->invoice_disbursed_id;
+            })
+            ->addColumn('trans_type', function($trans){
+                return $trans->transName;
+            })
+            ->addColumn('total_repay_amt', function($trans){
+                return "₹ ".number_format($trans->amount,2);
+            })
+            ->addColumn('outstanding_amt', function($trans){
+                return "₹ ".number_format($trans->outstanding,2);
+            })
+            ->addColumn('payment_date', function($trans){
+                return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+            })
+            ->addColumn('pay', function($trans){
+                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->make(true);
+    }
 }

@@ -15,7 +15,7 @@ class Transactions extends BaseModel {
      */
 
     private static $balacnce = 0;
-    protected $table = 'transactions';
+    protected $table = 'transactions_new';
 
     /**
      * Custom primary key is set for the table
@@ -69,7 +69,7 @@ class Transactions extends BaseModel {
     ];
 
     public function payment(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Payment','payment_id','payment_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
     } 
 
     public function invoiceDisbursed(){
@@ -88,22 +88,50 @@ class Transactions extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
     }
 
+    public function getsettled_amtAttribute(){
+        return self::where('parent_trans_id','=',$this->trans_id)->sum('amount');
+    }
+
     public function getOutstandingAttribute(){
-        $settledAmt = self::where('parent_trans_id','=',$this->trans_id)->sum('amount');
-        return $this->amount-$settledAmt;
+        return $this->amount-$this->getSettledAmt($this->trans_id);
     }
 
     public function getTransNameAttribute(){
         if($this->entry_type == 0){
-            return $this->trans_detail->debit_desc;
+            return $this->transType->debit_desc;
         }elseif($this->entry_type == 1){
-            return $this->trans_detail->credit_desc;
+            return $this->transType->credit_desc;
         }
     }
 
+    private function getSettledAmt($trans_id){
+        return self::where('parent_trans_id','=',$this->trans_id)->sum('amount');
+    }
 
+    public static function getUnsettledTrans($userId){
+        return self::whereIn('is_settled',[0,1])
+                ->whereNull('parent_trans_id')
+                ->where('user_id','=',$userId)
+                ->orderBy('trans_date','ASC')
+                ->get()
+                ->filter(function($item) {
+                    return $item->outstanding > 0;
+                });
+    }
 
+    public static function getSettledTrans($userId){
+        return self::whereIn('is_settled',[2])
+                ->whereNotNull('parent_trans_id')
+                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
+                ->where('user_id','=',$userId);
+    }
 
+    public static function getRefundTrans($userId){
+        return self::whereIn('is_settled',[2])
+                ->whereNotNull('parent_trans_id')
+                ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
+                ->where('user_id','=',$userId);
+    }
 
     /**
      * Save Transactions

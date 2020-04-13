@@ -2,27 +2,12 @@ class Apportionment {
     constructor(data) {
         this.data = data;
     }
-    
-    datatableView(id){
-        var data = this.data;
-        return $("#"+id).DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 10,
-            searching: false,
-            bSort: true,
-            ajax: {
-                "url": data.url, // json datasource
-                "method": 'POST',
-                data: function (d) {
-                    d._token = data.token;
-                },
-                "error": function () {  // error handling
-                    $("#"+id).append('<tbody class="appList-error"><tr><th colspan="8">' + data.data_not_found + '</th></tr></tbody>');
-                    $("#"+id+"_processing").css("display", "none");
-                }
-            },
-            columns: [
+
+    dataTableColumns(tableId){
+        var columns = [];
+        switch (tableId) {
+            case 'unsettledTransactions':
+            columns = [
                 {data: 'disb_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
@@ -31,8 +16,75 @@ class Apportionment {
                 {data: 'payment_date'},
                 {data: 'pay'},
                 {data: 'select'}
-            ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            ];
+                break;
+            case 'settledTransactions':
+            columns = [
+                {data: 'disb_date'},
+                {data: 'invoice_no'},
+                {data: 'trans_type'},
+                {data: 'total_repay_amt'},                    
+                {data: 'payment_date'},
+                {data: 'pay'},
+                {data: 'select'}
+            ];
+                break;
+            case 'refundTransactions':
+            columns =  [
+                {data: 'disb_date'},
+                {data: 'invoice_no'},
+                {data: 'trans_type'},
+                {data: 'total_repay_amt'},                    
+                {data: 'payment_date'},
+                {data: 'pay'},
+                {data: 'select'}
+            ];
+                break;
+        }
+        return columns;
+    }
+
+    datatableView(id,columns){
+        var data = this.data;
+        var columns = this.dataTableColumns(id);
+        return $("#"+id).DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: '*',
+            searching: false,
+            bSort: true,
+            bPaginate: false,
+            info: false,
+            ajax: {
+                "url": data.url, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    
+                    d.user_id = data.user_id;
+                    if(data.payment_id){
+                        d.payment_id = data.payment_id;
+                    }
+                    d._token = data.token;
+                },
+                "error": function () {  // error handling
+                    $("#"+id).append('<tbody class="appList-error"><tr><th colspan="8">' + data.data_not_found + '</th></tr></tbody>');
+                    $("#"+id+"_processing").css("display", "none");
+                }
+            },
+            columns: columns,
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
+            drawCallback: function( settings ) {
+                if(id == 'unsettledTransactions'){
+                    setPayAmount(1222,id);
+                }
+                alert( 'DataTables has redrawn the table' );
+            }
+        });
+    }
+
+    setPayAmount(amount, tableId){
+        $("#"+tableId).each(function (index, element) {
+            
         });
     }
 
