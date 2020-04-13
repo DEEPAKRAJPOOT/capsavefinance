@@ -45,8 +45,8 @@
 
     var messages = {
         url: "{{ URL::route('apport_unsettled_list') }}",
-        user_id: "542",
-        payment_id: "1",
+        user_id: "{{$userId}}",
+        payment_id: "{{$paymentId}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
     };
