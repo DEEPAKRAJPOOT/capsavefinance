@@ -45,7 +45,8 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-
+use App\Inv\Repositories\Models\BankWorkCapitalFacility;
+use App\Inv\Repositories\Models\BankTermBusiLoan;
 //date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
@@ -675,6 +676,18 @@ class CamController extends Controller
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
         $debtPosition = $fin->getDebtPosition($appId);
+        $dataWcf = [];
+        $dataTlbl = [];
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataWcf = BankWorkCapitalFacility::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                          ->where('is_active', 1)->get();
+          $dataWcf = $dataWcf ? $dataWcf->toArray() : [];
+        } 
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataTlbl = BankTermBusiLoan::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                          ->where('is_active', 1)->get();
+          $dataTlbl = $dataTlbl ? $dataTlbl->toArray() : [];
+        } 
         $contents = array();
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
@@ -707,6 +720,8 @@ class CamController extends Controller
           'xlsx_html'=> $xlsx_html,
           'xlsx_pagination'=> $xlsx_pagination,
           'debtPosition'=> $debtPosition,
+          'dataWcf'=> $dataWcf,
+          'dataTlbl'=> $dataTlbl
           ]);
     }
 

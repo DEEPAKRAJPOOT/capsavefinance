@@ -112,6 +112,26 @@
                            <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
                         </tr>  
 
+                        @if(isset($dataWcf) && count($dataWcf)>0)
+                           @foreach($dataWcf as $key =>$val)
+                           <tr class="control-group-wcf">
+                              <td width="12%"><input type="text" name="bank_name[]" value="{{$val['bank_name']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="fund_facility[]" value="{{$val['fund_facility']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="fund_amt[]" value="{{$val['fund_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="fund_os_amt[]" value="{{$val['fund_os_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="nonfund_facility[]" value="{{$val['nonfund_facility']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="nonfund_amt[]" value="{{$val['nonfund_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="nonfund_os_amt[]" value="{{$val['nonfund_os_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="">
+                                 <div class="input-group-btn">
+                                    <input type="text" name="relationship_len[]" value="{{$val['relationship_len']}}" class="col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove"></i>
+                                 <div>
+                              </td>
+                           </tr> 
+                           @endforeach
+                        @endif
+
                         <tr class="control-group-wcf">
                            <td width="12%"><input type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
                            <td width="12%"><input type="text" name="fund_facility[]" value="" class="form-control form-control-sm" /></td>
@@ -158,6 +178,23 @@
                            <td class="" tabindex="0" rowspan="1" colspan="1">O/S as On</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
                         </tr>  
+
+                        @if(isset($dataTlbl) && count($dataTlbl)>0)
+                           @foreach($dataTlbl as $key =>$val)
+                           <tr class="control-group-tlbl">
+                              <td width="12%"><input type="text" name="bank_name_tlbl[]" value="{{$val['bank_name_tlbl']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="loan_name[]" value="{{$val['loan_name']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="facility_amt[]" value="{{$val['facility_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input type="text" name="facility_os_amt[]" value="{{$val['facility_os_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="">
+                                 <div class="input-group-btn">
+                                    <input type="text" name="relationship_len_tlbl[]" value="{{$val['relationship_len_tlbl']}}" class="col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
+                                 <div>
+                              </td>
+                           </tr>  
+                           @endforeach
+                        @endif
 
                         <tr class="control-group-tlbl">
                            <td width="12%"><input type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
