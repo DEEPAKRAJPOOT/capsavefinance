@@ -45,6 +45,7 @@ class Apportionment {
     }
 
     datatableView(id,columns){
+        var paymentAmt = 10000;
         var data = this.data;
         var columns = this.dataTableColumns(id);
         return $("#"+id).DataTable({
@@ -73,21 +74,11 @@ class Apportionment {
             },
             columns: columns,
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
-            drawCallback: function( settings ) {
-                if(id == 'unsettledTransactions'){
-                    setPayAmount(1222,id);
-                }
-                alert( 'DataTables has redrawn the table' );
+            rowCallback: function( row, data, index ) {
+                $("input[name='payment["+data['trans_id']+"]']").val(10);
             }
         });
     }
-
-    setPayAmount(amount, tableId){
-        $("#"+tableId).each(function (index, element) {
-            
-        });
-    }
-
 }
 
 var apport =  new Apportionment(messages);

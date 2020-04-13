@@ -73,7 +73,7 @@ class Transactions extends BaseModel {
     } 
 
     public function invoiceDisbursed(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiveDisbursed','invoice_disbursed_id','invoice_disbursed_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiceDisbursed','invoice_disbursed_id','invoice_disbursed_id');
     }
         
     public function user(){
