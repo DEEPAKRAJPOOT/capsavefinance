@@ -572,7 +572,6 @@ class InvoiceController extends Controller {
 
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-                        $updateInvoiceActivityLog = $this->invRepo->saveInvoiceActivityLog($invoice['invoice_id'], 10, 'Sent to Bank', $creatorId, null);
                     }
 
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table

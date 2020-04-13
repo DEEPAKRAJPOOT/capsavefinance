@@ -207,6 +207,31 @@ $finalDisburseAmt +=  $disburseAmount;
 	$(document).ready(function () {
 	    parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
 	});
+	$(document).ready(function () {
+        $('#manualDisburse').validate({ // initialize the plugin
+            
+            rules: {
+                'disburse_date' : {
+                    required : true,
+                }
+            },
+            messages: {
+                'disburse_date': {
+                    required: "Disburse date is required.",
+                }
+            }
+        });
+
+        $('#manualDisburse').validate();
+
+        $("#submitManualDisburse").click(function(){
+            if($('#manualDisburse').valid()){
+                $('form#manualDisburse').submit();
+                $("#submitManualDisburse").attr("disabled","disabled");
+            }  
+        });            
+
+    });
 
 </script>
 @endsection
