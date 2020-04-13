@@ -533,7 +533,7 @@ class InvoiceController extends Controller {
                 if ($disburseData == null) {
                     $invoice['batch_id'] = $batchId;
                     $invoice['disburse_date'] = $disburseDate;
-                    $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
+                    $disburseRequestData = $this->createInvoiceDisbursedData($invoice, $disburseType);
                     $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
                     $disbursalId = $createDisbursal->disbursal_id; 
                     $disbursalIds[] = $createDisbursal->disbursal_id; 
@@ -547,7 +547,7 @@ class InvoiceController extends Controller {
                     $tenor = $this->calculateTenorDays($invoice);
                     $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                     $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                    $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+                    $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
                     if($invoice['program_offer']['payment_frequency'] == 1) {
                         $interest = $tInterest;
@@ -580,7 +580,6 @@ class InvoiceController extends Controller {
 
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-                        $updateInvoiceActivityLog = $this->invRepo->saveInvoiceActivityLog($invoice['invoice_id'], 10, 'Sent to Bank', $creatorId, null);
                     }
 
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
