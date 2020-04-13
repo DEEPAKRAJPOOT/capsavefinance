@@ -45,14 +45,15 @@ class Apportionment {
     }
 
     datatableView(id,columns){
+        var paymentAmt = 10000;
         var data = this.data;
         var columns = this.dataTableColumns(id);
         return $("#"+id).DataTable({
-            processing: true,
+            processing: false,
             serverSide: true,
             pageLength: '*',
             searching: false,
-            bSort: true,
+            bSort: false,
             bPaginate: false,
             info: false,
             ajax: {
@@ -75,19 +76,29 @@ class Apportionment {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
             drawCallback: function( settings ) {
                 if(id == 'unsettledTransactions'){
-                    setPayAmount(1222,id);
+
+                    $(".pay").each(function (index, element) {
+                        if(paymentAmt>0){
+                            let value =  parseFloat($(this).attr('max'));
+                            let id = $(this).attr('id');
+                            if(paymentAmt>=value){
+                                $(this).val(value);
+                                $(this).attr('readonly',false)
+                                $("input[name='check["+id+"]']").prop("checked", true);
+                                paymentAmt = paymentAmt-value;
+                            }else{
+                                $(this).val(paymentAmt);
+                                $(this).attr('readonly',false)
+                                $("input[name='check["+id+"]']").prop("checked", true);
+                                paymentAmt= 0;
+                            }
+                        }
+                    });
                 }
-                alert( 'DataTables has redrawn the table' );
             }
         });
     }
-
-    setPayAmount(amount, tableId){
-        $("#"+tableId).each(function (index, element) {
-            
-        });
-    }
-
+    
 }
 
 var apport =  new Apportionment(messages);

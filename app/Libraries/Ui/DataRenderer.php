@@ -1370,7 +1370,7 @@ class DataRenderer implements DataProviderInterface
                        $action = "";
                       if( $chkUser->id!=11)
                       {  
-                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
@@ -1721,7 +1721,7 @@ class DataRenderer implements DataProviderInterface
                        $action = "";
                        if( $chkUser->id!=11)
                       { 
-                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
                        $action .= '<option value="7">Pending</option>';
                        if(in_array($customer, $expl)) 
                        {
@@ -4547,6 +4547,38 @@ class DataRenderer implements DataProviderInterface
                     ->make(true);
         }
 
+        public function getToSettlePayments(Request $request, $dataRecords){
+            return DataTables::of($dataRecords)
+                    ->editColumn(
+                        'user_name',
+                        function ($dataRecords) {
+                            $full_name = $dataRecords->getUserName->f_name .' '.$dataRecords->getUserName->m_name . ' '. $dataRecords->getUserName->l_name;
+                        return $full_name;
+                    })
+                    ->editColumn(
+                        'business_name',
+                        function ($dataRecords) {
+                        return $dataRecords->getBusinessName->biz_entity_name;
+                    })
+                    ->editColumn(
+                        'virtual_account',
+                        function ($dataRecords) {
+                        return $dataRecords->virtual_acc;
+                    })
+                    ->editColumn(
+                        'amount',
+                        function ($dataRecords) {
+                        return $dataRecords->amount;
+                    }) 
+                    ->editColumn(
+                        'action',
+                        function ($dataRecords) {
+                        $btn = '<input type="checkbox" name="payment_ids[]" class="payment_ids" value="'.$dataRecords->payment_id.'" title="Move to Settled Status.">';
+                        return $btn;
+                    }) 
+                    ->make(true);
+        }
+
         public function getTransactionsByDataProvider(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
                     ->editColumn(
@@ -5277,7 +5309,9 @@ class DataRenderer implements DataProviderInterface
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
-                return $trans->invoice_disbursed_id;
+                if($trans->invoice_disbursed_id){
+                    return $trans->invoiceDisbursed->invoice_id;
+                }
             })
             ->addColumn('trans_type', function($trans){
                 return $trans->transName;
@@ -5292,7 +5326,7 @@ class DataRenderer implements DataProviderInterface
                 return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
             })
             ->addColumn('pay', function($trans){
-                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
                 return $result;
             })
             ->addColumn('select', function($trans){

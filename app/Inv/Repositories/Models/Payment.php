@@ -113,7 +113,6 @@ class Payment extends BaseModel {
        return $this->hasOne(User::class, 'user_id');
     }
 
-
     public static function getPaymentModeAttribute() {
         $payment_type = $this->payment_type;
         $payModes = config('payment.type') ?? [];
