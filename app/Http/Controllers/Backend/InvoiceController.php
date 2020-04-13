@@ -570,7 +570,7 @@ class InvoiceController extends Controller {
                     $totalInterest += $interest;
                     $totalMargin += $margin;
                     $totalFunded += $fundedAmount;
-                    $disburseAmount += round($fundedAmount, 2);
+                    $disburseAmount += round($fundedAmount - $interest, 2);
                 }
 
                 if($disburseType == 2) {
@@ -595,29 +595,9 @@ class InvoiceController extends Controller {
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                     }
-
-                    // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($userid, ['amount' => $fundedAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
-                    $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
-                    
-                    // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
-                
-                    if ($interest > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 9);
-                        $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
-
-                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 9, 1);
-                        $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
-                    }
-
-                    // Margin transaction $tranType = 10 
-                    if ($margin > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $margin, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 10, 1);
-                        $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
-                    }
                 } 
             }
-            /*
+            
             if ($disburseAmount) {
                 if($disburseType == 2) {
                     
@@ -643,7 +623,7 @@ class InvoiceController extends Controller {
                     }
                 }
             }
-            */
+            
         }
 
         $result = $this->export($exportData, $batchId);
