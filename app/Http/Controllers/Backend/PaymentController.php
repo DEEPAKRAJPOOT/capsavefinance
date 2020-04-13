@@ -42,6 +42,7 @@ class PaymentController extends Controller {
         $this->finRepo = $finRepo;
         //$this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
+        $this->middleware('checkEodBatchProcess');
     }
 
    
@@ -453,6 +454,11 @@ class PaymentController extends Controller {
   
   public function createPaymentRefund(Request $request)
   {
+    if ($request->get('eod_process')) {
+        Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+        return back();
+    }
+    
     $transId = $request->get('trans_id');
     $refundAmount = $request->get('total_refund_amount');
 

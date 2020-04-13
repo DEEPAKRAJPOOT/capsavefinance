@@ -85,5 +85,9 @@ return [
     'EOD_BATCH_PROCESS_STATUS' => [
         'EOD_TRANS_MARKED' => 1,
         'NO_BAL_MATCHED' => 2
+    ],
+    'EOD_BATCH_PROCESS_ROUTES' => [
+        'update_bulk_invoice',
+        'update_invoice_approve'
     ]
 ];

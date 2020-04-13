@@ -44,6 +44,7 @@ class DisbursalController extends Controller
         $this->masterRepo = $master;
         $this->finRepo = $finRepo;
 		$this->middleware('checkBackendLeadAccess');
+            $this->middleware('checkEodBatchProcess');
 	}
 	
 	/**
@@ -91,6 +92,12 @@ class DisbursalController extends Controller
 	 */
 	public function sendToBank(Request $request)
 	{
+            
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }       
+            
 		$invoiceIds = $request->invoiceids;
 		$customerRecords = $request->user_ids;
 		$disburseType = $request->disburse_type;
@@ -271,6 +278,11 @@ class DisbursalController extends Controller
      */
     public function processAccrualInterest()
     {
+        if (request()->get('eod_process')) {
+            //Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return response()->json(['error' => trans('backend_messages.lms_eod_batch_process_msg')]);
+        }
+        
 		$minDisbursalDate = Disbursal::whereIn('status_id',[12,13])->min('int_accrual_start_dt');
 		$currentDate = $this->subDays(date('Y-m-d'),1);
 		while(strtotime($minDisbursalDate)<=strtotime($currentDate)){

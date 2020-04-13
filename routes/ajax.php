@@ -1016,4 +1016,9 @@ Route::group(
         'as' => 'check_applied_charge',
         'uses' => 'AjaxController@checkAppliedCharge'
     ]);       
+    
+    Route::post('check-eod-batch-process', [
+        'as' => 'check_eod_batch_process',
+        'uses' => 'AjaxController@checkEodBatchProcess'
+    ]);      
 });

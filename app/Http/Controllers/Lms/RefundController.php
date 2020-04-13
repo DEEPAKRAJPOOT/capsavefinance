@@ -31,6 +31,7 @@ class RefundController extends Controller
 		$this->appRepo = $app_repo;
 		$this->lmsRepo = $lms_repo;
 		$this->middleware('checkBackendLeadAccess');
+                $this->middleware('checkEodBatchProcess');
 	}
 
     /**
@@ -87,6 +88,11 @@ class RefundController extends Controller
 
     public function refundOffline(Request $request)
     {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        
         $transactionIds = $request->get('transaction_ids');
         $disburseDate = $request->get('disburse_date');
         $creatorId = Auth::user()->user_id;
@@ -357,6 +363,11 @@ class RefundController extends Controller
 
 	public function sendRefund(Request $request)
 	{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+        
 		$transId = $request->trans_id;
 		$disburseIds = $request->disbursal_ids;
 
@@ -424,6 +435,11 @@ class RefundController extends Controller
 
         public function acceptReqStage(Request $request)
         {
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+        
             $reqId = $request->get('req_id');
             $isBackStage = $request->has('back_stage') && !empty($request->get('back_stage')) ? true : false;
             $comment = $request->get('sharing_comment');
@@ -517,6 +533,11 @@ class RefundController extends Controller
 
         public function processRefund(Request $request)
         {
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            
             $reqId = $request->get('req_id');
             $reqStatus = $request->get('status');
             $comment = $request->get('comment');

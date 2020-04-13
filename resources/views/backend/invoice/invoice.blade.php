@@ -551,6 +551,12 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    
                     if (data == 1)
                     {
                         
