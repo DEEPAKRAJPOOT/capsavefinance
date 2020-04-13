@@ -14,7 +14,7 @@ class InvoiceDisbursed extends BaseModel {
 	 * @var string
 	 */
 
-	protected $table = 'disbursal';
+	protected $table = 'invoice_disbursed';
 
 	/**
 	 * Custom primary key is set for the table
