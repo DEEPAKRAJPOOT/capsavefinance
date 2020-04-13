@@ -35,7 +35,6 @@ class ApportionmentController extends Controller
             $userId = 542;
             $paymentId = 1;
             $userDetails = $this->getUserDetails($userId); 
-            dd($userDetails);
             $payment = $this->getPaymentDetails($paymentId); 
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
@@ -117,9 +116,15 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getUserDetails($userId){
-        return $this->userRepo->lmsGetCustomer($userId);
-        return $data = $this->userRepo->find($userId);
-        dd($data);
+        $lmsUser = $this->userRepo->lmsGetCustomer($userId);
+        $user = $this->userRepo->find($userId);
+        
+        return [
+            'customer_id' => $lmsUser->customer_id,
+            'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
+            'address' => '',
+            'limit_amt'=>  '',
+        ];
     }
 
     /**
