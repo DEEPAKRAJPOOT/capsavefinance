@@ -73,6 +73,7 @@ class BizInvoice extends BaseModel
         'prgm_offer_id',
         'file_id',
         'status_id',
+        'is_bulk_upload',
         'status_update_time',
         'remark',
         'created_by',
@@ -405,4 +406,31 @@ public static function saveBulkInvoice($arrInvoice)
         
         return  self::where(['anchor_id'=>$res['anchor_id'],'program_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'supplier_id' => $res['user_id'],'status_id' =>12 ])->sum('invoice_approve_amount');      
     }
+    
+       protected  function saveFinalInvoice($res)
+    {
+           $mytime = Carbon::now();
+           $arr =          ['anchor_id' => $res->anchor_id,
+                            'supplier_id' => $res->supplier_id,
+                            'program_id' => $res->program_id,
+                            'prgm_offer_id' => $res->prgm_offer_id,
+                            'app_id' => $res->app_id,
+                            'biz_id' => $res->biz_id,
+                            'invoice_no' => $res->invoice_no,
+                            'tenor' => $res->tenor,
+                            'invoice_due_date' => $res->invoice_due_date,
+                            'invoice_date' => $res->invoice_date,
+                            'pay_calculation_on' => $res->pay_calculation_on,
+                            'invoice_amount' => $res->invoice_approve_amount, 	
+                            'invoice_approve_amount' => $res->invoice_approve_amount,
+                            'remark' => $res->comm_txt,
+                            'is_bulk_upload' => 1,
+                            'status_id' => 7,
+                            'file_id' => $res->file_id,
+                            'created_by' => $res->created_by,
+                            'created_at' =>  $mytime];
+     return self::create($arr);   
+   
+    }
+    
 }

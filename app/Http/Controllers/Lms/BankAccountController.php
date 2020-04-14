@@ -111,6 +111,7 @@ class BankAccountController extends Controller {
      */
     public function saveBankAccount(BankAccountRequest $request)
     {
+       
         try {
             $acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $prepareData = [
