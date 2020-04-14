@@ -293,6 +293,9 @@ class InvoiceController extends Controller {
                         
             if ($updateDisbursal) {
                 $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+                foreach ($invoiceIds as $key => $value) {
+                    $this->invRepo->saveInvoiceStatusLog($value, 12);
+                }
             }
         }
 
