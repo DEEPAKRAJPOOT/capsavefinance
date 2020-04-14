@@ -1777,12 +1777,12 @@ class DataRenderer implements DataProviderInterface
                     'amount',
                     function ($invoice) {
                       
-                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : '__________'; 
+                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : ''; 
              })
                 ->addColumn(
                     'comment',
                     function ($invoice) { 
-                     return ($invoice->comm_txt) ? $invoice->comm_txt : '__________'; 
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : ''; 
                 })
                ->addColumn(
                     'status',
@@ -1793,10 +1793,7 @@ class DataRenderer implements DataProviderInterface
                            {
                               return '<button type="button" class="'.$color[$invoice->status->id].' btn-sm">'.$invoice->status->status_name.'</button>';
                            }
-                           else
-                           {
-                             return '__________';
-                           }
+                           
                   })
                   ->addColumn(
                     'update',

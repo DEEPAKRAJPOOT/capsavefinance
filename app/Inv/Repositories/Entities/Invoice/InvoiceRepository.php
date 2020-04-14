@@ -18,6 +18,8 @@ use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
@@ -90,6 +92,26 @@ use CommonRepositoryTraits;
         }
 
         return InvoiceModel::saveInvoice($attributes);
+    }
+    
+    public function saveInvoice($attributes = [])
+    {
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return InvoiceBulkUpload::saveInvoice($attributes);
     }
     
      public function saveBulkTempInvoice($attributes = [])
@@ -204,7 +226,7 @@ use CommonRepositoryTraits;
             throw new BlankDataExceptions('No Data Found');
         }
 
-       return TempInvoiceModel::DeleteSingleTempInvoice($attributes);  
+       return InvoiceBulkUpload::DeleteTempInvoice($attributes);  
     }
     
         public function saveBulk($attributes = [])
@@ -952,7 +974,17 @@ use CommonRepositoryTraits;
 
        return BizInvoice::getRemainAmount($attributes);  
     }  
-    
+    public function saveFinalInvoice($attributes)
+    {
+         try
+        {
+             return BizInvoice::saveFinalInvoice($attributes);  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+
+       
+    }   
      public function saveInvoiceBatch($attributes)
     {
        
@@ -1004,7 +1036,53 @@ use CommonRepositoryTraits;
             return $ex;
         }
         
+    } 
+     public function getCustomerUser($custid)
+    {
+        try
+        {
+            return LmsUser::getCustomerUser($custid);
+           
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    } 
+     public function getAllBulkInvoice()
+    {
+        try
+        {
+            return InvoiceBulkUpload::getAllBulkInvoice();
+           
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
     }  
+    
+   
+     public function getSingleBulkInvoice($id)
+    {
+       try
+        {
+          return InvoiceBulkUpload::getSingleBulkInvoice($id);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+          
+    }
+    
+     public function updateBulkUpload($attr)
+    {
+       try
+        {
+          return InvoiceBulkUpload::updateBulkUpload($attr);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+          
+    }
+    
    public function getAllBankInvoiceCustomers($batch_id)
     {
         $this->result = Disbursal::getAllBankInvoiceCustomers($batch_id);

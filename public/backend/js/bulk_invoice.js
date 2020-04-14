@@ -1,7 +1,27 @@
+ $(document).ready(function(){
+    setInterval(function(){  localStorage.setItem('storageMsg',''); }, 1000);
+     var  msg = localStorage.getItem('storageMsg');
+    if(msg)
+     {
+       $("#storeSuccessMsg").html("<div class='alert-success alert' role='alert'><span><i class='fa fa-bell fa-lg' aria-hidden='true'></i></span>"+msg+"</div>");
+     }
+   })
  ///* upload image and get ,name  */
     $('input[name="file_id"]').change(function (e) {
         $("#customFile_msg").html('');
         var fileName = e.target.files[0].name;
+        var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+          if(fileNameExt!='csv')
+       {
+            $("#submit").css("pointer-events","none");
+            $("#customFile_msg").show();
+            $("#customFile_msg").text("Only Csv File Required"); 
+            return false;
+       }
+       else
+       {
+            $("#submit").css("pointer-events","auto");
+       }
         $("#msgFile").html('The file "' + fileName + '" has been selected.');
     });
     
@@ -9,10 +29,22 @@
     $('input[name="file_image_id"]').change(function (e) {
         $("#customImageFile_msg").html('');
         var fileName = e.target.files[0].name;
+         var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+          if(fileNameExt!='zip')
+       {
+            $("#submit").css("pointer-events","none");
+            $("#customImageFile_msg").show();
+            $("#customImageFile_msg").text("Only Zip File Required");
+            return false;
+       }
+       else
+       {
+            $("#submit").css("pointer-events","auto");
+       }
         $("#msgImageFile").html('The file "' + fileName + '" has been selected.');
     });
     
-    
+   
     $(document).ready(function () {
         $(".finalButton").hide();
         $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
@@ -87,6 +119,7 @@
 
     //////////////////// onchange anchor  id get data /////////////////
     $(document).on('change', '.changeBulkAnchor', function () {
+        var  msg = localStorage.setItem('storageMsg','');
         $("#anchor_bulk_id_msg").hide();
         var anchor_id = $(this).val();
         if (anchor_id == '')
@@ -236,6 +269,7 @@
         $("#customFile_msg").hide();
 
     });
+    
     function ChangeDateFormat(date)
     {
         var datearray = date.split("/");
@@ -256,7 +290,39 @@
     }
     /////////////// validation the time of final submit/////////////// 
     $(document).on('click', '#final_submit', function (e) {
-        $("#final_submit_msg").hide();
+        
+       var arr = $(".getUploadBulkId").map(function() {
+                return $(this).attr("data-id");
+              }).get().join();
+      if(confirm('Are you sure, You want to final submit'))
+      {
+        $('.isloader').show();   
+        var postData =  ({'id':arr,'_token':messages.token});
+        jQuery.ajax({
+         url: messages.upload_invoice_csv,
+                 method: 'post',
+                 dataType: 'json',
+                 data: postData,
+                 error: function (xhr, status, errorThrown) {
+                 alert(errorThrown);
+
+                 },
+                 success: function (data) {
+                       $('.isloader').hide();
+                       if(data.status==1)
+                       {
+                           localStorage.setItem('storageMsg', 'Invoice successfully saved');
+                           location.reload(); 
+                       }
+                 }
+         });  
+       }
+       else
+       {
+           return false;
+       }
+            ///var users = $('input:text.users').serialize();
+        /* $("#final_submit_msg").hide();
         var p_limit = $("#pro_limit_hide").val();
         var sum = 0;
         if ($('form#signupForm').validate().form()) {
@@ -319,7 +385,7 @@
                  $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
                  e.preventDefault();
                  }
-                 else */
+                 else 
                 if (getDays > tenor)
                 {
                     $(".appendExcel" + count).css("background-color", "#ea9292");
@@ -340,7 +406,7 @@
 
         } else {
             /// alert();
-        }
+        }  */
 
     });
 
@@ -354,9 +420,10 @@
             event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
 
     });
-
-    $(document).on('click', '#submit', function (e) {
-
+    
+       $(document).on('click', '#submit', function (e) {
+        $("#storeSuccessMsg").hide();
+        
         if ($("#anchor_bulk_id").val() == '')
         {
             $("#anchor_bulk_id_msg").show();
@@ -480,8 +547,9 @@
 
     $(document).on('click', '.deleteTempInv', function () {
         if (confirm("Are you sure? You want to delete it.")) {
-            var temp_id = $(this).attr('data-id');
-            var postData = ({'temp_id': temp_id, '_token': messages.token});
+            var invoice_bulk_upload_id = $(this).attr('data-id');
+            var numItems = $('.deleteTempInv').length;
+            var postData = ({'invoice_bulk_upload_id':invoice_bulk_upload_id, '_token': messages.token});
             jQuery.ajax({
                 url: messages.delete_temp_invoice,
                 method: 'post',
@@ -494,6 +562,10 @@
                 success: function (data) {
                     if (data.status == 1)
                     {
+                        if(numItems==1)
+                        {
+                            location.reload();
+                        }
                         $(".finalButton").show();
                         $("#deleteRow" + data.id).remove();
                     }

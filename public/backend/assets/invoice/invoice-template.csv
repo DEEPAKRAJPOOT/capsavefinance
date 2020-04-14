@@ -1,1 +1,3 @@
-Invoive No,Invoice Date,Invoice Due Date,Invoice Amount
+Customer_id,Invoice_no,Invoice_date,Invoice_due_date,Amount,File_name
+CAP000000522,TTT1234,19/03/20,09/04/20,70000,TB_data_dictionary_2020-04-10.csv
+CAP000000523,SSS1234,18/03/20,11/04/20,80000,payment.csv

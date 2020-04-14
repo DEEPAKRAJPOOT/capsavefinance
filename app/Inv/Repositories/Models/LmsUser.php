@@ -80,7 +80,17 @@ class LmsUser extends Authenticatable
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id');
     }
+    
+    public static function getCustomerUser($customer_id)
+    {
+        return self::with(['bizApp'])->where(['customer_id' => $customer_id ])->first();
+    }
 
+     public function bizApp()
+    {
+         return $this->hasOne('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+    }
+    
     public static function updateVirtualId($lmsUserId, $virtualId)
     {
         return self::where('lms_user_id', $lmsUserId)

@@ -129,7 +129,8 @@ class InvoiceController extends Controller {
         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
         $get_program = $this->invRepo->getLimitProgram($aid);
         $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
-        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program ]);
+        $getBulkInvoice = $this->invRepo->getAllBulkInvoice();
+        return view('backend.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program,'getBulkInvoice' =>$getBulkInvoice]);
     }
 
     public function viewApproveInvoice(Request $req) {
@@ -882,11 +883,14 @@ class InvoiceController extends Controller {
         $date = Carbon::now();
         $id = Auth::user()->user_id; 
         $attributes = $request->all();
+        $program_name  = explode(',',$attributes['program_name']);
+        $prgm_id        =   $program_name[0];
+        $prgm_limit_id   =   $program_name[1];
         $batch_id =  self::createBatchNumber(6);
         $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
         $userFile = $this->docRepo->saveFile($uploadData);  ///Upload csv
         $userFile['batch_no'] =  $batch_id;
-       if($userFile)
+        if($userFile)
        {
            $resFile =  $this->invRepo->saveInvoiceBatch($userFile);
            if($resFile)
@@ -904,6 +908,7 @@ class InvoiceController extends Controller {
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
                     $key=0;
+                    $ins = [];
                     while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
                     {   
                         $cusomer_id  =   $data[0]; 
@@ -915,31 +920,44 @@ class InvoiceController extends Controller {
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
                         if($getImage)
                         {
-                            $FileId = NUll;
+                           $FileDetail = $this->docRepo->saveFile($getImage); 
+                           $FileId  = $FileDetail->file_id; 
                         }
                         else
                         {
-                            $FileDetail = $this->docRepo->saveFile($getImage); 
-                            $FileId  = $FileDetail->file_id;
+                            $FileId = NUll;
                         }
-                        $data[$key]['anchor_id']=$userId;
-                        $data[$key]['supplier_id']=$business->biz_id;
-                        $data[$key]['program_id']=2;
-                        $data[$key]['app_id']=1;
-                        $data[$key]['biz_id']=1;
-                        $data[$key]['invoice_no']=$inv_no;
-                        $data[$key]['tenor']=5;
-                        $data[$key]['invoice_due_date']=Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
-                        $data[$key]['invoice_date']=Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
-                        $data[$key]['pay_calculation_on']=1;
-                        $data[$key]['invoice_approve_amount']=$amount;
-                        $data[$key]['status']=0;
-                        $data[$key]['file_id']= $FileId;
-                        $data[$key]['created_by']= $id;
-                        $data[$key]['created_at']= $date;
+                        $getLmsUser  = $this->invRepo->getCustomerUser($cusomer_id);
+                        $getOffer  = $this->invRepo->getOfferForLimit($prgm_limit_id);
+                        $ins[$key]['anchor_id'] = $attributes['anchor_name'];
+                        $ins[$key]['supplier_id'] = $getLmsUser->user_id;
+                        $ins[$key]['program_id'] = $prgm_id;
+                        $ins[$key]['prgm_offer_id'] = $getOffer['prgm_offer_id'];
+                        $ins[$key]['app_id'] = $getLmsUser->app_id;
+                        $ins[$key]['biz_id'] = $getLmsUser->bizApp->biz_id;
+                        $ins[$key]['invoice_no'] = $inv_no;
+                        $ins[$key]['tenor'] = 5;
+                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
+                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
+                        $ins[$key]['pay_calculation_on'] = 1;
+                        $ins[$key]['invoice_approve_amount'] = $amount;
+                        $ins[$key]['status'] = 0;
+                        $ins[$key]['file_id'] =  $FileId;
+                        $ins[$key]['created_by'] =  $id;
+                        $ins[$key]['created_at'] =  $date;
                         $key++;
                     } 
-                    
+                     $res =  $this->invRepo->saveInvoice($ins);
+                     if($res)
+                     {
+                         Session::flash('message', 'Invoice data successfully sent to under reviewer process');
+                         return back();  
+                     }
+                     else
+                     {
+                          Session::flash('message', 'Something wrong, Invoice is not saved');
+                          return back();
+                     }
                   }
               }
            }
