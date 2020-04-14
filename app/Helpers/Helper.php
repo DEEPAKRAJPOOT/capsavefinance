@@ -356,7 +356,9 @@ class Helper extends PaypalHelper
          {
             $pathToFile = storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$file_name);
             $attributes =  pathinfo($pathToFile);
-            $inputArr['file_path'] = $attributes['dirname'];
+            $realPath = '/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$attributes['basename'];
+            
+            $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $attributes['extension'];
             $inputArr['file_name'] = $attributes['basename'];
             $inputArr['file_size'] = filesize($pathToFile);
