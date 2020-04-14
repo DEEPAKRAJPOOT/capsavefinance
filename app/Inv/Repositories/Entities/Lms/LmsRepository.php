@@ -17,6 +17,7 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
@@ -898,9 +899,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::get();
 	}        
 
-	public function findDisbursalByInvoiceId($invoiceId)
+	public function findInvoiceDisbursedByInvoiceId($invoiceId)
 	{
-		return Disbursal::where('invoice_id', $invoiceId)
+		return InvoiceDisbursed::where('invoice_id', $invoiceId)
 				->get();
 	}
         

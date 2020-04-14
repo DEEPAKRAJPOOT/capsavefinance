@@ -1,6 +1,10 @@
 
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#invoice_ids').val().trim();
+        if (invoiceIds.length == 0) {
+            alert('Please select atleast one invoice');
+            return false;
+        }
         var dataUrl = $(this).attr('data-url');
         var newUrl = dataUrl+'&invoice_ids='+invoiceIds;
         $('#openDisburseInvoice').attr('data-url', newUrl);
