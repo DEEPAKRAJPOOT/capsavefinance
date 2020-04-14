@@ -956,7 +956,7 @@ class InvoiceController extends Controller {
                         $ins[$key]['tenor'] = 5;
                         $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
                         $ins[$key]['invoice_date'] = Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
-                        $ins[$key]['pay_calculation_on'] = 1;
+                        $ins[$key]['pay_calculation_on'] = 2;
                         $ins[$key]['invoice_approve_amount'] = $amount;
                         $ins[$key]['status'] = 0;
                         $ins[$key]['file_id'] =  $FileId;
