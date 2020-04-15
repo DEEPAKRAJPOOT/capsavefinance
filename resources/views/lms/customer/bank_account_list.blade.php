@@ -99,6 +99,19 @@
 										   data-target="#add_bank_account"
 										   data-url="' . route('add_bank_account', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Bank Account"><i class="fa fa-edit"></i></a>';
 											}
+
+
+											$act .= '<a data-toggle="modal"  data-height="450px" 
+										   data-width="100%" 
+										   data-target="#see_upload_bank_detail"
+										   data-url="' . route('see_upload_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="See Upload Document"><i class="fa fa-eye"></i></a>';
+
+										
+										   $act .= '<a data-toggle="modal"  data-height="450px" 
+										   data-width="100%" 
+										   data-target="#download_upload_bank_detail"
+										   data-url="' . route('add_bank_account', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Download Upload File"><i class="fa fa-download"></i></a>';
+											
 											@endphp
 											<td>{!! $act !!}</td>
 										</tr>
@@ -115,6 +128,7 @@
 @endsection
 
 {!!Helpers::makeIframePopup('add_bank_account','Add/Edit Bank', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('see_upload_bank_detail','See Upload File', 'modal-lg')!!}
 
 @section('additional_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">

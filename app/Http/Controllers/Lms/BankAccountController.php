@@ -170,4 +170,23 @@ class BankAccountController extends Controller {
         }
     }
 
+    /**
+     * This method is used for see upload file in Bank Account  
+     */
+    public function seeUploadFile(Request $request) {
+
+        $acc_id = $request->all('bank_account_id');
+        $user_id = $request->all('user_id');
+
+        // $userBaseDir = 'appDocs/Document/bankDoc/' . auth()->user()->user_id;
+
+        $userBaseDir = 'storage/app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/';
+        $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
+
+        // dd($file);
+
+        return view('lms.customer.view_upload_file')->with(['response' => $file, 'path' => $userBaseDir]);
+        // return view('lms.customer.view_upload_file', compact('file'));
+    }
+
 }
