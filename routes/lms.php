@@ -257,7 +257,47 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_process_refund',
                 'uses' => 'Lms\RefundController@processRefund'
             ]); 
+
+            Route::get('/apportionment/unsettled/view',[
+                'as' => 'apport_unsettled_view',
+                'uses' => 'Lms\ApportionmentController@viewUnsettledTrans'
+            ]);
+
+            Route::get('/apportionment/settled/view',[
+                'as' => 'apport_settled_view',
+                'uses' => 'Lms\ApportionmentController@viewSettledTrans'
+            ]);
+
+            Route::get('/apportionment/refund/view',[
+                'as' => 'apport_refund_view',
+                'uses' => 'Lms\ApportionmentController@viewRefundTrans'
+            ]);
+
+            Route::post('/apportionment/unsettled/list',[
+                'as' => 'apport_unsettled_list',
+                'uses' => 'Lms\ApportionmentController@listUnsettledTrans'
+            ]);
+
+            Route::post('/apportionment/settled/list',[
+                'as' => 'apport_settled_list',
+                'uses' => 'Lms\ApportionmentController@listSettledTrans'
+            ]);
+
+            Route::post('/apportionment/refund/list',[
+                'as' => 'apport_refund_list',
+                'uses' => 'Lms\ApportionmentController@listRefundTrans'
+            ]);
+
+            Route::post('/apportionment/unsettled/save',[
+                'as' => 'apport_unsettled_save',
+                'uses' => 'Lms\ApportionmentController@saveUnsettledTrans'
+            ]);
             
+            Route::post('/apportionment/settled/save',[
+                'as' => 'apport_settled_save',
+                'uses' => 'Lms\ApportionmentController@saveSettledTrans'
+            ]);
+
         });
         
         //end of application

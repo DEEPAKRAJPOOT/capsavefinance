@@ -39,6 +39,7 @@ use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
 use App\Inv\Repositories\Models\Lms\RefundBatch;
 use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Payment;
 
 /**
  * Lms Repository class
@@ -988,5 +989,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
         return RefundBatch::create($disburseBatch);
-    }        
+	} 
+
+	public static function getUnsettledTrans($userId){
+		return Transactions::getUnsettledTrans($userId);
+	}
+
+	public static function getSettledTrans($userId){
+		return Transactions::getSettledTrans($userId);
+	}
+
+	public static function getRefundTrans($userId){
+		return Transactions::getRefundTrans($userId);
+	}
+
+	public static function getPaymentDetail($paymentId){
+		return Payment::find($paymentId);
+	}
 }

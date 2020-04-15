@@ -27,6 +27,7 @@ use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -4335,11 +4336,20 @@ if ($err) {
         return $this->providerResult;
     }
     
-    public function checkAppliedCharge(Request $request)
-    {
+    public function checkAppliedCharge(Request $request) {
         $chargeId = $request->get('chrg_id');
         $chargeData = $this->lmsRepo->getChargeData(['charge_id' => $chargeId]);        
         $result = $chargeData && isset($chargeData[0]) ? 1 : 0;         
         return response()->json(['is_active' => $result]);         
+    }
+
+    public function getToSettlePayments(DataProviderInterface $dataProvider) {
+        $user_id = $this->request->user_id;
+        $this->dataRecords = [];
+        if (!empty($user_id)) {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id]);
+        }
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        return $this->providerResult;
     }
 }

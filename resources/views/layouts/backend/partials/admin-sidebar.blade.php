@@ -163,7 +163,7 @@
                 <ul class="nav flex-column sub-menu">                    
                 @can('request_list')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('request_list') }}">Manage Refund</a>
+                        <a class="nav-link" href="{{ route('lms_refund_new') }}">Manage Refund</a>
                     </li> 
                 @endcan 
                                         
@@ -277,7 +277,11 @@
                         <a class="nav-link" href="{{route('payment_list')}}">Manage Repayment</a>
                     </li>                     
                     @endcan
-
+                    @can('unsettled_payments')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('unsettled_payments')}}">Unsettled Payments</a>
+                    </li>                     
+                    @endcan
                     @can('payment_advice')
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('payment_advice')}}">Payment Advice</a>
