@@ -189,12 +189,31 @@ class Transactions extends BaseModel {
         return $result;
     }
 
+
+    /**
+     * Get Unsettled Inovoices
+     * 
+     * @param array 
+     * @return mixed
+     */
+    public static function getUnsettledInvoices(){
+        return self::whereIn('trans_type',[16])
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        })
+        ;
+    }
+
+
+
+
+
+
+
+
+
     
-
-
-
-
-
 
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)

@@ -30,10 +30,10 @@ class ApportionmentController extends Controller
      */
     public function viewUnsettledTrans(Request $request){
         try {
-            // $userId = $request->user_id;
-            // $paymentId = $request->payment_id;
             $userId = 542;
             $paymentId = 1;
+            // $userId = $request->user_id;
+            // $paymentId = $request->payment_id;
             $userDetails = $this->getUserDetails($userId); 
             $payment = $this->getPaymentDetails($paymentId); 
             return view('lms.apportionment.unsettledTransactions')
@@ -41,7 +41,6 @@ class ApportionmentController extends Controller
             ->with('userId', $userId)
             ->with('payment',$payment) 
             ->with('userDetails', $userDetails);
-
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -54,9 +53,9 @@ class ApportionmentController extends Controller
      */
     public function viewSettledTrans(Request $request){
         try {
-            $userId = $request->user_id;
+            $userId = 542;
+            //$userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
-
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails); 
 

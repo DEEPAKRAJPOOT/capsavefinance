@@ -85,4 +85,13 @@ class InvoiceDisbursed extends BaseModel {
 	public function disbursal() { 
 		return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'disbursal_id', 'disbursal_id'); 
 	}
+
+	public function transactions(){
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','invoice_disbursed_id','invoice_disbursed_id');
+	}
+
+	public function interests() { 
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'invoice_disbursed_id', 'invoice_disbursed_id'); 
+	}
+
 }
