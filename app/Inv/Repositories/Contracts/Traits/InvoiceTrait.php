@@ -43,7 +43,7 @@ trait InvoiceTrait
         if($res)
         {
             $attr['status'] = 0;
-            $attr['message']=  'Invoice No '.$inv_no.' already exits with '.$cusomer_id;
+            $attr['message']=  'Invoice No "'.$inv_no.'" already exits with '.$cusomer_id;
             return  $attr;    
         }
         if( $invoice_due_date_validate==false)

@@ -952,9 +952,9 @@ class InvoiceController extends Controller {
                         $ins[$key]['app_id'] = $getLmsUser->app_id;
                         $ins[$key]['biz_id'] = $getLmsUser->bizApp->biz_id;
                         $ins[$key]['invoice_no'] = $inv_no;
-                        $ins[$key]['tenor'] = 5;
-                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
-                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_due_date)->format('Y-m-d');
+                        $ins[$key]['tenor'] = 0;
+                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
+                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $inv_due_date)->format('Y-m-d');
                         $ins[$key]['pay_calculation_on'] = 2;
                         $ins[$key]['invoice_approve_amount'] = $amount;
                         $ins[$key]['status'] = 0;
