@@ -97,21 +97,13 @@ use CommonRepositoryTraits;
     public function saveInvoice($attributes = [])
     {
        
-        /**
-         * Check Data is Array
-         */
-        if (!is_array($attributes)) {
-            throw new InvalidDataTypeExceptions('Please send an array');
+        try
+        {
+            return InvoiceBulkUpload::saveInvoice($attributes); 
+        } catch (Exception $ex) {
+            return $ex;
         }
-
-        /**
-         * Check Data is not blank
-         */
-        if (empty($attributes)) {
-            throw new BlankDataExceptions('No Data Found');
-        }
-
-        return InvoiceBulkUpload::saveInvoice($attributes);
+       
     }
     
      public function saveBulkTempInvoice($attributes = [])

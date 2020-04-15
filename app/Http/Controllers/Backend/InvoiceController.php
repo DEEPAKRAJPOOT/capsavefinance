@@ -16,6 +16,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
+use Datetime;
 use DB;
 use Intervention\Image\File;
 use App\Libraries\Pdf;
@@ -24,7 +25,7 @@ use PHPExcel;
 use PHPExcel_IOFactory;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
-
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 class InvoiceController extends Controller {
 
     use ApplicationTrait;
@@ -934,6 +935,21 @@ class InvoiceController extends Controller {
                         $inv_due_date  =   $data[3]; 
                         $amount  =   $data[4]; 
                         $file_name  =   $data[5];
+                        $getLmsUser  = $this->invRepo->getCustomerUser($cusomer_id);
+                        ////// for validation paramiter here//////
+                        $dataAttr['cusomer_id']  =   $data[0]; 
+                        $dataAttr['inv_no']  =   $data[1]; 
+                        $dataAttr['inv_date']  =   $data[2]; 
+                        $dataAttr['inv_due_date']  =   $data[3]; 
+                        $dataAttr['amount']  =   $data[4]; 
+                        $dataAttr['file_name']  =   $data[5];
+                        $dataAttr['user_id']  =   $getLmsUser->user_id;
+                        $error = InvoiceTrait::checkCsvFile($dataAttr);
+                        if($error['status']==0)
+                        {
+                           Session::flash('message', $error['message']);
+                           return back(); 
+                        }
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
                         if($getImage)
                         {
@@ -944,7 +960,7 @@ class InvoiceController extends Controller {
                         {
                             $FileId = NUll;
                         }
-                        $getLmsUser  = $this->invRepo->getCustomerUser($cusomer_id);
+                      
                         $getOffer  = $this->invRepo->getOfferForLimit($prgm_limit_id);
                         $ins[$key]['anchor_id'] = $attributes['anchor_name'];
                         $ins[$key]['supplier_id'] = $getLmsUser->user_id;
@@ -954,8 +970,8 @@ class InvoiceController extends Controller {
                         $ins[$key]['biz_id'] = $getLmsUser->bizApp->biz_id;
                         $ins[$key]['invoice_no'] = $inv_no;
                         $ins[$key]['tenor'] = 5;
-                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
-                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
+                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
+                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_due_date)->format('Y-m-d');
                         $ins[$key]['pay_calculation_on'] = 2;
                         $ins[$key]['invoice_approve_amount'] = $amount;
                         $ins[$key]['status'] = 0;
@@ -994,4 +1010,6 @@ class InvoiceController extends Controller {
         }
         return $randomString;
     }
+    
+    
 }
