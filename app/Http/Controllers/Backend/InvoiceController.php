@@ -930,7 +930,7 @@ class InvoiceController extends Controller {
                         $error = InvoiceTrait::checkCsvFile($dataAttr);
                         if($error['status']==0)
                         {
-                           Session::flash('message', $error['message']);
+                           Session::flash('error', $error['message']);
                            return back(); 
                         }
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
