@@ -3877,7 +3877,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('invoice_no',function($trans){
                 $data = '';
-                if($trans->disbursal_id && $trans->disburse->invoice ){
+                if($trans->disbursal_id && $trans->disburse && $trans->disburse->invoice ){
                     $data = $trans->disburse->invoice->invoice_no; 
                 }
                 return $data;
