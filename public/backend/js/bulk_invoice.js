@@ -15,7 +15,7 @@
        {
             $("#submit").css("pointer-events","none");
             $("#customFile_msg").show();
-            $("#customFile_msg").text("Only Csv File Required"); 
+            $("#customFile_msg").text("File format is not correct, only csv file is allowed."); 
             return false;
        }
        else
@@ -34,7 +34,7 @@
        {
             $("#submit").css("pointer-events","none");
             $("#customImageFile_msg").show();
-            $("#customImageFile_msg").text("Only Zip File Required");
+            $("#customImageFile_msg").text("File format is not correct, only zip file is allowed.");
             return false;
        }
        else
@@ -449,6 +449,7 @@
             return false;
         } else
         {
+             $(".isloader").show();
             return true;
            /* if (confirm("Are you sure? You want to upload CSV")) {
                 $(".invoiceAppendData").empty();

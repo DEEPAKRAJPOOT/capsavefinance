@@ -86,7 +86,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                          <label for="txtCreditPeriod">Upload Invoice Copy
-                                             <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(Please upload zip file*)</span></label>
+                                             <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(zip file contains copy of invoice.)</span></label>
                                         <div class="custom-file  ">
 
                                             <input type="file"   class="custom-file-input fileUpload" id="customImageFile" data-id="1" name="file_image_id">
@@ -94,12 +94,12 @@
                                             <span id="customImageFile_msg" class="error"></span>
                                             <span id="msgImageFile" class="text-success"></span>
                                         </div>
-                                         <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
+                                      
                                         </div>
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
+                                        <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*&nbsp;&nbsp;(Only csv file format allowed.)</span></label>
                                         <div class="custom-file  ">
 
                                             <input type="file"   class="custom-file-input fileUpload" data-id="2" id="customFile" name="file_id">
@@ -107,7 +107,7 @@
                                             <span id="customFile_msg" class="error"></span>
                                             <span id="msgFile" class="text-success"></span>
                                         </div>
-
+   <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
                                     </div>
 
                                     <div class="col-md-2">
