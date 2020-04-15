@@ -943,7 +943,7 @@ class InvoiceController extends Controller {
                         $dataAttr['inv_due_date']  =   $data[3]; 
                         $dataAttr['amount']  =   $data[4]; 
                         $dataAttr['file_name']  =   $data[5];
-                        $dataAttr['user_id']  =   $getLmsUser->user_id;
+                        $dataAttr['user_id']  =   $getLmsUser['user_id'];
                         $error = InvoiceTrait::checkCsvFile($dataAttr);
                         if($error['status']==0)
                         {
@@ -963,7 +963,7 @@ class InvoiceController extends Controller {
                       
                         $getOffer  = $this->invRepo->getOfferForLimit($prgm_limit_id);
                         $ins[$key]['anchor_id'] = $attributes['anchor_name'];
-                        $ins[$key]['supplier_id'] = $getLmsUser->user_id;
+                        $ins[$key]['supplier_id'] = $getLmsUser['user_id'];
                         $ins[$key]['program_id'] = $prgm_id;
                         $ins[$key]['prgm_offer_id'] = $getOffer['prgm_offer_id'];
                         $ins[$key]['app_id'] = $getLmsUser->app_id;
