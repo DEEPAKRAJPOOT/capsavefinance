@@ -61,7 +61,6 @@ public function listAppliction(Request $request) {
         $transactions = 0;
         $user_id = $request->get('user_id');
         $userInfo = $this->userRepo->getCustomerDetail($user_id);
-
         $application = $this->appRepo->getCustomerApplications($user_id);
         $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 
