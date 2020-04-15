@@ -49,6 +49,7 @@ class Disbursal extends BaseModel {
 		'tran_id',
 		'disburse_date',
 		'disburse_amount',
+		'funded_date',
 		'bank_account_id',
 		'bank_name',
 		'ifsc_code',

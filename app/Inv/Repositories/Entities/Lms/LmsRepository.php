@@ -100,6 +100,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return Disbursal::saveDisbursalRequest($data, $whereCondition);
 	}
+
+	/**
+	 * Save or Update Disbursal Request
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public function saveUpdateInvoiceDisbursed($data, $whereCondition=[])
+	{
+		return InvoiceDisbursed::saveUpdateInvoiceDisbursed($data, $whereCondition);
+	}
 	
 	/**
 	 * Save Transactions
@@ -334,6 +347,24 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return ($response) ?? $response;
 	}          
 	 
+	 /**
+	 * Get Repayments
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function updateInvoiceDisbursed($data, $invoiceDisbursalIds)
+	{
+		if (!is_array($invoiceDisbursalIds)) {
+			return InvoiceDisbursed::where('invoice_disbursed_id', $invoiceDisbursalIds)
+				->update($data);
+		} else {
+			return InvoiceDisbursed::whereIn('invoice_disbursed_id', $invoiceDisbursalIds)
+					->update($data);
+		}
+	}
+
 	 /**
 	 *      
 	 * @param array $whereCondition | optional
