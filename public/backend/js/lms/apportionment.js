@@ -47,6 +47,7 @@ class Apportionment {
     datatableView(id,columns){
         var data = this.data;
         var columns = this.dataTableColumns(id);
+        var parentRef = this;
         return $("#"+id).DataTable({
             processing: false,
             serverSide: true,
@@ -75,29 +76,57 @@ class Apportionment {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
             drawCallback: function( settings ) {
                 if(id == 'unsettledTransactions'){
-                    var paymentAmt = data.payment_amt;
-                    $(".pay").each(function (index, element) {
-                        if(paymentAmt>0){
-                            let value =  parseFloat($(this).attr('max'));
-                            let id = $(this).attr('id');
-                            if(paymentAmt>=value){
-                                $(this).val(value);
-                                $(this).attr('readonly',false)
-                                $("input[name='check["+id+"]']").prop("checked", true);
-                                paymentAmt = paymentAmt-value;
-                            }else{
-                                $(this).val(paymentAmt);
-                                $(this).attr('readonly',false)
-                                $("input[name='check["+id+"]']").prop("checked", true);
-                                paymentAmt= 0;
-                            }
-                        }
-                    });
+                    parentRef.setTransactionAmt();
                 }
             }
         });
     }
-    
+
+    setTransactionAmt(){
+        var paymentAmt = this.data.payment_amt;
+        $(".pay").each(function (index, element) {
+            if(paymentAmt>0){
+                let value =  parseFloat($(this).attr('max'));
+                let id = $(this).attr('id');
+                if(paymentAmt>=value){
+                    $(this).val(value);
+                    $(this).attr('readonly',false)
+                    $("input[name='check["+id+"]']").prop("checked", true);
+                    paymentAmt = paymentAmt-value;
+                }else{
+                    $(this).val(paymentAmt);
+                    $(this).attr('readonly',false)
+                    $("input[name='check["+id+"]']").prop("checked", true);
+                    paymentAmt= 0;
+                }
+            }
+        });
+        this.calculateUnAppliedAmt();
+    }
+
+    calculateUnAppliedAmt(){
+        var payment_amt = this.data.payment_amt;
+        var settled_amt = 0;
+        $(".pay").each(function (index, element) {
+            var payamt = parseFloat($(this).val());
+            if($.isNumeric(payamt)){
+                settled_amt += payamt;
+            }
+        });
+        var unapplied_amt = payment_amt-settled_amt; 
+        $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
+    }
+
+    onPaymentChange(transId){
+        this.calculateUnAppliedAmt()
+    }
+
+    onCheckChange(transId){
+        $("input[name='payment["+transId+"]']").val('');
+        $("input[name='payment["+transId+"]']").attr('readonly',true);
+        this.calculateUnAppliedAmt()
+    }
+
 }
 
 var apport =  new Apportionment(messages);
@@ -114,4 +143,5 @@ jQuery(document).ready(function ($) {
     if($('#settledTransactions').length){
         oTable = apport.datatableView('settledTransactions');
     }
+
 });
