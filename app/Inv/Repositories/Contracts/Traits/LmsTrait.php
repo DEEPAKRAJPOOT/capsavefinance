@@ -657,7 +657,7 @@ trait LmsTrait
         $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
-        $disbursalData['status_id'] = ($disburseType == 2) ? 12 : 10;
+        $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
         
         $disbursalData['funded_date'] = null;
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 2 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;

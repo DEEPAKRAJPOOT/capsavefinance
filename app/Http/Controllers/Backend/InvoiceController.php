@@ -620,7 +620,6 @@ class InvoiceController extends Controller {
                 $updateDisbursal = $this->lmsRepo->updateInvoiceDisbursed([
                         'disbursal_id' => $createDisbursal->disbursal_id
                     ], $invoiceDisbursedIds);
-                $disbursalId = $createDisbursal->disbursal_id; 
                 $disbursalIds[] = $createDisbursal->disbursal_id; 
                 $refId = $invoice['lms_user']['virtual_acc_id'];      
                 $exportData[$userid]['RefNo'] = $refId;

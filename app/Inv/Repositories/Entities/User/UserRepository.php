@@ -1606,11 +1606,17 @@ class UserRepository extends BaseRepositories implements UserInterface
         {
             $anchor_id="";
         }
-       $result = Disbursal::select('*', DB::raw('count(invoice_id) as total_invoice'), DB::raw('sum(disburse_amount) as total_disburse_amount'))
-                ->with(['lms_user.bank_details.bank', 'invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch'])
-                ->whereHas('invoice', function($query) use ($anchor_id){
+       $result = Disbursal::select('*', DB::raw('sum(disburse_amount) as total_disburse_amount'))
+                ->with(['lms_user.bank_details.bank', 'invoice_disbursed',  'user.anchor_bank_details.bank', 'disbursal_batch'])
+                ->whereHas('invoice_disbursed', function($query) use ($anchor_id){
                     $query->where('status_id', 10);
-                     if($anchor_id!='')
+                    if($anchor_id!='')
+                    {
+                       $query->where('anchor_id',$anchor_id);
+                    }
+                })
+                ->whereHas('invoice_disbursed.invoice', function($query) use ($anchor_id){
+                    if($anchor_id!='')
                     {
                        $query->where('anchor_id',$anchor_id);
                     }
