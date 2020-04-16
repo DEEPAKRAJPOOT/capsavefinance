@@ -27,6 +27,7 @@ use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\UserReqDoc;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -2742,17 +2743,11 @@ if ($err) {
 
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
-        //////////////////// use for Approve invoice list/////////////////
-     public function getFrontendInvoiceListApprove(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,8);
-        $invoice = $dataProvider->getFrontendInvoiceListApprove($this->request, $invoice_data);
-        return $invoice;
-    } 
+        
     
      //////////////////// use for exception case invoice list/////////////////
      public function getBackendEpList(DataProviderInterface $dataProvider) {
@@ -3610,7 +3605,9 @@ if ($err) {
  
     function uploadInvoice(Request $request) {
       
-       $extension = $request['doc_file']->getClientOriginalExtension();
+        dd($request);
+        
+       /*$extension = $request['doc_file']->getClientOriginalExtension();
        if($extension!="csv" || $extension!="csv")
        {
             return response()->json(['status' => 2]); 
@@ -3735,6 +3732,8 @@ if ($err) {
                   else {
                         return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
                     }
+         
+        */
      }
     function twoDateDiff($fdate,$tdate)
     {
@@ -4335,11 +4334,20 @@ if ($err) {
         return $this->providerResult;
     }
     
-    public function checkAppliedCharge(Request $request)
-    {
+    public function checkAppliedCharge(Request $request) {
         $chargeId = $request->get('chrg_id');
         $chargeData = $this->lmsRepo->getChargeData(['charge_id' => $chargeId]);        
         $result = $chargeData && isset($chargeData[0]) ? 1 : 0;         
         return response()->json(['is_active' => $result]);         
+    }
+
+    public function getToSettlePayments(DataProviderInterface $dataProvider) {
+        $user_id = $this->request->user_id;
+        $this->dataRecords = [];
+        if (!empty($user_id)) {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id]);
+        }
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        return $this->providerResult;
     }
 }
