@@ -116,7 +116,11 @@ class Transactions extends BaseModel {
         return self::whereIn('is_settled',[0,1])
                 ->whereNull('parent_trans_id')
                 ->where('user_id','=',$userId)
-                ->orderBy('trans_date','ASC')
+                ->orderBy('invoice_disbursed_id','ASC')
+                ->with(array('invoiceDisbursed' => function($query) {
+                    $query->orderBy('int_accrual_start_dt','ASC');
+                }))
+                ->orderByRaw("FIELD(trans_type, '9', '16', '33', '10')")
                 ->get()
                 ->filter(function($item) {
                     return $item->outstanding > 0;
