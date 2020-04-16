@@ -139,6 +139,7 @@ class ApportionmentController extends Controller
             'date_of_payment'=> Carbon::parse($payment->date_of_payment)->format('d-m-Y'), 
             'paymentmode'=> $payment->paymentmode,
             'transactionno'=> $payment->transactionno,
+            'payment_amt' => $payment->amount
         ];
     }
 

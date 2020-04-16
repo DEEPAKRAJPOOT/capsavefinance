@@ -45,7 +45,6 @@ class Apportionment {
     }
 
     datatableView(id,columns){
-        var paymentAmt = 10000;
         var data = this.data;
         var columns = this.dataTableColumns(id);
         return $("#"+id).DataTable({
@@ -76,7 +75,7 @@ class Apportionment {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
             drawCallback: function( settings ) {
                 if(id == 'unsettledTransactions'){
-
+                    var paymentAmt = data.payment_amt;
                     $(".pay").each(function (index, element) {
                         if(paymentAmt>0){
                             let value =  parseFloat($(this).attr('max'));
