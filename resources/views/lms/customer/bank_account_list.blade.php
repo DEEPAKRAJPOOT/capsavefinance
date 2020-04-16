@@ -123,7 +123,6 @@
 @endsection
 
 {!!Helpers::makeIframePopup('add_bank_account','Add/Edit Bank', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('see_upload_bank_detail','See Upload File', 'modal-lg')!!}
 
 @section('additional_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
