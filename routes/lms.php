@@ -51,6 +51,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'see_upload_bank_detail',
                 'uses' => 'Lms\BankAccountController@seeUploadFile'
             ]);
+
+            Route::get('/download-bank-detail', [
+                'as' => 'download_bank_detail{file}',
+                'uses' => 'Lms\BankAccountController@downloadFile'
+            ]);
             
             // disbursal routes
             Route::get('/disbursal/request-list', [

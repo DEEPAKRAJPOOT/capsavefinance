@@ -2,10 +2,9 @@
 @section('content')
 
 
-<td>{{url($path.$response->doc_name)}}</td>
+<td>{{url($file->doc_name)}}</td>
 
-
-<iframe src="{{url($path.$response->doc_name)}};" frameborder="0"></iframe>
+<embed src="{{ Storage::url($file->doc_name) }}" style="width:600px; height:800px;" frameborder="0">
 
 
 @endsection

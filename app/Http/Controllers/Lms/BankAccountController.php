@@ -178,15 +178,29 @@ class BankAccountController extends Controller {
         $acc_id = $request->all('bank_account_id');
         $user_id = $request->all('user_id');
 
-        // $userBaseDir = 'appDocs/Document/bankDoc/' . auth()->user()->user_id;
+        $path = 'appDocs/Document/bankDoc/' . auth()->user()->user_id;
 
         $userBaseDir = 'storage/app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/';
         $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
 
-        // dd($file);
+        $isExists = \Storage::exists($path .'/'.$file->doc_name);
+        // $storagePath = \Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
 
-        return view('lms.customer.view_upload_file')->with(['response' => $file, 'path' => $userBaseDir]);
-        // return view('lms.customer.view_upload_file', compact('file'));
+
+        if($isExists) {
+            // return view('lms.customer.view_upload_file')->with(['response' => $file, 'path' => $userBaseDir, 'storagePath' => $storagePath]);
+            return view('lms.customer.view_upload_file', compact('file', 'storagePath', 'path'));
+        }
+    }
+
+    public function downloadFile(Request $request, $file) {
+
+        $acc_id = $request->all('bank_account_id');
+        $user_id = $request->all('user_id');
+
+        $userBaseDir = 'storage/app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/';
+        
+        return response()->download($userBaseDir.$file);
     }
 
 }
