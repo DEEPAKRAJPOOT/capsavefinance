@@ -15,7 +15,7 @@ class Transactions extends BaseModel {
      */
 
     private static $balacnce = 0;
-    protected $table = 'transactions_new';
+    protected $table = 'transactions';
 
     /**
      * Custom primary key is set for the table

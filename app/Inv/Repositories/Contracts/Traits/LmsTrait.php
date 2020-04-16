@@ -717,7 +717,7 @@ trait LmsTrait
      * @param array $data
      * @return mixed
      */
-    protected function createTransactionData($userId = null, $data = 0, $transId = null, $transType = 0, $entryType = 0)
+    protected function createTransactionData($userId = null, $data = 0, $transType = 0, $entryType = 0)
     {
         /**
         * disburseType = 1 for online and 2 for manually
@@ -728,38 +728,35 @@ trait LmsTrait
         if(isset($data['soa_flag'])){
             $soaFlag = $data['soa_flag'];
         }else{
-            $soaFlag = in_array($transType,[10,35])?0:1;
+            $soaFlag = in_array($transType,[10,35]) ? 0 : 1;
         }
 
         $transactionData = [];
-        // dd($data);
-        $transactionData['repay_trans_id'] = $data['repay_trans_id'] ?? null;
+
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
-        $transactionData['gl_flag'] = 1;
-        $transactionData['soa_flag'] = $soaFlag;
+        $transactionData['invoice_disbursed_id'] = $data['invoice_disbursed_id'] ?? null;
         $transactionData['user_id'] = $userId ?? null;
-        $transactionData['disbursal_id'] = $data['disbursal_id'] ?? null;
-        $transactionData['virtual_acc_id'] = $userId ? $this->appRepo->getVirtualAccIdByUserId($userId) : null;
         $transactionData['trans_date'] = (!empty($data['trans_date'])) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$data['trans_date']))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $transactionData['trans_type'] = $transType ?? 0;
-        $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['amount'] = $data['amount'] ?? 0;
-        $transactionData['settled_amount'] = $data['settled_amount'] ?? 0;
+        $transactionData['entry_type'] =  $entryType ?? 0;
         $transactionData['gst'] = $data['gst'] ?? 0;
         $transactionData['cgst'] = $data['cgst'] ?? 0;            
         $transactionData['sgst'] = $data['sgst'] ?? 0;
         $transactionData['igst'] = $data['igst'] ?? 0;
-        $transactionData['entry_type'] =  $entryType ?? 0;
         $transactionData['tds_per'] = null;
-        $transactionData['mode_of_pay'] =  1;
+        $transactionData['gl_flag'] = 1;
+        $transactionData['soa_flag'] = $soaFlag;
+        $transactionData['trans_by'] = 2;
+        $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
+        $transactionData['is_settled'] = 0;
+        $transactionData['is_posted_in_tally'] = 0;
         $transactionData['comment'] = null;
-        $transactionData['utr_no'] =null;
-        $transactionData['cheque_no'] = null;
-        $transactionData['unr_no'] = null;
-        $transactionData['txn_id'] = $transId;
 
-        $transactionData['created_by'] = Auth::user()->user_id ?? null;
-        
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+        $transactionData['created_by'] = Auth::user()->user_id;
+        $transactionData['created_at'] = $curData;
         return $transactionData;
     }
 
