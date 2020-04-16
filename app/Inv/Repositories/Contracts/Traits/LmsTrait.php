@@ -884,7 +884,7 @@ trait LmsTrait
         
         if ($includeTrans) {
             $repayment = $this->lmsRepo->getTransactions(['trans_id' => $transId, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')])->first();
-            $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id' => $transId]);
+            $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id' => $transId]);
 
             $transaction = [];
             $transactions = [];
@@ -892,10 +892,10 @@ trait LmsTrait
             $transaction['TRANS_DATE'] = $repayment->trans_date;
             $transaction['VALUE_DATE'] = $repayment->created_at;
 
-            if ($repayment->trans_detail->chrg_master_id != '0') {
-                $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
+            if ($repayment->transType->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $repayment->transType->charge->chrg_name;
             } else {
-                $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
+                $transaction['TRANS_TYPE'] = $repayment->transType->trans_name;
             }
 
             if ($repayment->disbursal_id && $repayment->disburse && $repayment->disburse->invoice) {
@@ -925,10 +925,10 @@ trait LmsTrait
                 $transaction['TRANS_DATE'] = $repay->trans_date;
                 $transaction['VALUE_DATE'] = $repay->created_at;
 
-                if ($repay->trans_detail->chrg_master_id != '0') {
-                    $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+                if ($repay->transType->chrg_master_id != '0') {
+                    $transaction['TRANS_TYPE'] = $repay->transType->charge->chrg_name;
                 } else {
-                    $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+                    $transaction['TRANS_TYPE'] = $repay->transType->trans_name;
                 }
 
                 if ($repay->disbursal_id && isset($repay->disburse->invoice) && $repay->disburse->invoice->invoice_no) {
@@ -1375,33 +1375,33 @@ trait LmsTrait
     protected function calculateRefund($transId)
     {
         $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-        $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
+        $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id'=>$transId]);
 
-        $repayDebitTotal = Transactions::where('repay_trans_id','=',$transId)
+        $repayDebitTotal = Transactions::where('payment_id','=',$transId)
         ->where('entry_type','=','0')
         ->sum('amount');
         
-        $repayCreditTotal = Transactions::where('repay_trans_id','=',$transId)
+        $repayCreditTotal = Transactions::where('payment_id','=',$transId)
         ->where('entry_type','=','1')
         ->sum('amount');
         
-        $interestRefundTotal = Transactions::where('repay_trans_id','=',$transId)
+        $interestRefundTotal = Transactions::where('payment_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
         ->sum('amount');
 
-        $interestRefundSettledTotal = Transactions::where('repay_trans_id','=',$transId)
+        $interestRefundSettledTotal = Transactions::where('payment_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
         ->sum('settled_amount');
 
-        $interestOverdueTotal = Transactions::where('repay_trans_id','=',$transId)
+        $interestOverdueTotal = Transactions::where('payment_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
         ->sum('amount');
         
-        $marginTotal = Transactions::where('repay_trans_id','=',$transId)
+        $marginTotal = Transactions::where('payment_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
         ->sum('amount');
         
-        $nonFactoredAmount = Transactions::where('repay_trans_id','=',$transId)
+        $nonFactoredAmount = Transactions::where('payment_id','=',$transId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
         ->sum('amount');
         if($nonFactoredAmount==0){
