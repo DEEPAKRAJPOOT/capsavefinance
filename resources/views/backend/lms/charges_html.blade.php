@@ -12,12 +12,12 @@
             <label for="chrg_type">Charge Type</label><br />
             <div class="form-check-inline ">
                 <label class="form-check-label fnt">
-                    <input type="radio" class="form-check-input" {{$data->chrg_type == 1 ? 'checked' : ($data->chrg_type != 2 ? 'checked' : '' )}} name="chrg_type[{{$len}}]" value="1">Auto
+                    <input type="radio" class="form-check-input cls-chrg-type" {{$data->chrg_type == 1 ? 'checked' : ($data->chrg_type != 2 ? 'checked' : '' )}} name="chrg_type[{{$len}}]" value="1" disabled>Auto
                 </label>
             </div>
             <div class="form-check-inline">
                 <label class="form-check-label fnt">
-                    <input type="radio" class="form-check-input" {{$data->chrg_type == 2 ? 'checked' : ''}} name="chrg_type[{{$len}}]" value="2">Manual
+                    <input type="radio" class="form-check-input cls-chrg-type" {{$data->chrg_type == 2 ? 'checked' : ''}} name="chrg_type[{{$len}}]" value="2"  disabled>Manual
                 </label>
             </div>
         </div>
@@ -25,20 +25,20 @@
             <label for="is_gst_applicable">GST Applicable</label><br />
             <div class="form-check-inline">
                 <label class="form-check-label fnt">
-                    <input type="radio" class="form-check-input" {{$data->is_gst_applicable == 1 ? 'checked' : ($data->is_gst_applicable != 2 ? 'checked' : '' )}} name="is_gst_applicable[{{$len}}]" value="1">Yes
+                    <input type="radio" class="form-check-input cls-is-gst-applicable" {{$data->is_gst_applicable == 1 ? 'checked' : ($data->is_gst_applicable != 2 ? 'checked' : '' )}} name="is_gst_applicable[{{$len}}]" value="1"  disabled>Yes
                 </label>
             </div>
             <div class="form-check-inline">
                 <label class="form-check-label fnt">
-                    <input type="radio" class="form-check-input" {{$data->is_gst_applicable == 2 ? 'checked' : ''}} name="is_gst_applicable[{{$len}}]" value="2">No
+                    <input type="radio" class="form-check-input cls-is-gst-applicable" {{$data->is_gst_applicable == 2 ? 'checked' : ''}} name="is_gst_applicable[{{$len}}]" value="2"  disabled>No
                 </label>
             </div>
         </div>
         <div class="form-group col-md-2">
             <label for="chrg_type">Charge Calculation</label><br />
-            <div class="form-check-inline "><label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type[{{$len}}]" value="1"  data-ct_idx="{{$len}}">Fixed</label></div>
+            <div class="form-check-inline "><label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 1 ? 'checked' : ($data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type[{{$len}}]" value="1"  data-ct_idx="{{$len}}"  disabled>Fixed</label></div>
             <div class="form-check-inline">
-                <label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type[{{$len}}]" value="2" data-ct_idx="{{$len}}">Percentage</label>
+                <label class="form-check-label fnt"><input type="radio" class="form-check-input charge_calculation_type" {{$data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type[{{$len}}]" value="2" data-ct_idx="{{$len}}"  disabled>Percentage</label>
             </div>
         </div>
         @if(isset($data->chrg_calculation_type))
@@ -63,8 +63,9 @@
             ],
             isset($data->chrg_applicable_id)  ?   $data->chrg_applicable_id  : null,
             ['id' => 'chrg_applicable_id_'.$len,
-            'class'=>'form-control clsRequired ',
-            'required'=>'required'
+            'class'=>'form-control clsRequired cls-chrg-applicable-id',
+            'required'=>'required',
+            'disabled'=>'disabled'
             ])
             !!}
         </div>
@@ -76,8 +77,9 @@
             [''=>'Please select']+config('common.chrg_trigger_list'),
             isset($data->chrg_tiger_id)  ?   $data->chrg_tiger_id  : null,
             ['id' => 'chrg_tiger_id_'.$len,
-            'class'=>'form-control clsRequired ',
-            'required'=>'required'
+            'class'=>'form-control clsRequired cls-chrg-trigger-id',
+            'required'=>'required',
+            'disabled'=>'disabled'
             ])
             !!}
         </div>

@@ -8,7 +8,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\BizInvoice as InvoiceModel;
 use App\Inv\Repositories\Models\BizInvoiceTemp as TempInvoiceModel;
-use App\Inv\Repositories\Models\BizBatchInvoice as BizBatchInvoice;
+use App\Inv\Repositories\Models\InvoiceBulkBatch;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Lms\Disbursal;
@@ -953,6 +953,29 @@ use CommonRepositoryTraits;
        return BizInvoice::getRemainAmount($attributes);  
     }  
     
+     public function saveInvoiceBatch($attributes)
+    {
+       
+        try
+        {
+             return InvoiceBulkBatch::saveInvoiceBatch($attributes);  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+      
+    }  
+   
+     public function saveInvoiceZipBatch($attributes)
+    {
+       
+        try
+        {
+             return InvoiceBulkBatch::saveInvoiceZipBatch($attributes);  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+      
+    }   
     public function getAllBankInvoice($from_date, $to_date)
     {
         $this->result = DisbursalBatch::getAllBatches($from_date, $to_date);

@@ -17,6 +17,7 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
@@ -99,6 +100,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function saveDisbursalRequest($data, $whereCondition=[])
 	{
 		return Disbursal::saveDisbursalRequest($data, $whereCondition);
+	}
+
+	/**
+	 * Save or Update Disbursal Request
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public function saveUpdateInvoiceDisbursed($data, $whereCondition=[])
+	{
+		return InvoiceDisbursed::saveUpdateInvoiceDisbursed($data, $whereCondition);
 	}
 	
 	/**
@@ -334,6 +348,24 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return ($response) ?? $response;
 	}          
 	 
+	 /**
+	 * Get Repayments
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function updateInvoiceDisbursed($data, $invoiceDisbursalIds)
+	{
+		if (!is_array($invoiceDisbursalIds)) {
+			return InvoiceDisbursed::where('invoice_disbursed_id', $invoiceDisbursalIds)
+				->update($data);
+		} else {
+			return InvoiceDisbursed::whereIn('invoice_disbursed_id', $invoiceDisbursalIds)
+					->update($data);
+		}
+	}
+
 	 /**
 	 *      
 	 * @param array $whereCondition | optional
@@ -899,9 +931,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::get();
 	}        
 
-	public function findDisbursalByInvoiceId($invoiceId)
+	public function findInvoiceDisbursedByInvoiceId($invoiceId)
 	{
-		return Disbursal::where('invoice_id', $invoiceId)
+		return InvoiceDisbursed::where('invoice_id', $invoiceId)
 				->get();
 	}
         

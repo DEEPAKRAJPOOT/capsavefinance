@@ -47,6 +47,7 @@
         url: "{{ URL::route('apport_unsettled_list') }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",
+        payment_amt: "{{$payment['payment_amt']}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
     };

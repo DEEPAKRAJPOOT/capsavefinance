@@ -89,6 +89,13 @@ var decimalPlace = 2;
                     this.value = this.value.replace(/,/gi, "");
                 }
             });
+                        
+            $('.cls-chrg-type:disabled').removeAttr('disabled');
+            $('.cls-is-gst-applicable:disabled').removeAttr('disabled');
+            $('.charge_calculation_type:disabled').removeAttr('disabled');
+            $('.cls-chrg-applicable-id:disabled').removeAttr('disabled');
+            $('.cls-chrg-trigger-id:disabled').removeAttr('disabled');            
+            
         });
         
         $(document).on('input', "input[type=text].amtpercnt", function(){     

@@ -49,6 +49,7 @@ class Disbursal extends BaseModel {
 		'tran_id',
 		'disburse_date',
 		'disburse_amount',
+		'funded_date',
 		'bank_account_id',
 		'bank_name',
 		'ifsc_code',
@@ -62,15 +63,6 @@ class Disbursal extends BaseModel {
 		'updated_at',
 		'updated_by',
 	];
-
-	/**
-	 * Get Interest Accrual 
-	 * 
-	 * @return type
-	 */
-	public function interests() { 
-		return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'disbursal_id', 'disbursal_id'); 
-	}
 
 	/**
 	 * Get App Program Offer 
@@ -155,13 +147,6 @@ class Disbursal extends BaseModel {
         }
         
         $result = self::select('app_prgm_offer.*')
-                //->join('invoice', 'invoice.invoice_id', '=', 'disbursal.invoice_id')
-                ////->join('app_prgm_limit', 'invoice.program_id', '=', 'app_prgm_limit.prgm_id')
-                //->join('app_prgm_limit', function ($join) {
-                //    $join->on('invoice.program_id', '=', 'app_prgm_limit.prgm_id');
-                //    $join->on('invoice.app_id', '=', 'app_prgm_limit.app_id');
-                //})
-                //->join('app_prgm_offer', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
                 ->join('app_prgm_offer', 'disbursal.prgm_offer_id', '=', 'app_prgm_offer.prgm_offer_id')
                 ->where('disbursal_id', $whereCondition['disbursal_id'])
                 ->where('app_prgm_offer.is_active', 1)

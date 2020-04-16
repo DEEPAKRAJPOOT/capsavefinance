@@ -54,28 +54,38 @@ class InvoiceDisbursed extends BaseModel {
 		'payment_due_date',
 		'customer_id',
 		'total_interest',
-		'total_repaid_amt',
 		'status_id',
-		'settlement_amount',
-		'settlement_date',
-		'surplus_amount',
-		'accured_interest',
-		'interest_refund',
-		'funded_date',
-		'int_accrual_start_dt',
-		'processing_fee',
 		'grace_period',
 		'overdue_interest_rate',
-		'penal_interest',
-		'repayment_amount',
-		'total_repaid_amount',
-		'penal_days',
-		'penalty_amount',
+		'int_accrual_start_dt',
 		'created_at',
 		'created_by',
 		'updated_at',
 		'updated_by',
 	];
+
+	/**
+	 * Save or Update
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function saveUpdateInvoiceDisbursed($data, $whereCondition=[])
+	{
+		if (!is_array($data)) {
+			throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+		}
+		
+		if (!empty($whereCondition)) {
+			return self::where($whereCondition)->update($data);
+		} else if (isset($data[0])) {
+			return self::insert($data);
+		} else {
+			return self::create($data);
+		}
+	}
 
 	/**
 	 * Get disbursal 
@@ -85,4 +95,17 @@ class InvoiceDisbursed extends BaseModel {
 	public function disbursal() { 
 		return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'disbursal_id', 'disbursal_id'); 
 	}
+
+	public function transactions(){
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','invoice_disbursed_id','invoice_disbursed_id');
+	}
+
+	public function interests() { 
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'invoice_disbursed_id', 'invoice_disbursed_id'); 
+	}
+
+	public function invoice(){
+		return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id');
+	}
+
 }
