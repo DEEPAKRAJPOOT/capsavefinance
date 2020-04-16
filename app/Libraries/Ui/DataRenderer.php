@@ -1342,7 +1342,7 @@ class DataRenderer implements DataProviderInterface
              ->addColumn(
                     'batch_id',
                     function ($invoice) {  
-                       return  (isset($invoice->disbursal->disbursal_batch->batch_id)) ? $invoice->disbursal->disbursal_batch->batch_id : '';
+                       return  (isset($invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id)) ? $invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id : '';
                 })
               ->addColumn(
                     'anchor_name',

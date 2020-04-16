@@ -39,7 +39,7 @@ try {
         });
 
         //Search
-        $('#search_biz').on('click', function (e) {
+        $('#searchbtn').on('click', function (e) {
             oTable.draw();
         });                  
     });

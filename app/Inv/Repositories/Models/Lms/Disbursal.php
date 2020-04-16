@@ -73,10 +73,6 @@ class Disbursal extends BaseModel {
 		return $this->hasMany('App\Inv\Repositories\Models\Lms\InvoiceDisbursed', 'disbursal_id', 'disbursal_id'); 
 	}
 
-	public function transaction() { 
-		return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions', 'disbursal_id', 'disbursal_id'); 
-	}
-
 	/**
 	 * Save or Update Disbursal Request
 	 * 
