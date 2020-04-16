@@ -1682,4 +1682,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getTotalLimit($biz_id,$program_id){
         return AppProgramLimit::where('biz_id','=',$biz_id)->where('product_id','=',$program_id)->sum('limit_amt');
     }
+
+
+    /**
+     * This method is used for see upload file in Bank Account  
+     */
+    public function seeUploadFilePopup($acc_id, $user_id) {
+        return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
+    }
 }
+
+
+
