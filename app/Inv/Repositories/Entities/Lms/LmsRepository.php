@@ -1006,4 +1006,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getPaymentDetail($paymentId){
 		return Payment::find($paymentId);
 	}
+
+	public static function getUnsettledInvoices($data){
+		return Transactions::getUnsettledInvoices($data);
+	}
 }

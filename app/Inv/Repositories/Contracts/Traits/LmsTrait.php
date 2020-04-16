@@ -57,7 +57,8 @@ trait LmsTrait
         if(!$currentDate){
             $currentDate = $this->subDays(date('Y-m-d'),1);
         }
-        $disbursalData = Disbursal::whereIn('status_id',[12,13])->whereDate('int_accrual_start_dt','<=',$currentDate)->get();
+        $disbursalData = Disbursal::whereIn('status_id',[12,13])
+        ->whereDate('int_accrual_start_dt','<=',$currentDate)->get();
         $interest = 0;
         $returnData = [];
         echo '<br>------------------------------------------------------------<br>'.$currentDate.'<br>';
@@ -295,8 +296,8 @@ trait LmsTrait
             $currentDate = $this->subDays($curdate,1);
         }
         
-        $unsettledInvoicesTrans = Transactions::getUnsettledInvoices();
-
+        $unsettledInvoicesTrans = $this->lmsRepo->getUnsettledInvoices(['int_accrual_start_dt'=>$currentDate]);
+        
         echo '<br>------------------------------------------------------------<br>'.$currentDate.'<br>';
 
         foreach ($unsettledInvoicesTrans as $key => $trans) {

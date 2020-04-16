@@ -5250,11 +5250,11 @@ class DataRenderer implements DataProviderInterface
                 return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
             })
             ->addColumn('pay', function($trans){
-                $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
                 return $result;
             })
             ->addColumn('select', function($trans){
-                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                $result = "<input class='check' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
            
