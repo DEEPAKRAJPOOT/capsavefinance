@@ -602,6 +602,19 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
+                                    <div class="col-md-12">
+                                        <div class="form-group password-input">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="txtCreditPeriod">Status <span class="error_message_label">*</span> </label>
+                                                    {!! Form::select('status', [''=>trans('backend.please_select') ,1=>'Active',0 =>'In Active'],
+                                                    isset($subProgramData->status) ? $subProgramData->status : null, ['class'=>'form-control required']) !!}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                                
                                                 <div class="col-md-12">
                                                     <h5 class="card-title">Charges</h5>
                                                 </div>
@@ -689,17 +702,6 @@
                                             <!--@include('backend.lms.doalevel' ,['doaLevelList'=>$doaLevelList])-->
                                         </div>
 
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group password-input">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label for="txtCreditPeriod">Status <span class="error_message_label">*</span> </label>
-                                                    {!! Form::select('status', [''=>trans('backend.please_select') ,1=>'Active',0 =>'In Active'],
-                                                    isset($subProgramData->status) ? $subProgramData->status : null, ['class'=>'form-control']) !!}
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="text-right mt-3">
