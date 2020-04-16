@@ -219,41 +219,7 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                  'as' => 'get_invoice',
                 'uses' => 'Application\InvoiceController@viewInvoice'
             ]); 
-          
-           Route::get('get_approve_invoice', [
-                 'as' => 'get_approve_invoice',
-                'uses' => 'Application\InvoiceController@viewApproveInvoice'
-            ]); 
-           
-            Route::get('get_disbursed_que_invoice', [
-                 'as' => 'get_disbursed_que_invoice',
-                'uses' => 'Application\InvoiceController@viewDisbursedQueInvoice'
-            ]); 
-            Route::get('get_sent_to_bank', [
-                 'as' => 'get_sent_to_bank',
-                'uses' => 'Application\InvoiceController@viewSentBankInvoice'
-            ]); 
-            
-             Route::get('get_failed_disbursed_invoice', [
-                 'as' => 'get_failed_disbursed_invoice',
-                'uses' => 'Application\InvoiceController@viewFailedDisbursedInvoice'
-            ]); 
-             
-            Route::get('get_disbursed_invoice', [
-                 'as' => 'get_disbursed_invoice',
-                'uses' => 'Application\InvoiceController@viewDisbursedInvoice'
-            ]); 
-            
-             Route::get('get_repaid_invoice', [
-                 'as' => 'get_repaid_invoice',
-                'uses' => 'Application\InvoiceController@viewRepaidInvoice'
-              ]); 
-           Route::get('get_reject_invoice', [
-                 'as' => 'get_reject_invoice',
-                'uses' => 'Application\InvoiceController@viewRejectInvoice'
-            ]); 
-     
-           Route::POST('front_save_invoice', [
+            Route::POST('front_save_invoice', [
                  'as' => 'front_save_invoice',
                 'uses' => 'Application\InvoiceController@saveInvoice'
             ]); 

@@ -49,9 +49,31 @@ class BankAccountController extends Controller {
     public function bankAccountList(Request $request)
     {
         try {
+            $totalLimit = 0;
+            $totalCunsumeLimit = 0;
+            $consumeLimit = 0;
+            $transactions = 0;
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $bankAccounts = $this->userRepo->getUserBankAccounts($user_id);
+            $application = $this->appRepo->getCustomerApplications($user_id);
+            $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+
+            foreach ($application as $key => $app) {
+                if (isset($app->prgmLimits)) {
+                    foreach ($app->prgmLimits as $value) {
+                        $totalLimit += $value->limit_amt;
+                    }
+                }
+                if (isset($app->acceptedOffers)) {
+                    foreach ($app->acceptedOffers as $value) {
+                        $totalCunsumeLimit += $value->prgm_limit_amt;
+                    }
+                }
+            }
+            $userInfo->total_limit = number_format($totalLimit);
+            $userInfo->consume_limit = number_format($totalCunsumeLimit);
+            $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
             return view('lms.customer.bank_account_list')
                     ->with([
                         'userInfo' => $userInfo,
