@@ -53,8 +53,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
             Route::get('/download-bank-detail', [
-                'as' => 'download_bank_detail{file}',
-                'uses' => 'Lms\BankAccountController@downloadFile'
+                'as' => 'download_bank_detail',
+                'uses' => 'Lms\BankAccountController@downloadUploadFile'
             ]);
             
             // disbursal routes

@@ -1691,3 +1691,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
     }
 }
+
+
+

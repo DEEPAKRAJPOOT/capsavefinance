@@ -84,6 +84,7 @@
 											<td>{{ $account->bank->bank_name }}</td>
 											<td>{{ $account->ifsc_code }}</td>
 											<td>{{ $account->branch_name }}</td>
+
 											<td>{!! ($account->is_active == 1) ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning current-status">InActive</span>' !!}</td>
 											@php
 
@@ -101,13 +102,10 @@
 											}
 
 
-											$act .= '<a data-toggle="modal"  data-height="450px" 
-										   data-width="100%" 
-										   data-target="#see_upload_bank_detail"
-										   data-url="' . route('see_upload_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="See Upload Document"><i class="fa fa-eye"></i></a>';
 
-											<h1>{{$account}}</h1>
-										   $act .= '<a href="/download_bank_detail/{{$account->bank_account_id}}" class="btn btn-action-btn btn-sm" title="Download Upload File"><i class="fa fa-download"></i></a>';
+											$act .= '<a href="' . route('see_upload_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="See Upload Document"><i class="fa fa-eye"></i></a>';
+											
+										   $act .= '<a href="' . route('download_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="Download Upload File"><i class="fa fa-download"></i></a>';
 											
 											@endphp
 											<td>{!! $act !!}</td>

@@ -177,30 +177,34 @@ class BankAccountController extends Controller {
 
         $acc_id = $request->all('bank_account_id');
         $user_id = $request->all('user_id');
-
-        $path = 'appDocs/Document/bankDoc/' . auth()->user()->user_id;
-
-        $userBaseDir = 'storage/app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/';
+    
         $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
+        $filePath = 'app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
+        $path = storage_path($filePath);
 
-        $isExists = \Storage::exists($path .'/'.$file->doc_name);
-        // $storagePath = \Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
-
-
-        if($isExists) {
-            // return view('lms.customer.view_upload_file')->with(['response' => $file, 'path' => $userBaseDir, 'storagePath' => $storagePath]);
-            return view('lms.customer.view_upload_file', compact('file', 'storagePath', 'path'));
+         if (file_exists($path)) {
+            
+            return response()->file($path);
         }
     }
 
-    public function downloadFile(Request $request, $file) {
+    public function downloadUploadFile(Request $request) {
 
         $acc_id = $request->all('bank_account_id');
         $user_id = $request->all('user_id');
 
-        $userBaseDir = 'storage/app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/';
-        
-        return response()->download($userBaseDir.$file);
-    }
+        $download = $request->get('download');
 
+        $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
+        $filePath = 'app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
+        $path = storage_path($filePath);
+
+        if (file_exists($path)) {
+            return response()->download($path);
+        }
+        return response(['status' => 'failure', 'message' => 'The file You have Requested to view / Download is not valid.',], 404)
+                  ->header('Content-Type', 'application/json');
+    }
 }
+
+
