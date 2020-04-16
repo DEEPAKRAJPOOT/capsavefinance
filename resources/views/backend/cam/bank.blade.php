@@ -117,11 +117,11 @@
                            <tr class="control-group-wcf">
                               <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="{{$val['bank_name']}}" class="form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="{{$val['fund_facility']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="fund_amt[]" value="{{$val['fund_amt']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="fund_os_amt[]" value="{{$val['fund_os_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_amt[]" value="{{number_format($val['fund_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_os_amt[]" value="{{number_format($val['fund_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="{{$val['nonfund_facility']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="nonfund_amt[]" value="{{$val['nonfund_amt']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="nonfund_os_amt[]" value="{{$val['nonfund_os_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="{{number_format($val['nonfund_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="{{number_format($val['nonfund_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len[]" value="{{$val['relationship_len']}}" class="col-md-8 form-control form-control-sm" />
@@ -135,11 +135,11 @@
                         <tr class="control-group-wcf">
                            <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
                            <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="20" type="text" name="fund_amt[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="20" type="text" name="fund_os_amt[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
                            <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="20" type="text" name="nonfund_amt[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
                            <td width="">
                               <div class="input-group-btn">
                                  <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
@@ -153,11 +153,11 @@
                            <tr class="control-group-wcf">
                               <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="fund_amt[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="fund_os_amt[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="nonfund_amt[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
@@ -184,8 +184,8 @@
                            <tr class="control-group-tlbl">
                               <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="{{$val['bank_name_tlbl']}}" class="form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="{{$val['loan_name']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="facility_amt[]" value="{{$val['facility_amt']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="facility_os_amt[]" value="{{$val['facility_os_amt']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="{{number_format($val['facility_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="{{number_format($val['facility_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="{{$val['relationship_len_tlbl']}}" class="col-md-8 form-control form-control-sm" />
@@ -199,8 +199,8 @@
                         <tr class="control-group-tlbl">
                            <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
                            <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="20" type="text" name="facility_amt[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="20" type="text" name="facility_os_amt[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
                            <td width="">
                               <div class="input-group-btn">
                                  <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
@@ -214,8 +214,8 @@
                            <tr class="control-group-tlbl">
                               <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="facility_amt[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="20" type="text" name="facility_os_amt[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
