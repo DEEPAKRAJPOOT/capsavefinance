@@ -1010,4 +1010,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getUnsettledInvoices($data){
 		return Transactions::getUnsettledInvoices($data);
 	}
+
+	public static function getUnsettledInvoiceTransactions($data){
+		return Transactions::getUnsettledInvoiceTransactions($data);
+	}
+
+	public static function getUnsettledChargeTransactions($data){
+		return Transactions::getUnsettledChargeTransactions($data);
+	}
+	
 }

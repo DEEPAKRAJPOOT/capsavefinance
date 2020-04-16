@@ -123,7 +123,12 @@ class Apportionment {
 
     onCheckChange(transId){
         $("input[name='payment["+transId+"]']").val('');
-        $("input[name='payment["+transId+"]']").attr('readonly',true);
+
+        if ($("input[name='check["+transId+"]']").is(":checked")) { 
+            $("input[name='payment["+transId+"]']").removeAttr('readonly');
+        } else { 
+            $("input[name='payment["+transId+"]']").attr('readonly',true);
+        } 
         this.calculateUnAppliedAmt()
     }
 

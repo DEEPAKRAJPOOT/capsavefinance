@@ -208,17 +208,63 @@ class Transactions extends BaseModel {
         if(isset($data['int_accrual_start_dt'])){
             $query->whereHas('invoiceDisbursed', function($q) use($data){
                 $q->where('int_accrual_start_dt','<=',$data['int_accrual_start_dt']);
+                $q->orderBy('inv_due_date','ASC');
+                $q->orderBy('disbursal_id','ASC');
             });
         }
 
         if(isset($data['user_id'])){
             $query->where('user_id','=',$data['user_id']);
         }
-        
+
         return $query->get()->filter(function($item) {
             return $item->outstanding > 0;
         });
 
+    }
+
+
+    public static function getUnsettledInvoiceTransactions($data){
+       
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
+
+        if(isset($data['invoice_disbursed_id'])){
+            $query->where('invoice_disbursed_id',$data['invoice_disbursed_id']);
+        }
+
+        if(isset($data['user_id'])){
+            $query->where('user_id',$data['user_id']);
+        }
+
+        if(isset($data['trans_type']) && !empty($data['trans_type'])){
+            $query->whereIn('trans_type',$data['trans_type']);
+        }
+
+        $query->orderByRaw("FIELD(trans_type, '9', '16', '33', '10')");
+        return $query->get()->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+    }
+
+    public static function getUnsettledChargeTransactions($data){
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
+
+        if(isset($data['user_id'])){
+            $query->where('user_id',$data['user_id']);
+        }
+
+        if(isset($data['trans_type']) && !empty($data['trans_type'])){
+            $query->whereIn('trans_type',$data['trans_type']);
+        }
+
+        if(!empty($data['trans_type_not_in'])){
+            $query->whereNotIn('trans_type',$data['trans_type_not_in']);
+        }
+        $query->orderBy('trans_date','ASC');
+
+        return $query->get()->filter(function($item) {
+            return $item->outstanding > 0;
+        });
     }
 
 
@@ -229,7 +275,6 @@ class Transactions extends BaseModel {
 
 
 
-    
 
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)

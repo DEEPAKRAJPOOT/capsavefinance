@@ -31,9 +31,17 @@
         <div class="card-body">       
             @include('lms.apportionment.common.userDetails')
             @include('lms.apportionment.common.paymentDetails')
+            <form>
             <div class="row">
                 @include('lms.apportionment.common.listUnsettledTransactions')
             </div>
+            <div class="row pull-right">
+                <div class="col-md-12" >
+                    <input type="submit" value="Mark Settled" class="btn btn-success btn-sm">
+                    <input type="button" value="Wave Off" class="btn btn-success btn-sm">
+                </div>
+            </div>
+            </form>
         </div>
     </div>
 

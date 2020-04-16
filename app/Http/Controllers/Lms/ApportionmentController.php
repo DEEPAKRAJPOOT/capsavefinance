@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Contracts\Ui\DataProviderInterface;
+use Illuminate\Support\Collection;
 use Carbon\Carbon;
 
 class ApportionmentController extends Controller
@@ -30,10 +31,8 @@ class ApportionmentController extends Controller
      */
     public function viewUnsettledTrans(Request $request){
         try {
-            $userId = 542;
-            $paymentId = 1;
-            // $userId = $request->user_id;
-            // $paymentId = $request->payment_id;
+            $userId = $request->user_id;
+            $paymentId = $request->payment_id;
             $userDetails = $this->getUserDetails($userId); 
             $payment = $this->getPaymentDetails($paymentId); 
             return view('lms.apportionment.unsettledTransactions')
@@ -53,7 +52,7 @@ class ApportionmentController extends Controller
      */
     public function viewSettledTrans(Request $request){
         try {
-            $userId = 542;
+            $userId = 385;
             //$userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
             return view('lms.apportionment.settledTransactions')
@@ -88,7 +87,40 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getUnsettledTrans(int $userId){
-        return $this->lmsRepo->getUnsettledTrans($userId);
+        
+      //  return $this->lmsRepo->getUnsettledTrans($userId);
+        $invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
+        $transactionList = new Collection();
+        foreach ($invoiceList as $invoice) {
+            $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
+                'invoice_disbursed_id'=>$invoice->invoice_disbursed_id,
+                'user_id'=>$userId,
+                'trans_type'=>[9,16]
+                ]);
+            foreach($invoiceTrans as $trans){
+                $transactionList->push($trans);
+            }
+        }
+
+        $chargeTrans = $this->lmsRepo->getUnsettledChargeTransactions([
+            'user_id'=>$userId,
+            'trans_type_not_in'=>[9,16,10]
+        ]);
+
+        foreach ($chargeTrans as $key => $charge) {
+            $transactionList->push($charge);
+        }
+
+        $marginTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
+            'user_id'=>$userId,
+            'trans_type'=>[10]
+        ]);
+
+        foreach ($marginTrans as $key => $margin) {
+            $transactionList->push($margin);
+        }
+
+        return $transactionList; 
     }
 
     /**
