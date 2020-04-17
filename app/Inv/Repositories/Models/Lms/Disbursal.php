@@ -69,12 +69,8 @@ class Disbursal extends BaseModel {
 	 * 
 	 * @return type
 	 */
-	public function offer() { 
-		return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id'); 
-	}
-
-	public function transaction() { 
-		return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions', 'disbursal_id', 'disbursal_id'); 
+	public function invoice_disbursed() { 
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\InvoiceDisbursed', 'disbursal_id', 'disbursal_id'); 
 	}
 
 	/**

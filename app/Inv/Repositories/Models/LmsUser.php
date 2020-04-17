@@ -107,8 +107,7 @@ class LmsUser extends Authenticatable
                     if (!empty($userIds)) {
                         $query->whereIn('supplier_id', $userIds);
                     }
-                })
-                ->get();
+                });
     }
 
     public function bank_details()

@@ -93,7 +93,7 @@ class InvoiceDisbursed extends BaseModel {
 	 * @return type
 	 */
 	public function disbursal() { 
-		return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'disbursal_id', 'disbursal_id'); 
+		return $this->belongsTo('App\Inv\Repositories\Models\Lms\Disbursal', 'disbursal_id', 'disbursal_id'); 
 	}
 
 	public function transactions(){

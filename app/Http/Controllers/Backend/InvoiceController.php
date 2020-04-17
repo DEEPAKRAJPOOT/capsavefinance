@@ -310,21 +310,30 @@ class InvoiceController extends Controller {
         $disbursalBatchId = $request->disbursal_batch_id;
         $transId = $request->trans_id;
         $remarks = $request->remarks;
+        $createdBy = Auth::user()->user_id;
 
         $apiLogData['tran_id'] = $transId;
-        $apiLogData['remark'] = $remarks;
+        $apiLogData['comment'] = $remarks;
 
-        $invoiceIds = $this->lmsRepo->findDisbursalByUserAndBatchIds(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
-        $disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
-        if ($disburseApiLog) {
+        $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+        $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+        
+        if ($disbursalIds) {
             $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
-                    'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
-                ], ['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId]);
-                        
-            if ($updateDisbursal) {
-                $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+                    'tran_id' => $transId,
+                    'status_id' => 12
+                ], $disbursalIds);
+            foreach ($disbursalIds as $key => $value) {
+                $this->lmsRepo->createDisbursalStatusLog($value, 12, $remarks, $createdBy);
+            }
+        }            
+        if ($invoiceIds) {
+            $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+            foreach ($invoiceIds as $key => $value) {
+                $this->invRepo->saveInvoiceStatusLog($value, 12);
             }
         }
+        
 
         Session::flash('message',trans('backend_messages.disburseMarked'));
         return redirect()->route('backend_get_sent_to_bank');
@@ -616,11 +625,11 @@ class InvoiceController extends Controller {
 
                 $disbursalRequest = $this->createDisbursalData($disbursalData['invoice'], $disburseAmount, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
+                $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
 
                 $updateDisbursal = $this->lmsRepo->updateInvoiceDisbursed([
                         'disbursal_id' => $createDisbursal->disbursal_id
                     ], $invoiceDisbursedIds);
-                $disbursalId = $createDisbursal->disbursal_id; 
                 $disbursalIds[] = $createDisbursal->disbursal_id; 
                 $refId = $invoice['lms_user']['virtual_acc_id'];      
                 $exportData[$userid]['RefNo'] = $refId;
@@ -774,7 +783,6 @@ class InvoiceController extends Controller {
         $batchId = $request->get('batch_id');
 
         $data = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
-        
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -853,8 +861,8 @@ class InvoiceController extends Controller {
                 ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
                 ->setCellValue('J' . $rows, $rowData['user']['email'] ?? '')
                 ->setCellValue('K' . $rows, $rowData['user']['mobile_no'] ?? '')
-                ->setCellValue('L' . $rows, $rowData['transaction']['comment'] ?? '')
-                ->setCellValue('M' . $rows, $rowData['transaction']['mode_of_pay'] ?? '')
+                ->setCellValue('L' . $rows, $rowData['Remarks'] ?? '')
+                ->setCellValue('M' . $rows, $rowData['Mode_of_Pay'] ?? '')
                 ->setCellValue('N' . $rows, $rowData['column'] ?? '')
                 ->setCellValue('O' . $rows, $rowData['column'] ?? '')
                 ->setCellValue('P' . $rows, $rowData['column'] ?? '')
