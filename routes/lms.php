@@ -288,9 +288,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\ApportionmentController@listRefundTrans'
             ]);
 
-            Route::post('/apportionment/unsettled/save',[
-                'as' => 'apport_unsettled_save',
-                'uses' => 'Lms\ApportionmentController@saveUnsettledTrans'
+            Route::post('/apportionment/mark/settle/confirmation',[
+                'as' => 'apport_mark_settle_confirmation',
+                'uses' => 'Lms\ApportionmentController@markSettleConfirmation'
+            ]);
+
+            Route::get('/apportionment/mark/settle/save',[
+                'as' => 'apport_mark_settle_save',
+                'uses' => 'Lms\ApportionmentController@markSettleSave'
             ]);
             
             Route::post('/apportionment/settled/save',[

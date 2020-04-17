@@ -15,6 +15,8 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Contracts\Ui\DataProviderInterface;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
+use  App\Inv\Repositories\Models\Lms\Transactions;
+use App\Http\Requests\Lms\ApportionmentRequest;
 
 class ApportionmentController extends Controller
 {
@@ -34,7 +36,7 @@ class ApportionmentController extends Controller
             $userId = $request->user_id;
             $paymentId = $request->payment_id;
             $userDetails = $this->getUserDetails($userId); 
-            $payment = $this->getPaymentDetails($paymentId); 
+            $payment = $this->getPaymentDetails($paymentId,$userId); 
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
@@ -163,12 +165,13 @@ class ApportionmentController extends Controller
      * @param int $userId
      * @return \Illuminate\Http\Response
      */
-    private function getPaymentDetails($paymentId){
-        $payment = $this->lmsRepo->getPaymentDetail($paymentId);
+    private function getPaymentDetails($paymentId, $userId){
+        $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
         
         return [
-            'amount'=> "₹ ".number_format($payment->amount,2),
-            'date_of_payment'=> Carbon::parse($payment->date_of_payment)->format('d-m-Y'), 
+            'trans_id' => $payment->trans_id,
+            'amount'=>$payment->amount,
+            'date_of_payment'=> $payment->date_of_payment, 
             'paymentmode'=> $payment->paymentmode,
             'transactionno'=> $payment->transactionno,
             'payment_amt' => $payment->amount
@@ -186,7 +189,7 @@ class ApportionmentController extends Controller
             $paymentId = $request->payment_id;
             
             $payment_date = null;
-            $payment = $this->lmsRepo->getPaymentDetail($paymentId);    
+            $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
             if(!empty($payment)){
                 $transactions = $this->getUnsettledTrans($userId);
                 return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment);
@@ -222,6 +225,111 @@ class ApportionmentController extends Controller
             $userId = $request->user_id;
             $transactions = $this->getRefundTrans($userId);
             return $this->dataProvider->getRefundTrans($request,$transactions);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+
+    /**
+     * Unsettled Transaction marked Settled
+     */
+    public function markSettleConfirmation(Request $request){
+        try {
+
+            // $validator = Validator::make($request->all(), [
+            //     "check.*" => 'required|min:1',
+            //     'payment.*' => 'nullable|numeric|gt:0|regex:/[0-9 \,]/'
+            // ]);
+            // if ($validator->fails()) {
+            //     Session::flash('error', $validator->messages()->first());
+            //     return redirect()->back()->withInput();
+            // }
+
+            $userId = $request->user_id;
+            $paymentId = $request->payment_id;
+            $userDetails = $this->getUserDetails($userId); 
+            $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
+
+            // if(!isset($userDetails['customer_id'])){
+            //     Session::flash('error', trans('error_messages.apport_invalid_user_id'));
+            //     return redirect()->back()->withInput();
+            // }
+
+            // if(!isset($paymentDetails['trans_id'])){
+            //     Session::flash('error', trans('error_messages.apport_invalid_repayment_id'));
+            //     return redirect()->back()->withInput();
+            // }
+
+            $repaymentAmt = $paymentDetails['amount']; 
+            $amtToSettle = 0;
+            $unAppliedAmt = 0;
+
+            $transIds = [];
+            $transactions = [];
+            $transactionList = [];
+            $payments = $request->payment;
+
+
+            foreach ($request->check as $Ckey => $Cval) {
+                if($Cval === 'on'){
+                    if($payments[$Ckey] > 0){
+                        array_push($transIds, $Ckey);
+                    }
+                }
+            }
+
+            // if(!empty($transIds)){
+            //     $transactions = Transactions::whereIn('trans_id',$transIds)
+            //     ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
+            //     ->get();
+            // }
+
+            foreach ($transactions as $trans){
+                $transactionList[] = [
+                    'trans_id' => $trans->trans_id,
+                    'trans_date' => $trans->trans_date,
+                    'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
+                    'trans_type' =>  $trans->transName,
+                    'total_repay_amt' => $trans->amount,
+                    'outstanding_amt' => $trans->outstanding,
+                    'payment_date' =>  $paymentDetails['date_of_payment'],
+                    'pay' => $payments[$trans->trans_id],
+                    'is_valid' => ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding)?1:0
+                ];
+                $amtToSettle += $payments[$trans->trans_id];
+            }
+
+            $unAppliedAmt = $repaymentAmt-$amtToSettle;
+
+            if($amtToSettle > $repaymentAmt){
+                Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
+                return redirect()->back()->withInput();
+            }
+            
+
+            $request->session()->put('apportionment', [
+                'payment_id' => $paymentId,
+                'user_id' => $userId,
+                'transactions' => $transactionList
+            ]);
+        
+            return view('lms.apportionment.markSettledConfirm',[
+                'paymentId' => $paymentId,
+                'userId' => $userId,
+                'payment' => $paymentDetails,
+                'userDetails' => $userDetails,
+                'transactions' => $transactionList,
+                'unAppliedAmt' => $unAppliedAmt,
+            ]);
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function markSettledConfitm(Request $request){
+        try {
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }

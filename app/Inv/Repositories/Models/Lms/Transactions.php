@@ -97,7 +97,7 @@ class Transactions extends BaseModel {
     }
 
     public function getOutstandingAttribute(){
-        return $this->amount-$this->getSettledAmt($this->trans_id);
+        return round(($this->amount-$this->getSettledAmt($this->trans_id)),2);
     }
 
     public function getTransNameAttribute(){

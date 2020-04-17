@@ -1030,8 +1030,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return Transactions::getRefundTrans($userId);
 	}
 
-	public static function getPaymentDetail($paymentId){
-		return Payment::find($paymentId);
+	public static function getPaymentDetail($paymentId, $userId){
+		return Payment::where('payment_id','=',$paymentId)
+		->where('user_id','=',$userId)
+		->first();
 	}
 
 	public static function getUnsettledInvoices($data){
