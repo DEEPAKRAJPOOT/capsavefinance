@@ -1227,7 +1227,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_get_bank_invoice_customers',
                'uses' => 'Backend\InvoiceController@viewBankInvoiceCustomers'
             ]);
-
+            Route::POST('upload_bulk_csv_Invoice', [
+                  'as' => 'upload_bulk_csv_Invoice',
+                  'uses' => 'Backend\InvoiceController@uploadBulkCsvInvoice'
+              ]); 
             Route::get('view-disburse-invoice', [
                 'as' => 'backend_view_disburse_invoice',
                'uses' => 'Backend\InvoiceController@viewDisburseInvoice'

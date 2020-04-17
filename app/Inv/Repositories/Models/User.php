@@ -175,7 +175,7 @@ class User extends Authenticatable
     public static function getCustomerDetail($user_id)
     {
          $arrUser = self::where('user_id', (int) $user_id)
-            ->with('anchor.salesUser')
+            ->with(['anchor.salesUser','biz'])
             ->first();
          
 
@@ -618,8 +618,10 @@ class User extends Authenticatable
     public function anchor(){
         return $this->hasOne('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
-
-
+   
+     public function biz(){
+        return $this->hasOne('App\Inv\Repositories\Models\Business', 'user_id', 'user_id');
+    }
      public static function getProgramUser($user_id)
     {
          $appIds =    LmsUser::where('user_id',$user_id)->pluck('app_id');
