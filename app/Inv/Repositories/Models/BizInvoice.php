@@ -155,7 +155,7 @@ public static function saveBulkInvoice($arrInvoice)
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC')->get();
         }
      } 
      
@@ -389,7 +389,7 @@ public static function saveBulkInvoice($arrInvoice)
     public static function getAllUserBatchInvoice($data)
     {
         return self::with('app.acceptedOffer')->with('invoice_disbursed')
-            ->whereHas('invoice_disbursed', function($query) use ($data) {
+            ->whereHas('invoice_disbursed.disbursal', function($query) use ($data) {
                     $query->where($data);
                 })
             ->where('status_id', 10)

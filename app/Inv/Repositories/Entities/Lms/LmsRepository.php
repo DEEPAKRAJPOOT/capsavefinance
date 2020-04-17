@@ -38,6 +38,7 @@ use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
 use App\Inv\Repositories\Models\Lms\RefundBatch;
+use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
 use App\Inv\Repositories\Models\Master\RoleUser;
 use App\Inv\Repositories\Models\Payment;
 
@@ -342,12 +343,30 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function updateDisburseByUserAndBatch($data, $updatingIds = [])
 	{
 		if (is_array($updatingIds)) {
-			$response =  Disbursal::where($updatingIds)
+			$response =  Disbursal::whereIn('disbursal_id', $updatingIds)
 				->update($data);
 		}
 		return ($response) ?? $response;
 	}          
-	 
+	/**
+	 * Create disbursaal status log
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function createDisbursalStatusLog($disbursalId, $statusId = null, $remarks = '', $createdBy)
+	{
+		$curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+		return DisbursalStatusLog::create([
+                    'disbursal_id' => $disbursalId,
+                    'status_id' => $statusId,
+                    'disbursal_comm_txt' => $remarks,
+                    'created_by' => $createdBy,
+                    'created_at' => $curData,
+                ]);
+	}
 	 /**
 	 * Get Repayments
 	 *      
@@ -895,10 +914,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return RequestAssign::getReqCurrentAssignee($reqId);
     }
 
-	public function findDisbursalByUserAndBatchIds($data)
+	public function findInvoicesByUserAndBatchId($data)
+	{
+		return InvoiceDisbursed::whereHas('disbursal', function ($query) use($data){
+				 	$query->where($data);
+			  	})
+				->pluck('invoice_id');
+	}
+
+	public function findDisbursalByUserAndBatchId($data)
 	{
 		return Disbursal::where($data)
-				->pluck('invoice_id');
+				->pluck('disbursal_id');
 	}
 
 	public function updateInvoicesStatus($invoiceIds, $status)
@@ -1010,4 +1037,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getUnsettledInvoices($data){
 		return Transactions::getUnsettledInvoices($data);
 	}
+
+	public static function getUnsettledInvoiceTransactions($data){
+		return Transactions::getUnsettledInvoiceTransactions($data);
+	}
+
+	public static function getUnsettledChargeTransactions($data){
+		return Transactions::getUnsettledChargeTransactions($data);
+	}
+	
 }

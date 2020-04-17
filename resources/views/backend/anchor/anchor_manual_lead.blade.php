@@ -170,6 +170,10 @@ $messages = session()->get('message', false);
             $.validator.addMethod("alphabetsonly", function(value, element) {
                 return this.optional(element) || /^[a-zA-Z]*$/.test(value);
             });
+
+            $.validator.addMethod("alphaSpace", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z\s]*$/.test(value);
+            });
             
             $.validator.addMethod("alphabetsnspacendot", function(value, element) {
                 return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
@@ -203,16 +207,16 @@ $messages = session()->get('message', false);
                     $(this).rules("add",
                             {
                                 required: true,
-                                alphabetsonly: true,
-                                messages: {'alphabetsonly' : "Only letters allowed" }
+                                alphaSpace: true,
+                                messages: {'alphaSpace' : "Only letters allowed" }
                             })
                 });
                  $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,
-                                alphabetsonly: true,
-                                messages: {'alphabetsonly' : "Only letters allowed" }
+                                alphaSpace: true,
+                                messages: {'alphaSpace' : "Only letters allowed" }
                             })
                 });
                 $('input.comp_name').each(function () {

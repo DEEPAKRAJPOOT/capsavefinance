@@ -1342,7 +1342,7 @@ class DataRenderer implements DataProviderInterface
              ->addColumn(
                     'batch_id',
                     function ($invoice) {  
-                       return  (isset($invoice->disbursal->disbursal_batch->batch_id)) ? $invoice->disbursal->disbursal_batch->batch_id : '';
+                       return  (isset($invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id)) ? $invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id : '';
                 })
               ->addColumn(
                     'anchor_name',
@@ -4495,7 +4495,9 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'action',
                         function ($dataRecords) {
-                        $btn = '<input type="checkbox" name="payment_ids[]" class="payment_ids" value="'.$dataRecords->payment_id.'" title="Move to Settled Status.">';
+
+                        $btn = "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
+                        
                         return $btn;
                     }) 
                     ->make(true);
@@ -5137,29 +5139,10 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'bank',
                         function ($disbursal) {
-                        if ($disbursal->lms_user->user->is_buyer == 2) {
-                            $bank_name = (isset($disbursal->lms_user->user->anchor_bank_details->bank->bank_name)) ? $disbursal->lms_user->user->anchor_bank_details->bank->bank_name : '';
-                        } else {
-                            $bank_name = (isset($disbursal->lms_user->bank_details->bank->bank_name)) ? $disbursal->lms_user->bank_details->bank->bank_name : '';
-                        }
-
-
-                        if ($disbursal->lms_user->user->is_buyer == 2) {
-                            $ifsc_code = (isset($disbursal->lms_user->user->anchor_bank_details->ifsc_code)) ? $disbursal->lms_user->user->anchor_bank_details->ifsc_code : '';
-                        } else {
-                            $ifsc_code = (isset($disbursal->lms_user->bank_details->ifsc_code)) ? $disbursal->lms_user->bank_details->ifsc_code : '';
-                        }
-
-                        if ($disbursal->lms_user->user->is_buyer == 2) {
-                            $benAcc = (isset($disbursal->lms_user->user->anchor_bank_details->acc_no)) ? $disbursal->lms_user->user->anchor_bank_details->acc_no : '';
-                        } else {
-                            $benAcc = (isset($disbursal->lms_user->bank_details->acc_no)) ? $disbursal->lms_user->bank_details->acc_no : '';
-                        }
-
                         $account = '';
-                        $account .= $bank_name ? '<span><b>Bank:&nbsp;</b>'.$bank_name.'</span>' : '';
-                        $account .= $ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$ifsc_code.'</span>' : '';
-                        $account .= $benAcc ? '<br><span><b>Acc. #:&nbsp;</b>'.$benAcc.'</span>' : '';
+                        $account .= $disbursal->bank_name ? '<span><b>Bank:&nbsp;</b>'.$disbursal->bank_name.'</span>' : '';
+                        $account .= $disbursal->ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$disbursal->ifsc_code.'</span>' : '';
+                        $account .= $disbursal->acc_no ? '<br><span><b>Acc. #:&nbsp;</b>'.$disbursal->acc_no.'</span>' : '';
 
                         return $account;
 
@@ -5169,12 +5152,12 @@ class DataRenderer implements DataProviderInterface
                     'total_actual_funded_amt',
                     function ($disbursal) {
 
-                        return '<i class="fa fa-inr"></i> '.number_format($disbursal->total_disburse_amount);
+                        return '<i class="fa fa-inr"></i> '.number_format($disbursal->total_disburse_amount, 2);
                 })
                 ->editColumn(
                     'total_invoice',
                     function ($disbursal) {   
-                        return $disbursal->total_invoice;
+                        return $disbursal->invoice_disbursed->count();
                 }) 
                 
                 ->addColumn(
@@ -5248,7 +5231,7 @@ class DataRenderer implements DataProviderInterface
                 return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
             })
             ->addColumn('pay', function($trans){
-                $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
+                $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
                 return $result;
             })
             ->addColumn('select', function($trans){
