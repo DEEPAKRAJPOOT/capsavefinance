@@ -82,6 +82,58 @@ class ApportionmentController extends Controller
     }
 
     /**
+     * get Transaction Detail
+     * @param Request $request
+     * @return array
+     */
+    public function getTransDetail(Request $request){
+        try {
+            $transId = $request->get('trans_id');
+            $payment_id = $request->get('payment_id');
+            $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            return view('lms.apportionment.detailedTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id]); 
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
+
+    /**
+     * save waiveoff Detail
+     * @param Request $request
+     * @return array
+     */
+    public function saveWaiveOffDetail(Request $request){
+        try {
+            $transId = $request->get('trans_id');
+            $paymentId = $request->get('payment_id');
+            $amount = $request->get('amount');
+            $comment = $request->get('comment');
+            $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            $txnInsertData = [
+                    'payment_id' => NULL,
+                    'parent_trans_id' => $transId,
+                    'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id,
+                    'user_id' => $TransDetail->user_id,
+                    'trans_date' => Carbon::now(),
+                    'comment' => $comment,
+                    'amount' => $amount,
+                    'entry_type' => 1,
+                    'trans_type' => 36,
+                    'gl_flag' => 0,
+                    'soa_flag' => 0,
+                    'pay_from' => 1,
+                    'is_settled' => 2,
+            ];
+            $resp = $this->lmsRepo->saveTransaction($txnInsertData);
+            if (!empty($resp->trans_id)) {
+                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully waived off']);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
+
+    /**
      * Get Unsettled Transactions 
      * @param int $userId
      * @return \Illuminate\Http\Response

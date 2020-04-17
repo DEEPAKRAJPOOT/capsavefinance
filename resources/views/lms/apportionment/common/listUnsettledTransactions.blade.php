@@ -14,7 +14,7 @@
                                     <th>Outstanding Amt</th>
                                     <th>Payment Date</th>
                                     <th>Pay</th>
-                                    <th>Select</th>
+                                    <th>Select <input type="checkbox" id="checkAll" checked onchange="apport.selectAllChecks(this.id)"></th>
                                 </tr>
                             </thead>
                             <tbody>

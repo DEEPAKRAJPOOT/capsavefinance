@@ -38,14 +38,15 @@
             <div class="row pull-right">
                 <div class="col-md-12" >
                     <input type="submit" value="Mark Settled" class="btn btn-success btn-sm">
-                    <input type="button" value="Wave Off" class="btn btn-success btn-sm">
+                    <input type="button" value="Wave Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
                 </div>
             </div>
             </form>
         </div>
     </div>
-
+     <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>
+{!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
 @endsection
 
 @section('jscript')
@@ -53,6 +54,7 @@
 
     var messages = {
         url: "{{ URL::route('apport_unsettled_list') }}",
+        trans_detail_url: "{{ URL::route('apport_trans_detail') }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",
         payment_amt: "{{$payment['payment_amt']}}",

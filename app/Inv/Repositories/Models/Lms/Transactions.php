@@ -302,6 +302,11 @@ class Transactions extends BaseModel {
     public static function getAllManualTransaction()
     {
           return self::with(['biz','disburse','user', 'transType'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
+    }  
+
+    /*** get transaction  Detail**/
+    public static function getTransDetail($whereCondition){
+          return self::with(['biz','disburse','user', 'transType'])->where($whereCondition)->first();
     }
     
 
