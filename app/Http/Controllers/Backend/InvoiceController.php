@@ -604,7 +604,7 @@ class InvoiceController extends Controller {
                         $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 9);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 9, 1);
+                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['parent_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 9, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
 
