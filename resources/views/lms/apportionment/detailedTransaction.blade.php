@@ -35,21 +35,21 @@
     <div class="form-inline">
         <div class="col">
             <label for="chrg_name">Margin</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->margin}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->margin ?? 0}}">
         </div>
         <div class="col">
             <label for="chrg_name">Interest Rate</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->interest_rate}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->interest_rate ?? 0}}">
         </div>
     </div>
     <div class="form-inline">    
         <div class="col">
             <label for="chrg_name">OverDue Intrest Rate</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->overdue_interest_rate}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->overdue_interest_rate ?? 0}}">
         </div>
         <div class="col">
             <label for="chrg_name">Total Interest</label>
-            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->total_interest}}">
+            <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->total_interest ?? 0}}">
         </div>
     </div>
     <div class="form-inline">

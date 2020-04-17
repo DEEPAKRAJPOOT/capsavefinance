@@ -113,7 +113,10 @@ class Apportionment {
                 settled_amt += payamt;
             }
         });
-        var unapplied_amt = payment_amt-settled_amt; 
+        var unapplied_amt = payment_amt-settled_amt;
+        if(unapplied_amt < 0 ){
+            alert("Sum of your total entries is grater than Re-payment amount");
+        } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
     }
 
@@ -123,13 +126,60 @@ class Apportionment {
 
     onCheckChange(transId){
         $("input[name='payment["+transId+"]']").val('');
-
+        
         if ($("input[name='check["+transId+"]']").is(":checked")) { 
             $("input[name='payment["+transId+"]']").removeAttr('readonly');
         } else { 
             $("input[name='payment["+transId+"]']").attr('readonly',true);
         } 
         this.calculateUnAppliedAmt()
+    }
+    
+    validateMarkSettled(el){
+        var check = $('.check');
+        var status = true;
+        var message = '';
+        var paymentAmt = this.data.payment_amt;
+        var totalSettledAmt = 0;
+        if($('.check').filter(':checked').length == 0){
+            message = "Please Select at least one ";
+            status = false;
+        } 
+        if(status){
+            $('.check').each(function (index, element) {
+                if($(this). is(":checked")){
+                    var name = $(this).attr('name');
+                    name =  name.replace('check','');
+                    var value = parseFloat($("input[name='payment"+name+"']").val());
+                    if(isNaN(value)){
+                        message = "Please enter valid value in Pay at row no - "+(index+1);
+                        status = false;
+                    }
+                    else if(value <= 0){
+                        message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
+                        status = false;
+                    }else{
+                        totalSettledAmt +=value;
+                    }
+                    if(!status){
+                        return false;
+                    }   
+                }
+            });
+        }
+
+        if(status){
+            if(totalSettledAmt > paymentAmt){
+                message =  "Sum of your total entries is grater than Re-payment amount";
+                status = false;
+            }
+        }
+            
+        if(!status){
+            alert(message);
+            return status;
+        }
+
     }
 
     onWaveOff(){

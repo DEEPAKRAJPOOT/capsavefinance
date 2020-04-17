@@ -31,7 +31,8 @@
         <div class="card-body">       
             @include('lms.apportionment.common.userDetails')
             @include('lms.apportionment.common.paymentDetails')
-            <form>
+            <form action="{{ route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId]) }}" method="post" onsubmit="return apport.validateMarkSettled(this)">
+             @csrf	
             <div class="row">
                 @include('lms.apportionment.common.listUnsettledTransactions')
             </div>
@@ -47,6 +48,7 @@
      <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>
 {!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
+</div>
 @endsection
 
 @section('jscript')
