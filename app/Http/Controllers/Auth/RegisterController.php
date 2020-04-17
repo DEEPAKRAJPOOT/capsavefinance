@@ -491,10 +491,8 @@ use RegistersUsers,
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     if(Auth::loginUsingId($userDetails->user_id)) {
-
                         return redirect()->route('business_information_open');
                     }
-
                     //return redirect()->route('login_open');
                 } else {
                     return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('error_messages.enter_corr_otp'));
