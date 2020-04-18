@@ -84,6 +84,8 @@ try {
                     {data: 'business_name'},
                     {data: 'virtual_account'},
                     {data: 'amount'},
+                    {data: 'date_of_payment'},
+                    {data: 'created_by'},
                     {data: 'action'}
                 ],
             aoColumnDefs: [{'aTargets': [0,1], 'bSortable': true}]

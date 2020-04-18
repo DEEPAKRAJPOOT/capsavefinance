@@ -4493,6 +4493,16 @@ class DataRenderer implements DataProviderInterface
                         return $dataRecords->amount;
                     }) 
                     ->editColumn(
+                        'date_of_payment',
+                        function ($dataRecords) {
+                        return date('Y-m-d', strtotime($dataRecords->date_of_payment));
+                    }) 
+                    ->editColumn(
+                        'created_by',
+                        function ($dataRecords) {
+                        return $dataRecords->getCreatedByName->f_name .' '.$dataRecords->getCreatedByName->m_name . ' '. $dataRecords->getCreatedByName->l_name;
+                    }) 
+                    ->editColumn(
                         'action',
                         function ($dataRecords) {
 
