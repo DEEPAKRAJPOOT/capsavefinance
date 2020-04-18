@@ -1688,6 +1688,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppProgramLimit::where('biz_id','=',$biz_id)->where('product_id','=',$program_id)->sum('limit_amt');
     }
 
+
     public static function getAppLimitIdByUserIdAppId($userId, $appId)
     {
         return AppLimit::where('user_id',$userId)->where('app_id', $appId)
@@ -1697,4 +1698,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function updatePrgmLimitByLimitId($arr, $limit_id=null){
         return AppProgramLimit::updatePrgmLimitByLimitId($arr, $limit_id);
     }
+
+    /**
+     * This method is used for see upload file in Bank Account  
+     */
+    public function seeUploadFilePopup($acc_id, $user_id) {
+        return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
+
+    }
 }
+
+
+
