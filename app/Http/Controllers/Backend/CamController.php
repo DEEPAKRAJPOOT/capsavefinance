@@ -1536,7 +1536,7 @@ class CamController extends Controller
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
                           'user_id' => $get_res['user_id'],
-                          'status' =>1,
+                          'status' =>0,
                           'tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt),
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),
