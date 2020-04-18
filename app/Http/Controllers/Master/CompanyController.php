@@ -130,11 +130,11 @@ class CompanyController extends Controller {
     public function saveCompanyBankAccount(BankAccountRequest $request)
     {
         try {
-            dd($request->all());
             $by_default = ($request->get('by_default')) ? ((int)$request->get('by_default')) : 0;
             $bank_acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $compId = ($request->get('company_id')) ? \Crypt::decrypt($request->get('company_id')) : null;
-//            dd($compId);
+//            dd($request->all(),$compId,$bank_acc_id,$by_default);
+            
             $prepareData = [
                 'acc_name' => $request->get('acc_name'),
                 'acc_no' => $request->get('acc_no'),
@@ -146,6 +146,17 @@ class CompanyController extends Controller {
                 'company_id' => $compId,
                 'is_default' => $by_default,
             ];
+            
+            if($by_default == 1){
+                $data = $this->appRepo->isDefalutCmpBankAcc(['company_id' => $compId, 'is_default' => $by_default]);
+                $result = $data ? $data->toArray() : '';
+//                dd($result);
+                if(!empty($result)){
+                    $prev_def_acc_id = $result['bank_account_id'];
+                    $result['is_default'] = 0;
+                    $this->appRepo->saveBankAccount($result, $prev_def_acc_id);
+                }
+            }
 
             $this->appRepo->saveBankAccount($prepareData, $bank_acc_id);
             $messges = $bank_acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');

@@ -1682,4 +1682,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getTotalLimit($biz_id,$program_id){
         return AppProgramLimit::where('biz_id','=',$biz_id)->where('product_id','=',$program_id)->sum('limit_amt');
     }
+    
+    /**
+     * check the company bank account is by default set
+     * 
+     * @param type $attributes array
+     * @param type $id int
+     * @return type mixed
+     */
+    public function isDefalutCmpBankAcc($attributes)
+    {
+        return UserBankAccount::isDefalutCmpBankAcc($attributes);
+    }
 }
