@@ -298,6 +298,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\ApportionmentController@markSettleSave'
             ]);
             
+            Route::post('/apportionment/settled/save',[
+                'as' => 'apport_settled_save',
+                'uses' => 'Lms\ApportionmentController@saveSettledTrans'
+            ]);
+
+            Route::get('/apportionment/txn/detail',[
+                'as' => 'apport_trans_detail',
+                'uses' => 'Lms\ApportionmentController@getTransDetail'
+            ]);
+
+            Route::post('/apportionment/waiveoff/save',[
+                'as' => 'apport_waiveoff_save',
+                'uses' => 'Lms\ApportionmentController@saveWaiveOffDetail'
+            ]);
+
         });
         
         //end of application

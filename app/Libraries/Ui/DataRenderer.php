@@ -1680,27 +1680,25 @@ class DataRenderer implements DataProviderInterface
         /// dd($trans->disburse);
     
          return DataTables::of($trans)
-               ->rawColumns(['trans_by','customer_id','virtual_account_no'])
+               ->rawColumns(['trans_by','customer_id','customer_detail'])
                 ->addIndexColumn()
                 
                 ->addColumn(
                     'customer_id',
-                    function ($trans) {                        
+                    function ($trans) {  
                         $customer = '';
                         $customer .= ($trans->biz!=null) ? '<span>'.$trans->biz->biz_entity_name.'</span>' : '';
                         $customer .= $trans->lmsUser ? '<br><span><b>Customer Id:&nbsp;</b>'.$trans->lmsUser->customer_id.'</span>' : '';
-                         $customer .= $trans->virtual_acc_id ? '<br><span><b>Virtual Acc. No.:&nbsp;</b>'.$trans->virtual_acc_id.'</span>' : '';
+                         // $customer .= $trans->virtual_acc_id ? '<br><span><b>Virtual Acc. No.:&nbsp;</b>'.$trans->virtual_acc_id.'</span>' : '';
                         return $customer;
                 })
                 ->addColumn(
-                    'virtual_account_no',
+                    'customer_detail',
                     function ($trans) { 
                         $payment = '';
-                        $payment .= $trans->trans_date ? '<span><b>Trans. Date:&nbsp;</b>'.date("Y-m-d", strtotime($trans->trans_date)).'</span>' : '';
-                        $payment .= $trans->trans_detail ? '<br><span><b>Trans. Type:&nbsp;</b>'.$trans->trans_detail->trans_name.'</span>' : '';
+                        $payment .= $trans->trans_date ? '<span><b>Trans. Date:&nbsp;</b>'.date("Y-m-d", strtotime($trans->created_at)).'</span>' : '';
                         $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b>'.number_format($trans->amount).'</span>' : '';
                         return $payment;
-                         return $trans->virtual_acc_id 	 ? $trans->virtual_acc_id : '';
                 })
                
                  ->addColumn(
@@ -1730,7 +1728,7 @@ class DataRenderer implements DataProviderInterface
                            $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
                            $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
                     }
-                    return $transaction;
+                    return $type;
                 })
                  ->addColumn(
                     'comment',
@@ -4493,6 +4491,16 @@ class DataRenderer implements DataProviderInterface
                         'amount',
                         function ($dataRecords) {
                         return $dataRecords->amount;
+                    }) 
+                    ->editColumn(
+                        'date_of_payment',
+                        function ($dataRecords) {
+                        return date('Y-m-d', strtotime($dataRecords->date_of_payment));
+                    }) 
+                    ->editColumn(
+                        'created_by',
+                        function ($dataRecords) {
+                        return $dataRecords->getCreatedByName->f_name .' '.$dataRecords->getCreatedByName->m_name . ' '. $dataRecords->getCreatedByName->l_name;
                     }) 
                     ->editColumn(
                         'action',

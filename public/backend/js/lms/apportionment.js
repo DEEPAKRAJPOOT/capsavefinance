@@ -198,6 +198,34 @@ class Apportionment {
 
     }
 
+    onWaveOff(){
+       var data = this.data;
+       var numberOfChecked = $('input:checkbox:checked').length;
+       if (numberOfChecked == 1) {
+           var checkedName = $('input:checkbox:checked').attr('name');
+           var transId = checkedName.replace(/[^0-9]/g, '');
+           var givenUrl = data.trans_detail_url;
+           var targetUrl = givenUrl + '?trans_id=' + transId;
+           if(data.payment_id){
+                targetUrl += '&payment_id=' + data.payment_id;
+            }
+           $('.view_detail_transaction').attr('data-url', targetUrl);
+           $('.view_detail_transaction').trigger('click');
+       }else{
+            alert('Please select only one checkbox');
+       }
+    }
+
+    selectAllChecks(checkallId){
+      if ($('#' + checkallId).is(':checked')) {
+        $('.check[type="checkbox"]').prop('checked', true);
+      }else{
+         $('.check[type="checkbox"]').prop('checked', false);
+      }
+      $('.pay[type="text"]').val('');
+      this.calculateUnAppliedAmt()
+    }
+
 }
 
 var apport =  new Apportionment(messages);

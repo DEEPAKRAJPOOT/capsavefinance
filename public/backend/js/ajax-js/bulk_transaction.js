@@ -24,7 +24,7 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
-                {data: 'virtual_account_no.'},
+                {data: 'customer_detail'},
                 {data: 'trans_by'},
                 {data: 'comment'},
                 {data: 'created_by'},
