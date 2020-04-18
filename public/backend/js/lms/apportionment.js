@@ -83,24 +83,40 @@ class Apportionment {
     }
 
     setTransactionAmt(){
+        var oldData = this.data.old_data;
         var paymentAmt = this.data.payment_amt;
-        $(".pay").each(function (index, element) {
-            if(paymentAmt>0){
-                let value =  parseFloat($(this).attr('max'));
-                let id = $(this).attr('id');
-                if(paymentAmt>=value){
-                    $(this).val(value);
-                    $(this).attr('readonly',false)
-                    $("input[name='check["+id+"]']").prop("checked", true);
-                    paymentAmt = paymentAmt-value;
-                }else{
-                    $(this).val(paymentAmt);
-                    $(this).attr('readonly',false)
-                    $("input[name='check["+id+"]']").prop("checked", true);
-                    paymentAmt= 0;
+        if($.isEmptyObject(oldData.payment) && $.isEmptyObject(oldData.check)) {
+            $(".pay").each(function (index, element) {
+                if(paymentAmt>0){
+                    let value =  parseFloat($(this).attr('max'));
+                    let id = $(this).attr('id');
+                    if(paymentAmt>=value){
+                        $(this).val(value);
+                        $(this).attr('readonly',false);
+                        $("input[name='check["+id+"]']").prop("checked", true);
+                        paymentAmt = paymentAmt-value;
+                    }else{
+                        $(this).val(paymentAmt);
+                        $(this).attr('readonly',false);
+                        $("input[name='check["+id+"]']").prop("checked", true);
+                        paymentAmt= 0;
+                    }
                 }
-            }
-        });
+            });
+        }
+        else{
+            $(".pay").each(function (index, element) {
+                let id = parseInt($(this).attr('id'));
+                if(!$.isEmptyObject(oldData.payment[id])){
+                    $("input[name='payment["+id+"]']").val(oldData.payment[id]);
+                }
+                if(!$.isEmptyObject(oldData.check[id])){
+                    $("input[name='check["+id+"]']").prop("checked", true);
+                }else{
+                    $("input[name='payment["+id+"]']").attr('readonly',true);
+                }
+            });
+        }
         this.calculateUnAppliedAmt();
     }
 

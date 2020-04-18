@@ -4490,7 +4490,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'amount',
                         function ($dataRecords) {
-                        return $dataRecords->amount;
+                        return "₹ ".number_format($dataRecords->amount,2);
                     }) 
                     ->editColumn(
                         'date_of_payment',
@@ -5264,7 +5264,9 @@ class DataRenderer implements DataProviderInterface
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
-                return $trans->invoice_disbursed_id;
+                if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
+                    return $trans->invoiceDisbursed->invoice->invoice_no;
+                }
             })
             ->addColumn('trans_type', function($trans){
                 return $trans->transName;

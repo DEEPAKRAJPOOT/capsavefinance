@@ -61,6 +61,7 @@
         payment_id: "{{$paymentId}}",
         payment_amt: "{{$payment['payment_amt']}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        old_data: {!! json_encode($oldData) !!},
         token: "{{ csrf_token() }}",
     };
 </script>
