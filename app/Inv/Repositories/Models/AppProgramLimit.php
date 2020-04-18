@@ -56,6 +56,8 @@ class AppProgramLimit extends BaseModel {
         'prgm_id',
         'product_id',
         'limit_amt',
+        'start_date',
+        'end_date',
         'created_at',
         'created_by',
         'updated_at',        
@@ -72,6 +74,16 @@ class AppProgramLimit extends BaseModel {
             return self::where('app_prgm_limit_id', $prgm_limit_id)->update(['limit_amt'=>$data['limit_amt']]);
         } else {
             return self::create($data);
+        }
+    }
+
+    public static function updatePrgmLimitByLimitId($data, $limit_id){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_null($limit_id)) {
+            return self::where('app_limit_id', $limit_id)->update($data);
         }
     }
 
