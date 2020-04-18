@@ -299,7 +299,15 @@ class Helper extends PaypalHelper
        $userId = Auth::user()->user_id;
        $inputArr = []; 
        $attr[] = "";   
-       if($attributes['file_id']->getClientSize() > 1000000)
+       $fp = file($attributes['file_id'], FILE_SKIP_EMPTY_LINES);
+      
+       if(count($fp) > 51)
+       {
+             $attr['status'] =0;
+             $attr['message']= 'You can not upload more than 50 records in csv file.';
+             return  $attr;   
+       } 
+      else if($attributes['file_id']->getClientSize() > 1000000)
        {
              $attr['status'] =0;
              $attr['message']= 'File size should be upload Only 1 Mb.';
@@ -335,7 +343,7 @@ class Helper extends PaypalHelper
 
       public static function uploadZipInvoiceFile($attributes, $batch_id)
     {
-       ini_set('memory_limit', '4096M');    
+     
        $userId = Auth::user()->user_id;
        $inputArr = []; 
        $attr[] = "";   
@@ -364,14 +372,21 @@ class Helper extends PaypalHelper
                 $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
                 $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
                 $zip =  Zip::open($open_path);
+               if(count($zip->listFiles()) > 50)
+                {
+                      
+                      $attr['status'] =0;
+                      $attr['message']= 'You can not archive more than 50 file.';
+                      return  $attr;   
+                } 
                 $resExtract  =  $zip->extract($extract_path);
-               
                 $inputArr['file_path'] = $path;
              }   
-             $totalFiles = glob($open_path . "*");
-                if ($totalFiles){
+            /* $totalFiles = glob($open_path . "*");
+                if ($resExtract){
                     $countFile = count($totalFiles);
                   }
+                  dd($countFile); */
         $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
         $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
@@ -391,7 +406,15 @@ class Helper extends PaypalHelper
             $pathToFile = storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$file_name);
             $attributes =  pathinfo($pathToFile);
             $realPath = '/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$attributes['basename'];
-            
+          /// dd(filesize($pathToFile));
+            if(filesize($pathToFile) > 1000000)
+            {
+                
+                      $inputArr['status'] =0;
+                      $inputArr['message']= 'Your Upload file "'.$file_name.'"  has been cancelled due to more than 1Mb size.';
+                      return  $inputArr;    
+            }
+            $inputArr['status'] =1;
             $inputArr['file_path'] = $realPath;
             $inputArr['file_type'] = $attributes['extension'];
             $inputArr['file_name'] = $attributes['basename'];

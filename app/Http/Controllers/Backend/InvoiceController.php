@@ -927,32 +927,27 @@ class InvoiceController extends Controller {
                         $inv_date  =   $data[2]; 
                         $amount  =   $data[3]; 
                         $file_name  =   $data[4];
-                        $getLmsUser  = $this->invRepo->getCustomerUser($cusomer_id);
-                        if(isset($getLmsUser['user_id']))
-                        {
-                            $getLmsUser['user_id'] =  $getLmsUser['user_id'];
-                        }
-                        else
-                        {
-                            $getLmsUser['user_id']  = 0;
-                        }
-                        $getPrgm  = $this->application->getProgram($prgm_id);
-                        ////// for validation paramiter here//////
                         $dataAttr['cusomer_id']  =   $data[0]; 
                         $dataAttr['inv_no']  =   $data[1]; 
                         $dataAttr['inv_date']  =   $data[2]; 
                         $dataAttr['amount']  =   $data[3]; 
                         $dataAttr['file_name']  =   $data[4];
-                        $dataAttr['user_id']  =   (isset($getLmsUser['user_id'])) ? $getLmsUser['user_id'] : '';
                         $dataAttr['anchor_id']  =   $attributes['anchor_name'];
                         $dataAttr['prgm_id']  =   $prgm_id;
-                        $dataAttr['app_id']  =   (isset($getLmsUser['app_id'])) ? $getLmsUser['app_id'] : '';
+                        $chlLmsCusto  = InvoiceTrait::getLimitProgram($dataAttr);
+                        $getPrgm  = $this->application->getProgram($prgm_id);
+                        if($chlLmsCusto['status']==0)
+                        {
+                           Session::flash('error', $chlLmsCusto['message']);
+                           return back(); 
+                        }
+                        ////// for validation paramiter here//////
+                        $dataAttr['user_id']  =  $chlLmsCusto['user_id'];
+                        $dataAttr['app_id']  =   $chlLmsCusto['app_id'];
+                        $dataAttr['biz_id']  =   $chlLmsCusto['biz_id'];
+                        $dataAttr['tenor']  =   $chlLmsCusto['tenor'];
+                        $dataAttr['old_tenor']  =   $chlLmsCusto['tenor_old_invoice'];
                         $dataAttr['approval']  =   $getPrgm;
-                      
-                        /////Get tenor//////////
-                        $getTenor =  $this->invRepo->getTenor($dataAttr);
-                        $dataAttr['tenor']  =   $getTenor['tenor'];
-                        $dataAttr['old_tenor']  =   $getTenor['tenor_old_invoice'];
                         $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
                         if($getInvDueDate['status']==0)
                         {
@@ -971,26 +966,28 @@ class InvoiceController extends Controller {
                         $comm_txt  =  $error['message'];
                         $error  =  $error['error'];
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
-                        if($getImage)
+                        if($getImage['status']==1)
                         {
+                            
                            $FileDetail = $this->docRepo->saveFile($getImage); 
                            $FileId  = $FileDetail->file_id; 
                         }
                         else
                         {
-                            $FileId = NUll;
+                           $FileId  = Null; 
+                           $comm_txt  =  $getImage['message']; 
                         }
                        //// $rr  =  $this->invRepo->getBulkProgramOfferByPrgmId($dataAttr);
                       
                         $getOffer  = $this->invRepo->getOfferForLimit($prgm_limit_id);
                         $ins[$key]['anchor_id'] = $attributes['anchor_name'];
-                        $ins[$key]['supplier_id'] = $getLmsUser['user_id'];
+                        $ins[$key]['supplier_id'] = $dataAttr['user_id'];
                         $ins[$key]['program_id'] = $prgm_id;
                         $ins[$key]['prgm_offer_id'] = $getOffer['prgm_offer_id'];
-                        $ins[$key]['app_id'] = $getLmsUser['app_id'];
-                        $ins[$key]['biz_id'] = $getLmsUser->bizApp->biz_id;
+                        $ins[$key]['app_id'] = $dataAttr['app_id'];
+                        $ins[$key]['biz_id'] = $dataAttr['biz_id'];
                         $ins[$key]['invoice_no'] = $inv_no;
-                        $ins[$key]['tenor'] = $getTenor['tenor'];
+                        $ins[$key]['tenor'] = $dataAttr['tenor'];
                         $ins[$key]['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
                         $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $dataAttr['inv_due_date'])->format('Y-m-d');
                         $ins[$key]['pay_calculation_on'] = 2;

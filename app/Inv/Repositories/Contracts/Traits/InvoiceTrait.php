@@ -111,7 +111,7 @@ trait InvoiceTrait
              $attr['status_id'] = 28;
              $attr['error'] = 0;
              $attr['status'] = 1;
-             $attr['message']= 'Invoice date & current date difference should not be more than '.$data['old_tenor'].' days.';
+             $attr['message']= '(Exceptional Case)Invoice date & current date difference should not be more than '.$data['old_tenor'].' days.';
              return  $attr;    
      
         }
@@ -137,12 +137,35 @@ trait InvoiceTrait
        
    }
   
-     public static function getLimitProgram($cust_id)
-     {     
-            $lms_user_id =    LmsUser::whereIn('customer_id',$cust_id)->pluck('user_id');
-            $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->pluck('app_id');
-            return AppProgramOffer::whereHas('productHas')->whereIn('app_id',$app_id)->where(['anchor_id' => $aid,'is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
-     }
+     public static function getLimitProgram($attr)
+     {      
+            $attr[]="";
+            $lms_user_id =    LmsUser::where('customer_id',$attr['cusomer_id'])->pluck('user_id');
+            $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->first();
+            $res =  AppProgramOffer::whereHas('productHas')->where(['app_id' => $app_id['app_id'],'anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->first();
+            if ($res) {
+              
+                  $limit =  AppProgramOffer::whereHas('productHas')->where('app_id',$app_id['app_id'])->where(['anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+                  $attr['status_id'] = 7;
+                  $attr['status'] = 1;
+                  $attr['user_id'] = $app_id['user_id'];
+                  $attr['tenor'] =  $res['tenor']; 
+                  $attr['tenor_old_invoice'] = $res['tenor_old_invoice'];
+                  $attr['limit'] = $limit; 
+                  $attr['app_id'] =  $app_id['app_id'];
+                  $attr['biz_id'] =  $app_id['biz_id'];
+                  $attr['message']= '';
+                  return  $attr;    
+          
+             }
+            else {
+                  $attr['status_id'] = 7;
+                  $attr['status'] = 0;
+                  $attr['message']= 'Offer is not approve for Customer id "('.$attr['cusomer_id'].')"';
+                  return  $attr;    
+          
+            }
+      }
      
    public static  function getInvoiceDueDate($dataAttr)
    {
