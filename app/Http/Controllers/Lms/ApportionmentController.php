@@ -449,8 +449,10 @@ class ApportionmentController extends Controller
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
                 $repaymentAmt = $paymentDetails['amount']; 
                 $transactionList = [];
-
-                $transIds = array_keys($payments);
+                if (!empty($payments)) {
+                    $transIds = array_keys($payments);
+                }
+                $transactions = [];
                 if(!empty($transIds)){
                     $transactions = Transactions::where('user_id','=',$userId)
                     ->whereIn('trans_id',$transIds)
