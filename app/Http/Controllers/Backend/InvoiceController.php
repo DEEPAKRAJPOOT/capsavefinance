@@ -889,6 +889,11 @@ class InvoiceController extends Controller {
         $prgm_limit_id   =   $program_name[1];
         $batch_id =  self::createBatchNumber(6);
         $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
+        if($uploadData['status']==0)
+        {
+             Session::flash('error', $uploadData['message']);
+             return back(); 
+        }
         $userFile = $this->docRepo->saveFile($uploadData);  ///Upload csv
         $userFile['batch_no'] =  $batch_id;
         if($userFile)
@@ -897,6 +902,11 @@ class InvoiceController extends Controller {
            if($resFile)
            {
               $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
+              if($uploadData['status']==0)
+             {
+               Session::flash('error', $uploadData['message']);
+               return back(); 
+             }
               if($uploadData)
               {   
                   $zipBatch  =   self::createBatchNumber(6);
@@ -910,29 +920,56 @@ class InvoiceController extends Controller {
                     $data = fgetcsv($handle, 1000, ",");
                     $key=0;
                     $ins = [];
-                    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
+                    while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
                     {   
                         $cusomer_id  =   $data[0]; 
                         $inv_no  =   $data[1]; 
                         $inv_date  =   $data[2]; 
-                        $inv_due_date  =   $data[3]; 
-                        $amount  =   $data[4]; 
-                        $file_name  =   $data[5];
+                        $amount  =   $data[3]; 
+                        $file_name  =   $data[4];
                         $getLmsUser  = $this->invRepo->getCustomerUser($cusomer_id);
+                        if(isset($getLmsUser['user_id']))
+                        {
+                            $getLmsUser['user_id'] =  $getLmsUser['user_id'];
+                        }
+                        else
+                        {
+                            $getLmsUser['user_id']  = 0;
+                        }
+                        $getPrgm  = $this->application->getProgram($prgm_id);
                         ////// for validation paramiter here//////
                         $dataAttr['cusomer_id']  =   $data[0]; 
                         $dataAttr['inv_no']  =   $data[1]; 
                         $dataAttr['inv_date']  =   $data[2]; 
-                        $dataAttr['inv_due_date']  =   $data[3]; 
-                        $dataAttr['amount']  =   $data[4]; 
-                        $dataAttr['file_name']  =   $data[5];
-                        $dataAttr['user_id']  =   $getLmsUser['user_id'];
+                        $dataAttr['amount']  =   $data[3]; 
+                        $dataAttr['file_name']  =   $data[4];
+                        $dataAttr['user_id']  =   (isset($getLmsUser['user_id'])) ? $getLmsUser['user_id'] : '';
+                        $dataAttr['anchor_id']  =   $attributes['anchor_name'];
+                        $dataAttr['prgm_id']  =   $prgm_id;
+                        $dataAttr['app_id']  =   (isset($getLmsUser['app_id'])) ? $getLmsUser['app_id'] : '';
+                        $dataAttr['approval']  =   $getPrgm;
+                      
+                        /////Get tenor//////////
+                        $getTenor =  $this->invRepo->getTenor($dataAttr);
+                        $dataAttr['tenor']  =   $getTenor['tenor'];
+                        $dataAttr['old_tenor']  =   $getTenor['tenor_old_invoice'];
+                        $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
+                        if($getInvDueDate['status']==0)
+                        {
+                           Session::flash('error', $getInvDueDate['message']);
+                           return back(); 
+                        }
+                        $dataAttr['inv_due_date']  =   $getInvDueDate['inv_due_date']; 
                         $error = InvoiceTrait::checkCsvFile($dataAttr);
+                       
                         if($error['status']==0)
                         {
                            Session::flash('error', $error['message']);
                            return back(); 
                         }
+                        $status_id =  $error['status_id'];
+                        $comm_txt  =  $error['message'];
+                        $error  =  $error['error'];
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
                         if($getImage)
                         {
@@ -943,21 +980,24 @@ class InvoiceController extends Controller {
                         {
                             $FileId = NUll;
                         }
+                       //// $rr  =  $this->invRepo->getBulkProgramOfferByPrgmId($dataAttr);
                       
                         $getOffer  = $this->invRepo->getOfferForLimit($prgm_limit_id);
                         $ins[$key]['anchor_id'] = $attributes['anchor_name'];
                         $ins[$key]['supplier_id'] = $getLmsUser['user_id'];
                         $ins[$key]['program_id'] = $prgm_id;
                         $ins[$key]['prgm_offer_id'] = $getOffer['prgm_offer_id'];
-                        $ins[$key]['app_id'] = $getLmsUser->app_id;
+                        $ins[$key]['app_id'] = $getLmsUser['app_id'];
                         $ins[$key]['biz_id'] = $getLmsUser->bizApp->biz_id;
                         $ins[$key]['invoice_no'] = $inv_no;
-                        $ins[$key]['tenor'] = 0;
+                        $ins[$key]['tenor'] = $getTenor['tenor'];
                         $ins[$key]['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
-                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $inv_due_date)->format('Y-m-d');
+                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $dataAttr['inv_due_date'])->format('Y-m-d');
                         $ins[$key]['pay_calculation_on'] = 2;
                         $ins[$key]['invoice_approve_amount'] = $amount;
-                        $ins[$key]['status'] = 0;
+                        $ins[$key]['comm_txt'] = $comm_txt;
+                        $ins[$key]['status'] = $error;
+                        $ins[$key]['status_id'] = $status_id;
                         $ins[$key]['file_id'] =  $FileId;
                         $ins[$key]['created_by'] =  $id;
                         $ins[$key]['created_at'] =  $date;

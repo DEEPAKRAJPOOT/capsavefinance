@@ -126,7 +126,6 @@
                             @php   } @endphp 
                            
                             <div class="row" id="setInvoiceCount" data-count="{{count($getBulkInvoice)}}">
-
                                     <div class="col-sm-12">
                                         <table  class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
@@ -137,11 +136,13 @@
                                                     <th>Anchor Detail</th>
                                                     <th>Invoice Detail</th>
                                                     <th>Invoice  Amount</th>
+                                                    <th>Remark</th>
                                                     <th>Action </th>
                                                 </tr>
                                             </thead>
+                                           
                                             @php if(count($getBulkInvoice) > 0) { @endphp
-                                            @foreach($getBulkInvoice as $key=>$val)
+                                            @foreach($getBulkInvoice as $key=>$val) 
                                            <tr id="deleteRow{{$val->invoice_bulk_upload_id}}"  @php if($val->status==2) { @endphp style="background-color: #ffef00" @php } @endphp  class="getUploadBulkId"  data-id="{{$val->invoice_bulk_upload_id}}" data-status="{{$val->status}}"> 
                                             <td>{{$key+1}}</td>
                                             <td>
@@ -150,7 +151,8 @@
                                             </td>
                                             <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->anchor->comp_name}}</span><br>
-                                                    <span><b>Program:&nbsp;</b>{{$val->program->prgm_name}}</span>
+                                                    <span><b>Program:&nbsp;</b>{{$val->program->prgm_name}}</span><br>
+                                                    <span><b>Business Name:&nbsp;</b>{{$val->business->biz_entity_name}}</span>
                                             </td>
                                              <td>
                                                     <span><b>Date:&nbsp;</b>{{$val->invoice_date}}</span><br>
@@ -158,6 +160,7 @@
                                                     <span><b>Tenor In Days:&nbsp;</b>{{$val->tenor}}</span>
                                              </td>
                                                 <td>{{number_format($val->invoice_approve_amount)}}</td>
+                                                 <td>{{$val->comm_txt}}</td>
                                                 <td><button class="btn deleteTempInv" data-id="{{$val->invoice_bulk_upload_id}}"><i class="fa fa-trash"></i></button></td>
                                             </tr>
                                           @endforeach     

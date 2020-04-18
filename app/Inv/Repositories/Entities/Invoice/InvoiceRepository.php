@@ -865,6 +865,17 @@ use CommonRepositoryTraits;
     {
         return AppProgramOffer::getProgramOfferByPrgmId($prgmId);
     } 
+    
+    public function getBulkProgramOfferByPrgmId($attr)
+    {
+       try
+       {
+         return AppProgramOffer::getBulkProgramOfferByPrgmId($attr);  
+       } catch (Exception $ex) {
+         return $ex;
+       }
+    } 
+    
     public function getUserProgramOfferByPrgmId($prgmId,$user_id)
     {
         return AppProgramOffer::getUserProgramOfferByPrgmId($prgmId,$user_id);

@@ -298,6 +298,20 @@ class Helper extends PaypalHelper
     {
        $userId = Auth::user()->user_id;
        $inputArr = []; 
+       $attr[] = "";   
+       if($attributes['file_id']->getClientSize() > 1000000)
+       {
+             $attr['status'] =0;
+             $attr['message']= 'File size should be upload Only 1 Mb.';
+             return  $attr;   
+       }
+       else if($attributes['file_id']->getClientOriginalExtension()!='csv')
+       {
+             $attr['status'] =0;
+             $attr['message']= 'Csv file format is not correct, only csv file is allowed.';
+             return  $attr;   
+       }
+       
        if ($attributes['file_id']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
@@ -315,13 +329,28 @@ class Helper extends PaypalHelper
         $inputArr['file_name'] = $attributes['file_id']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['file_id']->getClientSize();
         $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['status'] =1;
        return $inputArr;
     }
 
       public static function uploadZipInvoiceFile($attributes, $batch_id)
     {
+       ini_set('memory_limit', '4096M');    
        $userId = Auth::user()->user_id;
        $inputArr = []; 
+       $attr[] = "";   
+        if($attributes['file_image_id']->getClientSize() > 30000000)
+       {
+             $attr['status'] =0;
+             $attr['message']= 'File size should be upload Only 30 Mb.';
+             return  $attr;   
+       }
+       else if($attributes['file_image_id']->getClientOriginalExtension()!='zip')
+       {
+             $attr['status'] =0;
+             $attr['message']= 'Zip File format is not correct, only zip file is allowed.';
+             return  $attr;   
+       }
        if ($attributes['file_image_id']) {
             if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
                 Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
@@ -335,16 +364,21 @@ class Helper extends PaypalHelper
                 $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
                 $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
                 $zip =  Zip::open($open_path);
-                $zip->extract($extract_path);
+                $resExtract  =  $zip->extract($extract_path);
+               
                 $inputArr['file_path'] = $path;
              }   
+             $totalFiles = glob($open_path . "*");
+                if ($totalFiles){
+                    $countFile = count($totalFiles);
+                  }
         $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
         $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
-
+        $inputArr['status'] =1;
         return $inputArr;
     }
     

@@ -1620,11 +1620,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param integer $app_id
      * @return mixed
      */    
-    public function getAppApprovers($app_id)
+    public function getSingleAnchorDataByAppId($app_id)
+    {
+        return Application::getSingleAnchorDataByAppId($app_id);  
+    }
+   
+     public function getAppApprovers($app_id)
     {
         return AppApprover::getAppApprovers($app_id);
     }
-
+    
     public function getReviewerSummaryData($appId, $bizId){
         $returnData = []; 
         $reviewerSummaryData = CamReviewerSummary::where('biz_id',$bizId)->where('app_id', $appId)->first(); 
@@ -1681,5 +1686,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     
     public function getTotalLimit($biz_id,$program_id){
         return AppProgramLimit::where('biz_id','=',$biz_id)->where('product_id','=',$program_id)->sum('limit_amt');
+    }
+
+    public static function getAppLimitIdByUserIdAppId($userId, $appId)
+    {
+        return AppLimit::where('user_id',$userId)->where('app_id', $appId)
+                ->pluck('app_limit_id')->first();
+    }
+
+    public function updatePrgmLimitByLimitId($arr, $limit_id=null){
+        return AppProgramLimit::updatePrgmLimitByLimitId($arr, $limit_id);
     }
 }

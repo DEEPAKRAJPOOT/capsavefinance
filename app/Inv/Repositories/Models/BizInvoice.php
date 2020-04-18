@@ -425,7 +425,7 @@ public static function saveBulkInvoice($arrInvoice)
                             'invoice_approve_amount' => $res->invoice_approve_amount,
                             'remark' => $res->comm_txt,
                             'is_bulk_upload' => 1,
-                            'status_id' => 7,
+                            'status_id' => $res->status_id,
                             'file_id' => $res->file_id,
                             'created_by' => $res->created_by,
                             'created_at' =>  $mytime];

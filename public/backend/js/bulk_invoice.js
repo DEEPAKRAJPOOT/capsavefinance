@@ -9,6 +9,7 @@
  ///* upload image and get ,name  */
     $('input[name="file_id"]').change(function (e) {
         $("#customFile_msg").html('');
+       var get_sfm =  $("#customImageFile_msg").html();
         var fileName = e.target.files[0].name;
         var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
           if(fileNameExt!='csv')
@@ -18,7 +19,7 @@
             $("#customFile_msg").text("File format is not correct, only csv file is allowed."); 
             return false;
        }
-       else
+       else if(get_sfm=='')
        {
             $("#submit").css("pointer-events","auto");
        }
@@ -28,6 +29,7 @@
     ///* upload image and get ,name  */
     $('input[name="file_image_id"]').change(function (e) {
         $("#customImageFile_msg").html('');
+        var get_sfm =  $("#customFile_msg").html();
         var fileName = e.target.files[0].name;
          var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
           if(fileNameExt!='zip')
@@ -37,7 +39,7 @@
             $("#customImageFile_msg").text("File format is not correct, only zip file is allowed.");
             return false;
        }
-       else
+       else if(get_sfm=='')
        {
             $("#submit").css("pointer-events","auto");
        }
