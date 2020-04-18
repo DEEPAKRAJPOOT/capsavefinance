@@ -53,9 +53,22 @@ class CompanyController extends Controller {
     public function saveCompanies(CompanyRegRequest $request) {
         try {
             $arrCompaniesData = $request->all();
-//            dd($arrCompaniesData);
             $status = false;
             $company_id = false;
+//            dd($arrCompaniesData);
+            if($request->get('is_reg') == 1){
+                $comp_name = trim($request->get('cmp_name'));
+                $is_reg = (int)$request->get('is_reg');
+                $data = $this->masterRepo->checkIsRegCompany($comp_name,$is_reg);
+                $regComData = $data ? $data->toArray() : '';
+                if (!empty($regComData)) {
+                    $company_id = $regComData['company_id'];
+                    $regComData['is_reg'] = 0;
+//                    dd($regComData);
+                    $status = $this->masterRepo->updateCompanies($regComData, $company_id);
+                }
+            }
+            
             if (!empty($request->get('company_id'))) {
                 $company_id = $request->get('company_id');
                 $companies_data = $this->masterRepo->findCompanyById($company_id);
@@ -117,7 +130,7 @@ class CompanyController extends Controller {
     public function saveCompanyBankAccount(BankAccountRequest $request)
     {
         try {
-//            dd($request->all());
+            dd($request->all());
             $by_default = ($request->get('by_default')) ? ((int)$request->get('by_default')) : 0;
             $bank_acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $compId = ($request->get('company_id')) ? \Crypt::decrypt($request->get('company_id')) : null;

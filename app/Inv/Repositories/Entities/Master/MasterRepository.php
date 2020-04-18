@@ -668,5 +668,15 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return BaseRate::getBaseRateDropDown();
     }
+    
+    /*
+     * check that company is registered.
+     */
+    public function checkIsRegCompany($cmp_name,$is_reg) {
+        
+        $result = Company::checkIsRegCompany($cmp_name,$is_reg);
+  
+        return $result;
+    }
 
 }

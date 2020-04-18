@@ -131,5 +131,15 @@ class Company extends BaseModel {
         
     } 
     
+    public static function checkIsRegCompany($name,$is_reg) {
+        
+        if (empty($is_reg) || empty($name)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        $res = self::where(['cmp_name' => $name, 'is_reg' => $is_reg])->first();
+        
+        return $res;
+    }
 
 }
