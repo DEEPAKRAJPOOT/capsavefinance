@@ -9,6 +9,7 @@ use Helpers;
 use PHPExcel; 
 use PHPExcel_IOFactory;
 use Illuminate\Http\Request;
+use App\Http\Requests\MarkSettleInformationRequest as MarkSettleRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -111,13 +112,27 @@ class ApportionmentController extends Controller
             $amount = $request->get('amount');
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            if (empty($TransDetail)) {
+                return redirect()->route('unsettled_payments')->with(['error' => 'Selected Transaction to be waived off is not valid']);
+            }
+            $outstandingAmount = $TransDetail->getOutstandingAttribute();
+            if ($amount > $outstandingAmount)  {
+                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be Waived Off must be less than or equal to '. $outstandingAmount]);
+            }
+            if ($amount < 1)  {
+                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be Waived Off must have some values ']);
+            }
+
+            if (empty($comment))  {
+                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Comment / Remarks is required to waive off the amount.']);
+            }
             $txnInsertData = [
                     'payment_id' => NULL,
                     'parent_trans_id' => $transId,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
-                    'comment' => $comment,
+                    'comment' => $comment ?? NULL,
                     'amount' => $amount,
                     'entry_type' => 1,
                     'trans_type' => 36,
@@ -131,7 +146,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully waived off']);
             }
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
 
@@ -286,7 +301,10 @@ class ApportionmentController extends Controller
     /**
      * Unsettled Transaction marked Settled
      */
-    public function markSettleConfirmation(Request $request){
+    public function markSettleConfirmation(MarkSettleRequest $request){
+
+        dd($request->all());
+
         try {
 
             // $validator = Validator::make($request->all(), [
