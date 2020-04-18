@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers\Lms;
 
-use App\Http\Controllers\Controller;
 use Auth;
 use Session;
 use Helpers;
 use PHPExcel; 
-use PHPExcel_IOFactory;
+use PHPExcel_IOFactory; 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Requests\MarkSettleInformationRequest as MarkSettleRequest;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use App\Contracts\Ui\DataProviderInterface;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Lms\ApportionmentRequest;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use App\Contracts\Ui\DataProviderInterface;
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
-use  App\Inv\Repositories\Models\Lms\Transactions;
-use App\Http\Requests\Lms\ApportionmentRequest;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class ApportionmentController extends Controller
 {
@@ -305,7 +304,7 @@ class ApportionmentController extends Controller
     /**
      * Unsettled Transaction marked Settled
      */
-    public function markSettleConfirmation(MarkSettleRequest $request){
+    public function markSettleConfirmation(ApportionmentRequest $request){
         try {
             $validator = Validator::make($request->all(), [
                 "check.*" => 'required|min:1',
@@ -448,7 +447,10 @@ class ApportionmentController extends Controller
 
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
                 $repaymentAmt = $paymentDetails['amount']; 
+                
+                $invoiceList = [];
                 $transactionList = [];
+                
                 if (!empty($payments)) {
                     $transIds = array_keys($payments);
                 }
@@ -459,21 +461,45 @@ class ApportionmentController extends Controller
                     ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
                     ->get();
                 }
-    
-                foreach ($transactions as $trans){
+                
+
+                foreach ($transactions as $trans){  
+                    $invoiceList[$trans->invoice_disbursed_id] = [
+                        'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
+                        'date_of_payment'=>$paymentDetails['date_of_payment']
+                    ];             
                     $transactionList[] = [
                         'payment_id' => $paymentId,
                         'parent_trans_id' => $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
-                        'trans_date' => date('Y-m-d H:i:s'),
+                        'trans_date' => $paymentDetails['date_of_payment'],
                         'amount' => $payments[$trans->trans_id],
                         'entry_type' => 1,
                         'trans_type' => $trans->trans_type
                     ];
                     $amtToSettle += $payments[$trans->trans_id];
                 }
-    
+
+                foreach ($invoiceList as $invDisb) {
+                    $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    $refundParentTrans = $refundData->get('parent_transaction');
+                    $refundAmt = $refundData->get('amount'); 
+                    if($refundAmt > 0){
+                        $transactionList[] = [
+                            'payment_id' => $paymentId,
+                            'parent_trans_id' => $refundParentTrans->trans_id,
+                            'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
+                            'user_id' => $refundParentTrans->user_id,
+                            'trans_date' => $invDisb['date_of_payment'],
+                            'amount' => $refundAmt,
+                            'entry_type' => 1,
+                            'trans_type' => $refundParentTrans->trans_type
+                        ];
+                    }
+                }
+                
+
                 $unAppliedAmt = $repaymentAmt-$amtToSettle;
     
                 if($amtToSettle > $repaymentAmt){

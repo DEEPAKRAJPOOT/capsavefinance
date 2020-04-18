@@ -100,6 +100,10 @@ class Transactions extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
     }
 
+    public function accruedInterest(){
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id');
+    }
+
     public function getsettled_amtAttribute(){
         return self::where('parent_trans_id','=',$this->trans_id)->sum('amount');
     }
@@ -270,20 +274,42 @@ class Transactions extends BaseModel {
         });
     }
 
-    public static function calInvoiceRefund($data = [])
+
+    public static function calInvoiceRefund($invDesbId,$payment_date=null)
     {
+        $invoice = self::where('invoice_disbursed_id','=',$invDesbId)
+        ->where('trans_type','=','9')
+        ->whereHas('invoiceDisbursed',function($query){
+            $query->whereHas('invoice', function($query){
+                $query->whereHas('program_offer',function($query){
+                    $query->where('payment_frequency','=',1);
+                });
+            });
+        })
+        ->first();
+
+        $intRefund = 0;
         $totalDebitAmt = self::where('entry_type','=','0')
         ->where('invoice_disbursed_id','=',$invDesbId)
         ->whereNotIn('trans_type',[10])
         ->sum('amount');
         
-        $totalCreditAmt =  selef::where('entry_type','=','1')
+        $totalCreditAmt =  self::where('entry_type','=','1')
         ->where('invoice_disbursed_id','=',$invDesbId)
         ->whereNotIn('trans_type',[10])
         ->sum('amount');
+        $invoice2 = $invoice;
+
+        if($totalDebitAmt <= $totalCreditAmt){
+            $invoice = $invoice->accruedInterest();
+			if($payment_date){
+				$invoice = $invoice->whereDate('interest_date','<',$payment_date);
+			}    
+            $intRefund = $invoice->sum('accrued_interest');
+        }
+        
+		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
-
-
 
 
 
@@ -473,7 +499,7 @@ class Transactions extends BaseModel {
         return self::select('transactions.*')
                     ->join('users', 'transactions.user_id', '=', 'users.user_id')
                     ->join('lms_users','users.user_id','lms_users.user_id')
-                    ->where('soa_flag','=',1)
+                    //->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
                     ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');
