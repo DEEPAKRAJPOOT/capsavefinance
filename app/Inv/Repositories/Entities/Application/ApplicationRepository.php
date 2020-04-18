@@ -1620,11 +1620,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param integer $app_id
      * @return mixed
      */    
-    public function getAppApprovers($app_id)
+    public function getSingleAnchorDataByAppId($app_id)
+    {
+        return Application::getSingleAnchorDataByAppId($app_id);  
+    }
+   
+     public function getAppApprovers($app_id)
     {
         return AppApprover::getAppApprovers($app_id);
     }
-
+    
     public function getReviewerSummaryData($appId, $bizId){
         $returnData = []; 
         $reviewerSummaryData = CamReviewerSummary::where('biz_id',$bizId)->where('app_id', $appId)->first(); 

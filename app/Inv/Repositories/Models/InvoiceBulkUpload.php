@@ -75,6 +75,7 @@ class InvoiceBulkUpload extends BaseModel
         'invoice_approve_amount',
         'comm_txt',
         'status',
+        'status_id',
         'file_id',
         'created_by',
         'created_at',
@@ -110,10 +111,14 @@ class InvoiceBulkUpload extends BaseModel
     public static function getAllBulkInvoice()
     {
        $id = Auth::user()->user_id; 
-       return  self::with(['anchor','supplier','program','lms_user'])->whereIn('status',[0,2])->where(['created_by' => $id])->get();
+       return  self::with(['anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['created_by' => $id])->get();
  
     } 
-   
+      function business()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id','biz_id');  
+    
+     }
     function anchor()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Anchor', 'anchor_id','anchor_id');  
