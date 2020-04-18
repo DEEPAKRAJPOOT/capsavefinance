@@ -33,6 +33,9 @@ class ApportionmentController extends Controller
      */
     public function viewUnsettledTrans(Request $request){
         try {
+            $oldData = [];
+            $oldData['payment'] = (old('payment'))?old('payment'):[];
+            $oldData['check'] = (old('check'))?old('check'):[];
             $userId = $request->user_id;
             $paymentId = $request->payment_id;
             $userDetails = $this->getUserDetails($userId); 
@@ -41,7 +44,8 @@ class ApportionmentController extends Controller
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
             ->with('payment',$payment) 
-            ->with('userDetails', $userDetails);
+            ->with('userDetails', $userDetails)
+            ->with('oldData',$oldData);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -238,7 +242,7 @@ class ApportionmentController extends Controller
         try {
 
             $validator = Validator::make($request->all(), [
-                "check.*" => 'required|min:1',
+                "check.*" => 'required|string|min:1',
                 'payment.*' => 'nullable|numeric|gt:0|regex:/[0-9 \,]/'
             ]);
             if ($validator->fails()) {
@@ -264,23 +268,29 @@ class ApportionmentController extends Controller
             $repaymentAmt = $paymentDetails['amount']; 
             $amtToSettle = 0;
             $unAppliedAmt = 0;
-
+            $checkedCount = 0;
             $transIds = [];
             $transactions = [];
             $transactionList = [];
             $payments = $request->payment;
 
-
-            foreach ($request->check as $Ckey => $Cval) {
-                if($Cval === 'on'){
-                    if($payments[$Ckey] > 0){
-                        array_push($transIds, $Ckey);
+            if($request->has('check')){
+                foreach ($request->check as $Ckey => $Cval) {
+                    if($Cval === 'on'){
+                        $checkedCount++;
+                        if($payments[$Ckey] > 0){
+                            array_push($transIds, $Ckey);
+                        }
                     }
                 }
             }
-
+            if($checkedCount <= 0){
+                Session::flash('error', "Please select at least one record");
+                return redirect()->back()->withInput();
+            }    
             if(!empty($transIds)){
-                $transactions = Transactions::whereIn('trans_id',$transIds)
+                $transactions = Transactions::where('user_id','=',$userId)
+                ->whereIn('trans_id',$transIds)
                 ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
                 ->get();
             }
@@ -309,9 +319,9 @@ class ApportionmentController extends Controller
             
 
             $request->session()->put('apportionment', [
-                'payment_id' => $paymentId,
                 'user_id' => $userId,
-                'transactions' => $transactionList
+                'payment_id' => $paymentId,
+                'payments' => $payments
             ]);
         
             return view('lms.apportionment.markSettledConfirm',[
@@ -330,7 +340,51 @@ class ApportionmentController extends Controller
 
     public function markSettleSave(Request $request){
         try {
-            dd($request);
+            if($request->session()->has('apportionment')){
+                $amtToSettle = 0; 
+                $userId = $request->session()->get('apportionment.user_id');
+                $paymentId = $request->session()->get('apportionment.payment_id');
+                $payments = $request->session()->get('apportionment.payments');
+                $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
+                $repaymentAmt = $paymentDetails['amount']; 
+            
+
+                $transIds = array_keys($payments);
+                if(!empty($transIds)){
+                    $transactions = Transactions::where('user_id','=',$userId)
+                    ->whereIn('trans_id',$transIds)
+                    ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
+                    ->get();
+                }
+    
+                foreach ($transactions as $trans){
+                    if(((float)$payments[$trans->trans_id] > (float)$trans->outstanding)){
+                        Session::flash('error', 'Please re confirm');
+                        return redirect()->back()->withInput();
+                    }
+                    /*$transactionList[] = [
+                        'trans_id' => $trans->trans_id,
+                        'trans_date' => $trans->trans_date,
+                        'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
+                        'trans_type' =>  $trans->transName,
+                        'total_repay_amt' => (float)$trans->amount,
+                        'outstanding_amt' => (float)$trans->outstanding,
+                        'payment_date' =>  $paymentDetails['date_of_payment'],
+                        'pay' => (float)$payments[$trans->trans_id],
+                        'is_valid' => ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding)?1:0
+                    ];*/
+                    $amtToSettle += $payments[$trans->trans_id];
+                }
+    
+                $unAppliedAmt = $repaymentAmt-$amtToSettle;
+    
+                if($amtToSettle > $repaymentAmt){
+                    Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
+                    return redirect()->back()->withInput();
+                }
+                
+                dd( $userId, $paymentId, $transactions );
+            }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
