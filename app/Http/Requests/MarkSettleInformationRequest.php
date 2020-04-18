@@ -17,8 +17,7 @@ class MarkSettleInformationRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
-    {
+    public function authorize(){
         return true;
     }
 
@@ -35,12 +34,13 @@ class MarkSettleInformationRequest extends FormRequest
     }
 
     public function withValidator($validator){
-          $formData = $validator->getData();
-          if (empty($formData['check']) || !is_array($formData['check'])) {
-            $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
+        $formData = $validator->getData();
+        $validator->after(function ($validator) use ($formData) {
+            if (empty($formData['check']) || !is_array($formData['check'])) {
+              $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
           }
           $totalselectedAmount = 0;
-          $totalRePayAmount = -1;
+          $totalRePayAmount = 100000;
           foreach ($formData['check'] as $key => $value) {
               $selectedPayment = $formData['payment'][$key] ?? 0;
               $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
@@ -56,5 +56,11 @@ class MarkSettleInformationRequest extends FormRequest
           if ($totalselectedAmount > $totalRePayAmount) {
                 $validator->errors()->add("totalRepayAmount", 'totalRepayAmount must be less than: '. $totalRePayAmount);
           }
+        });
+    }
+
+    public function messages(){
+      $messages = [];
+      return $messages;
     }
 }
