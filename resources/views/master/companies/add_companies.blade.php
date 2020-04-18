@@ -14,7 +14,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="cmp_add" name="cmp_add" placeholder="Enter Company Address" maxlength="50"value="{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : ''}}">
+                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : ''}}</textarea>
                 {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -52,17 +52,12 @@
            <select class="form-control" name="state" id="state">
                     <option value="">Please Select</option>
                     @foreach($state as $key=>$val)
-                    @php 
-                  
-                 
-                    if($val==$comData['state']['id'])
-                    {
-                       $sel = "selected";
-                    }
-                    else
-                    {
-                       $sel = "";
-                    }
+                    @php
+                        if($key == $comData['state']['name']){
+                            $sel = 'selected';
+                        }else{
+                            $sel = '';
+                        }
                     @endphp
                     <option  value="{{$val}}" {{$sel}}>{{$key}}</option>
                     @endforeach
@@ -75,6 +70,17 @@
              
             </div>
            
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="is_reg">Is registered office<span class="mandatory">*</span></label>
+                <select class="form-control" name="is_reg" id="is_reg">
+                    <option value="" selected>Select</option>
+                    <option {{$comData['is_reg'] == 1 ? 'selected' : ''}} value="1">Yes</option>
+                    <option {{$comData['is_reg'] == 0 ? 'selected' : ''}} value="0">No</option>
+                </select>
+                {!! $errors->first('is_reg', '<span class="error">:message</span>') !!}
+            </div>
         </div>
         <div class="row">
             <div class="form-group col-md-12 text-right">
@@ -138,63 +144,72 @@
         $('#companiesForm').validate({// initialize the plugin
             rules: {
                 'cmp_name': {
-                    required: true,
+                    required: true
                 },
                 'cmp_add': {
-                    required: true,
+                    required: true
                 },
                 'gst_no': {
                     required: true,
-                    maxlength: 15,
+                    maxlength: 15
                 },
                 'pan_no': {
                     required: true,
-                    maxlength: 10,
+                    maxlength: 10
+                },
+                'cin_no': {
+                    required: true
                 },
                 'ifsc_code': {
-                    required: true,
+                    required: true
                 },
                 'is_active': {
-                    required: true,
+                    required: true
                 },
                  'state': {
-                    required: true,
+                    required: true
                 },
                  'city': {
-                    required: true,
+                    required: true
                 },
+                'is_reg': {
+                    required:true
+                }
             },
             messages: {
                 'cmp_name': {
-                    required: "Please Enter Company Name",
+                    required: "Please Enter Company Name"
                 },
                 'cmp_add': {
-                    required: "Please Enter Company Address",
+                    required: "Please Enter Company Address"
                 },
                 'gst_no': {
-                    required: "Please Enter GST No",
+                    required: "Please Enter GST No"
                 },
                 'pan_no': {
-                    required: "Please Enter Pan No",
+                    required: "Please Enter Pan No"
+                },
+                'cin_no': {
+                    required: "Please Enter CIN No"
                 },
                 'bank_acc_no': {
-                    required: "Please Enter Bank A/C No",
+                    required: "Please Enter Bank A/C No"
                 },
                 'conf_bank_acc_no': {
                     required: "Please Confirm Your Bank A/C No",
                     equalTo: 'Confirm Bank A/C No. and Bank A/C No. do not match.'
                 },
                 'ifsc_code': {
-                    required: "Please Enter IFSC Code",
+                    required: "Please Enter IFSC Code"
                 },
                 'is_active': {
-                    required: "Please Select Status of Company",
+                    required: "Please Select Status of Company"
                 },
                 'state': {
-                    required: "Please Select State",
+                    required: "Please Select State"
                 },
                 'city': {
-                    required: "Please Enter City",
+                    required: "Please Enter City"
                 }
             }
         });

@@ -24,7 +24,6 @@ class CompanyController extends Controller {
     }
 
     public function index(Request $request) {
-        
         $filter =   [];
         $search_keyword = $request->get('search_keyword');
         $filter['search_keyword'] =   '';
@@ -40,20 +39,21 @@ class CompanyController extends Controller {
 
         $company_data = [];
         $company_data['is_active'] = 2;
-        
+        $company_data['state']['name'] = '';
+        $company_data['is_reg'] = 0;
         if (!empty($request->get('id'))) {
             $company_id = preg_replace('#[^0-9]#', '', $request->get('id'));
             $company_data = $this->masterRepo->findCompanyById($company_id);
-          
+//            dd($company_data);
         }
          $get_state_list  =  $this->masterRepo->getAddStateList();
-        return view('master.companies.add_companies', ['comData' => $company_data,'state' =>$get_state_list ]);
+        return view('master.companies.add_companies', ['comData' => $company_data, 'state' => $get_state_list ]);
     }
 
     public function saveCompanies(CompanyRegRequest $request) {
         try {
             $arrCompaniesData = $request->all();
-            //dd($arrCompaniesData);
+//            dd($arrCompaniesData);
             $status = false;
             $company_id = false;
             if (!empty($request->get('company_id'))) {
