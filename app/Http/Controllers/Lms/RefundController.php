@@ -17,6 +17,7 @@ use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 
 class RefundController extends Controller
@@ -24,11 +25,13 @@ class RefundController extends Controller
 	use ApplicationTrait;
 	use LmsTrait;
         
-	protected $appRepo;
+    protected $appRepo;
+    protected $userRepo;
 	protected $lmsRepo;
 
-	public function __construct(InvAppRepoInterface $app_repo,  InvLmsRepoInterface $lms_repo ){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvLmsRepoInterface $lms_repo ){
 		$this->appRepo = $app_repo;
+        $this->userRepo = $user_repo;
 		$this->lmsRepo = $lms_repo;
 		$this->middleware('checkBackendLeadAccess');
                 $this->middleware('checkEodBatchProcess');
@@ -60,7 +63,12 @@ class RefundController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function refundListRequest(){
-        return view('lms.common.refund_request');
+        $userId = Auth::user()->user_id;
+        $userRole =  $this->userRepo->getRoleDataById($userId);
+
+        return view('lms.common.refund_request')->with([
+            'userRole' => $userRole
+            ]);
     }
     /**
      * Display a listing of the Refund Request
@@ -311,8 +319,7 @@ class RefundController extends Controller
             }
             $storage_path = storage_path('app/public/docs/bank_excel');
             $filePath = $storage_path.'/'.$filename.'.xlsx';
-
-            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+           $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
             $objWriter->save($filePath);
 
             return [ 'status' => 1,

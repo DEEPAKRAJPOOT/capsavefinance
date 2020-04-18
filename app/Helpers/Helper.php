@@ -27,6 +27,8 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\Business;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
+use Illuminate\Contracts\Support\Renderable;
+use ZanySoft\Zip\Zip;
 
 class Helper extends PaypalHelper
 {
@@ -291,7 +293,85 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
+    
+    public static function uploadInvoiceFile($attributes, $batch_id)
+    {
+       $userId = Auth::user()->user_id;
+       $inputArr = []; 
+       if ($attributes['file_id']) {
+            if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id)) {
+                Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id, 0777, true);
+            }
 
+                $extension = $attributes['file_id']->getClientOriginalExtension();
+                $name   = $attributes['file_id']->getClientOriginalName();
+                $name  =  explode('.',$name);
+                $filename =  $name[0].'.'.$extension;
+             $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id, $attributes['file_id'], $filename); 
+             $inputArr['file_path'] = $path;
+            }   
+
+        $inputArr['file_type'] = $attributes['file_id']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['file_id']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['file_id']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+       return $inputArr;
+    }
+
+      public static function uploadZipInvoiceFile($attributes, $batch_id)
+    {
+       $userId = Auth::user()->user_id;
+       $inputArr = []; 
+       if ($attributes['file_image_id']) {
+            if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
+                Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
+            }
+                $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
+                $zipName   = $attributes['file_image_id']->getClientOriginalName();
+                $zipName  =  explode('.',$zipName);
+                $zipFilename =  $zipName[0].'.'.$zipExtension;
+                $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
+                $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/zip'.$zipFilename);
+                $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
+                $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
+                $zip =  Zip::open($open_path);
+                $zip->extract($extract_path);
+                $inputArr['file_path'] = $path;
+             }   
+        $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
+    
+     public static function ImageChk($file_name,$batch_id)
+    {
+        $userId = Auth::user()->user_id;
+        $inputArr = [];
+        if (Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$file_name))
+         {
+            $pathToFile = storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$file_name);
+            $attributes =  pathinfo($pathToFile);
+            $inputArr['file_path'] = $attributes['dirname'];
+            $inputArr['file_type'] = $attributes['extension'];
+            $inputArr['file_name'] = $attributes['basename'];
+            $inputArr['file_size'] = filesize($pathToFile);
+            $inputArr['file_encp_key'] =  md5('2');
+            return $inputArr;
+         }
+         else
+         {
+             return false;
+         }
+        
+    }
+    
+   
+     
     /**
      * uploading document data
      *

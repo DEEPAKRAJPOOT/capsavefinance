@@ -17,6 +17,7 @@ use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
 use DB;
+use Intervention\Image\File;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
 use PHPExcel; 
@@ -89,11 +90,32 @@ class InvoiceController extends Controller {
         $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
+        $totalLimit = 0;
+        $totalCunsumeLimit = 0;
+        $consumeLimit = 0;
+        $transactions = 0;
         $userInfo = $this->invRepo->getCustomerDetail($user_id);
-
         $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(7);
         $get_bus = $this->invRepo->getBusinessNameApp(7);
         $status =  DB::table('mst_status')->where(['status_type' =>4])->get();
+        $application = $this->appRepo->getCustomerApplications($user_id);
+        $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+
+        foreach ($application as $key => $app) {
+            if (isset($app->prgmLimits)) {
+                foreach ($app->prgmLimits as $value) {
+                    $totalLimit += $value->limit_amt;
+                }
+            }
+            if (isset($app->acceptedOffers)) {
+                foreach ($app->acceptedOffers as $value) {
+                    $totalCunsumeLimit += $value->prgm_limit_amt;
+                }
+            }
+        }
+        $userInfo->total_limit = number_format($totalLimit);
+        $userInfo->consume_limit = number_format($totalCunsumeLimit);
+        $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
         return view('backend.invoice.user_wise_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
     } 
 
@@ -592,7 +614,6 @@ class InvoiceController extends Controller {
 
                     if ($createDisbursal) {
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-                        $updateInvoiceActivityLog = $this->invRepo->saveInvoiceActivityLog($invoice['invoice_id'], 10, 'Sent to Bank', $creatorId, null);
                     }
 
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
@@ -896,5 +917,90 @@ class InvoiceController extends Controller {
         
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
         $objWriter->save('php://output');
+    }
+    
+    public function uploadBulkCsvInvoice(Request $request)
+    {  
+        $date = Carbon::now();
+        $id = Auth::user()->user_id; 
+        $attributes = $request->all();
+        $batch_id =  self::createBatchNumber(6);
+        $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
+        $userFile = $this->docRepo->saveFile($uploadData);  ///Upload csv
+        $userFile['batch_no'] =  $batch_id;
+       if($userFile)
+       {
+           $resFile =  $this->invRepo->saveInvoiceBatch($userFile);
+           if($resFile)
+           {
+              $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
+              if($uploadData)
+              {   
+                  $zipBatch  =   self::createBatchNumber(6);
+                  $uploadData['batch_no'] = $zipBatch;
+                  $uploadData['parent_bulk_batch_id'] =  $resFile->invoice_bulk_batch_id;
+                  $resZipFile =  $this->invRepo->saveInvoiceZipBatch($uploadData);
+                  if($resZipFile)
+                  {
+                    $csvPath = storage_path('app/public/'.$userFile->file_path);
+                    $handle = fopen($csvPath, "r");
+                    $data = fgetcsv($handle, 1000, ",");
+                    $key=0;
+                    $ins = [];
+                    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
+                    {   
+                        $cusomer_id  =   $data[0]; 
+                        $inv_no  =   $data[1]; 
+                        $inv_date  =   $data[2]; 
+                        $inv_due_date  =   $data[3]; 
+                        $amount  =   $data[4]; 
+                        $file_name  =   $data[5];
+                        $getImage =  Helpers::ImageChk($file_name,$batch_id);
+                        if($getImage)
+                        {
+                           $FileDetail = $this->docRepo->saveFile($getImage); 
+                           $FileId  = $FileDetail->file_id; 
+                        }
+                        else
+                        {
+                            $FileId = NUll;
+                        }
+                       
+                        $ins[$key]['anchor_id'] = $id;
+                        $ins[$key]['supplier_id'] = $id;
+                        $ins[$key]['program_id'] = 2;
+                        $ins[$key]['app_id'] = 1;
+                        $ins[$key]['biz_id'] = 1;
+                        $ins[$key]['invoice_no'] = $inv_no;
+                        $ins[$key]['tenor'] = 5;
+                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d/m/Y', $inv_date)->format('Y-m-d');
+                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d/m/Y', $inv_due_date)->format('Y-m-d');
+                        $ins[$key]['pay_calculation_on'] = 1;
+                        $ins[$key]['invoice_approve_amount'] = $amount;
+                        $ins[$key]['status'] = 0;
+                        $ins[$key]['file_id'] =  $FileId;
+                        $ins[$key]['created_by'] =  $id;
+                        $ins[$key]['created_at'] =  $date;
+                        $key++;
+                    } 
+                    dd($ins);
+                  }
+              }
+           }
+       }
+      
+    }
+    
+   
+
+    public static function createBatchNumber($length = 6)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 }

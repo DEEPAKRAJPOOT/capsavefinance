@@ -14,8 +14,6 @@ use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
-use App\Helpers\FinanceHelper;
-use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 
 class DisbursalController extends Controller
@@ -36,13 +34,12 @@ class DisbursalController extends Controller
 	 */
 	protected $pdf;
 	
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo ,InvMasterRepoInterface $master,FinanceInterface $finRepo){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo ,InvMasterRepoInterface $master){
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
         $this->masterRepo = $master;
-        $this->finRepo = $finRepo;
 		$this->middleware('checkBackendLeadAccess');
             $this->middleware('checkEodBatchProcess');
 	}
@@ -229,10 +226,6 @@ class DisbursalController extends Controller
 					}
 				}
 			}
-		}
-		foreach ($allinvoices as $inv_k => $inv_arr) {
-			 $finHelperObj = new FinanceHelper($this->finRepo);
-        	 $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.DISBURSAL'), $inv_arr['invoice_id'], $inv_arr['app_id'], $inv_arr['supplier_id'], $inv_arr['biz_id']);
 		}
 		// dd($allrecords);
 		// --- production code end 

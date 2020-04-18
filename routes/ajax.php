@@ -214,6 +214,12 @@ Route::group(
         ]
     );
 
+   Route::post('get_to_settle_payments', [
+        'as' => 'get_to_settle_payments',
+        'uses' => 'AjaxController@getToSettlePayments'
+        ]
+    );
+
   
    //
     Route::post(
@@ -313,13 +319,7 @@ Route::group(
         'uses' => 'AjaxController@getBackendInvoiceListApprove'
         ]
     );
-         Route::post(
-        'frontend_get_invoice_list_approve',
-        [
-        'as' => 'frontend_get_invoice_list_approve',
-        'uses' => 'AjaxController@getFrontendInvoiceListApprove'
-        ]
-    );
+        
        Route::post(
         'backend_get_ep_list_approve',
         [
@@ -829,7 +829,8 @@ Route::group(
     Route::POST('check_duplicate_invoice', [
         'as' => 'check_duplicate_invoice',
         'uses' => 'AjaxController@checkDuplicateInvoice'
-    ]);            
+    ]);    
+  
     Route::POST('upload_invoice_csv', [
         'as' => 'upload_invoice_csv',
         'uses' => 'AjaxController@uploadInvoice'

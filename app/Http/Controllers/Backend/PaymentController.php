@@ -13,6 +13,7 @@ use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use  App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\Payment;
 use Session;
 use Helpers;
 use DB;
@@ -24,8 +25,6 @@ use PHPExcel_IOFactory;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
-use App\Helpers\FinanceHelper;
-use App\Inv\Repositories\Contracts\FinanceInterface;
 use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller {
@@ -33,15 +32,15 @@ class PaymentController extends Controller {
     protected $invRepo;
     protected $docRepo;
     use LmsTrait;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo,FinanceInterface $finRepo) {
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->appRepo = $appRepo;
         $this->finRepo = $finRepo;
-        //$this->middleware('auth');
-        $this->middleware('checkBackendLeadAccess');
+        $this->middleware('auth');
+        //$this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodBatchProcess');
     }
 
@@ -80,13 +79,14 @@ class PaymentController extends Controller {
           return view('backend.payment.excel_bulk_payment')->with(['customer' => $result]);
     }
        ///////////* change date format ********////////////////   
-     function validateDate($date, $format = 'd/m/Y')
-     { 
-     
+     function validateDate($date, $format = 'd/m/Y') { 
        return  $d = \DateTime::createFromFormat($format, $date);
      }
+
+     public function unsettledPayment() {
+       return view('backend.payment.post_payment');
+     }
      
-    
     /* save payment details   */
     public function  savePayment(Request $request)
     {
@@ -112,14 +112,58 @@ class PaymentController extends Controller {
                 'description' => 'required'
                // 'txn_id' => 'required'
           ]);
-          
-        $user_id  = Auth::user()->user_id;
-        $mytime = Carbon::now(); 
+          $user_id  = Auth::user()->user_id;
+          $mytime = Carbon::now();
 
+          $utr ="";
+          $check  ="";
+          $unr  ="";
+          if($request['payment_type']==1) {
+              $utr =   $request['utr_no'];  
+          } else  if($request['payment_type']==2) {
+              $check = $request['utr_no'];
+          } else  if($request['payment_type']==3) {
+              $unr =  $request['utr_no'];
+          }
+
+
+        #------------------------------------Transitional Table Data ----------------------------------------------#
+        $paymentData = [
+            'user_id' => $request->user_id,
+            'biz_id' => $request->biz_id,
+            'virtual_acc' => $request->virtual_acc,
+            'action_type' => $request->action_type,
+            'trans_type' => $request->trans_type,
+            'parent_trans_id' => $request->charges,
+            'amount' => $request->amount,
+            'date_of_payment' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
+            'gst' => $request->gst,
+            'sgst_amt' => $request->sgst_amt ?? 0,
+            'cgst_amt' => $request->cgst_amt ?? 0,
+            'igst_amt' => $request->igst_amt ?? 0,
+            'payment_type' => $request->payment_type,
+            'utr_no' => $utr ?? NULL,
+            'unr_no' => $unr ?? NULL,
+            'cheque_no' => $check ?? NULL,
+            'tds_certificate_no' => $request->tds_certificate_no ?? '',
+            'description' => $request->description,
+            'is_settled' => '0',
+            'is_manual' => '1',
+            'created_at' => $mytime,
+            'created_by' => $user_id,
+        ];
+        $paymentId = NULL;
+        if (in_array($request->action_type, [1,2,3])) {
+          $paymentId = Payment::insertPayments($paymentData);
+          if (!is_int($paymentId)) {
+            Session::flash('error', $paymentId);
+            return back();
+          }
+        }
+        
         $udata=$this->userRepo->getSingleUserDetails($request->customer_id);
         $getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
         $enterAmount =  str_replace(',', '', $request->amount);
-        $finHelperObj = new FinanceHelper($this->finRepo);
           
         foreach($getAmount as $val)
         {
@@ -133,22 +177,6 @@ class PaymentController extends Controller {
             else {       
               $this->invRepo->singleRepayment($val->disbursal_id,0);
             }
-        }
-      
-        $utr ="";
-        $check  ="";
-        $unr  ="";
-        if($request['payment_type']==1)
-        {
-            $utr =   $request['utr_no'];  
-        }
-        else  if($request['payment_type']==2)
-        {
-            $check = $request['utr_no'];
-        }
-          else  if($request['payment_type']==3)
-        {
-            $unr =  $request['utr_no'];
         }
 
         $sgst=0;
@@ -194,11 +222,7 @@ class PaymentController extends Controller {
         if( $res)
         {
           $appId = null;
-          if(in_array($request['trans_type'], [4,5,20,24,29])){
-            $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.CHARGES'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
-          }
           if($request['trans_type']==17){
-            $finHelperObj->finExecution(config('common.TRANS_CONFIG_TYPE.REPAYMENT'), $res->trans_id, $appId, $request['customer_id'], $request['biz_id']);
             //$this->paySettlement( $request['customer_id']);
             $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
             $Obj->init($res->trans_id);
