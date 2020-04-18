@@ -80,12 +80,13 @@ try {
                 }
             },
            columns: [
+                    {data: 'customer_id'},
                     {data: 'user_name'},
                     {data: 'business_name'},
                     {data: 'virtual_account'},
                     {data: 'amount'},
-                    {data: 'date_of_payment'},
-                    {data: 'created_by'},
+                    {data: 'trans_type'},
+                    {data: 'updated_by'},
                     {data: 'action'}
                 ],
             aoColumnDefs: [{'aTargets': [0,1], 'bSortable': true}]
