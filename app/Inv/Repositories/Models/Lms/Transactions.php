@@ -137,17 +137,17 @@ class Transactions extends BaseModel {
     }
 
     public static function getSettledTrans($userId){
-        return self::whereIn('is_settled',[2])
+        return self::whereNotNull('payment_id')
                 ->whereNotNull('parent_trans_id')
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
-                ->where('user_id','=',$userId);
+                ->where('user_id','=',$userId)->get();
     }
 
     public static function getRefundTrans($userId){
         return self::whereIn('is_settled',[2])
                 ->whereNotNull('parent_trans_id')
                 ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
-                ->where('user_id','=',$userId);
+                ->where('user_id','=',$userId)->get();
     }
 
     /**
@@ -202,14 +202,8 @@ class Transactions extends BaseModel {
         return $result;
     }
 
-
-    /**
-     * Get Unsettled Inovoices
-     * 
-     * @param array
-     * @return mixed
-     */
-    public static function getUnsettledInvoices($data = []){
+    public static function getUnsettledInvoices($data = [])
+    {
 
         $query = self::whereIn('trans_type',[16]);
         
@@ -231,8 +225,8 @@ class Transactions extends BaseModel {
 
     }
 
-
-    public static function getUnsettledInvoiceTransactions($data){
+    public static function getUnsettledInvoiceTransactions($data = [])
+    {
        
         $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
 
@@ -254,7 +248,8 @@ class Transactions extends BaseModel {
         });
     }
 
-    public static function getUnsettledChargeTransactions($data){
+    public static function getUnsettledChargeTransactions($data = [])
+    {
         $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
 
         if(isset($data['user_id'])){
@@ -274,6 +269,20 @@ class Transactions extends BaseModel {
             return $item->outstanding > 0;
         });
     }
+
+    public static function calInvoiceRefund($data = [])
+    {
+        $totalDebitAmt = self::where('entry_type','=','0')
+        ->where('invoice_disbursed_id','=',$invDesbId)
+        ->whereNotIn('trans_type',[10])
+        ->sum('amount');
+        
+        $totalCreditAmt =  selef::where('entry_type','=','1')
+        ->where('invoice_disbursed_id','=',$invDesbId)
+        ->whereNotIn('trans_type',[10])
+        ->sum('amount');
+    }
+
 
 
 

@@ -297,11 +297,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'apport_mark_settle_save',
                 'uses' => 'Lms\ApportionmentController@markSettleSave'
             ]);
-            
-            Route::post('/apportionment/settled/save',[
-                'as' => 'apport_settled_save',
-                'uses' => 'Lms\ApportionmentController@saveSettledTrans'
-            ]);
+
 
             Route::get('/apportionment/txn/detail',[
                 'as' => 'apport_trans_detail',
