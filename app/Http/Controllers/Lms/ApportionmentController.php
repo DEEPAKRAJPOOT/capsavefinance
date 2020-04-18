@@ -302,11 +302,7 @@ class ApportionmentController extends Controller
      * Unsettled Transaction marked Settled
      */
     public function markSettleConfirmation(MarkSettleRequest $request){
-
-        dd($request->all());
-
         try {
-
             $validator = Validator::make($request->all(), [
                 "check.*" => 'required|min:1',
                 'payment.*' => 'nullable|numeric|gt:0|regex:/[0-9 \,]/'

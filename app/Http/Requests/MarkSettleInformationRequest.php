@@ -29,8 +29,8 @@ class MarkSettleInformationRequest extends FormRequest
      */
      public function rules(){
         return [
-           'user_id' => 'required|numeric|min:10|max:200',
-           'payment_id' => 'required|numeric|min:200|max:500',
+           'user_id' => 'required|numeric|min:1',
+           'payment_id' => 'required|numeric|min:1',
         ];
     }
 
@@ -56,6 +56,5 @@ class MarkSettleInformationRequest extends FormRequest
           if ($totalselectedAmount > $totalRePayAmount) {
                 $validator->errors()->add("totalRepayAmount", 'totalRepayAmount must be less than: '. $totalRePayAmount);
           }
-          dd($validator->errors());
     }
 }
