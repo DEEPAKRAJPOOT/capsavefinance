@@ -128,12 +128,12 @@ return [
         2 => 'Fail'
     ],
     'EOD_PROCESS_CHECK_TYPE' => [
-        'TALLY_POSTING' => 'TALLY_POSTING',
-        'INT_ACCRUAL' => 'INT_ACCRUAL',
-        'REPAYMENT' => 'REPAYMENT',
-        'DISBURSAL' => 'DISBURSAL',
-        'CHARGE_POST' => 'CHARGE_POST',
-        'OVERDUE_INT_ACCRUAL' => 'OVERDUE_INT_ACCRUAL',
-        'DISBURSAL_BLOCK' => 'DISBURSAL_BLOCK',
+        'TALLY_POSTING' => 'tally_status',
+        'INT_ACCRUAL' => 'int_accrual_status',
+        'REPAYMENT' => 'repayment_status',
+        'DISBURSAL' => 'disbursal_status',
+        'CHARGE_POST' => 'charge_post_status',
+        'OVERDUE_INT_ACCRUAL' => 'overdue_int_accrual_status',
+        'DISBURSAL_BLOCK' => 'disbursal_block_status',
     ]    
 ];

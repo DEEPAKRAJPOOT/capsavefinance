@@ -244,6 +244,13 @@
 @endsection
 @section('jscript')
 <script>
+var messages = {
+    _token : "{{ csrf_token() }}",
+    update_eod_batch_process_url : "{{ route('update_eod_batch_process') }}",
+    eod_status : "{{ $eodData ? $eodData->status : '' }}",
+    sys_start_date : "{{ $eodData ? $eodData->sys_start_date : '' }}",
+    eod_process_start_date : "{{ $eodData ? $eodData->eod_process_start : '' }}",
+};    
 function currentDateTime() {
     var today = new Date();
     //var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -276,7 +283,32 @@ function display_c(){
     setTimeout('currentDateTime()',refresh);
 }
 
+function updateEodStatus() {
+    if (messages.eod_status == 2) {        
+    //if (messages.eod_process_start_date == '') {
+        var data = {'_token': messages._token};
+        $.ajax({
+        type: "POST",
+            url: messages.update_eod_batch_process_url,
+            data: data,
+            cache: false,
+            async:false,
+            beforeSend: function( xhr ) {
+                parent.$('.isloader').show();
+            },    
+            success: function (res) {        
+                parent.$('.isloader').hide();
+                location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        }); 
+    }
+}
 //display_c();
-
+$(document).ready(function(){    
+    updateEodStatus();    
+})
 </script>
 @endsection

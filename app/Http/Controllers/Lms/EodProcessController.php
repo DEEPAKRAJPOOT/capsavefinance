@@ -61,7 +61,7 @@ class EodProcessController extends Controller {
         $current_date = \Helpers::convertDateTimeFormat($sys_curr_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
         $whereCond=[];
         //$whereCond['status'] = 0;
-        $whereCond['sys_start_date_eq'] = $sys_start_date_eq;
+        $whereCond['sys_start_date_eq'] = $sys_start_date_eq;        
         $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
         $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';
         $status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
@@ -83,7 +83,8 @@ class EodProcessController extends Controller {
         $statusArr = config('lms.EOD_PASS_FAIL_STATUS');
         
         $enable_sys_start = $eod_process_id ? 0 : 1;
-        $enable_process_start = isset($eodProcess->status) && $eodProcess->status == config('lms.EOD_PROCESS_STATUS.STOPPED') ? 0 : 1;
+        
+        $enable_process_start = isset($eodProcess->status) && in_array($eodProcess->status,[config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')]) ? 0 : 1;
         
         return view('lms.eod.eod_process')
                 ->with('current_date', $current_date)

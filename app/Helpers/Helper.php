@@ -1341,7 +1341,7 @@ class Helper extends PaypalHelper
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $whereCond=[];
-        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
         $whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {            
@@ -1392,12 +1392,14 @@ class Helper extends PaypalHelper
                 }
             }
             
+            
             if ($eod_status) {
                 $eodData = [];
                 $eodData['status'] = $eod_status;
                 $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
-                $lmsRepo->saveEodProcess($data, $eod_process_id);
+                $lmsRepo->saveEodProcess($eodData, $eod_process_id);
             }
+           
         }
         
     }     
