@@ -4,6 +4,15 @@
 @section('content')
 <div class="content-wrapper">
     <div class="col-md-12 ">
+          @if(Session::has('multiVali'))
+          @php $multiVali = Session::get('multiVali');  @endphp
+        <div class=" alert-danger alert" role="alert">
+       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      @foreach ($multiVali as $key=>$val)
+      {{($key!='status') ? $val : ''}}</br>
+      @endforeach
+    </div>
+     @endif
        <span id="storeSuccessMsg"></span>
         <section class="content-header">
             <div class="header-icon">

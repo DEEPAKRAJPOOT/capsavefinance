@@ -136,8 +136,77 @@ trait InvoiceTrait
        
    }
   
+  public static function multiValiChk($handle,$prgm_id,$anchor_id)
+  {
+       
+         $inv_no_var   = ""; 
+         $inv_no_var1   = ""; 
+         $inv_no_var2   = ""; 
+         $inv_no_var3   = ""; 
+         $inv_no_var4   = ""; 
+      
+        while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
+        {   
+            $dataAttr['cusomer_id']  =   $data[0]; 
+            $dataAttr['anchor_id'] = $anchor_id;
+            $dataAttr['prgm_id'] = $prgm_id;
+            $inv_no  =   $data[1]; 
+            $inv_date  =   $data[2]; 
+            $amount  =   $data[3]; 
+            $file_name  =   $data[4];
+            $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
+            $chlLmsCusto =  self::getLimitProgram($dataAttr);
+            
+            if( $invoice_date_validate==false)
+            {
+               $multichk['status'] =0; 
+               $inv_no_var.=$inv_no.',';
+               $multichk['multiVali1'] = '* Invoice date is not correct for following invoice Number ('.$inv_no_var.')  date format should be "dd-mm-yy"';
+            }
+            else if(!is_numeric($amount))
+           {
+               $multichk['status'] =0; 
+               $inv_no_var1.=$inv_no.',';
+               $multichk['multiVali2'] = '* Invoice amount should be numaric for following invoice Number ('.$inv_no_var1.')';
+           
+            }
+            else if($amount==0)
+            {
+                 $multichk['status'] =0;
+                 $inv_no_var2.=$inv_no.',';
+                 $multichk['multiVali3'] = '* Invoice amount should not be 0 for following invoice Number ('.$inv_no_var2.')';
+            }
+            else if($chlLmsCusto['status']==0)
+            {
+                   $multichk['status'] =0;
+                   $inv_no_var3.=$inv_no.',';
+                   $multichk['multiVali4'] = '* You cannot upload  customer id for following invoice Number ('.$inv_no_var3.') as limit is not sanctioned or offer is not approved.';
+          
+            }
+           else if($chlLmsCusto['status']==1)
+           {
+                 $getDupli  = self::checkDuplicateInvoice($inv_no,$chlLmsCusto['user_id']);
+                 if($getDupli)
+                 {
+                      $multichk['status'] =0;
+                      $inv_no_var4.=$inv_no.',';
+                      $multichk['multiVali5'] = '* following invoice Number ('.$inv_no_var4.') already exists in our system.';
+          
+                 }
+                  else {
+                   $multichk['status'] =1;
+                }
+           }
+            else {
+                   $multichk['status'] =1;
+            }
+
+            
+        }
+        return $multichk;
+  }                
      public static function getLimitProgram($attr)
-     {      
+     {   
             $attr[]="";
             $lms_user_id =    LmsUser::where('customer_id',$attr['cusomer_id'])->pluck('user_id');
             $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->first();

@@ -918,13 +918,25 @@ class InvoiceController extends Controller {
                     $csvPath = storage_path('app/public/'.$userFile->file_path);
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
+                    
+                    $csvPath1 = storage_path('app/public/'.$userFile->file_path);
+                    $handle1 = fopen($csvPath1, "r");
+                    $data1 = fgetcsv($handle1, 1000, ",");
                     $key=0;
                     $ins = [];
                     $dataAttr[] ="";
-                    
-                    while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
+                   $multiValiChk =  InvoiceTrait::multiValiChk($handle1,$prgm_id,$attributes['anchor_name']);
+                   
+                if($multiValiChk['status']==0)
+                {
+
+                    Session::flash('multiVali', $multiValiChk);
+                    return back();   
+                }
+            
+                  while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
                     {   
-                        $cusomer_id  =   $data[0]; 
+                      
                         $inv_no  =   $data[1]; 
                         $inv_date  =   $data[2]; 
                         $amount  =   $data[3]; 
@@ -968,6 +980,8 @@ class InvoiceController extends Controller {
                         $status_id =  $error['status_id'];
                         $comm_txt  =  $error['message'];
                         $error  =  $error['error'];
+                      if($file_name)
+                      {
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
                         if($getImage['status']==1)
                         {
@@ -980,7 +994,11 @@ class InvoiceController extends Controller {
                            $FileId  = Null; 
                            $comm_txt  =  $getImage['message']; 
                         }
-                       
+                      }
+                      else
+                      {
+                            $FileId  = Null; 
+                      }
                         $userLimit = $chlLmsCusto['limit'];
                         $ins['anchor_id'] = $attributes['anchor_name'];
                         $ins['supplier_id'] = $dataAttr['user_id'];
@@ -1001,6 +1019,7 @@ class InvoiceController extends Controller {
                         $ins['created_by'] =  $id;
                         $ins['created_at'] =  $date;
                         $key++;
+                      
                         $res =  $this->invRepo->saveInvoice($ins);
                         if($res)
                         {
@@ -1013,19 +1032,11 @@ class InvoiceController extends Controller {
                         }
                            
                     } 
-                   
-                 
-                     if($res)
-                     {
-                        
+            
+                     
                          Session::flash('message', 'Invoice data successfully sent to under reviewer process');
                          return back();  
-                     }
-                     else
-                     {
-                          Session::flash('error', 'Something went wrong, Please try again');
-                          return back();
-                     }
+                     
                   }
               }
            }
