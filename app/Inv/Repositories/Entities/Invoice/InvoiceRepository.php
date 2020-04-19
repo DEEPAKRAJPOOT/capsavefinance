@@ -1097,5 +1097,16 @@ use CommonRepositoryTraits;
         $this->result = Disbursal::getAllDisburseInvoice($batch_id, $disbursed_user_id);
         return $this->result;
     }   
-
+    
+    public function updateLimit($limit,$inv_amout,$cid,$invoice_bulk_upload_id)
+    {
+       try
+        {
+          return InvoiceBulkUpload::updateLimit($limit,$inv_amout,$cid,$invoice_bulk_upload_id);
+        } catch (Exception $ex) {
+           return $ex;
+        } 
+          
+    }
+    
 }

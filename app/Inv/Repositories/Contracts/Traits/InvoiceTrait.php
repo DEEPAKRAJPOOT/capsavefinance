@@ -149,6 +149,7 @@ trait InvoiceTrait
                   $attr['status'] = 1;
                   $attr['user_id'] = $app_id['user_id'];
                   $attr['tenor'] =  $res['tenor']; 
+                  $attr['prgm_offer_id'] =  $res['prgm_offer_id']; 
                   $attr['tenor_old_invoice'] = $res['tenor_old_invoice'];
                   $attr['limit'] = $limit; 
                   $attr['app_id'] =  $app_id['app_id'];

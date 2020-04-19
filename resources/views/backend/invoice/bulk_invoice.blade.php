@@ -160,7 +160,11 @@
                                                     <span><b>Tenor In Days:&nbsp;</b>{{$val->tenor}}</span>
                                              </td>
                                                 <td>{{number_format($val->invoice_approve_amount)}}</td>
-                                                 <td>{{$val->comm_txt}}</td>
+                                                 <td>
+                                                     <span class="error">{{($val->limit_exceed==1) ? 'Limit exceeded' : ''}} </span></br>
+                                                     {{$val->comm_txt}}
+                                                     
+                                                 </td>
                                                 <td><button class="btn deleteTempInv" data-id="{{$val->invoice_bulk_upload_id}}"><i class="fa fa-trash"></i></button></td>
                                             </tr>
                                           @endforeach     

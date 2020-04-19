@@ -65,6 +65,7 @@ class InvoiceBulkUpload extends BaseModel
         'anchor_id',
         'supplier_id',
         'program_id',
+        'prgm_offer_id',
         'app_id',
         'biz_id',
         'invoice_no',
@@ -73,6 +74,7 @@ class InvoiceBulkUpload extends BaseModel
         'invoice_date',
         'pay_calculation_on',
         'invoice_approve_amount',
+        'limit_exceed',
         'comm_txt',
         'status',
         'status_id',
@@ -94,7 +96,7 @@ class InvoiceBulkUpload extends BaseModel
      */
     public static function saveInvoice($arrInvoice)
     {
-       return  self::insert($arrInvoice);
+       return  self::create($arrInvoice);
  
     } 
      public static function updateBulkUpload($attr)
@@ -242,4 +244,13 @@ class InvoiceBulkUpload extends BaseModel
             }
     } 
      
+    public static function updateLimit($limit,$inv_amout,$cid,$invoice_bulk_upload_id)
+    {
+        $uid = Auth::user()->user_id;
+        $sum = self::whereIn('status',[0,1])->where(['supplier_id' =>$cid])->sum('invoice_approve_amount');
+        if($sum  > $limit)
+        {
+           return  self::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>1]);
+        }
+    }
 }

@@ -920,6 +920,8 @@ class InvoiceController extends Controller {
                     $data = fgetcsv($handle, 1000, ",");
                     $key=0;
                     $ins = [];
+                    $dataAttr[] ="";
+                    
                     while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
                     {   
                         $cusomer_id  =   $data[0]; 
@@ -947,6 +949,7 @@ class InvoiceController extends Controller {
                         $dataAttr['biz_id']  =   $chlLmsCusto['biz_id'];
                         $dataAttr['tenor']  =   $chlLmsCusto['tenor'];
                         $dataAttr['old_tenor']  =   $chlLmsCusto['tenor_old_invoice'];
+                        $dataAttr['prgm_offer_id']  =   $chlLmsCusto['prgm_offer_id'];
                         $dataAttr['approval']  =   $getPrgm;
                         $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
                         if($getInvDueDate['status']==0)
@@ -977,39 +980,50 @@ class InvoiceController extends Controller {
                            $FileId  = Null; 
                            $comm_txt  =  $getImage['message']; 
                         }
-                       //// $rr  =  $this->invRepo->getBulkProgramOfferByPrgmId($dataAttr);
-                      
-                        $getOffer  = $this->invRepo->getOfferForLimit($prgm_limit_id);
-                        $ins[$key]['anchor_id'] = $attributes['anchor_name'];
-                        $ins[$key]['supplier_id'] = $dataAttr['user_id'];
-                        $ins[$key]['program_id'] = $prgm_id;
-                        $ins[$key]['prgm_offer_id'] = $getOffer['prgm_offer_id'];
-                        $ins[$key]['app_id'] = $dataAttr['app_id'];
-                        $ins[$key]['biz_id'] = $dataAttr['biz_id'];
-                        $ins[$key]['invoice_no'] = $inv_no;
-                        $ins[$key]['tenor'] = $dataAttr['tenor'];
-                        $ins[$key]['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
-                        $ins[$key]['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $dataAttr['inv_due_date'])->format('Y-m-d');
-                        $ins[$key]['pay_calculation_on'] = 2;
-                        $ins[$key]['invoice_approve_amount'] = $amount;
-                        $ins[$key]['comm_txt'] = $comm_txt;
-                        $ins[$key]['status'] = $error;
-                        $ins[$key]['status_id'] = $status_id;
-                        $ins[$key]['file_id'] =  $FileId;
-                        $ins[$key]['created_by'] =  $id;
-                        $ins[$key]['created_at'] =  $date;
+                       
+                        $userLimit = $chlLmsCusto['limit'];
+                        $ins['anchor_id'] = $attributes['anchor_name'];
+                        $ins['supplier_id'] = $dataAttr['user_id'];
+                        $ins['program_id'] = $prgm_id;
+                        $ins['prgm_offer_id'] = $dataAttr['prgm_offer_id'];
+                        $ins['app_id'] = $dataAttr['app_id'];
+                        $ins['biz_id'] = $dataAttr['biz_id'];
+                        $ins['invoice_no'] = $inv_no;
+                        $ins['tenor'] = $dataAttr['tenor'];
+                        $ins['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
+                        $ins['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $dataAttr['inv_due_date'])->format('Y-m-d');
+                        $ins['pay_calculation_on'] = 2;
+                        $ins['invoice_approve_amount'] = $amount;
+                        $ins['comm_txt'] = $comm_txt;
+                        $ins['status'] = $error;
+                        $ins['status_id'] = $status_id;
+                        $ins['file_id'] =  $FileId;
+                        $ins['created_by'] =  $id;
+                        $ins['created_at'] =  $date;
                         $key++;
+                        $res =  $this->invRepo->saveInvoice($ins);
+                        if($res)
+                        {
+                            if($res['status']!=2)
+                            {
+                                
+                               $updateLimit =  $this->invRepo->updateLimit($userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                            }
+                         
+                        }
+                           
                     } 
-                     $res =  $this->invRepo->saveInvoice($ins);
+                   
+                 
                      if($res)
                      {
-                         
+                        
                          Session::flash('message', 'Invoice data successfully sent to under reviewer process');
                          return back();  
                      }
                      else
                      {
-                          Session::flash('message', 'Something wrong, Invoice is not saved');
+                          Session::flash('error', 'Something went wrong, Please try again');
                           return back();
                      }
                   }
