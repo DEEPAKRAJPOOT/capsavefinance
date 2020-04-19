@@ -63,7 +63,7 @@ trait InvoiceTrait
        else  if(!is_numeric($amount))
        {
             $attr['status'] = 0;
-            $attr['message']=  'Invoice Amount '.$data['amount'].'  should be numaric.';
+            $attr['message']=  'Invoice amount should be numeric for Invoice Number <'.$inv_no.'>.';
             return  $attr;    
         
        }
@@ -160,7 +160,7 @@ trait InvoiceTrait
             else {
                   $attr['status_id'] = 7;
                   $attr['status'] = 0;
-                  $attr['message']= 'Offer is not approve for Customer id "('.$attr['cusomer_id'].')"';
+                  $attr['message']= 'You cannot upload for Customer ID - '.$attr['cusomer_id'].' as limit is not sanctioned or offer is not approved.';
                   return  $attr;    
           
             }
@@ -173,7 +173,8 @@ trait InvoiceTrait
         if( $invoice_date_validate==false)
         {
              $attr['status'] = 0;
-             $attr['message']=  'Please checkd the  invoice date ('.$dataAttr['inv_date'].'), It Should be "dd-mm-yy" format';
+             
+             $attr['message']=  'Invoice date ('.$dataAttr['inv_date'].') is not correct for Invoice Number <'.$dataAttr['inv_no'].'>, Date format should be "dd-mm-yy".';
              return  $attr;    
         } 
         else {

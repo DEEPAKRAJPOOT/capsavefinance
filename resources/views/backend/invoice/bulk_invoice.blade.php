@@ -143,7 +143,7 @@
                                            
                                             @php if(count($getBulkInvoice) > 0) { @endphp
                                             @foreach($getBulkInvoice as $key=>$val) 
-                                           <tr id="deleteRow{{$val->invoice_bulk_upload_id}}"  @php if($val->status==2) { @endphp style="background-color: #ffef00" @php } @endphp  class="getUploadBulkId"  data-id="{{$val->invoice_bulk_upload_id}}" data-status="{{$val->status}}"> 
+                                           <tr id="deleteRow{{$val->invoice_bulk_upload_id}}"  @php if($val->status==2) { @endphp style="background-color: #ff00004d" @php } @endphp  class="getUploadBulkId"  data-id="{{$val->invoice_bulk_upload_id}}" data-status="{{$val->status}}"> 
                                             <td>{{$key+1}}</td>
                                             <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->supplier->f_name}} {{$val->supplier->l_name}}</span><br>
