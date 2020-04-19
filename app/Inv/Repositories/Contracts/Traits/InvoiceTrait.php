@@ -53,15 +53,14 @@ trait InvoiceTrait
         $dueDateGreaterCurrentdate =  self::twoDateDiff($to,$CFrom);  /* Current date and Invoice Date diff */
         $approval =  self::chkApproval($data['approval']); /* Check approval */
         $invoice_date_validate  = self::validateDate($data['inv_date'], $format = 'd-m-Y'); /* chk date format */
-        //dd($inv_no);
-        /*  if($res)
+       if($res)
         {
-          //  $attr['status'] = 0;
-          //  $attr['message']=  'Invoice No "'.$inv_no.'" already exits with '.$cusomer_id;
-          //  return  $attr;  
+           $attr['status'] = 0;
+           $attr['message']=  'Invoice No "'.$inv_no.'" already exists with '.$cusomer_id;
+           return  $attr;  
            
-        } */
-       if(!is_numeric($amount))
+        } 
+       else  if(!is_numeric($amount))
        {
             $attr['status'] = 0;
             $attr['message']=  'Invoice Amount '.$data['amount'].'  should be numaric.';
@@ -93,7 +92,7 @@ trait InvoiceTrait
              $attr['status_id'] = 7;
              $attr['error'] = 0;
              $attr['status'] = 0;
-             $attr['message']= 'Customer Id "('.$cusomer_id.')" does not exits in our records.';
+             $attr['message']= 'Customer Id "('.$cusomer_id.')" does not exist in our records.';
              return  $attr;    
        
         }

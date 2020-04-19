@@ -1003,6 +1003,7 @@ class InvoiceController extends Controller {
                      $res =  $this->invRepo->saveInvoice($ins);
                      if($res)
                      {
+                         
                          Session::flash('message', 'Invoice data successfully sent to under reviewer process');
                          return back();  
                      }
