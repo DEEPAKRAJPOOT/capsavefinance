@@ -28,7 +28,7 @@
                             <div class="active" id="details">
                                 <div class="form-sections">
 
-                                    <div class="clearfix"></div>
+                                    <div class="clearfix"></div>                                    
                                     <div class="row">
                                         <div class="col-4">
                                             <div class="form-group">
@@ -37,18 +37,33 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label for="">{{ $current_date }}</label>                                                        
+                                                <label for=""><span id="current-date">{{ $current_date }}</span></label>                                                        
                                             </div>
                                         </div>                                        
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <input type="hidden" value="1" id="sys_start_flag" name="flag">
-                                                <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Start System">                                                 
+                                                <input type="submit" id="submit" name="btn_process"  class="btn btn-primary ml-2 btn-sm" {{ $enable_sys_start ? '' : 'disabled' }} value="Start System">                                                 
                                             </div>
                                         </div>                                         
                                     </div>
+                                    @if ($eod_process_id)
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="">System Started at</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for=""><span id="current-date">{{ \Helpers::convertDateTimeFormat($sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') }}</span></label>                                                        
+                                            </div>
+                                        </div>                                                                                                                        
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
+                            <input type="hidden" value="1" id="sys_start_flag" name="flag">
+                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">                            
                         </form>
                         
                         <form id="frm-sys-start" method="post" action="{{ route('save_process') }}" enctype= multipart/form-data>
@@ -58,6 +73,9 @@
 
                                     <div class="clearfix"></div>
                                     <div class="row">
+                                    @if($enable_process_start)
+                                    
+
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label for="">Running Hours</label>
@@ -67,16 +85,50 @@
                                             <div class="form-group">
                                                 <label for="">{{ $running_hours }}</label>                                                        
                                             </div>
-                                        </div>                                        
+                                        </div>
+                                                                       
+                                    @else
+                                    
+
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <input type="hidden" value="2" name="flag">
-                                                <input type="submit" id="submit"   class="btn btn-primary ml-2 btn-sm" value="Run Eod Process">                                                 
+                                                <label for="">Total Hours</label>
                                             </div>
-                                        </div>                                         
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="">{{ $total_hours }}</label>                                                        
+                                            </div>
+                                        </div>
+                                    
+                                    @endif
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <input type="submit" id="submit" name="btn_process"  class="btn btn-primary ml-2 btn-sm" {{ $enable_process_start ? '' : 'disabled' }} value="Run Eod Process">
+                                            </div>
+                                        </div>                                    
                                     </div>
+                                    <div class="row">
+                                    @if(!$enable_process_start)
+                                    
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="">System Stopped at</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                <label for="">{{ \Helpers::convertDateTimeFormat($sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') }}</label>                                                        
+                                            </div>
+                                        </div>
+                                                                       
+                                    @endif                                    
+                                    
                                 </div>
                             </div>
+                            <input type="hidden" value="2" name="flag">
+                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">                            
                         </form>   
                         <div class="row">
                             <div class="col-4">
@@ -191,4 +243,40 @@
 </div>
 @endsection
 @section('jscript')
+<script>
+function currentDateTime() {
+    var today = new Date();
+    //var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    
+    var years = today.getFullYear().toString().length == 1 ? '0'+today.getFullYear() : today.getFullYear();
+    var months = today.getMonth().toString().length == 1 ? '0'+(today.getMonth()+1) : today.getMonth();
+    var days = today.getDate().toString().length == 1 ? '0'+today.getDate() : today.getDate();
+    var date = days+'-'+months+'-'+years;
+    
+    //var ampm = d.getHours() >= 12 ? 'pm' : 'am',
+    //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    //var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    //days[d.getDay()]+' '+months[d.getMonth()]+' '+d.getDate()+' '+d.getFullYear()+' '+hours+':'+minutes+ampm;
+        
+    //var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var hours = today.getHours().toString().length == 1 ? '0'+today.getHours() : today.getHours();
+    var minutes = today.getMinutes().toString().length == 1 ? '0'+today.getMinutes() : today.getMinutes();
+    var seconds = today.getSeconds().toString().length == 1 ? '0'+today.getSeconds() : today.getSeconds();    
+    var time = hours + ":" + minutes + ":" + seconds;    
+    
+    var dateTime = date+' '+time;
+    
+    //console.log('dateTime', dateTime);
+    document.getElementById('current-date').innerHTML = dateTime;
+    display_c();
+}
+
+function display_c(){
+    var refresh=1000; // Refresh rate in milli seconds
+    setTimeout('currentDateTime()',refresh);
+}
+
+//display_c();
+
+</script>
 @endsection

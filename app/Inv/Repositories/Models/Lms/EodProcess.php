@@ -76,19 +76,52 @@ class EodProcess extends BaseModel
     {
         
         $query = self::select('*');
-        if (isset($whereCond['sys_start_date_gte'])) {
-            $query->where('sys_start_date', '>=', $whereCond['sys_start_date_gte']); 
+        
+        if (isset($whereCond['sys_start_date_eq'])) {
+            $query->where(\DB::raw('DATE(sys_start_date)'), '=', $whereCond['sys_start_date_eq']);
+            unset($whereCond['sys_start_date_eq']);
         }
         
-        if (isset($whereCond['eod_process_start_gte'])) {
-            $query->where('eod_process_start', '>=', $whereCond['eod_process_start']); 
+        if (isset($whereCond['sys_start_date_lte'])) {
+            $query->where('sys_start_date', '<=', $whereCond['sys_start_date_lte']);
+            unset($whereCond['sys_start_date_lte']);
         }
 
-        if (isset($whereCond['status'])) {
-            $query->where('status', $whereCond['status']);
+        if (isset($whereCond['sys_start_date_gte'])) {
+            $query->where('sys_start_date', '>=', $whereCond['sys_start_date_gte']);
+            unset($whereCond['sys_start_date_gte']);
         }
         
+        if (isset($whereCond['eod_process_start_date_eq'])) {
+            $query->where(\DB::raw('DATE(eod_process_start)'), '=', $whereCond['eod_process_start_date_eq']);
+            unset($whereCond['eod_process_start_date_eq']);
+        }
+        
+        if (isset($whereCond['eod_process_start_date_lte'])) {
+            $query->where('eod_process_start', '<=', $whereCond['eod_process_start_date_lte']);
+            unset($whereCond['eod_process_start_date_lte']);
+        }  
+        
+        if (isset($whereCond['eod_process_start_date_gte'])) {
+            $query->where('eod_process_start', '>=', $whereCond['eod_process_start_date_gte']);
+            unset($whereCond['eod_process_start_date_gte']);
+        }              
+
+        if (isset($whereCond['status'])) {
+            if (is_array($whereCond['status'])){
+                $query->whereIn('status', $whereCond['status']);
+            } else {
+                $query->where('status', $whereCond['status']);
+            }
+            unset($whereCond['status']);
+        }
+                                
+        unset($whereCond['is_active']);
+        
+        $query->where($whereCond);
         $query->where('is_active', 1);
+        //dd($query->toSql(), $whereCond);
+        
         $result = $query->first();
         
         return $result ? $result : null;

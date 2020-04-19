@@ -38,7 +38,7 @@ class PaymentController extends Controller {
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->appRepo = $appRepo;
-        $this->finRepo = $finRepo;
+        //$this->finRepo = $finRepo;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodProcess');

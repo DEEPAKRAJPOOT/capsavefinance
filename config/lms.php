@@ -96,12 +96,44 @@ return [
     ],
     'EOD_PROCESS_ROUTES' => [
         'update_bulk_invoice',
-        'update_invoice_approve'
+        'update_invoice_approve',
+        'lms_refund_new',
+        'lms_refund_pending',
+        'lms_refund_approved',
+        'request_list',
+        'lms_refund_sentbank',
+        'lms_refund_refunded',
+        'backend_upload_all_invoice',
+        'backend_get_invoice',
+        'backend_get_approve_invoice',
+        'backend_get_disbursed_invoice',
+        'backend_get_sent_to_bank',
+        'backend_get_failed_disbursment',
+        'backend_get_disbursed',
+        'backend_get_repaid_invoice',
+        'backend_get_reject_invoice',
+        'backend_get_exception_cases',
+        'lms_disbursal_request_list',
+        'lms_disbursed_list',
+        'payment_list',
+        'unsettled_payments',
+        'payment_advice',
+        'add_payment'
     ],
     'EOD_PASS_STATUS' => 1,
     'EOD_FAIL_STATUS' => 2,
     'EOD_PASS_FAIL_STATUS' => [
+        0 => '',
         1 => 'Pass',
         2 => 'Fail'
-    ]
+    ],
+    'EOD_PROCESS_CHECK_TYPE' => [
+        'TALLY_POSTING' => 'TALLY_POSTING',
+        'INT_ACCRUAL' => 'INT_ACCRUAL',
+        'REPAYMENT' => 'REPAYMENT',
+        'DISBURSAL' => 'DISBURSAL',
+        'CHARGE_POST' => 'CHARGE_POST',
+        'OVERDUE_INT_ACCRUAL' => 'OVERDUE_INT_ACCRUAL',
+        'DISBURSAL_BLOCK' => 'DISBURSAL_BLOCK',
+    ]    
 ];

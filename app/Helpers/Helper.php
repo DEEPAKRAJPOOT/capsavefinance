@@ -1341,10 +1341,64 @@ class Helper extends PaypalHelper
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $whereCond=[];
-        //$whereCond['end_datetime'] = \Carbon\Carbon::now()->toDateString();
-        $eodProcess = $lmsRepo->getEodProcess($whereCond);        
-        if (!$eodProcess) return false;
-        return $eodProcess && in_array($eodProcess->status, config('lms.EOD_PROCESS_STATUS'));
-    }  
+        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        $whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
+        $eodProcess = $lmsRepo->getEodProcess($whereCond);
+        if ($eodProcess) {            
+            return true;
+        } else {
+            return false;
+        }
+    }
     
+
+    public static function updateEodProcess($eodProcessCheckType, $status)
+    {
+        $eodProcessCheckTypeList = config('lms.EOD_PROCESS_CHECK_TYPE');
+       
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $data = [];
+        $data[$eodProcessCheckType] = $status;
+        
+        $today = \Carbon\Carbon::now();
+        
+        $sys_start_date_eq = $today->format('Y-m-d');
+        
+        $whereCond=[];
+        //$whereCond['status'] = 0;
+        $whereCond['sys_start_date_eq'] = $sys_start_date_eq;
+        $eodProcess = $lmsRepo->getEodProcess($whereCond);
+        if ($eodProcess) {
+            $eod_process_id = $eodProcess->eod_process_id;
+            $lmsRepo->saveEodProcessLog($data, $eod_process_id);
+            
+            $eod_status = '';
+            if ($status == config('lms.EOD_FAIL_STATUS')) {
+                $eod_status = $status;
+            } else {
+                $whereCond=[];
+                $whereCond['eod_process_id'] = $eod_process_id;
+                $eodLog = $lmsRepo->getEodProcessLog($whereCond);
+                $statusArr=[];
+                if ($eodLog) {
+                    $statusArr[] = $eodLog->tally_status;
+                    $statusArr[] = $eodLog->int_accrual_status;
+                    $statusArr[] = $eodLog->repayment_status;
+                    $statusArr[] = $eodLog->disbursal_status;
+                    $statusArr[] = $eodLog->charge_post_status;
+                    $statusArr[] = $eodLog->overdue_int_accrual_status;
+                    $statusArr[] = $eodLog->disbursal_block_status;
+                    $eod_status = in_array(2, $statusArr) ? config('lms.EOD_PROCESS_STATUS.FAILED') : (in_array(0, $statusArr) ? '' : config('lms.EOD_PROCESS_STATUS.COMPLETED'));
+                }
+            }
+            
+            if ($eod_status) {
+                $eodData = [];
+                $eodData['status'] = $eod_status;
+                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
+                $lmsRepo->saveEodProcess($data, $eod_process_id);
+            }
+        }
+        
+    }     
 }
