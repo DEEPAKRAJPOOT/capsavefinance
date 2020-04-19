@@ -62,7 +62,7 @@ class Kernel extends HttpKernel
         //'adminauth' => \App\Http\Middleware\AdminAuthenticate::class,
         'checkBackendLeadAccess' => \App\Http\Middleware\Authorization\CheckBackendLeadAccess::class,
         'CheckWorkflow' => \App\Http\Middleware\CheckWorkflow::class,
-        'checkEodBatchProcess' => \App\Http\Middleware\CheckEodBatchProcess::class,
+        'checkEodProcess' => \App\Http\Middleware\CheckEodProcess::class,
     ];
 
 }

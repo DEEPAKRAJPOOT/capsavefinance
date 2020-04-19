@@ -34,7 +34,7 @@ class RefundController extends Controller
         $this->userRepo = $user_repo;
 		$this->lmsRepo = $lms_repo;
 		$this->middleware('checkBackendLeadAccess');
-                $this->middleware('checkEodBatchProcess');
+                $this->middleware('checkEodProcess');
 	}
 
     /**

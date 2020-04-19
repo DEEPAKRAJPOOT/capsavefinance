@@ -1337,14 +1337,14 @@ class Helper extends PaypalHelper
     }  
     
     
-    public static function checkEodBatchProcess()
+    public static function checkEodProcess()
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $whereCond=[];
-        $whereCond['end_datetime'] = \Carbon\Carbon::now()->toDateString();
-        $eodBatchProcess = $lmsRepo->getEodBatchProcess($whereCond);        
-        if (!$eodBatchProcess) return false;
-        return $eodBatchProcess && in_array($eodBatchProcess->status, config('lms.EOD_BATCH_PROCESS_STATUS'));
+        //$whereCond['end_datetime'] = \Carbon\Carbon::now()->toDateString();
+        $eodProcess = $lmsRepo->getEodProcess($whereCond);        
+        if (!$eodProcess) return false;
+        return $eodProcess && in_array($eodProcess->status, config('lms.EOD_PROCESS_STATUS'));
     }  
     
 }

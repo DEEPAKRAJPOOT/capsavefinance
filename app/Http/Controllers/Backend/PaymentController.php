@@ -41,7 +41,7 @@ class PaymentController extends Controller {
         $this->finRepo = $finRepo;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
-        $this->middleware('checkEodBatchProcess');
+        $this->middleware('checkEodProcess');
     }
 
    

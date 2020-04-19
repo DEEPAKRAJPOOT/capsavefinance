@@ -82,12 +82,26 @@ return [
         '7' => ['SYSTEM' => 'Sent to Bank', 'USER' => 'Sent to Bank'],
         '8' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
     ],
-    'EOD_BATCH_PROCESS_STATUS' => [
-        'EOD_TRANS_MARKED' => 1,
-        'NO_BAL_MATCHED' => 2
+    'EOD_PROCESS_STATUS' => [
+        'RUNNING' => 0,
+        'COMPLETED' => 1,
+        'STOPPED' => 2,
+        'FAILED' => 3
     ],
-    'EOD_BATCH_PROCESS_ROUTES' => [
+    'EOD_PROCESS_STATUS_LIST' => [
+        0 => 'Running',
+        1 => 'Completed',
+        2 => 'Stopped',
+        3 => 'Failed',
+    ],
+    'EOD_PROCESS_ROUTES' => [
         'update_bulk_invoice',
         'update_invoice_approve'
+    ],
+    'EOD_PASS_STATUS' => 1,
+    'EOD_FAIL_STATUS' => 2,
+    'EOD_PASS_FAIL_STATUS' => [
+        1 => 'Pass',
+        2 => 'Fail'
     ]
 ];

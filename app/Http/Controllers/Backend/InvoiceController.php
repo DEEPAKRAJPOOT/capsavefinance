@@ -46,7 +46,7 @@ class InvoiceController extends Controller {
         $this->application  =  $application;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
-        $this->middleware('checkEodBatchProcess');
+        $this->middleware('checkEodProcess');
     }
 
     /* Invoice upload page  */

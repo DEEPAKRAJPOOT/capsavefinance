@@ -41,7 +41,7 @@ class DisbursalController extends Controller
 		$this->lmsRepo = $lms_repo;
         $this->masterRepo = $master;
 		$this->middleware('checkBackendLeadAccess');
-            $this->middleware('checkEodBatchProcess');
+            $this->middleware('checkEodProcess');
 	}
 	
 	/**

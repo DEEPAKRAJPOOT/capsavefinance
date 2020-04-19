@@ -11,14 +11,14 @@ class EodBatchProcess extends Command
      *
      * @var string
      */
-    protected $signature = 'lms:eodbatchprocess';
+    protected $signature = 'lms:eodprocess';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'EOD Batch Process';
+    protected $description = 'EOD Process';
 
     /**
      * Create a new command instance.
@@ -37,6 +37,6 @@ class EodBatchProcess extends Command
      */
     public function handle()
     {
-        \App::make('App\Http\Controllers\Lms\EodBatchProcessController')->process();
+        \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
     }
 }

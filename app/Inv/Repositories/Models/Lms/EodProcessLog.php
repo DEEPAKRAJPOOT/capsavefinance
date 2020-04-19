@@ -6,7 +6,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
-class EodBatchProcess extends BaseModel
+class EodProcessLog extends BaseModel
 {
 
     /**
@@ -14,14 +14,14 @@ class EodBatchProcess extends BaseModel
      *
      * @var string
      */
-    protected $table = 'lms_eod_batch_process';
+    protected $table = 'lms_eod_process_log';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'eod_batch_process_id';
+    protected $primaryKey = 'eod_process_log_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -45,33 +45,39 @@ class EodBatchProcess extends BaseModel
      * @var array
      */
     protected $fillable = [
-        'end_datetime',
-        'status',
+        'eod_process_id',
+        'tally_status',
+        'int_accrual_status',
+        'repayment_status',
+        'disbursal_status',
+        'charge_post_status',
+        'overdue_int_accrual_status',
+        'disbursal_block_status',
         'created_at',
         'created_by',
         'updated_at',
         'updated_by'        
     ];
 
-    public static function saveEodBatchProcess($data, $eodBatchProcessId=null)
+    public static function saveEodProcessLog($data, $eodProcessId=null)
     {
         //Check $data is not an array
         if (!is_array($data)) {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }        
         
-        if (!is_null($eodBatchProcessId)) {
-            return self::where('eod_batch_process_id', $eodBatchProcessId)->update($data);
+        if (!is_null($eodProcessId)) {
+            return self::where('eod_process_id', $eodProcessId)->update($data);
         } else {           
             return self::create($data);            
         }        
     }
     
-    public static function getEodBatchProcess($whereCond=[])
+    public static function getEodProcessLog($whereCond=[])
     {
         $query = self::select('*');
-        if (isset($whereCond['end_datetime'])) {
-            $query->where(\DB::raw('DATE(end_datetime)'), $whereCond['end_datetime']); 
+        if (count($whereCond) > 0) {
+            $query->where($whereCond); 
         }
                 
         $result = $query->first();        

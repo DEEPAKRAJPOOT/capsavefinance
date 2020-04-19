@@ -33,6 +33,6 @@ return [
     'noBankAccount' => 'No Bank Account Found.',
     'disburseMarked' => 'Successfully disburse marked .',
     'downloadExcel' => 'Successfully download.',
-    'lms_eod_batch_process_msg' => 'Sorry, You can\'t do any transactions in EOD',
+    'lms_eod_process_msg' => 'Sorry, You can\'t do any transactions in EOD',
 ];
 

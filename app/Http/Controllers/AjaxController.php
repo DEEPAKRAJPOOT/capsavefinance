@@ -67,7 +67,7 @@ class AjaxController extends Controller {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
-        $this->middleware('checkEodBatchProcess');
+        $this->middleware('checkEodProcess');
     }
 
     /**
@@ -4342,10 +4342,10 @@ if ($err) {
         return response()->json(['is_active' => $result]);         
     }
     
-    public function checkEodBatchProcess(Request $request)
+    public function checkEodProcess(Request $request)
     {
-        $data = ['eod_process' => \Helpers::checkEodBatchProcess()];
-        $response = $data + ['message' => trans('backend_messages.lms_eod_batch_process_msg')];
+        $data = ['eod_process' => \Helpers::checkEodProcess()];
+        $response = $data + ['message' => trans('backend_messages.lms_eod_process_msg')];
         return response()->json($response);  
     }    
 

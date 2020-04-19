@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Http\Middleware\Authorization\BaseAuthorization;
 
-class CheckEodBatchProcess extends BaseAuthorization
+class CheckEodProcess extends BaseAuthorization
 {
     /**
      * Handle an incoming request.
@@ -16,10 +16,10 @@ class CheckEodBatchProcess extends BaseAuthorization
      */
     public function handle($request, Closure $next)
     {     
-        $data = ['eod_process' => \Helpers::checkEodBatchProcess()];
+        $data = ['eod_process' => \Helpers::checkEodProcess()];
         if ($request->ajax()) {
-            if (in_array($request->route()->getName(), config('lms.EOD_BATCH_PROCESS_ROUTES'))) {
-                $response = $data + ['message' => trans('backend_messages.lms_eod_batch_process_msg')];
+            if (in_array($request->route()->getName(), config('lms.EOD_PROCESS_ROUTES'))) {
+                $response = $data + ['message' => trans('backend_messages.lms_eod_process_msg')];
                 return response()->json($response);
             }
         } else {
