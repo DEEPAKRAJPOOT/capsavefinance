@@ -37,7 +37,8 @@ class EodProcessController extends Controller {
         
             $whereCond=[];
             //$whereCond['status'] = 0;
-            $whereCond['sys_start_date_eq'] = $sys_start_date_eq;
+            //$whereCond['sys_start_date_eq'] = $sys_start_date_eq;
+            $whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq;
             $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
             $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';
             if(!$eod_process_id) return $message;
@@ -60,9 +61,10 @@ class EodProcessController extends Controller {
 
         $current_date = \Helpers::convertDateTimeFormat($sys_curr_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
         $whereCond=[];
-        //$whereCond['status'] = 0;
-        $whereCond['sys_start_date_eq'] = $sys_start_date_eq;        
-        $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
+        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.RUNNING'), config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        //$whereCond['sys_start_date_eq'] = $sys_start_date_eq;        
+        $whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq;        
+        $eodProcess = $this->lmsRepo->getEodProcess($whereCond);        
         $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';
         $status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
         $sys_start_date = $eodProcess ? $eodProcess->sys_start_date : '';
@@ -113,10 +115,8 @@ class EodProcessController extends Controller {
             $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
             $current_user_id = \Auth::user() ? \Auth::user()->user_id : 1;
             
-            if ($flag == 1) {
-                if ($eod_process_id) {                                
-                    $this->lmsRepo->saveEodProcess(['is_active' => 0], $eod_process_id);
-                }
+            if ($flag == 1) {                                              
+                $this->lmsRepo->updateEodProcess(['is_active' => 0], ['is_active' => 1]);                
                 $data=[];
                 $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
                 $data['sys_start_date'] = $current_datetime;

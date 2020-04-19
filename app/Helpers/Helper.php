@@ -1342,7 +1342,8 @@ class Helper extends PaypalHelper
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $whereCond=[];
         $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
-        $whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
+        //$whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
+        $whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {            
             return true;
@@ -1365,8 +1366,9 @@ class Helper extends PaypalHelper
         $sys_start_date_eq = $today->format('Y-m-d');
         
         $whereCond=[];
-        //$whereCond['status'] = 0;
-        $whereCond['sys_start_date_eq'] = $sys_start_date_eq;
+        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
+        $whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {
             $eod_process_id = $eodProcess->eod_process_id;
@@ -1402,5 +1404,12 @@ class Helper extends PaypalHelper
            
         }
         
-    }     
+    } 
+
+    public static function getDateTimeFieldInTz($fieldName)
+    {           
+        $tz = '+5:30';        //'timezone' => 'Asia/Kolkata',
+        $field = "CONVERT_TZ("+$fieldName+", '+00:00', '" . $tz . "')";
+        return $field;
+    }
 }

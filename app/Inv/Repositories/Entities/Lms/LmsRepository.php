@@ -991,5 +991,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getEodProcessLog($whereCond=[])
     {
         return EodProcessLog::getEodProcessLog($whereCond);
-    }    
+    }
+
+    public function updateEodProcess($data, $whereCond)
+    {
+        return EodProcess::updateEodProcess($data, $whereCond);
+    }
 }

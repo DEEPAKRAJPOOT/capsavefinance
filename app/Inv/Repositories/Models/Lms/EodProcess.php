@@ -74,12 +74,18 @@ class EodProcess extends BaseModel
     
     public static function getEodProcess($whereCond=[])
     {
-        
+                
         $query = self::select('*');
         
         if (isset($whereCond['sys_start_date_eq'])) {
             $query->where(\DB::raw('DATE(sys_start_date)'), '=', $whereCond['sys_start_date_eq']);
             unset($whereCond['sys_start_date_eq']);
+        }
+
+        if (isset($whereCond['sys_start_date_tz_eq'])) {
+            $current_date = \Helpers::convertDateTimeFormat($whereCond['sys_start_date_tz_eq'], $fromDateFormat='Y-m-d', $toDateFormat='Y-m-d');
+            $query->where(\DB::raw("DATE(CONVERT_TZ(sys_start_date, '+00:00', '+5:30'))"), '=', $current_date);
+            unset($whereCond['sys_start_date_tz_eq']);
         }
         
         if (isset($whereCond['sys_start_date_lte'])) {
@@ -96,6 +102,12 @@ class EodProcess extends BaseModel
             $query->where(\DB::raw('DATE(eod_process_start)'), '=', $whereCond['eod_process_start_date_eq']);
             unset($whereCond['eod_process_start_date_eq']);
         }
+        
+        if (isset($whereCond['eod_process_start_date_tz_eq'])) {
+            $current_date = \Helpers::convertDateTimeFormat($whereCond['eod_process_start_date_tz_eq'], $fromDateFormat='Y-m-d', $toDateFormat='Y-m-d');
+            $query->where(\DB::raw("DATE(CONVERT_TZ(eod_process_start, '+00:00', '+5:30'))"), '=', $current_date);
+            unset($whereCond['eod_process_start_date_tz_eq']);
+        }        
         
         if (isset($whereCond['eod_process_start_date_lte'])) {
             $query->where('eod_process_start', '<=', $whereCond['eod_process_start_date_lte']);
@@ -119,12 +131,26 @@ class EodProcess extends BaseModel
         unset($whereCond['is_active']);
         
         $query->where($whereCond);
-        $query->where('is_active', 1);
-        //dd($query->toSql(), $whereCond);
+        $query->where('is_active', 1);        
         
         $result = $query->first();
         
         return $result ? $result : null;
     }
+    
+    public static function updateEodProcess($data, $whereCond)
+    {
+        //Check $data is not an array
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }        
+        
+        //Check $whereCond is not an array
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }  
+                
+        return self::where($whereCond)->update($data);            
+    }    
 }
 
