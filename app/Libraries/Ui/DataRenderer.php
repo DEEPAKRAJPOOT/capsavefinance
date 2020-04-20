@@ -3831,11 +3831,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_type',
                 function ($trans) {
-                    if($trans->repay_trans_id && $trans->trans_detail->chrg_master_id!='0'){
-                        return $trans->oppTransName;
-                    }else{
-                        return $trans->transname;
-                    }
+                    return $trans->transname;
                 }
             )
             ->editColumn(

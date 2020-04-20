@@ -1052,4 +1052,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return Transactions::getUnsettledChargeTransactions($data);
 	}
 	
+	public static  function calInvoiceRefund($invoiceDisbursalId, $paymentDate)
+	{
+		return Transactions::calInvoiceRefund($invoiceDisbursalId, $paymentDate);
+	}
 }
