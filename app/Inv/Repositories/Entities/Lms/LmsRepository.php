@@ -38,6 +38,8 @@ use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
 use App\Inv\Repositories\Models\Lms\RefundBatch;
 use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Lms\EodProcess;
+use App\Inv\Repositories\Models\Lms\EodProcessLog;
 
 /**
  * Lms Repository class
@@ -956,5 +958,43 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
         return RefundBatch::create($disburseBatch);
-    }        
+    }
+    
+    /**
+     * Save Eod Process Data
+     * 
+     * @param array $data
+     * @param integer $eodProcessId
+     * @return mixed
+     */
+    public function saveEodProcess($data, $eodProcessId=null)
+    {
+        return EodProcess::saveEodProcess($data, $eodProcessId);
+    }
+    
+    /**
+     * Get Eod Process Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getEodProcess($whereCond=[])
+    {
+        return EodProcess::getEodProcess($whereCond);
+    }
+    
+    public function saveEodProcessLog($data, $eodProcessId=null)
+    {
+        return EodProcessLog::saveEodProcessLog($data, $eodProcessId);
+    }
+    
+    public function getEodProcessLog($whereCond=[])
+    {
+        return EodProcessLog::getEodProcessLog($whereCond);
+    }
+
+    public function updateEodProcess($data, $whereCond)
+    {
+        return EodProcess::updateEodProcess($data, $whereCond);
+    }
 }

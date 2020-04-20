@@ -38,7 +38,10 @@ class PaymentController extends Controller {
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->appRepo = $appRepo;
+        //$this->finRepo = $finRepo;
         $this->middleware('auth');
+        //$this->middleware('checkBackendLeadAccess');
+        $this->middleware('checkEodProcess');
     }
 
    
@@ -87,6 +90,11 @@ class PaymentController extends Controller {
     /* save payment details   */
     public function  savePayment(Request $request)
     {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        
         $validatedData = $request->validate([
                'payment_type' => Rule::requiredIf(function () use ($request) {
                     return ($request->action_type == 1)?true:false;
@@ -470,6 +478,11 @@ class PaymentController extends Controller {
   
   public function createPaymentRefund(Request $request)
   {
+    if ($request->get('eod_process')) {
+        Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+        return back();
+    }
+    
     $transId = $request->get('trans_id');
     $refundAmount = $request->get('total_refund_amount');
 

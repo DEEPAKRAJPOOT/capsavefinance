@@ -47,6 +47,7 @@ class InvoiceController extends Controller {
         $this->application  =  $application;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
+        $this->middleware('checkEodProcess');
     }
 
     /* Invoice upload page  */
@@ -300,6 +301,11 @@ class InvoiceController extends Controller {
     }
 
     public function updateDisburseInvoice(Request $request) {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+
         $userId = $request->user_id;
         $disbursalBatchId = $request->disbursal_batch_id;
         $transId = $request->trans_id;
@@ -330,6 +336,10 @@ class InvoiceController extends Controller {
     /* save bulk invoice */
 
     public function saveBulkInvoice(Request $request) {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
         $attributes = $request->all();
         $res = $this->invRepo->saveBulk($attributes);
         if ($res) {
@@ -360,7 +370,12 @@ class InvoiceController extends Controller {
 
     /*   save invoice */
 
-    public function saveInvoice(Request $request) {
+    public function saveInvoice(Request $request) {        
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
         $attributes['supplier_id'] = $explode[0];
@@ -500,6 +515,11 @@ class InvoiceController extends Controller {
      */
     public function disburseOffline(Request $request)
     {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        
         $invoiceIds = $request->get('invoice_ids');
         $disburseDate = $request->get('disburse_date');
         $creatorId = Auth::user()->user_id;
@@ -778,6 +798,11 @@ class InvoiceController extends Controller {
      */
     public function downloadBatchData(Request $request)
     {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        
         $custCode = $request->get('customer_code');
         $selectDate = $request->get('selected_date');
         $batchId = $request->get('batch_id');

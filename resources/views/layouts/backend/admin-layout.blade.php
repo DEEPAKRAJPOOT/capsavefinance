@@ -161,7 +161,7 @@
                 if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
                     return false;
                 }
-            });
+            });    
         });
 
         function datepickerDisFdate(){

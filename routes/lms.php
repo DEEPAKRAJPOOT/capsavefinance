@@ -268,6 +268,22 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@processRefund'
             ]); 
             
+            
+            Route::get('view-eod-process',[
+                'as' => 'eod_process',
+                'uses' => 'Lms\EodProcessController@viewEodProcess'
+            ]);    
+            
+            Route::post('save-eod-process',[
+                'as' => 'save_process',
+                'uses' => 'Lms\EodProcessController@saveEodProcess'
+            ]); 
+
+            Route::get('do-process',[
+                'as' => 'do_process',
+                'uses' => 'Lms\EodProcessController@process'
+            ]);             
+            
         });
         
         //end of application

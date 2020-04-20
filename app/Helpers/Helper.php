@@ -1393,5 +1393,82 @@ class Helper extends PaypalHelper
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');    
         $offerData = $appRepo->getPrgmLimitByAppId($appId);
         return $offerData && isset($offerData->offer);
-    }    
+    }  
+    
+    
+    public static function checkEodProcess()
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $whereCond=[];
+        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        //$whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
+        $whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        $eodProcess = $lmsRepo->getEodProcess($whereCond);
+        if ($eodProcess) {            
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+
+    public static function updateEodProcess($eodProcessCheckType, $status)
+    {
+        $eodProcessCheckTypeList = config('lms.EOD_PROCESS_CHECK_TYPE');
+       
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $data = [];
+        $data[$eodProcessCheckType] = $status;
+        
+        $today = \Carbon\Carbon::now();
+        
+        $sys_start_date_eq = $today->format('Y-m-d');
+        
+        $whereCond=[];
+        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
+        $whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
+        $eodProcess = $lmsRepo->getEodProcess($whereCond);
+        if ($eodProcess) {
+            $eod_process_id = $eodProcess->eod_process_id;
+            $lmsRepo->saveEodProcessLog($data, $eod_process_id);
+            
+            $eod_status = '';
+            if ($status == config('lms.EOD_FAIL_STATUS')) {
+                $eod_status = $status;
+            } else {
+                $whereCond=[];
+                $whereCond['eod_process_id'] = $eod_process_id;
+                $eodLog = $lmsRepo->getEodProcessLog($whereCond);
+                $statusArr=[];
+                if ($eodLog) {
+                    $statusArr[] = $eodLog->tally_status;
+                    $statusArr[] = $eodLog->int_accrual_status;
+                    $statusArr[] = $eodLog->repayment_status;
+                    $statusArr[] = $eodLog->disbursal_status;
+                    $statusArr[] = $eodLog->charge_post_status;
+                    $statusArr[] = $eodLog->overdue_int_accrual_status;
+                    $statusArr[] = $eodLog->disbursal_block_status;
+                    $eod_status = in_array(2, $statusArr) ? config('lms.EOD_PROCESS_STATUS.FAILED') : (in_array(0, $statusArr) ? '' : config('lms.EOD_PROCESS_STATUS.COMPLETED'));
+                }
+            }
+            
+            
+            if ($eod_status) {
+                $eodData = [];
+                $eodData['status'] = $eod_status;
+                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
+                $lmsRepo->saveEodProcess($eodData, $eod_process_id);
+            }
+           
+        }
+        
+    } 
+
+    public static function getDateTimeFieldInTz($fieldName)
+    {           
+        $tz = '+5:30';        //'timezone' => 'Asia/Kolkata',
+        $field = "CONVERT_TZ("+$fieldName+", '+00:00', '" . $tz . "')";
+        return $field;
+    }
 }
