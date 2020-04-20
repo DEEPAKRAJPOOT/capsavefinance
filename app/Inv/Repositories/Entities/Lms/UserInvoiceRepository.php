@@ -73,6 +73,11 @@ class UserInvoiceRepository extends BaseRepositories{
 		return $gsts->isEmpty() ? [] : $gsts;
 	}
 
+	public function getAppsByUserId($userId = null) {
+		$apps = Application::getAllAppsByUserId($$userId);
+		return $apps->isEmpty() ? [] : $apps;
+	}
+
         
 	public function saveUserInvoice($invoices,$whereCondition=[]) {
 		return UserInvoice::saveUserInvoice($invoices,$whereCondition);
