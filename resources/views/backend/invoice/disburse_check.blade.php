@@ -7,18 +7,32 @@ $finalDisburseAmt = 0;
 
 @php 
 $disburseAmount = 0;
+$totalMargin = 0;
+$totalInterest = 0;
 $interest = 0;
 $apps = $customer->app;
 foreach ($apps as $app) {
 	foreach ($app->invoices as $inv) {
 		$invoice = $inv->toArray();
 		$margin = $invoice['program_offer']['margin'];
-		$fundedAmount =  $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
-		$disburseAmount += round($fundedAmount, 2);
+		$interestRate = $invoice['program_offer']['interest_rate']/100;
+
+
+		$now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); 
+        $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
+        $datediff = abs($now - $your_date);
+        $tenor = round($datediff / (60 * 60 * 24));
+
+
+
+		$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
+		$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
+		if($invoice['program_offer']['payment_frequency'] == 1) {
+			$interest = $fundedAmount * $tenor * ($interestRate / 360) ;                
+        }
+		$finalDisburseAmt += round($fundedAmount - $interest, 2);
 	}
 }
-
-$finalDisburseAmt +=  $disburseAmount;
 @endphp
 
 
@@ -36,7 +50,7 @@ $finalDisburseAmt +=  $disburseAmount;
 		<div class="col-4">
 			<div class="form-group">
 				<label for="nonFactoredAmount"># Amount Disburse</label>
-				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
+				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ number_format($finalDisburseAmt) }}">
 			</div>
 		</div>
 	</div>
@@ -91,6 +105,8 @@ $finalDisburseAmt +=  $disburseAmount;
 									<th width="15%">Total Invoice</th>
 									<th width="15%">Total Invoice Amt.</th>
 									<th width="15%">Total Disburse Amt.</th>
+									<th width="15%">Total Margin</th>
+									<th width="15%">Total Interest</th>
 									<th width="30%">Total Actual Disburse Amt.</th>
 								</tr>
 							</thead>
@@ -173,17 +189,37 @@ $finalDisburseAmt +=  $disburseAmount;
 
 									@php 
 									$disburseAmount = 0;
+									$totalMargin = 0;
+									$totalInterest = 0;
 									$interest = 0;
 									$apps = $customer->app;
 									foreach ($apps as $app) {
 										foreach ($app->invoices as $inv) {
 											$invoice = $inv->toArray();
 											$margin = $invoice['program_offer']['margin'];
-											$fundedAmount =  $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$margin)/100);
-											$disburseAmount += round($fundedAmount, 2);
+											$interestRate = $invoice['program_offer']['interest_rate']/100;
+
+
+											$now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); 
+									        $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
+									        $datediff = abs($now - $your_date);
+									        $tenor = round($datediff / (60 * 60 * 24));
+
+
+
+											$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
+											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
+											if($invoice['program_offer']['payment_frequency'] == 1) {
+    											$interest = $fundedAmount * $tenor * ($interestRate / 360) ;                
+						                    }
+											$disburseAmount += round($fundedAmount - $interest, 2);
+											$totalMargin += round($tMargin, 2);
+											$totalInterest += round($interest, 2);
 										}
 									}
 									@endphp
+									<td> <i class="fa fa-inr"></i> {{ number_format($totalMargin) }}</td>
+									<td> <i class="fa fa-inr"></i> {{ number_format($totalInterest) }}</td>
 									<td> <i class="fa fa-inr"></i> {{ number_format($disburseAmount) }}</td>
 									@php 
 
@@ -207,6 +243,31 @@ $finalDisburseAmt +=  $disburseAmount;
 	$(document).ready(function () {
 	    parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
 	});
+	$(document).ready(function () {
+        $('#manualDisburse').validate({ // initialize the plugin
+            
+            rules: {
+                'disburse_date' : {
+                    required : true,
+                }
+            },
+            messages: {
+                'disburse_date': {
+                    required: "Disburse date is required.",
+                }
+            }
+        });
+
+        $('#manualDisburse').validate();
+
+        $("#submitManualDisburse").click(function(){
+            if($('#manualDisburse').valid()){
+                $('form#manualDisburse').submit();
+                $("#submitManualDisburse").attr("disabled","disabled");
+            }  
+        });            
+
+    });
 
 </script>
 @endsection

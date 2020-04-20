@@ -2743,17 +2743,11 @@ if ($err) {
 
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
-       
         $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
-        //////////////////// use for Approve invoice list/////////////////
-     public function getFrontendInvoiceListApprove(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getUserAllInvoice($this->request,8);
-        $invoice = $dataProvider->getFrontendInvoiceListApprove($this->request, $invoice_data);
-        return $invoice;
-    } 
+        
     
      //////////////////// use for exception case invoice list/////////////////
      public function getBackendEpList(DataProviderInterface $dataProvider) {
@@ -3611,7 +3605,36 @@ if ($err) {
  
     function uploadInvoice(Request $request) {
       
-       $extension = $request['doc_file']->getClientOriginalExtension();
+        $res  = explode(',',$request->id);
+        foreach($res as $key=>$val)
+        {
+                $attr =   $this->invRepo->getSingleBulkInvoice($val);
+                if($attr)
+                {
+                   $invoice_id = NULL;  
+                   if($attr->status==0)
+                   {
+                      $res  =  $this->invRepo->saveFinalInvoice($attr);
+                      $invoice_id =  $res['invoice_id'];
+                   }
+                  $attribute['invoice_id'] = $invoice_id;
+                  $attribute['status'] = 1;
+                  $attribute['invoice_bulk_upload_id'] = $attr->invoice_bulk_upload_id;
+                  $updateBulk  =  $this->invRepo->updateBulkUpload($attribute);  
+                }
+        }
+        if($updateBulk)
+        {
+                 return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
+              
+        }
+        else
+        {
+                  return response()->json(['status' => 0,'message' => 'Something went wrong, Please try again']); 
+             
+        }
+        
+       /*$extension = $request['doc_file']->getClientOriginalExtension();
        if($extension!="csv" || $extension!="csv")
        {
             return response()->json(['status' => 2]); 
@@ -3736,6 +3759,8 @@ if ($err) {
                   else {
                         return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
                     }
+         
+        */
      }
     function twoDateDiff($fdate,$tdate)
     {
@@ -3782,9 +3807,9 @@ if ($err) {
      
     function DeleteTempInvoice(Request $request) {
        
-        $whr =  ['invoice_id' => $request->temp_id];
+        $whr =  ['invoice_bulk_upload_id' => $request->invoice_bulk_upload_id];
         $res = $this->invRepo->DeleteSingleTempInvoice($whr);
-        return response()->json(['status' => 1,'id' => $request->temp_id]); 
+        return response()->json(['status' => 1,'id' => $request->invoice_bulk_upload_id]); 
         
     }
     

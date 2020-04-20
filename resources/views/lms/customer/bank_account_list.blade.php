@@ -5,19 +5,41 @@
 <div class="content-wrapper">
 	<div class="row grid-margin mt-3">
 		<div class="  col-md-12  ">
-			<section class="content-header">
-				<div class="header-icon">
-					<i class="fa fa-clipboard" aria-hidden="true"></i>
-				</div>
-				<div class="header-title">
-					<h3 class="mt-2">Bank Account</h3>
-					<ol class="breadcrumb">
-						<li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-						<li class="active">Bank Account</li>
-					</ol>
-				</div>
-				<div class="clearfix"></div>
-			</section>
+                     <div class="card">
+			     <div class="card-body">
+                    <div class="table-responsive ps ps--theme_default w-100">
+                        <table class="table  table-td-right">
+                                <tbody>
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Business Name</b></td>
+                                    <td> {{$userInfo->biz->biz_entity_name}}	</td> 
+                                     <td class="text-left" width="30%"><b>Full Name</b></td>
+                                    <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td> 
+                                   
+                                </tr>
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Email</b></td>
+                                    <td>{{$userInfo->email}}	</td> 
+                                     <td class="text-left" width="30%"><b>Mobile</b></td>
+                                    <td>{{$userInfo->mobile_no}} </td> 
+                                </tr>
+                                
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Total Limit</b></td>
+                                    <td>{{ $userInfo->total_limit }} </td> 
+                                    <td class="text-left" width="30%"><b>Available Limit</b></td>
+                                    <td>{{  $userInfo->consume_limit }} </td> 
+                                </tr>
+                                <tr>
+                                    <td class="text-left" width="30%"><b>Utilize Limit</b></td>
+                                    <td>{{ $userInfo->utilize_limit }} </td> 
+                                    <td class="text-left" width="30%"><b>Sales Manager</b></td>
+                                    <td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>	
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="head-sec">
@@ -62,6 +84,7 @@
 											<td>{{ $account->bank->bank_name }}</td>
 											<td>{{ $account->ifsc_code }}</td>
 											<td>{{ $account->branch_name }}</td>
+
 											<td>{!! ($account->is_active == 1) ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning current-status">InActive</span>' !!}</td>
 											@php
 
@@ -77,6 +100,13 @@
 										   data-target="#add_bank_account"
 										   data-url="' . route('add_bank_account', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Bank Account"><i class="fa fa-edit"></i></a>';
 											}
+
+
+
+											$act .= '<a href="' . route('see_upload_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="See Upload Document"><i class="fa fa-eye"></i></a>';
+											
+										   $act .= '<a href="' . route('download_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="Download Upload File"><i class="fa fa-download"></i></a>';
+											
 											@endphp
 											<td>{!! $act !!}</td>
 										</tr>
@@ -87,7 +117,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div></div>
 	</div>
 </div>
 @endsection

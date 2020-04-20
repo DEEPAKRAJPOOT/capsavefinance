@@ -52,9 +52,32 @@ class ChargeController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	 public function manageCharge(Request $request){
-             $user_id =  $request->get('user_id');
+             $totalLimit = 0;
+            $totalCunsumeLimit = 0;
+            $consumeLimit = 0;
+            $transactions = 0;
+            $user_id = $request->get('user_id');
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
              $transactionUser  = $this->lmsRepo->getAllUserChargeTransaction();
-             return view('lms.charges.manage_charge')->with(['user_id' =>$user_id,'trans' =>$transactionUser]);
+             $application = $this->appRepo->getCustomerApplications($user_id);
+             $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+
+            foreach ($application as $key => $app) {
+                if (isset($app->prgmLimits)) {
+                    foreach ($app->prgmLimits as $value) {
+                        $totalLimit += $value->limit_amt;
+                    }
+                }
+                if (isset($app->acceptedOffers)) {
+                    foreach ($app->acceptedOffers as $value) {
+                        $totalCunsumeLimit += $value->prgm_limit_amt;
+                    }
+                }
+            }
+            $userInfo->total_limit = number_format($totalLimit);
+            $userInfo->consume_limit = number_format($totalCunsumeLimit);
+            $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+             return view('lms.charges.manage_charge')->with(['user_id' =>$user_id,'trans' =>$transactionUser,'userInfo' => $userInfo]);
         }
 
     
