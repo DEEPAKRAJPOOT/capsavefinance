@@ -59,7 +59,7 @@ trait InvoiceTrait
            $attr['status_id'] = 7;
            $attr['error'] = 2;
            $attr['status'] = 1;
-           $attr['message']=  'Invoice No "'.$inv_no.'" already exists with '.$cusomer_id;
+           $attr['message']=  'Invoice auto cancel due to duplicate invoice no <'.$inv_no.'>';
            return  $attr;  
            
         } 
@@ -104,7 +104,7 @@ trait InvoiceTrait
              $attr['status_id'] = 7;
              $attr['error'] = 2;
              $attr['status'] = 1;
-             $attr['message']= 'Invoice Number  length should be minimum 3 for customer id "('.$cusomer_id.')"';
+             $attr['message']= 'Invoice auto cancel due to invoice no <'.$inv_no.'> max-length.';
              return  $attr;    
        
         }
