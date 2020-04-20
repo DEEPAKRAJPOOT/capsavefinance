@@ -30,11 +30,9 @@ class userInvoiceController extends Controller
      */
     protected $pdf;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, MasterInterface $master)
-    {
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, MasterInterface $master) {
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
-        //	$this->docRepo = $doc_repo;
         $this->master = $master;
         $this->middleware('checkBackendLeadAccess');
     }
@@ -43,10 +41,8 @@ class userInvoiceController extends Controller
      * Display invoice as per User.
      *
      */
-    public function getUserInvoice(Request $request) 
-    {
+    public function getUserInvoice(Request $request) {
         try {
-
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             return view('lms.invoice.user_invoice_list')->with(['userInfo' => $userInfo]);
@@ -59,15 +55,10 @@ class userInvoiceController extends Controller
      * Create invoice as per User.
      *
      */
-    public function createUserInvoice(Request $request) 
-    {
-
-        
+    public function createUserInvoice(Request $request) {
         try {
-
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
-
             $state_list = ['' => 'Please Select'] + $this->master->getAddStateList()->toArray();
             return view('lms.invoice.create_user_invoice')->with(['user_id' => $user_id, 'state_list' => $state_list]);
         } catch (Exception $ex) {
