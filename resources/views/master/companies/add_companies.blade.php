@@ -9,45 +9,34 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cmp_name">Company Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : ''}}">
+                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : old('cmp_name')}}">
                 {!! $errors->first('cmp_name', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
                 <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
-                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : ''}}</textarea>
+                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
                 {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="gst_no">GST No. <span class="mandatory">*</span></label>
-                <input type="text" class="form-control gstnumber" id="gst_no" name="gst_no" placeholder="Enter GST No." maxlength="50" value="{{ isset($comData['gst_no']) ? $comData['gst_no'] : ''}}">
+                <input type="text" class="form-control gstnumber" id="gst_no" name="gst_no" placeholder="Enter GST No." maxlength="50" value="{{ isset($comData['gst_no']) ? $comData['gst_no'] : old('gst_no')}}">
                 {!! $errors->first('gst_no', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
                 <label for="pan_no">PAN No. <span class="mandatory">*</span></label>
-                <input type="text" class="form-control pannumber" id="pan_no" name="pan_no" placeholder="Enter Pan No." maxlength="50" value="{{ isset($comData['pan_no']) ? $comData['pan_no'] : ''}}">
+                <input type="text" class="form-control pannumber" id="pan_no" name="pan_no" placeholder="Enter Pan No." maxlength="50" value="{{ isset($comData['pan_no']) ? $comData['pan_no'] : old('pan_no')}}">
                 {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cin_no">CIN No. <span class="mandatory"></span></label>
-                <input type="text" class="form-control cinnumber" id="cin_no" name="cin_no" placeholder="Enter CIN No." maxlength="50" value="{{ isset($comData['cin_no']) ? $comData['cin_no'] : ''}}">
+                <input type="text" class="form-control cinnumber" id="cin_no" name="cin_no" placeholder="Enter CIN No." maxlength="50" value="{{ isset($comData['cin_no']) ? $comData['cin_no'] : old('cin_no')}}">
                 {!! $errors->first('cin_no', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
-                <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
-                <select class="form-control" name="is_active" id="is_active">
-                    <option value="" selected>Select</option>
-                    <option {{$comData['is_active'] == 1 ? 'selected' : ''}} value="1">Active</option>
-                    <option {{$comData['is_active'] == 0 ? 'selected' : ''}} value="0">In-Active</option>
-                </select>
-                {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
-            </div>
-        </div>
-          <div class="row">
-               <div class="form-group col-md-6">
                 <label for="chrg_type">State<span class="mandatory">*</span></label><br />
            <select class="form-control" name="state" id="state">
                     <option value="">Please Select</option>
@@ -64,12 +53,22 @@
                 </select>
                
             </div>
+        </div>
+          <div class="row">
             <div class="form-group col-md-6">
                 <label for="cin_no">City <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="city" name="city" placeholder="Enter City" maxlength="50" value="{{ isset($comData['city']) ? $comData['city'] : ''}}">
+                <input type="text" class="form-control" id="city" name="city" placeholder="Enter City" maxlength="50" value="{{ isset($comData['city']) ? $comData['city'] : old('city') }}">
              
             </div>
-           
+           <div class="form-group col-md-6">
+                <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
+                <select class="form-control" name="is_active" id="is_active">
+                    <option value="" selected>Select</option>
+                    <option {{$comData['is_active'] == 1 ? 'selected' : ''}} value="1">Active</option>
+                    <option {{$comData['is_active'] == 0 ? 'selected' : ''}} value="0">In-Active</option>
+                </select>
+                {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
+            </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
@@ -178,38 +177,38 @@
             },
             messages: {
                 'cmp_name': {
-                    required: "Please Enter Company Name"
+                    required: "Please enter Company Name"
                 },
                 'cmp_add': {
-                    required: "Please Enter Company Address"
+                    required: "Please enter Company Address"
                 },
                 'gst_no': {
-                    required: "Please Enter GST No"
+                    required: "Please enter GST Number"
                 },
                 'pan_no': {
-                    required: "Please Enter Pan No"
+                    required: "Please enter Pan Number"
                 },
                 'cin_no': {
-                    required: "Please Enter CIN No"
+                    required: "Please enter CIN Number"
                 },
                 'bank_acc_no': {
-                    required: "Please Enter Bank A/C No"
+                    required: "Please enter Bank A/C Number"
                 },
                 'conf_bank_acc_no': {
-                    required: "Please Confirm Your Bank A/C No",
+                    required: "Please confirm Your Bank A/C No.",
                     equalTo: 'Confirm Bank A/C No. and Bank A/C No. do not match.'
                 },
                 'ifsc_code': {
-                    required: "Please Enter IFSC Code"
+                    required: "Please enter IFSC Code"
                 },
                 'is_active': {
-                    required: "Please Select Status of Company"
+                    required: "Please select Status of Company"
                 },
                 'state': {
-                    required: "Please Select State"
+                    required: "Please select State"
                 },
                 'city': {
-                    required: "Please Enter City"
+                    required: "Please enter City"
                 }
             }
         });
