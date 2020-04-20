@@ -4,6 +4,16 @@
 @section('content')
 <div class="content-wrapper">
     <div class="col-md-12 ">
+          @if(Session::has('multiVali'))
+          @php $multiVali = Session::get('multiVali');  @endphp
+        <div class=" alert-danger alert" role="alert">
+       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      @foreach ($multiVali as $key=>$val)
+      {{($key!='status') ? $val : ''}}</br>
+      @endforeach
+    </div>
+     @endif
+       <span id="storeSuccessMsg"></span>
         <section class="content-header">
             <div class="header-icon">
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -25,7 +35,8 @@
                     <div class="card-body">
                         <div class="modal-content">
                             <!-- Modal Header -->
-
+                             
+                          @php   if(count($getBulkInvoice)== 0) { @endphp
                             <!-- Modal body -->
                             <div class="modal-body ">
                            <form id="signupImageForm" action="{{Route('upload_bulk_csv_Invoice')}}" method="post" enctype='multipart/form-data'> 
@@ -34,7 +45,7 @@
                                 <div class="col-md-6">
                                         <div class="form-group">
                                 <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
-                                            <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" >
+                                            <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" name="anchor_name">
 
 
                                                 @if(count($anchor_list) > 0)
@@ -64,7 +75,7 @@
                                             <label for="txtCreditPeriod">Product Program Name
                                                 <span class="error_message_label">*</span>  <!-- <span id="pro_limit" class="error"></span> -->
                                             </label>
-                                            <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" >
+                                            <select readonly="readonly" class="form-control changeBulkSupplier" id="program_bulk_id" name="program_name">
                                                 @if($anchor==11)
                                                 <option value="">Please Select</option>
                                                 @if($get_program)
@@ -84,28 +95,28 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                          <label for="txtCreditPeriod">Upload Invoice Copy
-                                             <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(Please upload zip file*)</span></label>
+                                             <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(zip file contains copy of invoice.)</span></label>
                                         <div class="custom-file  ">
 
-                                            <input type="file"   class="custom-file-input fileUpload" id="customImageFile" name="file_image_id">
+                                            <input type="file"   class="custom-file-input fileUpload" id="customImageFile" data-id="1" name="file_image_id">
                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                             <span id="customImageFile_msg" class="error"></span>
                                             <span id="msgImageFile" class="text-success"></span>
                                         </div>
-                                         <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
+                                      
                                         </div>
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*</span></label>
+                                        <label for="txtCreditPeriod">Upload Invoice <span class="error_message_label">*&nbsp;&nbsp;(Only csv file format allowed.)</span></label>
                                         <div class="custom-file  ">
 
-                                            <input type="file"   class="custom-file-input fileUpload" id="customFile" name="file_id">
+                                            <input type="file"   class="custom-file-input fileUpload" data-id="2" id="customFile" name="file_id">
                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                             <span id="customFile_msg" class="error"></span>
                                             <span id="msgFile" class="text-success"></span>
                                         </div>
-
+   <a href="{{url('backend/assets/invoice/invoice-template.csv')}}" class="mt-1 float-left"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download Template</a>
                                     </div>
 
                                     <div class="col-md-2">
@@ -121,29 +132,56 @@
                                 </div>
                              </form>
                                 </div>
-                            <form id="signupForm" action="{{Route('backend_save_bulk_invoice')}}" method="post"> 
-                                @csrf
-                                <div class="row">
-
+                            @php   } @endphp 
+                           
+                            <div class="row" id="setInvoiceCount" data-count="{{count($getBulkInvoice)}}">
                                     <div class="col-sm-12">
                                         <table  class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">
 
                                                     <th>Sr. No.</th>
-                                                    <th>Invoice No</th>
-                                                    <th>Invoice Date</th>
-                                                    <th>Invoice Due Date</th>
+                                                     <th>Customer  Detail</th>
+                                                    <th>Anchor Detail</th>
+                                                    <th>Invoice Detail</th>
                                                     <th>Invoice  Amount</th>
-                                                    <th>Status</th>
+                                                    <th>Remark</th>
+                                                    <th>Action </th>
                                                 </tr>
                                             </thead>
-
-
-
-                                            <tbody  class="invoiceAppendData">
-
-                                            </tbody>
+                                           
+                                            @php if(count($getBulkInvoice) > 0) { @endphp
+                                            @foreach($getBulkInvoice as $key=>$val) 
+                                           <tr id="deleteRow{{$val->invoice_bulk_upload_id}}"  @php if($val->status==2) { @endphp style="background-color: #ff00004d" @php } @endphp  class="getUploadBulkId"  data-id="{{$val->invoice_bulk_upload_id}}" data-status="{{$val->status}}"> 
+                                            <td>{{$key+1}}</td>
+                                            <td>
+                                                    <span><b>Name:&nbsp;</b>{{$val->supplier->f_name}} {{$val->supplier->l_name}}</span><br>
+                                                    <span><b>Customer Id :&nbsp;</b>{{$val->lms_user->customer_id}}</span>
+                                            </td>
+                                            <td>
+                                                    <span><b>Name:&nbsp;</b>{{$val->anchor->comp_name}}</span><br>
+                                                    <span><b>Program:&nbsp;</b>{{$val->program->prgm_name}}</span><br>
+                                                    <span><b>Business Name:&nbsp;</b>{{$val->business->biz_entity_name}}</span>
+                                            </td>
+                                             <td>
+                                                    <span><b>Date:&nbsp;</b>{{$val->invoice_date}}</span><br>
+                                                    <span><b>Due Date:&nbsp;</b>{{$val->invoice_due_date}}</span><br>
+                                                    <span><b>Tenor In Days:&nbsp;</b>{{$val->tenor}}</span>
+                                             </td>
+                                                <td>{{number_format($val->invoice_approve_amount)}}</td>
+                                                 <td>
+                                                     <span class="error">{{($val->limit_exceed==1) ? 'Limit exceeded' : ''}} </span></br>
+                                                     {{$val->comm_txt}}
+                                                     
+                                                 </td>
+                                                <td><button class="btn deleteTempInv" data-id="{{$val->invoice_bulk_upload_id}}"><i class="fa fa-trash"></i></button></td>
+                                            </tr>
+                                          @endforeach     
+                                          @php } else { @endphp      
+                                          <tr>
+                                              <td colspan="6" class="error">No data found...</td>
+                                          </tr>
+                                          @php }@endphp       
                                         </table>
                                     </div>
                                     <div class="col-md-12">
@@ -152,14 +190,13 @@
                                         </div>
                                         <span class="exceptionAppend"></span>
                                         <span id="final_submit_msg" class="error" style="display:none;">Total Amount  should not greater Program Limit</span>
-                                        <input type="hidden" value="" id="tenor" name="tenor">
-                                        <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
-                                        <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
-                                        <input type="submit" id="final_submit" class="btn btn-secondary btn-sm mt-3 float-right finalButton" value="Final Submit"> 	
+                                        @php   if(count($getBulkInvoice) > 0) { @endphp
+                                        <input type="submit" id="final_submit" class="btn btn-secondary btn-sm mt-3 float-right" value="Final Submit"> 	
+                                       @php  } @endphp
                                     </div> 
 
                                 </div>
-                            </form>
+                           
                         </div>
                     </div>
                 </div>

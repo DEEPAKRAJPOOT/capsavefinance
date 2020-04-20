@@ -106,11 +106,38 @@ class Payment extends BaseModel {
     }
 
     public function getBusinessName() {
-       return $this->hasOne(Business::class, 'biz_id');
+       return $this->belongsTo(Business::class, 'biz_id');
     }
 
     public function getUserName() {
-       return $this->hasOne(User::class, 'user_id');
+       return $this->belongsTo(User::class, 'user_id');
+    }
+
+
+    public static function getPaymentModeAttribute() {
+        $payment_type = $this->payment_type;
+        $payModes = config('payment.type') ?? [];
+        $mode_of_pay = $payModes[$payment_type] ?? NULL;
+        return $mode_of_pay;
+    }
+
+    public static function getTransNameAttribute() {
+        $payment_type = $this->payment_type;
+        switch ($payment_type) {
+            case '1':
+                $attr = $this->utr_no;
+                break;
+            case '2':
+                $attr = $this->cheque_no;
+                break;
+            case '3':
+               $attr = $this->unr_no;
+                break;
+            default:
+               $attr = '';
+                break;
+        }
+        return $attr;
     }
      
 }

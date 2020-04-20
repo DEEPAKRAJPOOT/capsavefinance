@@ -12,6 +12,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\User;
 
 class AppProgramLimit extends BaseModel {
@@ -56,6 +57,8 @@ class AppProgramLimit extends BaseModel {
         'prgm_id',
         'product_id',
         'limit_amt',
+        'start_date',
+        'end_date',
         'created_at',
         'created_by',
         'updated_at',        
@@ -72,6 +75,16 @@ class AppProgramLimit extends BaseModel {
             return self::where('app_prgm_limit_id', $prgm_limit_id)->update(['limit_amt'=>$data['limit_amt']]);
         } else {
             return self::create($data);
+        }
+    }
+
+    public static function updatePrgmLimitByLimitId($data, $limit_id){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_null($limit_id)) {
+            return self::where('app_limit_id', $limit_id)->update($data);
         }
     }
 
@@ -147,8 +160,9 @@ class AppProgramLimit extends BaseModel {
       public static function getLimitProgram($aid)
      {     
             $user_id =   User::where(['anchor_id' => $aid])->where('anchor_id','<>', null)->pluck('user_id');  //'is_active' => 1,
-            $app_id =    LmsUser::whereIn('user_id',$user_id)->pluck('app_id');
-          return AppProgramOffer::whereHas('productHas')->whereIn('app_id',$app_id)->where(['anchor_id' => $aid,'is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
+            $lms_user_id =    LmsUser::whereIn('user_id',$user_id)->pluck('user_id');
+            $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->pluck('app_id');
+            return AppProgramOffer::whereHas('productHas')->whereIn('app_id',$app_id)->where(['anchor_id' => $aid,'is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
      }
      public static function getProgramLmsSingleList($aid)
      {      $id = Auth::user()->user_id;
@@ -184,7 +198,8 @@ class AppProgramLimit extends BaseModel {
     }
       public static function getLmsLimitAllAnchor(){
           
-            $user_id =    LmsUser::pluck('user_id');
+            $lms_user_id =    LmsUser::pluck('user_id');
+            $user_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->pluck('user_id');
             $achor_id =   User::whereIn('user_id',$user_id)->where('anchor_id','<>', null)->pluck('anchor_id');  
             return AppProgramOffer::whereHas('productHas')->whereIn('anchor_id',$achor_id)->where(['is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('anchorList')->groupBy('anchor_id')->get();
     }

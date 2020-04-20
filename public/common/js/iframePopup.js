@@ -108,7 +108,7 @@ var iframe_ids = [
         'invoiceDisbursalTxnUpdate',
         'disburseInvoicePopUp',
         'EdituploadDocument',
-        'addVoucherFrame'
+        'addVoucherFrame',
     ];
 
 iframe_ids.forEach(function(id) {
