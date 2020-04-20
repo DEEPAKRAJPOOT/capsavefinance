@@ -6,6 +6,7 @@ use App\Http\Requests\Request;
 use Carbon\Carbon;
 use DB;
 use Session;
+use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
@@ -16,15 +17,13 @@ use App\Inv\Repositories\Models\Application;
  * User Invoice Repository class
  */
 class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInterface{
+	use CommonRepositoryTraits;
 
-	/**
-	 * Class constructor
-	 *
-	 * @return void
-	 */    
 	public function __construct() {
+	   parent::__construct();
 	}
 
+	
 	/**
 	 * Create method
 	 *
@@ -41,22 +40,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	protected function update(array $attributes, $id) {        
 	}
 
-	/**
-	 * Get all records method
-	 *
-	 * @param array $columns
-	 */
-	public function all($columns = array('*')) {        
-	}
-
-	/**
-	 * Find method
-	 *
-	 * @param mixed $id
-	 * @param array $columns     
-	 */
-	public function find($id, $columns = array('*')) {        
-	}
+	
 
 	public function getBizId($appId = null) {
 		$records =  Application::where('app_id', $appId)->first();
