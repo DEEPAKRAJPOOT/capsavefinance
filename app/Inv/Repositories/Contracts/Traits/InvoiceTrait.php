@@ -148,6 +148,7 @@ trait InvoiceTrait
          $mytime = Carbon::now();
          $cDate   =  $mytime->toDateTimeString();
          $CFrom =  Carbon::createFromFormat('Y-m-d H:i:s', $cDate)->format('Y-m-d');
+        
          /* Current date and Invoice Date diff */
         while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
         {   
@@ -160,12 +161,13 @@ trait InvoiceTrait
             $file_name  =   $data[4];
             $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
             $chlLmsCusto =  self::getLimitProgram($dataAttr);
-            $to =    Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
-            $dueDateGreaterCurrentdate =  self::twoDateDiff($to,$CFrom); 
+           
             if( $invoice_date_validate==false)
             {
                $multichk['status'] =0; 
                $inv_no_var.=$inv_no.',';
+               $multichk['multiVali1'] = '* Invoice date is not correct for following invoice Number ('.substr($inv_no_var,0,-1).'), Date format should be "dd-mm-yy"';
+         
             }
             if(!is_numeric($amount) || $amount==0)
            {
@@ -174,12 +176,17 @@ trait InvoiceTrait
                $multichk['multiVali2'] = '* Invoice amount should be numaric or not equal to 0 for following invoice Number ('.substr($inv_no_var1,0,-1).')';
            
             }
-            if($dueDateGreaterCurrentdate)
+           if($invoice_date_validate==true)
             {
+               $to =    Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
+               $dueDateGreaterCurrentdate =  self::twoDateDiff($to,$CFrom);  /* Current date and Invoice Date diff */
+               if($dueDateGreaterCurrentdate)
+               {
                  $multichk['status'] =0;
                  $inv_no_var2.=$inv_no.',';
                  $multichk['multiVali3'] = '* Invoice date should not be greater than current date for following invoice Number  ('.substr($inv_no_var2,0,-1).')';
-            } 
+              }
+            }
              if($chlLmsCusto['status']==0)
             {
                    $multichk['status'] =0;
