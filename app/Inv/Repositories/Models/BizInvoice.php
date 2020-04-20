@@ -8,6 +8,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Business;
@@ -152,7 +153,7 @@ public static function saveBulkInvoice($arrInvoice)
         if( $chkUser->id==11)
         {
             $res  = User::where('user_id',$id)->first();
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload','business','anchor','supplier','userFile','program','program_offer','Invoiceuser','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
         else
         {
@@ -274,7 +275,11 @@ public static function saveBulkInvoice($arrInvoice)
      {
             return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
     }
-    
+      function bulkUpload()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\InvoiceBulkUpload', 'invoice_id', 'invoice_id');
+     
+     }
     public static function getUser($uid)
     {
        return User::whereIn('is_buyer',[1,2])->where('user_id',$uid)->first();

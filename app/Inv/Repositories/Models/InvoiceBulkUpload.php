@@ -247,7 +247,7 @@ class InvoiceBulkUpload extends BaseModel
     public static function updateLimit($limit,$inv_amout,$cid,$invoice_bulk_upload_id)
     {
         $uid = Auth::user()->user_id;
-        $sum = self::whereIn('status',[0,1])->where('status_id', '!=' , 28)->where(['supplier_id' =>$cid])->sum('invoice_approve_amount');
+        $sum = self::whereIn('status',[0,1])->where('status_id',8)->where(['supplier_id' =>$cid])->sum('invoice_approve_amount');
         if($sum  > $limit)
         {
            return  self::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>1]);

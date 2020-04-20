@@ -772,6 +772,9 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        if($invoice->bulkUpload['limit_exceed']==1) {
+                          $inv_amount .= '<br><span class="error">Limit Exceed</span>';   
+                        }
                         return $inv_amount;
                 })
                 ->addColumn(            
@@ -977,6 +980,9 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        if($invoice->bulkUpload['limit_exceed']==1) {
+                         $inv_amount .= '<br><span class="error">Limit Exceed</span>';  
+                        }
                         return $inv_amount;
                 })
                  ->addColumn(            

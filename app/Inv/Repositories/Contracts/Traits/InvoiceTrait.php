@@ -56,7 +56,9 @@ trait InvoiceTrait
         $invoice_date_validate  = self::validateDate($data['inv_date'], $format = 'd-m-Y'); /* chk date format */
        if($res)
         {
-           $attr['status'] = 0;
+           $attr['status_id'] = 7;
+           $attr['error'] = 2;
+           $attr['status'] = 1;
            $attr['message']=  'Invoice No "'.$inv_no.'" already exists with '.$cusomer_id;
            return  $attr;  
            
@@ -162,7 +164,7 @@ trait InvoiceTrait
             $file_name  =   $data[4];
             $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
             $chlLmsCusto =  self::getLimitProgram($dataAttr);
-           
+          
             if( $invoice_date_validate==false)
             {
                $multichk['status'] =0; 
@@ -174,7 +176,7 @@ trait InvoiceTrait
            {
                $multichk['status'] =0; 
                $inv_no_var1.=$inv_no.',';
-               $multichk['multiVali2'] = '* Invoice amount should be numaric or not equal to 0 for following invoice Number ('.substr($inv_no_var1,0,-1).')';
+               $multichk['multiVali2'] = '* Invalid numeric value in amount field for following invoice ('.substr($inv_no_var1,0,-1).') amount value should not be null, zero or less than zero.';
            
             }
            if($invoice_date_validate==true)
@@ -198,8 +200,10 @@ trait InvoiceTrait
             if($chlLmsCusto['status']==1)
            {
                  $getDupli  = self::checkDuplicateInvoice($inv_no,$chlLmsCusto['user_id']);
+               
                  if($getDupli)
                  {
+                     
                       $multichk['status'] =0;
                       $inv_no_var4.=$inv_no.',';
                       $multichk['multiVali5'] = '* following invoice Number ('.substr($inv_no_var4,0,-1).') already exists in our system.';
