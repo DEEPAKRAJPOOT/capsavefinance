@@ -1252,12 +1252,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             Route::get('/edit-upload-document', [
                 'as' => 'pp_edit_upload_document',
-                'uses' => 'Backend\ApplicationController@editUploadDocument'
+                'uses' => 'Backend\ApplicationController@ppEditUploadDocument'
             ]);
 
             Route::post('/update-edit-upload-document', [
                 'as' => 'pp_update_edit_upload_document',
-                'uses' => 'Backend\ApplicationController@updateEditUploadDocument'
+                'uses' => 'Backend\ApplicationController@ppUpdateEditUploadDocument'
             ]);
             
         });   
