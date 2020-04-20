@@ -74,7 +74,7 @@ class UserInvoiceRepository extends BaseRepositories{
 	}
 
 	public function getAppsByUserId($userId = null) {
-		$apps = Application::getAllAppsByUserId($$userId);
+		$apps = Application::getAllAppsByUserId($userId);
 		return $apps->isEmpty() ? [] : $apps;
 	}
 
