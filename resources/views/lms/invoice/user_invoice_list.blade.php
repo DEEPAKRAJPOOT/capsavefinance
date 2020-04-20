@@ -1,6 +1,4 @@
 @extends('layouts.backend.admin-layout')
-@section('additional_css')
-@endsection
 @section('content')
 @include('layouts.backend.partials.admin_customer_links',['active'=>'userInvoice'])
 <div class="content-wrapper">
@@ -90,7 +88,7 @@
   </div>
 
 </div>
-@endsectionInvoice
+@endsection
 @section('jscript')
 <script>
     var messages = {
