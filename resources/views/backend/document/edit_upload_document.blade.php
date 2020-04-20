@@ -1,6 +1,6 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-<form id="documentForm" style="width: 100%" method="POST" action="{{ Route('update_edit_upload_document') }}" enctype="multipart/form-data" target="_top">
+<form id="documentForm" style="width: 100%" method="POST" action="{{ Route('pp_update_edit_upload_document') }}" enctype="multipart/form-data" target="_top">
         @csrf
         <input type="hidden" name="app_doc_file_id" value="{{ $data->app_doc_file_id }}">
         <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">

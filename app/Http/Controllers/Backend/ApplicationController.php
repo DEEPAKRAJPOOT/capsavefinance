@@ -398,7 +398,31 @@ class ApplicationController extends Controller
 				]);   
 	}
 
+	public function ppEditUploadDocument(Request $request)
+	{
+		$fileId = $request->get('app_doc_file_id');
+		$data = $this->docRepo->getAppDocFileById($fileId);
+
+		return view('backend.document.edit_upload_document', [
+					'data' => $data
+				]);   
+	}
+
 	public function updateEditUploadDocument(Request $request)
+	{
+		$fileId = $request->get('app_doc_file_id');
+		$comment = $request->get('comment');
+		$appId = (int)$request->app_id; //  fetch app id
+		$bizId = (int)$request->biz_id; //  fetch biz id
+		$data = ['comment' => $comment ];
+		$document_info = $this->docRepo->updateDocument($data, $fileId);
+
+		Session::flash('message',trans('success_messages.documentUpdated'));
+		return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
+
+	}
+
+	public function ppUpdateEditUploadDocument(Request $request)
 	{
 		$fileId = $request->get('app_doc_file_id');
 		$comment = $request->get('comment');
