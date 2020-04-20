@@ -12,6 +12,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Helpers\ApportionmentHelper;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
@@ -191,7 +192,7 @@ trait InvoiceTrait
             {
                    $multichk['status'] =0;
                    $inv_no_var3.=$inv_no.',';
-                   $multichk['multiVali4'] = '* You cannot upload  customer id for following invoice Number ('.substr($inv_no_var3,0,-1).') as limit is not sanctioned or offer is not approved.';
+                   $multichk['multiVali4'] = '* You cannot upload invoice for following invoice Number ('.substr($inv_no_var3,0,-1).') as limit is not sanctioned or offer is not approved.';
           
             }
             if($chlLmsCusto['status']==1)
@@ -290,7 +291,7 @@ trait InvoiceTrait
     public static function checkDuplicateInvoice($invNo,$user_id)
     {
         
-        return BizInvoice::where(['invoice_no' => $invNo,'supplier_id' => $user_id])->first();
+        return InvoiceBulkUpload::where(['invoice_no' => $invNo,'supplier_id' => $user_id])->first();
     }  
         
        public static  function validateDate($date, $format = 'd-m-Y')
