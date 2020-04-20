@@ -19,7 +19,7 @@ class CheckEodProcess extends BaseAuthorization
         $eodStatus = \Helpers::checkEodProcess();
         $data = ['eod_process' => $eodStatus];
         if ($request->ajax()) {
-            if (in_array($request->route()->getName(), config('lms.EOD_PROCESS_ROUTES'))) {
+            if (in_array($request->route()->getName(), config('lms.EOD_PROCESS_ROUTES')) && $eodStatus) {
                 $response = $data + ['message' => trans('backend_messages.lms_eod_process_msg')];
                 return response()->json($response);
             }
