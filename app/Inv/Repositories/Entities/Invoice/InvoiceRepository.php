@@ -1063,7 +1063,30 @@ use CommonRepositoryTraits;
         
     }  
     
-   
+    public function getUserAllBulkInvoice()
+    {
+      
+        try
+        {
+            return InvoiceBulkUpload::getUserAllBulkInvoice();
+           
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    } 
+   public function checkLmsUser()
+    {
+      
+        try
+        {
+            return LmsUser::checkLmsUser();
+           
+        } catch (Exception $ex) {
+            return $ex;
+        }
+        
+    }  
      public function getSingleBulkInvoice($id)
     {
        try
