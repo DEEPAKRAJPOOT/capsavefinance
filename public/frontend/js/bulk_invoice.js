@@ -1,16 +1,43 @@
-///* upload image and get ,name  */
-   $('input[type="file"]'). change(function(e){
+ ///* upload image and get ,name  */
+    $('input[name="file_id"]').change(function (e) {
         $("#customFile_msg").html('');
-        var fileName = e. target. files[0]. name;
-        $("#msgFile").html('The file "' + fileName + '" has been selected.' );
+       var get_sfm =  $("#customImageFile_msg").html();
+        var fileName = e.target.files[0].name;
+        var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+          if(fileNameExt!='csv')
+       {
+            $("#submit").css("pointer-events","none");
+            $("#customFile_msg").show();
+            $("#customFile_msg").text("File format is not correct, only csv file is allowed."); 
+            return false;
+       }
+       else if(get_sfm=='')
+       {
+            $("#submit").css("pointer-events","auto");
+       }
+        $("#msgFile").html('The file "' + fileName + '" has been selected.');
     });
-  $(document).ready(function () {
-        $(".finalButton").hide();
-        $(".invoiceAppendData").append('<tr><td colspan="5">No data found...</td></tr>');
-        $("#program_bulk_id").append("<option value=''>No data found</option>");  
-                               
-   
-  }); 
+    
+    ///* upload image and get ,name  */
+    $('input[name="file_image_id"]').change(function (e) {
+        $("#customImageFile_msg").html('');
+        var get_sfm =  $("#customFile_msg").html();
+        var fileName = e.target.files[0].name;
+         var fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+          if(fileNameExt!='zip')
+       {
+            $("#submit").css("pointer-events","none");
+            $("#customImageFile_msg").show();
+            $("#customImageFile_msg").text("File format is not correct, only zip file is allowed.");
+            return false;
+       }
+       else if(get_sfm=='')
+       {
+            $("#submit").css("pointer-events","auto");
+       }
+        $("#msgImageFile").html('The file "' + fileName + '" has been selected.');
+    });
+    
   
   
    //////////////// for checked & unchecked////////////////
@@ -347,135 +374,129 @@
   
 });
 
-    $(document).on('click','#submit',function(e){  
-    
-        if($("#anchor_bulk_id").val()=='')
+     $(document).on('click', '#submit', function (e) {
+        $("#storeSuccessMsg").hide();
+        
+        if ($("#anchor_bulk_id").val() == '')
         {
-             $("#anchor_bulk_id_msg" ).show();
-            $("#anchor_bulk_id_msg" ).text('Please Select Anchor Name');
+            $("#anchor_bulk_id_msg").show();
+            $("#anchor_bulk_id_msg").text('Please Select Anchor Name');
             return false;
         }
-          if($("#program_bulk_id").val()=='')
+       else if ($("#program_bulk_id").val() == '')
         {
-              $("#program_bulk_id_msg" ).show();
-              $("#program_bulk_id_msg" ).text("Please Select Product Program Name");
-              return false;
+            $("#program_bulk_id_msg").show();
+            $("#program_bulk_id_msg").text("Please Select Product Program Name");
+            return false;
         }
-        if($("#supplier_bulk_id").val()=='')
+       else if ($("#customImageFile").val() == '')
         {
-             $("#supplier_bulk_id_msg" ).show();
-             $("#supplier_bulk_id_msg" ).text("Please Select Supplier Name");
-             return false;
+            $("#customImageFile_msg").show();
+            $("#customImageFile_msg").text("Please Select Invoice Copy Zip File");
+            return false;
         }
-         if($("#pay_calculation_on").val()=='')
+      else   if ($("#customFile").val() == '')
         {
-             $("#pay_calculation_on_msg" ).show();
-             $("#pay_calculation_on_msg" ).text("Please Select Payment Calculation");
-             return false;
-        } 
-        if($("#customFile").val()=='')
+            $("#customFile_msg").show();
+            $("#customFile_msg").text("Please Select Csv file");
+            return false;
+        } else
         {
-             $("#customFile_msg" ).show();
-             $("#customFile_msg" ).text("Please Select Csv file");
-             return false;
+             $(".isloader").show();
+            return true;
+           /* if (confirm("Are you sure? You want to upload CSV")) {
+                $(".invoiceAppendData").empty();
+                var file = $("#customFile")[0].files[0];
+                var datafile = new FormData();
+                var anchor_bulk_id = $("#anchor_bulk_id").val();
+                var program_bulk_id = $("#program_bulk_id").val();
+                var supplier_bulk_id = $("#supplier_bulk_id").val();
+                var pro_limit_hide = $("#pro_limit_hide").val();
+                var pay_calculation_on = $("#pay_calculation_on").val();
+                datafile.append('_token', messages.token);
+                datafile.append('doc_file', file);
+                datafile.append('anchor_bulk_id', anchor_bulk_id);
+                datafile.append('program_bulk_id', program_bulk_id);
+                datafile.append('supplier_bulk_id', supplier_bulk_id);
+                datafile.append('pro_limit_hide', pro_limit_hide);
+                datafile.append('pay_calculation_on', pay_calculation_on);
+                $('.isloader').show();
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': messages.token},
+                    url: messages.upload_invoice_csv,
+                    type: "POST",
+                    data: datafile,
+                    processData: false,
+                    contentType: false,
+                    cache: false, // To unable request pages to be cached
+                    enctype: 'multipart/form-data',
+
+                    success: function (r) {
+
+                        $(".isloader").hide();
+
+                        if (r.status == 1)
+                        {
+                            $('.isloader').hide();
+                            $(".finalButton").show();
+
+                            j = 0;
+                            $(r.data).each(function (i, v) {
+                                j++;
+                                var invoice_approve_amount = v.invoice_approve_amount;
+                                var date1 = v.invoice_due_date;
+                                var dateAr = date1.split('-');
+                                var invoice_due_date = '';
+                                var invoice = '';
+                                if (dateAr != '')
+                                {
+
+                                    var invoice_due_date = dateAr[2] + '/' + dateAr[1] + '/' + dateAr[0];
+                                }
+                                var date2 = v.invoice_date;
+                                var dateAr1 = date2.split('-');
+                                if (dateAr1 != '')
+                                {
+
+                                    var invoice_date = dateAr1[2] + '/' + dateAr1[1] + '/' + dateAr1[0];
+                                }
+                                if (parseInt(v.invoice_approve_amount) == '0.00')
+                                {
+                                    var invoice_approve_amount = "";
+                                }
+
+                                var getDays = parseInt(findDaysWithDate(invoice_due_date, invoice_date));
+                                var tenor = parseInt($('#tenor').val());
+                                var getClass = "";
+                                if (getDays > tenor)
+                                {
+                                    var getClass = "background-color: #ea9292;";
+                                }
+                                var invoice_approve_amount = invoice_approve_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+                                $(".invoiceAppendData").append('<tr id="deleteRow' + v.invoice_id + '" class="appendExcel' + j + '" style="' + getClass + '"><td>' + j + '</td><td><input type="hidden"  value="' + v.invoice_id + '" name="id[]"> <input type="text" maxlength="20" minlength="2" id="invoice_no' + v.invoice_id + '" name="invoice_no[]" class="form-control batchInvoice" value="' + v.invoice_no + '" placeholder="Invoice No"></td><td><input type="text" id="invoice_date' + v.invoice_id + '" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="' + invoice_date + '"></td><td><input type="text" id="invoice_due_date' + v.invoice_id + '" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor' + j + '" placeholder="Invoice Due Date" value="' + invoice_due_date + '"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount' + j + '" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="' + invoice_approve_amount + '"></td><td><i class="fa fa-trash deleteTempInv" data-id="' + v.invoice_id + '" aria-hidden="true"></i></td></tr>');
+
+                            });
+                            datepickerDisFdate();
+                            datepickerDisPdate();
+                            return false;
+                        } else if (r.status == 2)
+                        {
+                            $("#customFile_msg").show();
+                        } else
+                        {
+                            ///$("#submitInvoiceMsg").show();
+                            $(".invoiceAppendData").append('<tr><td colspan="5" class="error">' + r.message + '</td></tr>');
+
+                            return false;
+                        }
+                    }
+                });
+            } else
+            {
+                return false;
+            }  */
         }
-        else
-        {
-      if (confirm("Are you sure? You want to upload CSV")) {     
-        $(".invoiceAppendData").empty();
-        var file  = $("#customFile")[0].files[0];
-        var datafile = new FormData();
-        var anchor_bulk_id  = $("#anchor_bulk_id").val();
-        var program_bulk_id  = $("#program_bulk_id").val();
-        var supplier_bulk_id  = $("#supplier_bulk_id").val();
-        var pro_limit_hide  =  $("#pro_limit_hide").val();
-        var pay_calculation_on  =  $("#pay_calculation_on").val();
-        datafile.append('_token', messages.token );
-        datafile.append('doc_file', file);
-        datafile.append('anchor_bulk_id', anchor_bulk_id);
-        datafile.append('program_bulk_id', program_bulk_id);
-        datafile.append('supplier_bulk_id', supplier_bulk_id);
-        datafile.append('pro_limit_hide', pro_limit_hide);
-        datafile.append('pay_calculation_on', pay_calculation_on);
-        $('.isloader').show();
-        $.ajax({
-            headers: {'X-CSRF-TOKEN':  messages.token  },
-            url : messages.upload_invoice_csv,
-            type: "POST",
-            data: datafile,
-            processData: false,
-            contentType: false,
-            cache: false, // To unable request pages to be cached
-            enctype: 'multipart/form-data',
-
-            success: function(r){
-               
-                $(".isloader").hide();
-
-                if(r.status==1)
-                {
-                    $('.isloader').hide(); 
-                    $(".finalButton").show();
-                   
-                     j =0;
-                     $(r.data).each(function(i,v){ j++;
-                    var invoice_approve_amount =  v.invoice_approve_amount;  
-                    var  date1 = v.invoice_due_date;
-                    var dateAr = date1.split('-');
-                    var invoice_due_date = '';
-                    var invoice = '';
-                    if (dateAr != '')
-                    {
-
-                    var invoice_due_date = dateAr[2] + '/' + dateAr[1] + '/' + dateAr[0];
-                    }
-                    var  date2 = v.invoice_date;
-                    var dateAr1 = date2.split('-');
-                    if (dateAr1 != '')
-                    {
-
-                      var invoice_date = dateAr1[2] + '/' + dateAr1[1] + '/' + dateAr1[0];
-                    }
-                    if(parseInt(v.invoice_approve_amount)=='0.00')
-                    {
-                       var invoice_approve_amount = "";
-                    }
-                   
-                    var getDays  = parseInt(findDaysWithDate(invoice_due_date,invoice_date));
-                    var tenor  = parseInt($('#tenor').val());
-                    var getClass ="";
-                    if(getDays > tenor)
-                    {
-                      var getClass = "background-color: #ea9292;";  
-                    }
-                     var invoice_approve_amount =  invoice_approve_amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    
-                     $(".invoiceAppendData").append('<tr id="deleteRow'+v.invoice_id+'" class="appendExcel'+j+'" style="'+getClass+'"><td>'+j+'</td><td><input type="hidden"  value="'+v.invoice_id+'" name="id[]"> <input type="text" maxlength="20" minlength="2" id="invoice_no'+v.invoice_id+'" name="invoice_no[]" class="form-control batchInvoice" value="'+v.invoice_no+'" placeholder="Invoice No"></td><td><input type="text" id="invoice_date'+v.invoice_id+'" name="invoice_date[]" readonly="readonly" placeholder="Invoice Date" class="form-control date_of_birth datepicker-dis-fdate batchInvoiceDate" value="'+invoice_date+'"></td><td><input type="text" id="invoice_due_date'+v.invoice_id+'" readonly="readonly" name="invoice_due_date[]" class="form-control date_of_birth datepicker-dis-pdate batchInvoiceDueDate invoiceTanor'+j+'" placeholder="Invoice Due Date" value="'+invoice_due_date+'"></td><td><input type="text" class="form-control subOfAmount" id="invoice_approve_amount'+j+'" name="invoice_approve_amount[]" placeholder="Invoice Approve Amount" value="'+invoice_approve_amount+'"></td><td><i class="fa fa-trash deleteTempInv" data-id="'+v.invoice_id+'" aria-hidden="true"></i></td></tr>');
-                      
-                    });
-                      datepickerDisFdate();
-                      datepickerDisPdate();
-                      return false; 
-                }
-                 else if(r.status==2)
-                {
-                           $("#customFile_msg").show();  
-                }
-                else
-                {
-                     ///$("#submitInvoiceMsg").show();
-                     $(".invoiceAppendData").append('<tr><td colspan="5" class="error">'+r.message+'</td></tr>'); 
-                   
-                      return false;
-                 } 
-              }
-          });
-          }
-           else
-           {
-             return false;
-           }
-          }
     });
     
      $(document).on('click','.deleteTempInv',function(){

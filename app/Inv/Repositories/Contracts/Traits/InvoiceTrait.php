@@ -139,7 +139,7 @@ trait InvoiceTrait
        
    }
   
-  public static function multiValiChk($handle,$prgm_id,$anchor_id)
+  public static function multiValiChk($handle,$prgm_id,$anchor_id,$customerId)
   {
        
          $inv_no_var   = ""; 
@@ -155,7 +155,15 @@ trait InvoiceTrait
          /* Current date and Invoice Date diff */
         while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
         {   
-            $dataAttr['cusomer_id']  =   $data[0]; 
+            if($customerId==null)
+            {
+                $dataAttr['cusomer_id']  =   $data[0];  
+            }
+            else
+            {
+                 $dataAttr['cusomer_id']  =   $customerId;  
+            }
+            
             $dataAttr['anchor_id'] = $anchor_id;
             $dataAttr['prgm_id'] = $prgm_id;
             $inv_no  =   $data[1]; 
