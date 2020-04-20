@@ -157,19 +157,24 @@ trait InvoiceTrait
         {   
             if($customerId==null)
             {
-                $dataAttr['cusomer_id']  =   $data[0];  
+                 $dataAttr['cusomer_id']  =   $data[0]; 
+                 $inv_no  =   $data[1]; 
+                 $inv_date  =   $data[2]; 
+                 $amount  =   $data[3]; 
+                 $file_name  =   $data[4];
             }
             else
             {
-                 $dataAttr['cusomer_id']  =   $customerId;  
+                 $dataAttr['cusomer_id']  =   $customerId; 
+                 $inv_no  =   $data[0]; 
+                 $inv_date  =   $data[1]; 
+                 $amount  =   $data[2]; 
+                 $file_name  =   $data[3];
             }
             
             $dataAttr['anchor_id'] = $anchor_id;
             $dataAttr['prgm_id'] = $prgm_id;
-            $inv_no  =   $data[1]; 
-            $inv_date  =   $data[2]; 
-            $amount  =   $data[3]; 
-            $file_name  =   $data[4];
+           
             $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
             $chlLmsCusto =  self::getLimitProgram($dataAttr);
           

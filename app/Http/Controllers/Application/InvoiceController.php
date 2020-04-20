@@ -9,6 +9,7 @@ use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
@@ -22,9 +23,11 @@ class InvoiceController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo) {
+    protected $application;
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvAppRepoInterface $application) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
+        $this->application  =  $application;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
     }
@@ -198,7 +201,7 @@ class InvoiceController extends Controller {
         $prgm_limit_id   =   $program_name[1];
         $batch_id =  self::createBatchNumber(6);
         $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
-        if($uploadData['status']==0)
+      if($uploadData['status']==0)
         {
              Session::flash('error', $uploadData['message']);
              return back(); 
