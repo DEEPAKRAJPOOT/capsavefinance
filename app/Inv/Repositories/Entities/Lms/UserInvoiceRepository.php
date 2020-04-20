@@ -15,7 +15,7 @@ use App\Inv\Repositories\Models\Application;
 /**
  * User Invoice Repository class
  */
-class UserInvoiceRepository extends BaseRepositories{
+class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInterface{
 
 	/**
 	 * Class constructor
