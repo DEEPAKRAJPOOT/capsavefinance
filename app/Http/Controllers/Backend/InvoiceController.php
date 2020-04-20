@@ -926,7 +926,7 @@ class InvoiceController extends Controller {
                     $ins = [];
                     $dataAttr[] ="";
                    $multiValiChk =  InvoiceTrait::multiValiChk($handle1,$prgm_id,$attributes['anchor_name']);
-                
+               
                 if($multiValiChk['status']==0)
                 {
 

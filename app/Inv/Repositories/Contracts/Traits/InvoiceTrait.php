@@ -144,7 +144,11 @@ trait InvoiceTrait
          $inv_no_var2   = ""; 
          $inv_no_var3   = ""; 
          $inv_no_var4   = ""; 
-      
+         $multichk['status']   = 1;
+         $mytime = Carbon::now();
+         $cDate   =  $mytime->toDateTimeString();
+         $CFrom =  Carbon::createFromFormat('Y-m-d H:i:s', $cDate)->format('Y-m-d');
+         /* Current date and Invoice Date diff */
         while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
         {   
             $dataAttr['cusomer_id']  =   $data[0]; 
@@ -156,51 +160,46 @@ trait InvoiceTrait
             $file_name  =   $data[4];
             $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
             $chlLmsCusto =  self::getLimitProgram($dataAttr);
-            
+            $to =    Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
+            $dueDateGreaterCurrentdate =  self::twoDateDiff($to,$CFrom); 
             if( $invoice_date_validate==false)
             {
                $multichk['status'] =0; 
                $inv_no_var.=$inv_no.',';
-               $multichk['multiVali1'] = '* Invoice date is not correct for following invoice Number ('.$inv_no_var.')  date format should be "dd-mm-yy"';
             }
-            else if(!is_numeric($amount))
+            if(!is_numeric($amount) || $amount==0)
            {
                $multichk['status'] =0; 
                $inv_no_var1.=$inv_no.',';
-               $multichk['multiVali2'] = '* Invoice amount should be numaric for following invoice Number ('.$inv_no_var1.')';
+               $multichk['multiVali2'] = '* Invoice amount should be numaric or not equal to 0 for following invoice Number ('.substr($inv_no_var1,0,-1).')';
            
             }
-            else if($amount==0)
+            if($dueDateGreaterCurrentdate)
             {
                  $multichk['status'] =0;
                  $inv_no_var2.=$inv_no.',';
-                 $multichk['multiVali3'] = '* Invoice amount should not be 0 for following invoice Number ('.$inv_no_var2.')';
-            }
-            else if($chlLmsCusto['status']==0)
+                 $multichk['multiVali3'] = '* Invoice date should not be greater than current date for following invoice Number  ('.substr($inv_no_var2,0,-1).')';
+            } 
+             if($chlLmsCusto['status']==0)
             {
                    $multichk['status'] =0;
                    $inv_no_var3.=$inv_no.',';
-                   $multichk['multiVali4'] = '* You cannot upload  customer id for following invoice Number ('.$inv_no_var3.') as limit is not sanctioned or offer is not approved.';
+                   $multichk['multiVali4'] = '* You cannot upload  customer id for following invoice Number ('.substr($inv_no_var3,0,-1).') as limit is not sanctioned or offer is not approved.';
           
             }
-           else if($chlLmsCusto['status']==1)
+            if($chlLmsCusto['status']==1)
            {
                  $getDupli  = self::checkDuplicateInvoice($inv_no,$chlLmsCusto['user_id']);
                  if($getDupli)
                  {
                       $multichk['status'] =0;
                       $inv_no_var4.=$inv_no.',';
-                      $multichk['multiVali5'] = '* following invoice Number ('.$inv_no_var4.') already exists in our system.';
+                      $multichk['multiVali5'] = '* following invoice Number ('.substr($inv_no_var4,0,-1).') already exists in our system.';
           
                  }
-                  else {
-                   $multichk['status'] =1;
-                }
+                 
            }
-            else {
-                   $multichk['status'] =1;
-            }
-
+         
             
         }
         return $multichk;
