@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use DB;
 use Session;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
+use App\Inv\Repositories\Contracts\UserInvoiceInterface;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
