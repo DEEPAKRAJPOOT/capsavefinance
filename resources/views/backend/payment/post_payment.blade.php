@@ -53,7 +53,6 @@
                                   <th>Customer Id</th>
                                   <th>Customer Name</th>
                                   <th>Business Name</th>
-                                  <th>Virtual Account</th>
                                   <th>Amount</th>
                                   <th>Txn Type</th>
                                   <th>Updated By</th>

@@ -83,7 +83,6 @@ try {
                     {data: 'customer_id'},
                     {data: 'user_name'},
                     {data: 'business_name'},
-                    {data: 'virtual_account'},
                     {data: 'amount'},
                     {data: 'trans_type'},
                     {data: 'updated_by'},
