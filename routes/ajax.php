@@ -1016,5 +1016,5 @@ Route::group(
     Route::post('check-applied-charge', [
         'as' => 'check_applied_charge',
         'uses' => 'AjaxController@checkAppliedCharge'
-    ]);       
+    ]);     
 });
