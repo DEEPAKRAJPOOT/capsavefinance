@@ -980,7 +980,7 @@ trait LmsTrait
             }
 
             if(!empty($transactionData['marginReleased']))
-            foreach($transactionData['marginRefund'] as $marginReleasedValue){
+            foreach($transactionData['marginReleased'] as $marginReleasedValue){
                 $this->lmsRepo->saveTransaction($marginReleasedValue);
             }
 
