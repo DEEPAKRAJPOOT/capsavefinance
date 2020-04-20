@@ -1706,6 +1706,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
 
     }
+    
+    /**
+     * check the company bank account is by default set
+     * 
+     * @param type $attributes array
+     * @param type $id int
+     * @return type mixed
+     */
+    public function isDefalutCmpBankAcc($attributes)
+    {
+        return UserBankAccount::isDefalutCmpBankAcc($attributes);
+    }
 }
 
 
