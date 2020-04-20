@@ -179,7 +179,7 @@ class InvoiceController extends Controller {
             'file_id' => $userFile->file_id,
             'created_by' => $id,
             'created_at' => $date);
-        $result = $this->invRepo->save($arr);
+            $result = $this->invRepo->save($arr);
 
         if ($result) {
 
