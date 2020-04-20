@@ -28,7 +28,7 @@
                             <!-- Modal body -->
                             <div class="modal-body ">
 
-                                 <form id="signupForm" action="{{Route('frontend_save_bulk_invoice')}}" method="post"> 
+                                 <form id="signupForm" action="{{Route('frontend_save_bulk_invoice')}}" method="post" enctype='multipart/form-data'> 
                                 @csrf
                                 <div class="row">
                                           <div class="col-md-6">
