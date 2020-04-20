@@ -12,9 +12,9 @@ use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 
 /**
- * Invoice Repository class
+ * User Invoice Repository class
  */
-class InvoiceRepository extends BaseRepositories{
+class UserInvoiceRepository extends BaseRepositories{
 
 	/**
 	 * Class constructor
