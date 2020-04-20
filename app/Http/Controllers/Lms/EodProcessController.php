@@ -66,7 +66,8 @@ class EodProcessController extends Controller {
         $whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq;        
         $eodProcess = $this->lmsRepo->getEodProcess($whereCond);        
         $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';
-        $status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
+        $status = $eodProcess ? $eodProcess->status : '';
+        $disp_status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
         $sys_start_date = $eodProcess ? $eodProcess->sys_start_date : '';
         $total_hours = $eodProcess ? $eodProcess->total_hours : '';
         $sys_end_date = $eodProcess ? $eodProcess->sys_end_date : '';
@@ -84,7 +85,7 @@ class EodProcessController extends Controller {
         
         $statusArr = config('lms.EOD_PASS_FAIL_STATUS');
         
-        $enable_sys_start = $eod_process_id ? 0 : 1;
+        $enable_sys_start = $eod_process_id && $status != 1 ? 0 : 1;
         
         $enable_process_start = isset($eodProcess->status) && in_array($eodProcess->status,[config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')]) ? 0 : 1;
         
@@ -93,7 +94,7 @@ class EodProcessController extends Controller {
                 ->with('sys_start_date', $sys_start_date)
                 ->with('sys_end_date', $sys_end_date)
                 ->with('running_hours', $running_hours)
-                ->with('status', $status)
+                ->with('status', $disp_status)
                 ->with('eodData', $eodProcess)
                 ->with('statusLog', $statusLog)
                 ->with('statusArr', $statusArr)
