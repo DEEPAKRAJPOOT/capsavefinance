@@ -219,7 +219,7 @@ trait InvoiceTrait
                      
                       $multichk['status'] =0;
                       $inv_no_var4.=$inv_no.',';
-                      $multichk['multiVali5'] = '* following invoice Number ('.substr($inv_no_var4,0,-1).') already exists in our system.';
+                      $multichk['multiVali5'] = '* Following invoice Number ('.substr($inv_no_var4,0,-1).') already exists in our system.';
           
                  }
                  
