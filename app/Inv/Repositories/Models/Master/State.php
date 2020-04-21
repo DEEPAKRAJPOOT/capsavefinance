@@ -170,10 +170,24 @@ class State extends BaseModel
         return $res ?: false;
     }
 
+    // Drop down
     public static function getStateListCode() {
         $res = self::select('*')->get()
-        ->pluck('name', 'state_code', 'state_no');
+        ->pluck('id', 'name');
         return $res ? $res : false;
+    }
+
+    // ajax route for userInvoiceController
+    public static function lmsGetStateCode() {
+        $res = self::select('id', 'state_code')->get()
+        ->pluck('state_code', 'id');
+        return response()->json($res);
+
+        // $cities = DB::table("mst_city")
+        // ->select("id","name")
+        // ->where("state_id",$request->state_id)
+        // ->pluck("name","id");
+        // return response()->json($cities);
     }
 
 }

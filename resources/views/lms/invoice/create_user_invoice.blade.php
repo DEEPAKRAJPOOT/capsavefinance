@@ -38,7 +38,6 @@
                                         <tr>
                                             <td class="text-left border-0" width="30%"> <b>Billing Address</b> </td>
                                             <td class="text-right border-0" width="30%"> <b>Original Of Recipient</b> </td>
-                                            <td>{{$gstInfo[0]->pan_gst_hash}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -55,7 +54,7 @@
                                                         <select class="form-control" name="state_id" id="state_id">
                                                             <option disabled value="" selected>Select State</option>
                                                             @foreach($state_list as $stateName=>$stateList)
-                                                            <option value="{{$stateList}}">{{$stateList}}</option>
+                                                            <option value="{{$stateList}}">{{$stateName}}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -292,5 +291,43 @@
             invoice_id.value = "";
         }
     });
+</script>
+
+<script type="text/javascript">
+
+    $('#state_id').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('/lms-state-code-ajax')}}?state_id="+stateID,
+           success:function(data){
+            if(data){
+                $("#state_code").empty();
+
+                data.filter()
+                return
+                $.each(data,function(key,value){
+                   
+                    $("#state_code").append('<option value="'+value+'">'+value+'</option>');
+
+                    
+                     if ( $('#state_code').next("label").length > 0 ) {
+                        $("#state_code").next().remove();
+                     } else {
+                     }
+                });
+
+            }else{
+               $("#state_code").empty();
+            }
+           }
+        });
+    }else{
+        $("#state_code").empty();
+    }
+
+   });
 </script>
 @endsection

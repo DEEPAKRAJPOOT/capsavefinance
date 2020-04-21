@@ -38,6 +38,7 @@ use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Models\Master\State as StateModel;
 
 class AjaxController extends Controller {
 
@@ -4378,5 +4379,12 @@ if ($err) {
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
+    }
+
+    /**
+     * lms get state code
+     */
+    public function lmsGetStateCode() {
+        return StateModel::lmsGetStateCode();
     }
 }
