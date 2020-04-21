@@ -3,6 +3,17 @@
 
 <div class="content-wrapper">
     <div class="col-md-12 ">
+        
+         @if(Session::has('multiVali'))
+          @php $multiVali = Session::get('multiVali');  @endphp
+        <div class=" alert-danger alert" role="alert">
+       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      @foreach ($multiVali as $key=>$val)
+      {{($key!='status') ? $val : ''}}</br>
+      @endforeach
+        </div>
+             @endif
+         <span id="storeSuccessMsg"></span>
         <section class="content-header">
             <div class="header-icon">
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
@@ -178,7 +189,7 @@
 
     var messages = {
         backend_get_invoice_list: "{{ URL::route('backend_get_invoice_list') }}",
-        upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
+         upload_invoice_csv: "{{ URL::route('upload_invoice_csv') }}",
         get_program_supplier: "{{ URL::route('get_program_supplier') }}",
         get_tenor: "{{ URL::route('get_tenor') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
