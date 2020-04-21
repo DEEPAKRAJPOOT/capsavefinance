@@ -357,12 +357,36 @@
            type:"GET",
            data: { "approved": "True"},
            url:"{{url('/lms/get-biz-add-user-invoice')}}?user_id="+userID,
-           success:function(data){ address
+           success:function(data){ 
             if(data){
                 $('#address').val(data);
             } else {
                 $('#address').val();
             }
+           }
+        });
+    });
+</script>
+<script>
+    $('#state_id').on('change', function() {
+        var state_id = $(this).val();
+        if(!state_id.length) {
+            return false;
+        };
+
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('/lms/get-user-state-code')}}?state_code="+state_id,
+           success:function(data){ 
+
+                $.each(data, function(key, value) {
+                    console.log(key);
+                   if(data) {
+                       $('#state_code').val(key)
+                   }
+                });
+               
            }
         });
     });

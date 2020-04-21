@@ -78,6 +78,9 @@ class userInvoiceController extends Controller
         }
     }
 
+    /**
+     * Get Business Address by ajax
+     */
     public function getBizUserInvoiceAddr(Request $request) {
        try {
         $user_id = $request->get('user_id');
@@ -87,6 +90,20 @@ class userInvoiceController extends Controller
        } catch(Exception $ex) {
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
        }
+    }
+
+    /**
+     * Get state code by ajax
+     */
+    public function getUserStateCode(Request $request) {
+        try {
+            $state_code = $request->get('state_code');
+
+            return $this->UserInvRepo->getUserStateCodeList($state_code);
+    
+           } catch(Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+           }
     }
 
 }

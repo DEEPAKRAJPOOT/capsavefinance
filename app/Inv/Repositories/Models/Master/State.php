@@ -177,17 +177,14 @@ class State extends BaseModel
 
     }
 
-    // ajax route for userInvoiceController
-    public static function lmsGetStateCode() {
-        $res = self::select('id', 'state_code')->get()
-        ->pluck('state_code', 'id');
+    /**
+     * Get state code by ajax
+     */
+    public static function getUserStateCodeList($state_code) {
+        $res = self::select('state_code', 'state_no')
+        ->where('state_code',$state_code)
+        ->pluck('state_code', 'state_no');
         return response()->json($res);
-
-        // $cities = DB::table("mst_city")
-        // ->select("id","name")
-        // ->where("state_id",$request->state_id)
-        // ->pluck("name","id");
-        // return response()->json($cities);
     }
 
 }

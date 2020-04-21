@@ -73,6 +73,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get-biz-add-user-invoice',
                 'uses' => 'Lms\userInvoiceController@getBizUserInvoiceAddr'
             ]);
+
+            // get state code for user invoice 
+            Route::get('get-user-state-code', [
+                'as' => 'get-user-state-code',
+                'uses' => 'Lms\userInvoiceController@getUserStateCode'
+            ]);
             
             // disbursal routes
             Route::get('/disbursal/request-list', [

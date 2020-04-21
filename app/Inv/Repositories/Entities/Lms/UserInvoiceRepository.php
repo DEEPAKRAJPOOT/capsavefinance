@@ -91,4 +91,11 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	public function getUserCustomerID($user_id) {
 		return LmsUser::getCustomers($user_id);
 	}
+
+	/**
+     * Get state code by ajax
+     */
+	public function getUserStateCodeList($state_code) {
+		return State::getUserStateCodeList($state_code);
+	}
 }
