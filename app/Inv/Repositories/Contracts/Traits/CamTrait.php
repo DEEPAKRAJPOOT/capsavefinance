@@ -20,6 +20,8 @@ use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
+use App\Inv\Repositories\Models\BankWorkCapitalFacility;
+use App\Inv\Repositories\Models\BankTermBusiLoan;
 
 trait CamTrait
 {
@@ -288,6 +290,61 @@ trait CamTrait
               }
           }    
           CamReviewSummRiskCmnt::insert($arrData);        
+        }        
+    }
+
+    protected function saveBankWorkCapitalFacility($request, $bank_detail_id)
+    {
+        $updateData = [];
+        $updateData['is_active'] = 0;
+        $updateData['updated_by'] = Auth::user()->user_id;
+        $updResult = BankWorkCapitalFacility::where('bank_detail_id', $bank_detail_id);
+        $updResult->update($updateData);
+        $arrData =[];
+        if(isset($request->bank_name)) {
+            foreach($request->bank_name as $key=>$val){
+                if($request->bank_name[$key] != null) {
+                    $arrData[$key]['bank_detail_id'] = $bank_detail_id;
+                    $arrData[$key]['bank_name'] = $request->bank_name[$key];
+                    $arrData[$key]['fund_facility'] = $request->fund_facility[$key];
+                    $arrData[$key]['fund_amt'] = str_replace(',', '', $request->fund_amt[$key]);
+                    $arrData[$key]['fund_os_amt'] = str_replace(',', '', $request->fund_os_amt[$key]);
+                    $arrData[$key]['nonfund_facility'] = $request->nonfund_facility[$key];
+                    $arrData[$key]['nonfund_amt'] = str_replace(',', '', $request->nonfund_amt[$key]);
+                    $arrData[$key]['nonfund_os_amt'] = str_replace(',', '', $request->nonfund_os_amt[$key]);
+                    $arrData[$key]['relationship_len'] = $request->relationship_len[$key];
+                    $arrData[$key]['is_active'] = 1;
+                    $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                    $arrData[$key]['created_by'] = Auth::user()->user_id;
+                }
+            }  
+            BankWorkCapitalFacility::insert($arrData);          
+        }        
+    }
+
+    protected function saveBankTermBusiLoan($request, $bank_detail_id)
+    {
+        $updateData = [];
+        $updateData['is_active'] = 0;
+        $updateData['updated_by'] = Auth::user()->user_id;
+        $updResult = BankTermBusiLoan::where('bank_detail_id', $bank_detail_id);
+        $updResult->update($updateData);
+        $arrData =[];
+        if(isset($request->bank_name_tlbl)) {
+            foreach($request->bank_name_tlbl as $key=>$val){
+                if($request->bank_name_tlbl[$key] != null) {
+                    $arrData[$key]['bank_detail_id'] = $bank_detail_id;
+                    $arrData[$key]['bank_name_tlbl'] = $request->bank_name_tlbl[$key];
+                    $arrData[$key]['loan_name'] = $request->loan_name[$key];
+                    $arrData[$key]['facility_amt'] = str_replace(',', '', $request->facility_amt[$key]);
+                    $arrData[$key]['facility_os_amt'] = str_replace(',', '', $request->facility_os_amt[$key]);
+                    $arrData[$key]['relationship_len_tlbl'] = $request->relationship_len_tlbl[$key];
+                    $arrData[$key]['is_active'] = 1;
+                    $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                    $arrData[$key]['created_by'] = Auth::user()->user_id;
+                }
+            }  
+            BankTermBusiLoan::insert($arrData);          
         }        
     }
 }

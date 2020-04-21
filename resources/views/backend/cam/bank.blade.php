@@ -99,6 +99,134 @@
                   <input type="hidden" name="bank_detail_id" value="{{$debtPosition->bank_detail_id ?? ''}}">  
                   @csrf
                   <div class="mt-4">
+                     <h2 class="sub-title bg">Working Capital Facility</h2>
+                     <table class="after-add-more table-wcf table table-striped no-footer overview-table" role="grid" cellpadding="0" cellspacing="0"> 
+                        <tr role="row">
+                           <td class="" tabindex="0" rowspan="1" colspan="1" width="12%">Name of Bank/NBFC</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Fund based Facility</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->fund_date ?? '' }}" name="fund_date" id="fund_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Non-fund based Facility</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->nonfund_date ?? '' }}" name="nonfund_date" id="nonfund_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
+                        </tr>  
+
+                        @if(isset($dataWcf) && count($dataWcf)>0)
+                           @foreach($dataWcf as $key =>$val)
+                           <tr class="control-group-wcf">
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="{{$val['bank_name']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="{{$val['fund_facility']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_amt[]" value="{{number_format($val['fund_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_os_amt[]" value="{{number_format($val['fund_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="{{$val['nonfund_facility']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="{{number_format($val['nonfund_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="{{number_format($val['nonfund_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="">
+                                 <div class="input-group-btn">
+                                    <input maxlength="3" type="text" name="relationship_len[]" value="{{$val['relationship_len']}}" class="col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove"></i>
+                                 <div>
+                              </td>
+                           </tr> 
+                           @endforeach
+                        @endif
+
+                        <tr class="control-group-wcf">
+                           <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="">
+                              <div class="input-group-btn">
+                                 <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
+                                 <i class="fa fa-plus-circle add-ptpq-block add-more"></i>
+                              <div>
+                           </td>
+                        </tr>    
+                        
+                        <!-- Copy Fields -->
+                        <tbody class="copy hide">
+                           <tr class="control-group-wcf">
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="">
+                                 <div class="input-group-btn">
+                                    <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove"></i>
+                                 <div>
+                              </td>
+                           </tr> 
+                        </tbody>
+                     </table>
+                  </div>
+                  <div class="mt-4">
+                     <h2 class="sub-title bg">Term Loans & Business Loans</h2>
+                     <table class="after-add-more-tlbl table-wcf table table-striped no-footer overview-table" role="grid" cellpadding="0" cellspacing="0"> 
+                        <tr role="row">
+                           <td class="" tabindex="0" rowspan="1" colspan="1" width="20%">Name of the bank</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Loan name</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Facility amount(Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as On</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
+                        </tr>  
+
+                        @if(isset($dataTlbl) && count($dataTlbl)>0)
+                           @foreach($dataTlbl as $key =>$val)
+                           <tr class="control-group-tlbl">
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="{{$val['bank_name_tlbl']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="{{$val['loan_name']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="{{number_format($val['facility_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="{{number_format($val['facility_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="">
+                                 <div class="input-group-btn">
+                                    <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="{{$val['relationship_len_tlbl']}}" class="col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
+                                 <div>
+                              </td>
+                           </tr>  
+                           @endforeach
+                        @endif
+
+                        <tr class="control-group-tlbl">
+                           <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="">
+                              <div class="input-group-btn">
+                                 <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
+                                 <i class="fa fa-plus-circle add-ptpq-block add-more-post"></i>
+                              <div>
+                           </td>
+                        </tr>    
+                        
+                        <!-- Copy Fields -->
+                        <tbody class="copy-post hide">
+                           <tr class="control-group-tlbl">
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="">
+                                 <div class="input-group-btn">
+                                    <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
+                                 <div>
+                              </td>
+                           </tr> 
+                        </tbody>
+                     </table>
+                  </div>
+                  <div class="mt-4">
                      <h2 class="sub-title bg">Debt Position</h2>
                      <div class="pl-4 pr-4 pb-4 pt-2">
                         <div class="form-group row">
@@ -258,7 +386,7 @@
         disallowedContent: 'img{width,height};'
       };
     
-   $('#debt_on').datetimepicker({
+   $('#debt_on, #fund_date, #nonfund_date').datetimepicker({
      format: 'dd/mm/yyyy',
      pickTime: false,
      minView: 2, 
@@ -267,5 +395,25 @@
        $(this).datetimepicker('hide');
    });
  CKEDITOR.replace('debt_position_comments', ckeditorOptions);
+
+$(document).ready(function() {
+   $(".add-more").click(function(){ 
+      var html = $(".copy").html();
+      $(".after-add-more").append(html);
+   });
+
+   $("body").on("click",".remove",function(){ 
+      $(this).parents(".control-group-wcf").remove();
+   });
+
+   $(".add-more-post").click(function(){ 
+      var html = $(".copy-post").html();
+      $(".after-add-more-tlbl").append(html);
+   });
+
+   $("body").on("click",".remove-post",function(){ 
+      $(this).parents(".control-group-tlbl").remove();
+   });
+});
 </script>
 @endsection
