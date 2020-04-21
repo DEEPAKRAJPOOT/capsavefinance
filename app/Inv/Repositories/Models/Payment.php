@@ -106,11 +106,11 @@ class Payment extends BaseModel {
     }
 
     public function getBusinessName() {
-       return $this->hasOne(Business::class, 'biz_id');
+       return $this->belongsTo(Business::class, 'biz_id');
     }
 
     public function getUserName() {
-       return $this->hasOne(User::class, 'user_id');
+       return $this->belongsTo(User::class, 'user_id');
     }
 
 

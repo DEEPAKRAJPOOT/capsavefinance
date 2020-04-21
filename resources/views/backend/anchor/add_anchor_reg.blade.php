@@ -337,6 +337,7 @@
            data: { "approved": "True"},
            url:"{{url('/anchor/get-city-list')}}?state_id="+stateID,
            success:function(data){
+              console.log(data)
             if(data){
                 $("#city").empty();
                 $.each(data,function(key,value){

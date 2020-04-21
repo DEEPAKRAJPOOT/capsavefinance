@@ -234,3 +234,4 @@ class UserBankAccount extends BaseModel {
         return $res ?: false;
     }
 }
+

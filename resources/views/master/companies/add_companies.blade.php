@@ -94,7 +94,7 @@
     $(document).ready(function () {
 
         $(this).on('change', ".gstnumber", function () {
-
+            $('.gst_no_error, #gst_no_error').remove();
             var values = $(this).val();
             var gstnoformat = new RegExp('^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$');
 
@@ -102,7 +102,6 @@
                 if (gstnoformat.test(values)) {
                     return true;
                 } else {
-                    ;
                     $(this).after('<label id="gst_no-error" class="error gst_no_error" for="gst_no">Please Enter Valid GSTIN Number</label>');
                     $(this).val(values);
                     $(this).focus();
@@ -114,6 +113,7 @@
         });
 
         $(this).on('change', ".pannumber", function () {
+            $('.pan_no_error, #pan_no_error').remove();
             var values = $(this).val();
             var pannoformat = new RegExp('^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
 
@@ -121,7 +121,6 @@
                 if (pannoformat.test(values)) {
                     return true;
                 } else {
-                    $('.pan_no_error').remove();
                     $(this).after('<label id="pan_no-error" class="error pan_no_error " for="pan_no">Please Enter Valid PAN Number</label>');
                     $(this).val('');
                     $(this).focus();
@@ -133,6 +132,7 @@
         });
 
         $(this).on('change', ".cinnumber", function () {
+            $('.cin_no_error, #cin_no_error').remove();
             var values = $(this).val();
             var cinnoformat = new RegExp('^[L,U]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[C,P,T,L,S,G,O,N]{3}[0-9]{6}$');
 
@@ -140,7 +140,6 @@
                 if (cinnoformat.test(values)) {
                     return true;
                 } else {
-                    $('.cin_no_error').remove();
                     $(this).after('<label id="cin_no-error" class="error cin_no_error " for="cin_no">Please Enter Valid CIN Number</label>');
                     $(this).val('');
                     $(this).focus();

@@ -874,3 +874,17 @@ max-height: 165px;
 overflow: auto;
 transform: translate3d(0px, 0px, 0px) !important;
 }
+
+.invoice-state{
+    position: absolute;
+    padding: 1px 8px;
+    border-radius: 2px 1px;
+    background: #138864;
+    line-height: 33px;
+    text-align: center;
+    top: 27px;
+    text-decoration: none !important;
+    font-size: 14px;
+    cursor: pointer;
+    left: -10px;
+}
