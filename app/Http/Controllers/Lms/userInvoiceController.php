@@ -67,15 +67,26 @@ class userInvoiceController extends Controller
             $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
             $appID = $appInfo[0]->app_id;
             $gstInfo = $this->UserInvRepo->getGSTs($appID);
+            $customerID = $this->UserInvRepo->getUserCustomerID($user_id);
 
             $state_list = $this->UserInvRepo->getStateListCode();
-            dd($gstInfo);
 
             return view('lms.invoice.create_user_invoice')
-            ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo, 'gstInfo' => $gstInfo]);
+            ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo, 'gstInfo' => $gstInfo, 'customerID' => $customerID ]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+    public function getBizUserInvoiceAddr(Request $request) {
+       try {
+        $user_id = $request->get('user_id');
+
+        return $this->UserInvRepo->getBizUserInvoiceAddr($user_id);
+
+       } catch(Exception $ex) {
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+       }
     }
 
 }

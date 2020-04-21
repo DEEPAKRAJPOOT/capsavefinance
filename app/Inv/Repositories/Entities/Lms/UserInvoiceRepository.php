@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\LmsUser;
 
 /**
  * User Invoice Repository class
@@ -76,5 +77,18 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getStateListCode() {
 		return State::getStateListCode();
+	}
+
+	/**
+     * Get bussiness address for user invoice
+     */ 
+    public function getBizUserInvoiceAddr($user_id) {
+		$addr = 'Ador Powertron Limited Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019';
+
+        return response()->json($addr);
+	}
+
+	public function getUserCustomerID($user_id) {
+		return LmsUser::getCustomers($user_id);
 	}
 }

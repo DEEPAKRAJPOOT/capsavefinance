@@ -4379,4 +4379,5 @@ if ($err) {
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+
 }

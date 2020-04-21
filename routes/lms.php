@@ -67,16 +67,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'create_user_invoice',
                 'uses' => 'Lms\userInvoiceController@createUserInvoice'
             ]);
-            
-            // User Invoice
-            Route::get('/view-user-invoice', [
-                'as' => 'view_user_invoice',
-                'uses' => 'Lms\userInvoiceController@getUserInvoice'
-            ]);
-            
-            Route::get('/create-user-invoice', [
-                'as' => 'create_user_invoice',
-                'uses' => 'Lms\userInvoiceController@createUserInvoice'
+
+            // get bissuness address in user invoice 
+            Route::get('get-biz-add-user-invoice', [
+                'as' => 'get-biz-add-user-invoice',
+                'uses' => 'Lms\userInvoiceController@getBizUserInvoiceAddr'
             ]);
             
             // disbursal routes

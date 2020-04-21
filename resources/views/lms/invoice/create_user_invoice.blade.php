@@ -41,6 +41,8 @@
                                     </tbody>
                                 </table>
                                 <hr>
+                                            <input type="hidden" value="{{$userInfo->user_id}}" id="userID">
+
 
                                 <table class="table border-0">
                                     <tbody>
@@ -138,7 +140,7 @@
                                                 <div class="row">
                                                     <div class="form-group col-12">
                                                         <label for="refrence_no">Refrence No</label>
-                                                        <input type="text" class="form-control" id="refrence_no" name="refrence_no" placeholder="Refrence Number">
+                                                        <input type="text" class="form-control" id="refrence_no" name="refrence_no" value="{{$customerID[0]->customer_id}}" placeholder="Refrence Number">
                                                     </div>
                                                 </div>
                                             </td>
@@ -190,6 +192,13 @@
 
 
 @section('jscript')
+
+<script>
+    var message = {
+        token: "{{ csrf_token() }}",
+    }
+</script>
+
 <script type="text/javascript">
     $(document).ready(function() {
 
@@ -308,5 +317,29 @@
     }
 
    });
+</script>
+
+
+<script>
+    $('#gstin').on('change', function() {
+        var gstin = $(this).val();
+        var userID = $('#userID').val();
+        if(!gstin.length) {
+            return false;
+        };
+
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('/lms/get-biz-add-user-invoice')}}?user_id="+userID,
+           success:function(data){ address
+            if(data){
+                $('#address').val(data);
+            } else {
+                $('#address').val();
+            }
+           }
+        });
+    });
 </script>
 @endsection
