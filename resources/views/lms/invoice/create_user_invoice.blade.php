@@ -288,4 +288,42 @@
         }
     });
 </script>
+
+<script type="text/javascript">
+
+    $('#state_id').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('/lms-state-code-ajax')}}?state_id="+stateID,
+           success:function(data){
+            if(data){
+                $("#state_code").empty();
+
+                data.filter()
+                return
+                $.each(data,function(key,value){
+                   
+                    $("#state_code").append('<option value="'+value+'">'+value+'</option>');
+
+                    
+                     if ( $('#state_code').next("label").length > 0 ) {
+                        $("#state_code").next().remove();
+                     } else {
+                     }
+                });
+
+            }else{
+               $("#state_code").empty();
+            }
+           }
+        });
+    }else{
+        $("#state_code").empty();
+    }
+
+   });
+</script>
 @endsection
