@@ -8,7 +8,7 @@
     </div>
     <div class="header-title">
       <h3 class="mt-2">Invoices List</h3>
-
+     
       <ol class="breadcrumb">
         <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
         <li class="active">User Invoices List</li>
@@ -41,7 +41,7 @@
                   <div class="col-md-2 text-right">
                       <label>&nbsp;</label><br>
                        @can('create_user_invoice')
-                        <a href="{{ route('create_user_invoice') }}" >
+                        <a href="{{ route('create_user_invoice', [ 'user_id' => $userInfo->user_id ] ) }}" >
                             <button class="btn  btn-success btn-sm" type="button"><i class="fa fa-plus"></i> Create Invoice</button>
                         </a>
                         @endcan

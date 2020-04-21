@@ -10,6 +10,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Role as Role;
 use App\Inv\Repositories\Models\Master\Permission;
+use Auth;
 
 
 
@@ -61,7 +62,12 @@ class LmsUser extends Authenticatable
         'created_at',
         'created_by'
     ];
-
+  
+    public static  function checkLmsUser()
+    {
+        $id = Auth::user()->user_id;
+        return self::where(['user_id' => $id])->first();
+    }
     public static function getCustomers($search){
         return $data = self::select('customer_id','virtual_acc_id','users.user_id', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.m_name, rta_users.l_name) AS customer"),'biz.biz_entity_name','biz.biz_id' )
             ->join('users', 'lms_users.user_id', '=', 'users.user_id')
