@@ -18,7 +18,6 @@
             </ol>
         </div>
     </section>
-
     <div class="row grid-margin mt-3">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
@@ -63,11 +62,11 @@
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
                                                     <div class="form-group col-12">
-                                                        <label for="app_id">Application ID</label>
+                                                        <label for="app_id">Applications</label>
                                                         <select class="form-control" name="app_id" id="app_id">
-                                                            <option disabled value="" selected>Select Application ID</option>
+                                                            <option disabled value="" selected>Select Application</option>
                                                             @foreach($appInfo as $ad_id) 
-                                                            <option value="{{$ad_id}}">{{$appInfo[0]->app_id}}</option>
+                                                            <option value="{{$ad_id->app_id}}">{{$ad_id->business->biz_entity_name}}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -92,18 +91,14 @@
 
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
-                                                    <div class="form-group col-4">
-                                                        <label>State Code</label>
-                                                        <input type="text" class="form-control" id="invoice_state" name="invoice_state" placeholder="State Code">
-                                                    </div>
-                                                    <div class="form-group col-4 INR">
+                                                    <div class="form-group col-3" style="margin-left: 25px;">
+                                                        <a href="javascript:void(0);" class="invoice-state"><i style="color: #FFF;">MH</i></a>
                                                         <label>City Code</label>
-                                                        <a href="javascript:void(0);" class="verify-owner-no"><i>MH</i></a>
-                                                        <input type="text" class="form-control" id="invoice_city" name="invoice_city" placeholder="City Code">
+                                                        <input type="text" class="form-control" id="invoice_city" name="invoice_city" placeholder="City Code" maxlength="5">
                                                     </div>
                                                     <div class="form-group col-4">
                                                         <label>Invoice ID</label>
-                                                        <input type="text" class="form-control" id="invoice_id" name="invoice_id" placeholder="Invoice ID">
+                                                        <input type="text" class="form-control" tabindex="15" id="invoice_id" name="invoice_id" placeholder="Invoice ID">
                                                     </div>
                                                 </div>
                                             </td>

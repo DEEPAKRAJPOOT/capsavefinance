@@ -9,7 +9,7 @@ use Session;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
-use App\Inv\Repositories\Models\Master\State as StateModel;
+use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
@@ -59,7 +59,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}
 
 	public function getAppsByUserId($userId = null) {
-		$apps = Application::getAllAppsByUserId($userId);
+		$apps = Application::getAllAppsNbizByUserId($userId);
 		return $apps->isEmpty() ? [] : $apps;
 	}
 
@@ -75,6 +75,6 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}	
 
 	public function getStateListCode() {
-		return StateModel::getStateListCode();
+		return State::getStateListCode();
 	}
 }
