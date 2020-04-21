@@ -91,8 +91,8 @@
 
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
-                                                    <div class="form-group col-3" style="margin-left: 25px;">
-                                                        <a href="javascript:void(0);" class="invoice-state"><i style="color: #FFF;">MH</i></a>
+                                                    <div class="form-group col-4" style="margin-left: 25px;">
+                                                        <a href="javascript:void(0);" class="invoice-state"><i style="color: #FFF;" id="state_abbr">MH</i></a>
                                                         <label>City Code</label>
                                                         <input type="text" class="form-control" id="invoice_city" name="invoice_city" placeholder="City Code" maxlength="5">
                                                     </div>
@@ -278,13 +278,22 @@
 
 <script>
     let invoice_id = document.getElementById('invoice_id');
+    let invoice_city = document.getElementById('invoice_city');
 
     invoice_id.addEventListener('input', function() {
         let pinVal =  document.getElementById('invoice_id').value;
         let pinStr = pinVal.toString();
 
-        if (isNaN(invoice_id.value) || pinStr.length >= 3) {
+        if (isNaN(invoice_id.value) || pinStr.length >= 4) {
             invoice_id.value = "";
+        }
+    });
+    invoice_city.addEventListener('input', function() {
+        let pinVal =  document.getElementById('invoice_city').value;
+        let pinStr = pinVal.toString();
+
+        if (isNaN(invoice_city.value) || pinStr.length >= 4) {
+            invoice_city.value = "";
         }
     });
 </script>
@@ -293,35 +302,9 @@
 
     $('#state_id').on('change',function(){
     var stateID = $(this).val();
-    if(stateID){
-        $.ajax({
-           type:"GET",
-           data: { "approved": "True"},
-           url:"{{url('/lms-state-code-ajax')}}?state_id="+stateID,
-           success:function(data){
-            if(data){
-                $("#state_code").empty();
-
-                data.filter()
-                return
-                $.each(data,function(key,value){
-                   
-                    $("#state_code").append('<option value="'+value+'">'+value+'</option>');
-
-                    
-                     if ( $('#state_code').next("label").length > 0 ) {
-                        $("#state_code").next().remove();
-                     } else {
-                     }
-                });
-
-            }else{
-               $("#state_code").empty();
-            }
-           }
-        });
-    }else{
-        $("#state_code").empty();
+        $('#state_abbr').empty();
+    if(stateID) {
+        $('#state_abbr').append(stateID);
     }
 
    });

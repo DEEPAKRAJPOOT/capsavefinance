@@ -804,11 +804,6 @@ Route::group(
         'as' => 'lms_edit_batch_ajax',
         'uses' => 'AjaxController@lmsEditBatch'
     ]);
-
-    Route::get('lms-state-code-ajax', [
-        'as' => 'lms-state-code-ajax',
-        'uses' => 'AjaxController@lmsGetStateCode'
-    ]);
     /*lms route*/
 
 
