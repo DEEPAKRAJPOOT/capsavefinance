@@ -1,42 +1,37 @@
 <div style="width: 700px;margin:auto;">
    <p align="center">
-      <span style="color: #2d2d2d;font-size: xx-large;"><strong>CAPSAVE FINANCE PRIVATE LIMITED</strong></span>
+      <span style="color: #2d2d2d;font-size: xx-large;"><strong>{{$comp_name}}</strong></span>
    </p>
    <p align="center">
       <span style="font-size: small;">
-         <strong>Registered office: Unit 501, Wing D, Lotus Corporate Park, Western Exp. Highway, Goregaon (E), Mumbai - 400063</strong>
+         <strong>Registered office: {{$comp_registered_addr}}</strong>
       </span>
    </p>
    <p align="center">
       <span style="font-size: small;"><strong>Ph:</strong></span>
-      <span style="font-size: small;"> +91 22 6173 7600; </span>
+      <span style="font-size: small;"> {{$phone}}; </span>
       <span style="font-size: small;"><strong>CIN No:</strong></span>
-      <span style="font-size: small;">U67120MH1992PTC068062</span>
-      <span style="font-size: small;">; </span>
-      <span style="font-size: small;"><strong>Email:</strong></span><span style="font-size: small;"> accounts@rentalpha.com</span>
+      <span style="font-size: small;">{{$cin}};</span>
+      <span style="font-size: small;"><strong>Email:</strong></span><span style="font-size: small;"> {{$email}}</span>
    </p>
    <hr />
    <p align="center" style="color: #000000;"><u><strong>GST Tax Invoice</strong></u></p>
    <p style="font-size: small;text-align: right"><strong><u>Original for Recipient</u></strong></p>
    <div style="text-align: center">
-      <table border="1px" style="width: 100%" align="center">
+      <table border="1px" style="width: 100%" align="center" cellspacing="0" cellpadding="1">
          <tr>
-            <td><span style="font-size: small"><strong>Billing Address: </strong></span></td>
-            <td><span style="font-size: small"><strong>Invoice No: </strong> MH/19-20/0001</span></td>
+            <td width="71%"><span style="font-size: small"><strong>Billing Address: </strong></span></td>
+            <td width="30%"><span style="font-size: small"><strong>Invoice No: </strong> MH/19-20/0001</span></td>
          </tr>
          <tr>
-            <td rowspan="3"><span style="font-size: small"><strong>
-               Ador Powertron Limited <br />
-               Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, <br /> 
-               Chinchwad, Pune, Maharashtra, 411019
-            </td>
-            <td><span style="font-size: small"><strong>Invoice Date: </strong> 01-Apr-2019</span></td>
+            <td rowspan="3"><span style="font-size: small"><strong>{{$comp_billing_addr}}</strong></td>
+            <td><span style="font-size: small"><strong>Invoice Date: </strong> {{$comp_billing_addr}}</span></td>
          </tr>
          <tr>
-            <td><span style="font-size: small"><strong>Reference No: </strong> CAPII0000457</span></td>
+            <td><span style="font-size: small"><strong>Reference No: </strong> {{$comp_billing_addr}}</span></td>
          </tr>
          <tr>
-            <td><span style="font-size: small"><strong>Place of Supply: </strong> Maharashtra</span></td>
+            <td><span style="font-size: small"><strong>Place of Supply: </strong> {{$comp_billing_addr}}</span></td>
          </tr>
       </table>
    </div> 
@@ -206,49 +201,48 @@
    <p>&nbsp;</p>
    <p><span style="font-size: small;"><u><strong>RTGS Details:</strong></u></span></p>
    <p lang="en-US" align="justify"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Beneficiary: Capsave Finance Pvt. Ltd; HDFC Bank, ESCROW A/C NO: 50200030310781; Branch Name: A.K. Vaidya Marg, Mumbai; IFSC Code: HDFC0000212</strong></span></span></p>
-   <table width="609" cellspacing="0" cellpadding="1">
+   <table style="width: 100%" border="1" cellspacing="0" cellpadding="1">
       <tbody>
-         <tr valign="bottom">
-            <td width="74" height="11">
-               <p class="western">&nbsp;</p>
-               <p class="western"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>PAN: </strong></span></span></p>
+         <tr>
+            <td width="74">
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>PAN: </strong></span></p>
             </td>
             <td colspan="2" width="531">
-               <p class="western"><span style="color: #000000;"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;">AAACA4269Q</span></span></span></p>
-            </td>
-         </tr>
-         <tr valign="bottom">
-            <td width="74" height="7">
-               <p class="western"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>State:</strong></span></span></p>
-            </td>
-            <td colspan="2" width="531">
-               <p class="western">Maharashtra</p>
-            </td>
-         </tr>
-         <tr valign="bottom">
-            <td width="74" height="34">
-               <p class="western"><span style="color: #000000;"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Address:</strong></span></span></span></p>
-            </td>
-            <td colspan="2" width="531">
-               <p class="western">UNIT NO. 501, WING-D, LOTUS CORPORATE PARK, WESTERN EXPRESS HIGHWAY, GOREGAON (EAST), MUMBAI - 400 063, MAHARASHTRA</p>
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">AAACA4269Q</span></p>
             </td>
          </tr>
          <tr>
-            <td valign="bottom" width="74" height="2">
-               <p class="western"><span style="color: #000000;"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>GSTIN:</strong></span></span></span></p>
+            <td width="74">
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>State:</strong></span></p>
             </td>
-            <td valign="bottom" width="221">
-               <p class="western"><span style="color: #000000;"><span style="font-size: small;">27AAACA4269Q2Z5</span></span></p>
+            <td colspan="2" width="531">
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">Maharashtra</span></p>
+            </td>
+         </tr>
+         <tr>
+            <td width="74">
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>Address:</strong></span></p>
+            </td>
+            <td colspan="2" width="531">
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">UNIT NO. 501, WING-D, LOTUS CORPORATE PARK, WESTERN EXPRESS HIGHWAY, GOREGAON (EAST), MUMBAI - 400 063, MAHARASHTRA</span></p>
+            </td>
+         </tr>
+         <tr>
+            <td width="74">
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>GSTIN:</strong></span></p>
+            </td>
+            <td width="221">
+               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">27AAACA4269Q2Z5</span></p>
             </td>
             <td valign="top" width="309">
-               <p class="western">&nbsp;</p>
+               <p>&nbsp;</p>
             </td>
          </tr>
       </tbody>
    </table>
-   <p class="western">&nbsp;</p>
-   <p class="western" align="center"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</span></span></p>
-   <p class="western" align="center">&nbsp;</p>
+   <p>&nbsp;</p>
+   <p align="center"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</span></span></p>
+   <p align="center">&nbsp;</p>
    <p><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>For Capsave Finance Pvt. Ltd.</strong></span></span></p>
    <p lang="en-US">&nbsp;</p>
    <p lang="en-US">&nbsp;</p>

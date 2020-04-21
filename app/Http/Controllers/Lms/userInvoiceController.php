@@ -45,7 +45,56 @@ class userInvoiceController extends Controller
      *
      */
     public function getUserInvoice(Request $request) {
-        // return view('lms.invoice.generate_invoice');
+        $pdfData = [
+            'comp_name' => 'CAPSAVE FINANCE PRIVATE LIMITED',
+            'comp_registered_addr' => 'Unit 501, Wing D, Lotus Corporate Park, Western Exp. Highway, Goregaon (E), Mumbai - 400063',
+            'comp_billing_addr' => 'Ador Powertron Limited Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019',
+            'phone' => '22 6173 7600',
+            'cin' => 'U67120MH1992PTC068062',
+            'email' => 'accounts@rentalpha.com',
+            'invoice_date' => '01-Apr-2019',
+            'invoice_no' => 'CAPII0000457',
+            'place_of_supply' => 'Maharashtra',
+            'pan' => 'AAACA4269Q',
+            'state' => 'Maharashtra',
+            'gstin' => '27AAACA4269Q2Z5',
+            'intrest_charges' => [
+                array(
+                    'desc' => 'Processing Fee',
+                    'sac' => '9971',
+                    'base_amt' => '36534',
+                    'sgst_rate' => '9',
+                    'sgst_amt' => '3288.06',
+                    'cgst_rate' => '9',
+                    'cgst_amt' => '3288.06',
+                    'igst_rate' => '0',
+                    'igst_amt' => '0',
+                ),
+                 array(
+                    'desc' => 'Documentation Fee',
+                    'sac' => '9987',
+                    'base_amt' => '1000',
+                    'sgst_rate' => '9',
+                    'sgst_amt' => '90',
+                    'cgst_rate' => '9',
+                    'cgst_amt' => '90',
+                    'igst_rate' => '0',
+                    'igst_amt' => '0',
+                ),
+                 array(
+                    'desc' => 'overdue Fee',
+                    'sac' => '9961',
+                    'base_amt' => '3000',
+                    'sgst_rate' => '9',
+                    'sgst_amt' => '270',
+                    'cgst_rate' => '9',
+                    'cgst_amt' => '270',
+                    'igst_rate' => '12',
+                    'igst_amt' => '360',
+                ),
+            ],
+        ];
+        return $this->viewInvoiceAsPDF($pdfData);
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
@@ -54,6 +103,14 @@ class userInvoiceController extends Controller
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+    /**
+     * Display invoice as per User.
+     *
+     */
+    public function viewInvoiceAsPDF($data = []) {
+        return view('lms.invoice.generate_invoice', $data);
     }
 
     /**
