@@ -9,6 +9,7 @@ use Session;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
+use App\Inv\Repositories\Models\Master\State as StateModel;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
@@ -72,4 +73,8 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	public function getInvoices($whereCondition=[]) {
 			return UserInvoice::getInvoices($whereCondition);
 	}	
+
+	public function getStateListCode() {
+		return StateModel::getStateListCode();
+	}
 }

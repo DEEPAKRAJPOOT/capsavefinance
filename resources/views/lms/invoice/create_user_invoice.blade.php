@@ -53,8 +53,8 @@
                                                         <label for="state_id">State Name</label>
                                                         <select class="form-control" name="state_id" id="state_id">
                                                             <option disabled value="" selected>Select State</option>
-                                                            @foreach($state_list as $stateName=>$stateList)
-                                                            <option value="{{$stateList}}">{{$stateName}}</option>
+                                                            @foreach($state_list as $state)
+                                                            <option value="{{$state->state_code}}">{{$state->name}}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -96,8 +96,9 @@
                                                         <label>State Code</label>
                                                         <input type="text" class="form-control" id="invoice_state" name="invoice_state" placeholder="State Code">
                                                     </div>
-                                                    <div class="form-group col-4">
+                                                    <div class="form-group col-4 INR">
                                                         <label>City Code</label>
+                                                        <a href="javascript:void(0);" class="verify-owner-no"><i>MH</i></a>
                                                         <input type="text" class="form-control" id="invoice_city" name="invoice_city" placeholder="City Code">
                                                     </div>
                                                     <div class="form-group col-4">
