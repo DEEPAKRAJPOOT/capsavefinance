@@ -201,8 +201,6 @@ class Application extends BaseModel
       return  self::where('app_id',$appId)->first();
         
     } 
-    
-    
     /**
      * Get Applications for Application list data tables
      */
@@ -459,6 +457,12 @@ class Application extends BaseModel
         return $appData ? $appData : [];
     }
     
+    public static function getAllAppsNbizByUserId($user_id){
+        $appData = self::with('business')
+                ->where('app.user_id', $user_id)
+                ->get();
+        return $appData ? $appData : [];
+    }
     
     public  function user()
     {

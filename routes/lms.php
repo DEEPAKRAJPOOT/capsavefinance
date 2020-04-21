@@ -46,6 +46,38 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_bank_account',
                 'uses' => 'Lms\BankAccountController@saveBankAccount'
             ]);
+
+            Route::get('/see-upload-bank-detail', [
+                'as' => 'see_upload_bank_detail',
+                'uses' => 'Lms\BankAccountController@seeUploadFile'
+            ]);
+
+            Route::get('/download-bank-detail', [
+                'as' => 'download_bank_detail',
+                'uses' => 'Lms\BankAccountController@downloadUploadFile'
+            ]);
+
+            // User Invoice
+            Route::get('/view-user-invoice', [
+                'as' => 'view_user_invoice',
+                'uses' => 'Lms\userInvoiceController@getUserInvoice'
+            ]);
+            
+            Route::get('/create-user-invoice', [
+                'as' => 'create_user_invoice',
+                'uses' => 'Lms\userInvoiceController@createUserInvoice'
+            ]);
+            
+            // User Invoice
+            Route::get('/view-user-invoice', [
+                'as' => 'view_user_invoice',
+                'uses' => 'Lms\userInvoiceController@getUserInvoice'
+            ]);
+            
+            Route::get('/create-user-invoice', [
+                'as' => 'create_user_invoice',
+                'uses' => 'Lms\userInvoiceController@createUserInvoice'
+            ]);
             
             // disbursal routes
             Route::get('/disbursal/request-list', [

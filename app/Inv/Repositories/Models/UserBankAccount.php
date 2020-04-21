@@ -203,7 +203,7 @@ class UserBankAccount extends BaseModel {
         
         return $res ?: false;
     }
-    
+
     /**
      * get Bank account data by company id
      * 
@@ -212,11 +212,24 @@ class UserBankAccount extends BaseModel {
      * @throws InvalidDataTypeExceptions
      * @throws BlankDataExceptions 
      */
-    public static function isDefalutCmpBankAcc($where)
-    {
+    public static function isDefalutCmpBankAcc($where) {
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
         return self::where($where)->first();
+    }    
+
+    /**
+     * This method is used for see upload file in Bank Account  
+     */
+    public static function seeUploadFilePopup($acc_id, $user_id) {
+
+        $res = self::find($acc_id['bank_account_id']);
+        // $res = self::select('user_bank_account.bank_account_id', 'user_bank_account.doc_name')
+        //         ->where('bank_account_id','=',$acc_id)
+        //         ->where('user_id','=',$user_id)
+        //         ->get();
+
+        return $res ?: false;
     }
 }
