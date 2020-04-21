@@ -963,6 +963,11 @@ class InvoiceController extends Controller {
                     $csvPath = storage_path('app/public/'.$userFile->file_path);
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
+                    if(count($data) < 5 || count($data) > 6)
+                    {
+                          Session::flash('error', 'Please check Csv file format.');
+                          return back(); 
+                    }
                     
                     $csvPath1 = storage_path('app/public/'.$userFile->file_path);
                     $handle1 = fopen($csvPath1, "r");

@@ -889,14 +889,15 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'invoice_upload',
                     function ($invoice) {
-                     $action ="";
+                     
+                        $action ="";
                       if(($invoice->file_id != 0)) {
                           $action .='<a href="'.Storage::URL($invoice->userFile->file_path).'" download ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                          } else  {
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
-                         }                  
+                         }               
                     return $action;
                 })
                 ->addColumn(            
