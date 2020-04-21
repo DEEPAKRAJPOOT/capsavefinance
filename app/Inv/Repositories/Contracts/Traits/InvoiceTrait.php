@@ -59,7 +59,7 @@ trait InvoiceTrait
            $attr['status_id'] = 7;
            $attr['error'] = 2;
            $attr['status'] = 1;
-           $attr['message']=  'Invoice auto cancel due to duplicate invoice no <'.$inv_no.'>';
+           $attr['message']=  'Following Invoice Number ('.$inv_no.') has been auto-cancel due to duplicate invoice number.';
            return  $attr;  
            
         } 
@@ -104,7 +104,7 @@ trait InvoiceTrait
              $attr['status_id'] = 7;
              $attr['error'] = 2;
              $attr['status'] = 1;
-             $attr['message']= 'Invoice auto cancel due to invoice no <'.$inv_no.'> max-length.';
+             $attr['message']= ' Following Invoice Number ('.$inv_no.') has been auto-cancel due to invoice number max-length.';
              return  $attr;    
        
         }
