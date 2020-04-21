@@ -55,7 +55,6 @@
                   <br/>
                   <hr>
                   <div class="clearfix"></div>
-                  <h2 class="sub-title mt-4">Banking Analysis</h2>
                   <div class=" pb-4 pt-2">
                      <table cellspacing="0" cellpadding="0" class="table overview-table">
                         <tbody>
@@ -98,6 +97,58 @@
                   <input type="hidden" name="biz_id" value="{{$biz_id}}">  
                   <input type="hidden" name="bank_detail_id" value="{{$debtPosition->bank_detail_id ?? ''}}">  
                   @csrf
+                  
+                  <div class="data mt-4">
+                    <h2 class="sub-title bg">Banking Analysis</h2>
+                    <div class="pl-4 pr-4 pb-4 pt-2">
+                        <table class="table table-bordered overview-table" >
+                            <thead>
+                               <tr bgcolor="#ccc">
+                                  <th>Name of Bank</th>
+                                  <th>Acct. Type</th>
+                                  <th colspan="3">Utilization %</th>
+                                  <th colspan="4">Cheque Return</th>
+                                  <th colspan="2">Summations</th>
+                                  <th></th>
+                               </tr>
+                            </thead>
+                            <tbody id="working_capital_facility">
+                              <tr class="sub-heading">
+                                  <td></td>
+                                  <td></td>
+                                  <td>Max </td>
+                                  <td>Min</td>
+                                  <td>Avg</td>
+                                  <td>Inward</td>
+                                  <td>% of total cheques presented</td>
+                                  <td>Outward</td>
+                                  <td>% of total cheques deposited  </td>
+                                  <td>Credit</td>
+                                  <td>Debit</td>
+                                  <td>Over drawings in last 6 months</td>
+                              </tr>
+                              <tr>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control"></td>
+                                  <td><input type="text" class="form-control">
+                                  <div class="add-more"><i class="fa fa-plus-circle add-ptpq-block add-more-post"></i></div>
+                                  </td>
+                              </tr>
+                            </tbody>
+                        </table>
+                    <div class="clearfix"></div>
+                   </div>
+                   </div>
+                  
                   <div class="mt-4">
                      <h2 class="sub-title bg">Working Capital Facility</h2>
                      <table class="after-add-more table-wcf table table-striped no-footer overview-table" role="grid" cellpadding="0" cellspacing="0"> 
@@ -225,7 +276,7 @@
                            </tr> 
                         </tbody>
                      </table>
-                  </div>
+                  </div>                 
                   <div class="mt-4">
                      <h2 class="sub-title bg">Debt Position</h2>
                      <div class="pl-4 pr-4 pb-4 pt-2">

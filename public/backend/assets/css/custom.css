@@ -874,3 +874,8 @@ max-height: 165px;
 overflow: auto;
 transform: translate3d(0px, 0px, 0px) !important;
 }
+table tr td{position: relative;}
+.sub-heading{background: #19c38f;}
+.sub-heading td{color:#fff}
+.add-more {position: absolute;right: -21px;top: 12px;font-size: 19px;cursor: pointer;}
+.rupee-symbol{position: absolute;left: 4px;top: 21px;}
