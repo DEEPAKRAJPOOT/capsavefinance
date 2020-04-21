@@ -120,7 +120,7 @@
                                                 <div class="row">
                                                     <div class="form-group col-12">
                                                         <label for="invoice_date">Invoice Date</label>
-                                                        <input type="text" class="form-control" id="invoice_date" name="invoice_date" placeholder="Invoice Date">
+                                                        <input type="text" class="form-control dateFilter" id="invoice_date" name="invoice_date" placeholder="Invoice Date">
                                                     </div>
                                                 </div>
                                             </td>
@@ -311,11 +311,36 @@
 
     $('#state_id').on('change',function(){
     var stateID = $(this).val();
+    var state = $("#state_id :selected").text()
+    console.log(state)
+    var place_of_supply = $('#place_of_supply');
         $('#state_abbr').empty();
     if(stateID) {
         $('#state_abbr').append(stateID);
+        $('#place_of_supply').val(state);
     }
 
+   });
+
+//    Date picker
+   $(document).ready(function(){
+        $("#invoice_date").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView : 2,
+            //endDate: new Date()
+        });
+
+
+        var nowDate = new Date(); 
+        var currentDate = nowDate.getDate() +'/'+ (nowDate.getMonth()+1) +'/'+ nowDate.getFullYear();
+
+        var oneMonthAddedDate = new Date();
+        oneMonthAddedDate.setMonth( oneMonthAddedDate.getMonth() + 1 );
+        var currentAddedDate  = oneMonthAddedDate.getDate() +'/'+ (oneMonthAddedDate.getMonth()+1) +'/'+ oneMonthAddedDate.getFullYear();
+
+        $("#invoice_date").val(currentDate);
+     
    });
 </script>
 
