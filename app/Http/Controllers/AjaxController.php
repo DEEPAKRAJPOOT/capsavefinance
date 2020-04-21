@@ -3420,6 +3420,8 @@ if ($err) {
   public function lmsGetCustomer(DataProviderInterface $dataProvider) {
     $customersList = $this->userRepo->lmsGetCustomers();
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
+    // dd(json_encode($users));
+
     return $users;
   }   
   
