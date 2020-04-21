@@ -5284,7 +5284,9 @@ class DataRenderer implements DataProviderInterface
                 return "₹ ".number_format($trans->amount,2);
             })
             ->addColumn('payment_date', function($trans){
-                return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+                if($trans->payment){
+                    return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+                }
             })
             ->addColumn('pay', function($trans){
                 $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
