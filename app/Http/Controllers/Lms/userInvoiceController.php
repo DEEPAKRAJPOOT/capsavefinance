@@ -45,13 +45,14 @@ class userInvoiceController extends Controller
      *
      */
     public function getUserInvoice(Request $request) {
-        try {
+        return view('lms.invoice.generate_invoice');
+        /*try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             return view('lms.invoice.user_invoice_list')->with(['userInfo' => $userInfo]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
+        }*/
     }
 
     /**
