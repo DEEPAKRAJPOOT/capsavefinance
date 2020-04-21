@@ -299,9 +299,9 @@ class InvoiceController extends Controller {
                       if($file_name)
                       {
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
-                        if($getImage['status']==1)
+                       if($getImage['status']==1)
                         {
-                            
+                          
                            $FileDetail = $this->docRepo->saveFile($getImage); 
                            $FileId  = $FileDetail->file_id; 
                         }
@@ -310,11 +310,14 @@ class InvoiceController extends Controller {
                            $FileId  = Null; 
                            $comm_txt  =  $getImage['message']; 
                         }
+                         
                       }
                       else
                       {
                             $FileId  = Null; 
+                           
                       }
+                        
                         $userLimit = $chlLmsCusto['limit'];
                         $ins['anchor_id'] = $attributes['anchor_name'];
                         $ins['supplier_id'] = $dataAttr['user_id'];

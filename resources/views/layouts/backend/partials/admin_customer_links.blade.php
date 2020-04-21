@@ -24,6 +24,10 @@
     <li>
         <a class=" {{($active=='charges') ? 'active': null }} " href="{{route('manage_charge', ['user_id' => request()->get('user_id')])}}">Charges</a>
     </li>
+    
+     <li>
+        <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
+    </li>
     <!--
     <li>
         <a class=" {{ ($active=='soa') ? 'active': null }} "  href="#">SOA</a>
