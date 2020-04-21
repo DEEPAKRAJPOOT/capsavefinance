@@ -224,6 +224,7 @@ class ApportionmentController extends Controller
         return [
             'customer_id' => $lmsUser->customer_id,
             'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
+            'user_id' => $userId,
             'address' => '',
             'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
         ];
