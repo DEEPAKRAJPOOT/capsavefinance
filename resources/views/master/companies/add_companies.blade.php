@@ -14,53 +14,53 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
-                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
+                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" maxlength="100" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
                 {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="gst_no">GST No. <span class="mandatory">*</span></label>
-                <input type="text" class="form-control gstnumber" id="gst_no" name="gst_no" placeholder="Enter GST No." maxlength="50" value="{{ isset($comData['gst_no']) ? $comData['gst_no'] : old('gst_no')}}">
+                <input type="text" class="form-control gstnumber" id="gst_no" name="gst_no" placeholder="Enter GST No." maxlength="15" value="{{ isset($comData['gst_no']) ? $comData['gst_no'] : old('gst_no')}}">
                 {!! $errors->first('gst_no', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
                 <label for="pan_no">PAN No. <span class="mandatory">*</span></label>
-                <input type="text" class="form-control pannumber" id="pan_no" name="pan_no" placeholder="Enter Pan No." maxlength="50" value="{{ isset($comData['pan_no']) ? $comData['pan_no'] : old('pan_no')}}">
+                <input type="text" class="form-control pannumber" id="pan_no" name="pan_no" placeholder="Enter Pan No." maxlength="10" value="{{ isset($comData['pan_no']) ? $comData['pan_no'] : old('pan_no')}}">
                 {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cin_no">CIN No. <span class="mandatory"></span></label>
-                <input type="text" class="form-control cinnumber" id="cin_no" name="cin_no" placeholder="Enter CIN No." maxlength="50" value="{{ isset($comData['cin_no']) ? $comData['cin_no'] : old('cin_no')}}">
+                <input type="text" class="form-control cinnumber" id="cin_no" name="cin_no" placeholder="Enter CIN No." maxlength="21" value="{{ isset($comData['cin_no']) ? $comData['cin_no'] : old('cin_no')}}">
                 {!! $errors->first('cin_no', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
                 <label for="chrg_type">State<span class="mandatory">*</span></label><br />
-           <select class="form-control" name="state" id="state">
+                <select class="form-control" name="state" id="state">
                     <option value="">Please Select</option>
                     @foreach($state as $key=>$val)
                     @php
-                        if($key == $comData['state']['name']){
-                            $sel = 'selected';
-                        }else{
-                            $sel = '';
-                        }
+                    if($key == $comData['state']['name']){
+                    $sel = 'selected';
+                    }else{
+                    $sel = '';
+                    }
                     @endphp
                     <option  value="{{$val}}" {{$sel}}>{{$key}}</option>
                     @endforeach
                 </select>
-               
+
             </div>
         </div>
-          <div class="row">
+        <div class="row">
             <div class="form-group col-md-6">
                 <label for="cin_no">City <span class="mandatory">*</span></label>
                 <input type="text" class="form-control" id="city" name="city" placeholder="Enter City" maxlength="50" value="{{ isset($comData['city']) ? $comData['city'] : old('city') }}">
-             
+
             </div>
-           <div class="form-group col-md-6">
+            <div class="form-group col-md-6">
                 <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option value="" selected>Select</option>
@@ -98,13 +98,17 @@
             var values = $(this).val();
             var gstnoformat = new RegExp('^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$');
 
-            if (gstnoformat.test(values)) {
-                return true;
+            if (/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/.test(values)) {
+                if (gstnoformat.test(values)) {
+                    return true;
+                } else {
+                    ;
+                    $(this).after('<label id="gst_no-error" class="error gst_no_error" for="gst_no">Please Enter Valid GSTIN Number</label>');
+                    $(this).val(values);
+                    $(this).focus();
+                }
             } else {
-                $('.gst_no_error').remove();
-                $(this).after('<label id="gst_no-error" class="error gst_no_error " for="gst_no">Please Enter Valid GSTIN Number</label>');
-                $(this).val('');
-                $(this).focus();
+                console.log('special characters are not allowed');
             }
 
         });
@@ -113,13 +117,17 @@
             var values = $(this).val();
             var pannoformat = new RegExp('^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
 
-            if (pannoformat.test(values)) {
-                return true;
+            if (/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/.test(values)) {
+                if (pannoformat.test(values)) {
+                    return true;
+                } else {
+                    $('.pan_no_error').remove();
+                    $(this).after('<label id="pan_no-error" class="error pan_no_error " for="pan_no">Please Enter Valid PAN Number</label>');
+                    $(this).val('');
+                    $(this).focus();
+                }
             } else {
-                $('.pan_no_error').remove();
-                $(this).after('<label id="pan_no-error" class="error pan_no_error " for="pan_no">Please Enter Valid PAN Number</label>');
-                $(this).val('');
-                $(this).focus();
+                console.log('special characters are not allowed');
             }
 
         });
@@ -128,13 +136,17 @@
             var values = $(this).val();
             var cinnoformat = new RegExp('^[L,U]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[C,P,T,L,S,G,O,N]{3}[0-9]{6}$');
 
-            if (cinnoformat.test(values)) {
-                return true;
+            if (/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/.test(values)) {
+                if (cinnoformat.test(values)) {
+                    return true;
+                } else {
+                    $('.cin_no_error').remove();
+                    $(this).after('<label id="cin_no-error" class="error cin_no_error " for="cin_no">Please Enter Valid CIN Number</label>');
+                    $(this).val('');
+                    $(this).focus();
+                }
             } else {
-                $('.cin_no_error').remove();
-                $(this).after('<label id="cin_no-error" class="error cin_no_error " for="cin_no">Please Enter Valid CIN Number</label>');
-                $(this).val('');
-                $(this).focus();
+                console.log('special characters are not allowed');
             }
 
         });
@@ -165,14 +177,14 @@
                 'is_active': {
                     required: true
                 },
-                 'state': {
+                'state': {
                     required: true
                 },
-                 'city': {
+                'city': {
                     required: true
                 },
                 'is_reg': {
-                    required:true
+                    required: true
                 }
             },
             messages: {
@@ -183,13 +195,16 @@
                     required: "Please enter Company Address"
                 },
                 'gst_no': {
-                    required: "Please enter GST Number"
+                    required: "Please enter GST Number",
+                    maxlength: "GST Number can not more than 15 characters"
                 },
                 'pan_no': {
-                    required: "Please enter Pan Number"
+                    required: "Please enter Pan Number",
+                    maxlength: "PAN Number can not more than 10 characters"
                 },
                 'cin_no': {
-                    required: "Please enter CIN Number"
+                    required: "Please enter CIN Number",
+                    maxlength: "CIN Number can not more than 21 characters"
                 },
                 'bank_acc_no': {
                     required: "Please enter Bank A/C Number"
