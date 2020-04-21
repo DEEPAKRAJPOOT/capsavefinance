@@ -6,8 +6,10 @@ use App\Http\Requests\Request;
 use Carbon\Carbon;
 use DB;
 use Session;
+use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
+use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
@@ -15,16 +17,14 @@ use App\Inv\Repositories\Models\Application;
 /**
  * User Invoice Repository class
  */
-class UserInvoiceRepository extends BaseRepositories{
+class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInterface{
+	use CommonRepositoryTraits;
 
-	/**
-	 * Class constructor
-	 *
-	 * @return void
-	 */    
 	public function __construct() {
+	   parent::__construct();
 	}
 
+	
 	/**
 	 * Create method
 	 *
@@ -41,22 +41,7 @@ class UserInvoiceRepository extends BaseRepositories{
 	protected function update(array $attributes, $id) {        
 	}
 
-	/**
-	 * Get all records method
-	 *
-	 * @param array $columns
-	 */
-	public function all($columns = array('*')) {        
-	}
-
-	/**
-	 * Find method
-	 *
-	 * @param mixed $id
-	 * @param array $columns     
-	 */
-	public function find($id, $columns = array('*')) {        
-	}
+	
 
 	public function getBizId($appId = null) {
 		$records =  Application::where('app_id', $appId)->first();
@@ -73,6 +58,11 @@ class UserInvoiceRepository extends BaseRepositories{
 		return $gsts->isEmpty() ? [] : $gsts;
 	}
 
+	public function getAppsByUserId($userId = null) {
+		$apps = Application::getAllAppsNbizByUserId($userId);
+		return $apps->isEmpty() ? [] : $apps;
+	}
+
         
 	public function saveUserInvoice($invoices,$whereCondition=[]) {
 		return UserInvoice::saveUserInvoice($invoices,$whereCondition);
@@ -83,4 +73,8 @@ class UserInvoiceRepository extends BaseRepositories{
 	public function getInvoices($whereCondition=[]) {
 			return UserInvoice::getInvoices($whereCondition);
 	}	
+
+	public function getStateListCode() {
+		return State::getStateListCode();
+	}
 }

@@ -1026,6 +1026,5 @@ Route::group(
     Route::post('update-eod-batch-process', [
         'as' => 'update_eod_batch_process',
         'uses' => 'AjaxController@updateEodProcessStatus'
-    ]);     
-    
+    ]);        
 });
