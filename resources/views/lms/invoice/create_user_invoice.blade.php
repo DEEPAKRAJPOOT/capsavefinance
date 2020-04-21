@@ -38,6 +38,7 @@
                                         <tr>
                                             <td class="text-left border-0" width="30%"> <b>Billing Address</b> </td>
                                             <td class="text-right border-0" width="30%"> <b>Original Of Recipient</b> </td>
+                                            <td>{{$gstInfo[0]->pan_gst_hash}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -66,8 +67,9 @@
                                                         <label for="app_id">Application ID</label>
                                                         <select class="form-control" name="app_id" id="app_id">
                                                             <option disabled value="" selected>Select Application ID</option>
-                                                            <option value="">1</option>
-                                                            <option value="">2</option>
+                                                            @foreach($appInfo as $ad_id) 
+                                                            <option value="{{$ad_id}}">{{$appInfo[0]->app_id}}</option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
@@ -111,7 +113,7 @@
                                                 <div class="row">
                                                     <div class="form-group col-12">
                                                         <label for="pan_no">Enter PAN Number</label>
-                                                        <input type="text" class="form-control" id="pan_no" name="pan_no" placeholder="Enter PAN No">
+                                                        <input type="text" class="form-control" id="pan_no" name="pan_no" placeholder="Enter PAN No" value="{{$gstInfo[0]->pan_gst_hash}}">
                                                     </div>
                                                 </div>
                                             </td>

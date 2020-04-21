@@ -48,6 +48,7 @@ class userInvoiceController extends Controller
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
+
             return view('lms.invoice.user_invoice_list')->with(['userInfo' => $userInfo]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -62,10 +63,15 @@ class userInvoiceController extends Controller
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            $app_id = $this->UserInvRepo->getAppsByUserId($user_id);
-            
+            $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
+            $appID = $appInfo[0]->app_id;
+            $gstInfo = $this->UserInvRepo->getGSTs($appID);
             $state_list = ['' => 'Please Select'] + $this->master->getAddStateList()->toArray();
-            return view('lms.invoice.create_user_invoice')->with(['user_id' => $user_id, 'state_list' => $state_list]);
+
+            // dd($gstInfo);pan_gst_hash
+
+            return view('lms.invoice.create_user_invoice')
+            ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo, 'gstInfo' => $gstInfo]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
