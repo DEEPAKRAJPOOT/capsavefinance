@@ -38,7 +38,6 @@
                                         <tr>
                                             <td class="text-left border-0" width="30%"> <b>Billing Address</b> </td>
                                             <td class="text-right border-0" width="30%"> <b>Original Of Recipient</b> </td>
-                                            <td>{{$gstInfo[0]->pan_gst_hash}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -83,8 +82,9 @@
                                                         <label for="gstin">GSTIN</label>
                                                         <select class="form-control" name="gstin" id="gstin">
                                                             <option disabled value="" selected>Select GSTIN</option>
-                                                            <option value="">GST</option>
-                                                            <option value="">IGST</option>
+                                                            @foreach($gstInfo as $gstn)
+                                                                <option value="{{$gstn->pan_gst_hash}}">{{$gstn->pan_gst_hash}}</option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
