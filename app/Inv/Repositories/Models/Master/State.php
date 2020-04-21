@@ -42,10 +42,13 @@ class State extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'id',
         'country_id',
         'name',
         'is_active',
         'code',
+        'state_code',
+        'state_no',
         'created_at',
         'updated_at'
     ];
@@ -165,6 +168,12 @@ class State extends BaseModel
     {
         $res = self::where('is_active', '1')->pluck('id', 'name');
         return $res ?: false;
+    }
+
+    public static function getStateListCode() {
+        $res = self::select('*')->get()
+        ->pluck('name', 'state_code', 'state_no');
+        return $res ? $res : false;
     }
 
 }

@@ -66,9 +66,11 @@ class userInvoiceController extends Controller
             $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
             $appID = $appInfo[0]->app_id;
             $gstInfo = $this->UserInvRepo->getGSTs($appID);
-            $state_list = ['' => 'Please Select'] + $this->master->getAddStateList()->toArray();
 
-            // dd($gstInfo);pan_gst_hash
+            $state_list = ['' => 'Please Select'] + $this->UserInvRepo->getStateListCode()->toArray();
+            // $state_list = $this->UserInvRepo->getStateListCode();
+
+            // dd($gstInfo);
 
             return view('lms.invoice.create_user_invoice')
             ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo, 'gstInfo' => $gstInfo]);

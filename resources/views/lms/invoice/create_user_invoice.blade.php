@@ -55,7 +55,7 @@
                                                         <select class="form-control" name="state_id" id="state_id">
                                                             <option disabled value="" selected>Select State</option>
                                                             @foreach($state_list as $stateName=>$stateList)
-                                                            <option value="{{$stateList}}">{{$stateName}}</option>
+                                                            <option value="{{$stateList}}">{{$stateList}}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -83,8 +83,9 @@
                                                         <label for="gstin">GSTIN</label>
                                                         <select class="form-control" name="gstin" id="gstin">
                                                             <option disabled value="" selected>Select GSTIN</option>
-                                                            <option value="">GST</option>
-                                                            <option value="">IGST</option>
+                                                            @foreach($gstInfo as $gst)
+                                                            <option value="">{{$gst->pan_gst_hash}}</option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
