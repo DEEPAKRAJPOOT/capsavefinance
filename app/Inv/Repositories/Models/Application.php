@@ -201,8 +201,6 @@ class Application extends BaseModel
       return  self::where('app_id',$appId)->first();
         
     } 
-    
-    
     /**
      * Get Applications for Application list data tables
      */

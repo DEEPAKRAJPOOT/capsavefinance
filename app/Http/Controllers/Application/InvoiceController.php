@@ -13,8 +13,10 @@ use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
 use DB;
+use DateTime;
 use App\Libraries\Pdf;
 use Carbon\Carbon;
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 
 class InvoiceController extends Controller {
 
@@ -64,7 +66,8 @@ class InvoiceController extends Controller {
           
          $getAllInvoice    =   $this->invRepo->getLimitAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();  
-         return view('frontend.application.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice]);
+         $getBulkInvoice = $this->invRepo->getUserAllBulkInvoice();
+         return view('frontend.application.invoice.bulk_invoice')->with(['get_bus' => $get_bus, 'anchor_list'=> $getAllInvoice,'getBulkInvoice' =>$getBulkInvoice]);
         
       } 
     
@@ -125,21 +128,6 @@ class InvoiceController extends Controller {
                return back();
           }
       }
-       /* save bulk invoice */
-
-    public function saveBulkInvoice(Request $request) {
-        $attributes = $request->all();
-        $res = $this->invRepo->saveBulk($attributes);
-        if ($res) {
-
-            Session::flash('message', 'Invoice successfully saved');
-            return back();
-        } else {
-            Session::flash('message', 'Something wrong, Invoice is not saved');
-            return back();
-        }
-    }
-
       
      /*   save invoice */
 
@@ -179,7 +167,7 @@ class InvoiceController extends Controller {
             'file_id' => $userFile->file_id,
             'created_by' => $id,
             'created_at' => $date);
-        $result = $this->invRepo->save($arr);
+            $result = $this->invRepo->save($arr);
 
         if ($result) {
 
@@ -191,5 +179,192 @@ class InvoiceController extends Controller {
             return back();
         }
     }
+    
+    
+    
+    public function saveBulkInvoice(Request $request)
+    {  
+        $getCustomerId = $this->invRepo->checkLmsUser();
+        if(!$getCustomerId)
+        {
+             Session::flash('error','Customer Limit is not sanctioned or offer is not approved.');
+             return back(); 
+        }
+        $date = Carbon::now();
+        $id = Auth::user()->user_id; 
+        $attributes = $request->all();
+        $program_name  = explode(',',$attributes['program_name']);
+        $prgm_id        =   $program_name[0];
+        $prgm_limit_id   =   $program_name[1];
+        $batch_id =  self::createBatchNumber(6);
+        $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
+        if($uploadData['status']==0)
+        {
+             Session::flash('error', $uploadData['message']);
+             return back(); 
+        }
+        $userFile = $this->docRepo->saveFile($uploadData);  ///Upload csv
+        $userFile['batch_no'] =  $batch_id;
+        if($userFile)
+       {
+           $resFile =  $this->invRepo->saveInvoiceBatch($userFile);
+           if($resFile)
+           {
+              $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
+              if($uploadData['status']==0)
+             {
+               Session::flash('error', $uploadData['message']);
+               return back(); 
+             }
+              if($uploadData)
+              {   
+                  $zipBatch  =   self::createBatchNumber(6);
+                  $uploadData['batch_no'] = $zipBatch;
+                  $uploadData['parent_bulk_batch_id'] =  $resFile->invoice_bulk_batch_id;
+                  $resZipFile =  $this->invRepo->saveInvoiceZipBatch($uploadData);
+                  if($resZipFile)
+                  {
+                    $csvPath = storage_path('app/public/'.$userFile->file_path);
+                    $handle = fopen($csvPath, "r");
+                    $data = fgetcsv($handle, 1000, ",");
+                    
+                    $csvPath1 = storage_path('app/public/'.$userFile->file_path);
+                    $handle1 = fopen($csvPath1, "r");
+                    $data1 = fgetcsv($handle1, 1000, ",");
+                    $key=0;
+                    $ins = [];
+                    $dataAttr[] ="";
+                   $multiValiChk =  InvoiceTrait::multiValiChk($handle1,$prgm_id,$attributes['anchor_name'],$getCustomerId['customer_id']);
+               
+                if($multiValiChk['status']==0)
+                {
+
+                    Session::flash('multiVali', $multiValiChk);
+                    return back();   
+                }
+            
+                  while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
+                    {   
+                      
+                        $inv_no  =   $data[0]; 
+                        $inv_date  =   $data[1]; 
+                        $amount  =   $data[2]; 
+                        $file_name  =   $data[3];
+                        $dataAttr['cusomer_id']  =   $getCustomerId['customer_id']; 
+                        $dataAttr['inv_no']  =   $data[0]; 
+                        $dataAttr['inv_date']  =   $data[1]; 
+                        $dataAttr['amount']  =   $data[2]; 
+                        $dataAttr['file_name']  =   $data[3];
+                        $dataAttr['anchor_id']  =   $attributes['anchor_name'];
+                        $dataAttr['prgm_id']  =   $prgm_id;
+                        $chlLmsCusto  = InvoiceTrait::getLimitProgram($dataAttr);
+                        $getPrgm  = $this->application->getProgram($prgm_id);
+                        if($chlLmsCusto['status']==0)
+                        {
+                           Session::flash('error', $chlLmsCusto['message']);
+                           return back(); 
+                        }
+                        ////// for validation paramiter here//////
+                        $dataAttr['user_id']  =  $chlLmsCusto['user_id'];
+                        $dataAttr['app_id']  =   $chlLmsCusto['app_id'];
+                        $dataAttr['biz_id']  =   $chlLmsCusto['biz_id'];
+                        $dataAttr['tenor']  =   $chlLmsCusto['tenor'];
+                        $dataAttr['old_tenor']  =   $chlLmsCusto['tenor_old_invoice'];
+                        $dataAttr['prgm_offer_id']  =   $chlLmsCusto['prgm_offer_id'];
+                        $dataAttr['approval']  =   $getPrgm;
+                        $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
+                        if($getInvDueDate['status']==0)
+                        {
+                           Session::flash('error', $getInvDueDate['message']);
+                           return back(); 
+                        }
+                        $dataAttr['inv_due_date']  =   $getInvDueDate['inv_due_date']; 
+                        $error = InvoiceTrait::checkCsvFile($dataAttr);
+                       
+                        if($error['status']==0)
+                        {
+                           Session::flash('error', $error['message']);
+                           return back(); 
+                        }
+                        $status_id =  $error['status_id'];
+                        $comm_txt  =  $error['message'];
+                        $error  =  $error['error'];
+                      if($file_name)
+                      {
+                        $getImage =  Helpers::ImageChk($file_name,$batch_id);
+                        if($getImage['status']==1)
+                        {
+                            
+                           $FileDetail = $this->docRepo->saveFile($getImage); 
+                           $FileId  = $FileDetail->file_id; 
+                        }
+                        else
+                        {
+                           $FileId  = Null; 
+                           $comm_txt  =  $getImage['message']; 
+                        }
+                      }
+                      else
+                      {
+                            $FileId  = Null; 
+                      }
+                        $userLimit = $chlLmsCusto['limit'];
+                        $ins['anchor_id'] = $attributes['anchor_name'];
+                        $ins['supplier_id'] = $dataAttr['user_id'];
+                        $ins['program_id'] = $prgm_id;
+                        $ins['prgm_offer_id'] = $dataAttr['prgm_offer_id'];
+                        $ins['app_id'] = $dataAttr['app_id'];
+                        $ins['biz_id'] = $dataAttr['biz_id'];
+                        $ins['invoice_no'] = $inv_no;
+                        $ins['tenor'] = $dataAttr['tenor'];
+                        $ins['invoice_date'] = Carbon::createFromFormat('d-m-Y', $inv_date)->format('Y-m-d');
+                        $ins['invoice_due_date'] = Carbon::createFromFormat('d-m-Y', $dataAttr['inv_due_date'])->format('Y-m-d');
+                        $ins['pay_calculation_on'] = 2;
+                        $ins['invoice_approve_amount'] = $amount;
+                        $ins['comm_txt'] = $comm_txt;
+                        $ins['status'] = $error;
+                        $ins['status_id'] = $status_id;
+                        $ins['file_id'] =  $FileId;
+                        $ins['created_by'] =  $id;
+                        $ins['created_at'] =  $date;
+                        $key++;
+                      
+                        $res =  $this->invRepo->saveInvoice($ins);
+                        if($res)
+                        {
+                            if($res['status']!=2)
+                            {
+                                
+                               $updateLimit =  $this->invRepo->updateLimit($userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                            }
+                         
+                        }
+                           
+                    } 
+            
+                     
+                         Session::flash('message', 'Invoice data successfully sent to under reviewer process');
+                         return back();  
+                     
+                  }
+              }
+           }
+       }
+      
+    }
+    
+   
+
+    public static function createBatchNumber($length = 6)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+    
 
 }

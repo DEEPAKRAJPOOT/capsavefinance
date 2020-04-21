@@ -836,6 +836,19 @@ class ApplicationController extends Controller
 					'app_id' => $app_id, 
 					'created_by' => Auth::user()->user_id
 				  );
+
+			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
+			  	$endDate = date('Y-m-d', strtotime('+1 years'));
+			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
+        		if (!is_null($appLimitId)) {
+				  	$this->appRepo->saveAppLimit([
+				  		'status' => 1,
+				  		'start_date' => $curDate,
+				  		'end_date' => $endDate], $appLimitId);
+				  	$this->appRepo->updatePrgmLimitByLimitId([
+				  		'start_date' => $curDate,
+				  		'end_date' => $endDate], $appLimitId);
+			  	}
 				  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
 				  if($createCustomer != null) {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
