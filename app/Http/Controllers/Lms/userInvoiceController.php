@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use DB;
+use PDF;
 use Session;
 use Helpers;
 // use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
@@ -53,7 +54,8 @@ class userInvoiceController extends Controller
             'cin' => 'U67120MH1992PTC068062',
             'email' => 'accounts@rentalpha.com',
             'invoice_date' => '01-Apr-2019',
-            'invoice_no' => 'CAPII0000457',
+            'invoice_no' => 'MH/19-20/0001',
+            'ref_no' => 'CAPII0000457',
             'place_of_supply' => 'Maharashtra',
             'pan' => 'AAACA4269Q',
             'state' => 'Maharashtra',
@@ -69,6 +71,7 @@ class userInvoiceController extends Controller
                     'cgst_amt' => '3288.06',
                     'igst_rate' => '0',
                     'igst_amt' => '0',
+                    'total_rental' => '39110.12',
                 ),
                  array(
                     'desc' => 'Documentation Fee',
@@ -80,6 +83,7 @@ class userInvoiceController extends Controller
                     'cgst_amt' => '90',
                     'igst_rate' => '0',
                     'igst_amt' => '0',
+                    'total_rental' => '1180',
                 ),
                  array(
                     'desc' => 'overdue Fee',
@@ -91,6 +95,7 @@ class userInvoiceController extends Controller
                     'cgst_amt' => '270',
                     'igst_rate' => '12',
                     'igst_amt' => '360',
+                    'total_rental' => '3900',
                 ),
             ],
         ];
@@ -109,8 +114,13 @@ class userInvoiceController extends Controller
      * Display invoice as per User.
      *
      */
-    public function viewInvoiceAsPDF($data = []) {
-        return view('lms.invoice.generate_invoice', $data);
+    public function viewInvoiceAsPDF($data = [], $download = true) {
+        view()->share($data);
+        if ($download==true) {
+          $pdf = PDF::loadView('lms.invoice.generate_invoice');
+          return $pdf->download('pdfview.pdf');
+        }
+        return view('lms.invoice.generate_invoice');
     }
 
     /**

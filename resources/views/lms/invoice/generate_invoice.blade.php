@@ -20,222 +20,200 @@
    <div style="text-align: center">
       <table border="1px" style="width: 100%" align="center" cellspacing="0" cellpadding="1">
          <tr>
-            <td width="71%"><span style="font-size: small"><strong>Billing Address: </strong></span></td>
-            <td width="30%"><span style="font-size: small"><strong>Invoice No: </strong> MH/19-20/0001</span></td>
+            <td width="70%"><span style="font-size: small"><strong>Billing Address: </strong></span></td>
+            <td width="30%"><span style="font-size: small"><strong>Invoice No: </strong> {{$invoice_no}}</span></td>
          </tr>
          <tr>
             <td rowspan="3"><span style="font-size: small"><strong>{{$comp_billing_addr}}</strong></td>
-            <td><span style="font-size: small"><strong>Invoice Date: </strong> {{$comp_billing_addr}}</span></td>
+            <td><span style="font-size: small"><strong>Invoice Date: </strong> {{$invoice_date}}</span></td>
          </tr>
          <tr>
-            <td><span style="font-size: small"><strong>Reference No: </strong> {{$comp_billing_addr}}</span></td>
+            <td><span style="font-size: small"><strong>Reference No: </strong> {{$ref_no}}</span></td>
          </tr>
          <tr>
-            <td><span style="font-size: small"><strong>Place of Supply: </strong> {{$comp_billing_addr}}</span></td>
+            <td><span style="font-size: small"><strong>Place of Supply: </strong> {{$place_of_supply}}</span></td>
          </tr>
       </table>
    </div> 
    <div style="text-align: center;margin-top: 20px">
-      <table style="width: 100%;" border="1px" cellspacing="0" cellpadding="1">
-         <tbody>
-            <tr>
-               <td style="background: #f2f2f2;" rowspan="2" bgcolor="#f2f2f2" width="30" height="7">
-                  <p align="center"><span style="font-size: small;"><strong>Sr No</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" rowspan="2" bgcolor="#f2f2f2" width="104">
-                  <p align="center"><span style="font-size: small;"><strong>Description</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" rowspan="2" bgcolor="#f2f2f2" width="37">
-                  <p align="center"><span style="font-size: small;"><strong>SAC</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" rowspan="2" bgcolor="#f2f2f2" width="76">
-                  <p align="center"><span style="color: #000000;"><span style="font-size: small;"><strong>Base Amount (Rs)</strong></span></span></p>
-               </td>
-               <td style="background: #f2f2f2;" colspan="2" bgcolor="#f2f2f2" width="106">
-                  <p align="center"><span style="font-size: small;"><strong>SGST/UTGST</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" colspan="2" bgcolor="#f2f2f2" width="106">
-                  <p align="center"><span style="font-size: small;"><strong>CGST</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" colspan="2" bgcolor="#f2f2f2" width="105">
-                  <p align="center"><span style="font-size: small;"><strong>IGST</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" rowspan="2" bgcolor="#f2f2f2" width="65">
-                  <p align="center"><span style="font-size: small;"><strong>Total Rental</strong></span></p>
-               </td>
-            </tr>
-            <tr>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="42">
-                  <p align="center"><span style="color: #000000;"><span style="font-size: small;"><strong>Rate (%)</strong></span></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="62">
-                  <p align="center"><span style="color: #000000;"><span style="font-size: small;"><strong>Amount (Rs)</strong></span></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="42">
-                  <p align="center"><span style="color: #000000;"><span style="font-size: small;"><strong>Rate (%)</strong></span></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="62">
-                  <p align="center"><span style="color: #000000;"><span style="font-size: small;"><strong>Amount (Rs)</strong></span></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="42">
-                  <p align="center"><span style="color: #000000;"><span style="font-size: small;"><strong>Rate (%)</strong></span></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="61">
-                  <p align="center"><span style="color: #000000;"><span style="font-size: small;"><strong>Amount (Rs)</strong></span></span></p>
-               </td>
-            </tr>
-            <tr>
-               <td width="30" height="5">
-                  <p align="center"><span style="font-size: small;">1</span></p>
-               </td>
-               <td width="104">
-                  <p align="center"><span style="font-size: small;">Processing Fee</span></p>
-               </td>
-               <td width="37">
-                  <p align="right"><span style="font-size: small;">9971</span></p>
-               </td>
-               <td width="76">
-                  <p align="right"><span style="font-size: small;">36,534.00</span></p>
-               </td>
-               <td width="42">
-                  <p align="right"><span style="font-size: small;">9.00</span></p>
-               </td>
-               <td width="62">
-                  <p align="right"><span style="font-size: small;">3,288.06</span></p>
-               </td>
-               <td width="42">
-                  <p align="right"><span style="font-size: small;">9.00</span></p>
-               </td>
-               <td width="62">
-                  <p align="right"><span style="font-size: small;">3,288.06</span></p>
-               </td>
-               <td width="42">
-                  <p align="right"><span style="font-size: small;">0.00</span></p>
-               </td>
-               <td width="61">
-                  <p align="right"><span style="font-size: small;">0.00</span></p>
-               </td>
-               <td width="65">
-                  <p align="right"><span style="font-size: small;">43,110.12</span></p>
-               </td>
-            </tr>
-            <tr>
-               <td width="30" height="45">
-                  <p align="center"><span style="font-size: small;">2</span></p>
-               </td>
-               <td width="104">
-                  <p align="center"><span style="font-size: small;">Documentation Charges</span></p>
-               </td>
-               <td width="37">
-                  <p align="right"><span style="font-size: small;">9987</span></p>
-               </td>
-               <td width="76">
-                  <p align="right"><span style="font-size: small;">1000.00</span></p>
-               </td>
-               <td width="42">
-                  <p align="right"><span style="font-size: small;">9.00</span></p>
-               </td>
-               <td width="62">
-                  <p align="right"><span style="font-size: small;">90.00</span></p>
-               </td>
-               <td width="42">
-                  <p align="right"><span style="font-size: small;">9.00</span></p>
-               </td>
-               <td width="62">
-                  <p align="right"><span style="font-size: small;">90.00</span></p>
-               </td>
-               <td width="42">
-                  <p align="right"><span style="font-size: small;"><span style="color: #ff0000;">0.00</span></span></p>
-               </td>
-               <td width="61">
-                  <p align="right"><span style="font-size: small;">0.00</span></p>
-               </td>
-               <td width="65">
-                  <p align="right"><span style="font-size: small;">1180.00</span></p>
-               </td>
-            </tr>
-            <tr>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="30" height="7">
-                  <p align="right"><span style="font-size: small;"><strong>&nbsp;</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="104">
-                  <p align="center"><span style="font-size: small;"><strong>Total</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="37">
-                  <p align="right"><span style="font-size: small;"><strong>&nbsp;</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="76">
-                  <p align="right"><span style="font-size: small;"><strong>36,534.00</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="42">
-                  <p align="right"><span style="font-size: small;"><strong>&nbsp;</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="62">
-                  <p align="right"><span style="font-size: small;"><strong>3,288.06</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="42">
-                  <p align="right"><span style="font-size: small;"><strong>&nbsp;</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="62">
-                  <p align="right"><span style="font-size: small;"><strong>3,288.06</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="42">
-                  <p align="right"><span style="font-size: small;"><strong>&nbsp;</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="61">
-                  <p align="right"><span style="font-size: small;"><strong>0.00</strong></span></p>
-               </td>
-               <td style="background: #f2f2f2;" bgcolor="#f2f2f2" width="65">
-                  <p align="right"><span style="font-size: small;"><strong>43,110.12</strong></span></p>
-               </td>
-            </tr>
-         </tbody>
+      <table border="1px" style="width: 100%;" align="center" cellspacing="0" cellpadding="1">
+         <tr>
+            <td rowspan="2" bgcolor="#f2f2f2" width="10" height="7">
+               <span style="font-size: small;"><strong>Sr No</strong></span>
+            </td>
+            <td rowspan="2" bgcolor="#f2f2f2" width="20">
+               <span style="font-size: small;"><strong>Description</strong></span>
+            </td>
+            <td rowspan="2" bgcolor="#f2f2f2" width="15">
+               <span style="font-size: small;"><strong>SAC</strong></span>
+            </td>
+            <td rowspan="2" bgcolor="#f2f2f2" width="20">
+               <span style="font-size: small;"><strong>Base Amount (Rs)</strong></span>
+            </td>
+            <td colspan="2" bgcolor="#f2f2f2" width="40">
+               <span style="font-size: small;"><strong>SGST/UTGST</strong></span>
+            </td>
+            <td colspan="2" bgcolor="#f2f2f2" width="40">
+               <span style="font-size: small;"><strong>CGST</strong></span>
+            </td>
+            <td colspan="2" bgcolor="#f2f2f2" width="40">
+               <span style="font-size: small;"><strong>IGST</strong></span>
+            </td>
+            <td rowspan="2" bgcolor="#f2f2f2" width="15">
+               <span style="font-size: small;"><strong>Total Rental</strong></span>
+            </td>
+         </tr>
+         <tr>
+            <td bgcolor="#f2f2f2" width="10">
+               <span style="font-size: small;"><strong>Rate (%)</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2" width="30">
+               <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2" width="10">
+               <span style="font-size: small;"><strong>Rate (%)</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2" width="30">
+               <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2" width="10">
+               <span style="font-size: small;"><strong>Rate (%)</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2" width="30">
+               <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+            </td>
+         </tr>
+         @php
+         $total_base_amt = 0;
+         $total_sgst_amt = 0;
+         $total_cgst_amt = 0;
+         $total_igst_amt = 0;
+         $sum_total_rental = 0;
+         $count = 0;
+         @endphp
+         @foreach($intrest_charges as $key => $txns)
+         @php
+         $total_base_amt += $txns['base_amt'];
+         $total_sgst_amt += $txns['sgst_amt'];
+         $total_cgst_amt += $txns['cgst_amt'];
+         $total_igst_amt += $txns['igst_amt'];
+         $sum_total_rental += $txns['total_rental'];
+         $count++;
+         @endphp
+          <tr>
+            <td>
+               <span style="font-size: small;">{{$count}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['desc']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['sac']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['base_amt']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['sgst_rate']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['sgst_amt']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['cgst_rate']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['cgst_amt']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['igst_rate']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['igst_amt']}}</span>
+            </td>
+            <td>
+               <span style="font-size: small;">{{$txns['total_rental']}}</span>
+            </td>
+         </tr>
+         @endforeach
+         <tr>
+            <td bgcolor="#f2f2f2">
+               <span style="font-size: small;"><strong>&nbsp;</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+               <span style="font-size: small;"><strong>Total</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>&nbsp;</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>{{$total_base_amt}}</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>&nbsp;</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>{{$total_sgst_amt}}</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>&nbsp;</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>{{$total_cgst_amt}}</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>&nbsp;</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>{{$total_igst_amt}}</strong></span>
+            </td>
+            <td bgcolor="#f2f2f2">
+              <span style="font-size: small;"><strong>{{$sum_total_rental}}</strong></span>
+            </td>
+         </tr>
       </table>
    </div>
    <p><span style="font-family: 'Book Antiqua', serif;font-size: small;"><u><strong>Payment Instructions:</strong></u></span></p>
    <p>
-      <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at par in Mumbai for <strong>Rs 43,110.12 </strong>to </span>
+      <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at par in Mumbai for <strong>Rs {{$sum_total_rental}} </strong>to </span>
    </p>
-   <p><span style="font-size: small;"><strong>Capsave Finance Pvt Ltd.</strong></span></p>
-   <p><span style="font-size: small;"><strong>Unit No.501, Wing D, Lotus Corporate Park| Western Express Highway, Goregaon (E)|Mumbai: 400 063</strong></span></p>
+   <p><span style="font-size: small;"><strong>{{$comp_name}}</strong></span></p>
+   <p><span style="font-size: small;"><strong>{{$comp_registered_addr}}</strong></span></p>
    <p>&nbsp;</p>
    <p><span style="font-size: small;"><u><strong>RTGS Details:</strong></u></span></p>
    <p lang="en-US" align="justify"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Beneficiary: Capsave Finance Pvt. Ltd; HDFC Bank, ESCROW A/C NO: 50200030310781; Branch Name: A.K. Vaidya Marg, Mumbai; IFSC Code: HDFC0000212</strong></span></span></p>
-   <table style="width: 100%" border="1" cellspacing="0" cellpadding="1">
+   <table style="width: 100%" align="center" border="1" cellspacing="0" cellpadding="1">
       <tbody>
          <tr>
-            <td width="74">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>PAN: </strong></span></p>
+            <td style="width: 30%">
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>PAN: </strong></span>
             </td>
-            <td colspan="2" width="531">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">AAACA4269Q</span></p>
-            </td>
-         </tr>
-         <tr>
-            <td width="74">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>State:</strong></span></p>
-            </td>
-            <td colspan="2" width="531">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">Maharashtra</span></p>
+            <td style="width: 70%">
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">AAACA4269Q</span>
             </td>
          </tr>
          <tr>
-            <td width="74">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>Address:</strong></span></p>
+            <td>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>State:</strong></span>
             </td>
-            <td colspan="2" width="531">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">UNIT NO. 501, WING-D, LOTUS CORPORATE PARK, WESTERN EXPRESS HIGHWAY, GOREGAON (EAST), MUMBAI - 400 063, MAHARASHTRA</span></p>
+            <td>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">Maharashtra</span>
             </td>
          </tr>
          <tr>
-            <td width="74">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>GSTIN:</strong></span></p>
+            <td>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>Address:</strong></span>
             </td>
-            <td width="221">
-               <p><span style="font-size: small;font-family: 'Book Antiqua', serif;">27AAACA4269Q2Z5</span></p>
+            <td>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">UNIT NO. 501, WING-D, LOTUS CORPORATE PARK, WESTERN EXPRESS HIGHWAY, GOREGAON (EAST), MUMBAI - 400 063, MAHARASHTRA</span>
             </td>
-            <td valign="top" width="309">
-               <p>&nbsp;</p>
+         </tr>
+         <tr>
+            <td>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>GSTIN:</strong></span>
+            </td>
+            <td>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">27AAACA4269Q2Z5</span>
             </td>
          </tr>
       </tbody>
