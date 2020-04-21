@@ -111,6 +111,7 @@ class BankAccountController extends Controller {
      */
     public function saveBankAccount(BankAccountRequest $request)
     {
+       
         try {
             $acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $prepareData = [
@@ -170,4 +171,41 @@ class BankAccountController extends Controller {
         }
     }
 
+    /**
+     * This method is used for see upload file in Bank Account  
+     */
+    public function seeUploadFile(Request $request) {
+
+        $acc_id = $request->all('bank_account_id');
+        $user_id = $request->all('user_id');
+    
+        $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
+        $filePath = 'app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
+        $path = storage_path($filePath);
+
+         if (file_exists($path)) {
+            
+            return response()->file($path);
+        }
+    }
+
+    public function downloadUploadFile(Request $request) {
+
+        $acc_id = $request->all('bank_account_id');
+        $user_id = $request->all('user_id');
+
+        $download = $request->get('download');
+
+        $file = $this->appRepo->seeUploadFilePopup($acc_id, $user_id);
+        $filePath = 'app/appDocs/Document/bankDoc/' . auth()->user()->user_id . '/' . $file->doc_name;
+        $path = storage_path($filePath);
+
+        if (file_exists($path)) {
+            return response()->download($path);
+        }
+        return response(['status' => 'failure', 'message' => 'The file You have Requested to view / Download is not valid.',], 404)
+                  ->header('Content-Type', 'application/json');
+    }
 }
+
+

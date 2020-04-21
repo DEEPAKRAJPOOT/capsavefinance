@@ -42,9 +42,12 @@ class AppLimit extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'app_id',
         'biz_id',
         'tot_limit_amt',
+        'start_date',
+        'end_date',
         'created_at',
         'created_by',
         'updated_at',        
