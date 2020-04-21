@@ -102,7 +102,7 @@
                 if (gstnoformat.test(values)) {
                     return true;
                 } else {
-                    $(this).after('<label id="gst_no-error" class="error gst_no_error" for="gst_no">Please Enter Valid GSTIN Number</label>');
+                    $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Please Enter Valid GSTIN Number</label>');
                     $(this).val(values);
                     $(this).focus();
                 }
@@ -121,7 +121,7 @@
                 if (pannoformat.test(values)) {
                     return true;
                 } else {
-                    $(this).after('<label id="pan_no-error" class="error pan_no_error " for="pan_no">Please Enter Valid PAN Number</label>');
+                    $(this).after('<label id="pan_no_error" class="error pan_no_error " for="pan_no">Please Enter Valid PAN Number</label>');
                     $(this).val('');
                     $(this).focus();
                 }
@@ -140,7 +140,7 @@
                 if (cinnoformat.test(values)) {
                     return true;
                 } else {
-                    $(this).after('<label id="cin_no-error" class="error cin_no_error " for="cin_no">Please Enter Valid CIN Number</label>');
+                    $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Please Enter Valid CIN Number</label>');
                     $(this).val('');
                     $(this).focus();
                 }
