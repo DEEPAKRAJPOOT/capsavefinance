@@ -42,16 +42,14 @@ class InterestAccrual extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'disbursal_id',
+        'invoice_disbursed_id',
         'interest_date',
         'principal_amount',
         'accrued_interest',
         'interest_rate',
         'overdue_interest_rate',
         'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',
+        'created_by'
     ];
 
     /**
@@ -90,8 +88,8 @@ class InterestAccrual extends BaseModel {
         
         $query = self::select('*');
                 
-        if (isset($whereCondition['disbursal_id'])) {
-            $query->where('disbursal_id', $whereCondition['disbursal_id']);
+        if (isset($whereCondition['invoice_disbursed_id'])) {
+            $query->where('invoice_disbursed_id', $whereCondition['invoice_disbursed_id']);
         }
         if (isset($whereCondition['interest_date_gte'])) {
             $query->where('interest_date', '>=', $whereCondition['interest_date_gte']);
@@ -113,8 +111,8 @@ class InterestAccrual extends BaseModel {
      */
     public static function sumAccruedInterest($whereCond)
     {           
-        if (isset($whereCond['disbursal_id'])) {
-            $query = self::where('disbursal_id', $whereCond['disbursal_id']); 
+        if (isset($whereCond['invoice_disbursed_id'])) {
+            $query = self::where('invoice_disbursed_id', $whereCond['invoice_disbursed_id']); 
         } 
         
         if (isset($whereCond['interest_date_lte'])) {
@@ -133,8 +131,8 @@ class InterestAccrual extends BaseModel {
 
     public static function countAccruedInterest($whereCond)
     {
-        if (isset($whereCond['disbursal_id'])) {
-            $query = self::where('disbursal_id', $whereCond['disbursal_id']); 
+        if (isset($whereCond['invoice_disbursed_id'])) {
+            $query = self::where('invoice_disbursed_id', $whereCond['invoice_disbursed_id']); 
         } 
         
         if (isset($whereCond['interest_date_lte'])) {

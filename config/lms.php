@@ -81,5 +81,9 @@ return [
         '6' => ['SYSTEM' => 'Refund Queue', 'USER' => 'Refund Queue'],
         '7' => ['SYSTEM' => 'Sent to Bank', 'USER' => 'Sent to Bank'],
         '8' => ['SYSTEM' => 'Processed', 'USER' => 'Process'],
+    ],
+    'DECIMAL_TYPE' => [
+        'PERCENTAGE' => '2',
+        'AMOUNT'=>'5'
     ],    
 ];

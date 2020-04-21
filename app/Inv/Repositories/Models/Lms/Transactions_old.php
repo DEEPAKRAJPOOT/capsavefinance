@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
@@ -44,102 +45,38 @@ class Transactions extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'payment_id',
         'parent_trans_id',
-        'invoice_disbursed_id',
+        'repay_trans_id',
+        'gl_flag',
+        'soa_flag',
         'user_id',
+        'biz_id',
+        'chrg_trans_id',
+        'virtual_acc_id',
+        'disbursal_id',
         'trans_date',
         'trans_type',
+        'trans_by',
+        'pay_from',
         'amount',
-        'entry_type',
+        'settled_amount',
         'gst',
         'cgst',
         'sgst',
         'igst',
+        'entry_type',
+        'tds_cert',
+        'is_tds',
+        'is_waveoff',
         'tds_per',
-        'gl_flag',
-        'soa_flag',
-        'trans_by',
-        'pay_from',
-        'is_settled',
-        'is_posted_in_tally',
+        'mode_of_pay',
         'comment',
+        'utr_no',
+        'cheque_no',
+        'txn_id',        
         'created_at',
-        'created_by'
+        'created_by',
     ];
-
-    public function payment(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
-    } 
-
-    public function invoiceDisbursed(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiceDisbursed','invoice_disbursed_id','invoice_disbursed_id');
-    }
-        
-    public function user(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Users','user_id','user_id');
-    }
-    
-    public function lmsUser(){
-        return $this->belongsTo('App\Inv\Repositories\Models\LmUsersUser','user_id','user_id');
-    }
-
-    public function transType(){
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
-    }   
-  
-    public function refundTransaction(){
-        return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
-    }
-
-    public function getsettled_amtAttribute(){
-        return self::where('parent_trans_id','=',$this->trans_id)->sum('amount');
-    }
-
-    public function getOutstandingAttribute(){
-        return $this->amount-$this->getSettledAmt($this->trans_id);
-    }
-
-    public function getTransNameAttribute(){
-        if($this->entry_type == 0){
-            return $this->transType->debit_desc;
-        }elseif($this->entry_type == 1){
-            return $this->transType->credit_desc;
-        }
-    }
-
-    private function getSettledAmt($trans_id){
-        return self::where('parent_trans_id','=',$this->trans_id)->sum('amount');
-    }
-
-    public static function getUnsettledTrans($userId){
-        return self::whereIn('is_settled',[0,1])
-                ->whereNull('parent_trans_id')
-                ->where('user_id','=',$userId)
-                ->orderBy('invoice_disbursed_id','ASC')
-                ->with(array('invoiceDisbursed' => function($query) {
-                    $query->orderBy('int_accrual_start_dt','ASC');
-                }))
-                ->orderByRaw("FIELD(trans_type, '9', '16', '33', '10')")
-                ->get()
-                ->filter(function($item) {
-                    return $item->outstanding > 0;
-                });
-    }
-
-    public static function getSettledTrans($userId){
-        return self::whereIn('is_settled',[2])
-                ->whereNotNull('parent_trans_id')
-                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
-                ->where('user_id','=',$userId);
-    }
-
-    public static function getRefundTrans($userId){
-        return self::whereIn('is_settled',[2])
-                ->whereNotNull('parent_trans_id')
-                ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
-                ->where('user_id','=',$userId);
-    }
 
     /**
      * Save Transactions
@@ -155,10 +92,10 @@ class Transactions extends BaseModel {
         }
         
         if (!isset($transactions['created_at'])) {
-            $transactions['created_at'] = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
+            $transactions['created_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         }
         if (!isset($transactions['created_by'])) {
-            $transactions['created_by'] = \Auth::user()->user_id;
+            $transactions['created_at'] = \Auth::user()->user_id;
         }        
         
         if (!empty($whereCondition)) {
@@ -170,6 +107,9 @@ class Transactions extends BaseModel {
         }
     }
 
+
+    
+    
     /**
      * Get Transactions
      *      
@@ -192,33 +132,8 @@ class Transactions extends BaseModel {
         $result = $query->get();
         return $result;
     }
-
-
-    /**
-     * Get Unsettled Inovoices
-     * 
-     * @param array 
-     * @return mixed
-     */
-    public static function getUnsettledInvoices(){
-        return self::whereIn('trans_type',[16])
-        ->get()
-        ->filter(function($item) {
-            return $item->outstanding > 0;
-        })
-        ;
-    }
-
-
-
-
-
-
-
-
-
     
-
+    
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)
     {
@@ -239,6 +154,19 @@ class Transactions extends BaseModel {
           return self::with(['biz','disburse','trans_detail','user'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
     }
     
+    public function disburse()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\Disbursal','disbursal_id','disbursal_id');
+    }      
+    
+    public function trans_detail()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
+    }   
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
 
     public static function get_balance($trans_code,$user_id){
 
@@ -305,7 +233,49 @@ class Transactions extends BaseModel {
         return self::where($whereCondition)->update($data);
     }
 
+    /** 
+       * @Author: Rent Alpha
+       * @Date: 2020-02-20 10:53:40 
+       * @Desc:  function for get user details from lms user table using user id 
+       */      
+    public function lmsUser()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id', 'user_id');
+    }
 
+
+    public function refundTransaction()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
+    }
+
+    /**
+    * Get Transaction Type and Charge Name 
+    */
+    public function getTransNameAttribute(){
+        if($this->trans_detail->chrg_master_id!='0'){
+            if($this->is_waveoff == 1){
+                return $this->trans_detail->charge->chrg_name.' Waved Off';
+            }elseif($this->is_tds == 1){
+                return $this->trans_detail->charge->chrg_name.' TDS';
+            }elseif($this->entry_type == 0){
+                return $this->trans_detail->charge->debit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->charge->credit_desc;
+            }
+        }else{
+            if($this->is_waveoff == 1){
+                return $this->trans_detail->trans_name.' Waved Off';
+            }
+            if($this->is_tds == 1){
+                return $this->trans_detail->trans_name.' TDS';
+            }elseif($this->entry_type == 0){
+                return $this->trans_detail->debit_desc;
+            }elseif($this->entry_type == 1){
+                return $this->trans_detail->credit_desc;
+            }
+        }
+    }
 
     public function getOppTransNameAttribute(){
         if($this->trans_detail->chrg_master_id!='0'){
@@ -434,7 +404,10 @@ class Transactions extends BaseModel {
         return $repaymentAmount;
     }
 
-    
+    public function biz(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
+    }
+
     public static function getAllChargesApplied(array $where = array()) {
         $cond = '';
         if (!empty($where)) {

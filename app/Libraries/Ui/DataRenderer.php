@@ -1348,7 +1348,7 @@ class DataRenderer implements DataProviderInterface
              ->addColumn(
                     'batch_id',
                     function ($invoice) {  
-                       return  (isset($invoice->disbursal->disbursal_batch->batch_id)) ? $invoice->disbursal->disbursal_batch->batch_id : '';
+                       return  (isset($invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id)) ? $invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id : '';
                 })
               ->addColumn(
                     'anchor_name',
@@ -3804,7 +3804,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('invoice_no',function($trans){
                 $data = '';
-                if($trans->disbursal_id && $trans->disburse->invoice ){
+                if($trans->disbursal_id && $trans->disburse && $trans->disburse->invoice ){
                     $data = $trans->disburse->invoice->invoice_no; 
                 }
                 return $data;
@@ -5142,29 +5142,10 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'bank',
                         function ($disbursal) {
-                        if ($disbursal->lms_user->user->is_buyer == 2) {
-                            $bank_name = (isset($disbursal->lms_user->user->anchor_bank_details->bank->bank_name)) ? $disbursal->lms_user->user->anchor_bank_details->bank->bank_name : '';
-                        } else {
-                            $bank_name = (isset($disbursal->lms_user->bank_details->bank->bank_name)) ? $disbursal->lms_user->bank_details->bank->bank_name : '';
-                        }
-
-
-                        if ($disbursal->lms_user->user->is_buyer == 2) {
-                            $ifsc_code = (isset($disbursal->lms_user->user->anchor_bank_details->ifsc_code)) ? $disbursal->lms_user->user->anchor_bank_details->ifsc_code : '';
-                        } else {
-                            $ifsc_code = (isset($disbursal->lms_user->bank_details->ifsc_code)) ? $disbursal->lms_user->bank_details->ifsc_code : '';
-                        }
-
-                        if ($disbursal->lms_user->user->is_buyer == 2) {
-                            $benAcc = (isset($disbursal->lms_user->user->anchor_bank_details->acc_no)) ? $disbursal->lms_user->user->anchor_bank_details->acc_no : '';
-                        } else {
-                            $benAcc = (isset($disbursal->lms_user->bank_details->acc_no)) ? $disbursal->lms_user->bank_details->acc_no : '';
-                        }
-
                         $account = '';
-                        $account .= $bank_name ? '<span><b>Bank:&nbsp;</b>'.$bank_name.'</span>' : '';
-                        $account .= $ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$ifsc_code.'</span>' : '';
-                        $account .= $benAcc ? '<br><span><b>Acc. #:&nbsp;</b>'.$benAcc.'</span>' : '';
+                        $account .= $disbursal->bank_name ? '<span><b>Bank:&nbsp;</b>'.$disbursal->bank_name.'</span>' : '';
+                        $account .= $disbursal->ifsc_code ? '<br><span><b>IFSC:&nbsp;</b>'.$disbursal->ifsc_code.'</span>' : '';
+                        $account .= $disbursal->acc_no ? '<br><span><b>Acc. #:&nbsp;</b>'.$disbursal->acc_no.'</span>' : '';
 
                         return $account;
 
@@ -5174,12 +5155,12 @@ class DataRenderer implements DataProviderInterface
                     'total_actual_funded_amt',
                     function ($disbursal) {
 
-                        return '<i class="fa fa-inr"></i> '.number_format($disbursal->total_disburse_amount);
+                        return '<i class="fa fa-inr"></i> '.number_format($disbursal->total_disburse_amount, 2);
                 })
                 ->editColumn(
                     'total_invoice',
                     function ($disbursal) {   
-                        return $disbursal->total_invoice;
+                        return $disbursal->invoice_disbursed->count();
                 }) 
                 
                 ->addColumn(
@@ -5221,5 +5202,117 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
+    }
+
+
+     /*
+     * 
+     * Get All Unsettled Transactions
+     */
+    public function getUnsettledTrans(Request $request, $trans,$payment)
+    {
+        return DataTables::of($trans,$payment)
+            ->rawColumns(['select', 'pay'])
+            ->addColumn('disb_date', function($trans){
+                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+            })
+            ->addColumn('invoice_no', function($trans){
+                if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
+                    return $trans->invoiceDisbursed->invoice->invoice_no;
+                }
+            })
+            ->addColumn('trans_type', function($trans){
+                return $trans->transName;
+            })
+            ->addColumn('total_repay_amt', function($trans){
+                return "₹ ".number_format($trans->amount,2);
+            })
+            ->addColumn('outstanding_amt', function($trans){
+                return "₹ ".number_format($trans->outstanding,2);
+            })
+            ->addColumn('payment_date', function($payment){
+                return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
+            })
+            ->addColumn('pay', function($trans){
+                $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                return $result;
+            })
+           
+            ->make(true);
+    }
+
+    /*
+     * 
+     * Get All Settled Transactions
+     */
+    public function getSettledTrans(Request $request, $trans)
+    {
+        return DataTables::of($trans)
+            ->rawColumns(['select', 'pay'])
+            ->addColumn('disb_date', function($trans){
+                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+            })
+            ->addColumn('invoice_no', function($trans){
+                return $trans->invoice_disbursed_id;
+            })
+            ->addColumn('trans_type', function($trans){
+                return $trans->transName;
+            })
+            ->addColumn('total_repay_amt', function($trans){
+                return "₹ ".number_format($trans->amount,2);
+            })
+            ->addColumn('payment_date', function($trans){
+                return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+            })
+            ->addColumn('pay', function($trans){
+                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->make(true);
+    }
+
+    /*
+     * 
+     * Get All Refund Transactions
+     */
+    public function getRefundTrans(Request $request, $trans)
+    {
+        return DataTables::of($trans)
+            ->rawColumns(['select', 'pay'])
+            ->addColumn('disb_date', function($trans){
+                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+            })
+            ->addColumn('invoice_no', function($trans){
+                return $trans->invoice_disbursed_id;
+            })
+            ->addColumn('trans_type', function($trans){
+                return $trans->transName;
+            })
+            ->addColumn('total_repay_amt', function($trans){
+                return "₹ ".number_format($trans->amount,2);
+            })
+            ->addColumn('outstanding_amt', function($trans){
+                return "₹ ".number_format($trans->outstanding,2);
+            })
+            ->addColumn('payment_date', function($trans){
+                return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+            })
+            ->addColumn('pay', function($trans){
+                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                return $result;
+            })
+            ->make(true);
     }
 }

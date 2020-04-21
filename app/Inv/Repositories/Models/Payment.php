@@ -114,14 +114,14 @@ class Payment extends BaseModel {
     }
 
 
-    public static function getPaymentModeAttribute() {
+    public function getPaymentModeAttribute() {
         $payment_type = $this->payment_type;
         $payModes = config('payment.type') ?? [];
         $mode_of_pay = $payModes[$payment_type] ?? NULL;
         return $mode_of_pay;
     }
 
-    public static function getTransNameAttribute() {
+    public function getTransNameAttribute() {
         $payment_type = $this->payment_type;
         switch ($payment_type) {
             case '1':

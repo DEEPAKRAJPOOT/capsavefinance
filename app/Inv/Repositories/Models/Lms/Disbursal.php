@@ -45,40 +45,19 @@ class Disbursal extends BaseModel {
 	protected $fillable = [
 		'user_id',
 		'app_id',
-		'invoice_id',
-		'prgm_offer_id',
 		'disbursal_batch_id',
-		'bank_account_id',
+		'tran_id',
 		'disburse_date',
+		'disburse_amount',
+		'funded_date',
+		'bank_account_id',
 		'bank_name',
 		'ifsc_code',
 		'acc_no',
 		'virtual_acc_id',
-		'customer_id',
-		'principal_amount',
-		'inv_due_date',
-		'payment_due_date',
-		'tenor_days',
-		'interest_rate',
-		'total_repaid_amt',
-		'total_interest',
-		'margin',
-		'disburse_amount',
 		'status_id',
-		'disbursal_api_log_id',
 		'disburse_type',
-		'settlement_date',
-		'surplus_amount',
-		'accured_interest',
-		'interest_refund',
-		'funded_date',
-		'int_accrual_start_dt',
-		'processing_fee',
-		'grace_period',
-		'overdue_interest_rate',
-		'repayment_amount',
-		'total_repaid_amount',
-		'penalty_amount',
+		'status_update_time',
 		'created_at',
 		'created_by',
 		'updated_at',
@@ -86,25 +65,12 @@ class Disbursal extends BaseModel {
 	];
 
 	/**
-	 * Get Interest Accrual 
-	 * 
-	 * @return type
-	 */
-	public function interests() { 
-		return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual', 'disbursal_id', 'disbursal_id'); 
-	}
-
-	/**
 	 * Get App Program Offer 
 	 * 
 	 * @return type
 	 */
-	public function offer() { 
-		return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id', 'prgm_offer_id'); 
-	}
-
-	public function transaction() { 
-		return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions', 'disbursal_id', 'disbursal_id'); 
+	public function invoice_disbursed() { 
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\InvoiceDisbursed', 'disbursal_id', 'disbursal_id'); 
 	}
 
 	/**
@@ -177,13 +143,6 @@ class Disbursal extends BaseModel {
         }
         
         $result = self::select('app_prgm_offer.*')
-                //->join('invoice', 'invoice.invoice_id', '=', 'disbursal.invoice_id')
-                ////->join('app_prgm_limit', 'invoice.program_id', '=', 'app_prgm_limit.prgm_id')
-                //->join('app_prgm_limit', function ($join) {
-                //    $join->on('invoice.program_id', '=', 'app_prgm_limit.prgm_id');
-                //    $join->on('invoice.app_id', '=', 'app_prgm_limit.app_id');
-                //})
-                //->join('app_prgm_offer', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
                 ->join('app_prgm_offer', 'disbursal.prgm_offer_id', '=', 'app_prgm_offer.prgm_offer_id')
                 ->where('disbursal_id', $whereCondition['disbursal_id'])
                 ->where('app_prgm_offer.is_active', 1)
@@ -193,20 +152,7 @@ class Disbursal extends BaseModel {
         return $result;
     }
     
-    
-    
-    /**
-     * get getDisbursal list
-     * 
-     * @return mixed
-     */
-    public static function getDisbursalList()
-    {
-        $res = self::select('disbursal.*','invoice.invoice_no' ,'invoice.invoice_approve_amount', 'mst_status.status_name')
-                ->join('invoice','disbursal.invoice_id' ,'=','invoice.invoice_id')
-                ->join('mst_status','disbursal.status_id' ,'=','mst_status.id')->orderBy('disbursal.disbursal_id', 'DESC');
-        return $res;
-    }
+   
     /////////////* get customer id   */////////////////
     public static function  getCustomerId($uid)
     {
@@ -223,12 +169,6 @@ class Disbursal extends BaseModel {
     {
         return self::with('invoice')->where(['disburse_type' => 2,'user_id' => $uid])->get();
     }
-    
-    function invoice()
-    {
-        return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->orderBy('invoice_due_date','asc');
-   
-	}
 	
 	public function  user()
 	{
@@ -243,15 +183,6 @@ class Disbursal extends BaseModel {
 	public function  lms_user()
 	{
 		  return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
-	}
-	public static function   updateRepayment($attr)
-	{
-		 $res =   self::where(['invoice_id' => $attr['invoice_id']])->first();
-		 if($res)
-		 {
-			 $sumAmount   =  $res->disburse_amount - $attr['repaid_amount'];
-			 return self::where(['invoice_id' => $attr['invoice_id']])->update(['repayment_amount' =>  $sumAmount]);
-		 }
 	}
 	
 	public  static function singleRepayment($disbursal_id,$sumAmount)
@@ -295,22 +226,22 @@ class Disbursal extends BaseModel {
     //     return $result;    
 	// }
 	
-	public static function getAllBankInvoiceCustomers($batch_id){
-        $result = \DB::select("SELECT DISTINCT(rta_disbursal.user_id),rta_disbursal.app_id,customer_id,bank_name, acc_no, ifsc_code,  COUNT(invoice_id) as total_invoice, SUM(disburse_amount) as total_amt, concat(rta_users.f_name, ' ', rta_users.l_name) AS ben_name, rta_biz.biz_entity_name
-		FROM rta_disbursal 
-		JOIN rta_users ON (rta_users.user_id=rta_disbursal.user_id)
-        JOIN rta_app ON (rta_app.app_id=rta_disbursal.app_id)
-        JOIN rta_biz ON (rta_biz.biz_id=rta_app.biz_id)
-		WHERE disbursal_batch_id = ? AND disbursal_batch_id IS NOT null 
-		GROUP BY rta_disbursal.user_id, rta_disbursal.app_id, customer_id, bank_name, acc_no, ifsc_code",[$batch_id]);
-        return $result;    
-	}
+	// public static function getAllBankInvoiceCustomers($batch_id){
+ //        $result = \DB::select("SELECT DISTINCT(rta_disbursal.user_id),rta_disbursal.app_id,customer_id,bank_name, acc_no, ifsc_code,  COUNT(invoice_id) as total_invoice, SUM(disburse_amount) as total_amt, concat(rta_users.f_name, ' ', rta_users.l_name) AS ben_name, rta_biz.biz_entity_name
+	// 	FROM rta_disbursal 
+	// 	JOIN rta_users ON (rta_users.user_id=rta_disbursal.user_id)
+ //        JOIN rta_app ON (rta_app.app_id=rta_disbursal.app_id)
+ //        JOIN rta_biz ON (rta_biz.biz_id=rta_app.biz_id)
+	// 	WHERE disbursal_batch_id = ? AND disbursal_batch_id IS NOT null 
+	// 	GROUP BY rta_disbursal.user_id, rta_disbursal.app_id, customer_id, bank_name, acc_no, ifsc_code",[$batch_id]);
+ //        return $result;    
+	// }
 	
-	public static function getAllDisburseInvoice($batch_id, $disbursed_user_id){
-        $result = \DB::select("SELECT rta_disbursal.app_id,rta_disbursal.invoice_id,DATE_FORMAT(disburse_date,'%Y-%m-%d') as disburse_date,DATE_FORMAT(inv_due_date,'%Y-%m-%d') as inv_due_date,disburse_amount,disburse_type,rta_invoice.invoice_no
-		FROM rta_disbursal
-        JOIN rta_invoice ON (rta_invoice.invoice_id=rta_disbursal.invoice_id)
-		WHERE rta_disbursal.disbursal_batch_id IS NOT null AND rta_disbursal.disbursal_batch_id = ? AND rta_disbursal.user_id=?",[$batch_id, $disbursed_user_id]);
-        return $result;    
-    }
+	// public static function getAllDisburseInvoice($batch_id, $disbursed_user_id){
+ //        $result = \DB::select("SELECT rta_disbursal.app_id,rta_disbursal.invoice_id,DATE_FORMAT(disburse_date,'%Y-%m-%d') as disburse_date,DATE_FORMAT(inv_due_date,'%Y-%m-%d') as inv_due_date,disburse_amount,disburse_type,rta_invoice.invoice_no
+	// 	FROM rta_disbursal
+ //        JOIN rta_invoice ON (rta_invoice.invoice_id=rta_disbursal.invoice_id)
+	// 	WHERE rta_disbursal.disbursal_batch_id IS NOT null AND rta_disbursal.disbursal_batch_id = ? AND rta_disbursal.user_id=?",[$batch_id, $disbursed_user_id]);
+ //        return $result;    
+ //    }
 }

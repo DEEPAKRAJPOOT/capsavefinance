@@ -152,13 +152,21 @@ class InvoiceController extends Controller {
         $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
-        $userInfo = $this->invRepo->getCustomerDetail($user_id);
-        $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(9);
-        $get_bus = $this->invRepo->getBusinessNameApp(9);
+        // $userInfo = $this->invRepo->getCustomerDetail($user_id);
+        // $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(9);
+        // $get_bus = $this->invRepo->getBusinessNameApp(9);
         $id = Auth::user()->user_id;
         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-        return view('backend.invoice.disbursed_invoice')->with(['role' =>$chkUser->id,'get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+        return view('backend.invoice.disbursed_invoice')->with([
+            'role' =>$chkUser->id,
+            // 'get_bus' => $get_bus, 
+            // 'anchor_list' => $getAllInvoice, 
+            'flag' => $flag, 
+            'user_id' => $user_id, 
+            'app_id' => $app_id, 
+            // 'userInfo' => $userInfo
+            ]);
     }
 
     public function viewRepaidInvoice(Request $req) {
@@ -304,24 +312,30 @@ class InvoiceController extends Controller {
         $disbursalBatchId = $request->disbursal_batch_id;
         $transId = $request->trans_id;
         $remarks = $request->remarks;
+        $createdBy = Auth::user()->user_id;
 
         $apiLogData['tran_id'] = $transId;
-        $apiLogData['remark'] = $remarks;
+        $apiLogData['comment'] = $remarks;
 
-        $invoiceIds = $this->lmsRepo->findDisbursalByUserAndBatchIds(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
-        $disburseApiLog = $this->lmsRepo->createDisburseApi($apiLogData);
-        if ($disburseApiLog) {
+        $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+        $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+        
+        if ($disbursalIds) {
             $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
-                    'disbursal_api_log_id' => $disburseApiLog->disbursal_api_log_id
-                ], ['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId]);
-                        
-            if ($updateDisbursal) {
-                $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
-                foreach ($invoiceIds as $key => $value) {
-                    $this->invRepo->saveInvoiceStatusLog($value, 12);
-                }
+                    'tran_id' => $transId,
+                    'status_id' => 12
+                ], $disbursalIds);
+            foreach ($disbursalIds as $key => $value) {
+                $this->lmsRepo->createDisbursalStatusLog($value, 12, $remarks, $createdBy);
+            }
+        }            
+        if ($invoiceIds) {
+            $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+            foreach ($invoiceIds as $key => $value) {
+                $this->invRepo->saveInvoiceStatusLog($value, 12);
             }
         }
+        
 
         Session::flash('message',trans('backend_messages.disburseMarked'));
         return redirect()->route('backend_get_sent_to_bank');
@@ -503,7 +517,6 @@ class InvoiceController extends Controller {
         $invoiceIds = $request->get('invoice_ids');
         $disburseDate = $request->get('disburse_date');
         $creatorId = Auth::user()->user_id;
-        // dd($disburseDate);
         $validator = Validator::make($request->all(), [
            'disburse_date' => 'required'
         ]);
@@ -540,7 +553,9 @@ class InvoiceController extends Controller {
         $totalFunded = 0;
         $totalMargin = 0;
         $exportData = [];
+        $invoiceDisbursedIds = [];
         $disbursalIds = [];
+        $disbursalData = [];
         $batchId= _getRand(12);
         $transId = _getRand(18);
 
@@ -548,17 +563,21 @@ class InvoiceController extends Controller {
             $disburseAmount = 0;
 
             foreach ($allinvoices as $invoice) {
-                $disburseData = $this->lmsRepo->findDisbursalByInvoiceId($invoice['invoice_id'])->toArray();
-                if ($disburseData == null) {
-                    $invoice['batch_id'] = $batchId;
-                    $invoice['disburse_date'] = $disburseDate;
-                    $disburseRequestData = $this->createInvoiceDisbursalData($invoice, $disburseType);
-                    $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disburseRequestData);
-                    $disbursalId = $createDisbursal->disbursal_id; 
-                    $disbursalIds[] = $createDisbursal->disbursal_id; 
-                    $refId = $invoice['lms_user']['virtual_acc_id'];
-                }
+
                 if($invoice['supplier_id'] = $userid) {
+                    $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
+
+                    if ($invoiceDisbursedData == null) {
+                        $invoice['batch_id'] = $batchId;
+                        $invoice['disburse_date'] = $disburseDate;
+                        
+                        $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
+                        $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
+                        $invoiceDisbursedId = $createInvoiceDisbursed->invoice_disbursed_id;
+                        $invoiceDisbursedIds[] = $createInvoiceDisbursed->invoice_disbursed_id;
+                    }
+                    
+                    $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                     $this->invRepo->saveInvoiceStatusLog($invoice['invoice_id'], 10);
                     $interest= 0;
                     $margin= 0;
@@ -566,7 +585,7 @@ class InvoiceController extends Controller {
                     $tenor = $this->calculateTenorDays($invoice);
                     $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                     $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                    $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
+                    $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
                     if($invoice['program_offer']['payment_frequency'] == 1) {
                         $interest = $tInterest;
@@ -574,81 +593,64 @@ class InvoiceController extends Controller {
 
                     $totalInterest += $interest;
                     $totalMargin += $margin;
-                    $totalFunded += $fundedAmount;
-                    $disburseAmount += round($fundedAmount, 2);
-                }
-
-                if($disburseType == 2) {
-
-                    $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-                    $exportData[$userid]['RefNo'] = $refId;
-                    $exportData[$userid]['Amount'] = $disburseAmount;
-                    $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
-                    $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
-                    $exportData[$userid]['Debit_Mobile'] = '9876543210';
-                    $exportData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
-                    $exportData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
-                    $exportData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
-                    $exportData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
-                    $exportData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
-                    $exportData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
-                    $exportData[$userid]['Mode_of_Pay'] = 'IFT';
-                    $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
-                    $exportData[$userid]['Remarks'] = 'test remarks';
-                    $exportData[$userid]['Value_Date'] = date('Y-m-d');
-
-                    if ($createDisbursal) {
-                        $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-                    }
+                    $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+                    $disburseAmount += $amount;
 
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($userid, ['amount' => $fundedAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
+                    $transactionData = $this->createTransactionData($userid, ['amount' => $amount, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 16);
                     $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
                     
                     // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
-                
-                    if ($interest > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 9);
-                        $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
-
-                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $interest, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 9, 1);
-                        $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
-                    }
-
-                    // Margin transaction $tranType = 10 
-                    if ($margin > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $margin, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 10, 1);
-                        $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
-                    }
-                } 
-            }
-            /*
-            if ($disburseAmount) {
-                if($disburseType == 2) {
-                    
-                    // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($userid, ['amount' => $disburseAmount, 'trans_date' => $disburseDate, 'disbursal_id' => $disbursalId], $transId, 16);
-                    $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
-                    
-                    // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
-                    $intrstAmt = round($totalInterest,2);
+                    $intrstAmt = round($totalInterest, config('lms.DECIMAL_TYPE')['AMOUNT']);
                     if ($intrstAmt > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9);
+                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 9);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate], $transId, 9, 1);
+                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['parent_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 9, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
 
                     // Margin transaction $tranType = 10 
-                    $marginAmt = round($totalMargin,2);
+                    $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT']);
                     if ($marginAmt > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate], $transId, 10, 1);
+                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 10, 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
+
+                    $disbursalData['invoice'] = $invoice;
+
                 }
+
             }
-            */
+            if($disburseType == 2) {
+                $disbursalData['disburse_amount'] = $disburseAmount;
+
+                $disbursalRequest = $this->createDisbursalData($disbursalData['invoice'], $disburseAmount, $disburseType);
+                $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
+                $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
+
+                $updateDisbursal = $this->lmsRepo->updateInvoiceDisbursed([
+                        'disbursal_id' => $createDisbursal->disbursal_id
+                    ], $invoiceDisbursedIds);
+                $disbursalIds[] = $createDisbursal->disbursal_id; 
+                $refId = $invoice['lms_user']['virtual_acc_id'];      
+                $exportData[$userid]['RefNo'] = $refId;
+                $exportData[$userid]['Amount'] = $disburseAmount;
+                $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
+                $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
+                $exportData[$userid]['Debit_Mobile'] = '9876543210';
+                $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
+                $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
+                $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
+                $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+                $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
+                $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
+                $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
+                $exportData[$userid]['Remarks'] = 'test remarks';
+                $exportData[$userid]['Value_Date'] = date('Y-m-d');
+
+            } 
         }
 
         $result = $this->export($exportData, $batchId);
@@ -669,6 +671,7 @@ class InvoiceController extends Controller {
         Session::flash('message',trans('backend_messages.disbursed'));
         return redirect()->route('backend_get_disbursed_invoice');
     }
+
 
     public function export($data, $filename) {
         $sheet =  new PHPExcel();
@@ -783,7 +786,6 @@ class InvoiceController extends Controller {
         $batchId = $request->get('batch_id');
 
         $data = $this->userRepo->lmsGetSentToBankInvToExcel($custCode, $selectDate, $batchId)->toArray();
-        
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -862,8 +864,8 @@ class InvoiceController extends Controller {
                 ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
                 ->setCellValue('J' . $rows, $rowData['user']['email'] ?? '')
                 ->setCellValue('K' . $rows, $rowData['user']['mobile_no'] ?? '')
-                ->setCellValue('L' . $rows, $rowData['transaction']['comment'] ?? '')
-                ->setCellValue('M' . $rows, $rowData['transaction']['mode_of_pay'] ?? '')
+                ->setCellValue('L' . $rows, $rowData['Remarks'] ?? '')
+                ->setCellValue('M' . $rows, $rowData['Mode_of_Pay'] ?? '')
                 ->setCellValue('N' . $rows, $rowData['column'] ?? '')
                 ->setCellValue('O' . $rows, $rowData['column'] ?? '')
                 ->setCellValue('P' . $rows, $rowData['column'] ?? '')

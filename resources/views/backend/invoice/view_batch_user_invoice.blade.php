@@ -44,10 +44,10 @@
 				    			if($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) {
 						            $interest = $tInterest;
 						        }           
-								$disburseAmount = round($fundedAmount - $interest, 2);
+								$disburseAmount = round($fundedAmount - $interest, 5);
 							@endphp
 
-							{{ number_format($disburseAmount) }}
+							{{ number_format($disburseAmount, 2) }}
 							</td>
 							<td> <span class="badge badge-primary">{{ ($invoice->program_offer->payment_frequency == 1) ? 'UPFRONT' : 'MONTHLY'  }}</span></td>
 							<td> <span class="badge badge-warning">{{ $invoice->mstStatus->status_name }}</span></td>
