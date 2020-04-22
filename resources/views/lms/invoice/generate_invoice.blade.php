@@ -187,7 +187,7 @@
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>PAN: </strong></span>
             </td>
             <td style="width: 70%">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">AAACA4269Q</span>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$pan}}</span>
             </td>
          </tr>
          <tr>
@@ -195,7 +195,7 @@
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>State:</strong></span>
             </td>
             <td>
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">Maharashtra</span>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$state}}</span>
             </td>
          </tr>
          <tr>
@@ -203,7 +203,7 @@
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>Address:</strong></span>
             </td>
             <td>
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">UNIT NO. 501, WING-D, LOTUS CORPORATE PARK, WESTERN EXPRESS HIGHWAY, GOREGAON (EAST), MUMBAI - 400 063, MAHARASHTRA</span>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$comp_registered_addr}}</span>
             </td>
          </tr>
          <tr>
@@ -211,14 +211,13 @@
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>GSTIN:</strong></span>
             </td>
             <td>
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">27AAACA4269Q2Z5</span>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$gstin}}</span>
             </td>
          </tr>
       </tbody>
    </table>
    <p align="center"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</span></span></p>
-   <p align="center">&nbsp;</p>
-   <p><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>For Capsave Finance Pvt. Ltd.</strong></span></span></p>
+   <span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>FOR {{$comp_name}}</strong></span></span>
    <p lang="en-US">&nbsp;</p>
    <p lang="en-US">&nbsp;</p>
    <p lang="en-US"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Authorized Signatory</strong></span></span></p>

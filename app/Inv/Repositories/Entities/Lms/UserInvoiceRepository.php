@@ -59,6 +59,15 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return $gsts->isEmpty() ? [] : $gsts;
 	}
 
+	public function getPAN($appId = null) {
+		$biz_id = $this->getBizId($appId);
+		$pan = [];
+		if (!empty($biz_id)) {
+			$pan = BizPanGst::where(['biz_id' => $biz_id, 'type' => 1])->where('parent_pan_gst_id', '=', 0)->get();
+		}
+		return $pan->isEmpty() ? [] : $pan;
+	}
+
 	public function getAppsByUserId($userId = null) {
 		$apps = Application::getAllAppsNbizByUserId($userId);
 		return $apps->isEmpty() ? [] : $apps;
@@ -84,7 +93,6 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
      */ 
     public function getBizUserInvoiceAddr($user_id) {
 		$addr = 'Ador Powertron Limited Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019';
-
         return response()->json($addr);
 	}
 

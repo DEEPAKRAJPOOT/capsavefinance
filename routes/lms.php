@@ -74,14 +74,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
 
             // get bissuness address in user invoice 
-            Route::get('get-biz-add-user-invoice', [
-                'as' => 'get-biz-add-user-invoice',
+            Route::post('get-biz-add-user-invoice', [
+                'as' => 'get_biz_add_user_invoice',
                 'uses' => 'Lms\userInvoiceController@getBizUserInvoiceAddr'
             ]);
 
+            // get gstins in user invoice 
+            Route::post('get_app_gstin', [
+                'as' => 'get_app_gstin',
+                'uses' => 'Lms\userInvoiceController@getGstinOfApp'
+            ]);
+
             // get state code for user invoice 
-            Route::get('get-user-state-code', [
-                'as' => 'get-user-state-code',
+            Route::post('get-user-state-code', [
+                'as' => 'get_user_state_code',
                 'uses' => 'Lms\userInvoiceController@getUserStateCode'
             ]);
             

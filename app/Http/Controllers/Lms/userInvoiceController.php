@@ -49,7 +49,6 @@ class userInvoiceController extends Controller
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
-
             return view('lms.invoice.user_invoice_list')->with(['userInfo' => $userInfo]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -60,7 +59,7 @@ class userInvoiceController extends Controller
      * Display invoice as per User.
      *
      */
-    public function viewInvoiceAsPDF($pdfData = [], $download = false) {
+    public function viewInvoiceAsPDF($pdfData = [], $download = true) {
         if (empty($pdfData)) {
             $pdfData = [
                 'comp_name' => 'CAPSAVE FINANCE PRIVATE LIMITED',
@@ -133,14 +132,9 @@ class userInvoiceController extends Controller
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
-            $appID = $appInfo[0]->app_id;
-            $gstInfo = $this->UserInvRepo->getGSTs($appID);
-            $customerID = $this->UserInvRepo->getUserCustomerID($user_id);
-
             $state_list = $this->UserInvRepo->getStateListCode();
-
             return view('lms.invoice.create_user_invoice')
-            ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo, 'gstInfo' => $gstInfo, 'customerID' => $customerID ]);
+            ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -196,12 +190,29 @@ class userInvoiceController extends Controller
     /**
      * Get Business Address by ajax
      */
+    public function getGstinOfApp(Request $request) {
+       try {
+        $appID = $request->get('app_id');
+        $gstInfo = $this->UserInvRepo->getGSTs($appID)->toArray();
+        $panInfo = $this->UserInvRepo->getPAN($appID)->toArray();
+        if (empty($gstInfo) || empty($panInfo)) {
+          return response()->json(['status' => 0,'message' => 'Selected application is not valid.']); 
+        }
+        return response()->json(['status' => 1,'gstInfo' => $gstInfo, 'panInfo' => $panInfo]); 
+       } catch(Exception $ex) {
+         return response()->json(['status' => 0,'message' => 'Selected application is not valid.']); 
+       }
+    }
+
+    /**
+     * Get Business Address by ajax
+     */
     public function getBizUserInvoiceAddr(Request $request) {
        try {
         $user_id = $request->get('user_id');
-
-        return $this->UserInvRepo->getBizUserInvoiceAddr($user_id);
-
+        $resp = $this->UserInvRepo->getBizUserInvoiceAddr($user_id);
+        $addr = 'Ador Powertron Limited Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019';
+        return response()->json($addr);
        } catch(Exception $ex) {
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
        }
@@ -213,11 +224,9 @@ class userInvoiceController extends Controller
     public function getUserStateCode(Request $request) {
         try {
             $state_code = $request->get('state_code');
-
             return $this->UserInvRepo->getUserStateCodeList($state_code);
-    
            } catch(Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+             return response()->json(['status' => 0,'message' => 'selected state is not valid']); 
            }
     }
 
