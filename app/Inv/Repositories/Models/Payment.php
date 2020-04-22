@@ -61,6 +61,7 @@ class Payment extends BaseModel {
         'unr_no',
         'cheque_no',
         'tds_certificate_no',
+        'file_id',
         'description',
         'is_settled',
         'is_manual',
@@ -106,13 +107,16 @@ class Payment extends BaseModel {
     }
 
     public function getBusinessName() {
-       return $this->hasOne(Business::class, 'biz_id');
+       return $this->belongsTo(Business::class, 'biz_id');
     }
 
     public function getUserName() {
-       return $this->hasOne(User::class, 'user_id');
+       return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function getCreatedByName() {
+       return $this->belongsTo(User::class, 'created_by');
+    }
 
     public function getPaymentModeAttribute() {
         $payment_type = $this->payment_type;

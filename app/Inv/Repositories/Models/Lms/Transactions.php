@@ -75,21 +75,33 @@ class Transactions extends BaseModel {
     public function invoiceDisbursed(){
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiceDisbursed','invoice_disbursed_id','invoice_disbursed_id');
     }
+
+    public function biz() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+
+    public function disburse() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiceDisbursed', 'invoice_disbursed_id');
+    }
         
     public function user(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Users','user_id','user_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
     }
     
     public function lmsUser(){
-        return $this->belongsTo('App\Inv\Repositories\Models\LmUsersUser','user_id','user_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
     }
 
     public function transType(){
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\TransType', 'id', 'trans_type');
+       return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type', 'id');
     }   
   
     public function refundTransaction(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\RefundTransactions', 'new_trans_id', 'trans_id');
+    }
+
+    public function accruedInterest(){
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id');
     }
 
     public function getsettled_amtAttribute(){
@@ -97,7 +109,7 @@ class Transactions extends BaseModel {
     }
 
     public function getOutstandingAttribute(){
-        return $this->amount-$this->getSettledAmt($this->trans_id);
+        return round(($this->amount-$this->getSettledAmt($this->trans_id)),2);
     }
 
     public function getTransNameAttribute(){
@@ -120,6 +132,7 @@ class Transactions extends BaseModel {
                 ->with(array('invoiceDisbursed' => function($query) {
                     $query->orderBy('int_accrual_start_dt','ASC');
                 }))
+                ->orderBy('trans_date','ASC')
                 ->orderByRaw("FIELD(trans_type, '9', '16', '33', '10')")
                 ->get()
                 ->filter(function($item) {
@@ -128,17 +141,17 @@ class Transactions extends BaseModel {
     }
 
     public static function getSettledTrans($userId){
-        return self::whereIn('is_settled',[2])
+        return self::whereNotNull('payment_id')
                 ->whereNotNull('parent_trans_id')
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
-                ->where('user_id','=',$userId);
+                ->where('user_id','=',$userId)->get();
     }
 
     public static function getRefundTrans($userId){
         return self::whereIn('is_settled',[2])
                 ->whereNotNull('parent_trans_id')
                 ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
-                ->where('user_id','=',$userId);
+                ->where('user_id','=',$userId)->get();
     }
 
     /**
@@ -193,20 +206,109 @@ class Transactions extends BaseModel {
         return $result;
     }
 
+    public static function getUnsettledInvoices($data = [])
+    {
 
-    /**
-     * Get Unsettled Inovoices
-     * 
-     * @param array 
-     * @return mixed
-     */
-    public static function getUnsettledInvoices(){
-        return self::whereIn('trans_type',[16])
-        ->get()
-        ->filter(function($item) {
+        $query = self::whereIn('trans_type',[16]);
+        
+        if(isset($data['int_accrual_start_dt'])){
+            $query->whereHas('invoiceDisbursed', function($q) use($data){
+                $q->where('int_accrual_start_dt','<=',$data['int_accrual_start_dt']);
+                $q->orderBy('inv_due_date','ASC');
+                $q->orderBy('disbursal_id','ASC');
+            });
+        }
+
+        if(isset($data['user_id'])){
+            $query->where('user_id','=',$data['user_id']);
+        }
+
+        return $query->get()->filter(function($item) {
             return $item->outstanding > 0;
+        });
+
+    }
+
+    public static function getUnsettledInvoiceTransactions($data = [])
+    {
+       
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
+
+        if(isset($data['invoice_disbursed_id'])){
+            $query->where('invoice_disbursed_id',$data['invoice_disbursed_id']);
+        }
+
+        if(isset($data['user_id'])){
+            $query->where('user_id',$data['user_id']);
+        }
+
+        if(isset($data['trans_type']) && !empty($data['trans_type'])){
+            $query->whereIn('trans_type',$data['trans_type']);
+        }
+
+        $query->orderByRaw("FIELD(trans_type, '9', '16', '33', '10')");
+        return $query->get()->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+    }
+
+    public static function getUnsettledChargeTransactions($data = [])
+    {
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
+
+        if(isset($data['user_id'])){
+            $query->where('user_id',$data['user_id']);
+        }
+
+        if(isset($data['trans_type']) && !empty($data['trans_type'])){
+            $query->whereIn('trans_type',$data['trans_type']);
+        }
+
+        if(!empty($data['trans_type_not_in'])){
+            $query->whereNotIn('trans_type',$data['trans_type_not_in']);
+        }
+        $query->orderBy('trans_date','ASC');
+
+        return $query->get()->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+    }
+
+
+    public static function calInvoiceRefund($invDesbId,$payment_date=null)
+    {
+        $invoice = self::where('invoice_disbursed_id','=',$invDesbId)
+        ->where('trans_type','=','9')
+        ->whereHas('invoiceDisbursed',function($query){
+            $query->whereHas('invoice', function($query){
+                $query->whereHas('program_offer',function($query){
+                    $query->where('payment_frequency','=',1);
+                });
+            });
         })
-        ;
+        ->first();
+
+        $intRefund = 0;
+        $totalDebitAmt = self::where('entry_type','=','0')
+        ->where('invoice_disbursed_id','=',$invDesbId)
+        ->whereNotIn('trans_type',[10])
+        ->sum('amount');
+        
+        $totalCreditAmt =  self::where('entry_type','=','1')
+        ->where('invoice_disbursed_id','=',$invDesbId)
+        ->whereNotIn('trans_type',[10])
+        ->sum('amount');
+        $invoice2 = $invoice;
+
+        if($totalDebitAmt <= $totalCreditAmt){
+            $invoice = $invoice->accruedInterest();
+			if($payment_date){
+				$invoice = $invoice->whereDate('interest_date','<',$payment_date);
+			}    
+            $intRefund = $invoice->sum('accrued_interest');
+        }
+        
+		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
 
@@ -216,8 +318,6 @@ class Transactions extends BaseModel {
 
 
 
-
-    
 
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)
@@ -236,7 +336,12 @@ class Transactions extends BaseModel {
     /*** get all transaction  **/
     public static function getAllManualTransaction()
     {
-          return self::with(['biz','disburse','trans_detail','user'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
+          return self::with(['biz','disburse','user', 'transType'])->where('trans_by','!=',NULL)->orderBy('trans_id','DESC');
+    }  
+
+    /*** get transaction  Detail**/
+    public static function getTransDetail($whereCondition){
+          return self::with(['biz','disburse','user', 'transType'])->where($whereCondition)->first();
     }
     
 
@@ -245,14 +350,14 @@ class Transactions extends BaseModel {
         $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
-                    ->whereNull('repay_trans_id')
+                    ->whereNull('payment_id')
                     ->where('entry_type','=','0')
                     ->sum('amount');
                     
         $dr +=  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
-                    ->whereNotNull('repay_trans_id')
+                    ->whereNotNull('payment_id')
                     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST_REFUND')])
                     ->where('entry_type','=','0')
                     ->sum('amount');
@@ -260,14 +365,14 @@ class Transactions extends BaseModel {
         $cr =   self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
-                    ->whereNull('repay_trans_id')
+                    ->whereNull('payment_id')
                     ->where('entry_type','=','1')
                     ->sum('amount');
 
         $cr +=  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
                     ->where('user_id','=',$user_id)
                     ->where('soa_flag','=',1)
-                    ->whereNotNull('repay_trans_id')
+                    ->whereNotNull('payment_id')
                     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST_REFUND')])
                     ->where('entry_type','=','1')
                     ->sum('amount');
@@ -308,25 +413,25 @@ class Transactions extends BaseModel {
 
 
     public function getOppTransNameAttribute(){
-        if($this->trans_detail->chrg_master_id!='0'){
+        if($this->transType->chrg_master_id!='0'){
             if($this->is_waveoff == 1){
-                return $this->trans_detail->charge->chrg_name.' Waved Off';
+                return $this->transType->charge->chrg_name.' Waved Off';
             }if($this->is_tds == 1){
-                return $this->trans_detail->charge->chrg_name.' TDS';
+                return $this->transType->charge->chrg_name.' TDS';
             }elseif($this->entry_type == 0){
-                return $this->trans_detail->charge->credit_desc;
+                return $this->transType->charge->credit_desc;
             }elseif($this->entry_type == 1){
-                return $this->trans_detail->charge->debit_desc;
+                return $this->transType->charge->debit_desc;
             }
         }else{
             if($this->is_waveoff == 1){
-                return $this->trans_detail->trans_name.' Waved Off';
+                return $this->transType->trans_name.' Waved Off';
             }if($this->is_tds == 1){
-                return $this->trans_detail->trans_name.' TDS';
+                return $this->transType->trans_name.' TDS';
             }elseif($this->entry_type == 0){
-                return $this->trans_detail->credit_desc;
+                return $this->transType->credit_desc;
             }elseif($this->entry_type == 1){
-                return $this->trans_detail->debit_desc;
+                return $this->transType->debit_desc;
             }
         }
     }
@@ -367,7 +472,7 @@ class Transactions extends BaseModel {
         if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
             return $this->txn_id;
         }
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.INTEREST_REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.MARGIN') ]) && !$this->repay_trans_id && $this->refundTransaction != null){
+        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.INTEREST_REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.MARGIN') ]) && !$this->payment_id && $this->refundTransaction != null){
             return $this->refundTransaction->request->batch->batch_id;
         }
     }
@@ -394,7 +499,7 @@ class Transactions extends BaseModel {
         return self::select('transactions.*')
                     ->join('users', 'transactions.user_id', '=', 'users.user_id')
                     ->join('lms_users','users.user_id','lms_users.user_id')
-                    ->where('soa_flag','=',1)
+                    //->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
                     ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');
@@ -443,6 +548,7 @@ class Transactions extends BaseModel {
             }
            $cond = ' AND ' .implode(' AND ', $wh);
         }
+        dd($cond);
         $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
         FROM `get_all_charges` t1 
         LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
@@ -452,7 +558,7 @@ class Transactions extends BaseModel {
     }
     
     public static function getTallyTxns(array $where = array()) {
-        $result = self::select('transactions.trans_id', 'transactions.repay_trans_id', 'transactions.parent_trans_id', 'transactions.user_id', 'users.f_name', 'users.m_name', 'users.l_name', 'transactions.biz_id', 'transactions.virtual_acc_id', 'transactions.disbursal_id', 'transactions.trans_date', 'transactions.trans_type', 'transactions.chrg_trans_id', 'transactions.amount', 'transactions.settled_amount', 'transactions.entry_type', 'user_bank_account.acc_name', 'user_bank_account.acc_no', 'mst_bank.bank_name', 'user_bank_account.ifsc_code' , 'transactions.is_settled', 'transactions.mode_of_pay', 'transactions.utr_no', 'transactions.unr_no', 'transactions.cheque_no', 'transactions.trans_by', 'transactions.pay_from', 'transactions.txn_id', 'transactions.is_posted_in_tally', 'transactions.comment', 'tally_voucher.trans_type_id', 'mst_trans_type.trans_name', 'mst_trans_type.credit_desc', 'mst_trans_type.debit_desc', 'mst_trans_type.tally_trans_type', 'tally_voucher.tally_voucher_id', 'tally_voucher.voucher_name', 'tally_voucher.created_at as voucher_date')
+        $result = self::select('transactions.trans_id', 'transactions.payment_id repay_trans_id', 'transactions.parent_trans_id', 'transactions.user_id', 'users.f_name', 'users.m_name', 'users.l_name', 'transactions.biz_id', 'transactions.virtual_acc_id', 'transactions.disbursal_id', 'transactions.trans_date', 'transactions.trans_type', 'transactions.chrg_trans_id', 'transactions.amount', 'transactions.settled_amount', 'transactions.entry_type', 'user_bank_account.acc_name', 'user_bank_account.acc_no', 'mst_bank.bank_name', 'user_bank_account.ifsc_code' , 'transactions.is_settled', 'transactions.mode_of_pay', 'transactions.utr_no', 'transactions.unr_no', 'transactions.cheque_no', 'transactions.trans_by', 'transactions.pay_from', 'transactions.txn_id', 'transactions.is_posted_in_tally', 'transactions.comment', 'tally_voucher.trans_type_id', 'mst_trans_type.trans_name', 'mst_trans_type.credit_desc', 'mst_trans_type.debit_desc', 'mst_trans_type.tally_trans_type', 'tally_voucher.tally_voucher_id', 'tally_voucher.voucher_name', 'tally_voucher.created_at as voucher_date')
             ->join('users', 'users.user_id', '=', 'transactions.user_id')
             ->join('mst_trans_type', 'mst_trans_type.id', '=', 'transactions.trans_type')
             ->join('tally_voucher', 'tally_voucher.trans_type_id', '=', 'mst_trans_type.id')

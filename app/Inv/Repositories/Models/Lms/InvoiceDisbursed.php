@@ -108,4 +108,12 @@ class InvoiceDisbursed extends BaseModel {
 		return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id');
 	}
 
+	public function accruedInterest(){
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id');
+    }
+	
+	public function appProgramOffer(){
+		return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer',);
+	}
+
 }

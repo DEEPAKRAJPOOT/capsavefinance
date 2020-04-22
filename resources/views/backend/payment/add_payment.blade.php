@@ -31,7 +31,8 @@
                                 'name' => 'savePayFrm',
                                 'autocomplete' => 'off',
                                 'id' => 'savePayFrm',
-                                'method'=> 'POST'
+                                'method'=> 'POST',
+                                'files' => true,
                                 )
                                 )
                                 !!}
@@ -153,13 +154,6 @@
                                                 <input type="text" name="igst_amt" id="igst_amt" readonly="readonly" class="form-control" value="">
                                             </div>
                                         </div>
-                                        <!--<div class="col-md-4">
-                                            <div class="form-group ">
-                                                <label for="txtCreditPeriod">Transaction Id<span class="error_message_label">*</span> </label>
-
-                                                <input type="text" name="txn_id" id="txn_id" class="form-control">
-                                            </div>
-                                        </div>  --> 
                                         <div class="col-md-4 payment-methods">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
@@ -175,15 +169,21 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 payment-methods">
+                                        <div class="col-md-4 payment-methods" style="display: none;">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>
                                             </div>
                                         </div>
                                         <div class="col-md-4 tds_certificate">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">TDS Certificate No <span class="error_message_label">*</span> </label>
+                                                <label for="txtCreditPeriod">TDS Certificate No </label>
                                                 <input type="text" id="tds_certificate_no" name="tds_certificate_no" class="form-control">
+                                            </div>
+                                        </div>
+                                        <dsiv class="col-md-4 tds_certificate">
+                                            <div class="custom-file upload-btn-cls mb-3 mt-4">
+                                                <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" multiple="">
+                                                <label class="custom-file-label" for="customFile">Choose Certificate File</label>
                                             </div>
                                         </div>
                                     </div>
@@ -441,7 +441,10 @@ cursor: pointer;
                         required:$("#incl_gst:checked").val()>0?false:true,
                     },
                     tds_certificate_no:{
-                        required:true,
+                        required:false,
+                    },
+                    tds_certificate_no:{
+                        required:false,
                     }
                 },
                 messages: {
@@ -636,6 +639,14 @@ cursor: pointer;
             }
         });         
     });
-   
+
+    $('.getFileName').change(function(){
+        $(this).parent('div').children('.custom-file-label').html('Choose file');
+    });
+    
+    $('.getFileName').change(function(e) {
+        var fileName = e.target.files[0].name;
+        $(this).parent('div').children('.custom-file-label').html(fileName);
+    });
 </script>
 @endsection

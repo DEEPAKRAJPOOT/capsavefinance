@@ -1,6 +1,7 @@
 <div class="row">
-    <div class="col-md-6 Lh-3"><b>Amount:</b> {{ $payment['amount'] }}</div>
-    <div class="col-md-6 Lh-3"><b>Transaction Date:</b> {{ $payment['date_of_payment'] }}</div>
-    <div class="col-md-6 Lh-3"><b>Mode of Payment:</b> {{$payment['paymentmode']  }}</div>
-    <div class="col-md-6 Lh-3"><b>Transaction No:</b> {{ $payment['transactionno'] }}</div>
+    <div class="col-md-4 Lh-3"><b>Transaction Date:</b> {{ Carbon\Carbon::parse($payment['date_of_payment'])->format('d-m-Y') }}</div>
+    <div class="col-md-4 Lh-3"><b>Transaction No:</b> {{ $payment['transactionno'] }}</div>
+    <div class="col-md-4 Lh-3"><b>Mode of Payment:</b> {{$payment['paymentmode']  }}</div>
+    <div class="col-md-6 Lh-3"><b>Repayment Amount:</b> ₹  {{ number_format($payment['amount'],2) }}</div>
+    <div class="col-md-6 Lh-3"><b>Unapplied Amount:</b><span id='unappliledAmt'>@isset($unAppliedAmt)₹ {{ number_format($unAppliedAmt,2) }}@endisset</span></div>
 </div>

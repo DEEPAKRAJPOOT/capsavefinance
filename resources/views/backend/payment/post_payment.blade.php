@@ -26,7 +26,7 @@
               <div class="form-sections">
                 <div class="row">
                   <div class="col-md-4">
-                    <label class="float-left">Search By Business</label> 
+                    <label class="float-left">Search By Business Name </label> 
                     <input type="text" name="search_bus" id="search_bus" class="form-control form-control-sm searchBusiness" placeholder="Type your Business Name">
                     <span id="search_bus_error" class="error"></span>
                     <input type="hidden" name="customer_id" id="customer_id" class="form-control form-control-sm">
@@ -54,6 +54,8 @@
                                   <th>Business Name</th>
                                   <th>Virtual Account</th>
                                   <th>Amount</th>
+                                  <th>Txn Date</th>
+                                  <th>Transaction By</th>
                                   <th>Action</th> 
                                 </tr>
                               </thead>
