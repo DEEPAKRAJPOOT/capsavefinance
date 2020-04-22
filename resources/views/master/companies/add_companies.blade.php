@@ -9,7 +9,7 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cmp_name">Company Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : old('cmp_name')}}">
+                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : old('cmp_name')}}" autofocus>
                 {!! $errors->first('cmp_name', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
@@ -173,7 +173,10 @@
            var comp_name = $('#cmp_name').val();
            var comp_id = $('#company_id').val();
            var status = false;
-           
+           if(comp_name.length <1 ){
+               $('#cmp_add').val('');
+               $('#cmp_name').focus();
+           }
            $.ajax({
                url: messages.check_comp_add_exist,
                type: 'POST',
