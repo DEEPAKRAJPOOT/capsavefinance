@@ -20,6 +20,7 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 
 trait InvoiceTrait
 {
@@ -331,12 +332,12 @@ trait InvoiceTrait
          if($getUser->is_buyer==0)
          {
             $customerAuto  = 4;
-            $expl  =  explode(",",$getPrgm->invoice_approval); 
+            $expl  =  explode(",",$getPrgm->bulk_invoice_upload); 
             if(in_array($customerAuto, $expl))  
             {
               return $statusId = 8;  
             }
-            else if($getPrgm->invoice_approval==4)
+            else if($getPrgm->bulk_invoice_upload==4)
             {
               return  $statusId = 8;   
             }
@@ -371,20 +372,44 @@ trait InvoiceTrait
         return  BizInvoice::where('status_id',8)->where(['supplier_id' =>$cid])->sum('invoice_approve_amount');
    }
 
-     public static  function invoicePendingLimit($cid)
+  public static function getInvoiceDetail($attr)
+  {
+      return BizInvoice::where(['invoice_id' => $attr['invoice_id']])->first();
+  }
+      public static  function updateApproveStatus($attr)
    {
-        return  BizInvoice::where('status_id',7)->where(['supplier_id' =>$cid])->orderBy('invoice_approve_amount', 'ASC')->get();
-   }
-   public static  function UnlockLimitAxceed($uid,$remain_amount)
-   {
-       $remainAmount = 0;
-      return  $invoice_approve_amount = self::invoicePendingLimit($uid);
-      /* foreach($invoice_approve_amount as $val)
-       {
-           
-       }  */
-       
-   }
+            $mytime = Carbon::now();
+            $cDate   =  $mytime->toDateTimeString();
+            $uid = Auth::user()->user_id;
+            $dueDateGreaterCurrentdate =  self::limitExpire($attr['user_id']);
+            $sum =  self::invoiceApproveLimit($attr['user_id']);
+            $inv_details =  self::getInvoiceDetail($attr);
+            $limit   =  self::ProgramLimit($inv_details);
+            if($dueDateGreaterCurrentdate)
+            {
+                       InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                return BizInvoice::where(['invoice_id' =>$attr['invoice_id'],'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+            } 
+            if($limit  > $sum)
+            {
+                $remain_amount =  $limit-$sum;
+                if($remain_amount >=$attr['amount'])
+                {
+                           InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                    return BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+         
+                }
+                else 
+                {
+                     return 2;
+                }
+             }
+            else 
+            {
+                 return 2;
+            }
+    }
+  
    public static function updateLimit($status_id,$limit,$inv_amout,$cid,$invoice_bulk_upload_id)
     {
         $sum  = self::invoiceApproveLimit($cid);

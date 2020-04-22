@@ -25,7 +25,9 @@
         if (confirm('Are you sure? You want to approve it.'))
         {
             var invoice_id = $(this).attr('data-id');
-            var postData = ({'invoice_id': invoice_id, 'status': 8, '_token': messages.token});
+            var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': 8, '_token': messages.token});
             th = this;
             jQuery.ajax({
                 url: messages.update_invoice_approve,
@@ -41,10 +43,16 @@
                         parent.$("#iframeMessage").html(alertmsg);
                         return false;
                     }                            
-                   
+                  else if(data=2)
+                   {
+                      alert('Limit Exceed');
+                 }
+                 else
+                 {
+
                      $("#moveCase").html('Invoice successfully sent to  approve ');
-                     $(th).parent('td').parent('tr').remove();
-                   
+                     $(th).parent('td').parent('tr').remove(); 
+                 }
                 }
             });
         } else

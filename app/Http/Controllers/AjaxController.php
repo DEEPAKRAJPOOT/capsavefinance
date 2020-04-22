@@ -38,6 +38,7 @@ use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 
 class AjaxController extends Controller {
 
@@ -3024,10 +3025,16 @@ if ($err) {
     
    public function updateInvoiceApprove(Request $request)
    {
-       
-           $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);
-           return \Response::json(['status' => $res]); 
-    
+           
+           if($request->status==8)
+           {
+              return  InvoiceTrait::updateApproveStatus($request);
+           }
+           else
+           {
+              $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);   
+              return \Response::json(['status' => $res]);
+           }
    }
   
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){

@@ -126,17 +126,8 @@ public static function saveBulkInvoice($arrInvoice)
         $id = Auth::user()->user_id;    
         $result =  User::getSingleUserDetails($id);
         InvoiceStatusLog::saveInvoiceLog($invoiceId,7,$amount,$comment);
-        $update = self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
-        $getDetails =  self::where(['invoice_id' => $invoiceId])->first();
-        $limit  =  InvoiceTrait::ProgramLimit($getDetails);
-        $sum    =     InvoiceTrait::invoiceApproveLimit($getDetails['supplier_id']);
-        if($limit  > $sum)
-        { 
-           $remain_amount = $limit-$sum;
-           return InvoiceTrait::UnlockLimitAxceed($getDetails['supplier_id'],$remain_amount); 
-///InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>1,'status_id' =>7]);
-        } 
-         
+        return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
     } 
     
     public static function getDisbursedAmount($invid)
