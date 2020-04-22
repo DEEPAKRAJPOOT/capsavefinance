@@ -175,9 +175,6 @@
                 'cin_no': {
                     required: true
                 },
-                'ifsc_code': {
-                    required: true
-                },
                 'is_active': {
                     required: true
                 },
@@ -209,16 +206,6 @@
                 'cin_no': {
                     required: "Please enter CIN Number",
                     maxlength: "CIN Number can not more than 21 characters"
-                },
-                'bank_acc_no': {
-                    required: "Please enter Bank A/C Number"
-                },
-                'conf_bank_acc_no': {
-                    required: "Please confirm Your Bank A/C No.",
-                    equalTo: 'Confirm Bank A/C No. and Bank A/C No. do not match.'
-                },
-                'ifsc_code': {
-                    required: "Please enter IFSC Code"
                 },
                 'is_active': {
                     required: "Please select Status of Company"
