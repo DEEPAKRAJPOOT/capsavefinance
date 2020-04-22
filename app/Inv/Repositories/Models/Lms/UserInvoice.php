@@ -144,4 +144,9 @@ class UserInvoice extends BaseModel {
     public function getStateNameByStateCode() {
        return $this->belongsTo(State::class, 'invoce_state_code');
     }
+
+    public static function saveUserInvoiceData($arrUserData) {
+        $status = self::create($arrUserData);
+        return $status ? $status : false;
+    }
 }

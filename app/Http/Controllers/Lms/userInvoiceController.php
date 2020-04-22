@@ -85,22 +85,17 @@ class userInvoiceController extends Controller
     public function saveUserInvoice(Request $request) {
         try {
             $arrUserData = $request->all();
-            $user_id = $request->get('user_id');
+            // $user_id = $request->get('user_id');
             $arrUserData['created_at'] = \carbon\Carbon::now();
             $arrUserData['created_by'] = Auth::user()->user_id;
             $status = false;
             $userInvoice_id = false;
-            dd($arrUserData);
 
-            $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
-            $appID = $appInfo[0]->app_id;
-            $gstInfo = $this->UserInvRepo->getGSTs($appID);
-            $customerID = $this->UserInvRepo->getUserCustomerID($user_id);
+            $invoice_no = $request->get('state_id');
+            $invoice_no .= $request->get('invoice_city');
+            $invoice_no .= $request->get('invoice_id');
+            $arrUserData['invoice_no'] = $invoice_no;
 
-            $state_list = $this->UserInvRepo->getStateListCode();
-
-            
             if(!empty($request->get('user_invoice_id'))){
                 $userInvoice_id = preg_replace('#[^0-9]#', '', $request->get('user_invoice_id'));
                 $userInvoice_data = $this->UserInvRepo->findUserInvoiceById($userInvoice_id);
