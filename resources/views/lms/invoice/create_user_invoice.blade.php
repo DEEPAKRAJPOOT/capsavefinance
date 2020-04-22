@@ -21,7 +21,7 @@
             <div class="card-body">
                <div class="form-fields">
                   <div class="active" id="details">
-                     <form id="userInvoice" name="userInvoice" method="POST" action="{{ route('save_user_invoice', [ 'user_id' => $userInfo->user_id ] ) }}" target="_top">
+                     <form id="userInvoice" name="userInvoice" method="POST" action="{{ route('save_user_invoice') }}" target="_top">
                         @csrf
                         <div class="table-responsive ps ps--theme_default w-100">
                            <table class="table border-0">
@@ -268,6 +268,8 @@
      if(invoce_state_code) {
          $('#state_abbr').html(invoce_state_code);
          $('#place_of_supply').val(state);
+         $('#place_of_supply').next().remove();
+         $('#place_of_supply').removeClass('error').val();
      }
    });
    
@@ -277,7 +279,13 @@
            format: 'dd/mm/yyyy',
            autoclose: true,
            minView : 2,
-       });
+       })
+    $('#invoice_date').on('change', function() {
+        var date = $(this).val();
+        $(this).next().remove();
+        $(this).removeClass('error').val();
+    });
+
    });
    $(document).on('change', '#gstin', function() {
        var gstin = $(this).val();
@@ -291,6 +299,8 @@
           success:function(data){ 
            if(data){
                $('#gst_addr').val(data);
+               $('#gst_addr').next().remove();
+               $('#gst_addr').removeClass('error').val();
            } else {
                $('#gst_addr').val();
            }

@@ -154,7 +154,6 @@ class userInvoiceController extends Controller
             $status = false;
             $userInvoice_id = false;
 
-            dd($request->all());
             $invoice_no = $request->get('state_id');
             $invoice_no .= $request->get('invoice_city');
             $invoice_no .= $request->get('invoice_id');
