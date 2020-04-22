@@ -67,6 +67,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'create_user_invoice',
                 'uses' => 'Lms\userInvoiceController@createUserInvoice'
             ]);
+            
+            Route::post('/save_user_invoice', [
+                'as' => 'save_user_invoice',
+                'uses' => 'Lms\userInvoiceController@saveUserInvoice'
+            ]);
 
             // get bissuness address in user invoice 
             Route::get('get-biz-add-user-invoice', [

@@ -27,7 +27,7 @@
 
                         
 
-                        <form id="userInvoice" name="userInvoice" method="POST" action="#" target="_top">
+                        <form id="userInvoice" name="userInvoice" method="POST" action="url{{ route('save_user_invoice', [ 'user_id' => $userInfo->user_id ] ) }}" target="_top">
                         @csrf
 
                             <div class="table-responsive ps ps--theme_default w-100">
@@ -37,6 +37,7 @@
                                         <tr>
                                             <td class="text-left border-0" width="30%"> <b>Billing Address</b> </td>
                                             <td class="text-right border-0" width="30%"> <b>Original Of Recipient</b> </td>
+                                            <td>{{$userInfo->user_id }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
