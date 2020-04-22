@@ -167,41 +167,46 @@
             }
 
         });
-        
-       $.validator.addMethod("unique_add", function(value,element){
-           var comp_add = value;
-           var comp_name = $('#cmp_name').val();
-           var comp_id = $('#company_id').val();
-           var status = false;
-           if(comp_name.length <1 ){
-               $('#cmp_add').val('');
-               $('#cmp_name').focus();
-           }
-           $.ajax({
-               url: messages.check_comp_add_exist,
-               type: 'POST',
-               datatype: 'json',
-               async: false,
-               cache: false,
-               data:{
-                   'comp_add': comp_add,
-                   'comp_name': comp_name,
-                   'comp_id': comp_id,
-                   '_token': messages.token
-               },
-               success: function (response) {
-                if (response['status'] === 'true') {
-                    status = true;
-                }
+
+        $.validator.addMethod("unique_add", function (value, element) {
+            var comp_add = value;
+            var comp_name = $('#cmp_name').val();
+            var comp_id = $('#company_id').val();
+            var status = false;
+            if (comp_name.length < 1) {
+                $('#cmp_add').val('');
+                $('#cmp_name').focus();
             }
-           });
-           return this.optional(element) || (status === true);
-       }); 
+            $.ajax({
+                url: messages.check_comp_add_exist,
+                type: 'POST',
+                datatype: 'json',
+                async: false,
+                cache: false,
+                data: {
+                    'comp_add': comp_add,
+                    'comp_name': comp_name,
+                    'comp_id': comp_id,
+                    '_token': messages.token
+                },
+                success: function (response) {
+                    if (response['status'] === 'true') {
+                        status = true;
+                    }
+                }
+            });
+            return this.optional(element) || (status === true);
+        });
+
+        $.validator.addMethod("onlyletters", function (value, element) {
+            return this.optional(element) || /^[A-Za-z. ]*$/.test(value);
+        });
 
         $('#companiesForm').validate({// initialize the plugin
             rules: {
                 'cmp_name': {
-                    required: true
+                    required: true,
+                    onlyletters: true
                 },
                 'cmp_add': {
                     required: true,
@@ -233,7 +238,8 @@
             },
             messages: {
                 'cmp_name': {
-                    required: "Please enter Company Name"
+                    required: "Please enter Company Name",
+                    onlyletters: "Only letters, dot and space allowed."
                 },
                 'cmp_add': {
                     required: "Please enter Company Address",
