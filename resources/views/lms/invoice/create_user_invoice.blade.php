@@ -24,6 +24,7 @@
                      <form id="userInvoice" name="userInvoice" method="POST" action="{{ route('save_user_invoice') }}" target="_top">
                         @csrf
                         <div class="table-responsive ps ps--theme_default w-100">
+                        <input type="hidden" value="{{ $userInfo->user_id }}" name="user_id">
                            <table class="table border-0">
                               <tbody>
                                  <tr>

@@ -148,7 +148,7 @@ class userInvoiceController extends Controller
     public function saveUserInvoice(Request $request) {
         try {
             $arrUserData = $request->all();
-            // $user_id = $request->get('user_id');
+            $user_id = $request->get('user_id');
             $arrUserData['created_at'] = \carbon\Carbon::now();
             $arrUserData['created_by'] = Auth::user()->user_id;
             $status = false;
@@ -170,10 +170,10 @@ class userInvoiceController extends Controller
             }
             if($status){
                 Session::flash('message', $userInvoice_id ? trans('success_messages.user_invoice_edit_success') :trans('success_messages.user_invoice_add_success'));
-                return redirect()->route('view_user_invoice');
+                return redirect()->route('view_user_invoice', [ 'user_id' => $user_id ]);
             }else{
                 Session::flash('error', trans('master_messages.something_went_wrong'));
-                return redirect()->route('view_user_invoice');
+                return redirect()->route('view_user_invoice', [ 'user_id' => $user_id ]);
             }
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
