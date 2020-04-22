@@ -31,7 +31,7 @@
         <a class=" {{($active=='userInvoice') ? 'active': null }} " href="{{route('view_user_invoice', [ 'user_id' => $userInfo->user_id ] )}}">Create Invoice</a>
     </li>
     @endcan
-   @endcan
+ 
      @can('limit_management')
      <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
