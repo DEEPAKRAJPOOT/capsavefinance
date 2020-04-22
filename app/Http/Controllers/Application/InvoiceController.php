@@ -51,7 +51,7 @@ class InvoiceController extends Controller {
         else {
              $get_program = [];
         }
-      dd($get_program);
+      
          return view('frontend.application.invoice.uploadinvoice')
                    ->with(['get_user' => $get_user,'get_program' => $get_program, 'get_anchor' => $get_anchor, 'app_id' => $app_id,'biz_id' => $biz_id]);
     }

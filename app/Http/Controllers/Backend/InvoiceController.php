@@ -348,7 +348,7 @@ class InvoiceController extends Controller {
         $res = $this->invRepo->updateInvoiceAmount($attributes);
         if ($res) {
 
-            Session::flash('message', 'Invoice Amount successfully Updated '.dd($res).'');
+            Session::flash('message', 'Invoice Amount successfully Updated ');
             return back();
         } else {
             Session::flash('message', 'Something wrong, Amount is not Updated');
