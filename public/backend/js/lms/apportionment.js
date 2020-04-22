@@ -203,6 +203,11 @@ class Apportionment {
        var numberOfChecked = $('input:checkbox:checked').length;
        if (numberOfChecked == 1) {
            var checkedName = $('input:checkbox:checked').attr('name');
+           var transtype = $('input:checkbox:checked').attr('transtype');
+           if (!transtype && transtype != 'charges' && transtype != 'interest') {
+                 alert('Waive off is not allowed except charges and interests');
+                 return false;
+           }
            var transId = checkedName.replace(/[^0-9]/g, '');
            var givenUrl = data.trans_detail_url;
            var targetUrl = givenUrl + '?trans_id=' + transId;

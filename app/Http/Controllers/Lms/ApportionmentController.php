@@ -135,7 +135,6 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
-                    'comment' => $comment ?? NULL,
                     'amount' => $amount,
                     'entry_type' => 1,
                     'trans_type' => 36,
