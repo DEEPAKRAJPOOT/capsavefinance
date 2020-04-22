@@ -37,7 +37,6 @@
                                         <tr>
                                             <td class="text-left border-0" width="30%"> <b>Billing Address</b> </td>
                                             <td class="text-right border-0" width="30%"> <b>Original Of Recipient</b> </td>
-                                            <td>{{$userInfo->user_id }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
