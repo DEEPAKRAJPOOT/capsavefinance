@@ -699,6 +699,17 @@ class UserEventsListener extends BaseEvent
            $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
         
     }
+    
+    public function onAddActivityLog($arrActivity)
+    {
+        $arrActivity = unserialize($arrActivity);
+        $whereCond=[];
+        $whereCond['activity_code'] = $arrActivity['activity_code'];
+        $activity = $this->mstRepo->getActivity($whereCond);        
+        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0 ;
+        $activity_desc = $arrActivity['activity_desc'];
+        return self::addActivityLog($activity_type_id, $activity_desc, $arrActivity);        
+    }
 
     /**
      * Event subscribers
@@ -800,5 +811,10 @@ class UserEventsListener extends BaseEvent
             'APPLICATION_APPROVER_MAIL', 
             'App\Inv\Repositories\Events\UserEventsListener@onApplicationMoveToApprover'
         );
+        
+        $events->listen(
+            'ADD_ACTIVITY_LOG', 
+            'App\Inv\Repositories\Events\UserEventsListener@onAddActivityLog'
+        );         
     }
 }
