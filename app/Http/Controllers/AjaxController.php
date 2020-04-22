@@ -4399,4 +4399,23 @@ if ($err) {
         
         return response()->json( $response );
    }
+   
+   public function checkCompAddExist(Request $req){
+        
+        $response['status'] = false;
+        $comp_name = $req->get('comp_name');
+        $comp_add = $req->get('comp_add');
+        $comp_id = $req->get('comp_id');
+        $status = $this->masterRepo->getCompAddByCompanyName(['cmp_name' => $comp_name, 'cmp_add' => $comp_add]);
+       if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($comp_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
 }

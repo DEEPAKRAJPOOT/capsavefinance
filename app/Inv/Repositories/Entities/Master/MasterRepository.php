@@ -678,5 +678,14 @@ class MasterRepository extends BaseRepositories implements MasterInterface
   
         return $result;
     }
+    
+    /*
+     * check that company address is unique by company name.
+     */
+    public function getCompAddByCompanyName($attributes) {
+        
+        return Company::getCompAddByCompanyName($attributes);
+  
+    }
 
 }

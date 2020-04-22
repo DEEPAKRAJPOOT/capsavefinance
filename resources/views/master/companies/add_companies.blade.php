@@ -5,7 +5,7 @@
     <form id="companiesForm" name="companiesForm" method="POST" action="{{route('save_companies')}}" target="_top">
         @csrf
 
-        {!! Form::hidden('company_id' , isset($comData['company_id']) ? $comData['company_id'] : null )  !!}
+        {!! Form::hidden('company_id' , isset($comData['company_id']) ? $comData['company_id'] : null, ['id'=>'company_id'])  !!}
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cmp_name">Company Name <span class="mandatory">*</span></label>
@@ -90,6 +90,13 @@
 </div>
 @endsection
 @section('jscript')
+<script>
+    var messages = {
+        check_comp_add_exist: "{{ URL::route('check_comp_add_exist') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+    };
+</script>
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -102,11 +109,13 @@
                 if (gstnoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.gst_no_error, label#gst_no_error').remove();
                     $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Please enter valid GSTIN Number</label>');
                     $(this).val('');
                     $(this).focus();
                 }
             } else {
+                $('label.gst_no_error, label#gst_no_error').remove();
                 $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Special characters not allowed</label>');
                 $(this).val('');
                 $(this).focus();
@@ -122,11 +131,13 @@
                 if (pannoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.pan_no_error, label#pan_no_error').remove();
                     $(this).after('<label id="pan_no_error" class="error pan_no_error " for="pan_no">Please enter valid PAN Number</label>');
                     $(this).val('');
                     $(this).focus();
                 }
             } else {
+                $('label.pan_no_error, label#pan_no_error').remove();
                 $(this).after('<label id="pan_no_error" class="error pan_no_error " for="pan_no">Special charactes not allowed</label>');
                 $(this).val('');
                 $(this).focus();
@@ -143,18 +154,46 @@
                 if (cinnoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.cin_no_error, label#cin_no_error').remove();
                     $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Please enter valid CIN Number</label>');
                     $(this).val('');
                     $(this).focus();
                 }
             } else {
+                $('label.cin_no_error, label#cin_no_error').remove();
                 $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Special characters not allowed</label>');
                 $(this).val('');
                 $(this).focus();
             }
 
         });
-//        
+        
+       $.validator.addMethod("unique_add", function(value,element){
+           var comp_add = value;
+           var comp_name = $('#cmp_name').val();
+           var comp_id = $('#company_id').val();
+           var status = false;
+           
+           $.ajax({
+               url: messages.check_comp_add_exist,
+               type: 'POST',
+               datatype: 'json',
+               async: false,
+               cache: false,
+               data:{
+                   'comp_add': comp_add,
+                   'comp_name': comp_name,
+                   'comp_id': comp_id,
+                   '_token': messages.token
+               },
+               success: function (response) {
+                if (response['status'] === 'true') {
+                    status = true;
+                }
+            }
+           });
+           return this.optional(element) || (status === true);
+       }); 
 
         $('#companiesForm').validate({// initialize the plugin
             rules: {
@@ -162,7 +201,8 @@
                     required: true
                 },
                 'cmp_add': {
-                    required: true
+                    required: true,
+                    unique_add: true
                 },
                 'gst_no': {
                     required: true,
@@ -193,7 +233,8 @@
                     required: "Please enter Company Name"
                 },
                 'cmp_add': {
-                    required: "Please enter Company Address"
+                    required: "Please enter Company Address",
+                    unique_add: 'The company branch is already present at this address.'
                 },
                 'gst_no': {
                     required: "Please enter GST Number",
