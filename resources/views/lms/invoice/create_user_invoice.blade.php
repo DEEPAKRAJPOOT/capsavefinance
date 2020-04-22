@@ -27,7 +27,7 @@
 
                         
 
-                        <form id="userInvoice" name="userInvoice" method="POST" action="url{{ route('save_user_invoice', [ 'user_id' => $userInfo->user_id ] ) }}" target="_top">
+                        <form id="userInvoice" name="userInvoice" method="POST" action="url{{ route('save_user_invoice') }}" target="_top">
                         @csrf
 
                             <div class="table-responsive ps ps--theme_default w-100">
@@ -80,8 +80,8 @@
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
                                                     <div class="form-group col-12">
-                                                        <label for="gstin">GSTIN</label>
-                                                        <select class="form-control" name="gstin" id="gstin">
+                                                        <label for="biz_gst_no">GSTIN</label>
+                                                        <select class="form-control" name="biz_gst_no" id="biz_gst_no">
                                                             <option disabled value="" selected>Select GSTIN</option>
                                                             @foreach($gstInfo as $gstn)
                                                                 <option value="{{$gstn->pan_gst_hash}}">{{$gstn->pan_gst_hash}}</option>
@@ -130,8 +130,8 @@
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
                                                     <div class="form-group col-12">
-                                                        <label for="address">Enter Address</label>
-                                                        <input type="text" class="form-control" id="address" name="address" placeholder="Enter Address">
+                                                        <label for="gst_addr">Enter Address</label>
+                                                        <input type="text" class="form-control" id="gst_addr" name="gst_addr" placeholder="Enter Address">
                                                     </div>
                                                 </div>
                                             </td>
@@ -139,8 +139,8 @@
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
                                                     <div class="form-group col-12">
-                                                        <label for="refrence_no">Refrence No</label>
-                                                        <input type="text" class="form-control" id="refrence_no" name="refrence_no" value="{{$customerID[0]->customer_id}}" placeholder="Refrence Number">
+                                                        <label for="comp_id">Refrence No</label>
+                                                        <input type="text" class="form-control" id="comp_id" name="comp_id" value="{{$customerID[0]->customer_id}}" placeholder="Refrence Number">
                                                     </div>
                                                 </div>
                                             </td>
@@ -150,8 +150,8 @@
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
                                                     <div class="form-group col-12">
-                                                        <label for="state_code">Enter State Code</label>
-                                                        <input type="text" class="form-control" id="state_code" name="state_code" placeholder="Enter State Code">
+                                                        <label for="invoce_state_code">Enter State Code</label>
+                                                        <input type="text" class="form-control" id="invoce_state_code" name="invoce_state_code" placeholder="Enter State Code">
                                                     </div>
                                                 </div>
                                             </td>
@@ -211,7 +211,7 @@
                 'app_id': {
                     required: true,
                 },
-                'gstin': {
+                'biz_gst_no': {
                     required: true,
                 },
                 'invoice_state': {
@@ -230,16 +230,16 @@
                 'invoice_date': {
                     required: true,
                 },
-                'address': {
+                'gst_addr': {
                     required: true,
                 },
-                'refrence_no': {
+                'comp_id': {
                     required: true,
                 },
                 'place_of_supply': {
                     required: true,
                 },
-                'state_code': {
+                'invoce_state_code': {
                     required: true,
                 },
             },
@@ -250,7 +250,7 @@
                 'app_id': {
                     required: "This field is required",
                 },
-                'gstin': {
+                'biz_gst_no': {
                     required: "This field is required",
                 },
                 'invoice_state': {
@@ -268,16 +268,16 @@
                 'invoice_date': {
                     required: "This field is required",
                 },
-                'address': {
+                'gst_addr': {
                     required: "This field is required",
                 },
-                'refrence_no': {
+                'comp_id': {
                     required: "This field is required",
                 },
                 'place_of_supply': {
                     required: "This field is required",
                 },
-                'state_code': {
+                'invoce_state_code': {
                     required: "This field is required",
                 },
             }
@@ -318,6 +318,7 @@
     if(stateID) {
         $('#state_abbr').append(stateID);
         $('#place_of_supply').val(state);
+        $("#place_of_supply").next().remove();
     }
 
    });
@@ -346,7 +347,7 @@
 
 
 <script>
-    $('#gstin').on('change', function() {
+    $('#biz_gst_no').on('change', function() {
         var gstin = $(this).val();
         var userID = $('#userID').val();
         if(!gstin.length) {
@@ -359,9 +360,10 @@
            url:"{{url('/lms/get-biz-add-user-invoice')}}?user_id="+userID,
            success:function(data){ 
             if(data){
-                $('#address').val(data);
+                $('#gst_addr').val(data);
+                $('#gst_addr').next().remove();
             } else {
-                $('#address').val();
+                $('#gst_addr').val();
             }
            }
         });
@@ -383,7 +385,8 @@
                 $.each(data, function(key, value) {
                     console.log(key);
                    if(data) {
-                       $('#state_code').val(key)
+                       $('#invoce_state_code').val(key)
+                       $("#invoce_state_code").next().remove();
                    }
                 });
                

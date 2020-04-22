@@ -84,8 +84,8 @@ class userInvoiceController extends Controller
      */
     public function saveUserInvoice(Request $request) {
         try {
-            $user_id = $request->get('user_id');
             $arrUserData = $request->all();
+            $user_id = $request->get('user_id');
             dd($arrUserData);
 
             $arrUserData['created_at'] = \carbon\Carbon::now();
