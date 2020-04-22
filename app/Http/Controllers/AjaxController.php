@@ -4379,4 +4379,21 @@ if ($err) {
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+    
+    public function checkBankAccExist(Request $req){
+        
+        $response['status'] = false;
+        $acc_no = $req->get('acc_no');
+        $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
+        
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'company_id' => $comp_id]);
+        
+        if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false'; 
+        }
+        
+        return response()->json( $response );
+   }
 }

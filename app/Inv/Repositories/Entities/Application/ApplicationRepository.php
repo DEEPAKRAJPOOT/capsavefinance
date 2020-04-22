@@ -1717,4 +1717,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function seeUploadFilePopup($acc_id, $user_id) {
         return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
     }
+    
+    /*
+     *check bank account is unique for a company
+     */
+    public function getBankAccByCompany($attributes){
+        return UserBankAccount::getBankAccStatusByCompany($attributes);
+    }
 }

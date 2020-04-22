@@ -1016,5 +1016,10 @@ Route::group(
     Route::post('check-applied-charge', [
         'as' => 'check_applied_charge',
         'uses' => 'AjaxController@checkAppliedCharge'
-    ]);     
+    ]);
+    
+    Route::post('check-bank-acc-exist',[
+        'as' => 'check_bank_acc_exist',
+        'uses' => 'AjaxController@checkBankAccExist'
+    ]);
 });

@@ -12,7 +12,7 @@ Form::open(
 !!}
 
 {!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
-{!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null ) !!}
+{!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null,['id'=>'company_id'] ) !!}
 
 <div class="modal-body text-left">
     <div class="row">
@@ -121,7 +121,14 @@ try {
 }
 </script>
 @endif
+<script>
 
+    var messages = {
+        check_bank_acc_exist: "{{ URL::route('check_bank_acc_exist') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+    };
+</script>
 <script>
     $(document).on('input', '.number_format', function (event) {
         // skip for arrow keys
@@ -140,6 +147,30 @@ try {
         return this.optional(element) || /^[A-Za-z0-9]*$/.test(value);
     });
 
+    $.validator.addMethod("unique_acc", function (value, element) {
+        var acc_no = value;
+        var comp_id = $('#company_id').val();
+        let status = false;
+        $.ajax({
+            url: messages.check_bank_acc_exist,
+            type: 'POST',
+            async: false,
+            cache: false,
+            datatype: 'json',
+            data: {
+                'acc_no': acc_no,
+                'comp_id': comp_id,
+                '_token': messages.token
+            },
+            success: function (response) {
+                if (response['status'] === 'true') {
+                    status = true;
+                }
+            }
+        });
+        return this.optional(element) || (status === true);
+    });
+
     $(function () {
         $("form[name='bank_account']").validate({
             rules: {
@@ -151,7 +182,8 @@ try {
                 'acc_no': {
                     required: true,
                     number: true,
-                    maxlength: 18
+                    maxlength: 18,
+                    unique_acc: true
                 },
                 'confim_acc_no': {
                     required: true,
@@ -176,6 +208,9 @@ try {
                 },
             },
             messages: {
+                acc_no: {
+                    unique_acc: 'This account number is already exists.'
+                },
                 confim_acc_no: {
                     equalTo: 'Confirm Account Number and Account number do not match.  '
                 },

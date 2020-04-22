@@ -233,5 +233,24 @@ class UserBankAccount extends BaseModel {
 
         return $res ?: false;
     }
+    
+    /**
+     * get Bank account status by company id
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function getBankAccStatusByCompany($where)
+    {
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        $res = self::where($where)->first();
+        
+        return $res ?: false;
+    }
 }
 
