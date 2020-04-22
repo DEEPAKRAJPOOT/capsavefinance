@@ -132,8 +132,10 @@ class AppProgramOffer extends BaseModel {
     }
      public static function getTenor($res)
     {
-      return  self::where(['anchor_id'=>$res['anchor_id'],'prgm_id'=>$res['prgm_id'],'app_id'=>$res['app_id'],'is_active'=>1,'status' =>1 ])->first();      
-
+       $lms_user_id =    LmsUser::where('user_id',$res['user_id'])->pluck('user_id');
+       $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->first();
+       return self::whereHas('productHas')->where(['app_id' => $app_id['app_id'],'anchor_id' => $res['anchor_id'],'prgm_id'=> $res['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->first();
+            
     }
        public static function getAmountOfferLimit($res)
     {
@@ -420,6 +422,27 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
     }
     
+    public static function getBulkProgramOfferByPrgmId($attr)
+    {
+        $result = self::select('app_prgm_offer.*','app.user_id','users.f_name','users.l_name','biz.biz_entity_name','lms_users.customer_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')                
+                ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->join('users', 'users.user_id', '=', 'app.user_id')                
+                ->join('lms_users', function ($join) {
+                    $join->on('lms_users.user_id', '=', 'users.user_id');                    
+                    $join->on('lms_users.app_id', '=', 'app.app_id');
+                })     
+                ->where('lms_users.customer_id', $attr['cusomer_id'])
+                ->where('app_product.product_id', 1)
+                ->where('app_prgm_offer.prgm_id', $attr['prgm_id'])
+                ->where('app_prgm_offer.is_approve', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->groupBy('app.user_id')        
+                ->get();
+        
+        return isset($result[0]) ? $result : [];
+    } 
     
     public static function getProgramOfferByPrgmId($prgmId)
     {

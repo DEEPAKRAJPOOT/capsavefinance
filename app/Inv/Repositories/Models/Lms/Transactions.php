@@ -141,8 +141,8 @@ class Transactions extends BaseModel {
     }
 
     public static function getSettledTrans($userId){
-        return self::whereNotNull('payment_id')
-                ->whereNotNull('parent_trans_id')
+        return self:://whereNotNull('payment_id')
+                whereNotNull('parent_trans_id')
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_REFUND'),config('lms.TRANS_TYPE.MARGIN')])
                 ->where('user_id','=',$userId)->get();
     }

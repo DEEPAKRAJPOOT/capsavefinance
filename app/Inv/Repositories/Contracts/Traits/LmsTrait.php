@@ -75,6 +75,7 @@ trait LmsTrait
             $int_type_config = $prgmOffer->payment_frequency ? $prgmOffer->payment_frequency : 1;
             
             $gracePeriod = $prgmOffer->grace_period ? $prgmOffer->grace_period : 0;
+            $gracePeriod = ($gracePeriod <= 1)?1:$gracePeriod;
             $interestRate = $disburse->interest_rate ?? $prgmOffer->interest_rate;
             $overdueIntRate = $disburse->overdue_interest_rate ?? $prgmOffer->overdue_interest_rate;
             
