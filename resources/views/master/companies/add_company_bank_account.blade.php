@@ -11,7 +11,7 @@ Form::open(
 )
 !!}
 
-{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
+{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null, ['id'=>'acc_id']) !!}
 {!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null,['id'=>'company_id'] ) !!}
 
 <div class="modal-body text-left">
@@ -150,6 +150,7 @@ try {
     $.validator.addMethod("unique_acc", function (value, element) {
         var acc_no = value;
         var comp_id = $('#company_id').val();
+        var acc_id = $('#acc_id').val();
         let status = false;
         $.ajax({
             url: messages.check_bank_acc_exist,
@@ -160,6 +161,7 @@ try {
             data: {
                 'acc_no': acc_no,
                 'comp_id': comp_id,
+                'acc_id': acc_id,
                 '_token': messages.token
             },
             success: function (response) {

@@ -4385,13 +4385,16 @@ if ($err) {
         $response['status'] = false;
         $acc_no = $req->get('acc_no');
         $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
-        
+        $acc_id = $req->get('acc_id');
         $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'company_id' => $comp_id]);
         
         if($status == false){
                 $response['status'] = 'true';
         }else{
-           $response['status'] = 'false'; 
+           $response['status'] = 'false';
+           if($acc_id != null){
+               $response['status'] = 'true';
+           }
         }
         
         return response()->json( $response );
