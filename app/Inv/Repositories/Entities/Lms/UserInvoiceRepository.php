@@ -106,4 +106,25 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	public function getUserStateCodeList($state_code) {
 		return State::getUserStateCodeList($state_code);
 	}
+
+	/**
+     * Get User invoice id
+     */
+	public function findUserInvoiceById($userInvoice_id) {
+		return UserInvoice::findUserInvoiceById($userInvoice_id);
+	}
+
+	/**
+     * save user invoice
+     */
+	public function saveUserInvoiceData($arrUserData) {
+		return UserInvoice::saveUserInvoiceData($arrUserData);
+	}
+
+	/**
+     * update user invoice
+     */
+	public function updateUserInvoice($arrUserData, $userInvoice_id) {
+		return UserInvoice::updateUserInvoice($arrUserData, $userInvoice_id);
+	}
 }

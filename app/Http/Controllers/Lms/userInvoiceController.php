@@ -146,41 +146,33 @@ class userInvoiceController extends Controller
      */
     public function saveUserInvoice(Request $request) {
         try {
-            $user_id = $request->get('user_id');
             $arrUserData = $request->all();
-            dd($arrUserData);
-
+            // $user_id = $request->get('user_id');
             $arrUserData['created_at'] = \carbon\Carbon::now();
             $arrUserData['created_by'] = Auth::user()->user_id;
             $status = false;
-            $entity_id = false;
+            $userInvoice_id = false;
 
+            $invoice_no = $request->get('state_id');
+            $invoice_no .= $request->get('invoice_city');
+            $invoice_no .= $request->get('invoice_id');
+            $arrUserData['invoice_no'] = $invoice_no;
 
-            $userInvoice_id = $request->get('user_id');
-            $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
-            $appID = $appInfo[0]->app_id;
-            $gstInfo = $this->UserInvRepo->getGSTs($appID);
-            $customerID = $this->UserInvRepo->getUserCustomerID($user_id);
-
-            $state_list = $this->UserInvRepo->getStateListCode();
-
-            
-            if(!empty($request->get('id'))){
-                $entity_id = preg_replace('#[^0-9]#', '', $request->get('id'));
-                $entity_data = $this->masterRepo->findEntityById($entity_id);
-                if(!empty($entity_data)) {
-                    $status = $this->masterRepo->updateEntity($arrEntityData, $entity_id);
+            if(!empty($request->get('user_invoice_id'))){
+                $userInvoice_id = preg_replace('#[^0-9]#', '', $request->get('user_invoice_id'));
+                $userInvoice_data = $this->UserInvRepo->findUserInvoiceById($userInvoice_id);
+                if(!empty($userInvoice_data)) {
+                    $status = $this->UserInvRepo->updateUserInvoice($arrUserData, $userInvoice_id);
                 }
             }else{
-               $status = $this->masterRepo->saveEntity($arrEntityData); 
+               $status = $this->UserInvRepo->saveUserInvoiceData($arrUserData); 
             }
             if($status){
-                Session::flash('message', $entity_id ? trans('master_messages.entity_edit_success') :trans('master_messages.entity_add_success'));
-                return redirect()->route('get_entity_list');
+                Session::flash('message', $userInvoice_id ? trans('success_messages.user_invoice_edit_success') :trans('success_messages.user_invoice_add_success'));
+                return redirect()->route('view_user_invoice');
             }else{
                 Session::flash('error', trans('master_messages.something_went_wrong'));
-                return redirect()->route('get_entity_list');
+                return redirect()->route('view_user_invoice');
             }
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
