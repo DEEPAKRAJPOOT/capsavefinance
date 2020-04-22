@@ -113,7 +113,7 @@ class InvoiceDisbursed extends BaseModel {
     }
 	
 	public function appProgramOffer(){
-		return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer',);
+		return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer');
 	}
 
 }

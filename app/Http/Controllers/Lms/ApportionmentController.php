@@ -221,12 +221,12 @@ class ApportionmentController extends Controller
     private function getUserDetails($userId){
         $lmsUser = $this->userRepo->lmsGetCustomer($userId);
         $user = $this->userRepo->find($userId);
-        
         return [
             'customer_id' => $lmsUser->customer_id,
             'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
+            'user_id' => $userId,
             'address' => '',
-            'limit_amt'=>  '',
+            'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
         ];
     }
 

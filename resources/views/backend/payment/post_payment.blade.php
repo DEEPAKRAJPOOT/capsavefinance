@@ -26,7 +26,7 @@
               <div class="form-sections">
                 <div class="row">
                   <div class="col-md-4">
-                    <label class="float-left">Search By Business Name </label> 
+                    <label class="float-left">Search By Business Name / Customer Id </label> 
                     <input type="text" name="search_bus" id="search_bus" class="form-control form-control-sm searchBusiness" placeholder="Type your Business Name">
                     <span id="search_bus_error" class="error"></span>
                     <input type="hidden" name="customer_id" id="customer_id" class="form-control form-control-sm">
@@ -50,12 +50,12 @@
                             <table id="payments_txns" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="payments_listing_info" style="width: 100%;">
                               <thead>
                                 <tr role="row">
-                                  <th>User Name</th>
+                                  <th>Customer Id</th>
+                                  <th>Customer Name</th>
                                   <th>Business Name</th>
-                                  <th>Virtual Account</th>
                                   <th>Amount</th>
-                                  <th>Txn Date</th>
-                                  <th>Transaction By</th>
+                                  <th>Txn Type</th>
+                                  <th>Updated By</th>
                                   <th>Action</th> 
                                 </tr>
                               </thead>

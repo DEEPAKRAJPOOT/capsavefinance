@@ -4470,6 +4470,13 @@ class DataRenderer implements DataProviderInterface
 
         public function getToSettlePayments(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
+                    ->rawColumns(['customer_id','updated_by','action'])
+                    ->addColumn(
+                    'customer_id',
+                        function ($dataRecords) {
+                            $link = \Helpers::formatIdWithPrefix($dataRecords->user_id, 'CUSTID');
+                            return "<a id=\"" . $dataRecords->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $dataRecords->user_id])."\" rel=\"tooltip\" >$link</a> ";
+                    })
                     ->editColumn(
                         'user_name',
                         function ($dataRecords) {
@@ -4492,14 +4499,17 @@ class DataRenderer implements DataProviderInterface
                         return "₹ ".number_format($dataRecords->amount,2);
                     }) 
                     ->editColumn(
-                        'date_of_payment',
+                        'trans_type',
                         function ($dataRecords) {
-                        return date('Y-m-d', strtotime($dataRecords->date_of_payment));
+                        return $dataRecords->transType->trans_name;
                     }) 
                     ->editColumn(
-                        'created_by',
+                        'updated_by',
                         function ($dataRecords) {
-                        return $dataRecords->getCreatedByName->f_name .' '.$dataRecords->getCreatedByName->m_name . ' '. $dataRecords->getCreatedByName->l_name;
+                        $createdByName = $dataRecords->getCreatedByName->f_name .' '.$dataRecords->getCreatedByName->m_name . ' '. $dataRecords->getCreatedByName->l_name;
+                        $dateofPay = date('d/m/Y H:i:s', strtotime($dataRecords->date_of_payment));
+                        $updated_by = "$createdByName<br />$dateofPay";
+                        return $updated_by;
                     }) 
                     ->editColumn(
                         'action',
