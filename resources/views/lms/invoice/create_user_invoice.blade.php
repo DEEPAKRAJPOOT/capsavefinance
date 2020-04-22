@@ -27,7 +27,7 @@
 
                         
 
-                        <form id="userInvoice" name="userInvoice" method="POST" action="#" target="_top">
+                        <form id="userInvoice" name="userInvoice" method="POST" action="url{{ route('save_user_invoice', [ 'user_id' => $userInfo->user_id ] ) }}" target="_top">
                         @csrf
 
                             <div class="table-responsive ps ps--theme_default w-100">
@@ -41,6 +41,8 @@
                                     </tbody>
                                 </table>
                                 <hr>
+                                            <input type="hidden" value="{{$userInfo->user_id}}" id="userID">
+
 
                                 <table class="table border-0">
                                     <tbody>
@@ -91,8 +93,8 @@
 
                                             <td class="text-left border-0" width="30%">
                                                 <div class="row">
-                                                    <div class="form-group col-3" style="margin-left: 25px;">
-                                                        <a href="javascript:void(0);" class="invoice-state"><i style="color: #FFF;">MH</i></a>
+                                                    <div class="form-group col-4" style="margin-left: 25px;">
+                                                        <a href="javascript:void(0);" class="invoice-state"><i style="color: #FFF;" id="state_abbr">MH</i></a>
                                                         <label>City Code</label>
                                                         <input type="text" class="form-control" id="invoice_city" name="invoice_city" placeholder="City Code" maxlength="5">
                                                     </div>
@@ -118,7 +120,7 @@
                                                 <div class="row">
                                                     <div class="form-group col-12">
                                                         <label for="invoice_date">Invoice Date</label>
-                                                        <input type="text" class="form-control" id="invoice_date" name="invoice_date" placeholder="Invoice Date">
+                                                        <input type="text" class="form-control dateFilter" id="invoice_date" name="invoice_date" placeholder="Invoice Date">
                                                     </div>
                                                 </div>
                                             </td>
@@ -138,7 +140,7 @@
                                                 <div class="row">
                                                     <div class="form-group col-12">
                                                         <label for="refrence_no">Refrence No</label>
-                                                        <input type="text" class="form-control" id="refrence_no" name="refrence_no" placeholder="Refrence Number">
+                                                        <input type="text" class="form-control" id="refrence_no" name="refrence_no" value="{{$customerID[0]->customer_id}}" placeholder="Refrence Number">
                                                     </div>
                                                 </div>
                                             </td>
@@ -190,6 +192,13 @@
 
 
 @section('jscript')
+
+<script>
+    var message = {
+        token: "{{ csrf_token() }}",
+    }
+</script>
+
 <script type="text/javascript">
     $(document).ready(function() {
 
@@ -278,14 +287,108 @@
 
 <script>
     let invoice_id = document.getElementById('invoice_id');
+    let invoice_city = document.getElementById('invoice_city');
 
     invoice_id.addEventListener('input', function() {
         let pinVal =  document.getElementById('invoice_id').value;
         let pinStr = pinVal.toString();
 
-        if (isNaN(invoice_id.value) || pinStr.length >= 3) {
+        if (isNaN(invoice_id.value) || pinStr.length >= 4) {
             invoice_id.value = "";
         }
+    });
+    invoice_city.addEventListener('input', function() {
+        let pinVal =  document.getElementById('invoice_city').value;
+        let pinStr = pinVal.toString();
+
+        if (isNaN(invoice_city.value) || pinStr.length >= 4) {
+            invoice_city.value = "";
+        }
+    });
+</script>
+
+<script type="text/javascript">
+
+    $('#state_id').on('change',function(){
+    var stateID = $(this).val();
+    var state = $("#state_id :selected").text()
+    console.log(state)
+    var place_of_supply = $('#place_of_supply');
+        $('#state_abbr').empty();
+    if(stateID) {
+        $('#state_abbr').append(stateID);
+        $('#place_of_supply').val(state);
+    }
+
+   });
+
+//    Date picker
+   $(document).ready(function(){
+        $("#invoice_date").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView : 2,
+            //endDate: new Date()
+        });
+
+
+        var nowDate = new Date(); 
+        var currentDate = nowDate.getDate() +'/'+ (nowDate.getMonth()+1) +'/'+ nowDate.getFullYear();
+
+        var oneMonthAddedDate = new Date();
+        oneMonthAddedDate.setMonth( oneMonthAddedDate.getMonth() + 1 );
+        var currentAddedDate  = oneMonthAddedDate.getDate() +'/'+ (oneMonthAddedDate.getMonth()+1) +'/'+ oneMonthAddedDate.getFullYear();
+
+        $("#invoice_date").val(currentDate);
+     
+   });
+</script>
+
+
+<script>
+    $('#gstin').on('change', function() {
+        var gstin = $(this).val();
+        var userID = $('#userID').val();
+        if(!gstin.length) {
+            return false;
+        };
+
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('/lms/get-biz-add-user-invoice')}}?user_id="+userID,
+           success:function(data){ 
+            if(data){
+                $('#address').val(data);
+            } else {
+                $('#address').val();
+            }
+           }
+        });
+    });
+</script>
+<script>
+    $('#state_id').on('change', function() {
+        var state_id = $(this).val();
+        if(!state_id.length) {
+            return false;
+        };
+
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('/lms/get-user-state-code')}}?state_code="+state_id,
+           success:function(data){ 
+
+                $.each(data, function(key, value) {
+                    console.log(key);
+                   if(data) {
+                       $('#state_code').val(key)
+                   }
+                });
+               
+           }
+        });
     });
 </script>
 @endsection
