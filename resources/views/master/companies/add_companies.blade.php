@@ -22,19 +22,19 @@
             <div class="form-group col-md-6">
                 <label for="gst_no">GST No. <span class="mandatory">*</span></label>
                 <input type="text" class="form-control gstnumber" id="gst_no" name="gst_no" placeholder="Enter GST No." maxlength="15" value="{{ isset($comData['gst_no']) ? $comData['gst_no'] : old('gst_no')}}">
-                {!! $errors->first('gst_no', '<span class="error">:message</span>') !!}
+                <!--{!! $errors->first('gst_no', '<span class="error">:message</span>') !!}-->
             </div>
             <div class="form-group col-md-6">
                 <label for="pan_no">PAN No. <span class="mandatory">*</span></label>
                 <input type="text" class="form-control pannumber" id="pan_no" name="pan_no" placeholder="Enter Pan No." maxlength="10" value="{{ isset($comData['pan_no']) ? $comData['pan_no'] : old('pan_no')}}">
-                {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
+                <!--{!! $errors->first('pan_no', '<span class="error">:message</span>') !!}-->
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cin_no">CIN No. <span class="mandatory"></span></label>
                 <input type="text" class="form-control cinnumber" id="cin_no" name="cin_no" placeholder="Enter CIN No." maxlength="21" value="{{ isset($comData['cin_no']) ? $comData['cin_no'] : old('cin_no')}}">
-                {!! $errors->first('cin_no', '<span class="error">:message</span>') !!}
+                <!--{!! $errors->first('cin_no', '<span class="error">:message</span>') !!}-->
             </div>
             <div class="form-group col-md-6">
                 <label for="chrg_type">State<span class="mandatory">*</span></label><br />
