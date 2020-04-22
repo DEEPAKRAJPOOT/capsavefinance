@@ -27,7 +27,7 @@
 
                         
 
-                        <form id="userInvoice" name="userInvoice" method="POST" action="url{{ route('save_user_invoice') }}" target="_top">
+                        <form id="userInvoice" name="userInvoice" method="POST" action="{{route('save_user_invoice')}}" target="_top">
                         @csrf
 
                             <div class="table-responsive ps ps--theme_default w-100">
@@ -41,6 +41,7 @@
                                     </tbody>
                                 </table>
                                 <hr>
+                                            <input type="hidden" value="{{$userInfo->user_id}}" id="userID">
                                             <input type="hidden" value="{{$userInfo->user_id}}" id="userID">
 
 
@@ -170,7 +171,7 @@
 
                             <div class="row">
                                 <div class="form-group col-md-12 mb-0">
-                                    <input type="submit" class="btn btn-success btn-sm pull-right" name="add_address" id="add_address" value="Submit" />
+                                    <input type="submit" class="btn btn-success btn-sm pull-right" name="add_user_invoice" id="add_user_invoice" value="Submit" />
                                 </div>
                             </div>
                             
