@@ -346,7 +346,7 @@ class InvoiceController extends Controller {
         $id = Auth::user()->user_id;
         $attributes = $request->all();
         $res = $this->invRepo->updateInvoiceAmount($attributes);
-        if ($res) {
+       if ($res) {
 
             Session::flash('message', 'Invoice Amount successfully Updated ');
             return back();
