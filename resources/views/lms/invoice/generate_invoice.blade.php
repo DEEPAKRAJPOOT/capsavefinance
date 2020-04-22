@@ -174,14 +174,12 @@
       </table>
    </div>
    <p><span style="font-family: 'Book Antiqua', serif;font-size: small;"><u><strong>Payment Instructions:</strong></u></span></p>
-   <p>
-      <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at par in Mumbai for <strong>Rs {{$sum_total_rental}} </strong>to </span>
-   </p>
-   <p><span style="font-size: small;"><strong>{{$comp_name}}</strong></span></p>
-   <p><span style="font-size: small;"><strong>{{$comp_registered_addr}}</strong></span></p>
-   <p>&nbsp;</p>
+   <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at par in Mumbai for <strong>Rs {{$sum_total_rental}} </strong> to </span>
+   <div style="margin-top: 10px;font-size: small;"><strong>{{$comp_name}}</strong></div>
+   <span style="font-size: small;"><strong>{{$comp_registered_addr}}</strong></span>
+
    <p><span style="font-size: small;"><u><strong>RTGS Details:</strong></u></span></p>
-   <p lang="en-US" align="justify"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Beneficiary: Capsave Finance Pvt. Ltd; HDFC Bank, ESCROW A/C NO: 50200030310781; Branch Name: A.K. Vaidya Marg, Mumbai; IFSC Code: HDFC0000212</strong></span></span></p>
+   <p lang="en-US" align="justify" style="font-family: 'Book Antiqua', serif;font-size: small;"><strong>Beneficiary: Capsave Finance Pvt. Ltd; HDFC Bank, ESCROW A/C NO: 50200030310781; Branch Name: A.K. Vaidya Marg, Mumbai; IFSC Code: HDFC0000212</strong></p>
    <table style="width: 100%" align="center" border="1" cellspacing="0" cellpadding="1">
       <tbody>
          <tr>
@@ -218,13 +216,9 @@
          </tr>
       </tbody>
    </table>
-   <p>&nbsp;</p>
    <p align="center"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</span></span></p>
    <p align="center">&nbsp;</p>
    <p><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>For Capsave Finance Pvt. Ltd.</strong></span></span></p>
-   <p lang="en-US">&nbsp;</p>
-   <p lang="en-US">&nbsp;</p>
-   <p lang="en-US">&nbsp;</p>
    <p lang="en-US">&nbsp;</p>
    <p lang="en-US">&nbsp;</p>
    <p lang="en-US"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Authorized Signatory</strong></span></span></p>
