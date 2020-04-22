@@ -40,8 +40,8 @@
                                     <td class="text-left border-0" width="30%">
                                        <div class="row">
                                           <div class="form-group col-12">
-                                             <label for="state_id">State Name</label>
-                                             <select class="form-control" name="state_id" id="state_id">
+                                             <label for="invoce_state_code">State Name</label>
+                                             <select class="form-control" name="invoce_state_code" id="invoce_state_code">
                                                 <option disabled value="" selected>Select State</option>
                                                 @foreach($state_list as $state)
                                                 <option value="{{$state->state_code}}">{{$state->name}}</option>
@@ -124,18 +124,17 @@
                                        <div class="row">
                                           <div class="form-group col-12">
                                              <label for="refrence_no">Refrence No</label>
-                                             <input type="text" class="form-control" id="refrence_no" name="refrence_no"  placeholder="Refrence Number" autocomplete="off">
+                                             <input type="text" readonly class="form-control" id="refrence_no" name="refrence_no"  placeholder="Refrence Number" autocomplete="off" value="{{$reference_no}}">
                                           </div>
                                        </div>
                                     </td>
                                  </tr>
                                  <tr>
                                     <td class="text-left border-0" width="30%" colspan="2">
-                                      <input type="hidden" class="form-control" id="state_code" name="state_code">
                                       <div class="row">
                                           <div class="form-group col-12">
-                                             <label for="address">Enter Address</label>
-                                             <textarea class="form-control" id="address" name="address" placeholder="Enter Address"></textarea>
+                                             <label for="gst_addr">Enter Address</label>
+                                             <textarea class="form-control" id="gst_addr" name="gst_addr" placeholder="Enter Address"></textarea>
                                           </div>
                                        </div>
                                     </td>
@@ -145,7 +144,7 @@
                         </div>
                         <div class="row">
                            <div class="form-group col-md-12 mb-0">
-                              <input type="submit" class="btn btn-success btn-sm pull-right"  id="add_address" value="Submit" />
+                              <input type="submit" class="btn btn-success btn-sm pull-right" value="Submit" />
                            </div>
                         </div>
                      </form>
@@ -169,7 +168,7 @@
    $(document).ready(function() {
        $('#userInvoice').validate({ // initialize the plugin
            rules: {
-               'state_id': {
+               'invoce_state_code': {
                    required: true,
                },
                'app_id': {
@@ -194,7 +193,7 @@
                'invoice_date': {
                    required: true,
                },
-               'address': {
+               'gst_addr': {
                    required: true,
                },
                'refrence_no': {
@@ -203,12 +202,9 @@
                'place_of_supply': {
                    required: true,
                },
-               'state_code': {
-                   required: true,
-               },
            },
            messages: {
-               'state_id': {
+               'invoce_state_code': {
                    required: "This field is required",
                },
                'app_id': {
@@ -232,16 +228,13 @@
                'invoice_date': {
                    required: "This field is required",
                },
-               'address': {
+               'gst_addr': {
                    required: "This field is required",
                },
                'refrence_no': {
                    required: "This field is required",
                },
                'place_of_supply': {
-                   required: "This field is required",
-               },
-               'state_code': {
                    required: "This field is required",
                },
            }
@@ -268,13 +261,12 @@
        }
    });*/
 
-   $('#state_id').on('change',function(){
-     let state_id = $(this).val();
-     var state = $("#state_id :selected").text()
+   $('#invoce_state_code').on('change',function(){
+     let invoce_state_code = $(this).val();
+     var state = $("#invoce_state_code :selected").text()
      var place_of_supply = $('#place_of_supply');
-     if(state_id) {
-         $('#state_abbr').html(state_id);
-         $('#state_code').val(state_id);
+     if(invoce_state_code) {
+         $('#state_abbr').html(invoce_state_code);
          $('#place_of_supply').val(state);
      }
    });
@@ -298,29 +290,10 @@
           url:message.gst_address_url,
           success:function(data){ 
            if(data){
-               $('#address').val(data);
+               $('#gst_addr').val(data);
            } else {
-               $('#address').val();
+               $('#gst_addr').val();
            }
-          }
-       });
-   });
-   $('#state_id').on('change', function() {
-       var state_id = $(this).val();
-       if(!state_id.length) {
-           return false;
-       };
-       $.ajax({
-          type:"POST",
-          data: {'state_code' : state_id, '_token':message.token},
-          url: message.get_statecode_url,
-          success:function(data){ 
-               $.each(data, function(key, value) {
-                  if(data) {
-                      $('#state_code').val(key)
-                  }
-               });
-              
           }
        });
    });
@@ -329,7 +302,6 @@
        if(!app_id.length) {
            return false;
        };
-       $('#refrence_no').val(app_id);
        $.ajax({
           type:"POST",
           data: {'app_id' : app_id, '_token':message.token},

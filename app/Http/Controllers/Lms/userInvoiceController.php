@@ -133,8 +133,9 @@ class userInvoiceController extends Controller
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
             $state_list = $this->UserInvRepo->getStateListCode();
+            $reference_no = _getRand('15') . $user_id;
             return view('lms.invoice.create_user_invoice')
-            ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo]);
+            ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo, 'reference_no' => $reference_no]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -153,6 +154,7 @@ class userInvoiceController extends Controller
             $status = false;
             $userInvoice_id = false;
 
+            dd($request->all());
             $invoice_no = $request->get('state_id');
             $invoice_no .= $request->get('invoice_city');
             $invoice_no .= $request->get('invoice_id');
@@ -208,18 +210,6 @@ class userInvoiceController extends Controller
        } catch(Exception $ex) {
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
        }
-    }
-
-    /**
-     * Get state code by ajax
-     */
-    public function getUserStateCode(Request $request) {
-        try {
-            $state_code = $request->get('state_code');
-            return $this->UserInvRepo->getUserStateCodeList($state_code);
-           } catch(Exception $ex) {
-             return response()->json(['status' => 0,'message' => 'selected state is not valid']); 
-           }
     }
 
 }
