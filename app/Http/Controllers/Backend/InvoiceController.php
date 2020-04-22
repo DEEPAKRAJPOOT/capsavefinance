@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -350,7 +348,7 @@ class InvoiceController extends Controller {
         $res = $this->invRepo->updateInvoiceAmount($attributes);
         if ($res) {
 
-            Session::flash('message', 'Invoice Amount successfully Updated');
+            Session::flash('message', 'Invoice Amount successfully Updated '.dd($res).'');
             return back();
         } else {
             Session::flash('message', 'Something wrong, Amount is not Updated');
@@ -1030,8 +1028,7 @@ class InvoiceController extends Controller {
                         {
                             if($res['status']!=2)
                             {
-                                
-                               $updateLimit =  $this->invRepo->updateLimit($userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
                             }
                          
                         }

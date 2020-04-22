@@ -5,7 +5,7 @@
     <div class="col-md-12 ">
         
          @if(Session::has('multiVali'))
-          @php $multiVali = Session::get('multiVali');  @endphp
+          @php $multiVali = Session::get('multiVali'); @endphp
         <div class=" alert-danger alert" role="alert">
        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
       @foreach ($multiVali as $key=>$val)
@@ -116,12 +116,13 @@
                                         <table  class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">
-
                                                     <th>Sr. No.</th>
+                                                     <th>Invoice number </th>
                                                      <th>Customer  Detail</th>
                                                     <th>Anchor Detail</th>
                                                     <th>Invoice Detail</th>
                                                     <th>Invoice  Amount</th>
+                                                     <th>Uploaded By</th>
                                                     <th>Remark</th>
                                                     <th>Action </th>
                                                 </tr>
@@ -129,8 +130,10 @@
                                            
                                             @php if(count($getBulkInvoice) > 0) { @endphp
                                             @foreach($getBulkInvoice as $key=>$val) 
-                                           <tr id="deleteRow{{$val->invoice_bulk_upload_id}}"  @php if($val->status==2) { @endphp style="background-color: #ff00004d" @php } @endphp  class="getUploadBulkId"  data-id="{{$val->invoice_bulk_upload_id}}" data-status="{{$val->status}}"> 
+                                              <tr id="deleteRow{{$val->invoice_bulk_upload_id}}"  @php if($val->status==2) { @endphp style="background-color: #ff00004d" @php } @endphp  class="getUploadBulkId"  data-id="{{$val->invoice_bulk_upload_id}}" data-status="{{$val->status}}"> 
                                             <td>{{$key+1}}</td>
+                                             
+                                                  <td>{{$val->invoice_no}}</td>
                                             <td>
                                                     <span><b>Name:&nbsp;</b>{{$val->supplier->f_name}} {{$val->supplier->l_name}}</span><br>
                                                     <span><b>Customer Id :&nbsp;</b>{{$val->lms_user->customer_id}}</span>
@@ -145,12 +148,18 @@
                                                     <span><b>Due Date:&nbsp;</b>{{$val->invoice_due_date}}</span><br>
                                                     <span><b>Tenor In Days:&nbsp;</b>{{$val->tenor}}</span>
                                              </td>
-                                                <td>{{number_format($val->invoice_approve_amount)}}</td>
+                                             <td>{{number_format($val->invoice_approve_amount)}}</td>
+                                              <td>
+                                                    <span><b>Name:&nbsp;</b>{{$val->user->f_name}} {{$val->user->l_name}}</span><br>
+                                                    <span><b>Date:&nbsp;</b>{{date('d-m-Y',strtotime($val->created_at))}}</span>
+                                            </td>
+                                                
                                                  <td>
                                                      <span class="error">{{($val->limit_exceed==1) ? 'Limit exceeded' : ''}} </span></br>
                                                      {{$val->comm_txt}}
                                                      
                                                  </td>
+                                         
                                                 <td><button class="btn deleteTempInv" data-id="{{$val->invoice_bulk_upload_id}}"><i class="fa fa-trash"></i></button></td>
                                             </tr>
                                           @endforeach     
