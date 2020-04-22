@@ -22,6 +22,7 @@ use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\TransactionComments;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Master\GstTax;
@@ -126,6 +127,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function saveTransaction($transactions,$whereCondition=[])
 	{
 		return Transactions::saveTransaction($transactions,$whereCondition);
+	}	
+
+	/**
+	 * Save TransactionsComments
+	 * 
+	 * @param array $transactions
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function saveTxnComment($comments,$whereCondition=[])
+	{
+		return TransactionComments::saveTxnComments($comments,$whereCondition);
 	}
 
 	/**

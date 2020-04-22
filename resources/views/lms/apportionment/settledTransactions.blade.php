@@ -32,9 +32,15 @@
             <div class="row">
                 @include('lms.apportionment.common.listSettledTransactions')
             </div>
+            <div class="row pull-right">
+                <div class="col-md-12" >
+                    <input type="button" value="Reverse Amount" class="btn btn-success btn-sm" onclick="apport.onReversalAmount()">
+                </div>
+            </div>
         </div>
-    </div>
-
+     <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
+</div>
+{!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
 </div>
 @endsection
 
@@ -43,6 +49,7 @@
 
     var messages = {
         url: "{{ URL::route('apport_settled_list') }}",
+        trans_reversal_url: "{{ URL::route('apport_trans_reversal') }}",
         user_id: "542",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",

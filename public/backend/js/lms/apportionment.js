@@ -25,7 +25,7 @@ class Apportionment {
                 {data: 'trans_type'},
                 {data: 'total_repay_amt'},                    
                 {data: 'payment_date'},
-                {data: 'pay'},
+                // {data: 'pay'},
                 {data: 'select'}
             ];
                 break;
@@ -209,7 +209,7 @@ class Apportionment {
                  return false;
            }
            var transId = checkedName.replace(/[^0-9]/g, '');
-           var givenUrl = data.trans_detail_url;
+           var givenUrl = data.trans_waiveoff_url;
            var targetUrl = givenUrl + '?trans_id=' + transId;
            if(data.payment_id){
                 targetUrl += '&payment_id=' + data.payment_id;
@@ -218,6 +218,25 @@ class Apportionment {
            $('.view_detail_transaction').trigger('click');
        }else{
             alert('Please select only one checkbox');
+       }
+    }
+
+    onReversalAmount(){
+       var data = this.data;
+       var numberOfChecked = $('input:checkbox:checked').length;
+       if (numberOfChecked == 1) {
+           var checkedName = $('input:checkbox:checked').attr('name');
+           var transId = checkedName.replace(/[^0-9]/g, '');
+           var givenUrl = data.trans_reversal_url;
+           var targetUrl = givenUrl + '?trans_id=' + transId;
+           if(data.payment_id){
+                targetUrl += '&payment_id=' + data.payment_id;
+            }
+            console.log(targetUrl);
+           $('.view_detail_transaction').attr('data-url', targetUrl);
+           $('.view_detail_transaction').trigger('click');
+       }else{
+            alert('Please select only one checkbox to reverse.');
        }
     }
 

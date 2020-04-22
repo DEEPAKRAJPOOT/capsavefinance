@@ -313,14 +313,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\ApportionmentController@saveSettledTrans'
             ]);
 
-            Route::get('/apportionment/txn/detail',[
-                'as' => 'apport_trans_detail',
-                'uses' => 'Lms\ApportionmentController@getTransDetail'
+            Route::get('/apportionment/txn/waiveoff',[
+                'as' => 'apport_trans_waiveoff',
+                'uses' => 'Lms\ApportionmentController@getTransDetailWaiveOff'
+            ]);
+
+            Route::get('/apportionment/txn/reversal',[
+                'as' => 'apport_trans_reversal',
+                'uses' => 'Lms\ApportionmentController@getTransDetailReversal'
             ]);
 
             Route::post('/apportionment/waiveoff/save',[
                 'as' => 'apport_waiveoff_save',
                 'uses' => 'Lms\ApportionmentController@saveWaiveOffDetail'
+            ]);
+
+            Route::post('/apportionment/reversal/save',[
+                'as' => 'apport_reversal_save',
+                'uses' => 'Lms\ApportionmentController@saveReversalDetail'
             ]);
 
         });
