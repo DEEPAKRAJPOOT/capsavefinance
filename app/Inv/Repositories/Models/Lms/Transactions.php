@@ -56,6 +56,7 @@ class Transactions extends BaseModel {
         'cgst',
         'sgst',
         'igst',
+        'is_tds',
         'tds_per',
         'gl_flag',
         'soa_flag',

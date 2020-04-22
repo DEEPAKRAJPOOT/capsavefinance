@@ -293,7 +293,26 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
-    
+    public static function uploadUserLMSFile($attributes, $userId)
+    {
+        $inputArr = [];
+        if ($attributes['doc_file']) {
+            if (!Storage::exists('/public/Lms/' . $userId)) {
+                Storage::makeDirectory('/public/Lms/' . $userId, 0777, true);
+            }
+            $path = Storage::disk('public')->put('/Lms/' . $userId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
     public static function uploadInvoiceFile($attributes, $batch_id)
     {
        $userId = Auth::user()->user_id;

@@ -115,7 +115,7 @@ class PaymentController extends Controller {
 			}
 			if($request->biz_id && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
-			  	$uploadData = Helpers::uploadAppFile($arrFileData, $app_data->app_id);
+			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}
 			// dd($userFile);
@@ -146,12 +146,12 @@ class PaymentController extends Controller {
 				'generated_by' => 0,
 			];
 			$paymentId = NULL;
-			if (in_array($request->action_type, [1,2,3])) {
-			  $paymentId = Payment::insertPayments($paymentData);
-			  if (!is_int($paymentId)) {
-				Session::flash('error', $paymentId);
-				return back();
-			  }
+			if (in_array($request->action_type, [1,3])) {
+				$paymentId = Payment::insertPayments($paymentData);
+				if (!is_int($paymentId)) {
+					Session::flash('error', $paymentId);
+					return back();
+				}
 			}
 			$udata=$this->userRepo->getSingleUserDetails($request->customer_id);
 			$getAmount =  $this->invRepo->getRepaymentAmount($request->customer_id);  
@@ -193,6 +193,7 @@ class PaymentController extends Controller {
 					'sgst' =>  $sgst,
 					'cgst' =>  $cgst,
 					'igst' =>  $igst,
+					'is_tds' =>  ($request['action_type'] == 3) ? 1: 0,
 					'tds_per' => 1,
 					'gl_flag' => 1,
 					'soa_flag' => 1,
