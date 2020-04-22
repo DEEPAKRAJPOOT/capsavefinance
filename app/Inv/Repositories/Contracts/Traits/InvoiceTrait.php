@@ -122,7 +122,14 @@ trait InvoiceTrait
              $attr['status_id'] = $approval;
              $attr['status'] = 1;
              $attr['error'] = 0;
-             $attr['message']= 'Auto Approve';
+             if($approval==8)
+             {
+                $attr['message']= 'Auto Approve';
+             }
+             else
+             {
+                $attr['message']= ''; 
+             }
              return  $attr;    
      
         }
@@ -319,20 +326,96 @@ trait InvoiceTrait
      }
    public static function chkApproval($getPrgm)
    {
-          $customerAuto  = 4;
-          $expl  =  explode(",",$getPrgm->invoice_approval); 
-          if(in_array($customerAuto, $expl))  
-          {
-            return $statusId = 8;  
-          }
-          else if($getPrgm->invoice_approval==4)
-          {
-            return  $statusId = 8;   
-          }
-          else
-          {
+          $id = Auth::user()->user_id;
+          $getUser = User::where('user_id',$id)->first();
+         if($getUser->is_buyer==0)
+         {
+            $customerAuto  = 4;
+            $expl  =  explode(",",$getPrgm->invoice_approval); 
+            if(in_array($customerAuto, $expl))  
+            {
+              return $statusId = 8;  
+            }
+            else if($getPrgm->invoice_approval==4)
+            {
+              return  $statusId = 8;   
+            }
+            else
+            {
+              return $statusId = 7;
+            }
+         } 
+         else
+         {
             return $statusId = 7;
-          }
+         }
    }
+ 
+   public static function ProgramLimit($getDetails)
+   {
+        return   AppProgramOffer::whereHas('productHas')->where('app_id',$getDetails['app_id'])->where(['anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+        
+   }
+   
+   public static  function limitExpire($cid)
+   {
+        $mytime = Carbon::now();
+        $cDate   =  $mytime->toDateTimeString();
+        $CFrom =  Carbon::createFromFormat('Y-m-d H:i:s', $cDate)->format('Y-m-d');
+        $app_id =    AppLimit::where('user_id',$cid)->where('status',1)->first();
+       return self::twoDateDiff($CFrom,$app_id['end_date']);
+   }
+
+     public static  function invoiceApproveLimit($cid)
+   {
+        return  BizInvoice::where('status_id',8)->where(['supplier_id' =>$cid])->sum('invoice_approve_amount');
+   }
+
+     public static  function invoicePendingLimit($cid)
+   {
+        return  BizInvoice::where('status_id',7)->where(['supplier_id' =>$cid])->orderBy('invoice_approve_amount', 'ASC')->get();
+   }
+   public static  function UnlockLimitAxceed($uid,$remain_amount)
+   {
+       $remainAmount = 0;
+      return  $invoice_approve_amount = self::invoicePendingLimit($uid);
+      /* foreach($invoice_approve_amount as $val)
+       {
+           
+       }  */
+       
+   }
+   public static function updateLimit($status_id,$limit,$inv_amout,$cid,$invoice_bulk_upload_id)
+    {
+        $sum  = self::invoiceApproveLimit($cid);
+        $uid = Auth::user()->user_id;
+        if($status_id==8 || $status_id==7)
+        {
+            if($sum  > $limit)
+            {
+                if($status_id==8)  
+                {  
+                    $status_id = 28;   
+                } 
+                else 
+                { 
+                    $status_id = $status_id; 
+                }
+              return   InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>1,'status_id' =>$status_id]);
+            }
+        }
+         
+             $dueDateGreaterCurrentdate =  self::limitExpire($cid);
+             
+             if($dueDateGreaterCurrentdate)
+             {
+                return InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28]); 
+             }
+        
+    }
+   
+   
+   
+   
    
 }

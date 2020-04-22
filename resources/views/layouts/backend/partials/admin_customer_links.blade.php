@@ -21,20 +21,22 @@
    <!--  <li>
         <a class=" {{ ($active=='repayement') ? 'active': null }} " href="#">Repayment History</a>
     </li> -->
+    @can('manage_charge')
     <li>
         <a class=" {{($active=='charges') ? 'active': null }} " href="{{route('manage_charge', ['user_id' => request()->get('user_id')])}}">Charges</a>
     </li>
-
-
-    @can('view_user_invoice')
+     @endcan
+  @can('view_user_invoice')
     <li>
         <a class=" {{($active=='userInvoice') ? 'active': null }} " href="{{route('view_user_invoice', [ 'user_id' => $userInfo->user_id ] )}}">Create Invoice</a>
     </li>
     @endcan
-
+   @endcan
+     @can('limit_management')
      <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
     </li>
+      @endcan
 
     <!--
     <li>

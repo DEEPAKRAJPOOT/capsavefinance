@@ -720,8 +720,11 @@ class DataRenderer implements DataProviderInterface
                    
                        $expl  =  explode(",",$invoice->program->invoice_approval); 
                       if(in_array($customer, $expl)) 
-                      {         
-                        return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                      { 
+                        if($invoice->limit_exceed!=1)
+                        {
+                             return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                        }
                       }
                       else {
                         return "";
@@ -772,9 +775,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
-                        if($invoice->bulkUpload['limit_exceed']==1) {
-                          $inv_amount .= '<br><span class="error">Limit Exceed</span>';   
-                        }
+                        $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
                 })
                 ->addColumn(            
@@ -817,8 +818,12 @@ class DataRenderer implements DataProviderInterface
                      }
                       $expl  =  explode(",",$invoice->program->invoice_approval); 
                       if(in_array($customer, $expl)) 
-                      {             
+                      {  
+                          if($invoice->limit_exceed!=1)
+                        {
                           $action .='<a title="Approve" data-status="8"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                      
+                        }
                       }
                       return $action;
                 })
@@ -981,9 +986,6 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
-                        if($invoice->bulkUpload['limit_exceed']==1) {
-                         $inv_amount .= '<br><span class="error">Limit Exceed</span>';  
-                        }
                         return $inv_amount;
                 })
                  ->addColumn(            
@@ -1550,7 +1552,9 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
+                       
                 })
                  ->filter(function ($query) use ($request) {
                   

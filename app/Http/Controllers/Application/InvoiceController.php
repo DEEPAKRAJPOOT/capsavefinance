@@ -51,7 +51,7 @@ class InvoiceController extends Controller {
         else {
              $get_program = [];
         }
-      dd($get_program);
+      
          return view('frontend.application.invoice.uploadinvoice')
                    ->with(['get_user' => $get_user,'get_program' => $get_program, 'get_anchor' => $get_anchor, 'app_id' => $app_id,'biz_id' => $biz_id]);
     }
@@ -232,8 +232,9 @@ class InvoiceController extends Controller {
                     $data = fgetcsv($handle, 1000, ",");
                     if(count($data) < 4 || count($data) > 4)
                     {
-                          Session::flash('error', 'Please check Csv file format.');
-                          return back(); 
+                       $multichk['multiVali1'] = 'Please check Csv file format';
+                       Session::flash('multiVali',$multichk);
+                       return back();
                     }
                     $csvPath1 = storage_path('app/public/'.$userFile->file_path);
                     $handle1 = fopen($csvPath1, "r");
@@ -342,10 +343,10 @@ class InvoiceController extends Controller {
                         $res =  $this->invRepo->saveInvoice($ins);
                         if($res)
                         {
+                           
                             if($res['status']!=2)
                             {
-                                
-                               $updateLimit =  $this->invRepo->updateLimit($userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
                             }
                          
                         }

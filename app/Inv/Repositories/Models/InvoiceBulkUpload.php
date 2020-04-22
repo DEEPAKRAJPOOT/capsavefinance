@@ -114,7 +114,7 @@ class InvoiceBulkUpload extends BaseModel
       public static function getUserAllBulkInvoice()
     {
        $id = Auth::user()->user_id; 
-       return  self::with(['anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['supplier_id' => $id])->get();
+       return  self::with(['user','anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['created_by' => $id,'supplier_id' => $id])->get();
  
     } 
     
@@ -126,11 +126,11 @@ class InvoiceBulkUpload extends BaseModel
         if( $chkUser->id==11)
         {
             $res  = User::where('user_id',$id)->first();
-            return  self::with(['anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['anchor_id' => $res->anchor_id])->get();
+            return  self::with(['user','anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['created_by' => $id,'anchor_id' => $res->anchor_id])->get();
          }
         else 
        {
-            return  self::with(['anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['created_by' => $id])->get();
+            return  self::with(['user','anchor','supplier','program','lms_user','business'])->whereIn('status',[0,2])->where(['created_by' => $id])->get();
         }
     
     } 
@@ -150,7 +150,11 @@ class InvoiceBulkUpload extends BaseModel
           return $this->belongsTo('App\Inv\Repositories\Models\User', 'supplier_id','user_id')->whereIn('is_buyer',[1,2]); 
      
      }
-    
+     function user()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\User', 'created_by','user_id'); 
+     
+     }
      function program()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\Program', 'program_id','prgm_id');  
@@ -262,13 +266,5 @@ class InvoiceBulkUpload extends BaseModel
             }
     } 
      
-    public static function updateLimit($limit,$inv_amout,$cid,$invoice_bulk_upload_id)
-    {
-        $uid = Auth::user()->user_id;
-        $sum = self::whereIn('status',[0,1])->where('status_id',8)->where(['supplier_id' =>$cid])->sum('invoice_approve_amount');
-        if($sum  > $limit)
-        {
-           return  self::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>1]);
-        }
-    }
+   
 }
