@@ -160,6 +160,22 @@ class AppDocument extends BaseModel
         
         return $appDocCheck > 0 ? true : false;        
     }
+    
+    /**
+     * Get Application Documents
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppDocuments($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }     
 }
   
 

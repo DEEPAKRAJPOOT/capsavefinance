@@ -1864,7 +1864,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function saveAppProductData($appProductData)
     {
         return AppProduct::saveAppProductData($appProductData);
-    }    
+    }
+
+    /**
+     * Get Application Documents
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppDocuments($whereCond=[])
+    {
+        return AppDocument::getAppDocuments($whereCond);
+    }     
 }
 
 
