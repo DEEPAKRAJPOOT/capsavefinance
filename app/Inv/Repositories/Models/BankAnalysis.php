@@ -7,7 +7,7 @@ use DB;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class BankWorkCapitalFacility extends BaseModel
+class BankAnalysis extends BaseModel
 {
     use Notifiable;
     /**
@@ -15,14 +15,14 @@ class BankWorkCapitalFacility extends BaseModel
      *
      * @var string
      */
-    protected $table = 'app_bank_wc';
+    protected $table = 'app_bank_analysis';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'app_bank_wc_id';
+    protected $primaryKey = 'bank_analysis_id';
 
      /**
      * Maintain created_at and updated_at automatically
@@ -53,16 +53,20 @@ class BankWorkCapitalFacility extends BaseModel
     protected $fillable = [
                         'bank_detail_id',
                         'bank_name',
-                        'fund_facility',
-                        'fund_amt',  
-                        'fund_os_amt', 
-                        'nonfund_facility', 
-                        'nonfund_amt', 
-                        'nonfund_os_amt', 
-                        'relationship_len', 
-                        'is_active',             
-                        'created_by',
+                        'act_type',
+                        'uti_max',  
+                        'uti_min', 
+                        'uti_avg', 
+                        'chk_inward', 
+                        'chk_presented_per',
+                        'chk_outward',
+                        'chk_deposited_per', 
+                        'submission_credit',
+                        'submission_debbit',
+                        'overdrwaing_in_six_month',
+                        'is_active',
                         'created_at',
+                        'created_by',
                         'updated_at',
                         'updated_by'
     ];

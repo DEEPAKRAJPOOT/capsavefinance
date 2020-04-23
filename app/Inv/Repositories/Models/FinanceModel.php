@@ -231,8 +231,9 @@ class FinanceModel extends BaseModel
 
     public static function getDebtPosition($appId){
          $result = self::select(DB::raw("DATE_FORMAT(debt_on, '%d/%m/%Y') as debt_on"),
-         DB::raw("DATE_FORMAT(fund_date, '%d/%m/%Y') as fund_date"),
-         DB::raw("DATE_FORMAT(nonfund_date, '%d/%m/%Y') as nonfund_date"),
+         DB::raw("DATE_FORMAT(fund_ason_date, '%d/%m/%Y') as fund_ason_date"),
+         DB::raw("DATE_FORMAT(nonfund_ason_date, '%d/%m/%Y') as nonfund_ason_date"),
+         DB::raw("DATE_FORMAT(tbl_fund_ason_date, '%d/%m/%Y') as tbl_fund_ason_date"),
          'debt_position_comments','bank_detail_id')
                 ->from('app_biz_bank_detail')
                 ->where('app_id', $appId)
