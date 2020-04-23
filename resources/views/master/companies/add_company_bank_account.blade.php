@@ -213,7 +213,7 @@ try {
                     unique_acc: 'This account number is already exists.'
                 },
                 confim_acc_no: {
-                    equalTo: 'Confirm Account Number and Account number do not match.  '
+                    equalTo: 'Account number do not match.'
                 },
                 ifsc_code: {
                     alphanumericonly: 'Please enter alphanumeric characters.',
