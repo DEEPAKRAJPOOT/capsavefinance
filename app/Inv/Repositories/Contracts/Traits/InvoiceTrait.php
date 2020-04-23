@@ -389,7 +389,7 @@ trait InvoiceTrait
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['comm_txt' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                  
            } 
             if($limit  >= $sum)
