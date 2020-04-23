@@ -302,4 +302,81 @@ trait ApplicationTrait
         $data['anchorData'] = $anchorArr;
         return $data;
     }
+    
+    protected function copyApplication($userId, $appId, $bizId)
+    {
+        \DB::beginTransaction();
+
+        try {   
+            
+            $excludeKeys = ['created_at', 'created_by','updated_at', 'updated_by'];
+            
+            //Get and save Business Data
+            $bizData = $this->appRepo->getApplicationById($bizId);                        
+            $bizData = $bizData ? $this->arrayExcept($bizData->toArray(), array_merge($excludeKeys, ['biz_id'])) : [];           
+            $newBizData = $this->appRepo->createBusiness($bizData);
+            $newBizId = $newBizData->biz_id;
+
+            //Get and save Biz Address
+            $bizAddressesData  = $this->appRepo->getBizAddresses($newBizId);
+            foreach($bizAddressesData as $bizAddressData) {
+                $bizAddressArrData = $bizAddressData ? $this->arrayExcept($bizAddressData->toArray(), array_merge($excludeKeys, ['biz_addr_id'])) : [];
+                $bizAddressArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveAddress($bizAddressArrData);            
+            }
+            
+            //Get and save Application data
+            $appData  = $this->appRepo->getAppDataByAppId($appId);
+            $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id'])) : [];                
+            $appData['biz_id'] = $newBizId;
+            $appData['parent_app_id'] = $appId;
+            
+            $newAppData = $this->appRepo->createApplication($appData);
+            $newAppId = $newAppData->app_id;
+            
+            //Get and save Biz Owner with Address Data
+            $ownersData  = $this->appRepo->getOwnerByBizId($bizId);
+            foreach($ownersData as $ownerData) {
+                $bizOwnerId = $ownerData->biz_owner_id;
+                $ownerArrData = $ownerData ? $this->arrayExcept($ownerData->toArray(), array_merge($excludeKeys, ['biz_owner_id'])) : [];
+
+                $ownerArrData['biz_id'] = $newBizId;  
+                $newOwnerData = $this->appRepo->createBizOwner($ownerArrData);
+                $newBizOwnerId = $newOwnerData->biz_owner_id;
+                
+                //Get Biz Owner Address
+                $ownAddressesData  = $this->appRepo->getBizAddresses($bizId, $bizOwnerId);
+                foreach($ownAddressesData as $ownAddressData) {
+                    $ownAddressArrData = $ownAddressData ? $this->arrayExcept($ownAddressData->toArray(), array_merge($excludeKeys, ['biz_addr_id'])) : [];
+                    $ownAddressArrData['biz_id'] = $newBizId;
+                    $ownAddressArrData['biz_owner_id'] = $newBizOwnerId;
+                    $this->appRepo->saveAddress($ownAddressArrData);
+                }
+            }
+            
+            //
+            
+            \DB::rollback(); dd($ownerData);
+
+            //$CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
+            \DB::commit();
+            // all good
+        } catch (\Exception $e) {
+            \DB::rollback();
+            // something went wrong
+        }
+    }
+    
+    protected function arrayExcept($array, $keys)
+    {
+
+      foreach($keys as $key){
+          if (isset($array[$key])) {
+            unset($array[$key]);
+          }
+      }
+
+      return $array;
+
+    }    
 }

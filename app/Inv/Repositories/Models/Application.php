@@ -61,6 +61,7 @@ class Application extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'parent_app_id',
         'user_id',
         'biz_id',
         'loan_amt',
@@ -684,4 +685,28 @@ class Application extends BaseModel
        $role_id = RoleUser::where(['user_id' => $id])->pluck('role_id');
        return Role::whereIn('id',$role_id)->first();
     }
+    
+    /**
+     * Get Renewal application
+     * 
+     * @param int $userId
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getRenewalApp($userId)
+    {
+        $currDate = \Carbon\Carbon::now()->toDateString();       
+        $appData = self::select('app.*')
+                ->join('app_limit', 'app_limit.app_id', '=', 'app.app_id')
+                ->where('app.user_id', $userId)
+                ->where('app.status', '1')
+                ->where('app_limit.status', '1')
+                //->where('app_limit.start_date', '>=', $currDate)
+                //->where('app_limit.end_date', '<=', $currDate)
+                ->orderBy('app.app_id', 'DESC')
+                ->get();
+                       
+        return ($appData ? $appData : []);        
+    }    
 }

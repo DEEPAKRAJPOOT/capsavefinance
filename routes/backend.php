@@ -580,6 +580,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveBankDetail'
                 ]);
             }); //end of cam   
+            
+            Route::get('renew-application', [
+                'as' => 'renew_application',
+                'uses' => 'Backend\RenewalController@renewApplication'
+            ]);
+            
         });//end of application
 
         Route::group(['prefix' => 'lead'], function () {
@@ -1392,7 +1398,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('export_txns', [
                 'as' => 'export_txns',
                 'uses' => 'Backend\FinanceController@exportTransactions'
-            ]);
+            ]);                        
         });
 
         Route::post('ckeditor/image_upload', 'CKEditorController@upload')->name('upload_ckeditor_image');

@@ -165,4 +165,22 @@ class BusinessAddress extends BaseModel
         $result = $result->update($attributes);
         return $result ?: false;
     }
+    
+    /**
+     * Get All Addresses By Biz Id
+     * 
+     * @param int $bizId
+     * @return type
+     */
+    public static function getBizAddresses($bizId, $bizOwnerId=null)
+    {
+        $query = self::where('biz_id', $bizId);
+        if (!is_null($bizOwnerId)) {
+            $query->where('biz_owner_id', $bizOwnerId);
+        } else {
+            $query->whereNull('biz_owner_id');
+        }
+        $result = $query->get();
+        return $result ? $result : [];
+    }
 }

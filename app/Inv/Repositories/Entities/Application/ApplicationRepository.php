@@ -57,6 +57,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
+use App\Inv\Repositories\Models\BizOwner;
 
 /**
  * Application repository class
@@ -1706,6 +1707,50 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
 
     }
+    
+    /**
+     * Get Renewal application
+     * 
+     * @param int $userId
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getRenewalApp($userId)
+    {
+        return Application::getRenewalApp($userId);
+    }
+    
+    public function createBusiness($bizData)
+    {
+        return Business::create($bizData);
+    }
+    
+    public function createApplication($appData)
+    {
+        return Application::create($appData);
+    }
+        
+    public function getOwnerByBizId($bizId)
+    {
+        return BizOwner::getOwnerByBizId($bizId);
+    }
+    
+    public function createBizOwner($bizOwnerData)
+    {
+        return BizOwner::create($bizOwnerData);
+    }
+    
+    /**
+     * Get All Addresses By Biz Id
+     * 
+     * @param int $bizId
+     * @return type
+     */
+    public function getBizAddresses($bizId, $bizOwnerId=null)
+    {
+        return BusinessAddress::getBizAddresses($bizId, $bizOwnerId);
+    }    
 }
 
 
