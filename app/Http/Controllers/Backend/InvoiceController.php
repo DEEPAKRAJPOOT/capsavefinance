@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -348,9 +346,9 @@ class InvoiceController extends Controller {
         $id = Auth::user()->user_id;
         $attributes = $request->all();
         $res = $this->invRepo->updateInvoiceAmount($attributes);
-        if ($res) {
+       if ($res) {
 
-            Session::flash('message', 'Invoice Amount successfully Updated');
+            Session::flash('message', 'Invoice Amount successfully Updated ');
             return back();
         } else {
             Session::flash('message', 'Something wrong, Amount is not Updated');
@@ -938,6 +936,11 @@ class InvoiceController extends Controller {
                     $csvPath = storage_path('app/public/'.$userFile->file_path);
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
+                    if(count($data) < 5 || count($data) > 6)
+                    {
+                          Session::flash('error', 'Please check Csv file format.');
+                          return back(); 
+                    }
                     
                     $csvPath1 = storage_path('app/public/'.$userFile->file_path);
                     $handle1 = fopen($csvPath1, "r");
@@ -1045,8 +1048,7 @@ class InvoiceController extends Controller {
                         {
                             if($res['status']!=2)
                             {
-                                
-                               $updateLimit =  $this->invRepo->updateLimit($userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
                             }
                          
                         }

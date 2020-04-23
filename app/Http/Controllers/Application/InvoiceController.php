@@ -9,6 +9,7 @@ use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use Session;
 use Helpers;
@@ -22,9 +23,11 @@ class InvoiceController extends Controller {
 
     protected $invRepo;
     protected $docRepo;
-    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo) {
+    protected $application;
+    public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvAppRepoInterface $application) {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
+        $this->application  =  $application;
         $this->middleware('auth');
         //$this->middleware('checkBackendLeadAccess');
     }
@@ -48,7 +51,7 @@ class InvoiceController extends Controller {
         else {
              $get_program = [];
         }
-      dd($get_program);
+      
          return view('frontend.application.invoice.uploadinvoice')
                    ->with(['get_user' => $get_user,'get_program' => $get_program, 'get_anchor' => $get_anchor, 'app_id' => $app_id,'biz_id' => $biz_id]);
     }
@@ -198,7 +201,7 @@ class InvoiceController extends Controller {
         $prgm_limit_id   =   $program_name[1];
         $batch_id =  self::createBatchNumber(6);
         $uploadData = Helpers::uploadInvoiceFile($attributes, $batch_id); 
-        if($uploadData['status']==0)
+      if($uploadData['status']==0)
         {
              Session::flash('error', $uploadData['message']);
              return back(); 
@@ -227,7 +230,12 @@ class InvoiceController extends Controller {
                     $csvPath = storage_path('app/public/'.$userFile->file_path);
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
-                    
+                    if(count($data) < 4 || count($data) > 4)
+                    {
+                       $multichk['multiVali1'] = 'Please check Csv file format';
+                       Session::flash('multiVali',$multichk);
+                       return back();
+                    }
                     $csvPath1 = storage_path('app/public/'.$userFile->file_path);
                     $handle1 = fopen($csvPath1, "r");
                     $data1 = fgetcsv($handle1, 1000, ",");
@@ -292,9 +300,9 @@ class InvoiceController extends Controller {
                       if($file_name)
                       {
                         $getImage =  Helpers::ImageChk($file_name,$batch_id);
-                        if($getImage['status']==1)
+                       if($getImage['status']==1)
                         {
-                            
+                          
                            $FileDetail = $this->docRepo->saveFile($getImage); 
                            $FileId  = $FileDetail->file_id; 
                         }
@@ -303,11 +311,14 @@ class InvoiceController extends Controller {
                            $FileId  = Null; 
                            $comm_txt  =  $getImage['message']; 
                         }
+                         
                       }
                       else
                       {
                             $FileId  = Null; 
+                           
                       }
+                        
                         $userLimit = $chlLmsCusto['limit'];
                         $ins['anchor_id'] = $attributes['anchor_name'];
                         $ins['supplier_id'] = $dataAttr['user_id'];
@@ -332,10 +343,10 @@ class InvoiceController extends Controller {
                         $res =  $this->invRepo->saveInvoice($ins);
                         if($res)
                         {
+                           
                             if($res['status']!=2)
                             {
-                                
-                               $updateLimit =  $this->invRepo->updateLimit($userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
                             }
                          
                         }

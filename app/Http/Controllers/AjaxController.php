@@ -38,6 +38,7 @@ use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 
 class AjaxController extends Controller {
 
@@ -2811,6 +2812,7 @@ if ($err) {
     
       //////////////////// use for Invoice Activity  list/////////////////
      public function getBackendInvoiceActivityList(DataProviderInterface $dataProvider) {
+       
         $invoice_activity_data = $this->invRepo->getAllActivityInvoiceLog($this->request->inv_name);
         $invoice_activity_data = $dataProvider->getBackendInvoiceActivityList($this->request, $invoice_activity_data);
         return $invoice_activity_data;
@@ -3023,10 +3025,16 @@ if ($err) {
     
    public function updateInvoiceApprove(Request $request)
    {
-       
-           $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);
-           return \Response::json(['status' => $res]); 
-    
+           
+           if($request->status==8)
+           {
+              return  InvoiceTrait::updateApproveStatus($request);
+           }
+           else
+           {
+              $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);   
+              return \Response::json(['status' => $res]);
+           }
    }
   
     public function getFiLists(DataProviderInterface $dataProvider, Request $request){
@@ -3569,14 +3577,13 @@ if ($err) {
         $res['user_id']  = $supplier_id[0];
         $res['app_id']  = $supplier_id[1];
         $res['anchor_id']  = $request['anchor_id'];
-        $getTenor =   $this->invRepo->getTenor($res);
-        $getRemainAmount =   $this->invRepo->getRemainAmount($res);
-        $getOfferProgramLimit =   $this->invRepo->getAmountOfferLimit($res);
-        $limit = $getOfferProgramLimit-$getRemainAmount;
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $getOfferProgramLimit,'remain_limit' =>$limit]);
+        $res['program_id']  = $res['prgm_id'];
+        $getTenor   = $this->invRepo->getTenor($res);
+        $limit =   InvoiceTrait::ProgramLimit($res);
+        $sum   =   InvoiceTrait::invoiceApproveLimit($res['user_id']);
+        $remainAmount = $limit-$sum;
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount]);
      }
-          
-
     /**
      * change program status
      * 
@@ -3622,6 +3629,7 @@ if ($err) {
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
                   $attribute['invoice_bulk_upload_id'] = $attr->invoice_bulk_upload_id;
+                  $attribute['status_id'] = $attr->status_id;
                   $updateBulk  =  $this->invRepo->updateBulkUpload($attribute);  
                 }
         }
@@ -3817,12 +3825,34 @@ if ($err) {
     
    function updateBulkInvoice(Request $request)
    {
-       foreach($request['invoice_id'] as $row) {  
-        $res =   $this->invRepo->updateInvoice($row,$request->status);
+      
+       $msg = "";
+       $res['msg']="";
+       
+       foreach($request['invoice_id'] as $row)
+       {  
+        if($request->status==8)
+        {
+           $attr['invoice_id']=$row; 
+           $response =  InvoiceTrait::updateApproveStatus($attr);  
+         
+          if($response==2)
+          {
+             
+              $inv = InvoiceTrait::getInvoiceDetail($attr);
+              $msg.=$inv['invoice_no'].",";
+           }
+         
+        }
+          else
+          {
+             $this->invRepo->updateInvoice($row,$request->status);
+         }
        }
-       return  $res;
-   }
-    
+       
+      /// return \response()->json(['success' => substr($msg,0,-1)]);
+       return 1;
+   }  
    /**
     * get Bank account list
     * 
