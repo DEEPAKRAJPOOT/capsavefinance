@@ -108,7 +108,6 @@ class Transactions extends BaseModel {
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND')]) 
         ->sum('amount');
 
         $cr = self::where('parent_trans_id','=',$this->trans_id)
@@ -122,13 +121,20 @@ class Transactions extends BaseModel {
         return round(($this->amount - $this->getsettledAmtAttribute()),2);
     }
 
-    public function getRefundOutstandingAttribute(){
-        $dr = self::where('link_trans_id','=',$this->trans_id)
-        ->where('entry_type','=','0')
-        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE')]) 
+    public function getRefundableAmtAttribute(){
+        return self::where('parent_trans_id','=',$this->trans_id)
+        ->where('entry_type','=',1)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
         ->sum('amount');
 
-        return round(($this->amount - $dr),2);
+        // return self::where('link_trans_id','=',$this->trans_id)
+        // ->where('entry_type','=','0')
+        // ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')]) 
+        // ->sum('amount');
+    }
+
+    public function getRefundOutstandingAttribute(){
+        return round(($this->amount - $this->getRefundableAmtAttribute()),2);
     }
 
     public function getParentTransDateAttribute(){
@@ -144,8 +150,10 @@ class Transactions extends BaseModel {
         $name = ' '; 
        
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND')])){
-            $parentTrans = self::find($this->parent_trans_id);
-            $name .= $parentTrans->transType->trans_name.' ';
+            if($this->parent_trans_id){
+                $parentTrans = self::find($this->parent_trans_id);
+                $name .= $parentTrans->transType->trans_name.' ';
+            }
         }
 
         if($this->entry_type == 0){
@@ -173,8 +181,7 @@ class Transactions extends BaseModel {
     }
 
     public static function getSettledTrans($userId){
-        return self:://whereNotNull('payment_id')
-                where('entry_type','1')
+        return self::where('entry_type','1')
                 ->whereNotNull('parent_trans_id')
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND')])
                 ->where('user_id','=',$userId)->get()
@@ -184,17 +191,16 @@ class Transactions extends BaseModel {
     }
 
     public static function getRefundTrans($userId){
-        return self:://whereIn('is_settled',[2])
-                where('entry_type','1')
+        return self::where('entry_type','1')
                 ->whereNotNull('parent_trans_id')
                 ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS')])
-                ->where('user_id','=',$userId)->get()
-                ->filter(function($item){
-                    if(in_array($item->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS')])){
-                        return $item->refundoutstanding > 0;
-                    }
-                    return true;
-                });
+                ->where('user_id','=',$userId)->get();
+                //->filter(function($item){
+                //    if(in_array($item->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS')])){
+                //        return $item->refundoutstanding > 0;
+                //    }
+                //    return true;
+                //});
     }
 
     /**

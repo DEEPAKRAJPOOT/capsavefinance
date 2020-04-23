@@ -327,12 +327,11 @@ trait LmsTrait
             $settledInterest = 0;
 
             if($int_type_config==2){
-                $balancePrincipalAmt = round(($principalAmount + $totalInterest) - ($settledAmount + $settledInterest),5);
+                $balancePrincipalAmt = round(($trans->outstanding + $totalInterest),5);
             }else{
-                $balancePrincipalAmt = round(($principalAmount - $settledAmount),5);
+                $balancePrincipalAmt = $trans->outstanding;
             }
 
-            //$balancePrincipalAmt = $trans->outstanding;
 
             if($transDate && $maxAccrualDate && strtotime($transDate)<= strtotime($maxAccrualDate)){
                 $intAccrualDt = $transDate;

@@ -5227,14 +5227,14 @@ class DataRenderer implements DataProviderInterface
      */
     public function getUnsettledTrans(Request $request, $trans,$payment)
     {
-        return DataTables::of($trans,$payment)
+        return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
-                    return $trans->trans_id.'-'.$trans->invoiceDisbursed->invoice->invoice_no;
+                    return $trans->invoiceDisbursed->invoice->invoice_no;
                 }
             })
             ->addColumn('trans_type', function($trans){
@@ -5246,7 +5246,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('outstanding_amt', function($trans){
                 return "₹ ".number_format($trans->outstanding,2);
             })
-            ->addColumn('payment_date', function($payment){
+            ->addColumn('payment_date', function($trans)use($payment){
                 return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
             })
             ->addColumn('pay', function($trans){
@@ -5254,7 +5254,7 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             })
             ->addColumn('select', function($trans){
-                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == 9 ? 'interest' : '');
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
                 $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
