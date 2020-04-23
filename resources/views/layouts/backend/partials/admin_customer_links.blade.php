@@ -9,7 +9,7 @@
     @endcan
     @can('addr_get_customer_list')
     <li>
-		<a class=" {{( $active=='address') ? 'active': null }} " href="{{route('addr_get_customer_list',[ 'user_id' => $userInfo->user_id ])}}">Address </a>
+        <a class=" {{( $active=='address') ? 'active': null }} " href="{{route('addr_get_customer_list',[ 'user_id' => $userInfo->user_id ])}}">Address </a>
     </li>
     @endcan
     @can('user_wise_invoice')
@@ -17,27 +17,25 @@
         <a class=" {{ ($active=='invoice') ? 'active': null }} "  href="{{ route('user_wise_invoice', [ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ]) }}">View Invoices</a>
     </li>
     @endcan
-    
-   <!--  <li>
-        <a class=" {{ ($active=='repayement') ? 'active': null }} " href="#">Repayment History</a>
-    </li> -->
+
+    <!--  <li>
+         <a class=" {{ ($active=='repayement') ? 'active': null }} " href="#">Repayment History</a>
+     </li> -->
     @can('manage_charge')
     <li>
         <a class=" {{($active=='charges') ? 'active': null }} " href="{{route('manage_charge', ['user_id' => request()->get('user_id')])}}">Charges</a>
     </li>
-     @endcan
-  @can('view_user_invoice')
+    @endcan
+    @can('view_user_invoice')
     <li>
         <a class=" {{($active=='userInvoice') ? 'active': null }} " href="{{route('view_user_invoice', [ 'user_id' => $userInfo->user_id ] )}}">Create Invoice</a>
     </li>
     @endcan
- 
-     @can('limit_management')
-     <li>
+    @can('limit_management')
+    <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
     </li>
-      @endcan
-
+    @endcan
     <!--
     <li>
         <a class=" {{ ($active=='soa') ? 'active': null }} "  href="#">SOA</a>

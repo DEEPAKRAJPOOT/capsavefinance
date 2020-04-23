@@ -1027,4 +1027,15 @@ Route::group(
         'as' => 'update_eod_batch_process',
         'uses' => 'AjaxController@updateEodProcessStatus'
     ]);        
+    
+    Route::post('check-bank-acc-exist',[
+        'as' => 'check_bank_acc_exist',
+        'uses' => 'AjaxController@checkBankAccExist'
+    ]);
+    
+    Route::post('check-comp-add-exist',[
+        'as' => 'check_comp_add_exist',
+        'uses' => 'AjaxController@checkCompAddExist'
+    ]);
+
 });

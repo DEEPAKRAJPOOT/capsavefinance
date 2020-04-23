@@ -1718,7 +1718,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return UserBankAccount::isDefalutCmpBankAcc($attributes);
     }
+    
+    /*
+     *check bank account is unique for a company
+     */
+    public function getBankAccByCompany($attributes){
+        return UserBankAccount::getBankAccStatusByCompany($attributes);
+    }
 }
-
-
 

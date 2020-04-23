@@ -24,11 +24,12 @@ class BankAccountRequest extends FormRequest {
     public function rules()
     {
         return [
-            'acc_name' => 'required',
-            'acc_no' => 'required',
+            'acc_name' => 'required|regex:/^[a-zA-Z ]+$/|max:50',
+            'acc_no' => 'required|numeric|digits_between:9,18',
+            'confim_acc_no' => 'required|numeric|digits_between:9,18|same:acc_no',
             'bank_id' => 'required',
-            'ifsc_code' => 'required',
-            'branch_name' => 'required',
+            'ifsc_code' => 'required|alpha_num|max:11',
+            'branch_name' => 'required|regex:/^[a-zA-Z ]+$/|max:30',
             'is_active' => 'required',
         ];
     }

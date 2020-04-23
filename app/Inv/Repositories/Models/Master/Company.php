@@ -141,5 +141,16 @@ class Company extends BaseModel {
         
         return $res;
     }
+    
+    public static function getCompAddByCompanyName($where)
+    {
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        $res = self::where($where)->first();
+        
+        return $res ?: false;
+    }
 
 }

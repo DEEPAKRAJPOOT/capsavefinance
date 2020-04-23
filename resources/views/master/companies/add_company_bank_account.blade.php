@@ -11,8 +11,8 @@ Form::open(
 )
 !!}
 
-{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
-{!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null ) !!}
+{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null, ['id'=>'acc_id']) !!}
+{!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null,['id'=>'company_id'] ) !!}
 
 <div class="modal-body text-left">
     <div class="row">
@@ -23,7 +23,7 @@ Form::open(
                 </label>
                 {!! Form::text('acc_name', 
                 isset($bankAccount->acc_name) ? $bankAccount->acc_name : null
-                ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Holder Name']) !!}
+                ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Holder Name', 'maxlength'=>50]) !!}
                 {!! $errors->first('acc_name', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -42,31 +42,31 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm' ,
-                'id'=>'account_no','placeholder'=>'Enter Account Number']) !!}
+                ['class'=>'form-control form-control-sm number_format' ,
+                'id'=>'account_no','placeholder'=>'Enter Account Number', 'maxlength'=>18]) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
-        
-        
-         <div class="col-md-6">
+
+
+        <div class="col-md-6">
             <div class="form-group">
                 <label for="confim_acc_no">Confirm Account Number
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number']) !!}
-                
+                ['class'=>'form-control form-control-sm number_format', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number', 'maxlength'=>18]) !!}
+
             </div>
         </div>
-        
-       
+
+
         <div class="col-md-6">
             <div class="form-group">
                 <label for="ifsc_code">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code']) !!}
+                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code', 'maxlength'=>11]) !!}
                 {!! $errors->first('ifsc_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -75,7 +75,7 @@ Form::open(
                 <label for="branch_name">Branch Name
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('branch_name',isset($bankAccount->branch_name) ? $bankAccount->branch_name : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Branch Name']) !!}
+                {!! Form::text('branch_name',isset($bankAccount->branch_name) ? $bankAccount->branch_name : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Branch Name', 'maxlength'=>30]) !!}
                 {!! $errors->first('branch_name', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -121,50 +121,105 @@ try {
 }
 </script>
 @endif
-
 <script>
+
+    var messages = {
+        check_bank_acc_exist: "{{ URL::route('check_bank_acc_exist') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+    };
+</script>
+<script>
+    $(document).on('input', '.number_format', function (event) {
+        // skip for arrow keys
+        if (event.which >= 37 && event.which <= 40)
+            return;
+
+        // format number
+        $(this).val(function (index, value) {
+            return value.replace(/\D/g, "");
+        });
+    });
+
     $('#confim_acc_no').val($('#account_no').val());
+
+    $.validator.addMethod("alphanumericonly", function (value, element) {
+        return this.optional(element) || /^[A-Za-z0-9]*$/.test(value);
+    });
+
+    $.validator.addMethod("unique_acc", function (value, element) {
+        var acc_no = value;
+        var comp_id = $('#company_id').val();
+        var acc_id = $('#acc_id').val();
+        let status = false;
+        $.ajax({
+            url: messages.check_bank_acc_exist,
+            type: 'POST',
+            async: false,
+            cache: false,
+            datatype: 'json',
+            data: {
+                'acc_no': acc_no,
+                'comp_id': comp_id,
+                'acc_id': acc_id,
+                '_token': messages.token
+            },
+            success: function (response) {
+                if (response['status'] === 'true') {
+                    status = true;
+                }
+            }
+        });
+        return this.optional(element) || (status === true);
+    });
+
     $(function () {
         $("form[name='bank_account']").validate({
             rules: {
                 'acc_name': {
                     required: true,
-                    lettersonly: true
+                    lettersonly: true,
+                    maxlength: 50
                 },
                 'acc_no': {
                     required: true,
                     number: true,
-                    maxlength: 16,
+                    maxlength: 18,
+                    unique_acc: true
                 },
                 'confim_acc_no': {
                     required: true,
-                    equalTo: "#account_no",
-                    maxlength: 16,
+                    maxlength: 18,
+                    equalTo: "#account_no"
                 },
-                
                 'bank_id': {
-                    required: true,
+                    required: true
                 },
-
                 'ifsc_code': {
                     required: true,
-
+                    alphanumericonly: true,
+                    maxlength: 11
                 },
                 'branch_name': {
                     required: true,
-                    lettersonly: true
-
+                    lettersonly: true,
+                    maxlength: 30
                 },
                 'is_active': {
-                    required: true,
-
+                    required: true
                 },
             },
             messages: {
-                confim_acc_no:{
-                    equalTo:'Confirm Account Number and Account number do not match.  '
+                acc_no: {
+                    unique_acc: 'This account number is already exists.'
+                },
+                confim_acc_no: {
+                    equalTo: 'Confirm Account Number and Account number do not match.  '
+                },
+                ifsc_code: {
+                    alphanumericonly: 'Only alphanumeric allowed.',
+                    maxlength: 'IFSC code should be only 11 characters.'
                 }
-
             },
             submitHandler: function (form) {
                 form.submit();
