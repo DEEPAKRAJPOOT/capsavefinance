@@ -1550,6 +1550,37 @@ class DataRenderer implements DataProviderInterface
                         return $inv_amount;
                        
                 })
+                 ->addColumn(
+                    'action',
+                    function ($invoice) use ($request) {
+                        $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                        if( $chkUser->id==1)
+                        {
+                             $customer  = 1;
+                        }
+                        else if( $chkUser->id==11)
+                        {
+                             $customer  = 2;
+                        }
+                        else
+                        {
+                            $customer  = 3;
+                        }
+                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                       $action = "";
+                      if( $chkUser->id!=11)
+                      {  
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       if(in_array($customer, $expl)) 
+                       {
+                        $action .='<option value="8">Approve</option>';
+                       }
+                      }  
+                     
+                        return $action;
+                })
                  ->filter(function ($query) use ($request) {
                   
                    if ($request->get('biz_id') != '') {                        
