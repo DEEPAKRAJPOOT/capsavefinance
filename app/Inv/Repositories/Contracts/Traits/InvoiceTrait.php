@@ -404,8 +404,7 @@ trait InvoiceTrait
                            $status=28; 
                            $limit_exceed=1;
                         }
-
-                    }
+                       }
                     else 
                        {
                            $status=28; 
@@ -414,7 +413,7 @@ trait InvoiceTrait
                    InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status); 
                 return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>$status]);
            }
-           if($status_id==7)  
+           if($inv_details['status_id']==7)  
            { 
                  InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,7); 
                return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>7]);
