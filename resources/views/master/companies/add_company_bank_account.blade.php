@@ -202,7 +202,6 @@ try {
                 },
                 'branch_name': {
                     required: true,
-                    lettersonly: true,
                     maxlength: 30
                 },
                 'is_active': {
@@ -217,7 +216,7 @@ try {
                     equalTo: 'Confirm Account Number and Account number do not match.  '
                 },
                 ifsc_code: {
-                    alphanumericonly: 'Only alphanumeric allowed.',
+                    alphanumericonly: 'Please enter alphanumeric characters.',
                     maxlength: 'IFSC code should be only 11 characters.'
                 }
             },
