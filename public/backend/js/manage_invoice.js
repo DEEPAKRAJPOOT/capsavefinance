@@ -38,15 +38,15 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                   if(data=2)
+                   if(data==2)
                    {
                       alert('Limit Exceed');
-                 }
-                 else
-                 {
-                     $("#moveCase").html('Invoice successfully sent to  approve ');
-                     $(th).parent('td').parent('tr').remove(); 
-                 }
+                    }
+                    else
+                    {
+                        $("#moveCase").html('Invoice successfully sent to  approve ');
+                        $(th).parent('td').parent('tr').remove(); 
+                    }
                 }
             });
         } else
@@ -352,7 +352,9 @@ function uploadFile(app_id,id)
         th = this;
         $(".chkstatus:checked").each(function () {
             arr[i++] = $(this).val();
+           
         });
+     
         if (arr.length == 0) {
             alert('Please select atleast one checked');
             return false;
@@ -361,22 +363,19 @@ function uploadFile(app_id,id)
         {
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
-            jQuery.ajax({
+          jQuery.ajax({
                 url: messages.update_bulk_invoice,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
-                error: function (xhr, status, errorThrown) {
+                 error: function (xhr, status, errorThrown) {
                     alert(errorThrown);
 
                 },
                 success: function (data) {
-                    if (data == 1)
-                    {
-                        
+                        alert('Following invoice ('+data.success+')  Limit Exceed');
                         location.reload();
-                    }
-
+                  
                 }
             });
         } else
@@ -414,11 +413,9 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
-                    if (data == 1)
-                    {
-                        
+                      
                         location.reload();
-                    }
+                    
 
                 }
             });
@@ -462,6 +459,7 @@ function uploadFile(app_id,id)
      ///////////////////////For Invoice Approve////////////////////////
     $(document).on('change', '.approveInv1', function () {
         var status = $(this).val();
+        $("#moveCase").html('');
         if (status == 0)
         {
             return false;
@@ -484,10 +482,12 @@ function uploadFile(app_id,id)
         }
         if (confirm('Are you sure? You want to ' + st + ' it.'))
         {
-            th = this;
+           
             var invoice_id = $(this).attr('data-id');
-            var postData = ({'invoice_id': invoice_id, 'status': status, '_token': messages.token});
-            th = this;
+             var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            var $tr = $(this).closest('tr');
             jQuery.ajax({
                 url: messages.update_invoice_approve,
                 method: 'post',
@@ -497,7 +497,19 @@ function uploadFile(app_id,id)
                     alert(errorThrown);
                 },
                 success: function (data) {
-                    $(th).closest('tr').remove();
+                     if(data==2)
+                    {
+                      alert('Limit Exceed');
+                    }
+                    else
+                    {
+                       
+                         $tr.remove();
+                        /// $(th).parent('td').parent('tr').remove(); 
+                        /// $("#moveCase").html('Invoice successfully sent to  approve ');
+                      
+                    }
+                    
                 }
             });
         } else
