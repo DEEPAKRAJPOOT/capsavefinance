@@ -3852,7 +3852,8 @@ if ($err) {
          }
        }
        
-       return \response()->json(['success' => substr($msg,0,-1)]);
+      /// return \response()->json(['success' => substr($msg,0,-1)]);
+       return 1;
    }  
    /**
     * get Bank account list
