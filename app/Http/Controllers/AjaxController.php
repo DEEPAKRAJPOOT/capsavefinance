@@ -68,7 +68,6 @@ class AjaxController extends Controller {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
-        $this->middleware('checkEodProcess');
     }
 
     /**
@@ -3429,8 +3428,6 @@ if ($err) {
   public function lmsGetCustomer(DataProviderInterface $dataProvider) {
     $customersList = $this->userRepo->lmsGetCustomers();
     $users = $dataProvider->lmsGetCustomers($this->request, $customersList);
-    // dd(json_encode($users));
-
     return $users;
   }   
   
@@ -3581,7 +3578,7 @@ if ($err) {
         $res['program_id']  = $res['prgm_id'];
         $getTenor   = $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res['user_id']);
+        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         $remainAmount = $limit-$sum;
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount]);
      }
@@ -4400,13 +4397,6 @@ if ($err) {
         $result = $chargeData && isset($chargeData[0]) ? 1 : 0;         
         return response()->json(['is_active' => $result]);         
     }
-    
-    public function checkEodProcess(Request $request)
-    {
-        $data = ['eod_process' => \Helpers::checkEodProcess()];
-        $response = $data + ['message' => trans('backend_messages.lms_eod_process_msg')];
-        return response()->json($response);  
-    }    
 
     public function getToSettlePayments(DataProviderInterface $dataProvider) {
         $user_id = $this->request->user_id;
@@ -4417,64 +4407,5 @@ if ($err) {
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
     }
-
-    public function updateEodProcessStatus(Request $request) {
-        $waitTime = 3;
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'));
-        
-        return response()->json(['status' => 1]);
-    }
-
-    public function checkBankAccExist(Request $req){
-        
-        $response['status'] = false;
-        $acc_no = $req->get('acc_no');
-        $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
-        $acc_id = $req->get('acc_id');
-        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'company_id' => $comp_id]);
-        
-        if($status == false){
-                $response['status'] = 'true';
-        }else{
-           $response['status'] = 'false';
-           if($acc_id != null){
-               $response['status'] = 'true';
-           }
-        }
-        
-        return response()->json( $response );
-   }
-   
-   public function checkCompAddExist(Request $req){
-        
-        $response['status'] = false;
-        $comp_name = $req->get('comp_name');
-        $comp_add = $req->get('comp_add');
-        $comp_id = $req->get('comp_id');
-        $status = $this->masterRepo->getCompAddByCompanyName(['cmp_name' => $comp_name, 'cmp_add' => $comp_add]);
-       if($status == false){
-                $response['status'] = 'true';
-        }else{
-           $response['status'] = 'false';
-           if($comp_id != null){
-               $response['status'] = 'true';
-           }
-        }
-        
-        return response()->json( $response );
-   }
 
 }
