@@ -3578,7 +3578,7 @@ if ($err) {
         $res['program_id']  = $res['prgm_id'];
         $getTenor   = $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res['user_id']);
+        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         $remainAmount = $limit-$sum;
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount]);
      }

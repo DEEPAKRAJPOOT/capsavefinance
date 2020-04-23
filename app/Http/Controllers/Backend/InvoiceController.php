@@ -389,7 +389,7 @@ class InvoiceController extends Controller {
             $statusId = 7;
           }
         }
-
+      
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
         $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
@@ -413,10 +413,9 @@ class InvoiceController extends Controller {
             'updated_by' => $id,
             'created_at' => $date);
         $result = $this->invRepo->save($arr);
-
+       
         if ($result) {
-
-            $this->invRepo->saveInvoiceStatusLog($result, $statusId);
+            InvoiceTrait::getManualInvoiceStatus($result);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
@@ -1048,7 +1047,7 @@ class InvoiceController extends Controller {
                         {
                             if($res['status']!=2)
                             {
-                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr,$res->invoice_bulk_upload_id);  
                             }
                          
                         }

@@ -346,7 +346,7 @@ class InvoiceController extends Controller {
                            
                             if($res['status']!=2)
                             {
-                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr['user_id'],$res->invoice_bulk_upload_id);  
+                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr,$res->invoice_bulk_upload_id);  
                             }
                          
                         }
