@@ -153,7 +153,8 @@ public static function saveBulkInvoice($arrInvoice)
         if( $chkUser->id==11)
         {
             $res  = User::where('user_id',$id)->first();
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload','business','anchor','supplier','userFile','program','program_offer','Invoiceuser','disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+
         }
         else
         {
