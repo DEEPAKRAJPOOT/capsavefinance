@@ -30,61 +30,24 @@ class BizGstLog extends BaseModel
 
     
     protected $fillable = [
-        'user_id',
-        'biz_id',
-        'biz_owner_id',
-        'type',
-        'verify_doc_no',
-        'biz_api_log_id',
+        'app_id',
+        'gstin',
+        'request_id',
+        'req_file',
+        'res_file',
+        'url',
         'status',
-        'created_by'
+        'created_at',
+        'updated_at'
     ];
-
- public static function getPromoterCibilData($biz_owner_id)
-  {
-     $arrData = self::select('biz_api_log.res_file')
-        ->join('biz_api_log', 'biz_api_log.biz_api_log_id', '=', 'biz_api.biz_api_log_id')
-        ->where('biz_api.biz_owner_id', $biz_owner_id)
-        ->where('biz_api.type', '1')
-        ->orderBy('biz_api_log.biz_api_log_id', 'DESC')
-        ->first();
-        return $arrData;
-  }
-  
-
- public static function getCommercialCibilData($biz_id)
-  {
-     $arrData = self::select('biz_api_log.res_file')
-        ->join('biz_api_log', 'biz_api_log.biz_api_log_id', '=', 'biz_api.biz_api_log_id')
-        ->where('biz_api.biz_owner_id', NULL)
-        ->where('biz_api.biz_id', $biz_id)
-        ->where('biz_api.type', '1')
-        ->orderBy('biz_api_log.biz_api_log_id', 'DESC')
-        ->first();
-        return $arrData;
-  }
-
-
-    /* GET karaza api response   */
-     public static function getKarzaRes($attribute)
-     {
-       
-         return self::with('karza')->where(['biz_owner_id' => $attribute['ownerid'],'type' => $attribute['type'],'status' => 1])->first();
-     }
- /* GET karaza api response mapping  */
-   public  function karza()
-   {
-      return $this->belongsTo('App\Inv\Repositories\Models\BizApiLog', 'biz_api_log_id','biz_api_log_id');  
-       
-   }
    
     /**
-     * Get All Addresses By Biz Id
+     * Get Biz Gst Log Data
      * 
-     * @param int $bizId
-     * @return type
+     * @param array $whereCond
+     * @return mixed
      */
-    public function getBizApiData($whereCond=[])
+    public function getBizGstLogData($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {
@@ -95,14 +58,14 @@ class BizGstLog extends BaseModel
     }   
     
     /**
-     * Save Biz Api Data
+     * Save Biz Gst Log Data
      * 
-     * @param array $bizApiData
+     * @param array $bizGstLogData
      * @return mixed
      */
-    public function saveBizApiData($bizApiData)
+    public function saveBizGstLogData($bizGstLogData)
     {
-        return self::create($bizApiData);
+        return self::create($bizGstLogData);
     }    
    
 }

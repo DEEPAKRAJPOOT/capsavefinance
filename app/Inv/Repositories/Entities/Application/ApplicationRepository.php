@@ -58,6 +58,7 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\BizGstLog;
 
 /**
  * Application repository class
@@ -1773,6 +1774,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return BizApi::saveBizApiData($bizApiData);
     }    
+    
+    /**
+     * Get Biz Gst Log Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizGstLogData($whereCond=[])
+    {        
+        return BizGstLog::getBizGstLogData($whereCond);
+    }   
+    
+    /**
+     * Save Biz Gst Log Data
+     * 
+     * @param array $bizGstLogData
+     * @return mixed
+     */
+    public function saveBizGstLogData($bizGstLogData)
+    {
+        return BizGstLog::create($bizGstLogData);
+    }    
+    
 }
 
 

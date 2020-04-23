@@ -367,8 +367,19 @@ trait ApplicationTrait
                 
             }
             
-            //
+            //Get and save GST Log Data
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $bizGstLogsData = $this->appRepo->getBizGstLogData($whereCond);
+            foreach($bizGstLogsData as $gstLog) {
+                $bizGstLogArrData = $gstLog ? $this->arrayExcept($apiData->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                $bizGstLogArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveBizGstLogData($bizGstLogArrData);
+            }
             
+            //Get and save Pan GST Data
+            
+                        
             \DB::rollback(); dd($ownerData);
 
             //$CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
@@ -383,13 +394,13 @@ trait ApplicationTrait
     protected function arrayExcept($array, $keys)
     {
 
-      foreach($keys as $key){
-          if (isset($array[$key])) {
-            unset($array[$key]);
-          }
-      }
+        foreach($keys as $key){
+            if (isset($array[$key])) {
+              unset($array[$key]);
+            }
+        }
 
-      return $array;
+        return $array;
 
     }    
 }
