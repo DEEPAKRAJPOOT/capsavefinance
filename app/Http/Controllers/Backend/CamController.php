@@ -47,6 +47,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\BankWorkCapitalFacility;
 use App\Inv\Repositories\Models\BankTermBusiLoan;
+use App\Inv\Repositories\Models\BankAnalysis;
 //date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
@@ -678,6 +679,7 @@ class CamController extends Controller
         $debtPosition = $fin->getDebtPosition($appId);
         $dataWcf = [];
         $dataTlbl = [];
+        $dataBankAna = [];
         if(isset($debtPosition['bank_detail_id'])) {
           $dataWcf = BankWorkCapitalFacility::where('bank_detail_id', $debtPosition['bank_detail_id'])
                           ->where('is_active', 1)->get();
@@ -688,6 +690,11 @@ class CamController extends Controller
                           ->where('is_active', 1)->get();
           $dataTlbl = $dataTlbl ? $dataTlbl->toArray() : [];
         } 
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataBankAna = BankAnalysis::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                            ->where('is_active', 1)->get();
+          $dataBankAna = $dataBankAna ? $dataBankAna->toArray() : [];
+        }
         $contents = array();
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
@@ -721,7 +728,8 @@ class CamController extends Controller
           'xlsx_pagination'=> $xlsx_pagination,
           'debtPosition'=> $debtPosition,
           'dataWcf'=> $dataWcf,
-          'dataTlbl'=> $dataTlbl
+          'dataTlbl'=> $dataTlbl,
+          'dataBankAna'=> $dataBankAna
           ]);
     }
 
@@ -2039,6 +2047,7 @@ class CamController extends Controller
             $date = $request->get('debt_on');
             $fund_date = $request->get('fund_date');
             $nonfund_date = $request->get('nonfund_date');
+            $tblfund_date = $request->get('tbl_fund_date');
              if (empty($date)) {
                Session::flash('error',trans('Debt on field can\'t be empty'));
                return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
@@ -2046,6 +2055,7 @@ class CamController extends Controller
             $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
             $arrData['fund_ason_date'] = Carbon::createFromFormat('d/m/Y', $fund_date)->format('Y-m-d');
             $arrData['nonfund_ason_date'] = Carbon::createFromFormat('d/m/Y', $nonfund_date)->format('Y-m-d');
+            $arrData['tbl_fund_ason_date'] = Carbon::createFromFormat('d/m/Y', $tblfund_date)->format('Y-m-d');
             $arrData['debt_position_comments'] = request()->get('debt_position_comments');
             $arrData['created_by'] = Auth::user()->user_id;
             $bank_detail_id = $request->get('bank_detail_id');
@@ -2053,11 +2063,13 @@ class CamController extends Controller
               $result = FinanceModel::updatePerfios($arrData,'app_biz_bank_detail', $bank_detail_id ,'bank_detail_id');
               $this->saveBankWorkCapitalFacility($request, $bank_detail_id);
               $this->saveBankTermBusiLoan($request, $bank_detail_id);
+              $this->saveBankAnalysis($request, $bank_detail_id);
               $resultFlag = true;
             }else{
-              $result = FinanceModel::insertPerfios($arrData, 'app_biz_bank_detail');
-              $this->saveBankWorkCapitalFacility($request, $result->bank_detail_id);
-              $this->saveBankTermBusiLoan($request, $result->bank_detail_id);
+              $result_id = FinanceModel::insertPerfios($arrData, 'app_biz_bank_detail');
+              $this->saveBankWorkCapitalFacility($request, $result_id);
+              $this->saveBankTermBusiLoan($request, $result_id);
+              $this->saveBankAnalysis($request, $result_id);
               $resultFlag = true;
             }
             

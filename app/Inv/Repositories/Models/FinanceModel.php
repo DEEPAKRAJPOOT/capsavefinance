@@ -233,6 +233,7 @@ class FinanceModel extends BaseModel
          $result = self::select(DB::raw("DATE_FORMAT(debt_on, '%d/%m/%Y') as debt_on"),
          DB::raw("DATE_FORMAT(fund_ason_date, '%d/%m/%Y') as fund_ason_date"),
          DB::raw("DATE_FORMAT(nonfund_ason_date, '%d/%m/%Y') as nonfund_ason_date"),
+         DB::raw("DATE_FORMAT(tbl_fund_ason_date, '%d/%m/%Y') as tbl_fund_ason_date"),
          'debt_position_comments','bank_detail_id')
                 ->from('app_biz_bank_detail')
                 ->where('app_id', $appId)

@@ -22,6 +22,7 @@ use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\BankWorkCapitalFacility;
 use App\Inv\Repositories\Models\BankTermBusiLoan;
+use App\Inv\Repositories\Models\BankAnalysis;
 
 trait CamTrait
 {
@@ -345,6 +346,39 @@ trait CamTrait
                 }
             }  
             BankTermBusiLoan::insert($arrData);          
+        }        
+    }
+    
+    protected function saveBankAnalysis($request, $bank_detail_id)
+    {
+        $updateData = [];
+        $updateData['is_active'] = 0;
+        $updateData['updated_by'] = Auth::user()->user_id;
+        $updResult = BankAnalysis::where('bank_detail_id', $bank_detail_id);
+        $updResult->update($updateData);
+        $arrData =[];
+        if(isset($request->bank_name_ba)) {
+            foreach($request->bank_name_ba as $key=>$val){
+                if($request->bank_name_ba[$key] != null) {
+                    $arrData[$key]['bank_detail_id'] = $bank_detail_id;
+                    $arrData[$key]['bank_name'] = $request->bank_name_ba[$key];
+                    $arrData[$key]['act_type'] = $request->act_type[$key];
+                    $arrData[$key]['uti_max'] = $request->uti_max[$key];
+                    $arrData[$key]['uti_min'] = $request->uti_min[$key];
+                    $arrData[$key]['uti_avg'] = $request->uti_avg[$key];
+                    $arrData[$key]['chk_inward'] = str_replace(',', '', $request->chk_inward[$key]);
+                    $arrData[$key]['chk_presented_per'] = $request->chk_presented_per[$key];
+                    $arrData[$key]['chk_outward'] = str_replace(',', '', $request->chk_outward[$key]);
+                    $arrData[$key]['chk_deposited_per'] = $request->chk_deposited_per[$key];
+                    $arrData[$key]['submission_credit'] = str_replace(',', '', $request->submission_credit[$key]);
+                    $arrData[$key]['submission_debbit'] = str_replace(',', '', $request->submission_debbit[$key]);
+                    $arrData[$key]['overdrawing_in_six_month'] = str_replace(',', '', $request->overdrawing_in_six_month[$key]);
+                    $arrData[$key]['is_active'] = 1;
+                    $arrData[$key]['created_at'] = \Carbon\Carbon::now();
+                    $arrData[$key]['created_by'] = Auth::user()->user_id;
+                }
+            }  
+            BankAnalysis::insert($arrData);          
         }        
     }
 }

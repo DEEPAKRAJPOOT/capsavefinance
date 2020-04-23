@@ -98,57 +98,103 @@
                   <input type="hidden" name="bank_detail_id" value="{{$debtPosition->bank_detail_id ?? ''}}">  
                   @csrf
                   
-                  <div class="data mt-4">
-                    <h2 class="sub-title bg">Banking Analysis</h2>
-                    <div class="pl-4 pr-4 pb-4 pt-2">
-                        <table class="table table-bordered overview-table" >
-                            <thead>
-                               <tr bgcolor="#ccc">
-                                  <th>Name of Bank</th>
-                                  <th>Acct. Type</th>
-                                  <th colspan="3">Utilization %</th>
-                                  <th colspan="4">Cheque Return</th>
-                                  <th colspan="2">Summations</th>
-                                  <th></th>
-                               </tr>
-                            </thead>
-                            <tbody id="working_capital_facility">
-                              <tr class="sub-heading">
-                                  <td></td>
-                                  <td></td>
-                                  <td>Max </td>
-                                  <td>Min</td>
-                                  <td>Avg</td>
-                                  <td>Inward</td>
-                                  <td>% of total cheques presented</td>
-                                  <td>Outward</td>
-                                  <td>% of total cheques deposited  </td>
-                                  <td>Credit</td>
-                                  <td>Debit</td>
-                                  <td>Over drawings in last 6 months</td>
-                              </tr>
-                              <tr>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control"></td>
-                                  <td><input type="text" class="form-control">
-                                  <div class="add-more"><i class="fa fa-plus-circle add-ptpq-block add-more-post"></i></div>
-                                  </td>
-                              </tr>
-                            </tbody>
-                        </table>
-                    <div class="clearfix"></div>
-                   </div>
-                   </div>
-                  
+                  <div class="mt-4">
+                     <h2 class="sub-title bg">Banking Analysis</h2>
+                     <table class="after-add-more-ba table-ba table table-striped no-footer overview-table" role="grid" cellpadding="0" cellspacing="0"> 
+                        <thead>
+                            <tr bgcolor="#ccc">
+                               <th>Name of Bank</th>
+                               <th>Acct. Type</th>
+                               <th colspan="3">Utilization %</th>
+                               <th colspan="4">Cheque Return</th>
+                               <th colspan="2">Summations</th>
+                               <th></th>
+                            </tr>
+                         </thead>
+                         <tbody>
+                         <tr bgcolor="#19c38f">
+                            <td></td>
+                            <td></td>
+                            <td>Max </td>
+                            <td>Min</td>
+                            <td>Avg</td>
+                            <td>Inward</td>
+                            <td>% of total cheques presented</td>
+                            <td>Outward</td>
+                            <td>% of total cheques deposited  </td>
+                            <td>Credit</td>
+                            <td>Debit</td>
+                            <td>Over drawings in last 6 months</td>
+                        </tr> 
+
+                        @if(isset($dataBankAna) && count($dataBankAna)>0)
+                           @foreach($dataBankAna as $key =>$val)
+                           <tr class="control-group-ba">
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="{{$val['bank_name']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="{{$val['act_type']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="{{$val['uti_max']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="{{$val['uti_min']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="{{$val['uti_avg']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="{{number_format($val['chk_inward'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="{{$val['chk_presented_per']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="{{number_format($val['chk_outward'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="{{$val['chk_deposited_per']}}" class="form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="{{number_format($val['submission_credit'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="{{number_format($val['submission_debbit'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="">
+                                 <div class="input-group-btn">
+                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="{{$val['overdrawing_in_six_month']}}" class="number_format col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove-ba"></i>
+                                 </div>
+                              </td>
+                           </tr> 
+                           @endforeach
+                        @endif
+
+                        <tr class="control-group-ba">
+                           <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="">
+                              <div class="input-group-btn">
+                                 <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="number_format col-md-8 form-control form-control-sm" />
+                                 <i class="fa fa-plus-circle add-ptpq-block add-more-ba"></i>
+                              </div>
+                           </td>
+                        </tr>    
+                        </tbody>
+                        <!-- Copy Fields -->
+                        <tbody class="copy-ba hide">
+                           <tr class="control-group-ba">
+                                <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="number_format form-control form-control-sm" /></td>
+                                <td width="">
+                                 <div class="input-group-btn">
+                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="number_format col-md-8 form-control form-control-sm" />
+                                    <i class="fa fa-times-circle remove-ptpq-block remove-ba"></i>
+                                 </div>
+                                </td>
+                           </tr> 
+                        </tbody>
+                     </table>
+                  </div>
                   <div class="mt-4">
                      <h2 class="sub-title bg">Working Capital Facility</h2>
                      <table class="after-add-more table-wcf table table-striped no-footer overview-table" role="grid" cellpadding="0" cellspacing="0"> 
@@ -177,7 +223,7 @@
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len[]" value="{{$val['relationship_len']}}" class="col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove"></i>
-                                 <div>
+                                 </div>
                               </td>
                            </tr> 
                            @endforeach
@@ -195,7 +241,7 @@
                               <div class="input-group-btn">
                                  <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
                                  <i class="fa fa-plus-circle add-ptpq-block add-more"></i>
-                              <div>
+                              </div>
                            </td>
                         </tr>    
                         
@@ -213,7 +259,7 @@
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove"></i>
-                                 <div>
+                                 </div>
                               </td>
                            </tr> 
                         </tbody>
@@ -226,7 +272,7 @@
                            <td class="" tabindex="0" rowspan="1" colspan="1" width="20%">Name of the bank</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Loan name</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility amount(Mn)</td>
-                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as On</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as On <input type="text" class="col-md-10" value="{{$debtPosition->tbl_fund_ason_date ?? '' }}" name="tbl_fund_date" id="tblfund_ason_date" placeholder="Date"> (Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
                         </tr>  
 
@@ -241,7 +287,7 @@
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="{{$val['relationship_len_tlbl']}}" class="col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
-                                 <div>
+                                 </div>
                               </td>
                            </tr>  
                            @endforeach
@@ -256,7 +302,7 @@
                               <div class="input-group-btn">
                                  <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
                                  <i class="fa fa-plus-circle add-ptpq-block add-more-post"></i>
-                              <div>
+                              </div>
                            </td>
                         </tr>    
                         
@@ -271,7 +317,7 @@
                                  <div class="input-group-btn">
                                     <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
-                                 <div>
+                                 </div>
                               </td>
                            </tr> 
                         </tbody>
@@ -307,22 +353,6 @@
    process_url = '{{URL::route("process_banking_statement") }}';
    _token = "{{ csrf_token() }}";
 </script>
-<script type="text/javascript">
-    $("tr").each(function(){
-      var deleteTd = true;
-      target_tr = $(this);
-      target_tr.find('td').each(function() {
-        var thishtml = $(this).html();
-        if(thishtml !== "") {
-           deleteTd = false;
-        }
-      })
-      if (deleteTd) {
-        target_tr.remove();
-      }
-    })
- </script>
-
 <script type="text/javascript">
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
@@ -437,7 +467,7 @@
         disallowedContent: 'img{width,height};'
       };
     
-   $('#debt_on, #fund_date, #nonfund_date').datetimepicker({
+   $('#debt_on, #fund_date, #nonfund_date, #tblfund_ason_date').datetimepicker({
      format: 'dd/mm/yyyy',
      pickTime: false,
      minView: 2, 
@@ -464,6 +494,15 @@ $(document).ready(function() {
 
    $("body").on("click",".remove-post",function(){ 
       $(this).parents(".control-group-tlbl").remove();
+   });
+   
+   $(".add-more-ba").click(function(){ 
+      var html = $(".copy-ba").html();
+      $(".after-add-more-ba").append(html);
+   });
+
+   $("body").on("click",".remove-ba",function(){ 
+      $(this).parents(".control-group-ba").remove();
    });
 });
 </script>
