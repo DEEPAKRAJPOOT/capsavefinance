@@ -3839,8 +3839,7 @@ if ($err) {
              
               $inv = InvoiceTrait::getInvoiceDetail($attr);
               $msg.=$inv['invoice_no'].",";
-              
-          }
+           }
          
         }
           else

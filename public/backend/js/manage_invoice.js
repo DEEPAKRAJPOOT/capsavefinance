@@ -359,7 +359,7 @@ function uploadFile(app_id,id)
             alert('Please select atleast one checked');
             return false;
         }
-        if (confirm('Are you sure? You want to approve it.'))
+        if (confirm('If someone selected invoice found under limit exceed, Then it will not process further'))
         {
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
@@ -373,8 +373,7 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
-                      ///  alert('Following invoice ('+data.success+')  Limit Exceed');
-                        location.reload();
+                         location.reload();
                   
                 }
             });
