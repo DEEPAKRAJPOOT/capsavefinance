@@ -5284,14 +5284,13 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('total_repay_amt', function($trans){
                 return "₹ ".number_format($trans->amount,2);
             })
+            ->addColumn('settled_amt', function($trans){
+                return "₹ ".number_format($trans->refundoutstanding,2);
+            })
             ->addColumn('payment_date', function($trans){
                 if($trans->payment){
                     return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
                 }
-            })
-            ->addColumn('pay', function($trans){
-                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
-                return $result;
             })
             ->addColumn('select', function($trans){
                 $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";

@@ -170,10 +170,7 @@ class Transactions extends BaseModel {
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
-                    if(in_array($item->trans_type,[config('lms.TRANS_TYPE.TDS')])){
-                        return $item->refundoutstanding > 0;
-                    }
-                    return true;
+                    return $item->refundoutstanding > 0;
                 });
     }
 
@@ -312,7 +309,6 @@ class Transactions extends BaseModel {
         });
     }
 
-
     public static function calInvoiceRefund($invDesbId,$payment_date=null)
     {
         $invoice = self::where('invoice_disbursed_id','=',$invDesbId)
@@ -349,26 +345,16 @@ class Transactions extends BaseModel {
 		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
-
-
-
-
-
-
-
-
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)
     {
           return self::create($attr);
     }
     
-    
     /*** save repayment transaction details for invoice  **/
     public static function saveCharge($attr)
     {
         return self::insert($attr);
-          
     } 
     
     /*** get all transaction  **/
@@ -382,6 +368,15 @@ class Transactions extends BaseModel {
           return self::with(['biz','disburse','user', 'transType'])->where($whereCondition)->first();
     }
     
+
+
+
+
+
+
+
+
+
 
     public static function get_balance($trans_code,$user_id){
 

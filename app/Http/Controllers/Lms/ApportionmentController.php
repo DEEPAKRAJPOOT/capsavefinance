@@ -201,13 +201,14 @@ class ApportionmentController extends Controller
             }
             $txnInsertData = [
                     'payment_id' => NULL,
-                    'parent_trans_id' => $transId,
+                    'link_trans_id'=> $transId,
+                    'parent_trans_id' => $TransDetail->parent_trans_id,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
                     'amount' => $amount,
                     'entry_type' => 0,
-                    'trans_type' => 2,
+                    'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
                     'gl_flag' => 0,
                     'soa_flag' => 0,
                     'pay_from' => 1,

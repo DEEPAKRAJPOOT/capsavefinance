@@ -7,12 +7,12 @@
                         <table id="settledTransactions" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">                                                   
-                                    <th>Disb Date</th>       
+                                    <th>Trans Date</th>       
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>
+                                    <th>Settled Amt</th>
                                     <th>Payment Date</th>
-                                    <!-- <th>Pay</th> -->
                                     <th>Select</th>
                                 </tr>
                             </thead>
