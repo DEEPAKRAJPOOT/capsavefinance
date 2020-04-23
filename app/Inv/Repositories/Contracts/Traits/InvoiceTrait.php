@@ -378,22 +378,24 @@ trait InvoiceTrait
   }
       public static  function updateApproveStatus($attr)
    {
+            $limitData[]="";
             $mytime = Carbon::now();
             $cDate   =  $mytime->toDateTimeString();
             $uid = Auth::user()->user_id;
-            $dueDateGreaterCurrentdate =  self::limitExpire($attr['user_id']);
-            $sum =  self::invoiceApproveLimit($attr['user_id']);
             $inv_details =  self::getInvoiceDetail($attr);
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']);
+            $sum =  self::invoiceApproveLimit($inv_details['supplier_id']);
             $limit   =  self::ProgramLimit($inv_details);
             if($dueDateGreaterCurrentdate)
             {
-                       InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                return BizInvoice::where(['invoice_id' =>$attr['invoice_id'],'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
-            } 
-            if($limit  > $sum)
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['comm_txt' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                 
+           } 
+            if($limit  >= $sum)
             {
                 $remain_amount =  $limit-$sum;
-                if($remain_amount >=$attr['amount'])
+                if($remain_amount >=$inv_details['invoice_approve_amount'])
                 {
                            InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
                     return BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
@@ -414,9 +416,9 @@ trait InvoiceTrait
     {
         $sum  = self::invoiceApproveLimit($cid);
         $uid = Auth::user()->user_id;
-        if($status_id==8 || $status_id==7)
+         if($status_id==8 || $status_id==7)
         {
-            if($sum  > $limit)
+            if($sum  >= $limit)
             {
                 if($status_id==8)  
                 {  
@@ -426,7 +428,7 @@ trait InvoiceTrait
                 { 
                     $status_id = $status_id; 
                 }
-              return   InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>1,'status_id' =>$status_id]);
+               return   InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>1,'status_id' =>$status_id]);
             }
         }
          

@@ -101,7 +101,10 @@ class InvoiceBulkUpload extends BaseModel
  
     } 
      public static function updateBulkUpload($attr)
-    {
+    {    if($attr['invoice_id']!=null)
+         {
+            InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$attr['status_id']);
+         }
        return  self::where('invoice_bulk_upload_id',$attr['invoice_bulk_upload_id'])->update(['invoice_id' => $attr['invoice_id'],'status' => $attr['status']]);
  
     } 

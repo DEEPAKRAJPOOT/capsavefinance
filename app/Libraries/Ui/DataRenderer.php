@@ -722,7 +722,7 @@ class DataRenderer implements DataProviderInterface
                       if(in_array($customer, $expl)) 
                       { 
                        
-                             return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                             return '<input type="checkbox" data-id="'.$invoice->supplier_id.'" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
                       }
                       else {
                         return "";
