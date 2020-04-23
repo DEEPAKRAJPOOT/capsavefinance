@@ -172,6 +172,10 @@ try {
         });
         return this.optional(element) || (status === true);
     });
+    
+    $('#confim_acc_no').on("cut copy paste",function(e) {
+      e.preventDefault();
+   });
 
     $(function () {
         $("form[name='bank_account']").validate({
