@@ -45,6 +45,7 @@ class Transactions extends BaseModel {
      */
     protected $fillable = [
         'payment_id',
+        'link_trans_id',
         'parent_trans_id',
         'invoice_disbursed_id',
         'user_id',
@@ -128,6 +129,15 @@ class Transactions extends BaseModel {
         ->sum('amount');
 
         return round(($this->amount - $dr),2);
+    }
+
+    public function getParentTransDateAttribute(){
+        $transDate = '';
+        $parentTrans = self::find($this->parent_trans_id);
+        if($parentTrans){
+            $transDate = $parentTrans->trans_date;
+        }
+        return $transDate;
     }
 
     public function getTransNameAttribute(){
@@ -242,7 +252,10 @@ class Transactions extends BaseModel {
     public static function getUnsettledInvoices($data = [])
     {
 
-        $query = self::whereIn('trans_type',[16]);
+        $query = self::whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+        ->whereNull('payment_id')  
+        ->whereNull('link_trans_id')  
+        ->whereNull('parent_trans_id');
         
         if(isset($data['int_accrual_start_dt'])){
             $query->whereHas('invoiceDisbursed', function($q) use($data){

@@ -5234,7 +5234,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
-                    return $trans->invoiceDisbursed->invoice->invoice_no;
+                    return $trans->trans_id.'-'.$trans->invoiceDisbursed->invoice->invoice_no;
                 }
             })
             ->addColumn('trans_type', function($trans){
@@ -5271,7 +5271,7 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
-                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
@@ -5308,7 +5308,7 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
-                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
