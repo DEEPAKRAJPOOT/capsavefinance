@@ -373,7 +373,7 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
-                        alert('Following invoice ('+data.success+')  Limit Exceed');
+                      ///  alert('Following invoice ('+data.success+')  Limit Exceed');
                         location.reload();
                   
                 }
