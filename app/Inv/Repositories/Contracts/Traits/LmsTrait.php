@@ -306,7 +306,7 @@ trait LmsTrait
             
             $whereProgramOffer = [];   
             $whereProgramOffer['disbursal_id'] = $trans->invoiceDisbursed->disbursal_id;
-            $prgmOffer = $this->lmsRepo->getProgramOffer($whereProgramOffer);
+            $prgmOffer =    $trans->invoiceDisbursed->invoice->program_offer;
             
             $int_type_config = $prgmOffer->payment_frequency ? $prgmOffer->payment_frequency : 1;
              
@@ -448,7 +448,7 @@ trait LmsTrait
 
                     if($lastInterest > 0){
                         $transInterestId = Transactions::where('invoice_disbursed_id','=',$trans->invoice_disbursed_id)
-                        ->where('trans_type','=','9')
+                        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                         ->whereMonth('trans_date',$lastMonth)
                         ->where('user_id','=',$trans->user_id)->value('trans_id');
 
@@ -517,7 +517,7 @@ trait LmsTrait
             
             if($int_type_config==3){
                 $transOverdueData = Transactions::firstOrNew(
-                    ['invoice_disbursed_id' => $trans->invoice_disbursed_id, 'trans_type'=>'9', 'user_id'=>$trans->user_id],
+                    ['invoice_disbursed_id' => $trans->invoice_disbursed_id, 'trans_type'=>config('lms.TRANS_TYPE.INTEREST'), 'user_id'=>$trans->user_id],
                     ['trans_date'=>$currentDate,
                     'amount'=>$accuredInterest,
                     'entry_type'=>0,
@@ -529,7 +529,7 @@ trait LmsTrait
             
             if($penalAmount>0 && $penalDays>0){
                 $transOverdueData = Transactions::firstOrNew(
-                    ['invoice_disbursed_id' => $trans->invoice_disbursed_id, 'trans_type'=>'33', 'user_id'=>$trans->user_id],
+                    ['invoice_disbursed_id' => $trans->invoice_disbursed_id, 'trans_type'=>config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 'user_id'=>$trans->user_id],
                     ['trans_date'=>$currentDate,
                     'amount'=>$penalAmount,
                     'entry_type'=>0,
@@ -753,7 +753,6 @@ trait LmsTrait
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
-        $transactionData['comment'] = null;
 
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                         

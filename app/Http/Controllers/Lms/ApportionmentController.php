@@ -17,6 +17,9 @@ use App\Http\Requests\Lms\ApportionmentRequest;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use Illuminate\Support\Facades\DB;
 
 class ApportionmentController extends Controller
 {
@@ -58,8 +61,7 @@ class ApportionmentController extends Controller
      */
     public function viewSettledTrans(Request $request){
         try {
-            $userId = 385;
-            //$userId = $request->user_id;
+            $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails); 
@@ -78,7 +80,6 @@ class ApportionmentController extends Controller
         try {
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
-
             return view('lms.apportionment.RefundTransactions')
                 ->with('userDetails', $userDetails); 
 
@@ -138,7 +139,7 @@ class ApportionmentController extends Controller
                     'comment' => $comment ?? NULL,
                     'amount' => $amount,
                     'entry_type' => 1,
-                    'trans_type' => 36,
+                    'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF'),
                     'gl_flag' => 0,
                     'soa_flag' => 0,
                     'pay_from' => 1,
@@ -167,7 +168,10 @@ class ApportionmentController extends Controller
             $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
                 'invoice_disbursed_id'=>$invoice->invoice_disbursed_id,
                 'user_id'=>$userId,
-                'trans_type'=>[9,16]
+                'trans_type'=>[
+                    config('lms.TRANS_TYPE.INTEREST'),
+                    config('lms.TRANS_TYPE.PAYMENT_DISBURSED')
+                    ]
                 ]);
             foreach($invoiceTrans as $trans){
                 $transactionList->push($trans);
@@ -176,7 +180,11 @@ class ApportionmentController extends Controller
 
         $chargeTrans = $this->lmsRepo->getUnsettledChargeTransactions([
             'user_id'=>$userId,
-            'trans_type_not_in'=>[9,16,10]
+            'trans_type_not_in'=>[
+                config('lms.TRANS_TYPE.INTEREST'),
+                config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
+                config('lms.TRANS_TYPE.MARGIN')
+            ]
         ]);
 
         foreach ($chargeTrans as $key => $charge) {
@@ -185,7 +193,7 @@ class ApportionmentController extends Controller
 
         $marginTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
             'user_id'=>$userId,
-            'trans_type'=>[10]
+            'trans_type'=>[config('lms.TRANS_TYPE.MARGIN')]
         ]);
 
         foreach ($marginTrans as $key => $margin) {
@@ -306,7 +314,7 @@ class ApportionmentController extends Controller
      */
     public function markSettleConfirmation(ApportionmentRequest $request){
         try {
-            
+
             $amtToSettle = 0;
             $unAppliedAmt = 0;
             $transIds = [];
@@ -345,7 +353,8 @@ class ApportionmentController extends Controller
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
                     'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
-                    'trans_type' =>  $trans->transName,
+                    'trans_type' => $trans->trans_type,
+                    'trans_name' =>  $trans->transName,
                     'total_repay_amt' => (float)$trans->amount,
                     'outstanding_amt' => (float)$trans->outstanding,
                     'payment_date' =>  $paymentDetails['date_of_payment'],
@@ -476,5 +485,44 @@ class ApportionmentController extends Controller
         }
     }
 
+    public function getAccruedInterest($invDisbId, $fromDate, $toDate){
+
+        $accuredIntAmount = 0; 
+        $invoiceDetails = InvoiceDisbursed::find($invDisbId);
+        $invDueDate = $invoiceDetails->inv_due_date;
+        $intRate = $invoiceDetails->interest_rate; 
+        $gracePeriod = $invoiceDetails->grace_period;
+
+        $graceStartDate = ($gracePeriod > 0)?$this->addDays($invDueDate, 1):$invDueDate;
+        $graceEndDate = addDays($invDueDate, $gracePeriod);
+
+        $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
+
+        if($gracePeriod > 0 && strtotime($toDate) <= strtotime($graceDueDate)){
+            
+            $interestData = InterestAccrual::whereBetween('interest_date', [$graceStartDate, $toDate])
+            ->select(DB::row("sum((principal_amount*($intRate/360))100) as total"))->get();
+            if($interestData){
+                $accuredIntAmount += $interestData->total;
+            }
+        }
+
+        if(strtotime($toDate) > strtotime($graceDueDate)){
+            $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
+        }
+
+    }
+
+    protected function addDays($currentDate, $noOfDays)
+    {
+        $calDate = date('Y-m-d', strtotime($currentDate . "+ $noOfDays days"));
+        return $calDate;
+    }
+
+    protected function subDays($currentDate, $noOfDays)
+    {
+        $calDate = date('Y-m-d', strtotime($currentDate . "- $noOfDays days"));
+        return $calDate;
+    }
     
 }
