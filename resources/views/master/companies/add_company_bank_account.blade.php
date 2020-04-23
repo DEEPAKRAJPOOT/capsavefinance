@@ -202,7 +202,6 @@ try {
                 },
                 'branch_name': {
                     required: true,
-                    lettersonly: true,
                     maxlength: 30
                 },
                 'is_active': {
@@ -214,10 +213,10 @@ try {
                     unique_acc: 'This account number is already exists.'
                 },
                 confim_acc_no: {
-                    equalTo: 'Confirm Account Number and Account number do not match.  '
+                    equalTo: 'Account number do not match.'
                 },
                 ifsc_code: {
-                    alphanumericonly: 'Only alphanumeric allowed.',
+                    alphanumericonly: 'please enter alphanumeric characters.',
                     maxlength: 'IFSC code should be only 11 characters.'
                 }
             },
