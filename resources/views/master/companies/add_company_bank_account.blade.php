@@ -172,6 +172,10 @@ try {
         });
         return this.optional(element) || (status === true);
     });
+    
+    $('#confim_acc_no').on("cut copy paste",function(e) {
+      e.preventDefault();
+   });
 
     $(function () {
         $("form[name='bank_account']").validate({
@@ -202,7 +206,6 @@ try {
                 },
                 'branch_name': {
                     required: true,
-                    lettersonly: true,
                     maxlength: 30
                 },
                 'is_active': {
@@ -214,10 +217,10 @@ try {
                     unique_acc: 'This account number is already exists.'
                 },
                 confim_acc_no: {
-                    equalTo: 'Confirm Account Number and Account number do not match.  '
+                    equalTo: 'Account number do not match.'
                 },
                 ifsc_code: {
-                    alphanumericonly: 'Only alphanumeric allowed.',
+                    alphanumericonly: 'Please enter alphanumeric characters.',
                     maxlength: 'IFSC code should be only 11 characters.'
                 }
             },
