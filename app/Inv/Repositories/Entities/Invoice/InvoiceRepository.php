@@ -357,6 +357,25 @@ use CommonRepositoryTraits;
        }
     }
     
+    function  getPaymentById($paymentId)
+    {
+       try
+       {
+           return Payment::find($paymentId);  
+       } catch (Exception $ex) {
+          return $ex;
+       }
+    }
+
+    public function updatePayment($data = [], $paymentId){
+        if (!is_array($paymentId)) {
+            return Payment::where('payment_id', $paymentId)
+                ->update($data);
+        } else {
+            return Payment::whereIn('payment_id', $paymentId)
+                    ->update($data);
+        }
+    }
      /* get all save bulk transaction      */
     /* created by gajendra chauhan  */
         public function saveRepaymentTrans($attributes = [])

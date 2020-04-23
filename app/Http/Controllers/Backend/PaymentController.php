@@ -83,6 +83,11 @@ class PaymentController extends Controller {
 	 public function unsettledPayment() {
 	   return view('backend.payment.post_payment');
 	 }
+ 	public function EditPayment(Request $request) {
+ 		$paymentId = $request->payment_id;
+	  	$data  =  $this->invRepo->getPaymentById($paymentId);
+	   	return view('backend.payment.edit_payment')->with(['data' => $data]);
+ 	}
 	 
 	/* save payment details   */
 	public function  savePayment(Request $request)
@@ -113,7 +118,7 @@ class PaymentController extends Controller {
 			} else  if($request['payment_type']==3) {
 				$unr =  $request['utr_no'];
 			}
-			if($request->biz_id && !is_null($arrFileData['doc_file'])) {
+			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
@@ -183,17 +188,16 @@ class PaymentController extends Controller {
 			}
 				
 			$tran  = [  
-					'payment_id' => 1,
+					'payment_id' => $paymentId,
 					'user_id' => $request['user_id'],
 					'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
-					'trans_type' => $request['trans_type'],
+					'trans_type' => (in_array($request->action_type, [3])) ? 7 : $request['trans_type'],
 					'amount' => str_replace(',', '', $request['amount']),
 					'entry_type' => 1,
 					'gst'=> $request['incl_gst'],
 					'sgst' =>  $sgst,
 					'cgst' =>  $cgst,
 					'igst' =>  $igst,
-					'is_tds' =>  ($request['action_type'] == 3) ? 1: 0,
 					'tds_per' => 1,
 					'gl_flag' => 1,
 					'soa_flag' => 1,
@@ -201,7 +205,6 @@ class PaymentController extends Controller {
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
 					'is_posted_in_taaly' => 0,
-					'comment' => $request['description'],
 		  		];
 			$res = $this->invRepo->saveRepaymentTrans($tran);
 			if( $res)
@@ -219,6 +222,35 @@ class PaymentController extends Controller {
 				Session::flash('message', 'Something went wrong, Please try again');
 				return back(); 
 			}
+	   	} catch (Exception $ex) {
+			return Helpers::getExceptionMessage($ex);
+		}
+	}
+	public function updatePayment(Request $request)
+	{
+		try {
+			$arrFileData = $request->all();
+			$user_id  = Auth::user()->user_id;
+			$mytime = Carbon::now();
+
+			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
+				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
+				$userFile = $this->docRepo->saveFile($uploadData);
+			}
+
+			$paymentData = [
+				'tds_certificate_no' => $request->tds_certificate_no ?? '',
+				'file_id' => $userFile->file_id ?? '',
+				'description' => $request->description,
+				'updated_at' => $mytime,
+				'updated_by' => $user_id,
+			];
+			
+			$response =  $this->invRepo->updatePayment($paymentData, $request->payment_id);
+
+			Session::flash('message',trans('success_messages.paymentUpdated'));
+        	return redirect()->route('payment_list');
 	   	} catch (Exception $ex) {
 			return Helpers::getExceptionMessage($ex);
 		}

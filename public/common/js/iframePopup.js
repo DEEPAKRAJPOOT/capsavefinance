@@ -110,6 +110,7 @@ var iframe_ids = [
         'EdituploadDocument',
         'addVoucherFrame',
         'viewDetailFrame',
+        'editPaymentFrm',
     ];
 
 iframe_ids.forEach(function(id) {

@@ -38,4 +38,5 @@ return [
     'userAdress_edit_success' => 'Address updated successfully',
     'program_already_exist' => "This Program Already exist",
     'documentUpdated' => 'Document updated successfully',
+    'paymentUpdated' => 'Payment updated successfully',
 ];

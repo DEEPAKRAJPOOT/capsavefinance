@@ -1721,10 +1721,12 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->addColumn(
                     'action',
-                    function ($app) {
+                    function ($trans) {
                         $act = '';
-                        $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_anchor_reg', ['payment_id' => $trans->payment_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                        if (isset($trans->transaction->trans_type) && $trans->transaction->trans_type == 7) {
 
+                            $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                        }
                     return $act;
                    
                 })

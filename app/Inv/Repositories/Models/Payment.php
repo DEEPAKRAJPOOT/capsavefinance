@@ -67,6 +67,8 @@ class Payment extends BaseModel {
         'is_manual',
         'created_at',
         'created_by',
+        'updated_at',
+        'updated_by',
     ];
     
     public function biz() {

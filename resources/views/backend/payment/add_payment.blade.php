@@ -180,7 +180,7 @@
                                                 <input type="text" id="tds_certificate_no" name="tds_certificate_no" class="form-control">
                                             </div>
                                         </div>
-                                        <dsiv class="col-md-4 tds_certificate">
+                                        <div class="col-md-4 tds_certificate">
                                             <div class="custom-file upload-btn-cls mb-3 mt-4">
                                                 <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" multiple="">
                                                 <label class="custom-file-label" for="customFile">Choose Certificate File</label>
