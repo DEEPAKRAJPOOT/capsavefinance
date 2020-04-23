@@ -9,21 +9,23 @@ use Carbon\Carbon;
 use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class BizApi extends BaseModel
+class BizGstLog extends BaseModel
 {
     /* The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'biz_api';
+    protected $table = 'biz_gst_log';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'biz_api_id';
+    protected $primaryKey = 'id';
+    
     public $userstamps = false;
+    
     public $timestamps = false;
 
     

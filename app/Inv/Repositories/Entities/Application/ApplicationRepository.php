@@ -1750,6 +1750,28 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getBizAddresses($bizId, $bizOwnerId=null)
     {
         return BusinessAddress::getBizAddresses($bizId, $bizOwnerId);
+    }
+    
+    /**
+     * Get All Addresses By Biz Id
+     * 
+     * @param int $bizId
+     * @return type
+     */
+    public function getBizApiData($whereCond=[])
+    {
+        return BizApi::getBizApiData($whereCond);
+    }
+
+    /**
+     * Save Biz Api Data
+     * 
+     * @param array $bizApiData
+     * @return mixed
+     */
+    public function saveBizApiData($bizApiData)
+    {
+        return BizApi::saveBizApiData($bizApiData);
     }    
 }
 

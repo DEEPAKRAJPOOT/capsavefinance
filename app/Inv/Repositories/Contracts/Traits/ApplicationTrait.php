@@ -352,6 +352,19 @@ trait ApplicationTrait
                     $ownAddressArrData['biz_owner_id'] = $newBizOwnerId;
                     $this->appRepo->saveAddress($ownAddressArrData);
                 }
+                
+                //Get Biz API Data
+                $whereCond=[];
+                $whereCond['biz_id'] = $bizId;
+                $whereCond['biz_owner_id'] = $bizOwnerId;
+                $bizApiData  = $this->appRepo->getBizApiData($whereCond);
+                foreach($bizApiData as $apiData) {
+                    $bizApiArrData = $apiData ? $this->arrayExcept($apiData->toArray(), array_merge($excludeKeys, ['biz_api_id'])) : [];
+                    $bizApiArrData['biz_id'] = $newBizId;
+                    $bizApiArrData['biz_owner_id'] = $newBizOwnerId;
+                    $this->appRepo->saveBizApiData($bizApiArrData);
+                }                
+                
             }
             
             //
