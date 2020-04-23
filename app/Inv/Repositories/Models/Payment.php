@@ -69,7 +69,21 @@ class Payment extends BaseModel {
         'created_by',
     ];
     
+    public function biz() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
     
+    public function lmsUser(){
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
+
+    public function transaction(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
+    }
     /**
      * get Payment data list
      * 
@@ -147,5 +161,10 @@ class Payment extends BaseModel {
         }
         return $attr;
     }
-     
+    
+    /*** get all transaction  **/
+    public static function getAllManualTransaction()
+    {
+          return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
+    }
 }

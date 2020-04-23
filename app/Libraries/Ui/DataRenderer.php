@@ -1683,10 +1683,8 @@ class DataRenderer implements DataProviderInterface
      
      public function getAllManualTransaction(Request $request,$trans)
      {
-        /// dd($trans->disburse);
-    
          return DataTables::of($trans)
-               ->rawColumns(['trans_by','customer_id','customer_detail'])
+               ->rawColumns(['trans_by','customer_id','customer_detail', 'action'])
                 ->addIndexColumn()
                 
                 ->addColumn(
@@ -1695,73 +1693,63 @@ class DataRenderer implements DataProviderInterface
                         $customer = '';
                         $customer .= ($trans->biz!=null) ? '<span>'.$trans->biz->biz_entity_name.'</span>' : '';
                         $customer .= $trans->lmsUser ? '<br><span><b>Customer Id:&nbsp;</b>'.$trans->lmsUser->customer_id.'</span>' : '';
-                         // $customer .= $trans->virtual_acc_id ? '<br><span><b>Virtual Acc. No.:&nbsp;</b>'.$trans->virtual_acc_id.'</span>' : '';
                         return $customer;
                 })
                 ->addColumn(
                     'customer_detail',
                     function ($trans) { 
                         $payment = '';
-                        $payment .= $trans->trans_date ? '<span><b>Trans. Date:&nbsp;</b>'.date("Y-m-d", strtotime($trans->created_at)).'</span>' : '';
+                        $payment .= $trans->created_at ? '<span><b>Trans. Date:&nbsp;</b>'.date("Y-m-d", strtotime($trans->created_at)).'</span>' : '';
                         $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b>'.number_format($trans->amount).'</span>' : '';
                         return $payment;
                 })
                
                  ->addColumn(
-                    'trans_by',
+                    'trans_type',
                     function ($trans) {  
-                       if($trans->trans_by==1)
-                       {
-                         $type =  'Manual';
-                       }
-                       else if($trans->trans_by==2)
-                       {
-                         $type =  'Excel';
-                       }
-                       else
-                       {
-                           $type =  'N/A';
-                       }
-                       $transaction = '';
-                       
-                    if($trans->mode_of_pay){
-                        $mode  = ['1' =>  'Online RTGS/NEFT','2' => 'Cheque','3' => 'NACH','4' => 'Other'];
-                        $refNo  = ['1' =>  'utr_no','2' => 'cheque_no','3' => 'unr_no','4' => 'unr_no'];
-                        $refNoShpw  = ['1' =>  'Utr No.','2' => 'Cheque No.','3' => 'Unr No.','4' => 'Other '];
-                        $rfNo = $refNo[$trans->mode_of_pay];
-                        $refNoShpw = $refNoShpw[$trans->mode_of_pay];
-                           $transaction .= $trans->mode_of_pay ? '<span><b>Payment Mode:&nbsp;</b>'.$mode[$trans->mode_of_pay].'</span>' : '';
-                           $transaction .= $trans->$rfNo ? '<br><span><b>'.$refNoShpw.':&nbsp;</b>'.$trans->$rfNo.'</span>' : '<br><span><b>'.$refNoShpw.':&nbsp;</b>N/A</span>';
-                           $transaction .= $trans->lmsUser ? '<br><span><b>Trigger Type:&nbsp;</b>'.$type.'</span>' : '';
-                    }
-                    return $type;
+                        return $trans->transType->trans_name;
                 })
                  ->addColumn(
                     'comment',
                     function ($trans) {                        
-                         return $trans->comment ? $trans->comment : '';
+                        return $trans->comment ? $trans->comment : '';
                 })  
                 ->addColumn(
                     'created_by',
                     function ($trans) {                        
-                         return $trans->created_at ? $trans->created_at : '';
+                        return $trans->created_at ? $trans->created_at : '';
                 })
-                 ->filter(function ($query) use ($request) {
+                ->addColumn(
+                    'action',
+                    function ($app) {
+                        $act = '';
+                        $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_anchor_reg', ['payment_id' => $trans->payment_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+
+                    return $act;
+                   
+                })
+                ->filter(function ($query) use ($request) {
                     if ($request->get('type') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('type'));
-                            $query->where('trans_by',$search_keyword);
+                            $query->where('s',$search_keyword);
                            
                         });                        
                     }
-                    else if ($request->get('date') != '') {                        
+                    if ($request->get('date') != '') {                        
                         $query->where(function ($query) use ($request) {
                              $search_keyword = Carbon::createFromFormat('d/m/Y', $request->get('date'))->format('Y-m-d');
-                             $query->where('trans_date',$search_keyword);
+                            $query->where('created_at', 'like',"%$search_keyword%");
                         });                        
                     }
-                    else {
-                        $query->where('trans_by','!=',NULL);
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->whereHas('lmsUser', function ($query) use($search_keyword) {
+                                $query->where('customer_id', 'like',"%$search_keyword%");
+
+                            }); 
+                        });                        
                     }
                })
               

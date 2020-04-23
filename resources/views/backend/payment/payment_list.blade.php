@@ -25,24 +25,37 @@
 					<div class="active" id="details">
 						<div class="form-sections">
 							<div class="row">
-								<div class="col-md-2">
+								<div class="col-md-3">
 									<label class="float-left">Transaction Date
 									</label> 
 									<input type="text" name="date" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
 								</div>
-								<div class="col-md-2">
+								<div class="col-md-3">
+									<label class="float-left">Customer Code
+									</label> 
+				                    {!!
+				                    Form::text('search_keyword',
+				                    null,
+				                    [
+				                    'class' => 'form-control',
+				                    'placeholder' => 'Search by Customer Code',
+				                    'id'=>'search_keyword'
+				                    ])
+				                    !!}
+				                </div>
+								<!-- <div class="col-md-3">
 									<label>Type</label>
 									<select class="form-control form-control-sm" name="type">
 										<option value="">All</option>
 										<option value="1">Manual</option>
 										<option value="2">Excel Upload</option>
 									</select>
-								</div>
+								</div> -->
 								<div class="col-md-2">
 									<label>&nbsp;</label><br>
 									<button type="button" class="btn btn-success btn-sm searchbtn">Search</button>
 								</div>
-								<div class="col-md-6 text-right">
+								<div class="col-md-4 text-right">
 									<label>&nbsp;</label><br>
 									<a href="{{route('add_payment')}}" class="btn btn-primary btn-sm">Add Manual</a>
 									<!--<a  data-toggle="modal" data-target="#modalUploadPayment" data-url ="{{route('excel_bulk_payment', [])}}" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Anchor Detail">Excel</a> -->
@@ -61,9 +74,10 @@
 															<tr role="row">
 																<th>Customer Detail</th>
 																<th>Repayment Detail</th>
-																<th>Payment Method</th>
-																 <th> Comment</th>
+																<th>Trans Type</th>
+																<th>Comment</th>
 																<th>Created Date</th> 
+																<th>Action</th> 
 															</tr>
 														</thead>
 														<tbody>

@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
@@ -350,7 +351,7 @@ use CommonRepositoryTraits;
     {
        try
        {
-           return Transactions::getAllManualTransaction();  
+           return Payment::getAllManualTransaction();  
        } catch (Exception $ex) {
           return $ex;
        }
