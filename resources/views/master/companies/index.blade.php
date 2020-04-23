@@ -74,7 +74,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            
+                                        @if($company['is_reg'] == 1) 
                                         @can('add_bank_account')
                                         <a  data-toggle="modal" 
                                            data-height="400px" 
@@ -87,6 +87,7 @@
                                             </button>
                                         </a>
                                         @endcan
+                                        @endif
                                         <span style="margin-left:5px" >
                                         <a  
                                             data-toggle="modal" 
