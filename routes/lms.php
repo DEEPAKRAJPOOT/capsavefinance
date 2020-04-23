@@ -72,15 +72,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\userInvoiceController@createUserInvoice'
             ]);
             
-            // User Invoice
-            Route::get('/view-user-invoice', [
-                'as' => 'view_user_invoice',
-                'uses' => 'Lms\userInvoiceController@getUserInvoice'
+            Route::post('/save_user_invoice', [
+                'as' => 'save_user_invoice',
+                'uses' => 'Lms\userInvoiceController@saveUserInvoice'
             ]);
-            
-            Route::get('/create-user-invoice', [
-                'as' => 'create_user_invoice',
-                'uses' => 'Lms\userInvoiceController@createUserInvoice'
+
+            // get bissuness address in user invoice 
+            Route::post('get-biz-add-user-invoice', [
+                'as' => 'get_biz_add_user_invoice',
+                'uses' => 'Lms\userInvoiceController@getBizUserInvoiceAddr'
+            ]);
+
+            // get gstins in user invoice 
+            Route::post('get_app_gstin', [
+                'as' => 'get_app_gstin',
+                'uses' => 'Lms\userInvoiceController@getGstinOfApp'
+            ]);
+
+            // get state code for user invoice 
+            Route::post('get-user-state-code', [
+                'as' => 'get_user_state_code',
+                'uses' => 'Lms\userInvoiceController@getUserStateCode'
             ]);
             
             // disbursal routes

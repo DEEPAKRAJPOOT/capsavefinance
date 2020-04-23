@@ -885,6 +885,22 @@ transform: translate3d(0px, 0px, 0px) !important;
     top: 27px;
     text-decoration: none !important;
     font-size: 14px;
+    min-width: 31px;
     cursor: pointer;
     left: -10px;
+}
+
+.invoice_no{
+    position: absolute;
+    padding: 1px 8px;
+    border-radius: 2px 1px;
+    background: #138864;
+    line-height: 33px;
+    text-align: center;
+    top: 27px;
+    text-decoration: none !important;
+    font-size: 14px;
+    min-width: 31px;
+    cursor: pointer;
+    right: 0px !important;
 }

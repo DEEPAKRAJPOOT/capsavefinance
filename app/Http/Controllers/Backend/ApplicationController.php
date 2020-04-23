@@ -899,15 +899,15 @@ class ApplicationController extends Controller
 							if($userStateId == $companyStateId) {
 							  $fWGst = round((($pf_amt*18)/100),2);
 							  $fData['gst'] = $PrgmChrg->is_gst_applicable;
-							  $fData['igst'] = $fWGst;
+							  $fData['igst'] = 0; //$fWGst
 							  $fData['amount'] += $fWGst;
 
 							} else {
 							  $fWGst = round((($pf_amt*9)/100),2);
 							  $fData['gst'] = $PrgmChrg->is_gst_applicable;
-							  $fData['cgst'] = $fWGst;
-							  $fData['sgst'] = $fWGst;
-							  $totalGst = $fData['cgst'] + $fData['sgst'];
+							  $fData['cgst'] = 0; //$fWGst
+							  $fData['sgst'] = 0; //$fWGst;
+							  $totalGst = $fWGst + $fWGst; //$fData['cgst'] + $fData['sgst'];
 							  $fData['amount'] += $totalGst;
 							}
 						  }

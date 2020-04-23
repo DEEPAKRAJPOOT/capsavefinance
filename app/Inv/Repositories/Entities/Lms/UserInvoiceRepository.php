@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\LmsUser;
 
 /**
  * User Invoice Repository class
@@ -58,6 +59,15 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return $gsts->isEmpty() ? [] : $gsts;
 	}
 
+	public function getPAN($appId = null) {
+		$biz_id = $this->getBizId($appId);
+		$pan = [];
+		if (!empty($biz_id)) {
+			$pan = BizPanGst::where(['biz_id' => $biz_id, 'type' => 1])->where('parent_pan_gst_id', '=', 0)->get();
+		}
+		return $pan->isEmpty() ? [] : $pan;
+	}
+
 	public function getAppsByUserId($userId = null) {
 		$apps = Application::getAllAppsNbizByUserId($userId);
 		return $apps->isEmpty() ? [] : $apps;
@@ -76,5 +86,45 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getStateListCode() {
 		return State::getStateListCode();
+	}
+
+	/**
+     * Get bussiness address for user invoice
+     */ 
+    public function getBizUserInvoiceAddr($user_id) {
+		$addr = 'Ador Powertron Limited Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019';
+        return response()->json($addr);
+	}
+
+	public function getUserCustomerID($user_id) {
+		return LmsUser::getCustomers($user_id);
+	}
+
+	/**
+     * Get state code by ajax
+     */
+	public function getUserStateCodeList($state_code) {
+		return State::getUserStateCodeList($state_code);
+	}
+
+	/**
+     * Get User invoice id
+     */
+	public function findUserInvoiceById($userInvoice_id) {
+		return UserInvoice::findUserInvoiceById($userInvoice_id);
+	}
+
+	/**
+     * save user invoice
+     */
+	public function saveUserInvoiceData($arrUserData) {
+		return UserInvoice::saveUserInvoiceData($arrUserData);
+	}
+
+	/**
+     * update user invoice
+     */
+	public function updateUserInvoice($arrUserData, $userInvoice_id) {
+		return UserInvoice::updateUserInvoice($arrUserData, $userInvoice_id);
 	}
 }

@@ -4418,8 +4418,7 @@ if ($err) {
         return $this->providerResult;
     }
     
-    public function updateEodProcessStatus(Request $request)
-    {
+    public function updateEodProcessStatus(Request $request) {
         $waitTime = 3;
         sleep($waitTime);
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));
