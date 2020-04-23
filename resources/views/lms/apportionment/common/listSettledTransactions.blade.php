@@ -12,7 +12,7 @@
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>
                                     <th>Payment Date</th>
-                                    <th>Pay</th>
+                                    <!-- <th>Pay</th> -->
                                     <th>Select</th>
                                 </tr>
                             </thead>

@@ -89,16 +89,32 @@ class ApportionmentController extends Controller
     }
 
     /**
-     * get Transaction Detail
+     * get Transaction Detail for waiveOff
      * @param Request $request
      * @return array
      */
-    public function getTransDetail(Request $request){
+    public function getTransDetailWaiveOff(Request $request){
         try {
             $transId = $request->get('trans_id');
             $payment_id = $request->get('payment_id');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
-            return view('lms.apportionment.detailedTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id]); 
+            return view('lms.apportionment.waiveOffTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id]); 
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
+
+    /**
+     * get Transaction Detail for Reversal
+     * @param Request $request
+     * @return array
+     */
+    public function getTransDetailReversal(Request $request){
+        try {
+            $transId = $request->get('trans_id');
+            $payment_id = $request->get('payment_id');
+            $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            return view('lms.apportionment.reversalTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id]); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -136,7 +152,6 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
-                    'comment' => $comment ?? NULL,
                     'amount' => $amount,
                     'entry_type' => 1,
                     'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF'),
@@ -147,7 +162,65 @@ class ApportionmentController extends Controller
             ];
             $resp = $this->lmsRepo->saveTransaction($txnInsertData);
             if (!empty($resp->trans_id)) {
-                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully waived off']);
+                $commentData = [
+                    'trans_id' => $resp->trans_id,
+                    'comment' => $comment,
+                ];
+                $comment = $this->lmsRepo->saveTxnComment($commentData);
+                return redirect()->route('apport_settled_list', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully waived off']);
+            }
+        } catch (Exception $ex) {
+             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
+    /**
+     * save reversal Detail
+     * @param Request $request
+     * @return array
+     */
+    public function saveReversalDetail(Request $request){
+        try {
+            $transId = $request->get('trans_id');
+            $paymentId = $request->get('payment_id');
+            $amount = $request->get('amount');
+            $comment = $request->get('comment');
+            $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            if (empty($TransDetail)) {
+                return redirect()->route('unsettled_payments')->with(['error' => 'Selected Transaction to be reversed is not valid']);
+            }
+            $outstandingAmount = $TransDetail->amount;
+            if ($amount > $outstandingAmount)  {
+                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be reversed must be less than or equal to '. $outstandingAmount]);
+            }
+            if ($amount < 1)  {
+                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be reversed must have some values ']);
+            }
+
+            if (empty($comment))  {
+                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Comment / Remarks is required to reversed the amount.']);
+            }
+            $txnInsertData = [
+                    'payment_id' => NULL,
+                    'parent_trans_id' => $transId,
+                    'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
+                    'user_id' => $TransDetail->user_id,
+                    'trans_date' => date('Y-m-d H:i:s'),
+                    'amount' => $amount,
+                    'entry_type' => 0,
+                    'trans_type' => 2,
+                    'gl_flag' => 0,
+                    'soa_flag' => 0,
+                    'pay_from' => 1,
+                    'is_settled' => 2,
+            ];
+            $resp = $this->lmsRepo->saveTransaction($txnInsertData);
+            if (!empty($resp->trans_id)) {
+                $commentData = [
+                    'trans_id' => $resp->trans_id,
+                    'comment' => $comment,
+                ];
+                $comment = $this->lmsRepo->saveTxnComment($commentData);
+                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully reversed']);
             }
         } catch (Exception $ex) {
              return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
@@ -229,12 +302,28 @@ class ApportionmentController extends Controller
     private function getUserDetails($userId){
         $lmsUser = $this->userRepo->lmsGetCustomer($userId);
         $user = $this->userRepo->find($userId);
-        
+        $addresses = $user->biz->address;
+        if(!$addresses->isEmpty()){
+            $default_address = $addresses[0];
+            foreach ($addresses as $key => $addr) {
+               if($addr->is_default == 1){
+                    $default_address = $addr;
+                    break;
+               }
+               if($addr->address_type == 0){
+                    $default_address = $addr;
+               }
+            }
+        }
+        if (!empty($default_address)) {
+          $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
+        }
         return [
             'customer_id' => $lmsUser->customer_id,
             'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
-            'address' => '',
-            'limit_amt'=>  '',
+            'user_id' => $userId,
+            'address' => $fullAddress ?? '',
+            'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
         ];
     }
 

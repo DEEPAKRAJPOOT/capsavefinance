@@ -55,7 +55,7 @@
     <div class="form-inline">
         <div class="col">
             <label for="chrg_name"> Transaction Amount</label>
-            <input type="text" class="form-control" value="{{ $TransDetail->amount}}" name="amount" id="txn_amount">
+            <input type="text" class="form-control" value="{{ $TransDetail->getOutstandingAttribute()}}" name="amount" id="txn_amount">
             <span id="amt_error" class="error"></span>
         </div>      
     </div>
