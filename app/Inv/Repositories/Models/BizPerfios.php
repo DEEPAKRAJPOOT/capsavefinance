@@ -1,53 +1,52 @@
 <?php
 
 namespace App\Inv\Repositories\Models;
-use Illuminate\Database\Eloquent\Model;
-use DB;
-use Session;
-use Auth;
+
 use Carbon\Carbon;
 use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class BizGstLog extends BaseModel
+class BizPerfios extends BaseModel
 {
     /* The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'biz_gst_log';
+    protected $table = 'biz_perfios';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'id';
-    
+    protected $primaryKey = 'biz_perfios_id';
     public $userstamps = false;
-    
     public $timestamps = false;
 
     
     protected $fillable = [
-        'app_id',
-        'gstin',
-        'request_id',
-        'req_file',
-        'res_file',
-        'url',
+        'user_id',
+        'biz_id',
+        'biz_owner_id',
+        'type',
+        'cin',
+        'pan_gst_hash',
         'status',
+        'parent_pan_gst_id',
+        'biz_pan_gst_api_id',
+        'created_by',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'updated_by'
     ];
    
     /**
-     * Get Biz Gst Log Data
+     * Get Biz Perfios Data
      * 
      * @param array $whereCond
      * @return mixed
      */
-    public static function getBizGstLogData($whereCond=[])
+    public static function getBizPerfiosData($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {
@@ -58,16 +57,15 @@ class BizGstLog extends BaseModel
     }   
     
     /**
-     * Save Biz Gst Log Data
+     * Save Biz Perfios Data
      * 
-     * @param array $bizGstLogData
+     * @param array $bizPerfiosData
      * @return mixed
      */
-    public static function saveBizGstLogData($bizGstLogData)
+    public static function saveBizPerfiosData($bizPerfiosData)
     {
-        return self::create($bizGstLogData);
+        return self::create($bizPerfiosData);
     }    
-   
 }
 
 

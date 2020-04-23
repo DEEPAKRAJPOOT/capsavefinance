@@ -40,6 +40,32 @@ class BizPanGst extends BaseModel
         'updated_by'
     ];
    
+    /**
+     * Get Biz Pan Gst Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizPanGstData($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }   
+    
+    /**
+     * Save Biz Pan Gst Data
+     * 
+     * @param array $bizPanGstData
+     * @return mixed
+     */
+    public function saveBizPanGstData($bizPanGstData)
+    {
+        return self::create($bizPanGstData);
+    }    
 }
 
 

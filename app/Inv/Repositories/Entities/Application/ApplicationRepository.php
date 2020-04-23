@@ -59,6 +59,9 @@ use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\BizGstLog;
+use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\BizPerfios;
+use App\Inv\Repositories\Models\AppProduct;
 
 /**
  * Application repository class
@@ -1796,7 +1799,72 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return BizGstLog::create($bizGstLogData);
     }    
+  
+    /**
+     * Get Biz Pan Gst Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizPanGstData($whereCond=[])
+    {
+        return BizPanGst::getBizPanGstData($whereCond);
+    }   
     
+    /**
+     * Save Biz Pan Gst Data
+     * 
+     * @param array $bizPanGstData
+     * @return mixed
+     */
+    public function saveBizPanGstData($bizPanGstData)
+    {
+        return BizPanGst::saveBizPanGstData($bizPanGstData);
+    } 
+    
+    /**
+     * Get Biz Perfios Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizPerfiosData($whereCond=[])
+    {
+        return BizPerfios::getBizPerfiosData($whereCond);
+    }   
+    
+    /**
+     * Save Biz Perfios Data
+     * 
+     * @param array $bizPerfiosData
+     * @return mixed
+     */
+    public function saveBizPerfiosData($bizPerfiosData)
+    {
+        return BizPerfios::saveBizPerfiosData($bizPerfiosData);
+    }
+    
+    /**
+     * Get Application Product Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppProductData($whereCond=[])
+    {
+        return AppProduct::getAppProductData($whereCond);
+    }   
+    
+    /**
+     * Save Application Product Data
+     * 
+     * @param array $appProductData
+     * @return mixed
+     */
+    public function saveAppProductData($appProductData)
+    {
+        return AppProduct::saveAppProductData($appProductData);
+    }    
 }
 
 

@@ -1,21 +1,18 @@
 <?php
 
 namespace App\Inv\Repositories\Models;
-use Illuminate\Database\Eloquent\Model;
-use DB;
-use Session;
-use Auth;
+
 use Carbon\Carbon;
 use DateTime;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class BizGstLog extends BaseModel
+class AppProduct extends BaseModel
 {
     /* The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'biz_gst_log';
+    protected $table = 'app_product';
 
     /**
      * Custom primary key is set for the table
@@ -23,31 +20,24 @@ class BizGstLog extends BaseModel
      * @var integer
      */
     protected $primaryKey = 'id';
-    
     public $userstamps = false;
-    
     public $timestamps = false;
 
     
     protected $fillable = [
         'app_id',
-        'gstin',
-        'request_id',
-        'req_file',
-        'res_file',
-        'url',
-        'status',
-        'created_at',
-        'updated_at'
+        'product_id',
+        'loan_amount',
+        'tenor_days',
     ];
    
     /**
-     * Get Biz Gst Log Data
+     * Get Application Product Data
      * 
      * @param array $whereCond
      * @return mixed
      */
-    public static function getBizGstLogData($whereCond=[])
+    public static function getAppProductData($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {
@@ -58,16 +48,15 @@ class BizGstLog extends BaseModel
     }   
     
     /**
-     * Save Biz Gst Log Data
+     * Save Application Product Data
      * 
-     * @param array $bizGstLogData
+     * @param array $appProductData
      * @return mixed
      */
-    public static function saveBizGstLogData($bizGstLogData)
+    public static function saveAppProductData($appProductData)
     {
-        return self::create($bizGstLogData);
+        return self::create($appProductData);
     }    
-   
 }
 
 

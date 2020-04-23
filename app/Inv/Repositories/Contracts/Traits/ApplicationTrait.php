@@ -363,8 +363,20 @@ trait ApplicationTrait
                     $bizApiArrData['biz_id'] = $newBizId;
                     $bizApiArrData['biz_owner_id'] = $newBizOwnerId;
                     $this->appRepo->saveBizApiData($bizApiArrData);
-                }                
+                } 
                 
+                //Get and save Pan GST Data
+                $whereCond=[];
+                $whereCond['biz_id'] = $bizId;
+                $whereCond['biz_owner_id'] = $bizOwnerId;
+                $bizPanGstData  = $this->appRepo->getBizPanGstData($whereCond);
+                foreach($bizPanGstData as $gstData) {
+                    $bizPanGstArrData = $gstData ? $this->arrayExcept($gstData->toArray(), array_merge($excludeKeys, ['biz_pan_gst_id'])) : [];
+                    $bizPanGstArrData['biz_id'] = $newBizId;
+                    $bizPanGstArrData['biz_owner_id'] = $newBizOwnerId;
+                    $this->appRepo->saveBizPanGstData($bizPanGstArrData);
+                }
+                                
             }
             
             //Get and save GST Log Data
@@ -377,9 +389,28 @@ trait ApplicationTrait
                 $this->appRepo->saveBizGstLogData($bizGstLogArrData);
             }
             
-            //Get and save Pan GST Data
+            //Get and save Perfios Data
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $bizPerfiosData = $this->appRepo->getBizPerfiosData($whereCond);
+            foreach($bizPerfiosData as $perfiosData) {
+                $bizPerfiosArrData = $perfiosData ? $this->arrayExcept($perfiosData->toArray(), array_merge($excludeKeys, ['biz_perfios_id'])) : [];
+                $bizPerfiosArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveBizPerfiosData($bizPerfiosArrData);
+            }            
             
-                        
+                     
+            //Get and save application product data            
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appProductData = $this->appRepo->getAppProductData($whereCond);
+            foreach($appProductData as $appProdData) {
+                $appProductArrData = $appProdData ? $this->arrayExcept($appProdData->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                $appProductArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveAppProductData($appProductArrData);
+            }            
+                    
+                    
             \DB::rollback(); dd($ownerData);
 
             //$CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
