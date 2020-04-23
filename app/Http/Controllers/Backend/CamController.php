@@ -1516,7 +1516,7 @@ class CamController extends Controller
               'product_id'=>$request->product_id
               ]);
 
-            $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+             $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
 
             if($checkProgram->count()){
               Session::flash('message',trans('backend_messages.already_exist'));
@@ -1531,9 +1531,12 @@ class CamController extends Controller
             if($totalLimit){
               //$this->appRepo->saveAppLimit(['tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt)], $totalLimit->app_limit_id);
             }else{
+              $get_res =  $this->appRepo->getSingleAnchorDataByAppId($appId);  
               $app_limit = $this->appRepo->saveAppLimit([
                           'app_id'=>$appId,
                           'biz_id'=>$bizId,
+                          'user_id' => $get_res['user_id'],
+                          'status' =>0,
                           'tot_limit_amt'=>str_replace(',', '', $request->tot_limit_amt),
                           'created_by'=>\Auth::user()->user_id,
                           'created_at'=>\Carbon\Carbon::now(),

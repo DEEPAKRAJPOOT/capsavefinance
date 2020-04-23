@@ -74,6 +74,7 @@ trait LmsTrait
             $int_type_config = $prgmOffer->payment_frequency ? $prgmOffer->payment_frequency : 1;
             
             $gracePeriod = $prgmOffer->grace_period ? $prgmOffer->grace_period : 0;
+            $gracePeriod = ($gracePeriod <= 1)?1:$gracePeriod;
             $interestRate = $disburse->interest_rate ?? $prgmOffer->interest_rate;
             $overdueIntRate = $disburse->overdue_interest_rate ?? $prgmOffer->overdue_interest_rate;
             
@@ -751,7 +752,6 @@ trait LmsTrait
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
-        $transactionData['comment'] = null;
 
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                         
