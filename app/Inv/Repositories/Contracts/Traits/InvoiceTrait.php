@@ -404,8 +404,7 @@ trait InvoiceTrait
                            $status=28; 
                            $limit_exceed=1;
                         }
-
-                    }
+                      }
                     else 
                        {
                            $status=28; 
