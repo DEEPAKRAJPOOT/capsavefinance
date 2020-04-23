@@ -411,7 +411,7 @@ class Helper extends PaypalHelper
             {
                       unlink($pathToFile);
                       $inputArr['status'] =0;
-                      $inputArr['message']= 'Your Upload file "'.$file_name.'"  has been cancelled due to more than 1Mb size.';
+                      $inputArr['message']= 'Following files ('.$file_name.') has been auto-cancel due to file size limit, the file size should not be more than 1 MB.';
                       return  $inputArr;    
             }
             $inputArr['status'] =1;
