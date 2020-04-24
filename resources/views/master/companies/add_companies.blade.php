@@ -14,7 +14,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="cmp_add" name="cmp_add" placeholder="Enter Company Address" maxlength="50"value="{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : ''}}">
+                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : ''}}</textarea>
                 {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -52,17 +52,12 @@
            <select class="form-control" name="state" id="state">
                     <option value="">Please Select</option>
                     @foreach($state as $key=>$val)
-                    @php 
-                  
-                 
-                    if($val==$comData['state']['id'])
-                    {
-                       $sel = "selected";
-                    }
-                    else
-                    {
-                       $sel = "";
-                    }
+                    @php
+                        if($key == $comData['state']['name']){
+                            $sel = 'selected';
+                        }else{
+                            $sel = '';
+                        }
                     @endphp
                     <option  value="{{$val}}" {{$sel}}>{{$key}}</option>
                     @endforeach
@@ -77,6 +72,17 @@
            
         </div>
         <div class="row">
+            <div class="form-group col-md-6">
+                <label for="is_reg">Is registered office<span class="mandatory">*</span></label>
+                <select class="form-control" name="is_reg" id="is_reg">
+                    <option value="" selected>Select</option>
+                    <option {{$comData['is_reg'] == 1 ? 'selected' : ''}} value="1">Yes</option>
+                    <option {{$comData['is_reg'] == 0 ? 'selected' : ''}} value="0">No</option>
+                </select>
+                {!! $errors->first('is_reg', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="row">
             <div class="form-group col-md-12 text-right">
                 <input type="submit" class="btn btn-success btn-sm" name="add_company" id="add_company" value="Submit"/>
             </div>
@@ -89,14 +95,13 @@
     $(document).ready(function () {
 
         $(this).on('change', ".gstnumber", function () {
-
+            $('.gst_no_error, #gst_no_error').remove();
             var values = $(this).val();
             var gstnoformat = new RegExp('^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$');
 
             if (gstnoformat.test(values)) {
                 return true;
             } else {
-                $('.gst_no_error').remove();
                 $(this).after('<label id="gst_no-error" class="error gst_no_error " for="gst_no">Please Enter Valid GSTIN Number</label>');
                 $(this).val('');
                 $(this).focus();
@@ -105,13 +110,13 @@
         });
 
         $(this).on('change', ".pannumber", function () {
+            $('.pan_no_error, #pan_no_error').remove();
             var values = $(this).val();
             var pannoformat = new RegExp('^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
 
             if (pannoformat.test(values)) {
                 return true;
             } else {
-                $('.pan_no_error').remove();
                 $(this).after('<label id="pan_no-error" class="error pan_no_error " for="pan_no">Please Enter Valid PAN Number</label>');
                 $(this).val('');
                 $(this).focus();
@@ -120,14 +125,14 @@
         });
 
         $(this).on('change', ".cinnumber", function () {
+            $('.cin_no_error, #cin_no_error').remove();
             var values = $(this).val();
             var cinnoformat = new RegExp('^[L,U]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[C,P,T,L,S,G,O,N]{3}[0-9]{6}$');
 
             if (cinnoformat.test(values)) {
                 return true;
             } else {
-                $('.cin_no_error').remove();
-                $(this).after('<label id="cin_no-error" class="error cin_no_error " for="cin_no">Please Enter Valid CIN Number</label>');
+                $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Please Enter Valid CIN Number</label>');
                 $(this).val('');
                 $(this).focus();
             }
@@ -138,63 +143,72 @@
         $('#companiesForm').validate({// initialize the plugin
             rules: {
                 'cmp_name': {
-                    required: true,
+                    required: true
                 },
                 'cmp_add': {
-                    required: true,
+                    required: true
                 },
                 'gst_no': {
                     required: true,
-                    maxlength: 15,
+                    maxlength: 15
                 },
                 'pan_no': {
                     required: true,
-                    maxlength: 10,
+                    maxlength: 10
+                },
+                'cin_no': {
+                    required: true
                 },
                 'ifsc_code': {
-                    required: true,
+                    required: true
                 },
                 'is_active': {
-                    required: true,
+                    required: true
                 },
                  'state': {
-                    required: true,
+                    required: true
                 },
                  'city': {
-                    required: true,
+                    required: true
                 },
+                'is_reg': {
+                    required:true
+                }
             },
             messages: {
                 'cmp_name': {
-                    required: "Please Enter Company Name",
+                    required: "Please Enter Company Name"
                 },
                 'cmp_add': {
-                    required: "Please Enter Company Address",
+                    required: "Please Enter Company Address"
                 },
                 'gst_no': {
-                    required: "Please Enter GST No",
+                    required: "Please Enter GST No"
                 },
                 'pan_no': {
-                    required: "Please Enter Pan No",
+                    required: "Please Enter Pan No"
+                },
+                'cin_no': {
+                    required: "Please Enter CIN No"
                 },
                 'bank_acc_no': {
-                    required: "Please Enter Bank A/C No",
+                    required: "Please Enter Bank A/C No"
                 },
                 'conf_bank_acc_no': {
                     required: "Please Confirm Your Bank A/C No",
                     equalTo: 'Confirm Bank A/C No. and Bank A/C No. do not match.'
                 },
                 'ifsc_code': {
-                    required: "Please Enter IFSC Code",
+                    required: "Please Enter IFSC Code"
                 },
                 'is_active': {
-                    required: "Please Select Status of Company",
+                    required: "Please Select Status of Company"
                 },
                 'state': {
-                    required: "Please Select State",
+                    required: "Please Select State"
                 },
                 'city': {
-                    required: "Please Enter City",
+                    required: "Please Enter City"
                 }
             }
         });

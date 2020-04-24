@@ -340,16 +340,13 @@
             if(data){
                 $("#city").empty();
                 $.each(data,function(key,value){
-                   console.log(value)
                     $("#city").append('<option value="'+value+'">'+value+'</option>');
 
                   //   $( "select" ).has( "label" ).css( "background-color", "red" );
                     
                      if ( $('#city').next("label").length > 0 ) {
-                        console.log('yes')
                         $("#city").next().remove();
                      } else {
-                        console.log('no')
                      }
                 });
 
