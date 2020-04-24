@@ -39,6 +39,10 @@ class BizPanGst extends BaseModel
         'updated_at',
         'updated_by'
     ];
+
+    public static function getGSTsByUserId($user_id){
+        return BizPanGst::where(['user_id'=> $user_id, 'type'=> 2, 'status'=> 1])->where('parent_pan_gst_id', '<>', 0)->get();
+    }
    
 }
 

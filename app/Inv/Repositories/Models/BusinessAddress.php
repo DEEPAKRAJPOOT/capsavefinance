@@ -46,6 +46,7 @@ class BusinessAddress extends BaseModel
         'pin_code',
         'address_type',
         'rcu_status',
+        'is_default',
         'created_by',
         'created_at',
         'updated_at',

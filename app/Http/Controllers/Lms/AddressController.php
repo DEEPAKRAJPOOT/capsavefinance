@@ -45,29 +45,29 @@ class AddressController extends Controller
     public function list(Request $request)
     {
         $totalLimit = 0;
-           $totalCunsumeLimit = 0;
-           $consumeLimit = 0;
-           $transactions = 0;
+        $totalCunsumeLimit = 0;
+        $consumeLimit = 0;
+        $transactions = 0;
         $user_id = $request->get('user_id');
         $userInfo = $this->userRepo->getCustomerDetail($user_id);
         $application = $this->appRepo->getCustomerApplications($user_id);
-            $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+        $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 
-            foreach ($application as $key => $app) {
-                if (isset($app->prgmLimits)) {
-                    foreach ($app->prgmLimits as $value) {
-                        $totalLimit += $value->limit_amt;
-                    }
-                }
-                if (isset($app->acceptedOffers)) {
-                    foreach ($app->acceptedOffers as $value) {
-                        $totalCunsumeLimit += $value->prgm_limit_amt;
-                    }
+        foreach ($application as $key => $app) {
+            if (isset($app->prgmLimits)) {
+                foreach ($app->prgmLimits as $value) {
+                    $totalLimit += $value->limit_amt;
                 }
             }
-            $userInfo->total_limit = number_format($totalLimit);
-            $userInfo->consume_limit = number_format($totalCunsumeLimit);
-            $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+            if (isset($app->acceptedOffers)) {
+                foreach ($app->acceptedOffers as $value) {
+                    $totalCunsumeLimit += $value->prgm_limit_amt;
+                }
+            }
+        }
+        $userInfo->total_limit = number_format($totalLimit);
+        $userInfo->consume_limit = number_format($totalCunsumeLimit);
+        $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
         return view('lms.address.index')->with(['userInfo' => $userInfo]);
     }
 
@@ -75,9 +75,10 @@ class AddressController extends Controller
     {
         $user_id = $request->get('user_id');
 
+        $gsts = $this->appRepo->getGSTsByUserId($user_id);
 
         $state_list =  $this->master->getAddStateList()->toArray();
-        return view('lms.address.add_address')->with(['user_id' => $user_id, 'state_list' => $state_list]);
+        return view('lms.address.add_address')->with(['user_id' => $user_id, 'state_list' => $state_list, 'gsts' => $gsts]);
     }
 
     public function saveAddress(Request $request)
@@ -124,10 +125,12 @@ class AddressController extends Controller
     {
         $user_id = (int) $request->get('user_id');
 
+        $gsts = $this->appRepo->getGSTsByUserId($user_id);
+
         $userAddress_id = preg_replace('#[^0-9]#', '', $request->get('biz_addr_id'));
         $userAddress_data = $this->appRepo->findUserAddressyById($userAddress_id);
         $state_list = ['' => 'Please Select'] + $this->master->getAddStateList()->toArray();
 
-        return view('lms.address.edit_address', ['biz_addr_id' => $request->get('biz_addr_id'),  'userAddress_data' => $userAddress_data, 'user_id' => $user_id, 'state_list' => $state_list]);
+        return view('lms.address.edit_address', ['biz_addr_id' => $request->get('biz_addr_id'),  'userAddress_data' => $userAddress_data, 'user_id' => $user_id, 'state_list' => $state_list, 'gsts'=> $gsts]);
     }
 }

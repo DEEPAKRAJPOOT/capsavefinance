@@ -57,6 +57,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
+use App\Inv\Repositories\Models\BizPanGst;
 
 /**
  * Application repository class
@@ -1705,6 +1706,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function seeUploadFilePopup($acc_id, $user_id) {
         return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
 
+    }
+
+    public function getGSTsByUserId($user_id)
+    {   
+        return BizPanGst::getGSTsByUserId($user_id);
     }
 }
 
