@@ -2053,9 +2053,9 @@ class CamController extends Controller
                return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
             }
             $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
-            $arrData['fund_ason_date'] = $fund_date != null ? Carbon::createFromFormat('d/m/Y', $fund_date)->format('Y-m-d') : '';
-            $arrData['nonfund_ason_date'] = $nonfund_date != null ? Carbon::createFromFormat('d/m/Y', $nonfund_date)->format('Y-m-d') : '';
-            $arrData['tbl_fund_ason_date'] = $tblfund_date != null ? Carbon::createFromFormat('d/m/Y', $tblfund_date)->format('Y-m-d') : '';
+            $arrData['fund_ason_date'] = $fund_date != null ? Carbon::createFromFormat('d/m/Y', $fund_date)->format('Y-m-d') : null;
+            $arrData['nonfund_ason_date'] = $nonfund_date != null ? Carbon::createFromFormat('d/m/Y', $nonfund_date)->format('Y-m-d') : null;
+            $arrData['tbl_fund_ason_date'] = $tblfund_date != null ? Carbon::createFromFormat('d/m/Y', $tblfund_date)->format('Y-m-d') : null;
             $arrData['debt_position_comments'] = request()->get('debt_position_comments');
             $arrData['created_by'] = Auth::user()->user_id;
             $bank_detail_id = $request->get('bank_detail_id');
