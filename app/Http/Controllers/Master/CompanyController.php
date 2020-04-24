@@ -75,6 +75,7 @@ class CompanyController extends Controller {
                 $companies_data = $this->masterRepo->findCompanyById($company_id);
                 if (!empty($companies_data)) {
                     $arrCompaniesData['updated_by'] = Auth::user()->user_id;
+                    $arrCompaniesData['comp_name_id'] = 1;
                     $status = $this->masterRepo->updateCompanies($arrCompaniesData, $company_id);
                 }
             } else {
