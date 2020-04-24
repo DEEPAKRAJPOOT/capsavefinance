@@ -3615,17 +3615,22 @@ if ($err) {
         $res  = explode(',',$request->id);
         foreach($res as $key=>$val)
         {
+               
                 $attr =   $this->invRepo->getSingleBulkInvoice($val);
                 if($attr)
                 {
                    $invoice_id = NULL;  
                    if($attr->status==0)
                    {
+                     if($attr->status_id==8)
+                     {
+                        $userLimit = InvoiceTrait::ProgramLimit($attr);
+                        $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
+                        $attr['comm_txt'] = $updateInvoice['comm_txt'];
+                        $attr['status_id'] = $updateInvoice['status_id'];
+                        
+                     }
                       $res  =  $this->invRepo->saveFinalInvoice($attr);
-                      $invoice_id =  $res['invoice_id'];
-                      $userLimit =  InvoiceTrait::ProgramLimit($res);
-                      $updateInvoice=  InvoiceTrait::updateLimit($res->status_id,$userLimit,$res->invoice_approve_amount,$res,$invoice_id);  
-                     
                    }
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
@@ -3636,6 +3641,7 @@ if ($err) {
         }
         if($updateBulk)
         {
+              
                  return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
               
         }
