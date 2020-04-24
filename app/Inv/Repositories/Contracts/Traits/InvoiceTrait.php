@@ -369,7 +369,7 @@ trait InvoiceTrait
 
      public static  function invoiceApproveLimit($attr)
    {
-        return  BizInvoice::where('status_id',8)->where(['supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
    }
 
   public static function getInvoiceDetail($attr)
