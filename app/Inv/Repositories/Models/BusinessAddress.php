@@ -5,6 +5,7 @@ namespace App\Inv\Repositories\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\BusinessAddress;
 use DB;
 
 class BusinessAddress extends BaseModel
@@ -165,5 +166,11 @@ class BusinessAddress extends BaseModel
         }
         $result = $result->update($attributes);
         return $result ?: false;
+    }
+
+    public static function unsetDefaultAddress($user_id){
+        $biz_ids = Application::where('user_id', $user_id)->pluck('biz_id');
+        $status = self::whereIn('biz_id', $biz_ids)->where(['address_type'=> 6, 'is_default'=> 1])->update(['is_default'=> 0]);
+        return $status;
     }
 }

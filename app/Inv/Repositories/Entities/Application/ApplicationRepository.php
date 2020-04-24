@@ -1708,9 +1708,20 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     }
 
+    /**
+    * Get all GSTs by user id  
+    */
     public function getGSTsByUserId($user_id)
     {   
         return BizPanGst::getGSTsByUserId($user_id);
+    }
+
+    /**
+    * update is_default to 0 in biz_addr where address_type is 6 by user id
+    */
+    public function unsetDefaultAddress($user_id)
+    {   
+        return BusinessAddress::unsetDefaultAddress($user_id);
     }
 }
 

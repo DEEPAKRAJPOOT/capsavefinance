@@ -98,8 +98,13 @@ class AddressController extends Controller
 
             $status = false;
             $userAddress_id = false;
-            if (!empty($request->get('biz_addr_id'))) {
+            if($request->has('is_default')){
+                $this->appRepo->unsetDefaultAddress($user_id);
+            }else{
+                $arrAddressData['is_default'] = 0;
+            }
 
+            if (!empty($request->get('biz_addr_id'))) {
                 $userAddress_id = preg_replace('#[^0-9]#', '', $request->get('biz_addr_id'));
                 $address_data = $this->appRepo->findUserAddressyById($userAddress_id);
                 if (!empty($address_data)) {
@@ -110,6 +115,7 @@ class AddressController extends Controller
                 $arrAddressData['created_at'] = \carbon\Carbon::now();
                 $status = $this->appRepo->saveAddress($arrAddressData);
             }
+            
             if ($status) {
                 Session::flash('message', $userAddress_id ? trans('success_messages.userAdress_edit_success') : trans('success_messages.userAdress_add_success'));
             } else {
