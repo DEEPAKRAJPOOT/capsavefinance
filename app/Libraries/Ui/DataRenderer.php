@@ -5244,7 +5244,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn(
                 'action',
                 function ($data) {
-                return  "<a title='Edit User Invoice'  data-toggle=\"modal\" data-target=\"#editLead\" data-url ='' data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                return  "<a title='Edit User Invoice'  data-toggle=\"modal\" data-target=\"#edit_user_invoice\" data-url ='' data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
                 }
             )
             

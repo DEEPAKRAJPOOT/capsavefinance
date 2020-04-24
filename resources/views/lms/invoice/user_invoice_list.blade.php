@@ -89,6 +89,9 @@
   </div>
 
 </div>
+
+{!!Helpers::makeIframePopup('edit_user_invoice','Edit User Invoice', 'modal-lg')!!}
+
 @endsection
 @section('jscript')
 <script>
