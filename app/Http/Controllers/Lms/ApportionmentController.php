@@ -405,7 +405,6 @@ class ApportionmentController extends Controller
      */
     public function markSettleConfirmation(ApportionmentRequest $request){
         try {
-
             $amtToSettle = 0;
             $unAppliedAmt = 0;
             $transIds = [];
@@ -517,7 +516,6 @@ class ApportionmentController extends Controller
                     ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
                     ->get();
                 }
-                
 
                 foreach ($transactions as $trans){  
                     $invoiceList[$trans->invoice_disbursed_id] = [
@@ -555,7 +553,6 @@ class ApportionmentController extends Controller
                     }
                 }
                 
-
                 $unAppliedAmt = $repaymentAmt-$amtToSettle;
     
                 if($amtToSettle > $repaymentAmt){
@@ -576,134 +573,134 @@ class ApportionmentController extends Controller
         }
     }
 
-    public function getAccruedInterest($invDisbId, $fromDate = null, $toDate = null){
+    // public function getAccruedInterest($invDisbId, $fromDate = null, $toDate = null){
 
-        $accuredIntAmount = 0; 
-        $invoiceDetails = InvoiceDisbursed::find($invDisbId);
-        $invDueDate = $invoiceDetails->inv_due_date;
-        $intRate = $invoiceDetails->interest_rate; 
-        $gracePeriod = $invoiceDetails->grace_period;
+    //     $accuredIntAmount = 0; 
+    //     $invoiceDetails = InvoiceDisbursed::find($invDisbId);
+    //     $invDueDate = $invoiceDetails->inv_due_date;
+    //     $intRate = $invoiceDetails->interest_rate; 
+    //     $gracePeriod = $invoiceDetails->grace_period;
 
-        $fromDate = $fromDate ?? $invoiceDetails->int_accrual_start_dt;
-        $toDate =  $toDate ?? date('Y-m-d H:i:s');
+    //     $fromDate = $fromDate ?? $invoiceDetails->int_accrual_start_dt;
+    //     $toDate =  $toDate ?? date('Y-m-d H:i:s');
 
-        $graceStartDate = ($gracePeriod > 0)?$this->addDays($invDueDate, 1):$invDueDate;
-        $graceEndDate = addDays($invDueDate, $gracePeriod);
+    //     $graceStartDate = ($gracePeriod > 0)?$this->addDays($invDueDate, 1):$invDueDate;
+    //     $graceEndDate = addDays($invDueDate, $gracePeriod);
 
-        $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
+    //     $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
 
-        if($gracePeriod > 0 && strtotime($toDate) <= strtotime($graceDueDate)){
+    //     if($gracePeriod > 0 && strtotime($toDate) <= strtotime($graceDueDate)){
             
-            $interestData = InterestAccrual::whereBetween('interest_date', [$graceStartDate, $toDate])
-            ->select(DB::row("sum((principal_amount*($intRate/360))100) as total"))->get();
-            if($interestData){
-                $accuredIntAmount += $interestData->total;
-            }
-        }
+    //         $interestData = InterestAccrual::whereBetween('interest_date', [$graceStartDate, $toDate])
+    //         ->select(DB::row("sum((principal_amount*($intRate/360))100) as total"))->get();
+    //         if($interestData){
+    //             $accuredIntAmount += $interestData->total;
+    //         }
+    //     }
 
-        if(strtotime($toDate) > strtotime($graceDueDate)){
-            $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
-        }
+    //     if(strtotime($toDate) > strtotime($graceDueDate)){
+    //         $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
+    //     }
 
-    }
+    // }
 
-    protected function addDays($currentDate, $noOfDays)
-    {
-        $calDate = date('Y-m-d', strtotime($currentDate . "+ $noOfDays days"));
-        return $calDate;
-    }
+    // protected function addDays($currentDate, $noOfDays)
+    // {
+    //     $calDate = date('Y-m-d', strtotime($currentDate . "+ $noOfDays days"));
+    //     return $calDate;
+    // }
 
-    protected function subDays($currentDate, $noOfDays)
-    {
-        $calDate = date('Y-m-d', strtotime($currentDate . "- $noOfDays days"));
-        return $calDate;
-    }
+    // protected function subDays($currentDate, $noOfDays)
+    // {
+    //     $calDate = date('Y-m-d', strtotime($currentDate . "- $noOfDays days"));
+    //     return $calDate;
+    // }
     
-    public function manualUpfrontPostCalculation(int $transId, int $paymentId){
+    // public function manualUpfrontPostCalculation(int $transId, int $paymentId){
        
-        $transactionList = [];
-        $finalReversalAmt = 0;
-        $finalRendedAmt = 0;
+    //     $transactionList = [];
+    //     $finalReversalAmt = 0;
+    //     $finalRendedAmt = 0;
 
-        $currentRequesteAmt = 0;
-        $currentRefundedAmt = 0;
-        $currentUnpaidAmt = 0;
-        $currentPaidAmt = 0;
+    //     $currentRequesteAmt = 0;
+    //     $currentRefundedAmt = 0;
+    //     $currentUnpaidAmt = 0;
+    //     $currentPaidAmt = 0;
         
-        $interest = Transactions::find($transId);
-        $invoiceDisbursedId = $interest->invoice_disbursed_id;
-        $userId = $interest->user_id;
+    //     $interest = Transactions::find($transId);
+    //     $invoiceDisbursedId = $interest->invoice_disbursed_id;
+    //     $userId = $interest->user_id;
         
-        $currentRequesteAmt = $interest->amount;
-        $currentRefundedAmt =  $interest->refundableamt;  
-        $currentUnpaidAmt = $interest->outstanding;
-        $currentPaidAmt = $interest - $totalUnpaidAmt;
+    //     $currentRequesteAmt = $interest->amount;
+    //     $currentRefundedAmt =  $interest->refundableamt;  
+    //     $currentUnpaidAmt = $interest->outstanding;
+    //     $currentPaidAmt = $interest - $totalUnpaidAmt;
 
-        $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
-        $paymentDate = $payment->date_of_payment;
+    //     $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
+    //     $paymentDate = $payment->date_of_payment;
 
-        $currentOverdueRequested = Transactions::where('invoice_disbursed_id','=',$invoiceDisbursedId)
-                    ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
-                    ->where('entry_type','=','0')->sum('amount');
+    //     $currentOverdueRequested = Transactions::where('invoice_disbursed_id','=',$invoiceDisbursedId)
+    //                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+    //                 ->where('entry_type','=','0')->sum('amount');
 
-        $currentOverduePaid =  Transactions::where('invoice_disbursed_id','=',$invoiceDisbursedId)
-                    ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
-                    ->where('entry_type','=','1')->sum('amount');
+    //     $currentOverduePaid =  Transactions::where('invoice_disbursed_id','=',$invoiceDisbursedId)
+    //                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+    //                 ->where('entry_type','=','1')->sum('amount');
 
-        $payDateRequesteAmt = $this->getAccruedInterest($invoiceDisbursedId, null, $paymentDate);
-        $payOverdueAmt = ($payDateRequesteAmt>$currentRequesteAmt)?($payDateRequesteAmt-$currentRequesteAmt):0;
+    //     $payDateRequesteAmt = $this->getAccruedInterest($invoiceDisbursedId, null, $paymentDate);
+    //     $payOverdueAmt = ($payDateRequesteAmt>$currentRequesteAmt)?($payDateRequesteAmt-$currentRequesteAmt):0;
 
-        if($payOverdueAmt < $currentOverduePaid){
-            $finalRendedAmt += $currentOverduePaid-$payOverdueAmt;
-        }
+    //     if($payOverdueAmt < $currentOverduePaid){
+    //         $finalRendedAmt += $currentOverduePaid-$payOverdueAmt;
+    //     }
 
-        if($payOverdueAmt > 0 && $payOverdueAmt <= $currentOverduePaid && $currentOverdueRequested > $payDateRequesteAmt){
-            $finalReversalAmt += $currentOverdueRequested-$payDateRequesteAmt;
-        }
+    //     if($payOverdueAmt > 0 && $payOverdueAmt <= $currentOverduePaid && $currentOverdueRequested > $payDateRequesteAmt){
+    //         $finalReversalAmt += $currentOverdueRequested-$payDateRequesteAmt;
+    //     }
         
-        if($payDateRequesteAmt < $currentPaidAmt){
-            $finalRendedAmt += $currentOverduePaid-$payOverdueAmt;
-        }
+    //     if($payDateRequesteAmt < $currentPaidAmt){
+    //         $finalRendedAmt += $currentOverduePaid-$payOverdueAmt;
+    //     }
         
-        if($payDateRequesteAmt <= $currentPaidAmt && ($payDateRequesteAmt+$currentRefundedAmt) < $currentRequesteAmt){
-            $finalReversalAmt += ($payDateRequesteAmt+$currentRefundedAmt)-$currentRequesteAmt;
-        }
+    //     if($payDateRequesteAmt <= $currentPaidAmt && ($payDateRequesteAmt+$currentRefundedAmt) < $currentRequesteAmt){
+    //         $finalReversalAmt += ($payDateRequesteAmt+$currentRefundedAmt)-$currentRequesteAmt;
+    //     }
 
-        if($finalRendedAmt > 0){
-            $transactionList[] = [
-                'payment_id' => $paymentId,  
-                'link_trans_id' => null,  
-                'parent_trans_id' => null,  
-                'invoice_disbursed_id' => $interest->invoice_disbursed_id,  
-                'user_id' => $interest->user_id,  
-                'trans_date' => $paymentDate,           
-                'trans_type' => config('lms.TRANS_TYPE.REFUND'),   
-                'amount' => $finalRendedAmt,  
-                'entry_type' => '0',
-                'soa_flag' => '1'    
-            ];
-        }
-        if($finalReversalAmt > 0){
-            $transactionList[] = [
-                'payment_id' => $paymentId,  
-                'link_trans_id' => null,  
-                'parent_trans_id' => null,  
-                'invoice_disbursed_id' => $interest->invoice_disbursed_id,  
-                'user_id' => $interest->user_id,  
-                'trans_date' => $paymentDate,           
-                'trans_type' => config('lms.TRANS_TYPE.REVERSE'),   
-                'amount' => $finalReversalAmt,  
-                'entry_type' => '1',
-                'soa_flag' => '1'     
-            ];
-        }
+    //     if($finalRendedAmt > 0){
+    //         $transactionList[] = [
+    //             'payment_id' => $paymentId,  
+    //             'link_trans_id' => null,  
+    //             'parent_trans_id' => null,  
+    //             'invoice_disbursed_id' => $interest->invoice_disbursed_id,  
+    //             'user_id' => $interest->user_id,  
+    //             'trans_date' => $paymentDate,           
+    //             'trans_type' => config('lms.TRANS_TYPE.REFUND'),   
+    //             'amount' => $finalRendedAmt,  
+    //             'entry_type' => '0',
+    //             'soa_flag' => '1'    
+    //         ];
+    //     }
+    //     if($finalReversalAmt > 0){
+    //         $transactionList[] = [
+    //             'payment_id' => $paymentId,  
+    //             'link_trans_id' => null,  
+    //             'parent_trans_id' => null,  
+    //             'invoice_disbursed_id' => $interest->invoice_disbursed_id,  
+    //             'user_id' => $interest->user_id,  
+    //             'trans_date' => $paymentDate,           
+    //             'trans_type' => config('lms.TRANS_TYPE.REVERSE'),   
+    //             'amount' => $finalReversalAmt,  
+    //             'entry_type' => '1',
+    //             'soa_flag' => '1'     
+    //         ];
+    //     }
 
-        foreach ($transactionList as $key => $newTrans) {
-            $this->lmsRepo->saveTransaction($newTrans);
-        }
-    }
+    //     foreach ($transactionList as $key => $newTrans) {
+    //         $this->lmsRepo->saveTransaction($newTrans);
+    //     }
+    // }
     
-    public function manualRearendPostCalculation(int $transId, int $paymentId){
+    // public function manualRearendPostCalculation(int $transId, int $paymentId){
 
-    }
+    // }
 }

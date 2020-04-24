@@ -17,6 +17,8 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
+use App\Helpers\ManualApportionmentHelper;
+
 class DisbursalController extends Controller
 {
 	use ApplicationTrait;
@@ -265,17 +267,10 @@ class DisbursalController extends Controller
      */
     public function processAccrualInterest()
     {
-		$minDisbursalDate = InvoiceDisbursed::whereIn('status_id',[12,13])
-		->min('int_accrual_start_dt');
-		$currentDate = $this->subDays(date('Y-m-d'),1);
-		while(strtotime($minDisbursalDate)<=strtotime($currentDate)){
-			$returnData = $this->calAccrualInterest(null,$minDisbursalDate);
-			$minDisbursalDate = $this->addDays($minDisbursalDate, 1);
-			foreach($returnData as $disbursal_id => $interest) {
-				echo "<br>\nDisbursal ID#{$disbursal_id} -  Accrued Interest {$interest}";
-			}
-		}
-        
+		echo "start";
+		$Obj = new ManualApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
+		$Obj->dailyIntAccrual();
+		echo "end";
     }
 
     /**
