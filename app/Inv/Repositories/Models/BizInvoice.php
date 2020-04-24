@@ -96,8 +96,8 @@ class BizInvoice extends BaseModel
      */
 public static function saveInvoice($arrInvoice)
     {
-        $arrInvoiceVal = self::create($arrInvoice);
-        return ($arrInvoiceVal->invoice_id ?: false);
+        return  self::create($arrInvoice);
+        
     } 
     
     

@@ -808,8 +808,8 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                     if( $chkUser->id!=11)
-                     {
+                     if($customer!=3)
+                     {  
                       $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
                      }
                       $expl  =  explode(",",$invoice->program->invoice_approval); 
@@ -997,11 +997,9 @@ class DataRenderer implements DataProviderInterface
                      $id = Auth::user()->user_id;
                      $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                      $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                     if( $chkUser->id!==11)
-                     {
+                      
                       $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
                       $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option><option value="14">Reject</option></select></div>';
-                     }
                       return  $action;
                 })
                  ->filter(function ($query) use ($request) {
@@ -1107,8 +1105,8 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                          $action = "";
-                    if( $chkUser->id!==11)
-                     {   
+                    if($customer!=3)
+                      {    
                          $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option>';
                        if(in_array($customer, $expl)) 
                        {
@@ -1295,8 +1293,8 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
-                      if( $chkUser->id!=11)
-                      {  
+                      if($customer!=3)
+                      {   
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
@@ -1549,6 +1547,37 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
                        
+                })
+                 ->addColumn(
+                    'action',
+                    function ($invoice) use ($request) {
+                        $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                        if( $chkUser->id==1)
+                        {
+                             $customer  = 1;
+                        }
+                        else if( $chkUser->id==11)
+                        {
+                             $customer  = 2;
+                        }
+                        else
+                        {
+                            $customer  = 3;
+                        }
+                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                       $action = "";
+                      if($customer!=3)
+                      {  
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       if(in_array($customer, $expl)) 
+                       {
+                        $action .='<option value="8">Approve</option>';
+                       }
+                      }  
+                     
+                        return $action;
                 })
                  ->filter(function ($query) use ($request) {
                   
