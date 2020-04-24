@@ -687,5 +687,14 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return Company::getCompAddByCompanyName($attributes);
   
     }
+    
+    /*
+     * get companies ids of same name by a particular company id.
+     */
+    public function getCompNameByCompId($compId) {
+        
+        return Company::getCompNameByCompId($compId);
+  
+    }
 
 }

@@ -212,12 +212,17 @@ class UserBankAccount extends BaseModel {
      * @throws InvalidDataTypeExceptions
      * @throws BlankDataExceptions 
      */
-    public static function isDefalutCmpBankAcc($where)
+    public static function isDefalutCmpBankAcc($arr, $is_default)
     {
-        if (!is_array($where)) {
+        if (!is_array($arr)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
-        return self::where($where)->first();
+//        dd($arr, $is_default);
+        $result = self::whereIn('company_id', $arr)
+                ->where('is_default', $is_default)
+                ->first();
+        
+        return $result;
     }
 
     /**

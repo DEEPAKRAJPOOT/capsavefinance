@@ -152,5 +152,15 @@ class Company extends BaseModel {
         
         return $res ?: false;
     }
+    
+    public static function getCompNameByCompId($compId){
+        
+        $compName = self::select('cmp_name')->where('company_id', $compId)->first();
+        
+        $CompIdArr = self::where(['cmp_name' => $compName->cmp_name])->get();
+        
+        return $CompIdArr;
+        
+    }
 
 }
