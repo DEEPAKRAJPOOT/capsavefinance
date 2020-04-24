@@ -38,11 +38,8 @@ use App\Inv\Repositories\Contracts\FinanceInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
-<<<<<<< HEAD
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
-=======
 use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
->>>>>>> aditya_create_user_invoice
 
 class AjaxController extends Controller {
 
