@@ -4433,12 +4433,12 @@ if ($err) {
    public function checkCompAddExist(Request $req){
         
         $response['status'] = false;
-        $gst_no = $req->get('gst_no');
+        $cmp_name = $req->get('cmp_name');
         $comp_add = $req->get('comp_add');
         $comp_id = $req->get('comp_id');
 //        dd($comp_name, $comp_add, $comp_id);
-        $status = $this->masterRepo->getCompAddByCompanyName(['gst_no' => $gst_no, 'cmp_add' => $comp_add]);
-//        dd($status);
+        $status = $this->masterRepo->getCompAddByCompanyName(['cmp_name' => $cmp_name, 'cmp_add' => $comp_add]);
+        dd($status);
        if($status == false){
                 $response['status'] = 'true';
         }else{

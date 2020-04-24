@@ -13,28 +13,28 @@
                 {!! $errors->first('cmp_name', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
+                <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
+                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" maxlength="100" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
+                {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
                 <label for="gst_no">GST No. <span class="mandatory">*</span></label>
                 <input type="text" class="form-control gstnumber" id="gst_no" name="gst_no" placeholder="Enter GST No." maxlength="15" value="{{ isset($comData['gst_no']) ? $comData['gst_no'] : old('gst_no')}}">
                 <!--{!! $errors->first('gst_no', '<span class="error">:message</span>') !!}-->
             </div>
-        </div>
-        <div class="row">
             <div class="form-group col-md-6">
                 <label for="pan_no">PAN No. <span class="mandatory">*</span></label>
                 <input type="text" class="form-control pannumber" id="pan_no" name="pan_no" placeholder="Enter Pan No." maxlength="10" value="{{ isset($comData['pan_no']) ? $comData['pan_no'] : old('pan_no')}}">
                 <!--{!! $errors->first('pan_no', '<span class="error">:message</span>') !!}-->
             </div>
+        </div>
+        <div class="row">
             <div class="form-group col-md-6">
                 <label for="cin_no">CIN No. <span class="mandatory"></span></label>
                 <input type="text" class="form-control cinnumber" id="cin_no" name="cin_no" placeholder="Enter CIN No." maxlength="21" value="{{ isset($comData['cin_no']) ? $comData['cin_no'] : old('cin_no')}}">
                 <!--{!! $errors->first('cin_no', '<span class="error">:message</span>') !!}-->
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
-                <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
-                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" maxlength="100" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
-                {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
                 <label for="chrg_type">State<span class="mandatory">*</span></label><br />
@@ -161,14 +161,14 @@
 
         $.validator.addMethod("unique_add", function (value, element) {
             var comp_add = value;
-            var gst_no = $('#gst_no').val();
+            var cmp_name = $('#cmp_name').val();
             var comp_id = $('#company_id').val();
             var status = false;
-            console.log(comp_id);
-            if (gst_no.length < 1) {
-                $('#cmp_add').val('');
-                $('#gst_no').focus();
-            }
+//            console.log(comp_id);
+//            if (gst_no.length < 1) {
+//                $('#cmp_add').val('');
+//                $('#gst_no').focus();
+//            }
             $.ajax({
                 url: messages.check_comp_add_exist,
                 type: 'POST',
@@ -177,7 +177,7 @@
                 cache: false,
                 data: {
                     'comp_add': comp_add,
-                    'gst_no': gst_no,
+                    'cmp_name': cmp_name,
                     'comp_id': comp_id,
                     '_token': messages.token
                 },
