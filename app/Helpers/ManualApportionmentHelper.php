@@ -55,7 +55,7 @@ class ManualApportionmentHelper{
             $balancePrincipal = $this->getpaymentSettled($gStartDate, $invDisbId);
             $interestAmt = round($this->calInterest($balancePrincipal, $odIntRate, 1),config('lms.DECIMAL_TYPE.AMOUNT'));
             
-            $interest_accrual_id = InterestAccrual::whereDate('interest_date',$intAccrualStartDate)
+            $interest_accrual_id = InterestAccrual::whereDate('interest_date',$gStartDate)
             ->where('invoice_disbursed_id','=',$invDisbId)
             ->value('interest_accrual_id');
 
