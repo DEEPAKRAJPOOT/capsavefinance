@@ -334,6 +334,7 @@ trait ApplicationTrait
             $newAppData = $this->appRepo->createApplication($appData);
             $newAppId = $newAppData->app_id;
             
+            $newBizOwnersArr=[];
             //Get and save Biz Owner with Address Data
             $ownersData  = $this->appRepo->getOwnerByBizId($bizId);
             foreach($ownersData as $ownerData) {
@@ -343,6 +344,8 @@ trait ApplicationTrait
                 $ownerArrData['biz_id'] = $newBizId;  
                 $newOwnerData = $this->appRepo->createBizOwner($ownerArrData);
                 $newBizOwnerId = $newOwnerData->biz_owner_id;
+                
+                $newBizOwnersArr[$bizOwnerId] = $newBizOwnerId;
                 
                 //Get Biz Owner Address
                 $ownAddressesData  = $this->appRepo->getBizAddresses($bizId, $bizOwnerId);
@@ -410,7 +413,27 @@ trait ApplicationTrait
                 $this->appRepo->saveAppProductData($appProductArrData);
             }            
                     
-                    
+            //Get and save application documents           
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appDocsData = $this->appRepo->getAppDocuments($whereCond);
+            foreach($appDocsData as $appDoc) {
+                $appDocsArrData = $appDoc ? $this->arrayExcept($appDoc->toArray(), array_merge($excludeKeys, ['app_doc_id'])) : [];
+                $appDocsArrData['app_id'] = $newAppId;                
+                $this->appRepo->getAppDocuments($appDocsArrData);
+            }      
+            
+            //Get and save application document files         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appDocFilesData = $this->appRepo->getAppDocFiles($whereCond);
+            foreach($appDocFilesData as $appDocFile) {
+                $appDocFilesArrData = $appDocFile ? $this->arrayExcept($appDocFile->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
+                $appDocFilesArrData['app_id'] = $newAppId; 
+                $appDocFilesArrData['biz_owner_id'] = isset($newBizOwnersArr[$appDocFilesArrData['biz_owner_id']]) ? $newBizOwnersArr[$appDocFilesArrData['biz_owner_id']] : null;
+                $this->appRepo->getAppDocuments($appDocFilesArrData);
+            }                
+            
             \DB::rollback(); dd($ownerData);
 
             //$CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);

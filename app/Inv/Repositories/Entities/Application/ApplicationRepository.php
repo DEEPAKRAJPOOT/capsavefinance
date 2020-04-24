@@ -1875,7 +1875,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAppDocuments($whereCond=[])
     {
         return AppDocument::getAppDocuments($whereCond);
-    }     
+    } 
+
+    /**
+     * Get Application Document Files
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppDocFiles($whereCond=[])
+    {
+        return AppDocumentFile::getAppDocFiles($whereCond);
+    }    
 }
 
 
