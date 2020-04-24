@@ -1715,9 +1715,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $id int
      * @return type mixed
      */
-    public function isDefalutCmpBankAcc($attributes)
+    public function isDefalutCmpBankAcc($attributes, $is_default)
     {
-        return UserBankAccount::isDefalutCmpBankAcc($attributes);
+        return UserBankAccount::isDefalutCmpBankAcc($attributes, $is_default);
     }
     
     /*
