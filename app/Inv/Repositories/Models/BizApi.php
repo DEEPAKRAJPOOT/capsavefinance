@@ -77,12 +77,12 @@ class BizApi extends BaseModel
    }
    
     /**
-     * Get All Addresses By Biz Id
+     * Get Business Api Data
      * 
-     * @param int $bizId
+     * @param array $whereCond
      * @return type
      */
-    public function getBizApiData($whereCond=[])
+    public static function getBizApiData($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {
@@ -98,7 +98,7 @@ class BizApi extends BaseModel
      * @param array $bizApiData
      * @return mixed
      */
-    public function saveBizApiData($bizApiData)
+    public static function saveBizApiData($bizApiData)
     {
         return self::create($bizApiData);
     }    

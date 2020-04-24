@@ -58,6 +58,7 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Models\BizGstLog;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\BizPerfios;
@@ -65,6 +66,9 @@ use App\Inv\Repositories\Models\AppProduct;
 use App\Inv\Repositories\Models\AppDocProduct;
 use App\Inv\Repositories\Models\AppBizFinDetail;
 use App\Inv\Repositories\Models\AppBizBankDetail;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
+use App\Inv\Repositories\Models\UserAppDoc;
+use App\Inv\Repositories\Models\CamHygiene;
 
 /**
  * Application repository class
@@ -1749,14 +1753,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
     
     /**
-     * Get All Addresses By Biz Id
+     * Get All Addresses
      * 
-     * @param int $bizId
+     * @param array $whereCond
      * @return type
      */
-    public function getBizAddresses($bizId, $bizOwnerId=null)
+    public function getBizAddresses($whereCond=[])
     {
-        return BusinessAddress::getBizAddresses($bizId, $bizOwnerId);
+        return BusinessAddress::getBizAddresses($whereCond);
     }
     
     /**
@@ -1977,7 +1981,139 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function saveAppBizBankDetail($appBizBankData)
     {
         return AppBizBankDetail::create($appBizBankData);
-    }     
+    } 
+
+    /**
+     * Get Cam Report Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReportData($whereCond=[])
+    {
+        return Cam::getCamReportData($whereCond);
+    }   
+    
+    /**
+     * Save Cam Report Data
+     * 
+     * @param array $camReportData
+     * @return mixed
+     */
+    public function saveCamReportData($camReportData)
+    {
+        return Cam::create($camReportData);
+    } 
+    
+    /**
+     * Get Cam Hygiene Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamHygieneData($whereCond=[])
+    {
+        return CamHygiene::getCamHygieneData($whereCond);
+    }   
+    
+    /**
+     * Save Cam Hygiene Data
+     * 
+     * @param array $camHygieneData
+     * @return mixed
+     */
+    public function saveCamHygieneData($camHygieneData)
+    {
+        return CamHygiene::create($camHygieneData);
+    }    
+    
+    /**
+     * Get Cam Reviewer Summary Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReviewerSummaryData($whereCond=[])
+    {
+        return CamReviewerSummary::getCamReviewerSummaryData($whereCond);
+    }  
+    
+    /**
+     * Save Cam Reviewer Summary Data
+     * 
+     * @param array $camReviewerSummary
+     * @return mixed
+     */
+    public function saveCamReviewerSummaryData($camReviewerSummary)
+    {
+        return CamReviewerSummary::create($camReviewerSummary);
+    }   
+    
+    /**
+     * Get Cam Reviewer Risk Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReviewerRiskData($whereCond=[])
+    {
+        return CamReviewSummRiskCmnt::getCamReviewerRiskData($whereCond);
+    } 
+    
+    /**
+     * Save Cam Reviewer Risk Data
+     * 
+     * @param array $camReviewerRiskData
+     * @return mixed
+     */
+    public function saveCamReviewerRiskData($camReviewerRiskData)
+    {
+        return CamReviewSummRiskCmnt::create($camReviewerRiskData);
+    } 
+    
+    /**
+     * Get Cam Reviewer Pre Post Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReviewerPrePostData($whereCond=[])
+    {
+        return CamReviewSummPrePost::getCamReviewerPrePostData($whereCond);
+    }  
+    
+    /**
+     * Save Cam Reviewer Pre Post Data
+     * 
+     * @param array $camReviewerPrePostData
+     * @return mixed
+     */
+    public function saveCamReviewerPrePostData($camReviewerPrePostData)
+    {
+        return CamReviewSummPrePost::create($camReviewerPrePostData);
+    }
+    
+    /**
+     * Get User Application Doc Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getUserAppDocData($whereCond=[])
+    {
+        return UserAppDoc::getUserAppDocData($whereCond);
+    }  
+    
+    /**
+     * Save User Application Doc Data
+     * 
+     * @param array $userAppDocData
+     * @return mixed
+     */
+    public function saveUserAppDocData($userAppDocData)
+    {
+        return UserAppDoc::create($userAppDocData);
+    }    
 }
 
 

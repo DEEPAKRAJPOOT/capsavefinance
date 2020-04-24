@@ -167,18 +167,16 @@ class BusinessAddress extends BaseModel
     }
     
     /**
-     * Get All Addresses By Biz Id
+     * Get All Addresses
      * 
-     * @param int $bizId
+     * @param array $whereCond
      * @return type
      */
-    public static function getBizAddresses($bizId, $bizOwnerId=null)
+    public static function getBizAddresses($whereCond=[])
     {
-        $query = self::where('biz_id', $bizId);
-        if (!is_null($bizOwnerId)) {
-            $query->where('biz_owner_id', $bizOwnerId);
-        } else {
-            $query->whereNull('biz_owner_id');
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
         }
         $result = $query->get();
         return $result ? $result : [];

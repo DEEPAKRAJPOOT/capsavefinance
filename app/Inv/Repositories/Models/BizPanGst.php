@@ -46,7 +46,7 @@ class BizPanGst extends BaseModel
      * @param array $whereCond
      * @return mixed
      */
-    public function getBizPanGstData($whereCond=[])
+    public static function getBizPanGstData($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {
@@ -62,7 +62,7 @@ class BizPanGst extends BaseModel
      * @param array $bizPanGstData
      * @return mixed
      */
-    public function saveBizPanGstData($bizPanGstData)
+    public static function saveBizPanGstData($bizPanGstData)
     {
         return self::create($bizPanGstData);
     }    

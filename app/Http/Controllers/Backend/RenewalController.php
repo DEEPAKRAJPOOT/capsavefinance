@@ -30,7 +30,9 @@ class RenewalController extends Controller {
     public function renewApplication(Request $request)
     {
         try {
-            $userId = 568;
+            //$userId = 568;
+            $userId = 510;
+            /*
             $appData = $this->appRepo->getRenewalApp($userId);
             
             
@@ -41,10 +43,19 @@ class RenewalController extends Controller {
             
             $appId = $appData[0]->app_id;
             $bizId = $appData[0]->biz_id;
+            */
+            
+            
+            //$appId = 435;
+            //$bizId = 439;  
+
+            $appId = 391;
+            $bizId = 392;  
+
             
             $this->copyApplication($userId, $appId, $bizId);
             Session::flash('message', 'Application is copied successfully');
-            return redirect()->back();
+            return redirect()->route('application_list');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

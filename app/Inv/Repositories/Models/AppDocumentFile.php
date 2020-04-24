@@ -276,7 +276,7 @@ class AppDocumentFile extends BaseModel
      * @param array $whereCond
      * @return mixed
      */
-    public function getAppDocFiles($whereCond=[])
+    public static function getAppDocFiles($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {

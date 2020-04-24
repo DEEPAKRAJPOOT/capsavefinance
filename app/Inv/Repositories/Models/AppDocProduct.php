@@ -70,7 +70,7 @@ class AppDocProduct extends BaseModel
      * @param array $whereCond
      * @return mixed
      */
-    public function getAppProductDocs($whereCond=[])
+    public static function getAppProductDocs($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {

@@ -216,4 +216,20 @@ class CamReviewerSummary extends BaseModel
         ]);
         return $qryOutput ? true : false;
     }
+    
+    /**
+     * Get Cam Reviewer Summary Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getCamReviewerSummaryData($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }    
 }

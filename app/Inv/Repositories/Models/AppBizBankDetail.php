@@ -68,7 +68,7 @@ class AppBizBankDetail extends BaseModel
      * @param array $whereCond
      * @return mixed
      */
-    public function getAppBizBankDetail($whereCond=[])
+    public static function getAppBizBankDetail($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {

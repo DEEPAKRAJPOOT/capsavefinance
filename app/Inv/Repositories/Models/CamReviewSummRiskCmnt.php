@@ -61,4 +61,20 @@ class CamReviewSummRiskCmnt extends BaseModel
                         'updated_at',
                         'updated_by'
     ];
+    
+    /**
+     * Get Cam Reviewer Risk Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getCamReviewerRiskData($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }
 }

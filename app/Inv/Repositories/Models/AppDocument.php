@@ -167,7 +167,7 @@ class AppDocument extends BaseModel
      * @param array $whereCond
      * @return mixed
      */
-    public function getAppDocuments($whereCond=[])
+    public static function getAppDocuments($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {

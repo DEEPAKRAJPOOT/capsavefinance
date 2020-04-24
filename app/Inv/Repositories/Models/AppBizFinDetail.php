@@ -118,7 +118,7 @@ class AppBizFinDetail extends BaseModel
      * @param array $whereCond
      * @return mixed
      */
-    public function getAppBizFinDetail($whereCond=[])
+    public static function getAppBizFinDetail($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {

@@ -61,4 +61,20 @@ class CamReviewSummPrePost extends BaseModel
                         'updated_at',
                         'updated_by'
     ];
+    
+    /**
+     * Get Cam Reviewer Pre Post Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getCamReviewerPrePostData($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }    
 }
