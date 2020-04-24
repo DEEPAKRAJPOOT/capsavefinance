@@ -606,9 +606,8 @@ class InvoiceController extends Controller {
 
             } 
         }
-
-        $result = $this->export($exportData, $batchId);
-        $file['file_path'] = $result['file_path'];
+        // $result = $this->export($exportData, $batchId);
+        $file['file_path'] = $result['file_path'] ?? '';
         if ($file) {
             $createBatchFileData = $this->createBatchFileData($file);
             $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
@@ -618,20 +617,14 @@ class InvoiceController extends Controller {
             }
         }
 
-
-
         foreach ($supplierIds as $userid) {
             $disburseAmount = 0;
-
-            $disbursalRequest = $this->createDisbursalData($disbursalData['invoice'], $disburseAmount, $disburseType);
+            $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
+            $userData['disbursal_batch_id'] =$disbursalBatchId;
+            $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
             $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
             $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
 
-            $updateDisbursal = $this->lmsRepo->updateInvoiceDisbursed([
-                    'disbursal_id' => $createDisbursal->disbursal_id
-                ], $invoiceDisbursedIds);
-            $disbursalIds[] = $createDisbursal->disbursal_id; 
-            
             foreach ($allinvoices as $invoice) {
                 if($invoice['supplier_id'] = $userid) {
                     $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
@@ -639,11 +632,11 @@ class InvoiceController extends Controller {
                     if ($invoiceDisbursedData == null) {
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
+                        $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
                         
                         $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                         $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
                         $invoiceDisbursedId = $createInvoiceDisbursed->invoice_disbursed_id;
-                        $invoiceDisbursedIds[] = $createInvoiceDisbursed->invoice_disbursed_id;
                     }
                     
                     $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
@@ -690,19 +683,13 @@ class InvoiceController extends Controller {
 
                 }
             }
+            if($createDisbursal) {
+                $updateDisbursal = $this->lmsRepo->updateDisburse([
+                        'disburse_amount' => $disburseAmount
+                    ], $createDisbursal->disbursal_id);
+            }
+
         }
-
-
-
-
-
-
-
-
-
-
-
-
 
         Session::flash('message',trans('backend_messages.disbursed'));
         return redirect()->route('backend_get_disbursed_invoice');

@@ -44,7 +44,6 @@ class Disbursal extends BaseModel {
 	 */
 	protected $fillable = [
 		'user_id',
-		'app_id',
 		'disbursal_batch_id',
 		'tran_id',
 		'disburse_date',
