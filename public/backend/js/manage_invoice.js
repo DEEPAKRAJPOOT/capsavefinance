@@ -21,9 +21,10 @@
 
     ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.approveInv', function () {
+          
         $("#moveCase").html('');
         if (confirm('Are you sure? You want to approve it.'))
-        {
+        {  $(".isloader").show(); 
             var invoice_id = $(this).attr('data-id');
             var user_id = $(this).attr('data-user');
             var amount = $(this).attr('data-amount');
@@ -38,13 +39,14 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
+                     $(".isloader").hide(); 
                     if (data.eod_process) {
                         var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
                         parent.$("#iframeMessage").html(alertmsg);
                         return false;
                     }                            
                   else if(data==2)
-                   {
+                 {
                       alert('Limit Exceed');
                  }
                  else
@@ -64,9 +66,11 @@
     
      ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.disburseInv', function () {
+       
         $("#moveCase").html('');
         if (confirm('Are you sure? You want to disbursement queue.'))
         {
+            $(".isloader").show(); 
             var invoice_id = $(this).attr('data-id');
             var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
             th = this;
@@ -79,7 +83,7 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                   
+                      $(".isloader").hide(); 
                      $("#moveCase").html('Invoice successfully sent to  disbursement queue ');
                      $(th).parent('td').parent('tr').remove();
                    
@@ -352,6 +356,7 @@ function uploadFile(app_id,id)
 
 
     $(document).on('click', '#bulkApprove', function () {
+       
         $("#moveCase").html('');
         var arr = [];
         i = 0;
@@ -366,7 +371,7 @@ function uploadFile(app_id,id)
             return false;
         }
         if (confirm('If someone selected invoice found under limit exceed, Then it will not process further'))
-        {
+        {     $(".isloader").show(); 
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
           jQuery.ajax({
@@ -379,6 +384,7 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
+                     $(".isloader").hide(); 
                     if (data.eod_process) {
                         var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
                         parent.$("#iframeMessage").html(alertmsg);
@@ -388,11 +394,12 @@ function uploadFile(app_id,id)
                     if (data == 1)
                     {
 
-                      
+                       
                         location.reload();
 
                      }
                  }
+
             });
         } else
         {
@@ -404,6 +411,7 @@ function uploadFile(app_id,id)
 
 
     $(document).on('click', '#bulkDisburseApprove', function () {
+       
         $("#moveCase").html('');
         var arr = [];
         i = 0;
@@ -416,7 +424,7 @@ function uploadFile(app_id,id)
             return false;
         }
         if (confirm('Are you sure? You want to disbursement queue.'))
-        {
+        {    $(".isloader").show(); 
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
             jQuery.ajax({
@@ -429,12 +437,12 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
+                     $(".isloader").hide(); 
                     if (data.eod_process) {
                         var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
                         parent.$("#iframeMessage").html(alertmsg);
                         return false;
                     }
-                    
                     if (data == 1)
                     {
 
@@ -481,6 +489,7 @@ function uploadFile(app_id,id)
     
      ///////////////////////For Invoice Approve////////////////////////
     $(document).on('change', '.approveInv1', function () {
+       
         var status = $(this).val();
         $("#moveCase").html('');
         if (status == 0)
@@ -505,7 +514,7 @@ function uploadFile(app_id,id)
         }
         if (confirm('Are you sure? You want to ' + st + ' it.'))
         {
-           
+             $(".isloader").show(); 
             var invoice_id = $(this).attr('data-id');
              var user_id = $(this).attr('data-user');
             var amount = $(this).attr('data-amount');
@@ -520,6 +529,7 @@ function uploadFile(app_id,id)
                     alert(errorThrown);
                 },
                 success: function (data) {
+                   $(".isloader").hide(); 
                     if (data.eod_process) {
                         var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
                         parent.$("#iframeMessage").html(alertmsg);
