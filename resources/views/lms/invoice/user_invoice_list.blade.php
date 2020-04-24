@@ -8,6 +8,7 @@
     </div>
     <div class="header-title">
       <h3 class="mt-2">Invoices List</h3>
+
      
       <ol class="breadcrumb">
         <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
@@ -98,6 +99,7 @@
       get_to_settle_payments: "{{ route('get_to_settle_payments') }}",
       data_not_found: "{{ trans('error_messages.data_not_found') }}",
       token: "{{ csrf_token() }}",
+      user_id:"{{ $userInfo->user_id }}",
     };
 </script>
 

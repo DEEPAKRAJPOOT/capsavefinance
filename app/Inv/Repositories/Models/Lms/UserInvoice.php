@@ -153,8 +153,15 @@ class UserInvoice extends BaseModel {
     /**
      * GET AJAX result list
      */
-    public static function getUserInvoiceList() {
-        $result = self::orderBy('user_invoice_id', 'DESC');
+    public static function getUserInvoiceList($user_id, $appId) {
+        $result = self::select(
+            'user_invoice.app_id',
+            'user_invoice.invoice_no', 
+            'user_invoice.invoice_date',
+            'user_invoice.place_of_supply'
+            )
+            ->orderBy('user_invoice.user_invoice_id', 'DESC');
+
         return $result ? : false;
     }
 }

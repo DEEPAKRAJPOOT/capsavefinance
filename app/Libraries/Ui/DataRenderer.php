@@ -5221,4 +5221,43 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+
+    // get user invoice list
+    public function getUserInvoiceList(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->addColumn(
+                'biz_addr_id',
+                function ($data) {
+                    return $data->biz_addr_id;
+                }
+            )
+
+            ->addColumn(
+                'invoice_date',
+                function ($data) {
+                    return date('d-M-Y', strtotime($data->invoice_date));
+                }
+            )    
+
+            ->addColumn(
+                'action',
+                function ($users) {
+                return  "<a title='Edit User Invoice'  data-toggle=\"modal\" data-target=\"#editLead\" data-url ='' data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                }
+            )
+            
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('chrg_desc', 'like', "%$search_keyword%")
+                            ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%");
+                    });
+                }
+            })
+            ->make(true);
+    }
+
 }

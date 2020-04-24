@@ -134,6 +134,7 @@ class userInvoiceController extends Controller
             $appInfo = $this->UserInvRepo->getAppsByUserId($user_id);
             $state_list = $this->UserInvRepo->getStateListCode();
             $reference_no = _getRand('15') . $user_id;
+            dd($userInfo);
             return view('lms.invoice.create_user_invoice')
             ->with(['userInfo' => $userInfo, 'state_list' => $state_list, 'appInfo' => $appInfo, 'reference_no' => $reference_no]);
         } catch (Exception $ex) {
