@@ -3623,6 +3623,9 @@ if ($err) {
                    {
                       $res  =  $this->invRepo->saveFinalInvoice($attr);
                       $invoice_id =  $res['invoice_id'];
+                      $userLimit =  InvoiceTrait::ProgramLimit($res);
+                      $updateInvoice=  InvoiceTrait::updateLimit($res->status_id,$userLimit,$res->invoice_approve_amount,$res,$invoice_id);  
+                     
                    }
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;

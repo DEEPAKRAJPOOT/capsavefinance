@@ -372,6 +372,8 @@ trait InvoiceTrait
         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
    }
 
+   
+   
   public static function getInvoiceDetail($attr)
   {
       return BizInvoice::where(['invoice_id' => $attr['invoice_id']])->first();
@@ -469,17 +471,20 @@ trait InvoiceTrait
             }
     }
   
-   public static function updateLimit($status_id,$limit,$inv_amout,$attr,$invoice_bulk_upload_id)
+   public static function updateLimit($status_id,$limit,$inv_amout,$attr,$invoice_id)
     {
-        $cid  = $attr['user_id'];
-        $sum  = self::invoiceApproveLimit($attr);
+        $cid  = $attr['supplier_id'];
+        $attribute['prgm_id']  = $attr['program_id'];
+        $attribute['user_id']  = $attr['supplier_id'];
+        $attribute['anchor_id']  = $attr['anchor_id'];
+        $sum  = self::invoiceApproveLimit($attribute);
         $uid = Auth::user()->user_id;
         if($status_id==8)  
          {  
                      if($limit  >= $sum)
                     {
-                        $remain_amount = (float) $limit-$sum;
-                       if((float)$remain_amount >=$inv_amout)
+                        $remain_amount =  $limit-$sum;
+                       if($remain_amount >=$inv_amout)
                         { 
                            $status=8; 
                            $limit_exceed=0;
@@ -497,12 +502,12 @@ trait InvoiceTrait
                            $limit_exceed=1;
                        }
                  
-                return   InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['limit_exceed' =>$limit_exceed,'status_id' =>$status]);
+                return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>$status]);
            }
            if($status_id==7)  
            { 
                
-               return   InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>7]);
+               return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>7]);
             }
        
          
@@ -510,7 +515,7 @@ trait InvoiceTrait
              
              if($dueDateGreaterCurrentdate)
              {
-                return InvoiceBulkUpload::where(['invoice_bulk_upload_id' =>$invoice_bulk_upload_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28]); 
+                return BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28]); 
              }
         
     }
