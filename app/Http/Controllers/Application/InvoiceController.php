@@ -341,16 +341,7 @@ class InvoiceController extends Controller {
                         $key++;
                       
                         $res =  $this->invRepo->saveInvoice($ins);
-                        if($res)
-                        {
-                           
-                            if($res['status']!=2)
-                            {
-                               InvoiceTrait::updateLimit($status_id,$userLimit,$amount,$dataAttr,$res->invoice_bulk_upload_id);  
-                            }
-                         
-                        }
-                           
+                       
                     } 
             
                      

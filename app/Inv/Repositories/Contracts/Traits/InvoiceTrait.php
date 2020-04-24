@@ -430,7 +430,31 @@ trait InvoiceTrait
                 return BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>'User limit has been expire','status_id' =>28]); 
              }
  
-  }
+  }  
+
+   public static  function checkInvoiceLimitExced($attr)
+   {
+       
+        $msg="";
+        foreach($attr['invoice_id'] as $row)
+        {  
+             if($attr->status==8)
+             {    
+                   $attribute['invoice_id'] = $row;
+                   $inv = InvoiceTrait::getInvoiceDetail($attribute);
+                   $response =  self::updateApproveStatus($inv); 
+                   if($response==2)
+                   {
+                   
+                     $msg.= $inv['invoice_no'].',';
+                  
+                   }
+                  
+             }
+        }
+        return $msg;
+    }
+      
       public static  function updateApproveStatus($attr)
    {
             $limitData[]="";

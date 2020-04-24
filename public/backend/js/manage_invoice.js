@@ -1,3 +1,11 @@
+  $(document).ready(function(){
+    setInterval(function(){  localStorage.setItem('storageMsg',''); }, 1000);
+     var  msg = localStorage.getItem('storageMsg');
+    if(msg)
+     {
+       $("#storeSuccessMsg").html("<div class='alert-success alert' role='alert'><span><i class='fa fa-bell fa-lg' aria-hidden='true'></i></span>"+msg+"</div>");
+     }
+   })
  $(document).ready(function () {
        
          document.getElementById('invoice_approve_amount').addEventListener('input', event =>
@@ -364,7 +372,7 @@ function uploadFile(app_id,id)
             alert('Please select atleast one checked');
             return false;
         }
-        if (confirm('If someone selected invoice found under limit exceed, Then it will not process further'))
+        if (confirm('Are you sure, You want to approve it.'))
         {     $(".isloader").show(); 
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
@@ -379,9 +387,19 @@ function uploadFile(app_id,id)
                 },
                 success: function (data) {
                          $(".isloader").hide(); 
-                         location.reload();
-                  
-                }
+                         if(data.msg=="")
+                         {
+                            localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                            location.reload();
+                         }
+                         else
+                         {
+                             
+                            localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer');
+                            location.reload();
+                         }
+                     }
+               
             });
         } else
         {

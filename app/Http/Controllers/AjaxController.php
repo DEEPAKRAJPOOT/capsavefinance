@@ -3827,32 +3827,23 @@ if ($err) {
    function updateBulkInvoice(Request $request)
    {
       
-       $msg = "";
-       $res['msg']="";
-       
+       $result = InvoiceTrait::checkInvoiceLimitExced($request); 
        foreach($request['invoice_id'] as $row)
        {  
-        if($request->status==8)
-        {
-           $attr['invoice_id']=$row; 
-           $response =  InvoiceTrait::updateApproveStatus($attr);  
-         
-          if($response==2)
+          if($request->status==8)
           {
-             
-              $inv = InvoiceTrait::getInvoiceDetail($attr);
-              $msg.=$inv['invoice_no'].",";
-           }
+            $attr['invoice_id']=$row; 
+            $response =  InvoiceTrait::updateApproveStatus($attr);  
          
-        }
+          }
           else
           {
              $this->invRepo->updateInvoice($row,$request->status);
-         }
+           }
        }
        
-      /// return \response()->json(['success' => substr($msg,0,-1)]);
-       return 1;
+      return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
+       
    }  
    /**
     * get Bank account list
