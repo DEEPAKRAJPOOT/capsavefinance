@@ -127,4 +127,11 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	public function updateUserInvoice($arrUserData, $userInvoice_id) {
 		return UserInvoice::updateUserInvoice($arrUserData, $userInvoice_id);
 	}
+
+	/**
+	 * Get AJAX list of user invoice result
+	 */
+	public function getUserInvoiceList() {
+		return UserInvoice::orderBy('user_invoice_id', 'DESC');
+	}
 }

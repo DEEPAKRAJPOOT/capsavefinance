@@ -149,4 +149,12 @@ class UserInvoice extends BaseModel {
         $status = self::create($arrUserData);
         return $status ? $status : false;
     }
+
+    /**
+     * GET AJAX result list
+     */
+    public static function getUserInvoiceList() {
+        $result = self::orderBy('user_invoice_id', 'DESC');
+        return $result ? : false;
+    }
 }
