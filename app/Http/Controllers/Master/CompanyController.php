@@ -32,6 +32,7 @@ class CompanyController extends Controller {
              $filter['search_keyword'] =$search_keyword;
         }
         $companiesList = $this->masterRepo->getAllCompanies($filter)->toArray();
+//        dd($companiesList);
         return view('master.companies.index',['cmpData' => $companiesList]);
     }
 
