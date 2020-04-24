@@ -4438,7 +4438,7 @@ if ($err) {
         $comp_id = $req->get('comp_id');
 //        dd($comp_name, $comp_add, $comp_id);
         $status = $this->masterRepo->getCompAddByCompanyName(['cmp_name' => $cmp_name, 'cmp_add' => $comp_add]);
-        dd($status);
+//        dd($status);
        if($status == false){
                 $response['status'] = 'true';
         }else{
