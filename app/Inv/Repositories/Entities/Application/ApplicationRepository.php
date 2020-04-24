@@ -69,6 +69,7 @@ use App\Inv\Repositories\Models\AppBizBankDetail;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\CamHygiene;
+use App\Inv\Repositories\Models\WfAppStage;
 
 /**
  * Application repository class
@@ -2113,6 +2114,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function saveUserAppDocData($userAppDocData)
     {
         return UserAppDoc::create($userAppDocData);
+    }  
+    
+    /**
+     * Save application workflow stage
+     * 
+     * @param array $arrData
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function saveWfDetail($arrData)
+    {
+        return WfAppStage::saveWfDetail($arrData);
     }    
 }
 

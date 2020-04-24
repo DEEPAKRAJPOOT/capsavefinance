@@ -6,6 +6,7 @@ use Auth;
 use Session;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
@@ -14,10 +15,11 @@ class RenewalController extends Controller {
     use ApplicationTrait;
     protected $appRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo)
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo)
     {        
         $this->middleware('checkBackendLeadAccess');
-        $this->appRepo = $app_repo;
+        $this->appRepo  = $app_repo;
+        $this->userRepo = $user_repo;
     }
 
 

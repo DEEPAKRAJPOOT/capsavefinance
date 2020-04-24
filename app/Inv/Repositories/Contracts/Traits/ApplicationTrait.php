@@ -543,7 +543,36 @@ trait ApplicationTrait
                     $camReviewerPrePostArrData['cam_reviewer_summary_id'] = $newCamReviewerSummaryId;                     
                     $this->appRepo->saveCamReviewerPrePostData($camReviewerPrePostArrData);
                 }                  
-            }               
+            }  
+            
+            $wfStageArr = [1, 2, 5, 10, 15, 16];
+            foreach($wfStageArr as $wfStageId) {
+                $wfData=[];
+                $wfData['biz_app_id'] = $newAppId;
+                $wfData['user_id'] = $userId;
+                $wfData['wf_stage_id'] = $wfStageId;
+                $stats = $wfStageId == 16 ? 1 : 0;
+                $wfData['app_wf_status'] = $stats;
+                $wfData['is_complete'] = $stats;
+                $this->appRepo->saveWfDetail($wfData);
+            }
+            
+            
+            $userData = $this->userRepo->getfullUserDetail($userId);
+            if ($userData && !empty($userData->anchor_id)) {
+                $toUserId = $this->userRepo->getLeadSalesManager($userId);
+            } else {
+                $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+            }
+            
+            
+            //$roles = $this->appRepo->getBackStageUsers($appId, [4]);  //Assigned Sales Manager
+            //$toUserId = isset($roles[0]) ? $roles[0]->user_id : null;
+                                        
+            if ($toUserId) {
+               \Helpers::assignAppToUser($toUserId, $newAppId);
+            }            
+            
             
             //\DB::rollback(); dd($ownerData);
 
