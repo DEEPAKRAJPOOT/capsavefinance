@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 use Carbon\Carbon;
+use Dompdf\Helpers;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
@@ -19,7 +21,7 @@ class ManualApportionmentHelper{
 
     private function calInterest($principalAmt, $interestRate, $tenorDays){
         $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
-        return $interest;        
+        return $interest/100;        
     }  
     
     private function addDays($currentDate, $noOfDays){
@@ -34,7 +36,7 @@ class ManualApportionmentHelper{
 
     private function getpaymentSettled($transDate, $invDisbId){
 
-        $Dr = Transactions::where('trans_date','<=',$transDate)
+        $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
         ->sum('amount');
@@ -91,7 +93,7 @@ class ManualApportionmentHelper{
     }
 
     private function interestPosting($invDisbId, $userId, $payFreq){
-        $interests = new collection();
+        $interests = new Collection();
         
         //Monthly Case
         if($payFreq == '2'){
