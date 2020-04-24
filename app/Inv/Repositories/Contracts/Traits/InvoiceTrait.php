@@ -332,12 +332,12 @@ trait InvoiceTrait
          if($getUser->is_buyer==0)
          {
             $customerAuto  = 4;
-            $expl  =  explode(",",$getPrgm->bulk_invoice_upload); 
+            $expl  =  explode(",",$getPrgm->invoice_approval); 
             if(in_array($customerAuto, $expl))  
             {
               return $statusId = 8;  
             }
-            else if($getPrgm->bulk_invoice_upload==4)
+            else if($getPrgm->invoice_approval==4)
             {
               return  $statusId = 8;   
             }
