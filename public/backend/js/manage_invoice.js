@@ -43,7 +43,7 @@
                         parent.$("#iframeMessage").html(alertmsg);
                         return false;
                     }                            
-                  else if(data=2)
+                  else if(data==2)
                    {
                       alert('Limit Exceed');
                  }
