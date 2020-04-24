@@ -43,6 +43,7 @@ class Company extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'comp_name_id',
         'cmp_name',
         'cmp_add',
         'gst_no',
@@ -151,6 +152,16 @@ class Company extends BaseModel {
         $res = self::where($where)->first();
         
         return $res ?: false;
+    }
+    
+    public static function getCompNameByCompId($compId){
+        
+        $compName = self::select('cmp_name')->where('company_id', $compId)->first();
+        
+        $CompIdArr = self::where(['cmp_name' => $compName->cmp_name])->get();
+        
+        return $CompIdArr;
+        
     }
 
 }

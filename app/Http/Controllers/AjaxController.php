@@ -4402,4 +4402,46 @@ if ($err) {
         return $this->providerResult;
     }
 
+    
+    public function checkBankAccExist(Request $req){
+        
+        $response['status'] = false;
+        $acc_no = $req->get('acc_no');
+        $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
+        $acc_id = $req->get('acc_id');
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'company_id' => $comp_id]);
+        
+        if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($acc_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+   
+   public function checkCompAddExist(Request $req){
+        
+        $response['status'] = false;
+        $cmp_name = $req->get('cmp_name');
+        $comp_add = $req->get('comp_add');
+        $comp_id = $req->get('comp_id');
+//        dd($comp_name, $comp_add, $comp_id);
+        $status = $this->masterRepo->getCompAddByCompanyName(['cmp_name' => $cmp_name, 'cmp_add' => $comp_add]);
+//        dd($status);
+       if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($comp_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+
 }

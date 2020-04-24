@@ -75,6 +75,7 @@ class CompanyController extends Controller {
                 $companies_data = $this->masterRepo->findCompanyById($company_id);
                 if (!empty($companies_data)) {
                     $arrCompaniesData['updated_by'] = Auth::user()->user_id;
+                    $arrCompaniesData['comp_name_id'] = 1;
                     $status = $this->masterRepo->updateCompanies($arrCompaniesData, $company_id);
                 }
             } else {
@@ -149,10 +150,18 @@ class CompanyController extends Controller {
             ];
             
             if($by_default == 1){
-                $data = $this->appRepo->isDefalutCmpBankAcc(['company_id' => $compId, 'is_default' => $by_default]);
+                $companyIdsArr = null;
+                $companiesArr = $this->masterRepo->getCompNameByCompId((int)$compId);
+//                dd($companyIdsArr);
+                foreach($companiesArr as $key => $value){
+                    $companyIdsArr[$key] = $value->company_id;
+                }
+//                dd($companyIdsArr);
+                $data = $this->appRepo->isDefalutCmpBankAcc($companyIdsArr, $by_default);
                 $result = $data ? $data->toArray() : '';
 //                dd($result);
                 if(!empty($result)){
+//                    dd($result);
                     $prev_def_acc_id = $result['bank_account_id'];
                     $result['is_default'] = 0;
                     $this->appRepo->saveBankAccount($result, $prev_def_acc_id);
