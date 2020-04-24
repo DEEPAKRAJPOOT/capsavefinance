@@ -62,6 +62,9 @@ use App\Inv\Repositories\Models\BizGstLog;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\BizPerfios;
 use App\Inv\Repositories\Models\AppProduct;
+use App\Inv\Repositories\Models\AppDocProduct;
+use App\Inv\Repositories\Models\AppBizFinDetail;
+use App\Inv\Repositories\Models\AppBizBankDetail;
 
 /**
  * Application repository class
@@ -1876,6 +1879,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppDocument::getAppDocuments($whereCond);
     } 
+    
+    /**
+     * Save Application Documents
+     * 
+     * @param array $appDocsData
+     * @return mixed
+     */
+    public function saveAppDocuments($appDocsData)
+    {
+        return AppDocument::create($appDocsData);
+    }     
 
     /**
      * Get Application Document Files
@@ -1886,7 +1900,84 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAppDocFiles($whereCond=[])
     {
         return AppDocumentFile::getAppDocFiles($whereCond);
+    } 
+    
+    /**
+     * Save Application Document Files
+     * 
+     * @param array $appDocFiles
+     * @return mixed
+     */
+    public function saveAppDocFiles($appDocFiles)
+    {
+        return AppDocumentFile::create($appDocFiles);
+    }
+    
+    /**
+     * Get Application Product Documents
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppProductDocs($whereCond=[])
+    { 
+        return AppDocProduct::getAppProductDocs($whereCond);
+    }  
+    
+    /**
+     * Save Application Product Documents
+     * 
+     * @param array $appProductDocs
+     * @return mixed
+     */
+    public function saveAppProductDocs($appProductDocs)
+    { 
+        return AppDocProduct::create($appProductDocs);
+    }
+    
+    /**
+     * Get Application Business Finance Detail
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppBizFinDetail($whereCond=[])
+    {
+        return AppBizFinDetail::getAppBizFinDetail($whereCond);
     }    
+    
+    /**
+     * Save Application Business Finance Detail
+     * 
+     * @param array $appBizFinData
+     * @return mixed
+     */
+    public function saveAppBizFinDetail($appBizFinData)
+    {
+        return AppBizFinDetail::create($appBizFinData);
+    } 
+                
+    /**
+     * Get Application Business Bank Detail
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppBizBankDetail($whereCond=[])
+    {
+        return AppBizBankDetail::getAppBizBankDetail($whereCond);
+    }    
+    
+    /**
+     * Save Application Business Bank Detail
+     * 
+     * @param array $appBizBankData
+     * @return mixed
+     */
+    public function saveAppBizBankDetail($appBizBankData)
+    {
+        return AppBizBankDetail::create($appBizBankData);
+    }     
 }
 
 

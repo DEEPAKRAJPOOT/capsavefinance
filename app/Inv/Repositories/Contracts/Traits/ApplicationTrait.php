@@ -418,9 +418,22 @@ trait ApplicationTrait
             $whereCond['app_id'] = $appId;
             $appDocsData = $this->appRepo->getAppDocuments($whereCond);
             foreach($appDocsData as $appDoc) {
+                $appDocId = $appDoc->app_doc_id;
                 $appDocsArrData = $appDoc ? $this->arrayExcept($appDoc->toArray(), array_merge($excludeKeys, ['app_doc_id'])) : [];
+                
                 $appDocsArrData['app_id'] = $newAppId;                
-                $this->appRepo->getAppDocuments($appDocsArrData);
+                $appDocResult = $this->appRepo->saveAppDocuments($appDocsArrData);
+                $newAppDocId = $appDocResult ? $appDocResult->app_doc_id : null;
+                
+                //Get and save application product document
+                $whereCond=[];
+                $whereCond['app_doc_id'] = $appDocId;
+                $appDocFilesData = $this->appRepo->getAppProductDocs($whereCond);
+                foreach($appDocFilesData as $appDocFile) {
+                    $appDocFilesArrData = $appDocFile ? $this->arrayExcept($appDocFile->toArray(), array_merge($excludeKeys, ['app_doc_product_id'])) : [];
+                    $appDocFilesArrData['app_doc_id'] = $newAppDocId; 
+                    $this->appRepo->saveAppProductDocs($appDocFilesArrData);
+                }  
             }      
             
             //Get and save application document files         
@@ -431,8 +444,34 @@ trait ApplicationTrait
                 $appDocFilesArrData = $appDocFile ? $this->arrayExcept($appDocFile->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
                 $appDocFilesArrData['app_id'] = $newAppId; 
                 $appDocFilesArrData['biz_owner_id'] = isset($newBizOwnersArr[$appDocFilesArrData['biz_owner_id']]) ? $newBizOwnersArr[$appDocFilesArrData['biz_owner_id']] : null;
-                $this->appRepo->getAppDocuments($appDocFilesArrData);
+                $this->appRepo->saveAppDocFiles($appDocFilesArrData);
             }                
+            
+            //rta_app_biz_bank_detail
+            //Get and save application business bank detail       
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appBizBankData = $this->appRepo->getAppBizBankDetail($whereCond);
+            foreach($appBizBankData as $appBizBank) {
+                $appBizBankArrData = $appBizBank ? $this->arrayExcept($appBizBank->toArray(), array_merge($excludeKeys, ['bank_detail_id'])) : [];
+                $appBizBankArrData['app_id'] = $newAppId; 
+                $this->appRepo->saveAppBizBankDetail($appBizBankArrData);
+            }                
+            
+            
+            //app_biz_fin_detail
+            //Get and save application business finance detail         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appBizFinData = $this->appRepo->getAppBizFinDetail($whereCond);
+            foreach($appBizFinData as $appBizFin) {
+                $appBizFinArrData = $appBizFin ? $this->arrayExcept($appBizFin->toArray(), array_merge($excludeKeys, ['fin_detail_id'])) : [];
+                $appBizFinArrData['app_id'] = $newAppId; 
+                $appBizFinArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveAppBizFinDetail($appBizFinArrData);
+            }                   
+            
+            
             
             \DB::rollback(); dd($ownerData);
 
