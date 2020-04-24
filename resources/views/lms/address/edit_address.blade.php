@@ -8,6 +8,17 @@
         @csrf
 
         <div class="row">
+            <div class="form-group col-md-6">
+                <label for="address_type">GST Number <small>(if you want to prefill address based on GST)</small></label><br />
+                <select class="form-control" name="gst_no" id="gst_no" onchange="fillAddress(this.value)">
+                    <option disabled value="" selected>Select GST</option>
+                    @foreach($gsts as $gst)
+                    <option value="{{$gst->pan_gst_hash}}">{{$gst->pan_gst_hash}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="row">
             <div class="form-group col-6">
                 <label for="addr_1">Enter Address</label>
                 <input type="text" class="form-control" id="addr_1" name="addr_1" value="{{$userAddress_data->addr_1}}" placeholder="Enter Address">
@@ -35,13 +46,17 @@
         </div>
 
         <div class="row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-6">
                 <label for="address_type">Status</label><br />
                 <select class="form-control" name="rcu_status" id="rcu_status">
                     <option disabled value="" selected>Select</option>
                     <option {{$userAddress_data->rcu_status == 1 ? 'selected' : ''}} value="1">Active</option>
                     <option {{$userAddress_data->rcu_status == 0 ? 'selected' : ''}} value="0">In-Active</option>
                 </select>
+            </div>
+            <div class="form-group col-6">
+                <label for="address_type">Set as Default</label><br />
+                <input type="checkbox" name="is_default" value="1" {{($userAddress_data->is_default)? 'checked': ''}} style="width: 25px; height: 25px;">
             </div>
         </div>
         <div class="row">
@@ -53,59 +68,12 @@
 </div>
 @endsection
 @section('jscript')
-<script type="text/javascript">
-    $(document).ready(function() {
-
-
-        $('#addressForm').validate({ // initialize the plugin
-            rules: {
-                'addr_1': {
-                    required: true,
-                },
-                'city_name': {
-                    required: true,
-                },
-                'state_id': {
-                    required: true,
-                },
-                'pin_code': {
-                    required: true,
-                    digits: true,
-                },
-                'rcu_status': {
-                    required: true,
-                },
-            },
-            messages: {
-                'addr_1': {
-                    required: "Please enter Address",
-                },
-                'city_name': {
-                    required: "Please enter city name",
-                },
-                'state_id': {
-                    required: "Please enter state name",
-                },
-                'pin_code': {
-                    required: "Please enter pincode",
-                },
-                'rcu_status': {
-                    required: "Please select Status",
-                },
-            }
-        });
-    });
-</script>
 <script>
-    let pincode = document.getElementById('pin_code');
-
-    pincode.addEventListener('input', function() {
-        let pinVal = document.getElementById('pin_code').value;
-        let pinStr = pinVal.toString();
-
-        if (isNaN(pincode.value) || pinStr.length >= 7) {
-            pincode.value = "";
-        }
-    });
+var messages = {
+    biz_gst_to_entity_karza: "{{ URL::route('chk_biz_gst_to_entity') }}",
+    data_not_found: "{{ trans('error_messages.data_not_found') }}",
+    token: "{{ csrf_token() }}"
+};
 </script>
+<script src="{{ asset('backend/js/lms/address.js') }}"></script>
 @endsection

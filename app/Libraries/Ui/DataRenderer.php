@@ -3765,12 +3765,12 @@ class DataRenderer implements DataProviderInterface
                     $checked = ($data->is_default == 1) ? 'checked' : null;
                     $act = '';
 
-                    if ($data->rcu_status) {
+                    /*if ($data->rcu_status) {
                         $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
-                    }
+                    }*/
 
                     if (Helpers::checkPermission('edit_addr')) {
-                        $act .= '<a data-toggle="modal"  data-height="310px" 
+                        $act .= '<a data-toggle="modal"  data-height="450px" 
                             data-width="100%" 
                             data-target="#editAddressFrame"
                             data-url="' . route('edit_addr', ['biz_addr_id' => $data->biz_addr_id, 'user_id' => $request->get('user_id')]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>';
@@ -3782,10 +3782,16 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'rcu_status',
                 function ($data) {
-                    if ($data->rcu_status) {
-                        return '<span class="badge badge-success">Active</span>';
+                    if ($data->is_default) {
+                        $is_default = '<span class="badge badge-info">Default</span>';
                     } else {
-                        return '<span class="badge badge-warning current-status">InActive</span>';
+                        $is_default = '';
+                    }
+
+                    if ($data->rcu_status) {
+                        return '<span class="badge badge-success">Active</span> &nbsp;&nbsp;'.$is_default;
+                    } else {
+                        return '<span class="badge badge-warning current-status">InActive</span> &nbsp;&nbsp;'.$is_default;
                     }
                 }
             )
