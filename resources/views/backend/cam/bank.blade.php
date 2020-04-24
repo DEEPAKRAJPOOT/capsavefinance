@@ -104,7 +104,7 @@
                         <thead>
                             <tr bgcolor="#ccc">
                                <th>Name of Bank</th>
-                               <th>Acct. Type</th>
+                               <th>Account Type</th>
                                <th colspan="3">Utilization %</th>
                                <th colspan="4">Cheque Return</th>
                                <th colspan="2">Summations</th>
@@ -130,20 +130,20 @@
                         @if(isset($dataBankAna) && count($dataBankAna)>0)
                            @foreach($dataBankAna as $key =>$val)
                            <tr class="control-group-ba">
-                              <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="{{$val['bank_name']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="{{$val['act_type']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="{{$val['uti_max']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="{{$val['uti_min']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="{{$val['uti_avg']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="{{number_format($val['chk_inward'])}}" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="{{$val['chk_presented_per']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="{{number_format($val['chk_outward'])}}" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="{{$val['chk_deposited_per']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="{{number_format($val['submission_credit'])}}" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="{{number_format($val['submission_debbit'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="{{$val['bank_name']}}" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="{{$val['act_type']}}" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="{{$val['uti_max']}}" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="{{$val['uti_min']}}" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="{{$val['uti_avg']}}" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="{{number_format($val['chk_inward'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="{{$val['chk_presented_per']}}" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="{{number_format($val['chk_outward'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="{{$val['chk_deposited_per']}}" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="{{number_format($val['submission_credit'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="{{number_format($val['submission_debbit'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="{{$val['overdrawing_in_six_month']}}" class="number_format col-md-8 form-control form-control-sm" />
+                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="{{$val['overdrawing_in_six_month']}}" class="numericOnly number_format col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-ba"></i>
                                  </div>
                               </td>
@@ -152,20 +152,20 @@
                         @endif
 
                         <tr class="control-group-ba">
-                           <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="number_format form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="number_format form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="number_format form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                            <td width="">
                               <div class="input-group-btn">
-                                 <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="number_format col-md-8 form-control form-control-sm" />
+                                 <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="numericOnly number_format col-md-8 form-control form-control-sm" />
                                  <i class="fa fa-plus-circle add-ptpq-block add-more-ba"></i>
                               </div>
                            </td>
@@ -174,20 +174,20 @@
                         <!-- Copy Fields -->
                         <tbody class="copy-ba hide">
                            <tr class="control-group-ba">
-                                <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="number_format form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="number_format form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="number_format form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                                 <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="number_format col-md-8 form-control form-control-sm" />
+                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="numericOnly number_format col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-ba"></i>
                                  </div>
                                 </td>
@@ -202,7 +202,7 @@
                            <td class="" tabindex="0" rowspan="1" colspan="1" width="12%">Name of Bank/NBFC</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Fund based Facility</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
-                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->fund_ason_date ?? '' }}" name="fund_date" id="fund_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on {{$debtPosition->fund_ason_date }} <input type="text" class="col-md-10" value="{{$debtPosition->fund_ason_date ?? '' }}" name="fund_date" id="fund_date" placeholder="Date"> (Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Non-fund based Facility</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->nonfund_ason_date ?? '' }}" name="nonfund_date" id="nonfund_date" placeholder="Date"> (Rs. Mn)</td>
@@ -212,16 +212,16 @@
                         @if(isset($dataWcf) && count($dataWcf)>0)
                            @foreach($dataWcf as $key =>$val)
                            <tr class="control-group-wcf">
-                              <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="{{$val['bank_name']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="{{$val['fund_facility']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_amt[]" value="{{number_format($val['fund_amt'])}}" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_os_amt[]" value="{{number_format($val['fund_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="{{$val['bank_name']}}" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="{{$val['fund_facility']}}" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_amt[]" value="{{number_format($val['fund_amt'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377;<input maxlength="20" type="text" name="fund_os_amt[]" value="{{number_format($val['fund_os_amt'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="{{$val['nonfund_facility']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="{{number_format($val['nonfund_amt'])}}" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="{{number_format($val['nonfund_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="{{number_format($val['nonfund_amt'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="{{number_format($val['nonfund_os_amt'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="3" type="text" name="relationship_len[]" value="{{$val['relationship_len']}}" class="col-md-8 form-control form-control-sm" />
+                                    <input maxlength="3" type="text" name="relationship_len[]" value="{{$val['relationship_len']}}" class="numericOnly col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove"></i>
                                  </div>
                               </td>
@@ -230,16 +230,16 @@
                         @endif
 
                         <tr class="control-group-wcf">
-                           <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
-                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                            <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
-                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                            <td width="">
                               <div class="input-group-btn">
-                                 <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
+                                 <input maxlength="3" type="text" name="relationship_len[]" value="" class="numericOnly col-md-8 form-control form-control-sm" />
                                  <i class="fa fa-plus-circle add-ptpq-block add-more"></i>
                               </div>
                            </td>
@@ -248,16 +248,16 @@
                         <!-- Copy Fields -->
                         <tbody class="copy hide">
                            <tr class="control-group-wcf">
-                              <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="fund_facility[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="fund_os_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="100" type="text" name="nonfund_facility[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="nonfund_os_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="3" type="text" name="relationship_len[]" value="" class="col-md-8 form-control form-control-sm" />
+                                    <input maxlength="3" type="text" name="relationship_len[]" value="" class="numericOnly col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove"></i>
                                  </div>
                               </td>
@@ -279,13 +279,13 @@
                         @if(isset($dataTlbl) && count($dataTlbl)>0)
                            @foreach($dataTlbl as $key =>$val)
                            <tr class="control-group-tlbl">
-                              <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="{{$val['bank_name_tlbl']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="{{$val['loan_name']}}" class="form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="{{number_format($val['facility_amt'])}}" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="{{number_format($val['facility_os_amt'])}}" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="{{$val['bank_name_tlbl']}}" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="{{$val['loan_name']}}" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="{{number_format($val['facility_amt'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="{{number_format($val['facility_os_amt'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="{{$val['relationship_len_tlbl']}}" class="col-md-8 form-control form-control-sm" />
+                                    <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="{{$val['relationship_len_tlbl']}}" class="numericOnly col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
                                  </div>
                               </td>
@@ -294,13 +294,13 @@
                         @endif
 
                         <tr class="control-group-tlbl">
-                           <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
-                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="number_format form-control form-control-sm" /></td>
-                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                            <td width="">
                               <div class="input-group-btn">
-                                 <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
+                                 <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="numericOnly col-md-8 form-control form-control-sm" />
                                  <i class="fa fa-plus-circle add-ptpq-block add-more-post"></i>
                               </div>
                            </td>
@@ -309,13 +309,13 @@
                         <!-- Copy Fields -->
                         <tbody class="copy-post hide">
                            <tr class="control-group-tlbl">
-                              <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="number_format form-control form-control-sm" /></td>
-                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="bank_name_tlbl[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="100" type="text" name="loan_name[]" value="" class="alphaOnly form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%">&#8377; <input maxlength="20" type="text" name="facility_os_amt[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="col-md-8 form-control form-control-sm" />
+                                    <input maxlength="3" type="text" name="relationship_len_tlbl[]" value="" class="numericOnly col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-post"></i>
                                  </div>
                               </td>
@@ -354,6 +354,23 @@
    _token = "{{ csrf_token() }}";
 </script>
 <script type="text/javascript">
+    $(document).on("change keypress", ".alphaOnly", function (e) {
+        var regex = new RegExp("^[a-zA-Z]+$");
+        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+        if (!regex.test(str)) {
+            return false;
+        }
+        return true;
+    });
+    $(document).on("change keypress", ".numericOnly", function (evt) {
+//        this.value = this.value.replace(/[^\d].+/,'');
+        var self = $(this);
+        self.val(self.val().replace(/[^0-9\.\,]/g, ''));
+        if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 
+        {
+          evt.preventDefault();
+        }
+    });
    $(document).on('click', '.getAnalysis', function() {
       data = {appId, _token};
       $.ajax({
