@@ -4382,7 +4382,8 @@ if ($err) {
 
     // get user invoice list
     public function getUserInvoiceList() {
-        dd('user invoice');
+        return dd('user invoice');
+        
     }
 
 }

@@ -92,7 +92,7 @@
 @section('jscript')
 <script>
     var messages = {
-      get_user_invoice_list: "{{ URL::route('get_user_invoice_list') }}"
+      get_user_invoice_list: "{{ URL::route('get_user_invoice_list') }}",
       search_business: "{{URL::route('search_business')}}",
       get_customer: "{{ route('get_customer') }}",
       get_to_settle_payments: "{{ route('get_to_settle_payments') }}",
@@ -101,6 +101,6 @@
     };
 </script>
 
-<script src="{{ asset('backend/js/ajax-js/lms/userInvoice.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/ajax-js/lms/userInvoice.js') }}"></script>
 
 @endsection
