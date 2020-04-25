@@ -1684,16 +1684,26 @@ class DataRenderer implements DataProviderInterface
      public function getAllManualTransaction(Request $request,$trans)
      {
          return DataTables::of($trans)
-               ->rawColumns(['trans_by','customer_id','customer_detail', 'action'])
+               ->rawColumns(['trans_by', 'customer_name', 'customer_id','customer_detail','created_by', 'action'])
                 ->addIndexColumn()
                 
                 ->addColumn(
                     'customer_id',
-                    function ($trans) {  
-                        $customer = '';
-                        $customer .= ($trans->biz!=null) ? '<span>'.$trans->biz->biz_entity_name.'</span>' : '';
-                        $customer .= $trans->lmsUser ? '<br><span><b>Customer Id:&nbsp;</b>'.$trans->lmsUser->customer_id.'</span>' : '';
-                        return $customer;
+                    function ($trans) { 
+                        $link = $trans->lmsUser->customer_id;
+                        return "<a id=\"" . $trans->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $trans->user_id])."\" rel=\"tooltip\"   >$link</a> "; 
+                })
+                ->addColumn(
+                    'customer_name',
+                    function ($trans) { 
+                        $full_name = $trans->user->f_name.' '.$trans->user->l_name;
+                        $email = $trans->user->email;
+
+                        $data = '';
+                        $data .= $full_name ? '<span><b>Name:&nbsp;</b>'.$full_name.'</span>' : '';
+                        $data .= $email ? '<br><span><b>Email:&nbsp;</b>'.$email.'</span>' : '';
+
+                        return $data;
                 })
                 ->addColumn(
                     'customer_detail',
@@ -1706,18 +1716,23 @@ class DataRenderer implements DataProviderInterface
                
                  ->addColumn(
                     'trans_type',
-                    function ($trans) {  
-                        return $trans->transType->trans_name;
+                    function ($trans) {
+                        $tdsType = ($trans->transaction->trans_type == 7) ? '/TDS' : '';   
+                        return $trans->transType->trans_name . $tdsType;
                 })
                  ->addColumn(
                     'comment',
                     function ($trans) {                        
-                        return $trans->comment ? $trans->comment : '';
+                        return $trans->description ? $trans->description : '';
                 })  
                 ->addColumn(
                     'created_by',
-                    function ($trans) {                        
-                        return $trans->created_at ? $trans->created_at : '';
+                    function ($trans) {
+                        $created_by = '';
+                        $created_by .= $trans->creator ? '<span><b>Name:&nbsp;</b>'.$trans->creator->f_name.'&nbsp;'.$trans->creator->l_name.'</span>' : '';
+                        $created_by .= $trans->created_at ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($trans->created_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        return $created_by;                        
+                        // return ($trans->created_at) ? Carbon::parse($trans->created_at)->format('d-m-Y H:i:s') : '';
                 })
                 ->addColumn(
                     'action',

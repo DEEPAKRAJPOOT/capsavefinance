@@ -3,6 +3,7 @@
 <form id="paymentForm" style="width: 100%" method="POST" action="{{ Route('update_payment') }}" enctype="multipart/form-data" target="_top">
         @csrf
         <input type="hidden" name="payment_id" value="{{ $data->payment_id }}">
+        <input type="hidden" name="biz_id" value="{{ $data->biz_id }}">
         <div class="col-md-4 tds_certificate">
             <div class="form-group">
                 <label for="txtCreditPeriod">TDS Certificate No <span class="error_message_label">*</span></label>

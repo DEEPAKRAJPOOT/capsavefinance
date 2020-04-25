@@ -25,6 +25,7 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
+                {data: 'customer_name'},
                 {data: 'customer_detail'},
                 {data: 'trans_type'},
                 {data: 'comment'},
