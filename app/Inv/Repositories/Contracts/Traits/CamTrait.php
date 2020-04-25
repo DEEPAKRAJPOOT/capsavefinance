@@ -169,9 +169,9 @@ trait CamTrait
                   }
                 } 
                 $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
-                dd($supplyOfferData);
                 foreach($supplyOfferData as $key=>$val){
                   $supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($val->anchor_id)->pluck('f_name')->first();
+                                  dd($supplyOfferData[$key]['anchorData']);
                   $supplyOfferData[$key]['programData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id], ['*'], ['programDoc', 'programCharges'])->first();
                   $supplyOfferData[$key]['subProgramData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
                 }
