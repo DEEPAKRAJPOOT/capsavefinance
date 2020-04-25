@@ -392,10 +392,11 @@ trait InvoiceTrait
             $sum =  self::invoiceApproveLimit($attr);
             $limit   =  self::ProgramLimit($inv_details);
           if($inv_details['status_id']==8)  
-         {  
-                     if($limit  >= $sum)
+         {     
+              $finalsum = $sum-$inv_details['invoice_approve_amount'];
+                     if($limit  >= $finalsum)
                     {
-                        $remain_amount = $limit-$sum;
+                        $remain_amount = $limit-$finalsum;
                        if($remain_amount >=$inv_details['invoice_approve_amount'])
                         { 
                            $status=8; 
