@@ -41,7 +41,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_bank_account',
                 'uses' => 'Lms\BankAccountController@addBankAccount'
             ]);
-            
+              Route::get('/limit_management', [
+                'as' => 'limit_management',
+                'uses' => 'Lms\CustomerController@limitManagement'
+            ]);
+              
             Route::post('/save-bank-account', [
                 'as' => 'save_bank_account',
                 'uses' => 'Lms\BankAccountController@saveBankAccount'
@@ -78,28 +82,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\userInvoiceController@saveUserInvoice'
             ]);
 
-            // get bissuness address in user invoice 
-            Route::post('get-biz-add-user-invoice', [
-                'as' => 'get_biz_add_user_invoice',
-                'uses' => 'Lms\userInvoiceController@getBizUserInvoiceAddr'
-            ]);
-
             // get gstins in user invoice 
             Route::post('get_app_gstin', [
                 'as' => 'get_app_gstin',
                 'uses' => 'Lms\userInvoiceController@getGstinOfApp'
             ]);
 
-            // get state code for user invoice 
             Route::post('get-user-state-code', [
                 'as' => 'get_user_state_code',
                 'uses' => 'Lms\userInvoiceController@getUserStateCode'
             ]);
 
-            // preview user invoice 
             Route::post('preview-user-invoice', [
                 'as' => 'preview_user_invoice',
                 'uses' => 'Lms\userInvoiceController@previewUserInvoice'
+            ]);
+
+            Route::get('download_user_invoice', [
+                'as' => 'download_user_invoice',
+                'uses' => 'Lms\userInvoiceController@downloadUserInvoice'
             ]);
             
             // disbursal routes

@@ -380,7 +380,7 @@ Route::group(
         'uses' => 'AjaxController@getCustomerId'
         ]
     );       
-             Route::post(
+          Route::post(
         'backend_activity_invoice_list',
         [
         'as' => 'backend_activity_invoice_list',
@@ -1016,5 +1016,11 @@ Route::group(
     Route::post('check-applied-charge', [
         'as' => 'check_applied_charge',
         'uses' => 'AjaxController@checkAppliedCharge'
+    ]);     
+     
+    // get user invoice list
+    Route::post('get-user-invoice-list', [
+        'as' => 'get_user_invoice_list',
+        'uses' => 'AjaxController@getUserInvoiceList'
     ]);     
 });

@@ -112,4 +112,11 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = []) {
 		return Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds);
 	}
+
+	/**
+	 * Get AJAX list of user invoice result
+	 */
+	public function getUserInvoiceList($user_id, $appId) {
+		return UserInvoice::getUserInvoiceList($user_id, $appId);
+	}
 }

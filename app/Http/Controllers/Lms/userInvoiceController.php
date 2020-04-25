@@ -176,6 +176,56 @@ class userInvoiceController extends Controller
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
     }
 
+    public function downloadUserInvoice(Request $request){
+        $user_id = $request->get('user_id');
+        $user_invoice_id = $request->get('user_invoice_id');
+        $invData = $this->UserInvRepo->getInvoices(['user_invoice_id'=> $user_invoice_id, 'invoice_user_id' => $user_id])[0];
+        $reference_no = $invData->reference_no;
+        $invoice_no = $invData->invoice_no;
+        $state_name = $invData->place_of_supply;
+        $invoice_type = $invData->invoice_type;
+        $invoice_date = $invData->invoice_date;
+        $company_id = $invData->comp_id;
+        $bank_id = $invData->bank_id;
+        $totalTxnsInInvoice = $invData->userInvoiceTxns->toArray();
+        $trans_ids = [];
+        foreach ($totalTxnsInInvoice as $key => $value) {
+           $trans_ids[] =  $value['trans_id'];
+        }
+        if (!in_array($invoice_type, ['I', 'C'])) {
+           return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
+        }
+        if (empty(preg_replace('#[^0-9]+#', '', $user_id))) {
+           return response()->json(['status' => 0,'message' => 'Invalid UserId Found.']); 
+        }
+        
+        $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type, $trans_ids);
+        if($txnsData->isEmpty()){
+            return response()->json(['status' => 0,'message' => 'No transaction found for the user.']); 
+        }
+        $userStateId = $companyStateId = 5;
+        $is_state_diffrent = ($userStateId != $companyStateId);
+        $inv_data = $this->_calculateInvoiceTxns($txnsData);
+        $intrest_charges = $inv_data[0];
+        $total_sum_of_rental = $inv_data[1];
+        $billingDetails = $this->_getBillingDetail($user_id);
+        $origin_of_recipient = [
+            'reference_no' => $reference_no,
+            'invoice_no' => $invoice_no,
+            'place_of_supply' => $state_name,
+            'invoice_date' => $invoice_date,
+        ];
+        $company_data = $this->_getCompanyDetail($user_id, $company_id);
+        $data = [
+            'company_data' => $company_data,
+            'billingDetails' => $billingDetails,
+            'origin_of_recipient' => $origin_of_recipient, 
+            'intrest_charges' => $intrest_charges,
+            'total_sum_of_rental' => $total_sum_of_rental,
+        ];
+        return $this->viewInvoiceAsPDF($data, true);
+    }
+
     /**
      * Display invoice as per User.
      *
@@ -208,7 +258,7 @@ class userInvoiceController extends Controller
         }
     }
 
-    private function _getCompanyDetail($user_id) {
+    private function _getCompanyDetail($user_id, $company_id=null) {
         $CompanyDetails = [
             'comp_id' => '123',
             'name' => 'CAPSAVE FINANCE PRIVATE LIMITED',

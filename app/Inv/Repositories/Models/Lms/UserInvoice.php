@@ -108,15 +108,16 @@ class UserInvoice extends BaseModel {
         if (!is_array($whereCondition)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        
-        $query = self::select('*');
-                
+        $query = self::with('userInvoiceTxns');  
         if (!empty($whereCondition)) {
             $query->where($whereCondition);
         }
-        
         $result = $query->get();
         return $result;
+    }
+
+    public function userInvoiceTxns(){
+       return $this->hasMany('App\Inv\Repositories\Models\Lms\UserInvoiceTrans', 'user_invoice_id', 'user_invoice_id');
     }
 
     /**
@@ -133,7 +134,6 @@ class UserInvoice extends BaseModel {
      * Get Created By Name
      *      
      **/
-
     public function getCreatedByName() {
        return $this->belongsTo(User::class, 'created_by');
     }
@@ -144,5 +144,13 @@ class UserInvoice extends BaseModel {
      **/
     public function getStateNameByStateCode() {
        return $this->belongsTo(State::class, 'invoice_state_code', 'state_code');
+    }
+
+    /**
+     * GET AJAX result list
+     */
+    public static function getUserInvoiceList($invoice_user_id, $appId = null) {
+        $result = self::where('invoice_user_id' , $invoice_user_id)->get();
+        return $result ? : false;
     }
 }
