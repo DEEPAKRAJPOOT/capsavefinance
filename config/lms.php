@@ -36,7 +36,7 @@ return [
         'INVOICE_KNOCKED_OFF'=>'30',
         'INTEREST_REFUND'=>'31',
         'REFUND'=>'32',
-        'INTEREST_PAID'=>'32',
+        //'INTEREST_PAID'=>'32',
         'INTEREST_OVERDUE'=>'33',
         'INVOICE_PARTIALLY_KNOCKED_OFF'=>'34',
         'NON_FACTORED_AMT' => '35',
