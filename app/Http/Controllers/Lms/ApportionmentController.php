@@ -3,20 +3,26 @@
 namespace App\Http\Controllers\Lms;
 
 use Auth;
-use Session;
 use Helpers;
+use Session;
+use Exception;
 use PHPExcel; 
-use PHPExcel_IOFactory; 
 use Carbon\Carbon;
+use PHPExcel_IOFactory; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Contracts\Ui\DataProviderInterface;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\ApportionmentRequest;
+use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
-use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Helpers\ManualApportionmentHelper;
 
 class ApportionmentController extends Controller
 {
@@ -40,6 +46,7 @@ class ApportionmentController extends Controller
             $paymentId = $request->payment_id;
             $userDetails = $this->getUserDetails($userId); 
             $payment = $this->getPaymentDetails($paymentId,$userId); 
+
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
@@ -58,12 +65,10 @@ class ApportionmentController extends Controller
      */
     public function viewSettledTrans(Request $request){
         try {
-            $userId = 385;
-            //$userId = $request->user_id;
-            $userDetails = $this->getUserDetails($userId); 
+            $userId = $request->user_id;
+            $userDetails = $this->getUserDetails($userId);
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails); 
-
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -78,7 +83,6 @@ class ApportionmentController extends Controller
         try {
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
-
             return view('lms.apportionment.RefundTransactions')
                 ->with('userDetails', $userDetails); 
 
@@ -151,13 +155,14 @@ class ApportionmentController extends Controller
             }
             $txnInsertData = [
                     'payment_id' => NULL,
-                    'parent_trans_id' => $transId,
+                    'link_trans_id'=> $transId,
+                    'parent_trans_id' => $TransDetail->parent_trans_id,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
                     'amount' => $amount,
                     'entry_type' => 1,
-                    'trans_type' => 36,
+                    'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF'),
                     'gl_flag' => 0,
                     'soa_flag' => 0,
                     'pay_from' => 1,
@@ -204,13 +209,14 @@ class ApportionmentController extends Controller
             }
             $txnInsertData = [
                     'payment_id' => NULL,
-                    'parent_trans_id' => $transId,
+                    'link_trans_id'=> $transId,
+                    'parent_trans_id' => $TransDetail->parent_trans_id,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
                     'amount' => $amount,
                     'entry_type' => 0,
-                    'trans_type' => 2,
+                    'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
                     'gl_flag' => 0,
                     'soa_flag' => 0,
                     'pay_from' => 1,
@@ -237,14 +243,16 @@ class ApportionmentController extends Controller
      */
     private function getUnsettledTrans(int $userId){
         
-      //  return $this->lmsRepo->getUnsettledTrans($userId);
         $invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
         $transactionList = new Collection();
         foreach ($invoiceList as $invoice) {
             $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
                 'invoice_disbursed_id'=>$invoice->invoice_disbursed_id,
                 'user_id'=>$userId,
-                'trans_type'=>[9,16]
+                'trans_type'=>[
+                    config('lms.TRANS_TYPE.INTEREST'),
+                    config('lms.TRANS_TYPE.PAYMENT_DISBURSED')
+                    ]
                 ]);
             foreach($invoiceTrans as $trans){
                 $transactionList->push($trans);
@@ -253,7 +261,11 @@ class ApportionmentController extends Controller
 
         $chargeTrans = $this->lmsRepo->getUnsettledChargeTransactions([
             'user_id'=>$userId,
-            'trans_type_not_in'=>[9,16,10]
+            'trans_type_not_in'=>[
+                config('lms.TRANS_TYPE.INTEREST'),
+                config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
+                config('lms.TRANS_TYPE.MARGIN')
+            ]
         ]);
 
         foreach ($chargeTrans as $key => $charge) {
@@ -262,7 +274,7 @@ class ApportionmentController extends Controller
 
         $marginTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
             'user_id'=>$userId,
-            'trans_type'=>[10]
+            'trans_type'=>[config('lms.TRANS_TYPE.MARGIN')]
         ]);
 
         foreach ($marginTrans as $key => $margin) {
@@ -296,31 +308,35 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getUserDetails($userId){
-        $lmsUser = $this->userRepo->lmsGetCustomer($userId);
-        $user = $this->userRepo->find($userId);
-        $addresses = $user->biz->address;
-        if(!$addresses->isEmpty()){
-            $default_address = $addresses[0];
-            foreach ($addresses as $key => $addr) {
-               if($addr->is_default == 1){
-                    $default_address = $addr;
-                    break;
-               }
-               if($addr->address_type == 0){
-                    $default_address = $addr;
-               }
+        try {
+            $lmsUser = $this->userRepo->lmsGetCustomer($userId);
+            $user = $this->userRepo->find($userId);
+            $addresses = $user->biz->address;
+            if(!$addresses->isEmpty()){
+                $default_address = $addresses[0];
+                foreach ($addresses as $key => $addr) {
+                if($addr->is_default == 1){
+                        $default_address = $addr;
+                        break;
+                }
+                if($addr->address_type == 0){
+                        $default_address = $addr;
+                }
+                }
             }
+            if (!empty($default_address)) {
+            $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
+            }
+            return [
+                'customer_id' => $lmsUser->customer_id,
+                'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
+                'user_id' => $userId,
+                'address' => $fullAddress ?? '',
+                'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
+            ];
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
-        if (!empty($default_address)) {
-          $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
-        }
-        return [
-            'customer_id' => $lmsUser->customer_id,
-            'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
-            'user_id' => $userId,
-            'address' => $fullAddress ?? '',
-            'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
-        ];
     }
 
     /**
@@ -329,16 +345,21 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getPaymentDetails($paymentId, $userId){
-        $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
-        
-        return [
-            'payment_id' => $payment->payment_id,
-            'amount'=>$payment->amount,
-            'date_of_payment'=> $payment->date_of_payment, 
-            'paymentmode'=> $payment->paymentmode,
-            'transactionno'=> $payment->transactionno,
-            'payment_amt' => $payment->amount
-        ];
+        try {
+            $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
+            
+            return [
+                'payment_id' => $payment->payment_id,
+                'amount'=>$payment->amount,
+                'date_of_payment'=> $payment->date_of_payment, 
+                'paymentmode'=> $payment->paymentmode,
+                'transactionno'=> $payment->transactionno,
+                'payment_amt' => $payment->amount,
+                'is_settled' => $payment->is_settled
+            ];
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 
     /**
@@ -399,7 +420,6 @@ class ApportionmentController extends Controller
      */
     public function markSettleConfirmation(ApportionmentRequest $request){
         try {
-            
             $amtToSettle = 0;
             $unAppliedAmt = 0;
             $transIds = [];
@@ -438,7 +458,8 @@ class ApportionmentController extends Controller
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
                     'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
-                    'trans_type' =>  $trans->transName,
+                    'trans_type' => $trans->trans_type,
+                    'trans_name' =>  $trans->transName,
                     'total_repay_amt' => (float)$trans->amount,
                     'outstanding_amt' => (float)$trans->outstanding,
                     'payment_date' =>  $paymentDetails['date_of_payment'],
@@ -510,7 +531,6 @@ class ApportionmentController extends Controller
                     ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
                     ->get();
                 }
-                
 
                 foreach ($transactions as $trans){  
                     $invoiceList[$trans->invoice_disbursed_id] = [
@@ -530,37 +550,61 @@ class ApportionmentController extends Controller
                     $amtToSettle += $payments[$trans->trans_id];
                 }
 
+                $unAppliedAmt = $repaymentAmt-$amtToSettle;
+
+                if($amtToSettle > $repaymentAmt){
+                    Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
+                    return redirect()->back()->withInput();
+                }
+
                 foreach ($invoiceList as $invDisb) {
                     $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                     $refundParentTrans = $refundData->get('parent_transaction');
-                    $refundAmt = $refundData->get('amount'); 
+                    $refundAmt = $refundData->get('amount');
                     if($refundAmt > 0){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
+                            'link_id' => $refundParentTrans->trans_id,
                             'parent_trans_id' => $refundParentTrans->trans_id,
                             'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
                             'user_id' => $refundParentTrans->user_id,
                             'trans_date' => $invDisb['date_of_payment'],
                             'amount' => $refundAmt,
                             'entry_type' => 1,
-                            'trans_type' => $refundParentTrans->trans_type
+                            'trans_type' => config('lms.TRANS_TYPE.REFUND')
                         ];
                     }
                 }
                 
-
-                $unAppliedAmt = $repaymentAmt-$amtToSettle;
-    
-                if($amtToSettle > $repaymentAmt){
-                    Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
-                    return redirect()->back()->withInput();
+                if($unAppliedAmt > 0){
+                    $transactionList[] = [
+                        'payment_id' => $paymentId,
+                        'link_id' => $refundParentTrans->trans_id,
+                        'parent_trans_id' => $refundParentTrans->trans_id,
+                        'invoice_disbursed_id' => null,
+                        'user_id' => $refundParentTrans->user_id,
+                        'trans_date' => $invDisb['date_of_payment'],
+                        'amount' => $unAppliedAmt,
+                        'entry_type' => 1,
+                        'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT')
+                    ];
                 }
-                
+
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
+
+                    /** Mark Payment Settled */
+                    $payment = Payment::find($paymentId);
+                    $payment->is_settled = 1;
+                    $payment->save();
+                    foreach ($invoiceList as $invDisb) {
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    }
                     $request->session()->forget('apportionment');
+
                     return redirect()->route('apport_settled_view', ['user_id' =>$userId])->with(['message' => 'Successfully marked settled']);
                 }
             }
@@ -569,5 +613,134 @@ class ApportionmentController extends Controller
         }
     }
 
+    // public function getAccruedInterest($invDisbId, $fromDate = null, $toDate = null){
+
+    //     $accuredIntAmount = 0; 
+    //     $invoiceDetails = InvoiceDisbursed::find($invDisbId);
+    //     $invDueDate = $invoiceDetails->inv_due_date;
+    //     $intRate = $invoiceDetails->interest_rate; 
+    //     $gracePeriod = $invoiceDetails->grace_period;
+
+    //     $fromDate = $fromDate ?? $invoiceDetails->int_accrual_start_dt;
+    //     $toDate =  $toDate ?? date('Y-m-d H:i:s');
+
+    //     $graceStartDate = ($gracePeriod > 0)?$this->addDays($invDueDate, 1):$invDueDate;
+    //     $graceEndDate = addDays($invDueDate, $gracePeriod);
+
+    //     $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
+
+    //     if($gracePeriod > 0 && strtotime($toDate) <= strtotime($graceDueDate)){
+            
+    //         $interestData = InterestAccrual::whereBetween('interest_date', [$graceStartDate, $toDate])
+    //         ->select(DB::row("sum((principal_amount*($intRate/360))100) as total"))->get();
+    //         if($interestData){
+    //             $accuredIntAmount += $interestData->total;
+    //         }
+    //     }
+
+    //     if(strtotime($toDate) > strtotime($graceDueDate)){
+    //         $accuredIntAmount += InterestAccrual::where('invoice_disbursed_id',$invDisbId)->whereBetween('interest_date', [$fromDate, $invDueDate])->sum('accrued_interest');
+    //     }
+
+    // }
+
+    // protected function addDays($currentDate, $noOfDays)
+    // {
+    //     $calDate = date('Y-m-d', strtotime($currentDate . "+ $noOfDays days"));
+    //     return $calDate;
+    // }
+
+    // protected function subDays($currentDate, $noOfDays)
+    // {
+    //     $calDate = date('Y-m-d', strtotime($currentDate . "- $noOfDays days"));
+    //     return $calDate;
+    // }
     
+    // public function manualUpfrontPostCalculation(int $transId, int $paymentId){
+       
+    //     $transactionList = [];
+    //     $finalReversalAmt = 0;
+    //     $finalRendedAmt = 0;
+
+    //     $currentRequesteAmt = 0;
+    //     $currentRefundedAmt = 0;
+    //     $currentUnpaidAmt = 0;
+    //     $currentPaidAmt = 0;
+        
+    //     $interest = Transactions::find($transId);
+    //     $invoiceDisbursedId = $interest->invoice_disbursed_id;
+    //     $userId = $interest->user_id;
+        
+    //     $currentRequesteAmt = $interest->amount;
+    //     $currentRefundedAmt =  $interest->refundableamt;  
+    //     $currentUnpaidAmt = $interest->outstanding;
+    //     $currentPaidAmt = $interest - $totalUnpaidAmt;
+
+    //     $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
+    //     $paymentDate = $payment->date_of_payment;
+
+    //     $currentOverdueRequested = Transactions::where('invoice_disbursed_id','=',$invoiceDisbursedId)
+    //                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+    //                 ->where('entry_type','=','0')->sum('amount');
+
+    //     $currentOverduePaid =  Transactions::where('invoice_disbursed_id','=',$invoiceDisbursedId)
+    //                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+    //                 ->where('entry_type','=','1')->sum('amount');
+
+    //     $payDateRequesteAmt = $this->getAccruedInterest($invoiceDisbursedId, null, $paymentDate);
+    //     $payOverdueAmt = ($payDateRequesteAmt>$currentRequesteAmt)?($payDateRequesteAmt-$currentRequesteAmt):0;
+
+    //     if($payOverdueAmt < $currentOverduePaid){
+    //         $finalRendedAmt += $currentOverduePaid-$payOverdueAmt;
+    //     }
+
+    //     if($payOverdueAmt > 0 && $payOverdueAmt <= $currentOverduePaid && $currentOverdueRequested > $payDateRequesteAmt){
+    //         $finalReversalAmt += $currentOverdueRequested-$payDateRequesteAmt;
+    //     }
+        
+    //     if($payDateRequesteAmt < $currentPaidAmt){
+    //         $finalRendedAmt += $currentOverduePaid-$payOverdueAmt;
+    //     }
+        
+    //     if($payDateRequesteAmt <= $currentPaidAmt && ($payDateRequesteAmt+$currentRefundedAmt) < $currentRequesteAmt){
+    //         $finalReversalAmt += ($payDateRequesteAmt+$currentRefundedAmt)-$currentRequesteAmt;
+    //     }
+
+    //     if($finalRendedAmt > 0){
+    //         $transactionList[] = [
+    //             'payment_id' => $paymentId,  
+    //             'link_trans_id' => null,  
+    //             'parent_trans_id' => null,  
+    //             'invoice_disbursed_id' => $interest->invoice_disbursed_id,  
+    //             'user_id' => $interest->user_id,  
+    //             'trans_date' => $paymentDate,           
+    //             'trans_type' => config('lms.TRANS_TYPE.REFUND'),   
+    //             'amount' => $finalRendedAmt,  
+    //             'entry_type' => '0',
+    //             'soa_flag' => '1'    
+    //         ];
+    //     }
+    //     if($finalReversalAmt > 0){
+    //         $transactionList[] = [
+    //             'payment_id' => $paymentId,  
+    //             'link_trans_id' => null,  
+    //             'parent_trans_id' => null,  
+    //             'invoice_disbursed_id' => $interest->invoice_disbursed_id,  
+    //             'user_id' => $interest->user_id,  
+    //             'trans_date' => $paymentDate,           
+    //             'trans_type' => config('lms.TRANS_TYPE.REVERSE'),   
+    //             'amount' => $finalReversalAmt,  
+    //             'entry_type' => '1',
+    //             'soa_flag' => '1'     
+    //         ];
+    //     }
+
+    //     foreach ($transactionList as $key => $newTrans) {
+    //         $this->lmsRepo->saveTransaction($newTrans);
+    //     }
+    // }
+    
+    // public function manualRearendPostCalculation(int $transId, int $paymentId){
+
+    // }
 }

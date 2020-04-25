@@ -23,9 +23,9 @@ class Apportionment {
                 {data: 'disb_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
-                {data: 'total_repay_amt'},                    
+                {data: 'total_repay_amt'},
+                {data: 'settled_amt'},                    
                 {data: 'payment_date'},
-                // {data: 'pay'},
                 {data: 'select'}
             ];
                 break;
