@@ -109,7 +109,7 @@ class PaymentController extends Controller {
 				'description' => 'required'
 			]);
 			$user_id  = Auth::user()->user_id;
-			$mytime = Carbon::now();
+			$mytime = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
 
 			$utr ="";
 			$check  ="";
@@ -198,9 +198,6 @@ class PaymentController extends Controller {
 					'amount' => str_replace(',', '', $request['amount']),
 					'entry_type' => 1,
 					'gst'=> $request['incl_gst'],
-					'sgst' =>  $sgst,
-					'cgst' =>  $cgst,
-					'igst' =>  $igst,
 					'tds_per' => 1,
 					'gl_flag' => 1,
 					'soa_flag' => 1,
@@ -208,6 +205,8 @@ class PaymentController extends Controller {
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
 					'is_posted_in_taaly' => 0,
+					'created_at' =>  $mytime,
+                    'created_by' =>  $user_id,
 		  		];
 			$res = $this->invRepo->saveRepaymentTrans($tran);
 			if( $res)

@@ -56,7 +56,7 @@
 
     var messages = {
         url: "{{ URL::route('apport_unsettled_list') }}",
-        trans_detail_url: "{{ URL::route('apport_trans_detail') }}",
+        trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff') }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",
         payment_amt: "{{$payment['payment_amt']}}",

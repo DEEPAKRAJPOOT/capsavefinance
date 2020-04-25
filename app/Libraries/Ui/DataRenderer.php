@@ -4538,10 +4538,11 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'action',
                         function ($dataRecords) {
-
-                        $btn = "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
-                        
-                        return $btn;
+                            $btn = '';
+                            if($dataRecords->is_settled == 0){
+                                $btn .= "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
+                            } 
+                            return $btn;
                     }) 
                     ->make(true);
         }
@@ -5251,7 +5252,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getUnsettledTrans(Request $request, $trans,$payment)
     {
-        return DataTables::of($trans,$payment)
+        return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
@@ -5270,7 +5271,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('outstanding_amt', function($trans){
                 return "₹ ".number_format($trans->outstanding,2);
             })
-            ->addColumn('payment_date', function($payment){
+            ->addColumn('payment_date', function($trans)use($payment){
                 return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
             })
             ->addColumn('pay', function($trans){
@@ -5278,7 +5279,8 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             })
             ->addColumn('select', function($trans){
-                $result = "<input class='check' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
+                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
            
@@ -5294,7 +5296,7 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
-                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
@@ -5307,12 +5309,13 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('total_repay_amt', function($trans){
                 return "₹ ".number_format($trans->amount,2);
             })
-            ->addColumn('payment_date', function($trans){
-                return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+            ->addColumn('settled_amt', function($trans){
+                return "₹ ".number_format($trans->refundoutstanding,2);
             })
-            ->addColumn('pay', function($trans){
-                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
-                return $result;
+            ->addColumn('payment_date', function($trans){
+                if($trans->payment){
+                    return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
+                }
             })
             ->addColumn('select', function($trans){
                 $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
@@ -5330,10 +5333,12 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
-                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
-                return $trans->invoice_disbursed_id;
+                if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
+                    return $trans->invoiceDisbursed->invoice->invoice_no;
+                }
             })
             ->addColumn('trans_type', function($trans){
                 return $trans->transName;
@@ -5342,7 +5347,7 @@ class DataRenderer implements DataProviderInterface
                 return "₹ ".number_format($trans->amount,2);
             })
             ->addColumn('outstanding_amt', function($trans){
-                return "₹ ".number_format($trans->outstanding,2);
+                return "₹ ".number_format($trans->refundoutstanding,2);
             })
             ->addColumn('payment_date', function($trans){
                 return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
