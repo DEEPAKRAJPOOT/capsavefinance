@@ -21,7 +21,7 @@ class Company extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'company_id';
+    protected $primaryKey = 'com_add_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -44,7 +44,7 @@ class Company extends BaseModel {
      */
     protected $fillable = [
         'comp_name_id',
-        'cmp_name',
+        'comp_add_id',
         'cmp_add',
         'gst_no',
         'pan_no',
@@ -53,6 +53,8 @@ class Company extends BaseModel {
         'state',
         'city',
         'is_reg',
+        'created_at',
+        'updated_at',
         'created_by',
         'updated_by'
     ];
@@ -74,14 +76,14 @@ class Company extends BaseModel {
     public static function getAllCompanies($key) {
 
         $res = self::where('is_active', '!=', '2')
-                ->orderBy('company_id', 'DESC');
+                ->orderBy('com_add_id', 'DESC');
         
         if (isset($key['search_keyword'])) {
             if ($key['search_keyword'] != "") {
                 $search_keyword = trim($key['search_keyword']);
                 $search_keyword = strtolower($search_keyword);
                 $res->where(function ($res) use ($search_keyword) {
-                    $res->where('mst_company.cmp_name', 'LIKE', '%' . $search_keyword . '%')
+                    $res->where('mst_company.comp_add_id', 'LIKE', '%' . $search_keyword . '%')
                             ->orWhere('mst_company.cmp_add', 'LIKE', '%' . $search_keyword . '%');
                 });
             }
@@ -98,7 +100,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        $res = self::with('state')->where(['company_id'=>$id])->first();
+        $res = self::with('state')->where(['com_add_id'=>$id])->first();
 
         return $res ?: false;
     }
@@ -121,7 +123,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         
-        $res = self::where('company_id', $companyId)->first()->update($compArr);
+        $res = self::where('com_add_id', $companyId)->first()->update($compArr);
         
         return $res ?: false;
     }
@@ -138,7 +140,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        $res = self::where(['cmp_name' => $name, 'is_reg' => $is_reg])->first();
+        $res = self::where(['comp_add_id' => $name, 'is_reg' => $is_reg])->first();
         
         return $res;
     }
@@ -156,9 +158,9 @@ class Company extends BaseModel {
     
     public static function getCompNameByCompId($compId){
         
-        $compName = self::select('cmp_name')->where('company_id', $compId)->first();
+        $compName = self::select('comp_add_id')->where('com_add_id', $compId)->first();
         
-        $CompIdArr = self::where(['cmp_name' => $compName->cmp_name])->get();
+        $CompIdArr = self::where(['comp_add_id' => $compName->comp_add_id])->get();
         
         return $CompIdArr;
         

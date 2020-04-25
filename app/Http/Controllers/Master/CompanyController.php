@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use Auth;
 use Session;
 use Helpers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\BankAccountRequest;
@@ -63,23 +64,25 @@ class CompanyController extends Controller {
                 $data = $this->masterRepo->checkIsRegCompany($comp_name,$is_reg);
                 $regComData = $data ? $data->toArray() : '';
                 if (!empty($regComData)) {
-                    $company_id = $regComData['company_id'];
+                    $company_id = $regComData['comp_add_id'];
                     $regComData['is_reg'] = 0;
 //                    dd($regComData);
                     $status = $this->masterRepo->updateCompanies($regComData, $company_id);
                 }
             }
             
-            if (!empty($request->get('company_id'))) {
-                $company_id = $request->get('company_id');
+            if (!empty($request->get('comp_add_id'))) {
+                $company_id = $request->get('comp_add_id');
                 $companies_data = $this->masterRepo->findCompanyById($company_id);
                 if (!empty($companies_data)) {
                     $arrCompaniesData['updated_by'] = Auth::user()->user_id;
-                    $arrCompaniesData['comp_name_id'] = 1;
+                    $arrCompaniesData['updated_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
                     $status = $this->masterRepo->updateCompanies($arrCompaniesData, $company_id);
                 }
             } else {
+                $arrCompaniesData['comp_name_id'] = 1;
                 $arrCompaniesData['created_by'] = Auth::user()->user_id;
+                $arrCompaniesData['created_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
                 $status = $this->masterRepo->saveCompanies($arrCompaniesData);
             }
             if ($status) {
@@ -104,12 +107,11 @@ class CompanyController extends Controller {
     public function addCompanyBankAccount(Request $request)
     {
         try {
-           
+//           dd($request->all());
             $bankAccount = [];
-            $comp_id = $request->get('company_id');
+            $comp_id = $request->get('comp_add_id');
             $bank_acc_id = false;
             $bankAccount['is_default'] = 0;
-            
             if (!empty($request->get('bank_account_id'))) {
                 $bank_acc_id = preg_replace('#[^0-9]#', '', $request->get('bank_account_id'));
                 $bankAccount = $this->appRepo->getBankAccountDataByCompanyId($bank_acc_id,$comp_id)->first();
@@ -134,7 +136,7 @@ class CompanyController extends Controller {
         try {
             $by_default = ($request->get('by_default')) ? ((int)$request->get('by_default')) : 0;
             $bank_acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
-            $compId = ($request->get('company_id')) ? \Crypt::decrypt($request->get('company_id')) : null;
+            $compId = ($request->get('comp_add_id')) ? \Crypt::decrypt($request->get('comp_add_id')) : null;
 //            dd($request->all(),$compId,$bank_acc_id,$by_default);
             
             $prepareData = [
@@ -145,16 +147,16 @@ class CompanyController extends Controller {
                 'branch_name' => $request->get('branch_name'),
                 'is_active' => $request->get('is_active'),
                 'user_id' => auth()->user()->user_id,
-                'company_id' => $compId,
+                'comp_add_id' => $compId,
                 'is_default' => $by_default,
             ];
-            
+//            dd($prepareData);
             if($by_default == 1){
                 $companyIdsArr = null;
                 $companiesArr = $this->masterRepo->getCompNameByCompId((int)$compId);
-//                dd($companyIdsArr);
+//                dd($companiesArr);
                 foreach($companiesArr as $key => $value){
-                    $companyIdsArr[$key] = $value->company_id;
+                    $companyIdsArr[$key] = $value->comp_add_id;
                 }
 //                dd($companyIdsArr);
                 $data = $this->appRepo->isDefalutCmpBankAcc($companyIdsArr, $by_default);

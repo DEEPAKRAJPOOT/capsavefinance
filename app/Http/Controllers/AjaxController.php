@@ -4416,7 +4416,7 @@ if ($err) {
         $acc_no = $req->get('acc_no');
         $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
         $acc_id = $req->get('acc_id');
-        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'company_id' => $comp_id]);
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'comp_add_id' => $comp_id]);
         
         if($status == false){
                 $response['status'] = 'true';

@@ -12,7 +12,7 @@ Form::open(
 !!}
 
 {!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null, ['id'=>'acc_id']) !!}
-{!! Form::hidden('company_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null,['id'=>'company_id'] ) !!}
+{!! Form::hidden('comp_add_id', isset($companyId) ? \Crypt::encrypt($companyId)  : null,['id'=>'company_id'] ) !!}
 
 <div class="modal-body text-left">
     <div class="row">
