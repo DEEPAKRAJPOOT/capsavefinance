@@ -25,7 +25,7 @@
                     <div class="col-md-3">
                         <label class="float-left">Invoice Tag</label>
                         <select class="form-control form-control-sm" id="invoice_type" name="invoice_type">
-                            <option value="">Select Invoice Type</option>
+                            <option value="" disabled selected>Select Invoice Type</option>
                             <option value="I">Interest</option>
                             <option value="C">Charges</option>
                         </select>
@@ -198,8 +198,6 @@
        token: "{{ csrf_token() }}",
        user_id: "{{ $user_id }}",
        state_name: "{{ $origin_of_recipient['state_name'] }}",
-       gst_address_url: "{{route('get_biz_add_user_invoice')}}",
-       get_statecode_url: "{{route('get_user_state_code')}}",
        get_app_gstin_url: "{{route('get_app_gstin')}}",
        invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
        invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
@@ -276,8 +274,14 @@
     return true;
   }
 
-  $(document).on('click', '#invoice_type', function(argument) {
+  $(document).on('change', '#invoice_type', function(argument) {
+    $('#invoice_type_error').remove();
     let invoice_type = $(this).val();
+    if (!invoice_type) {
+      $('#invoice_type').after('<span id="invoice_type_error" class="error">Please select invoice type</span>');
+      $('#invoice_type').focus();
+      return false;
+    }
     let data = {'invoice_type' : invoice_type};
     data['_token'] =  message.token;
     $.ajax({
@@ -290,6 +294,7 @@
         if (res.status == 1) {
           $('#table_tbody').html(atob(res.view));
         }else{
+          $('#table_tbody').html('<tr><td style="border: 1px solid #ddd;padding: 5px;" colspan="12">No records found</td></tr>');
           alert(res.message);
         }
       }

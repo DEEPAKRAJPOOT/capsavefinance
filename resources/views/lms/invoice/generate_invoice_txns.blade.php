@@ -98,7 +98,5 @@
          </td>
       </tr>
    @else
-      <tr>
-         <td style="border: 1px solid #ddd;padding: 5px;" colspan="{{!empty($checkbox) ? 12 : 11}}">No records found</td>
-      </tr>
+      <tr><td style="border: 1px solid #ddd;padding: 5px;" colspan="{{!empty($checkbox) ? 12 : 11}}">No records found</td></tr>
    @endif
