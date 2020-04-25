@@ -123,7 +123,6 @@ trait CamTrait
                     $arrCamData['group_company'] = $arrMstGroup['name'];
                   }
                 } 
-                dd($financeData);
                 if(!empty($arrGroupCompany)){
                     $temp = array();
                     $total = 0;
@@ -169,6 +168,8 @@ trait CamTrait
                     $negativeRiskCmntArr = array_filter($dataRiskComments, array($this, "filterRiskCommentNegative"));
                   }
                 } 
+                dd($financeData);
+                
 
                 $supplyOfferData = $this->appRepo->getAllOffers($appId, 1);//for supply chain
                 foreach($supplyOfferData as $key=>$val){
