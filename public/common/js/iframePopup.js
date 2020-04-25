@@ -109,6 +109,8 @@ var iframe_ids = [
         'disburseInvoicePopUp',
         'EdituploadDocument',
         'addVoucherFrame',
+        'viewDetailFrame',
+        'editPaymentFrm',
     ];
 
 iframe_ids.forEach(function(id) {

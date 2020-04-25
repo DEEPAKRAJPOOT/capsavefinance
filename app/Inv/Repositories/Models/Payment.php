@@ -61,14 +61,31 @@ class Payment extends BaseModel {
         'unr_no',
         'cheque_no',
         'tds_certificate_no',
+        'file_id',
         'description',
         'is_settled',
         'is_manual',
         'created_at',
         'created_by',
+        'updated_at',
+        'updated_by',
     ];
     
+    public function biz() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
     
+    public function lmsUser(){
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
+
+    public function transaction(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
+    }
     /**
      * get Payment data list
      * 
@@ -113,15 +130,22 @@ class Payment extends BaseModel {
        return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function getCreatedByName() {
+       return $this->belongsTo(User::class, 'created_by');
+    }
 
-    public static function getPaymentModeAttribute() {
+    public function transType(){
+       return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type');
+    }   
+
+    public function getPaymentModeAttribute() {
         $payment_type = $this->payment_type;
         $payModes = config('payment.type') ?? [];
         $mode_of_pay = $payModes[$payment_type] ?? NULL;
         return $mode_of_pay;
     }
 
-    public static function getTransNameAttribute() {
+    public function getTransNameAttribute() {
         $payment_type = $this->payment_type;
         switch ($payment_type) {
             case '1':
@@ -139,5 +163,10 @@ class Payment extends BaseModel {
         }
         return $attr;
     }
-     
+    
+    /*** get all transaction  **/
+    public static function getAllManualTransaction()
+    {
+          return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
+    }
 }

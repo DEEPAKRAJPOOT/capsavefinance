@@ -135,5 +135,9 @@ return [
         'CHARGE_POST' => 'charge_post_status',
         'OVERDUE_INT_ACCRUAL' => 'overdue_int_accrual_status',
         'DISBURSAL_BLOCK' => 'disbursal_block_status',
-    ]    
+    ],    
+    'DECIMAL_TYPE' => [
+        'PERCENTAGE' => '2',
+        'AMOUNT'=>'5'
+    ],    
 ];

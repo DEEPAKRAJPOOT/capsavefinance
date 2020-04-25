@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
@@ -350,12 +351,31 @@ use CommonRepositoryTraits;
     {
        try
        {
-           return Transactions::getAllManualTransaction();  
+           return Payment::getAllManualTransaction();  
        } catch (Exception $ex) {
           return $ex;
        }
     }
     
+    function  getPaymentById($paymentId)
+    {
+       try
+       {
+           return Payment::find($paymentId);  
+       } catch (Exception $ex) {
+          return $ex;
+       }
+    }
+
+    public function updatePayment($data = [], $paymentId){
+        if (!is_array($paymentId)) {
+            return Payment::where('payment_id', $paymentId)
+                ->update($data);
+        } else {
+            return Payment::whereIn('payment_id', $paymentId)
+                    ->update($data);
+        }
+    }
      /* get all save bulk transaction      */
     /* created by gajendra chauhan  */
         public function saveRepaymentTrans($attributes = [])

@@ -1283,11 +1283,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('add_payment', [
                  'as' => 'add_payment',
                 'uses' => 'Backend\PaymentController@addPayment'
-            ]);      
+            ]);
             
-             Route::post('save_payment', [
+            Route::post('save_payment', [
                  'as' => 'save_payment',
                 'uses' => 'Backend\PaymentController@savePayment'
+            ]);
+
+            Route::get('edit_payment', [
+                 'as' => 'edit_payment',
+                'uses' => 'Backend\PaymentController@EditPayment'
+            ]);      
+
+            Route::post('update_payment', [
+                 'as' => 'update_payment',
+                'uses' => 'Backend\PaymentController@updatePayment'
             ]);  
              Route::get('excel_bulk_payment', [
                 'as' => 'excel_bulk_payment',
