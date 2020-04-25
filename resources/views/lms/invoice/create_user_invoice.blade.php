@@ -294,6 +294,7 @@
         if (res.status == 1) {
           $('#table_tbody').html(atob(res.view));
         }else{
+          $('#table_tbody').html('<tr><td style="border: 1px solid #ddd;padding: 5px;" colspan="12">No records found</td></tr>');
           alert(res.message);
         }
       }
