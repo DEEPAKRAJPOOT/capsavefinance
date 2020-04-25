@@ -171,6 +171,8 @@ class AppProgramOffer extends BaseModel {
         }else{
             $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->get();
         }
+
+        dd($offers);
         return $offers ? $offers : null;
     }
 
