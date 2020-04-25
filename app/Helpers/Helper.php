@@ -159,7 +159,7 @@ class Helper extends PaypalHelper
                 'is_complete' => $wf_status
             ];
             $appData = Application::getAppData((int) $app_id);
-            $user_id = $appData->user_id;
+            $user_id = (int)$appData->user_id;
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
