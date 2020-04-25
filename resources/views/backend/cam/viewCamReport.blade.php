@@ -2,7 +2,7 @@
 
 @section('content')
 
-@include('layouts.backend.partials.admin-subnav')
+
 <style>
 .overview-table >thead> tr > th {
     background: #138864 !important;
