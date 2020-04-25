@@ -3,23 +3,26 @@
 namespace App\Http\Controllers\Lms;
 
 use Auth;
-use Session;
 use Helpers;
+use Session;
+use Exception;
 use PHPExcel; 
-use PHPExcel_IOFactory; 
 use Carbon\Carbon;
+use PHPExcel_IOFactory; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Contracts\Ui\DataProviderInterface;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\ApportionmentRequest;
-use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
-use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
-use Illuminate\Support\Facades\DB;
+use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Helpers\ManualApportionmentHelper;
 
 class ApportionmentController extends Controller
 {
@@ -43,6 +46,7 @@ class ApportionmentController extends Controller
             $paymentId = $request->payment_id;
             $userDetails = $this->getUserDetails($userId); 
             $payment = $this->getPaymentDetails($paymentId,$userId); 
+
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
@@ -65,7 +69,6 @@ class ApportionmentController extends Controller
             $userDetails = $this->getUserDetails($userId);
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails); 
-
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -236,7 +239,6 @@ class ApportionmentController extends Controller
      */
     private function getUnsettledTrans(int $userId){
         
-      //  return $this->lmsRepo->getUnsettledTrans($userId);
         $invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
         $transactionList = new Collection();
         foreach ($invoiceList as $invoice) {
@@ -302,31 +304,35 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getUserDetails($userId){
-        $lmsUser = $this->userRepo->lmsGetCustomer($userId);
-        $user = $this->userRepo->find($userId);
-        $addresses = $user->biz->address;
-        if(!$addresses->isEmpty()){
-            $default_address = $addresses[0];
-            foreach ($addresses as $key => $addr) {
-               if($addr->is_default == 1){
-                    $default_address = $addr;
-                    break;
-               }
-               if($addr->address_type == 0){
-                    $default_address = $addr;
-               }
+        try {
+            $lmsUser = $this->userRepo->lmsGetCustomer($userId);
+            $user = $this->userRepo->find($userId);
+            $addresses = $user->biz->address;
+            if(!$addresses->isEmpty()){
+                $default_address = $addresses[0];
+                foreach ($addresses as $key => $addr) {
+                if($addr->is_default == 1){
+                        $default_address = $addr;
+                        break;
+                }
+                if($addr->address_type == 0){
+                        $default_address = $addr;
+                }
+                }
             }
+            if (!empty($default_address)) {
+            $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
+            }
+            return [
+                'customer_id' => $lmsUser->customer_id,
+                'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
+                'user_id' => $userId,
+                'address' => $fullAddress ?? '',
+                'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
+            ];
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
-        if (!empty($default_address)) {
-          $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
-        }
-        return [
-            'customer_id' => $lmsUser->customer_id,
-            'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
-            'user_id' => $userId,
-            'address' => $fullAddress ?? '',
-            'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
-        ];
     }
 
     /**
@@ -335,16 +341,21 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     private function getPaymentDetails($paymentId, $userId){
-        $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
-        
-        return [
-            'payment_id' => $payment->payment_id,
-            'amount'=>$payment->amount,
-            'date_of_payment'=> $payment->date_of_payment, 
-            'paymentmode'=> $payment->paymentmode,
-            'transactionno'=> $payment->transactionno,
-            'payment_amt' => $payment->amount
-        ];
+        try {
+            $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
+            
+            return [
+                'payment_id' => $payment->payment_id,
+                'amount'=>$payment->amount,
+                'date_of_payment'=> $payment->date_of_payment, 
+                'paymentmode'=> $payment->paymentmode,
+                'transactionno'=> $payment->transactionno,
+                'payment_amt' => $payment->amount,
+                'is_settled' => $payment->is_settled
+            ];
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 
     /**
@@ -535,36 +546,61 @@ class ApportionmentController extends Controller
                     $amtToSettle += $payments[$trans->trans_id];
                 }
 
+                $unAppliedAmt = $repaymentAmt-$amtToSettle;
+
+                if($amtToSettle > $repaymentAmt){
+                    Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
+                    return redirect()->back()->withInput();
+                }
+
                 foreach ($invoiceList as $invDisb) {
                     $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                     $refundParentTrans = $refundData->get('parent_transaction');
-                    $refundAmt = $refundData->get('amount'); 
+                    $refundAmt = $refundData->get('amount');
                     if($refundAmt > 0){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
+                            'link_id' => $refundParentTrans->trans_id,
                             'parent_trans_id' => $refundParentTrans->trans_id,
                             'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
                             'user_id' => $refundParentTrans->user_id,
                             'trans_date' => $invDisb['date_of_payment'],
                             'amount' => $refundAmt,
                             'entry_type' => 1,
-                            'trans_type' => $refundParentTrans->trans_type
+                            'trans_type' => config('lms.TRANS_TYPE.REFUND')
                         ];
                     }
                 }
                 
-                $unAppliedAmt = $repaymentAmt-$amtToSettle;
-    
-                if($amtToSettle > $repaymentAmt){
-                    Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
-                    return redirect()->back()->withInput();
+                if($unAppliedAmt > 0){
+                    $transactionList[] = [
+                        'payment_id' => $paymentId,
+                        'link_id' => $refundParentTrans->trans_id,
+                        'parent_trans_id' => $refundParentTrans->trans_id,
+                        'invoice_disbursed_id' => null,
+                        'user_id' => $refundParentTrans->user_id,
+                        'trans_date' => $invDisb['date_of_payment'],
+                        'amount' => $unAppliedAmt,
+                        'entry_type' => 1,
+                        'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT')
+                    ];
                 }
-                
+
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
+
+                    /** Mark Payment Settled */
+                    $payment = Payment::find($paymentId);
+                    $payment->is_settled = 1;
+                    $payment->save();
+                    foreach ($invoiceList as $invDisb) {
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    }
                     $request->session()->forget('apportionment');
+
                     return redirect()->route('apport_settled_view', ['user_id' =>$userId])->with(['message' => 'Successfully marked settled']);
                 }
             }

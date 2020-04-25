@@ -12,10 +12,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 class ManualApportionmentHelper{
     
-    public function __construct($app_repo, $user_repo, $doc_repo, $lms_repo){
-		$this->appRepo = $app_repo;
-		$this->userRepo = $user_repo;
-		$this->docRepo = $doc_repo;
+    public function __construct($lms_repo){
 		$this->lmsRepo = $lms_repo;
     }
 
@@ -199,8 +196,9 @@ class ManualApportionmentHelper{
                     
                 }else{
                     InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
-                    ->where('interest_date','>=',$delStartDate)
+                    ->where('interest_date','>=',$loopStratDate)
                     ->delete();
+                    break;
                 }
                 
                 $loopStratDate = $this->addDays($loopStratDate,1);

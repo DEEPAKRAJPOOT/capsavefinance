@@ -267,10 +267,10 @@ class DisbursalController extends Controller
      */
     public function processAccrualInterest()
     {
-		echo "start";
-		$Obj = new ManualApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
+		echo "start-----------------";
+		$Obj = new ManualApportionmentHelper($this->lmsRepo);
 		$Obj->dailyIntAccrual();
-		echo "end";
+		echo "-------------------end";
     }
 
     /**
