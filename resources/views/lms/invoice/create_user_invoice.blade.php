@@ -25,7 +25,7 @@
                     <div class="col-md-3">
                         <label class="float-left">Invoice Tag</label>
                         <select class="form-control form-control-sm" id="invoice_type" name="invoice_type">
-                            <option value="">Select Invoice Type</option>
+                            <option value="" disabled>Select Invoice Type</option>
                             <option value="I">Interest</option>
                             <option value="C">Charges</option>
                         </select>
