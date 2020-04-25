@@ -1057,8 +1057,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getAllOffers($appId, $product_id=null){
-        $offers = AppProgramOffer::getAllOffers((int)$appId, $product_id);
-        dd($offers);
+        return AppProgramOffer::getAllOffers((int)$appId, $product_id);
     }    
     
     /**
