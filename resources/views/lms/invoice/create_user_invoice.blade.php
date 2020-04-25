@@ -274,7 +274,7 @@
     return true;
   }
 
-  $(document).on('click', '#invoice_type', function(argument) {
+  $(document).on('change', '#invoice_type', function(argument) {
     $('#invoice_type_error').remove();
     let invoice_type = $(this).val();
     if (!invoice_type) {
