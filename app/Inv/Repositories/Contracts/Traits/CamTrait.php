@@ -139,7 +139,7 @@ trait CamTrait
                     $arrCamData['total_exposure_amount'] = round($total,2);
                 }
 
-
+                 dd($arrCamData);
 
                  //dd($arrGroupCompany);
                 /*start code for approve button */
