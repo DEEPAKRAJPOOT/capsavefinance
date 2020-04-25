@@ -54,28 +54,24 @@
                             <tr>
                                 <td>Dependence On Anchor</td>
                                 <td>
-                                    <input type="text" id="dependence_on_anchor" name="dependence_on_anchor" class="form-control" value="{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] : ''}}" minlength="10" maxlength="50" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="dependence_on_anchor" name="dependence_on_anchor" class="form-control" value="{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] : ''}}" maxlength="100">
                                     {!! $errors->first('dependence_on_anchor', '<span class="error">:message</span>') !!}
                                 </td>
                                 <td>Quarter on Quarter off-take from Anchor</td>
                                 <td>
-                                    <input type="text" id="qoq_ot_from_anchor" name="qoq_ot_from_anchor" class="form-control" value="{{isset($anchorRelationData['qoq_ot_from_anchor']) ? $anchorRelationData['qoq_ot_from_anchor'] : ''}}" minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="qoq_ot_from_anchor" name="qoq_ot_from_anchor" class="form-control" value="{{isset($anchorRelationData['qoq_ot_from_anchor']) ? $anchorRelationData['qoq_ot_from_anchor'] : ''}}" maxlength="100">
                                     {!! $errors->first('qoq_ot_from_anchor', '<span class="error">:message</span>') !!}
                                 </td>
-                                
                             </tr>
                             <tr>
                                 <td>Categorization/ Relevance by Anchor</td>
                                 <td>
-                                    <input type="text" id="cat_relevance_by_anchor" name="cat_relevance_by_anchor" class="form-control" value="{{isset($anchorRelationData['cat_relevance_by_anchor']) ? $anchorRelationData['cat_relevance_by_anchor'] : ''}}" minlength="10" maxlength="50" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="cat_relevance_by_anchor" name="cat_relevance_by_anchor" class="form-control" value="{{isset($anchorRelationData['cat_relevance_by_anchor']) ? $anchorRelationData['cat_relevance_by_anchor'] : ''}}" maxlength="100">
                                     {!! $errors->first('cat_relevance_by_anchor', '<span class="error">:message</span>') !!}
                                 </td>
-                                
                             </tr>
                         </tbody>
                     </table>
-
-
                     <div class="clearfix"></div>
                 </div>
             </div>

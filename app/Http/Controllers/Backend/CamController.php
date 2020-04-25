@@ -1937,8 +1937,10 @@ class CamController extends Controller
                    $liftingArr['mt_value'] = $value ?? 0;
                    $liftingArr['amount'] = $months[$i]['mt_amount'][$key] ?? 0;
                    if (!empty($liftingData)) {
+                      $liftingArr['updated_by'] = $userId;
                       $this->appRepo->updateLiftingDetail($liftingArr, $liftingArr['anchor_lift_detail_id']);
                    }else{
+                        $liftingArr['created_by'] = $userId;
                         $this->appRepo->creates($liftingArr);
                    }
                }
