@@ -9,7 +9,7 @@
 			     <div class="card-body">
                     <div class="table-responsive ps ps--theme_default w-100">
                         <table class="table  table-td-right">
-                                <tbody>
+                               <tbody>
                                 <tr>
                                     <td class="text-left" width="30%"><b>Business Name</b></td>
                                     <td> {{$userInfo->biz->biz_entity_name}}	</td> 
@@ -25,13 +25,13 @@
                                 </tr>
                                 
                                 <tr>
-                                    <td class="text-left" width="30%"><b>Total Limit</b></td>
+                                    <td class="text-left" width="30%"><b>Product Limit</b></td>
                                     <td>{{ $userInfo->total_limit }} </td> 
-                                    <td class="text-left" width="30%"><b>Available Limit</b></td>
+                                    <td class="text-left" width="30%"><b>Utilize Product Limit</b></td>
                                     <td>{{  $userInfo->consume_limit }} </td> 
                                 </tr>
                                 <tr>
-                                    <td class="text-left" width="30%"><b>Utilize Limit</b></td>
+                                    <td class="text-left" width="30%"><b>Remaining Product Limit</b></td>
                                     <td>{{ $userInfo->utilize_limit }} </td> 
                                     <td class="text-left" width="30%"><b>Sales Manager</b></td>
                                     <td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>

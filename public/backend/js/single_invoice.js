@@ -56,12 +56,12 @@
                       if(data.status==1)
                         {
                             $("#msgInvoiceDupli").text('Invoice No already exists');
-                            $("#submit").css("pointer-events","auto");
                             $("#submit").css("pointer-events","none");
                             return false;
                         }
                         else
                         {
+                             $("#submit").css("pointer-events","auto");
                             $("#msgInvoiceDupli").empty();
                            return true;
                         }

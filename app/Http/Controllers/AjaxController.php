@@ -3580,7 +3580,7 @@ if ($err) {
         $res['program_id']  = $res['prgm_id'];
         $getTenor   = $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res['user_id']);
+        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         $remainAmount = $limit-$sum;
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount]);
      }
@@ -3617,14 +3617,22 @@ if ($err) {
         $res  = explode(',',$request->id);
         foreach($res as $key=>$val)
         {
+               
                 $attr =   $this->invRepo->getSingleBulkInvoice($val);
                 if($attr)
                 {
                    $invoice_id = NULL;  
                    if($attr->status==0)
                    {
+                     if($attr->status_id==8)
+                     {
+                        $userLimit = InvoiceTrait::ProgramLimit($attr);
+                        $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
+                        $attr['comm_txt'] = $updateInvoice['comm_txt'];
+                        $attr['status_id'] = $updateInvoice['status_id'];
+                        
+                     }
                       $res  =  $this->invRepo->saveFinalInvoice($attr);
-                      $invoice_id =  $res['invoice_id'];
                    }
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
@@ -3635,6 +3643,7 @@ if ($err) {
         }
         if($updateBulk)
         {
+              
                  return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
               
         }
@@ -3826,32 +3835,23 @@ if ($err) {
    function updateBulkInvoice(Request $request)
    {
       
-       $msg = "";
-       $res['msg']="";
-       
+       $result = InvoiceTrait::checkInvoiceLimitExced($request); 
        foreach($request['invoice_id'] as $row)
        {  
-        if($request->status==8)
-        {
-           $attr['invoice_id']=$row; 
-           $response =  InvoiceTrait::updateApproveStatus($attr);  
-         
-          if($response==2)
+          if($request->status==8)
           {
-             
-              $inv = InvoiceTrait::getInvoiceDetail($attr);
-              $msg.=$inv['invoice_no'].",";
-           }
+            $attr['invoice_id']=$row; 
+            $response =  InvoiceTrait::updateApproveStatus($attr);  
          
-        }
+          }
           else
           {
              $this->invRepo->updateInvoice($row,$request->status);
-         }
+           }
        }
        
-      /// return \response()->json(['success' => substr($msg,0,-1)]);
-       return 1;
+      return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
+       
    }  
    /**
     * get Bank account list
