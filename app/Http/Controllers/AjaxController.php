@@ -4421,7 +4421,6 @@ if ($err) {
         $userInvoice = $this->UserInvRepo->getUserInvoiceList($user_id, $appId);
         $data = $dataProvider->getUserInvoiceList($this->request, $userInvoice);
         return $data;
-        
     }
 
 }
