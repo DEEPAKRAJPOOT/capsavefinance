@@ -742,9 +742,6 @@ trait LmsTrait
         $transactionData['amount'] = $data['amount'] ?? 0;
         $transactionData['entry_type'] =  $entryType ?? 0;
         $transactionData['gst'] = $data['gst'] ?? 0;
-        $transactionData['cgst'] = $data['cgst'] ?? 0;            
-        $transactionData['sgst'] = $data['sgst'] ?? 0;
-        $transactionData['igst'] = $data['igst'] ?? 0;
         $transactionData['tds_per'] = null;
         $transactionData['gl_flag'] = 1;
         $transactionData['soa_flag'] = $soaFlag;
