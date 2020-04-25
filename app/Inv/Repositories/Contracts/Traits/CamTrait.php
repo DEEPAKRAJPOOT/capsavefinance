@@ -90,6 +90,7 @@ trait CamTrait
                   $FinanceColumns = array_merge($FinanceColumns, $cols);
                 }
                // dd(getTotalFinanceData($financeData['2017']));
+                dd($financeData);
                 $leaseOfferData = array();
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
                 $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
