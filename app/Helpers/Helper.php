@@ -778,6 +778,7 @@ class Helper extends PaypalHelper
      */
     public static function getUserInfo($user_id = null)
     {
+        $user_id = !is_null($user_id) ? (int) $user_id : null;
         $getUserInfo = User::getfullUserDetail($user_id);
         return $getUserInfo;
     }
