@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 /**
  * All Ajax routes
