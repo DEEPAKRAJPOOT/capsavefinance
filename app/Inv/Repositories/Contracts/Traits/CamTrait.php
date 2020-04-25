@@ -90,7 +90,6 @@ trait CamTrait
                   $FinanceColumns = array_merge($FinanceColumns, $cols);
                 }
                // dd(getTotalFinanceData($financeData['2017']));
-                dd($financeData);
                 $leaseOfferData = array();
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
                 $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
@@ -124,6 +123,7 @@ trait CamTrait
                     $arrCamData['group_company'] = $arrMstGroup['name'];
                   }
                 } 
+                dd($financeData);
                 if(!empty($arrGroupCompany)){
                     $temp = array();
                     $total = 0;
