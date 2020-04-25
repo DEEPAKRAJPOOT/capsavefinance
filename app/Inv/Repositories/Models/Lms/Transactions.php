@@ -63,7 +63,6 @@ class Transactions extends BaseModel {
         'pay_from',
         'is_settled',
         'is_posted_in_tally',
-        'comment',
         'created_at',
         'created_by'
     ];

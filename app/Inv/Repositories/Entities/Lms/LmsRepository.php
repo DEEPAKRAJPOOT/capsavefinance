@@ -232,6 +232,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   ->get();
 	}  
 
+	public function getUserBankDetail($userId)
+	{
+		return User::where('user_id', $userId)
+			   ->with(['lms_user' , 'anchor_bank_details.bank', 'supplier_bank_detail.bank'])
+			   ->first();
+	}
 	/**
 	 * Get Repayments
 	 *      

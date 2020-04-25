@@ -680,26 +680,25 @@ trait LmsTrait
      * @param array $data
      * @return mixed
      */
-    protected function createDisbursalData($invoice, $disburseAmount, $disburseType = 2)
+    protected function createDisbursalData($user, $disburseAmount, $disburseType = 2)
     {
         /**
         * disburseType = 1 for online and 2 for manually
         */
         $disbursalData = [];
         
-        $disbursalData['user_id'] = $invoice['supplier_id'] ?? null;
-        $disbursalData['app_id'] = $invoice['app_id'] ?? null;
+        $disbursalData['user_id'] = $user['user_id'] ?? null;
 
-        $disbursalData['disburse_date'] = (!empty($invoice['disburse_date'])) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$invoice['disburse_date']))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $disbursalData['disburse_date'] = (!empty($user['disburse_date'])) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$user['disburse_date']))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['disburse_amount'] = $disburseAmount ?? null;
-        $disbursalData['disbursal_batch_id'] = $invoice['disbursal_batch_id'] ?? null;
-        $disbursalData['tran_id'] = $invoice['tran_id'] ?? null;
+        $disbursalData['disbursal_batch_id'] = $user['disbursal_batch_id'] ?? null;
+        $disbursalData['tran_id'] = $user['tran_id'] ?? null;
         
-        $disbursalData['bank_account_id'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank_account_id'] : $invoice['supplier_bank_detail']['bank_account_id'];
-        $disbursalData['bank_name'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['bank']['bank_name'] : $invoice['supplier_bank_detail']['bank']['bank_name'] ;
-        $disbursalData['ifsc_code'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['ifsc_code'] : $invoice['supplier_bank_detail']['ifsc_code'];
-        $disbursalData['acc_no'] = ($invoice['supplier']['is_buyer'] == 2) ? $invoice['supplier']['anchor_bank_details']['acc_no'] : $invoice['supplier_bank_detail']['acc_no'];            
-        $disbursalData['virtual_acc_id'] = $invoice['lms_user']['virtual_acc_id'] ?? null;
+        $disbursalData['bank_account_id'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['bank_account_id'] : $user['supplier_bank_detail']['bank_account_id'];
+        $disbursalData['bank_name'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['bank']['bank_name'] : $user['supplier_bank_detail']['bank']['bank_name'] ;
+        $disbursalData['ifsc_code'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['ifsc_code'] : $user['supplier_bank_detail']['ifsc_code'];
+        $disbursalData['acc_no'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['acc_no'] : $user['supplier_bank_detail']['acc_no'];            
+        $disbursalData['virtual_acc_id'] = $user['lms_user']['virtual_acc_id'] ?? null;
        
         $disbursalData['status_id'] = ($disburseType == 2) ? 12 : 10;
         $disbursalData['disburse_type'] = $disburseType;
@@ -753,7 +752,6 @@ trait LmsTrait
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
-        $transactionData['comment'] = null;
 
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                         
