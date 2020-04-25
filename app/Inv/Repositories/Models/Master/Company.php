@@ -21,7 +21,7 @@ class Company extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'com_add_id';
+    protected $primaryKey = 'comp_add_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -76,7 +76,7 @@ class Company extends BaseModel {
     public static function getAllCompanies($key) {
 
         $res = self::where('is_active', '!=', '2')
-                ->orderBy('com_add_id', 'DESC');
+                ->orderBy('comp_add_id', 'DESC');
         
         if (isset($key['search_keyword'])) {
             if ($key['search_keyword'] != "") {
@@ -100,7 +100,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        $res = self::with('state')->where(['com_add_id'=>$id])->first();
+        $res = self::with('state')->where(['comp_add_id'=>$id])->first();
 
         return $res ?: false;
     }
@@ -123,7 +123,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         
-        $res = self::where('com_add_id', $companyId)->first()->update($compArr);
+        $res = self::where('comp_add_id', $companyId)->first()->update($compArr);
         
         return $res ?: false;
     }
@@ -158,7 +158,7 @@ class Company extends BaseModel {
     
     public static function getCompNameByCompId($compId){
         
-        $compName = self::select('comp_add_id')->where('com_add_id', $compId)->first();
+        $compName = self::select('comp_add_id')->where('comp_add_id', $compId)->first();
         
         $CompIdArr = self::where(['comp_add_id' => $compName->comp_add_id])->get();
         
