@@ -25,7 +25,7 @@
                     <div class="col-md-3">
                         <label class="float-left">Invoice Tag</label>
                         <select class="form-control form-control-sm" id="invoice_type" name="invoice_type">
-                            <option value="">Select Invoice Type</option>
+                            <option value="" disabled selected>Select Invoice Type</option>
                             <option value="I">Interest</option>
                             <option value="C">Charges</option>
                         </select>
@@ -275,7 +275,13 @@
   }
 
   $(document).on('click', '#invoice_type', function(argument) {
+    $('#invoice_type_error').remove();
     let invoice_type = $(this).val();
+    if (!invoice_type) {
+      $('#invoice_type').after('<span id="invoice_type_error" class="error">Please select invoice type</span>');
+      $('#invoice_type').focus();
+      return false;
+    }
     let data = {'invoice_type' : invoice_type};
     data['_token'] =  message.token;
     $.ajax({
