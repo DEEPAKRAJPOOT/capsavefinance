@@ -35,7 +35,7 @@ try {
             ],
             aoColumnDefs: [{
                     'bSortable': false,
-                    'aTargets': [0]
+                    'aTargets': [0, 3, 4, 5, 6, 7, 8]
                 }]
 
         });
