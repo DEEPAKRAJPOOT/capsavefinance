@@ -2,7 +2,7 @@
 
 @section('content')
 
-
+@include('layouts.backend.partials.admin-subnav')
 <style>
 .overview-table >thead> tr > th {
     background: #138864 !important;
@@ -38,7 +38,6 @@
       <div class="card-body pt-3 pb-3">
         <div class="row">
           <div class="col-md-12">
-            @include('backend.cam.camReport')
           </div>
         </div>
       </div>
