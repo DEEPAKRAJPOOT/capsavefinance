@@ -60,7 +60,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             // User Invoice
             Route::get('/view-user-invoice', [
                 'as' => 'view_user_invoice',
-                'uses' => 'Lms\userInvoiceController@getUserInvoice'
+                'uses' => 'Lms\userInvoiceController@listUserInvoice'
+            ]); 
+
+            Route::post('/get_invoice_transaction', [
+                'as' => 'get_invoice_transaction',
+                'uses' => 'Lms\userInvoiceController@getUserInvoiceTxns'
             ]);
             
             Route::get('/create-user-invoice', [
@@ -89,6 +94,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('get-user-state-code', [
                 'as' => 'get_user_state_code',
                 'uses' => 'Lms\userInvoiceController@getUserStateCode'
+            ]);
+
+            // preview user invoice 
+            Route::post('preview-user-invoice', [
+                'as' => 'preview_user_invoice',
+                'uses' => 'Lms\userInvoiceController@previewUserInvoice'
             ]);
             
             // disbursal routes

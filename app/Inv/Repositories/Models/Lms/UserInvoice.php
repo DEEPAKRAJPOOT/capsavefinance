@@ -51,9 +51,11 @@ class UserInvoice extends BaseModel {
         'pan_no',
         'biz_gst_no',
         'gst_addr',
+        'reference_no',
+        'invoice_type',
         'invoice_no',
-        'invoce_state_code',
         'invoice_date',
+        'invoice_state_code',
         'place_of_supply',
         'comp_id',
         'bank_id',
@@ -140,13 +142,7 @@ class UserInvoice extends BaseModel {
      * Get State Name
      *      
      **/
-
     public function getStateNameByStateCode() {
-       return $this->belongsTo(State::class, 'invoce_state_code');
-    }
-
-    public static function saveUserInvoiceData($arrUserData) {
-        $status = self::create($arrUserData);
-        return $status ? $status : false;
+       return $this->belongsTo(State::class, 'invoice_state_code', 'state_code');
     }
 }
