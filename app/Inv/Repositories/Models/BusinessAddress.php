@@ -173,4 +173,8 @@ class BusinessAddress extends BaseModel
         $status = self::whereIn('biz_id', $biz_ids)->where(['address_type'=> 6, 'is_default'=> 1])->update(['is_default'=> 0]);
         return $status;
     }
+
+    public function gst(){
+        return $this->hasOne('App\Inv\Repositories\Models\BizPanGst','biz_addr_id','biz_addr_id');
+    }
 }

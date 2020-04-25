@@ -1016,5 +1016,11 @@ Route::group(
     Route::post('check-applied-charge', [
         'as' => 'check_applied_charge',
         'uses' => 'AjaxController@checkAppliedCharge'
-    ]);       
+    ]); 
+
+    Route::post('get_address_by_gst',[
+        'as' => 'get_address_by_gst',
+        'uses' => 'Karza\KarzaController@getAddressByGst'
+        ]
+    );      
 });
