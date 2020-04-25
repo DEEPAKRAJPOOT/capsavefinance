@@ -173,7 +173,7 @@ trait CamTrait
                   $supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($val->anchor_id)->pluck('f_name')->first();
                   $supplyOfferData[$key]['programData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id], ['*'], ['programDoc', 'programCharges'])->first();
                   $supplyOfferData[$key]['subProgramData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
-                                                      dd($supplyOfferData[$key]['subProgramData']);
+                                                      dd($supplyOfferData[$key]['subProgramData'], "9876543210");
                 }
 
                 return [
