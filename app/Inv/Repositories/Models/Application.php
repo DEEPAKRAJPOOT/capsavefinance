@@ -131,7 +131,7 @@ class Application extends BaseModel
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $curUserId = \Auth::user()->user_id;
         $userArr = Helpers::getChildUsersWithParent($curUserId);
-        $appData = self::select('app.user_id','app.app_id','app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
+        $query = self::select('app.user_id','app.app_id','app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
                 'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
@@ -142,8 +142,21 @@ class Application extends BaseModel
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
                 'app_assign.app_assign_id')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
-                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')                                               
-                ->join('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id');
+        if ($roleData[0]->id == 11) {            
+        $query  = $query->leftJoin('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
+                    $join->on('app.app_id', '=', 'app_assign.app_id');                    
+                })
+                ->leftJoin('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')           
+                ->leftJoin('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
+                ->leftJoin('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
+                ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
+                ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
+                         
+                $query->where('users.anchor_id', \Auth::user()->anchor_id);            
+        } else {
+        $query  = $query->join('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
                     if ($roleData[0]->is_superadmin != 1) {
                         //$join->on('app_assign.to_id', '=', DB::raw($curUserId));
@@ -154,19 +167,18 @@ class Application extends BaseModel
                         $join->whereNotNull('app_assign.to_id');
                     }
                 })
-                ->join('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')             
+                ->join('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')           
                 ->join('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
                 ->join('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
-        if ($roleData[0]->id == 11) {            
-                //$appData->where('users.anchor_user_id', \Auth::user()->user_id);            
-                $appData->where('users.anchor_id', \Auth::user()->anchor_id);            
-        }
 
-        $appData->groupBy('app.app_id');
-        $appData = $appData->orderBy('app.app_id', 'DESC');
+        }
+                //$query->where('users.anchor_user_id', \Auth::user()->user_id);            
+                //$query->where('users.anchor_id', \Auth::user()->anchor_id);              
+        $query->groupBy('app.app_id');
+        $appData = $query->orderBy('app.app_id', 'DESC');
         return $appData;
     }
    

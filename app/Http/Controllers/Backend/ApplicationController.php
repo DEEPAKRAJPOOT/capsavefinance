@@ -850,8 +850,6 @@ class ApplicationController extends Controller
 						return redirect()->back();                                            
 					}
 				} else if ($currStage->stage_code == 'opps_checker') {
-                                  $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
-                                  if($prcsAmt && isset($prcsAmt->offer)) {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
 				  $lmsCustomerArray = array(
@@ -873,7 +871,10 @@ class ApplicationController extends Controller
 				  		'start_date' => $curDate,
 				  		'end_date' => $endDate], $appLimitId);
 			  	}
-				  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+			  	
+			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+              	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+              	if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
