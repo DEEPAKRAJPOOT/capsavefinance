@@ -1012,7 +1012,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
-    public function getLimit($app_prgm_limit_id){
+    public function getLimit(int $app_prgm_limit_id){
         $prgmLimitData = AppProgramLimit::getLimit($app_prgm_limit_id);
         return $prgmLimitData ? $prgmLimitData : [];
     }

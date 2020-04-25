@@ -156,7 +156,7 @@ trait ApplicationTrait
     }
 
 
-     protected function getSanctionLetterData($appId, $bizId, $offerId=null, $sanctionID=null){
+     protected function getSanctionLetterData($appId, int $bizId, $offerId=null, $sanctionID=null){
         $offerWhereCond = [];
         
         if ($offerId) {
