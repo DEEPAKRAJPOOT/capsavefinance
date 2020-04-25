@@ -31,6 +31,7 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\Master\FacilityType;
 use App\Inv\Repositories\Models\Master\BaseRate;
+use App\Inv\Repositories\Models\Master\Activity;
 
 /**
  * 
@@ -669,4 +670,16 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return BaseRate::getBaseRateDropDown();
     }
 
+    
+    /**
+     * Get Activity Data
+     * 
+     * @param array $whereCond
+     * @return type mixed     
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function getActivity($whereCond=[])
+    {
+        return Activity::getActivity($whereCond);
+    }     
 }

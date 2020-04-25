@@ -21,7 +21,7 @@ abstract class BaseEvent extends Event {
     {
         $arrActivity['session_id']       = \Session::get('uuid') ? \Session::get('uuid') : null;
  
-        $arrActivity['activity_type_id'] = $activity_type_id;
+        $arrActivity['activity_id'] = $activity_type_id;
         $arrActivity['activity_desc'] = $activity_desc . (isset($arrActivity['auto_logout']) ? ' (timed out)' : '');
         $arrActivity['status'] = 1;
 
