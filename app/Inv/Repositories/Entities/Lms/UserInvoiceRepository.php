@@ -11,9 +11,11 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
+use App\Inv\Repositories\Models\Lms\UserInvoiceTrans;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 /**
  * User Invoice Repository class
@@ -73,12 +75,13 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return $apps->isEmpty() ? [] : $apps;
 	}
 
-        
 	public function saveUserInvoice($invoices,$whereCondition=[]) {
 		return UserInvoice::saveUserInvoice($invoices,$whereCondition);
 	}
 
-
+	public function saveUserInvoiceTxns($invoices_txns,$whereCondition=[]) {
+		return UserInvoiceTrans::saveUserInvoiceTxns($invoices_txns,$whereCondition);
+	}
 
 	public function getInvoices($whereCondition=[]) {
 			return UserInvoice::getInvoices($whereCondition);
@@ -86,14 +89,6 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getStateListCode() {
 		return State::getStateListCode();
-	}
-
-	/**
-     * Get bussiness address for user invoice
-     */ 
-    public function getBizUserInvoiceAddr($user_id) {
-		$addr = 'Ador Powertron Limited Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019';
-        return response()->json($addr);
 	}
 
 	public function getUserCustomerID($user_id) {
@@ -114,17 +109,14 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoice::findUserInvoiceById($userInvoice_id);
 	}
 
-	/**
-     * save user invoice
-     */
-	public function saveUserInvoiceData($arrUserData) {
-		return UserInvoice::saveUserInvoiceData($arrUserData);
+	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = []) {
+		return Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds);
 	}
 
 	/**
-     * update user invoice
-     */
-	public function updateUserInvoice($arrUserData, $userInvoice_id) {
-		return UserInvoice::updateUserInvoice($arrUserData, $userInvoice_id);
+	 * Get AJAX list of user invoice result
+	 */
+	public function getUserInvoiceList($user_id, $appId) {
+		return UserInvoice::getUserInvoiceList($user_id, $appId);
 	}
 }

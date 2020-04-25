@@ -395,10 +395,10 @@ trait LmsTrait
             $transaction['TRANS_DATE'] = $repayment->trans_date;
             $transaction['VALUE_DATE'] = $repayment->created_at;
 
-            if ($repayment->trans_detail->chrg_master_id != '0') {
-                $transaction['TRANS_TYPE'] = $repayment->trans_detail->charge->chrg_name;
+            if ($repayment->transType->chrg_master_id != '0') {
+                $transaction['TRANS_TYPE'] = $repayment->transType->charge->chrg_name;
             } else {
-                $transaction['TRANS_TYPE'] = $repayment->trans_detail->trans_name;
+                $transaction['TRANS_TYPE'] = $repayment->transType->trans_name;
             }
 
             if ($repayment->disbursal_id && $repayment->disburse && $repayment->disburse->invoice) {
@@ -428,10 +428,10 @@ trait LmsTrait
                 $transaction['TRANS_DATE'] = $repay->trans_date;
                 $transaction['VALUE_DATE'] = $repay->created_at;
 
-                if ($repay->trans_detail->chrg_master_id != '0') {
-                    $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+                if ($repay->transType->chrg_master_id != '0') {
+                    $transaction['TRANS_TYPE'] = $repay->transType->charge->chrg_name;
                 } else {
-                    $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+                    $transaction['TRANS_TYPE'] = $repay->transType->trans_name;
                 }
 
                 if ($repay->disbursal_id && isset($repay->disburse->invoice) && $repay->disburse->invoice->invoice_no) {

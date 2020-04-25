@@ -138,6 +138,10 @@ class ApportionmentController extends Controller
             if (empty($TransDetail)) {
                 return redirect()->route('unsettled_payments')->with(['error' => 'Selected Transaction to be waived off is not valid']);
             }
+            $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || $TransDetail->transType->id == 9);
+            if(!$is_interest_charges){
+                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Waive off is possible only Interest and Charges.']);
+            }
             $outstandingAmount = $TransDetail->getOutstandingAttribute();
             if ($amount > $outstandingAmount)  {
                 return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be Waived Off must be less than or equal to '. $outstandingAmount]);
@@ -171,7 +175,7 @@ class ApportionmentController extends Controller
                     'comment' => $comment,
                 ];
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
-                return redirect()->route('apport_settled_list', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully waived off']);
+                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully waived off']);
             }
         } catch (Exception $ex) {
              return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));

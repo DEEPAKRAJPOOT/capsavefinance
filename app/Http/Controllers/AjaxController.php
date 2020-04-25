@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 namespace App\Http\Controllers;
 use Auth;
@@ -4444,4 +4445,13 @@ if ($err) {
         return response()->json( $response );
    }
 
+    // get user invoice list
+    public function getUserInvoiceList(DataProviderInterface $dataProvider) {
+        $user_id =  (int) $this->request->get('user_id');
+        $latestApp = $this->application->getUpdatedApp($user_id);
+        $appId = $latestApp->app_id ? $latestApp->app_id : null;
+        $userInvoice = $this->UserInvRepo->getUserInvoiceList($user_id, $appId);
+        $data = $dataProvider->getUserInvoiceList($this->request, $userInvoice);
+        return $data;
+    }
 }

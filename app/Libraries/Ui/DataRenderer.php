@@ -5245,6 +5245,77 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+    // get user invoice list
+    public function getUserInvoiceList(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->editColumn(
+                'gst_address',
+                function ($data) {
+                    return $data->gst_addr;
+                }
+            )
+            ->editColumn(
+                'invoice_date',
+                function ($data) {
+                    return date('d/m/Y', strtotime($data->invoice_date));
+                }
+            )   
+            ->editColumn(
+                'pan_no',
+                function ($data) {
+                    return $data->pan_no;
+                }
+            )     
+            ->editColumn(
+                'biz_gst_no',
+                function ($data) {
+                    return $data->biz_gst_no;
+                }
+            )     
+            ->editColumn(
+                'reference_no',
+                function ($data) {
+                    return $data->reference_no;
+                }
+            )      
+            ->editColumn(
+                'invoice_no',
+                function ($data) {
+                    return $data->invoice_no;
+                }
+            )        
+            ->editColumn(
+                'place_of_supply',
+                function ($data) {
+                    return $data->place_of_supply;
+                }
+            )      
+            ->editColumn(
+                'action',
+                function ($data) {
+                return  "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->invoice_user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                }
+            )
+            ->filter(function ($query) use ($request) {
+                   if (!empty($request->get('from_date')) && !empty($request->get('to_date'))) {               
+                        $query->where(function ($query) use ($request) {
+                            $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d H:i:s');
+                            $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d H:i:s');
+                            $query->whereBetween('invoice_date',  [$from_date, $to_date]);
+                        });                        
+                    }
+                    if(!empty($request->get('invoice_no'))){
+                        $query->where(function ($query) use ($request) {
+                           $invoice_no = trim($request->get('invoice_no'));
+                           $query->where('invoice_no', 'like', "%$invoice_no%");
+                        });
+                    }
+                    
+                })
+            ->make(true);
+    }
 
      /*
      * 

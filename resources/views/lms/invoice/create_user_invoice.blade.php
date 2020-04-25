@@ -19,139 +19,175 @@
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
          <div class="card">
             <div class="card-body">
-               <div class="form-fields">
-                  <div class="active" id="details">
-                     <form id="userInvoice" name="userInvoice" method="POST" action="{{ route('save_user_invoice', [ 'user_id' => $userInfo->user_id ] ) }}" target="_top">
-                        @csrf
-                        <div class="table-responsive ps ps--theme_default w-100">
-                           <table class="table border-0">
-                              <tbody>
-                                 <tr>
-                                    <td class="text-left border-0" width="30%"> <b>Billing Address</b> </td>
-                                    <td class="text-right border-0" width="30%"> <b>Original Of Recipient</b> </td>
-                                 </tr>
-                              </tbody>
-                           </table>
-                           <hr>
-                           <table class="table border-0">
-                              <tbody>
-                                 <tr>
-                                    <!-- USER -->
-                                    <td class="text-left border-0" width="30%">
-                                       <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="invoce_state_code">State Name</label>
-                                             <select class="form-control" name="invoce_state_code" id="invoce_state_code">
-                                                <option disabled value="" selected>Select State</option>
-                                                @foreach($state_list as $state)
-                                                <option value="{{$state->state_code}}">{{$state->name}}</option>
-                                                @endforeach
-                                             </select>
-                                          </div>
-                                       </div>
-                                    </td>
-                                    <td class="text-left border-0" width="30%">
-                                       <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="app_id">Applications</label>
-                                             <select class="form-control" name="app_id" id="app_id">
-                                                <option disabled value="" selected>Select Application</option>
-                                                @foreach($appInfo as $ad_id) 
-                                                <option value="{{$ad_id->app_id}}">{{$ad_id->business->biz_entity_name}}</option>
-                                                @endforeach
-                                             </select>
-                                          </div>
-                                       </div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                   <td class="text-left border-0" width="30%">
-                                       <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="pan_no">PAN Number</label>
-                                             <select class="form-control" name="pan_no" id="pan_no">
-                                                <option disabled value="" selected>Select PAN</option>
-                                             </select>
-                                          </div>
-                                       </div>
-                                    </td>
-                                    <td class="text-left border-0" width="30%">
-                                       <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="gstin">GSTIN</label>
-                                             <select class="form-control" name="gstin" id="gstin">
-                                                <option disabled value="" selected>Select GSTIN</option>
-                                             </select>
-                                          </div>
-                                       </div>
-                                    </td>
-                                    
-                                 <tr>
-                                    <td class="text-left border-0" width="30%">
-                                       <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="invoice_date">Invoice Date</label>
-                                             <input type="text" class="form-control dateFilter" id="invoice_date" name="invoice_date" placeholder="Invoice Date" autocomplete="off">
-                                          </div>
-                                       </div>
-                                    </td>
-                                    <td class="text-left border-0" width="30%">
-                                      @php 
-                                        $rand_inv = mt_rand(1000, 9999);
-                                      @endphp
-                                       <div class="row">
-                                          <div class="form-group col-4" style="margin-left: 25px;">
-                                             <a href="javascript:void(0);" class="invoice-state"><i style="color: #FFF;" id="state_abbr">&nbsp;</i></a>
-                                             <label>Invoice No</label>
-                                             <a href="javascript:void(0);" class="invoice_no"><i style="color: #FFF;" id="invoice_no">{{$rand_inv}}</i></a>
-                                             <input type="text" class="form-control" id="invoice_city" name="invoice_city" placeholder="City Code" maxlength="5" autocomplete="off">
-                                          </div>
-                                          <input type="hidden" readonly class="form-control" id="invoice_id" name="invoice_id" placeholder="Invoice ID" value="{{$rand_inv}}" autocomplete="off">
-                                       </div>
-                                    </td>
-                                 </tr>
-                                 </tr>
-                                 <tr>
-                                    <td class="text-left border-0" width="30%">
-                                      <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="place_of_supply">Place Of Supply</label>
-                                             <input type="text" class="form-control" id="place_of_supply" name="place_of_supply" placeholder="Place Of Supply" autocomplete="off">
-                                          </div>
-                                       </div>
-                                    </td>
-                                    <td class="text-left border-0" width="30%">
-                                       <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="refrence_no">Refrence No</label>
-                                             <input type="text" readonly class="form-control" id="refrence_no" name="refrence_no"  placeholder="Refrence Number" autocomplete="off" value="{{$reference_no}}">
-                                          </div>
-                                       </div>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td class="text-left border-0" width="30%" colspan="2">
-                                      <div class="row">
-                                          <div class="form-group col-12">
-                                             <label for="gst_addr">Enter Address</label>
-                                             <textarea class="form-control" id="gst_addr" name="gst_addr" placeholder="Enter Address"></textarea>
-                                          </div>
-                                       </div>
-                                    </td>
-                                 </tr>
-                              </tbody>
-                           </table>
-                        </div>
-                        <div class="row">
-                           <div class="form-group col-md-12 mb-0">
-                              <input type="submit" class="btn btn-success btn-sm pull-right" value="Submit" />
-                           </div>
-                        </div>
-                     </form>
+                <form action="{{route('save_user_invoice',  ['user_id' => $user_id])}}" method="post" id="invoice_form">
+                @csrf
+                  <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label class="float-left">Invoice Tag</label>
+                        <select class="form-control form-control-sm" id="invoice_type" name="invoice_type">
+                            <option value="">Select Invoice Type</option>
+                            <option value="I">Interest</option>
+                            <option value="C">Charges</option>
+                        </select>
+                    </div>
                   </div>
-               </div>
+                  <div class=" form-fields mb-4">
+                      <div class="row">
+                          <div class="col-md-6 d-flex">
+                              <div class="col-md-12 data p-0">
+                                  <div class="">
+                                      <h2 class="sub-title bg">Billing Address  </h2>
+                                      <div class="pl-4 pr-4 pb-4 pt-2">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <div class="form-group">
+                                                      <label class="m-0">PAN Number: <span>{{$billingDetails['pan_no']}}</span></label>
+                                                  </div>
+                                              </div>
+                                              <div class="col-md-12">
+                                                  <div class="form-group">
+                                                      <label class="m-0">GSTIN:<span>{{$billingDetails['gstin_no']}}</span></label>
+                                                  </div>
+                                              </div>
+                                              <div class="col-md-12">
+                                                  <div class="form-group m-0">
+                                                      <label class="m-0">Address:<span>{{$billingDetails['address']}}</span></label>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col-md-6 d-flex">
+                              <div class="col-md-12 data p-0">
+                                  <div class="">
+                                      <h2 class="sub-title bg">Original Of Recipient  </h2>
+                                      <div class="pl-4 pr-4 pb-4 pt-2">
+                                          <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Invoice No
+                                                    </label>
+                                                    <div>
+                                                        <ul class="mh-line">
+                                                            <li>{{$origin_of_recipient['state_code']}}/ </li>
+                                                            <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" placeholder="" maxlength="3" /></li>
+                                                            <li>/{{$origin_of_recipient['financial_year']}}/{{$origin_of_recipient['rand_4_no']}}</li>
+                                                        </ul>
+                                                    </div> 
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="state_code" value="{{$origin_of_recipient['state_code']}}">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Invoice Date
+                                                    </label>
+                                                    <input type="text" name="invoice_date" id="invoice_date" class="form-control" placeholder="dd/mm/yyyy" readonly maxlength="10" />
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="reference_no" value="{{$origin_of_recipient['reference_no']}}">
+                                            <input type="hidden" name="invoice_no" id="invoice_no" value="{{$origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="m-0">Reference No: <span>#{{$origin_of_recipient['reference_no']}}</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group m-0">
+                                                    <label class="m-0">Place of Supply: <span>{{$origin_of_recipient['state_name']}}</span>
+                                                      <input type="hidden" name="place_of_supply" value="{{$origin_of_recipient['state_name']}}"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="pdf-responsive">
+                              <table border="0" cellspacing="0" cellpadding="0" id="table">
+                                  <thead>
+                                       <tr>
+                                        <td rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong><input type="checkbox" name=""></strong></span>
+                                        </td>
+                                        <td rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Sr No</strong></span>
+                                        </td>
+                                        <td rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Description</strong></span>
+                                        </td>
+                                        <td rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>SAC</strong></span>
+                                        </td>
+                                        <td rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Base Amount (Rs)</strong></span>
+                                        </td>
+                                        <td colspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>SGST/UTGST</strong></span>
+                                        </td>
+                                        <td colspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>CGST</strong></span>
+                                        </td>
+                                        <td colspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>IGST</strong></span>
+                                        </td>
+                                        <td rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Total Rental</strong></span>
+                                        </td>
+                                     </tr>
+                                     <tr>
+                                        <td bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Rate (%)</strong></span>
+                                        </td>
+                                        <td bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+                                        </td>
+                                        <td bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Rate (%)</strong></span>
+                                        </td>
+                                        <td bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+                                        </td>
+                                        <td bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Rate (%)</strong></span>
+                                        </td>
+                                        <td bgcolor="#f2f2f2">
+                                           <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+                                        </td>
+                                     </tr>
+                                  </thead>
+                                  <tbody id="table_tbody">
+                                    <tr><td colspan="12">No records found</td></tr>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="form-group mb-0 mt-1 d-flex justify-content-between">
+                      <button type="button" class="btn btn-default" id="preview_invoice">Preview</button>
+                      <button type="submit" class="btn btn-primary" id="save_invoice">Save</button>
+                  </div>
+                </form>
             </div>
          </div>
+      </div>
+   </div>
+</div>
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+   <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body" id="response"></div>
       </div>
    </div>
 </div>
@@ -160,171 +196,104 @@
 <script type="text/javascript">
    var message = {
        token: "{{ csrf_token() }}",
-       user_id: "{{ $userInfo->user_id }}",
+       user_id: "{{ $user_id }}",
+       state_name: "{{ $origin_of_recipient['state_name'] }}",
        gst_address_url: "{{route('get_biz_add_user_invoice')}}",
        get_statecode_url: "{{route('get_user_state_code')}}",
        get_app_gstin_url: "{{route('get_app_gstin')}}",
+       invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
+       invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
    }
-   $(document).ready(function() {
-       $('#userInvoice').validate({ // initialize the plugin
-           rules: {
-               'invoce_state_code': {
-                   required: true,
-               },
-               'app_id': {
-                   required: true,
-               },
-               'gstin': {
-                   required: true,
-               },
-               'invoice_state': {
-                   required: true,
-               },
-               'invoice_city': {
-                   required: true,
-               },
-               'invoice_id': {
-                   required: true,
-                   digits: true,
-               },
-               'pan_no': {
-                   required: true,
-               },
-               'invoice_date': {
-                   required: true,
-               },
-               'gst_addr': {
-                   required: true,
-               },
-               'refrence_no': {
-                   required: true,
-               },
-               'place_of_supply': {
-                   required: true,
-               },
-           },
-           messages: {
-               'invoce_state_code': {
-                   required: "This field is required",
-               },
-               'app_id': {
-                   required: "This field is required",
-               },
-               'gstin': {
-                   required: "This field is required",
-               },
-               'invoice_state': {
-                   required: "This field is required",
-               },
-               'invoice_city': {
-                   required: "This field is required",
-               },
-               'invoice_id': {
-                   required: "This field is required",
-               },
-               'pan_no': {
-                   required: "This field is required",
-               },
-               'invoice_date': {
-                   required: "This field is required",
-               },
-               'gst_addr': {
-                   required: "This field is required",
-               },
-               'refrence_no': {
-                   required: "This field is required",
-               },
-               'place_of_supply': {
-                   required: "This field is required",
-               },
-           }
-       });
-   });
-
-   /*let invoice_id = document.getElementById('invoice_id');
-   let invoice_city = document.getElementById('invoice_city');
-   
-   invoice_id.addEventListener('input', function() {
-       let pinVal =  document.getElementById('invoice_id').value;
-       let pinStr = pinVal.toString();
-   
-       if (isNaN(invoice_id.value) || pinStr.length >= 4) {
-           invoice_id.value = "";
-       }
-   });
-   invoice_city.addEventListener('input', function() {
-       let pinVal =  document.getElementById('invoice_city').value;
-       let pinStr = pinVal.toString();
-   
-       if (isNaN(invoice_city.value) || pinStr.length >= 4) {
-           invoice_city.value = "";
-       }
-   });*/
-
-   $('#invoce_state_code').on('change',function(){
-     let invoce_state_code = $(this).val();
-     var state = $("#invoce_state_code :selected").text()
-     var place_of_supply = $('#place_of_supply');
-     if(invoce_state_code) {
-         $('#state_abbr').html(invoce_state_code);
-         $('#place_of_supply').val(state);
-     }
-   });
-   
-   //    Date picker
    $(document).ready(function(){
        $("#invoice_date").datetimepicker({
+           setDate : new Date(),
            format: 'dd/mm/yyyy',
            autoclose: true,
            minView : 2,
        });
    });
-   $(document).on('change', '#gstin', function() {
-       var gstin = $(this).val();
-       if(!gstin.length) {
-           return false;
-       };
-       $.ajax({
-          type:"POST",
-          data: {'gstin' : gstin, '_token' : message.token},
-          url:message.gst_address_url,
-          success:function(data){ 
-           if(data){
-               $('#gst_addr').val(data);
-           } else {
-               $('#gst_addr').val();
-           }
-          }
-       });
-   });
-  $('#app_id').on('change', function() {
-       var app_id = $(this).val();
-       if(!app_id.length) {
-           return false;
-       };
-       $.ajax({
-          type:"POST",
-          data: {'app_id' : app_id, '_token':message.token},
-          url: message.get_app_gstin_url,
-          success:function(data){ 
-            if (data.status == 1) {
-              gstInfo = data.gstInfo;
-              panInfo = data.panInfo;
-              gstHtml = '<option disabled value="" selected>Select GSTIN</option>';
-              panHtml = '<option disabled value="" selected>Select PAN</option>';
-              $.each(gstInfo, function(gstkey, gstVal) {
-                 gstHtml += '<option value="' + gstVal.pan_gst_hash + '">' + gstVal.pan_gst_hash + '</option>'; 
-              });
-              $.each(panInfo, function(pankey, panVal) {
-                 panHtml += '<option value="'+panVal.pan_gst_hash+'">' + panVal.pan_gst_hash + '</option>'; 
-              });
-              $('#gstin').html(gstHtml);
-              $('#pan_no').html(panHtml);
-            }else{
-              alert(data.message);
-            }             
-          }
-       });
-   });
+  $(document).on('keyup', '#invoice_user_code', function(e) {
+    var invoice_user_code = $(this).val();
+    fullInvoiceNo = message.invoice_state_code + invoice_user_code + message.invoice_fin;
+    $('#invoice_no').val(fullInvoiceNo);
+  })
+  $(document).on('click', '#preview_invoice', function(e) {
+    e.preventDefault();
+    if (validate_form() != true) {
+      return false;
+    }
+    let myForm = $('#invoice_form')[0];
+    let formData = new FormData(myForm);
+    formData.append('_token', message.token);
+    formData.append('state_name', message.state_name);
+    $.ajax({
+      type:'POST',
+      url : "{{route('preview_user_invoice', ['user_id'=> $user_id])}}",
+      data: formData,
+      cache : false,
+      contentType : false,
+      processData : false,
+      dataType    : 'json',
+      success: function (res) {
+        if (res.status == 1) {
+          $('#response').html(atob(res.view));
+          $('#exampleModalCenter').modal();
+        }else{
+          alert(res.message);
+        }
+      }
+    })
+  })
+  $(document).on('click', '#save_invoice', function(e) {
+    return validate_form();
+  })
+  function validate_form() {
+    $('#invoice_type_error').remove();
+    $('#invoice_user_code_error').remove();
+    $('#invoice_date_error').remove();
+    let invoice_type = $('#invoice_type').val();
+    if (!invoice_type) {
+      $('#invoice_type').after('<span id="invoice_type_error" class="error">Please select invoice type</span>');
+      $('#invoice_type').focus();
+      return false;
+    }
+    let invoice_user_code = $('#invoice_user_code').val();
+    if (!invoice_user_code) {
+      $('#invoice_user_code').css({'border':'1px solid #ff1111'});
+      $('#invoice_user_code').focus();
+      return false;
+    }
+    let invoice_date = $('#invoice_date').val();
+    if (!invoice_date) {
+      $('#invoice_date').after('<span id="invoice_date_error" class="error">Please select invoice Date</span>');
+      $('#invoice_date').focus();
+      return false;
+    }
+    if($('.trans_check:checked').length == 0){
+      alert('Please select a transaction to preview of invoice.');
+      return false;
+    }
+    return true;
+  }
+
+  $(document).on('click', '#invoice_type', function(argument) {
+    let invoice_type = $(this).val();
+    let data = {'invoice_type' : invoice_type};
+    data['_token'] =  message.token;
+    $.ajax({
+      type:'POST',
+      url : "{{route('get_invoice_transaction', ['user_id'=> $user_id])}}",
+      data: data,
+      cache : false,
+      dataType    : 'json',
+      success: function (res) {
+        if (res.status == 1) {
+          $('#table_tbody').html(atob(res.view));
+        }else{
+          alert(res.message);
+        }
+      }
+    })
+  })
 </script>
 @endsection

@@ -382,15 +382,6 @@ class Transactions extends BaseModel {
     public static function getTransDetail($whereCondition){
           return self::with(['biz','disburse','user', 'transType'])->where($whereCondition)->first();
     }
-    
-
-
-
-
-
-
-
-
 
 
     public static function get_balance($trans_code,$user_id){
@@ -616,5 +607,18 @@ class Transactions extends BaseModel {
             ->groupBy('transactions.trans_id')
             ->get();
         return $result;
+    }
+
+    public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids){
+       $sql = self::with('transType')->where('user_id', '=', $userId);
+       if (!empty($trans_ids)) {
+          $sql->whereIn('trans_id', $trans_ids);
+       }
+       return $sql->whereHas('transType', function($query) use ($invoiceType) { 
+            if($invoiceType == 'I')
+                 $query->where('id','=','9');
+             else
+                $query->where('chrg_master_id','!=','0');
+        })->get();
     }
 }

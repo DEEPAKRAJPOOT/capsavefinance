@@ -109,6 +109,7 @@ var iframe_ids = [
         'disburseInvoicePopUp',
         'EdituploadDocument',
         'addVoucherFrame',
+        'previewUserInvoiceFrame',
         'viewDetailFrame',
         'editPaymentFrm',
     ];

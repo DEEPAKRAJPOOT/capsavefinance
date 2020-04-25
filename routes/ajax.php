@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 /**
  * All Ajax routes
@@ -1038,4 +1039,8 @@ Route::group(
         'uses' => 'AjaxController@checkCompAddExist'
     ]);
 
+    Route::post('get-user-invoice-list', [
+        'as' => 'get_user_invoice_list',
+        'uses' => 'AjaxController@getUserInvoiceList'
+    ]);   
 });
