@@ -139,7 +139,7 @@ trait CamTrait
                     $arrCamData['total_exposure_amount'] = round($total,2);
                 }
 
-                 dd($arrCamData);
+
 
                  //dd($arrGroupCompany);
                 /*start code for approve button */
@@ -175,8 +175,6 @@ trait CamTrait
                   $supplyOfferData[$key]['programData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id], ['*'], ['programDoc', 'programCharges'])->first();
                   $supplyOfferData[$key]['subProgramData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $val->prgm_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
                 }
-                                                     
-                dd($supplyOfferData);
                 return [
                     'arrCamData' =>$arrCamData,
                     'arrBizData' => $arrBizData, 
