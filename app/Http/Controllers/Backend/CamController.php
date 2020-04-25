@@ -1977,6 +1977,7 @@ class CamController extends Controller
     public function viewCamReport(Request $request){
       try{
         $viewData = $this->getCamReportData($request);
+        dd($viewData);
         return view('backend.cam.viewCamReport')->with($viewData);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

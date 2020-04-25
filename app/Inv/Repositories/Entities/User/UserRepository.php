@@ -1311,7 +1311,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param type $id int
      * @return type mixed
      */
-    public function getAnchorDataById($id)
+    public function getAnchorDataById(int $id)
     {
         return Anchor::getAnchorDataById($id);
     }
