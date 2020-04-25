@@ -274,7 +274,7 @@
     return true;
   }
 
-  $(document).on('click', '#invoice_type', function(argument) {
+  $(document).on('change', '#invoice_type', function(argument) {
     $('#invoice_type_error').remove();
     let invoice_type = $(this).val();
     if (!invoice_type) {
@@ -294,6 +294,7 @@
         if (res.status == 1) {
           $('#table_tbody').html(atob(res.view));
         }else{
+          $('#table_tbody').html('<tr><td style="border: 1px solid #ddd;padding: 5px;" colspan="12">No records found</td></tr>');
           alert(res.message);
         }
       }
