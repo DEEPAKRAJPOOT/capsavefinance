@@ -198,8 +198,6 @@
        token: "{{ csrf_token() }}",
        user_id: "{{ $user_id }}",
        state_name: "{{ $origin_of_recipient['state_name'] }}",
-       gst_address_url: "{{route('get_biz_add_user_invoice')}}",
-       get_statecode_url: "{{route('get_user_state_code')}}",
        get_app_gstin_url: "{{route('get_app_gstin')}}",
        invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
        invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
