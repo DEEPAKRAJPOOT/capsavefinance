@@ -1,4 +1,3 @@
-@extends('layouts.backend.admin-layout')
 
 @section('content')
 
@@ -38,6 +37,7 @@
       <div class="card-body pt-3 pb-3">
         <div class="row">
           <div class="col-md-12">
+            @include('backend.cam.camReport')
           </div>
         </div>
       </div>
