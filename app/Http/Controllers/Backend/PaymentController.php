@@ -216,8 +216,8 @@ class PaymentController extends Controller {
           $appId = null;
           if($request['trans_type']==17){
             //$this->paySettlement( $request['customer_id']);
-            $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
-            $Obj->init($res->trans_id);
+            //$Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
+            //$Obj->init($res->trans_id);
           }
           Session::flash('message',trans('backend_messages.add_payment_manual'));
           return redirect()->route('payment_list');
@@ -285,16 +285,16 @@ class PaymentController extends Controller {
     $nonFactoredAmount = 0;
     
     $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-    $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
+    $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id'=>$transId]);
     
-    $disbursalIds = Transactions::where('repay_trans_id','=',$transId)
+    $disbursalIds = Transactions::where('payment_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->where('trans_type','=',config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))
     ->distinct('disbursal_id')
     ->pluck('disbursal_id')
     ->toArray();
     
-    $principalSettled = Transactions::where('repay_trans_id','=',$transId)
+    $principalSettled = Transactions::where('payment_id','=',$transId)
     ->whereNotNull('disbursal_id')
     ->whereIn('trans_type',[config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'),config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF')])
     ->sum('amount');
@@ -342,7 +342,7 @@ class PaymentController extends Controller {
       $objPHPExcel->setActiveSheetIndex(0)
       ->setCellValue('A'.$counter, date('d-M-Y',strtotime($repayment->trans_date)))
       ->setCellValue('B'.$counter, date('d-M-Y',strtotime($repayment->created_at)))
-      ->setCellValue('C'.$counter, ($repayment->trans_detail->chrg_master_id!='0')?$repayment->trans_detail->charge->chrg_name:$repayment->trans_detail->trans_name)
+      ->setCellValue('C'.$counter, ($repayment->transType->chrg_master_id!='0')?$repayment->transType->charge->chrg_name:$repayment->transType->trans_name)
       ->setCellValue('D'.$counter, ($repayment->disburse && $repayment->disburse->invoice && $repayment->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))? $repayment->disburse->invoice->invoice_no:'')
       ->setCellValue('E'.$counter, ($repayment->entry_type=='0')?$repayment->amount:'')
       ->setCellValue('F'.$counter, ($repayment->entry_type=='1')?$repayment->amount:'');            
@@ -352,7 +352,7 @@ class PaymentController extends Controller {
         $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('A'.$counter, date('d-M-Y',strtotime($rtrail->trans_date)))
         ->setCellValue('B'.$counter, date('d-M-Y',strtotime($rtrail->created_at)))
-        ->setCellValue('C'.$counter, ($rtrail->trans_detail->chrg_master_id!='0')?$rtrail->trans_detail->charge->chrg_name:$rtrail->trans_detail->trans_name)
+        ->setCellValue('C'.$counter, ($rtrail->transType->chrg_master_id!='0')?$rtrail->transType->charge->chrg_name:$rtrail->transType->trans_name)
         ->setCellValue('D'.$counter, ($rtrail->disburse && $rtrail->disburse->invoice && $rtrail->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'))? $rtrail->disburse->invoice->invoice_no:'')
         ->setCellValue('E'.$counter, ($rtrail->entry_type=='0')?$rtrail->amount:'')
         ->setCellValue('F'.$counter, ($rtrail->entry_type=='1')?$rtrail->amount:'');  
@@ -487,10 +487,10 @@ class PaymentController extends Controller {
         $transaction['TRANS_DATE'] = $refundData['repayment']->trans_date;
         $transaction['VALUE_DATE'] = $refundData['repayment']->created_at;
         
-        if ($refundData['repayment']->trans_detail->chrg_master_id != '0') {
-            $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->charge->chrg_name;
+        if ($refundData['repayment']->transType->chrg_master_id != '0') {
+            $transaction['TRANS_TYPE'] = $refundData['repayment']->transType->charge->chrg_name;
         } else {
-            $transaction['TRANS_TYPE'] = $refundData['repayment']->trans_detail->trans_name;
+            $transaction['TRANS_TYPE'] = $refundData['repayment']->transType->trans_name;
         }
                                         
         if ($refundData['repayment']->disbursal_id &&  $refundData['repayment']->disburse && $refundData['repayment']->disburse->invoice) {
@@ -518,10 +518,10 @@ class PaymentController extends Controller {
           $transaction['TRANS_DATE'] = $repay->trans_date;
           $transaction['VALUE_DATE'] = $repay->created_at;
 
-          if ($repay->trans_detail->chrg_master_id != '0') {
-              $transaction['TRANS_TYPE'] = $repay->trans_detail->charge->chrg_name;
+          if ($repay->transType->chrg_master_id != '0') {
+              $transaction['TRANS_TYPE'] = $repay->transType->charge->chrg_name;
           } else {
-              $transaction['TRANS_TYPE'] = $repay->trans_detail->trans_name;
+              $transaction['TRANS_TYPE'] = $repay->transType->trans_name;
           }
 
           if ($repay->disbursal_id && $repay->disburse && $repay->disburse->invoice->invoice_no) {

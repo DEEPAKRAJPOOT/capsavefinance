@@ -17,10 +17,12 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\Charges;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\TransactionComments;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Master\GstTax;
@@ -37,7 +39,9 @@ use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Lms\Refund;
 use App\Inv\Repositories\Models\Lms\RefundBatch;
+use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
 use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Payment;
 
 /**
  * Lms Repository class
@@ -99,6 +103,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return Disbursal::saveDisbursalRequest($data, $whereCondition);
 	}
+
+	/**
+	 * Save or Update Disbursal Request
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public function saveUpdateInvoiceDisbursed($data, $whereCondition=[])
+	{
+		return InvoiceDisbursed::saveUpdateInvoiceDisbursed($data, $whereCondition);
+	}
 	
 	/**
 	 * Save Transactions
@@ -110,6 +127,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function saveTransaction($transactions,$whereCondition=[])
 	{
 		return Transactions::saveTransaction($transactions,$whereCondition);
+	}	
+
+	/**
+	 * Save TransactionsComments
+	 * 
+	 * @param array $transactions
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function saveTxnComment($comments,$whereCondition=[])
+	{
+		return TransactionComments::saveTxnComments($comments,$whereCondition);
 	}
 
 	/**
@@ -327,12 +356,48 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function updateDisburseByUserAndBatch($data, $updatingIds = [])
 	{
 		if (is_array($updatingIds)) {
-			$response =  Disbursal::where($updatingIds)
+			$response =  Disbursal::whereIn('disbursal_id', $updatingIds)
 				->update($data);
 		}
 		return ($response) ?? $response;
 	}          
-	 
+	/**
+	 * Create disbursaal status log
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function createDisbursalStatusLog($disbursalId, $statusId = null, $remarks = '', $createdBy)
+	{
+		$curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+		return DisbursalStatusLog::create([
+                    'disbursal_id' => $disbursalId,
+                    'status_id' => $statusId,
+                    'disbursal_comm_txt' => $remarks,
+                    'created_by' => $createdBy,
+                    'created_at' => $curData,
+                ]);
+	}
+	 /**
+	 * Get Repayments
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function updateInvoiceDisbursed($data, $invoiceDisbursalIds)
+	{
+		if (!is_array($invoiceDisbursalIds)) {
+			return InvoiceDisbursed::where('invoice_disbursed_id', $invoiceDisbursalIds)
+				->update($data);
+		} else {
+			return InvoiceDisbursed::whereIn('invoice_disbursed_id', $invoiceDisbursalIds)
+					->update($data);
+		}
+	}
+
 	 /**
 	 *      
 	 * @param array $whereCondition | optional
@@ -862,10 +927,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return RequestAssign::getReqCurrentAssignee($reqId);
     }
 
-	public function findDisbursalByUserAndBatchIds($data)
+	public function findInvoicesByUserAndBatchId($data)
+	{
+		return InvoiceDisbursed::whereHas('disbursal', function ($query) use($data){
+				 	$query->where($data);
+			  	})
+				->pluck('invoice_id');
+	}
+
+	public function findDisbursalByUserAndBatchId($data)
 	{
 		return Disbursal::where($data)
-				->pluck('invoice_id');
+				->pluck('disbursal_id');
 	}
 
 	public function updateInvoicesStatus($invoiceIds, $status)
@@ -898,9 +971,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::get();
 	}        
 
-	public function findDisbursalByInvoiceId($invoiceId)
+	public function findInvoiceDisbursedByInvoiceId($invoiceId)
 	{
-		return Disbursal::where('invoice_id', $invoiceId)
+		return InvoiceDisbursed::where('invoice_id', $invoiceId)
 				->get();
 	}
         
@@ -956,5 +1029,44 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
         return RefundBatch::create($disburseBatch);
-    }        
+	} 
+
+	public static function getUnsettledTrans($userId){
+		return Transactions::getUnsettledTrans($userId);
+	}
+
+	public static function getSettledTrans($userId){
+		return Transactions::getSettledTrans($userId);
+	}
+
+	public static function getRefundTrans($userId){
+		return Transactions::getRefundTrans($userId);
+	}
+
+	public static function getPaymentDetail($paymentId, $userId){
+		return Payment::where('payment_id','=',$paymentId)
+		->where('user_id','=',$userId)
+		->first();
+	}
+
+	public static function getUnsettledInvoices($data){
+		return Transactions::getUnsettledInvoices($data);
+	}
+	
+	public static function getTransDetail($data){
+		return Transactions::getTransDetail($data);
+	}
+
+	public static function getUnsettledInvoiceTransactions($data){
+		return Transactions::getUnsettledInvoiceTransactions($data);
+	}
+
+	public static function getUnsettledChargeTransactions($data){
+		return Transactions::getUnsettledChargeTransactions($data);
+	}
+	
+	public static  function calInvoiceRefund($invoiceDisbursalId, $paymentDate)
+	{
+		return Transactions::calInvoiceRefund($invoiceDisbursalId, $paymentDate);
+	}
 }

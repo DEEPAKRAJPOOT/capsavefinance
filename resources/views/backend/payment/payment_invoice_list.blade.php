@@ -32,10 +32,10 @@
                                         <td>{{date('d-m-Y',strtotime($repayment->trans_date))}}</td>
                                         <td>{{date('d-M-Y',strtotime($repayment->created_at))}}</td>
                                         <td>
-                                            @if($repayment->trans_detail->chrg_master_id!='0')
-                                                {{$repayment->trans_detail->charge->chrg_name}}
+                                            @if($repayment->transType->chrg_master_id!='0')
+                                                {{$repayment->transType->charge->chrg_name}}
                                             @else
-                                                {{$repayment->trans_detail->trans_name}}
+                                                {{$repayment->transType->trans_name}}
                                             @endif
                                         </td>
                                         <td>
@@ -70,10 +70,10 @@
                                         <td> {{date('d-m-Y',strtotime($repay->trans_date))}}</td>
                                         <td>{{date('d-M-Y',strtotime($repay->created_at))}}</td>
                                         <td>
-                                            @if($repay->trans_detail->chrg_master_id!='0')
-                                                {{$repay->trans_detail->charge->chrg_name}}
+                                            @if($repay->transType->chrg_master_id!='0')
+                                                {{$repay->transType->charge->chrg_name}}
                                             @else
-                                                {{$repay->trans_detail->trans_name}}
+                                                {{$repay->transType->trans_name}}
                                             @endif
                                         </td>
                                         <td>

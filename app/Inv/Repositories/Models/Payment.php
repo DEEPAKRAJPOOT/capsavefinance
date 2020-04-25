@@ -113,15 +113,22 @@ class Payment extends BaseModel {
        return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function getCreatedByName() {
+       return $this->belongsTo(User::class, 'created_by');
+    }
 
-    public static function getPaymentModeAttribute() {
+    public function transType(){
+       return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type');
+    }   
+
+    public function getPaymentModeAttribute() {
         $payment_type = $this->payment_type;
         $payModes = config('payment.type') ?? [];
         $mode_of_pay = $payModes[$payment_type] ?? NULL;
         return $mode_of_pay;
     }
 
-    public static function getTransNameAttribute() {
+    public function getTransNameAttribute() {
         $payment_type = $this->payment_type;
         switch ($payment_type) {
             case '1':

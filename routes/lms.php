@@ -313,7 +313,72 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_process_refund',
                 'uses' => 'Lms\RefundController@processRefund'
             ]); 
+
+            Route::get('/apportionment/unsettled/view',[
+                'as' => 'apport_unsettled_view',
+                'uses' => 'Lms\ApportionmentController@viewUnsettledTrans'
+            ]);
+
+            Route::get('/apportionment/settled/view',[
+                'as' => 'apport_settled_view',
+                'uses' => 'Lms\ApportionmentController@viewSettledTrans'
+            ]);
+
+            Route::get('/apportionment/refund/view',[
+                'as' => 'apport_refund_view',
+                'uses' => 'Lms\ApportionmentController@viewRefundTrans'
+            ]);
+
+            Route::post('/apportionment/unsettled/list',[
+                'as' => 'apport_unsettled_list',
+                'uses' => 'Lms\ApportionmentController@listUnsettledTrans'
+            ]);
+
+            Route::post('/apportionment/settled/list',[
+                'as' => 'apport_settled_list',
+                'uses' => 'Lms\ApportionmentController@listSettledTrans'
+            ]);
+
+            Route::post('/apportionment/refund/list',[
+                'as' => 'apport_refund_list',
+                'uses' => 'Lms\ApportionmentController@listRefundTrans'
+            ]);
+
+            Route::post('/apportionment/mark/settle/confirmation',[
+                'as' => 'apport_mark_settle_confirmation',
+                'uses' => 'Lms\ApportionmentController@markSettleConfirmation'
+            ]);
+
+            Route::post('/apportionment/mark/settle/save',[
+                'as' => 'apport_mark_settle_save',
+                'uses' => 'Lms\ApportionmentController@markSettleSave'
+            ]);
             
+            Route::post('/apportionment/settled/save',[
+                'as' => 'apport_settled_save',
+                'uses' => 'Lms\ApportionmentController@saveSettledTrans'
+            ]);
+
+            Route::get('/apportionment/txn/waiveoff',[
+                'as' => 'apport_trans_waiveoff',
+                'uses' => 'Lms\ApportionmentController@getTransDetailWaiveOff'
+            ]);
+
+            Route::get('/apportionment/txn/reversal',[
+                'as' => 'apport_trans_reversal',
+                'uses' => 'Lms\ApportionmentController@getTransDetailReversal'
+            ]);
+
+            Route::post('/apportionment/waiveoff/save',[
+                'as' => 'apport_waiveoff_save',
+                'uses' => 'Lms\ApportionmentController@saveWaiveOffDetail'
+            ]);
+
+            Route::post('/apportionment/reversal/save',[
+                'as' => 'apport_reversal_save',
+                'uses' => 'Lms\ApportionmentController@saveReversalDetail'
+            ]);
+
         });
         
         //end of application

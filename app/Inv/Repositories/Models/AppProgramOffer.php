@@ -500,7 +500,7 @@ class AppProgramOffer extends BaseModel {
         return !$result->isEmpty() ? $result : [];
     }
     
-    public static function chargeName(){
+    public function chargeName(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
     }    
 }
