@@ -338,11 +338,11 @@ cursor: pointer;
             switch (action_type) {
                 case "1":
                     if(trans_type==17){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -351,7 +351,7 @@ cursor: pointer;
                     break;
                 case "2":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -360,7 +360,7 @@ cursor: pointer;
                     break;
                 case "3":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -551,7 +551,7 @@ cursor: pointer;
             success: function (res) {
                 var amt = parseFloat(res.amount);
                 if (res.status == 'success') {
-                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                     $('#amount').val(amt.toFixed(2));
                     $('#amount').attr('max',amt.toFixed(2));
                 }else{

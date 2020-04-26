@@ -124,7 +124,7 @@ class TransType extends BaseModel {
         $result = \DB::SELECT(\DB::raw($query));
 
         foreach ($result as $key => $value) {
-            array_push($trans_type,$value->trans_type);
+            array_push($trans_type,(int)$value->trans_type);
         }
 
         return self::select('id','credit_desc','trans_name')
