@@ -92,7 +92,7 @@ class ApportionmentController extends Controller
             $sanctionPageView = $request->has('sanctionPageView');
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
-            return view('lms.apportionment.RefundTransactions')
+            return view('lms.apportionment.refundTransactions')
                 ->with('userDetails', $userDetails)
                 ->with('sanctionPageView',$sanctionPageView); 
 
