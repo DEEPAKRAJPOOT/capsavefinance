@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Master;
 use Auth;
 use Session;
 use Helpers;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Lms\BankAccountRequest;
@@ -77,13 +76,14 @@ class CompanyController extends Controller {
                 $companies_data = $this->masterRepo->findCompanyById($company_id);
                 if (!empty($companies_data)) {
                     $arrCompaniesData['updated_by'] = Auth::user()->user_id;
-                    $arrCompaniesData['updated_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
+//                    $arrCompaniesData['updated_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
                     $status = $this->masterRepo->updateCompanies($arrCompaniesData, $company_id);
                 }
             } else {
                 $arrCompaniesData['comp_name_id'] = 1;
                 $arrCompaniesData['created_by'] = Auth::user()->user_id;
-                $arrCompaniesData['created_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
+//                $arrCompaniesData['created_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
+//                dd($arrCompaniesData);
                 $status = $this->masterRepo->saveCompanies($arrCompaniesData);
             }
             if ($status) {
