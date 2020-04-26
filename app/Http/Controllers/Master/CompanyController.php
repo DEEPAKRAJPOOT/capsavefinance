@@ -63,6 +63,7 @@ class CompanyController extends Controller {
                 $is_reg = (int)$request->get('is_reg');
                 $data = $this->masterRepo->checkIsRegCompany($comp_name,$is_reg);
                 $regComData = $data ? $data->toArray() : '';
+//                dd($regComData);
                 if (!empty($regComData)) {
                     $company_id = $regComData['comp_add_id'];
                     $regComData['is_reg'] = 0;

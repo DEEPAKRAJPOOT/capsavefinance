@@ -44,7 +44,7 @@ class Company extends BaseModel {
      */
     protected $fillable = [
         'comp_name_id',
-        'comp_add_id',
+        'cmp_name',
         'cmp_add',
         'gst_no',
         'pan_no',
@@ -140,7 +140,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        $res = self::where(['comp_add_id' => $name, 'is_reg' => $is_reg])->first();
+        $res = self::where(['cmp_name' => $name, 'is_reg' => $is_reg])->first();
         
         return $res;
     }
@@ -158,10 +158,10 @@ class Company extends BaseModel {
     
     public static function getCompNameByCompId($compId){
         
-        $compName = self::select('comp_add_id')->where('comp_add_id', $compId)->first();
-        
-        $CompIdArr = self::where(['comp_add_id' => $compName->comp_add_id])->get();
-        
+        $compName = self::select('cmp_name')->where('comp_add_id', $compId)->first();
+//        dd($compName);
+        $CompIdArr = self::where(['cmp_name' => $compName->cmp_name])->get();
+//        dd($CompIdArr);
         return $CompIdArr;
         
     }
