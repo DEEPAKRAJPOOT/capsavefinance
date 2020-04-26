@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Dompdf\Helpers;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
@@ -63,7 +64,9 @@ class ManualApportionmentHelper{
             $intAccrualData['accrued_interest'] = $interestAmt;
             $intAccrualData['interest_rate'] = null;
             $intAccrualData['overdue_interest_rate'] = $odIntRate;
-            
+            $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+            $intAccrualData['created_by'] = Auth::user()->user_id;
+
             if($interest_accrual_id){
                 $recalwhereCond = [];
                 $recalwhereCond['interest_accrual_id'] = $interest_accrual_id;
@@ -185,6 +188,8 @@ class ManualApportionmentHelper{
                     $intAccrualData['accrued_interest'] = $interestAmt;
                     $intAccrualData['interest_rate'] = ($intType==1)?$intRate:null;
                     $intAccrualData['overdue_interest_rate'] = ($intType==2)?$odIntRate:null;
+                    $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+                    $intAccrualData['created_by'] = Auth::user()->user_id;
                     
                     if($interest_accrual_id){
                         $recalwhereCond = [];
