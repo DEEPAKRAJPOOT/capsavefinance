@@ -83,9 +83,14 @@ class PaymentController extends Controller {
 	   return  $d = \DateTime::createFromFormat($format, $date);
 	 }
 
-	 public function unsettledPayment() {
-	   return view('backend.payment.post_payment');
-	 }
+	public function unsettledPayment() {
+		return view('backend.payment.unsettled_payment');
+	}
+
+	public function settledPayment() {
+		return view('backend.payment.settled_payment');
+	}
+
  	public function EditPayment(Request $request) {
  		$paymentId = $request->payment_id;
 	  	$data  =  $this->invRepo->getPaymentById($paymentId);
@@ -126,7 +131,7 @@ class PaymentController extends Controller {
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}
-			// dd($userFile);
+
 			$paymentData = [
 				'user_id' => $request->user_id,
 				'biz_id' => $request->biz_id,
@@ -147,7 +152,7 @@ class PaymentController extends Controller {
 				'tds_certificate_no' => $request->tds_certificate_no ?? '',
 				'file_id' => $userFile->file_id ?? '',
 				'description' => $request->description,
-				'is_settled' => '0',
+				'is_settled' => (in_array($request->action_type, [3])) ? '1':'0',
 				'is_manual' => '1',
 				'created_at' => $mytime,
 				'created_by' => $user_id,
@@ -207,15 +212,13 @@ class PaymentController extends Controller {
 					'is_posted_in_taaly' => 0,
 					'created_at' =>  $mytime,
                     'created_by' =>  $user_id,
-		  		];
-			$res = $this->invRepo->saveRepaymentTrans($tran);
-			if( $res)
+				  ];
+			if($request->action_type == 13){
+				$res = $this->invRepo->saveRepaymentTrans($tran);
+			}
+
+			if($paymentId)
 			{
-				$appId = null;
-				if($request['trans_type']==17){
-					// $Obj = new ApportionmentHelper($this->appRepo,$this->userRepo, $this->docRepo, $this->lmsRepo);
-					// $Obj->init($res->trans_id);
-				}
 		  		Session::flash('message',trans('backend_messages.add_payment_manual'));
 			  	return redirect()->route('payment_list');
 			}
@@ -449,7 +452,7 @@ class PaymentController extends Controller {
 	$objPHPExcel->setActiveSheetIndex(0)
 				->setCellValue('F'.$counter, $totalMarginAmount);
 	
-  /*   $counter +=1;
+    /*  $counter +=1;
 	$objPHPExcel->setActiveSheetIndex(0)
 				->setCellValue('A'.$counter, 'Overdue')
 				->setCellValue('E'.$counter, '');
@@ -490,7 +493,6 @@ class PaymentController extends Controller {
   {
 	$transId = $request->get('trans_id');
 	$data = $this->calculateRefund($transId);
-	
 	return view('backend.payment.payment_invoice_list', $data);
   }
   

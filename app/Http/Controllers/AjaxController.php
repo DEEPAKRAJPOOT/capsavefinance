@@ -4391,6 +4391,15 @@ if ($err) {
         return $this->providerResult;
     }
 
+    public function getSettledPayments(DataProviderInterface $dataProvider) {
+        $user_id = $this->request->user_id;
+        $this->dataRecords = [];
+        if (!empty($user_id)) {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+        }
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
     
     public function checkBankAccExist(Request $req){
         

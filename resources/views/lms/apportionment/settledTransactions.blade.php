@@ -9,9 +9,11 @@
 @endsection
 
 @section('content')
-
+@if($sanctionPageView)
+    @include('layouts.backend.partials.admin_customer_links',['active'=>'settledTrans'])
+@endif
 <div class="content-wrapper">
-
+    @if(!$sanctionPageView)
     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
@@ -26,9 +28,12 @@
             </ol>
         </div>
     </section>
+    @endif
     <div class="card">
         <div class="card-body">   
+        @if(!$sanctionPageView)    
             @include('lms.apportionment.common.userDetails')
+        @endif
             <div class="row">
                 @include('lms.apportionment.common.listSettledTransactions')
             </div>
@@ -40,7 +45,7 @@
         </div>
      <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>
-{!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
+{!!Helpers::makeIframePopup('viewDetailFrame','Reverse Transaction', 'modal-md')!!}
 </div>
 @endsection
 

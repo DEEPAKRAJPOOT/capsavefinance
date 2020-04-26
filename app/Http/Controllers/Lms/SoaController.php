@@ -42,9 +42,23 @@ class SoaController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function list()
-	{
-		return view('lms.soa.list');              
+	public function list(Request $request)
+	{	
+		$userData = [];
+		if($request->has('user_id')){
+			$user = $this->userRepo->lmsGetCustomer($request->user_id);
+			if($user && $user->app_id){
+				$userData['user_id'] = $user->user_id;
+				$userData['customer_id'] = $user->customer_id;
+				$appDetail = $this->appRepo->getAppDataByAppId($user->app_id);
+				if($appDetail){
+					$userData['app_id'] = $appDetail->app_id;
+					$userData['biz_id'] = $appDetail->biz_id;
+				}
+			}
+		}
+		
+		return view('lms.soa.list')->with('user',$userData);              
 	}
 
 }

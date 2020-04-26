@@ -1,5 +1,4 @@
 @extends('layouts.backend.admin-layout')
-
 @section('additional_css')
 <style>
     .Lh-3{
@@ -9,9 +8,11 @@
 @endsection
 
 @section('content')
-
+@if($sanctionPageView)
+    @include('layouts.backend.partials.admin_customer_links',['active'=>'unsettledTrans'])
+@endif
 <div class="content-wrapper">
-
+    @if(!$sanctionPageView)
     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
@@ -26,11 +27,15 @@
             </ol>
         </div>
     </section>
-
+    @endif
     <div class="card">
-        <div class="card-body">       
+        <div class="card-body"> 
+        @if(!$sanctionPageView)      
             @include('lms.apportionment.common.userDetails')
+            @if($paymentId)
             @include('lms.apportionment.common.paymentDetails')
+            @endif
+        @endif
             <form action="{{ route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId]) }}" method="post" onsubmit="return apport.validateMarkSettled(this)">
              @csrf	
             <div class="row">
@@ -38,7 +43,7 @@
             </div>
             <div class="row pull-right">
                 <div class="col-md-12" >
-                    <input type="submit" value="Mark Settled" class="btn btn-success btn-sm">
+                    @if($paymentId) <input type="submit" value="Mark Settled" class="btn btn-success btn-sm"> @endif
                     <input type="button" value="Wave Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
                 </div>
             </div>

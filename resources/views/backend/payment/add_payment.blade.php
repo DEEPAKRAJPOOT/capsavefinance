@@ -72,7 +72,7 @@
                                                 <select class="form-control" name="action_type" id="action_type">
                                                     <option value="">Select Action Type</option>
                                                     <option value="1">Receipt</option>
-                                                    <option value="2">Wave Off</option>
+                                                    {{-- <option value="2">Wave Off</option> --}}
                                                     <option value="3">TDS</option>
                                                 </select>
                                                 <span id="action_type_error" class="error"></span>

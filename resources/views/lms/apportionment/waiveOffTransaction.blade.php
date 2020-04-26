@@ -32,6 +32,7 @@
             <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->user->f_name . ' ' . $TransDetail->user->l_name }}">
         </div>
     </div>
+    @if($TransDetail->transType->chrg_master_id == 0)
     <div class="form-inline">
         <div class="col">
             <label for="chrg_name">Margin</label>
@@ -52,6 +53,7 @@
             <input type="text" readonly="readonly"  class="form-control" value="{{ $TransDetail->disburse->total_interest ?? 0}}">
         </div>
     </div>
+    @endif
     <div class="form-inline">
         <div class="col">
             <label for="chrg_name"> Transaction Amount</label>

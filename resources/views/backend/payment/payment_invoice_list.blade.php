@@ -29,57 +29,29 @@
                                 $balanceAmount = $repayment->amount;
                             @endphp
                                     <tr>
-                                        <td>{{date('d-m-Y',strtotime($repayment->trans_date))}}</td>
+                                        <td>{{date('d-m-Y',strtotime($repayment->date_of_payment))}}</td>
                                         <td>{{date('d-M-Y',strtotime($repayment->created_at))}}</td>
-                                        <td>
-                                            @if($repayment->transType->chrg_master_id!='0')
-                                                {{$repayment->transType->charge->chrg_name}}
-                                            @else
-                                                {{$repayment->transType->trans_name}}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($repayment->disbursal_id && $repayment->disburse->invoice  {{--  && $repayment->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF' --}} ))
-                                                {{$repayment->disburse->invoice->invoice_no}}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($repayment->entry_type=='0')
-                                                {{ number_format($repayment->amount,2) }}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($repayment->entry_type=='1')
-                                                {{ number_format($repayment->amount,2) }}
-                                            @endif
-                                        </td>
-                                        <td> {{number_format($repayment->amount,2)}} </td>
+                                        <td>{{ $repayment->transname }}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{ number_format($repayment->amount,2) }}</td>
+                                        <td>{{ number_format($repayment->amount,2) }}</td>
                                     </tr>
                                 @foreach($repaymentTrails as $repay)
                                     @php 
-                                            if($repay->entry_type=='1')
-                                                $balanceAmount += $repay->amount;
-                                                if($repay->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                                                    $balanceAmount -= $repay->amount;
-                                                }
-                                            elseif($repay->entry_type=='0')
-                                                $balanceAmount -= $repay->amount;
+                                        if($repay->entry_type=='1')
+                                            $balanceAmount -= $repay->amount;
+                                        elseif($repay->entry_type=='0')
+                                            $balanceAmount += $repay->amount;
                                             
                                     @endphp
                                     <tr role="row" >
                                         <td> {{date('d-m-Y',strtotime($repay->trans_date))}}</td>
-                                        <td>{{date('d-M-Y',strtotime($repay->created_at))}}</td>
+                                        <td> {{date('d-m-Y',strtotime($repay->created_at))}}</td>
+                                        <td> {{$repay->TransName}}</td>
                                         <td>
-                                            @if($repay->transType->chrg_master_id!='0')
-                                                {{$repay->transType->charge->chrg_name}}
-                                            @else
-                                                {{$repay->transType->trans_name}}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{-- @if($repay->disburse && $repay->disburse->invoice && $repay->trans_type == config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF')) --}}
-                                            @if(isset($repay->disbursal_id))
-                                                {{$repay->disburse->invoice->invoice_no}}
+                                            @if($repay->invoice_disbursed_id && $repay->invoiceDisbursed->invoice_id)
+                                                {{$repay->invoiceDisbursed->invoice->invoice_no}}
                                             @endif 
                                         </td>
                                         <td>

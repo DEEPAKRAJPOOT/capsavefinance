@@ -214,12 +214,17 @@ Route::group(
         ]
     );
 
-   Route::post('get_to_settle_payments', [
+    Route::post('get_to_settle_payments', [
         'as' => 'get_to_settle_payments',
         'uses' => 'AjaxController@getToSettlePayments'
         ]
     );
 
+    Route::post('get_settled_payments', [
+        'as' => 'get_settled_payments',
+        'uses' => 'AjaxController@getSettledPayments'
+        ]
+    );
   
    //
     Route::post(

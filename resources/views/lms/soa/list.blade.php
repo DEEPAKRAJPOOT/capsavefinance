@@ -8,8 +8,11 @@
 </style>
 @endsection
 @section('content')
-
+@if(request()->get('sanctionPageView'))
+    @include('layouts.backend.partials.admin_customer_links',['active'=>'custSoa'])
+@endif
 <div class="content-wrapper">
+  @if(!request()->get('sanctionPageView'))
     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
@@ -23,7 +26,7 @@
             </ol>
         </div>
     </section>
-
+    @endif
 
     <div class="card">
         <div class="card-body">       
@@ -51,6 +54,7 @@
                     ])
                     !!} 
                 </div>
+                @if(!request()->get('sanctionPageView'))
                 <div class="col-md-3" id="prefetch">
                     {!!
                     Form::text('search_keyword',
@@ -63,18 +67,22 @@
                     ])
                     !!}
                 </div>
+                @endif
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
-                {!! Form::hidden('biz_id', null, [
-                    'id'=>'biz_id'
-                ]) !!}
+                {!! Form::hidden('biz_id', 
+                    isset($user['biz_id'])?$user['biz_id']:null, 
+                    [ 'id'=>'biz_id']) 
+                !!}
 
-                {!! Form::hidden('user_id', null, [
-                    'id'=>'user_id'
-                ]) !!}
+                {!! Form::hidden('user_id', 
+                    isset($user['user_id'])?$user['user_id']:null, 
+                    [ 'id'=>'user_id' ]) 
+                !!}
 
-                {!! Form::hidden('customer_id', null, [
-                    'id'=>'customer_id'
-                ]) !!}
+                {!! Form::hidden('customer_id',  
+                    isset($user['customer_id'])?$user['customer_id']:null, 
+                    [ 'id'=>'customer_id' ])
+                !!}
                 
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">

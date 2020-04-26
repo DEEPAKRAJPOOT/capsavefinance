@@ -1745,7 +1745,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
-                        $tdsType = ($trans->transaction->trans_type == 7) ? '/TDS' : '';   
+                        $tdsType = ($trans->action_type == 3) ? '/TDS' : '';   
                         return $trans->transType->trans_name . $tdsType;
                 })
                  ->addColumn(
@@ -1766,8 +1766,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($trans) {
                         $act = '';
-                        if (isset($trans->transaction->trans_type) && $trans->transaction->trans_type == 7) {
-
+                        if ($trans->action_type == 3) {
                             $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
                         }
                     return $act;
@@ -3841,8 +3840,8 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('invoice_no',function($trans){
                 $data = '';
-                if($trans->disbursal_id && $trans->disburse && $trans->disburse->invoice ){
-                    $data = $trans->disburse->invoice->invoice_no; 
+                if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
+                    return $trans->invoiceDisbursed->invoice->invoice_no;
                 }
                 return $data;
             })
@@ -4556,6 +4555,8 @@ class DataRenderer implements DataProviderInterface
                             $btn = '';
                             if($dataRecords->is_settled == 0){
                                 $btn .= "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
+                            }else{
+                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('payment_refund_index', ['trans_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-undo"></a>';
                             } 
                             return $btn;
                     }) 
@@ -5358,10 +5359,15 @@ class DataRenderer implements DataProviderInterface
                 return "₹ ".number_format($trans->outstanding,2);
             })
             ->addColumn('payment_date', function($trans)use($payment){
-                return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
+                if($payment){
+                    return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
+                }
             })
-            ->addColumn('pay', function($trans){
-                $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
+            ->addColumn('pay', function($trans)use($payment){
+                $result = '';
+                if($payment){
+                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
+                }
                 return $result;
             })
             ->addColumn('select', function($trans){
@@ -5419,7 +5425,7 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
-                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
+                return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
@@ -5434,17 +5440,6 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('outstanding_amt', function($trans){
                 return "₹ ".number_format($trans->refundoutstanding,2);
-            })
-            ->addColumn('payment_date', function($trans){
-                return Carbon::parse($trans->payment->date_of_payment)->format('d-m-Y');
-            })
-            ->addColumn('pay', function($trans){
-                $result = "<input type='text' max='".$trans->outstanding."' name='payment[".$trans->trans_id."]'>";
-                return $result;
-            })
-            ->addColumn('select', function($trans){
-                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
-                return $result;
             })
             ->make(true);
     }

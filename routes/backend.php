@@ -1267,15 +1267,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         
         Route::group(['prefix' => 'payment'], function () {
             Route::get('payment_list', [
-                 'as' => 'payment_list',
+                'as' => 'payment_list',
                 'uses' => 'Backend\PaymentController@paymentList'
             ]);
 
             Route::get('unsettled_payments', [
-                 'as' => 'unsettled_payments',
+                'as' => 'unsettled_payments',
                 'uses' => 'Backend\PaymentController@unsettledPayment'
             ]); 
             
+            Route::get('settled_payments', [
+                'as' => 'settled_payments',
+                'uses' => 'Backend\PaymentController@settledPayment'
+            ]);
+
             Route::get('excel_payment_list', [
                  'as' => 'excel_payment_list',
                 'uses' => 'Backend\PaymentController@excelPaymentList'
@@ -1312,13 +1317,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('payment_advice', [
                 'as' => 'payment_advice',
                'uses' => 'Backend\PaymentController@paymentAdviceList'
-           ]); 
+            ]); 
            
             // Payment Advice Excel Download
             Route::get('payment_advice_excel', [
                 'as' => 'payment_advice_excel',
                'uses' => 'Backend\PaymentController@paymentAdviceExcel'
-           ]); 
+            ]); 
 
          });
 
