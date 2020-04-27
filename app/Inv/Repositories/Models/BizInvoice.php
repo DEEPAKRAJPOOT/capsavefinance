@@ -369,7 +369,7 @@ public static function saveBulkInvoice($arrInvoice)
    public static function getUserWiseInvoiceData($user_id)
     {
         
-        return self::with('mstStatus','disbursal')->where(['supplier_id' => $user_id]);
+        return self::with('mstStatus','invoice_disbursed')->where(['supplier_id' => $user_id]);
     }
     
     public static function getUserInvoiceIds($userId)
