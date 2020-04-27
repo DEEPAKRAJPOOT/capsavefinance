@@ -20,6 +20,7 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 
 trait InvoiceTrait
@@ -357,7 +358,9 @@ trait InvoiceTrait
         return   AppProgramOffer::whereHas('productHas')->where('app_id',$getDetails['app_id'])->where(['anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
         
    }
-   
+     /* check the user app limit  */
+    /* Use  app_limit table */
+    /* Created by gajendra chahan  */ 
    public static  function limitExpire($cid)
    {
         $mytime = Carbon::now();
@@ -378,7 +381,9 @@ trait InvoiceTrait
   {
       return BizInvoice::where(['invoice_id' => $attr['invoice_id']])->first();
   }
-  
+   /* update manuall status by limit  */
+    /* Use  invoice table */
+    /* Created by gajendra chahan  */ 
   public static function getManualInvoiceStatus($inv_details)
   {
             $mytime = Carbon::now();
@@ -391,6 +396,8 @@ trait InvoiceTrait
             $cid = $inv_details['supplier_id'];
             $sum =  self::invoiceApproveLimit($attr);
             $limit   =  self::ProgramLimit($inv_details);
+            $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
+            $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
           if($inv_details['status_id']==8)  
          {     
               $finalsum = $sum-$inv_details['invoice_approve_amount'];
@@ -400,39 +407,53 @@ trait InvoiceTrait
                        if($remain_amount >=$inv_details['invoice_approve_amount'])
                         { 
                            $status=8; 
-                           $limit_exceed=0;
+                           $limit_exceed='Auto Approve';
                         }
                         else 
                         {
                            $status=28; 
-                           $limit_exceed=1;
+                           $limit_exceed='Auto Approve, Limit exceed';
                         }
                        }
                     else 
                        {
                            $status=28; 
-                           $limit_exceed=1;
+                           $limit_exceed='Auto Approve, Limit exceed';
                        }
-                   InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status); 
-                return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>$status]);
+                 
+              if($isOverDue->is_overdue==1)
+             {
+                   $status=28; 
+                   $limit_exceed='Auto Approve, Overdue';
+             }       
+                InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status); 
+                return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
            }
            if($inv_details['status_id']==7)  
            { 
+                $status_id=7; 
+                $limit_exceed='';  
+                if($dueDateGreaterCurrentdate)
+                {
+                          $status_id=28; 
+                          $limit_exceed='User limit has been expire.'; 
+                }
+                   if($isOverDue->is_overdue==1)
+              {
+                   $status=28; 
+                    $limit_exceed='Overdue';
+              }  
                  InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,7); 
-               return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>7]);
+                 return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>7]);
             }
        
-         
-             $dueDateGreaterCurrentdate =  self::limitExpire($cid);
-             
-             if($dueDateGreaterCurrentdate)
-             {
-                   InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,28); 
-                return BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>'User limit has been expire','status_id' =>28]); 
-             }
+           
+            
  
   }  
-
+  /* checked  invoice limit exceed  */
+    /* Use  invoice table */
+    /* Created by gajendra chahan  */
    public static  function checkInvoiceLimitExced($attr)
    {
        
@@ -455,7 +476,10 @@ trait InvoiceTrait
         }
         return $msg;
     }
-      
+    
+    /* Update single invoice status id according user limit */
+    /* Use bulk and invoice table */
+    /* Created by gajendra chahan  */
       public static  function updateApproveStatus($attr)
    {
             $limitData[]="";
@@ -495,7 +519,10 @@ trait InvoiceTrait
                  return 2;
             }
     }
-  
+   /* Update bulk invoice status id according user limit */
+    /* Use bulk and invoice table */
+    /* Created by gajendra chahan  */
+    
    public static function updateLimit($status_id,$limit,$inv_amout,$attr,$invoice_id)
     {
         $cid  = $attr['supplier_id'];
@@ -550,7 +577,9 @@ trait InvoiceTrait
              return $rr;
         
     }
-   
+    /* Check Bulk invoice status */
+    /* Use bulk and invoice table */
+    /* Created by gajendra chahan  */
     public static function updateBulkLimit($limit,$inv_amout,$attr)
     {
         $cid  = $attr['supplier_id'];
@@ -592,7 +621,12 @@ trait InvoiceTrait
         
     }
    
-   
-   
+   /* Check overdue amount */
+    /* Use User details table */
+    /* Created by gajendra chahan  */
+  public static function isOverDue($user_id)
+  {
+    return  UserDetail::where('user_id',$user_id)->first();
+  }
    
 }
