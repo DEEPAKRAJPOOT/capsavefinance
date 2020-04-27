@@ -5,11 +5,12 @@
     <form id="companiesForm" name="companiesForm" method="POST" action="{{route('save_companies')}}" target="_top">
         @csrf
 
-        {!! Form::hidden('company_id' , isset($comData['company_id']) ? $comData['company_id'] : null, ['id'=>'company_id'])  !!}
+        {!! Form::hidden('comp_addr_id' , isset($comData['comp_addr_id']) ? $comData['comp_addr_id'] : null, ['id'=>'comp_addr_id'])  !!}
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cmp_name">Company Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : 'CAPSAVE FINANCE CONSULTANCY'}}" readonly="readonly">
+                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : 'CAPSAVE FINANCE PRIVATE LIMITED
+'}}" readonly="readonly">
                 {!! $errors->first('cmp_name', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
@@ -162,7 +163,7 @@
         $.validator.addMethod("unique_add", function (value, element) {
             var comp_add = value;
             var cmp_name = $('#cmp_name').val();
-            var comp_id = $('#company_id').val();
+            var comp_id = $('#comp_addr_id').val();
             var status = false;
 //            console.log(comp_id);
 //            if (gst_no.length < 1) {

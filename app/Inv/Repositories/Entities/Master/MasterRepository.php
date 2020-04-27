@@ -673,9 +673,9 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     /*
      * check that company is registered.
      */
-    public function checkIsRegCompany($cmp_name,$is_reg) {
+    public function checkIsRegCompany($cmp_name, $is_reg) {
         
-        $result = Company::checkIsRegCompany($cmp_name,$is_reg);
+        $result = Company::checkIsRegCompany($cmp_name, $is_reg);
   
         return $result;
     }

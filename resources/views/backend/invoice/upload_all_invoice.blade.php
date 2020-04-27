@@ -39,10 +39,9 @@
                                             @if(count($get_anchor) > 0)
                                               @if($anchor==11)
                                                @foreach($get_anchor as $row) 
-                                                    @php if(isset($row->anchorList->anchor_id)) {  
-                                                     if($id==$row->anchorList->anchor_id) { @endphp
+                                                    @php if(isset($row->anchorList->anchor_id)) {  @endphp
                                                     <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
-                                                    @php } } @endphp
+                                                    @php }  @endphp
                                                     @endforeach
                                               @else    
                                                 <option value="">Please Select</option>
@@ -68,6 +67,7 @@
                                             @if($anchor==11)
                                             <option value="">Please Select</option>
                                             @if($get_program)
+                                            {
                                              @foreach($get_program as $row1) 
                                               <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}</option>
                                                   
