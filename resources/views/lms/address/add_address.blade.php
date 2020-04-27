@@ -4,15 +4,19 @@
 <div class="modal-body text-left">
     <form id="addressForm" name="addressForm" method="POST" action="{{route('save_addr')}}" target="_top">
         {!! Form::hidden('user_id' , isset($user_id) ?$user_id : null ) !!}
+        {!! Form::hidden('biz_pan_gst_api_id') !!}
+        {!! Form::hidden('biz_pan_gst_id') !!}
         @csrf
 
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="address_type">GST Number <small>(if you want to prefill address based on GST)</small></label><br />
                 <select class="form-control" name="gst_no" id="gst_no" onchange="fillAddress(this.value)">
-                    <option disabled value="" selected>Select GST</option>
+                    <option disabled value="" data-id="" selected>Select GST</option>
                     @foreach($gsts as $gst)
-                    <option value="{{$gst->pan_gst_hash}}">{{$gst->pan_gst_hash}}</option>
+                        @if($gst->is_shown == 0)
+                        <option value="{{$gst->pan_gst_hash}}" data-id="{{$gst->biz_pan_gst_id}}">{{$gst->pan_gst_hash}}</option>
+                        @endif
                     @endforeach
                 </select>
             </div>
@@ -32,7 +36,7 @@
                 <label for="state_id">State Name</label>
                 <!-- <input type="text" class="form-control" id="state_id" name="state_id" placeholder="Enter State"> -->
                 <select class="form-control" name="state_id" id="state_id">
-                    <option disabled value="" selected>Select State</option>
+                    <option value="">Select State</option>
                     @foreach($state_list as $stateName=>$stateList)
                     <option value="{{$stateList}}">{{$stateName}}</option>
                     @endforeach
@@ -69,7 +73,7 @@
 @section('jscript')
 <script>
 var messages = {
-    biz_gst_to_entity_karza: "{{ URL::route('chk_biz_gst_to_entity') }}",
+    get_address_by_gst: "{{ URL::route('get_address_by_gst') }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}"
 };

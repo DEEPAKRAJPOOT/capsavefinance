@@ -380,9 +380,17 @@ class KarzaController extends Controller
         $requestArr   = $request->all();
         try{
           $result =  $KarzaApi->checkBizGstToEntity($requestArr);
-          $res = json_decode($result);
+          $res = json_decode($result,1);
+          if($res['statusCode'] == 101){
+            $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
+                'file_name' =>   $res['result']['pradr']['adr'],
+                'status' => 1,
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by' => Auth::user()->user_id,
+              ]);
+          }
           //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
-          return response()->json(['response' =>$res]);
+          return response()->json(['response' => $res, 'pgapiId' => $pgapiId]);
         }catch (Exception $e){
           return false;
         }      
@@ -398,11 +406,25 @@ class KarzaController extends Controller
         $requestArr   = $request->all();
         try{
           $result =  $KarzaApi->checkBizEntityToCin($requestArr);
-          $res = json_decode($result);
+          $res = json_decode($result,1);
           //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
           return response()->json(['response' =>$res]);
         }catch (Exception $e){
           return false;
+        }      
+    }
+
+    public function getAddressByGst(KarzaApi $KarzaApi, Request $request)
+    {
+        $requestArr   = $request->all();
+        $data = \DB::table('biz_pan_gst')->select('biz_pan_gst_api_id')->where(['pan_gst_hash'=>$request->gstin, 'type'=>2])->where('parent_pan_gst_id', '<>', 0)->where('biz_pan_gst_api_id', '<>', 0)->first();
+
+        if($data){
+          $addressData = \DB::table('biz_pan_gst_api')->select('file_name')->where('biz_pan_gst_api_id', $data->biz_pan_gst_api_id)->first();
+          $response = ['statusCode'=>101, 'result'=>['pradr'=>['adr'=>$addressData->file_name]]];
+          return response()->json(['response' => $response, 'pgapiId' => $data->biz_pan_gst_api_id]);
+        }else{
+          return $this->checkBizGstToEntity($KarzaApi, $request);
         }      
     }
 }

@@ -1047,4 +1047,10 @@ Route::group(
         'as' => 'get_user_invoice_list',
         'uses' => 'AjaxController@getUserInvoiceList'
     ]);   
+
+    Route::post('get_address_by_gst',[
+        'as' => 'get_address_by_gst',
+        'uses' => 'Karza\KarzaController@getAddressByGst'
+        ]
+    );
 });
