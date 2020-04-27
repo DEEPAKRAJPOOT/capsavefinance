@@ -129,6 +129,11 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds);
 	}
 
+	public function updateIsInvoiceGenerated($transDataArray){
+		$data = ['is_invoice_generated' => 1];
+		return Transactions::updateIsInvoiceGenerated($transDataArray, $data);
+	}
+
 	/**
 	 * Get AJAX list of user invoice result
 	 */
