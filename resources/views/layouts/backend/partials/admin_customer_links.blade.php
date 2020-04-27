@@ -37,7 +37,7 @@
     @can('apport_settled_view')
     <li>
         <a class=" {{ ($active=='settledTrans')? 'active': null }} " href="{{route('apport_settled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Settled Tran.</a>
-    <li>
+    </li>
       @endcan
          
 <!--
