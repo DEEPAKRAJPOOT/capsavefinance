@@ -211,29 +211,29 @@ class userInvoiceController extends Controller
            $trans_ids[] =  $value['trans_id'];
         }
         if (!in_array($invoice_type, ['I', 'C'])) {
-           return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
+           return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Invalid Invoice Type found.'); 
         }
         if (empty(preg_replace('#[^0-9]+#', '', $user_id))) {
-           return response()->json(['status' => 0,'message' => 'Invalid UserId Found.']); 
+           return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Invalid UserId Found.');
         }
         
         $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type, $trans_ids);
         if($txnsData->isEmpty()){
-            return response()->json(['status' => 0,'message' => 'No transaction found for the user.']); 
+            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No transaction found for the user.');
         }
         $userData = $this->UserInvRepo->getUser($user_id);
         $userStateId = $userData->state_id;
 
         $company_data = $this->_getCompanyDetail($user_id, $company_id, $bank_account_id);
         if ($company_data['status'] != 'success') {
-           return response()->json(['status' => 0,'message' => $company_data['message']]); 
+           return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error',  $company_data['message']);
         }
         $company_data = $company_data['data'];
         $companyStateId = $company_data['state']->id;
 
         $billingDetails = $this->_getBillingDetail($user_id);
         if ($billingDetails['status'] != 'success') {
-           return response()->json(['status' => 0,'message' => $billingDetails['message']]); 
+           return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error',  $billingDetails['message']);
         }
         $billingDetails = $billingDetails['data'];
         $origin_of_recipient = [
