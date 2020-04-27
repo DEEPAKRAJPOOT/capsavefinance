@@ -45,7 +45,7 @@ class FiRcuController extends Controller
 
         $status_lists = Status::where(['status_type'=>3, 'is_active'=>1])->pluck('status_name', 'id');
 
-        $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
+        $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)', 'Management Address', 'Additional Address'];
         //dd($fiLists[0]->fiAddress);
         return view('backend.fircu.fi')->with(['fiLists'=> $fiLists, 'addrType'=> $addrType, 'status_lists'=> $status_lists]);   
     }
@@ -114,7 +114,7 @@ class FiRcuController extends Controller
 
         $status_lists = Status::where(['status_type'=>3, 'is_active'=>1])->pluck('status_name', 'id');
 
-        $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)','Management Address'];
+        $addrType = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)', 'Management Address', 'Additional Address'];
         //dd($fiLists[0]->fiAddress);
         return view('backend.fircu.inspection')->with(['fiLists'=> $fiLists, 'addrType'=> $addrType, 'status_lists'=> $status_lists]);   
     }

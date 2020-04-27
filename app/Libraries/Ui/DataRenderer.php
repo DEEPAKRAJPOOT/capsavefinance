@@ -2322,7 +2322,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getFiListsList(Request $request, $data)
     {
-        $type = ['Company (Registered Address)', 'Company (Communication Address)', 'Company (GST Address)', 'Company (Warehouse Address)', 'Company (Factory Address)','Promoter Address'];
+        $type = ['Company (GST Address)', 'Company (Communication Address)', 'Company ()', 'Company (Warehouse Address)', 'Company (Factory Address)', 'Management Address', 'Additional Address'];
         return DataTables::of($data)
                 ->rawColumns(['id', 'action', 'status'])
                 ->addColumn(
