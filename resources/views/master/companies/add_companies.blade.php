@@ -5,7 +5,7 @@
     <form id="companiesForm" name="companiesForm" method="POST" action="{{route('save_companies')}}" target="_top">
         @csrf
 
-        {!! Form::hidden('company_id' , isset($comData['company_id']) ? $comData['company_id'] : null, ['id'=>'company_id'])  !!}
+        {!! Form::hidden('comp_addr_id' , isset($comData['comp_addr_id']) ? $comData['comp_addr_id'] : null, ['id'=>'comp_addr_id'])  !!}
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cmp_name">Company Name <span class="mandatory">*</span></label>
@@ -162,7 +162,7 @@
         $.validator.addMethod("unique_add", function (value, element) {
             var comp_add = value;
             var cmp_name = $('#cmp_name').val();
-            var comp_id = $('#company_id').val();
+            var comp_id = $('#comp_addr_id').val();
             var status = false;
 //            console.log(comp_id);
 //            if (gst_no.length < 1) {

@@ -43,7 +43,7 @@ class UserBankAccount extends BaseModel {
      */
     protected $fillable = [
         'user_id',
-        'company_id',
+        'comp_addr_id',
         'anchor_id',
         'acc_name',
         'bank_id',
@@ -162,7 +162,7 @@ class UserBankAccount extends BaseModel {
 
         $res = self::select('user_bank_account.*', 'mb.bank_name as bank_name')
                 ->leftjoin('mst_bank as mb', 'user_bank_account.bank_id', '=', 'mb.id')
-                ->where('company_id','=',(int)$comp_id)
+                ->where('comp_addr_id','=',(int)$comp_id)
                 ->get();
         
         return $res ?: false;
@@ -180,7 +180,7 @@ class UserBankAccount extends BaseModel {
     {
 
         $res = self::where('bank_account_id','=',(int)$acc_id)
-                ->where('company_id','=',(int)$comp_id)
+                ->where('comp_addr_id','=',(int)$comp_id)
                 ->get();
         
         return $res ?: false;
@@ -219,7 +219,7 @@ class UserBankAccount extends BaseModel {
     }
     
     /**
-     * get Bank account data by company id
+     * get Bank account data by comp_addr_id 
      * 
      * @param type $where array
      * @return type mixed
@@ -232,7 +232,7 @@ class UserBankAccount extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 //        dd($arr, $is_default);
-        $result = self::whereIn('company_id', $arr)
+        $result = self::whereIn('comp_addr_id', $arr)
                 ->where('is_default', $is_default)
                 ->first();
         
