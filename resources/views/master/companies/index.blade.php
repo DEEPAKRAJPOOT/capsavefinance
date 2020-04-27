@@ -81,7 +81,7 @@
                                            data-width="100%" 
                                            data-target="#add_bank_account"
                                            id="register" 
-                                           data-url="{{ route('add_company_bank_account',['comp_add_id' => $company['comp_add_id']]) }}" >
+                                           data-url="{{ route('add_company_bank_account',['comp_addr_id' => $company['comp_addr_id']]) }}" >
                                             <button class="btn  btn-success btn-sm float-left mb-2" type="button">
                                                 <i class="fa fa-plus"></i> Add Account
                                             </button>
@@ -95,7 +95,7 @@
                                             data-height="350px" 
                                             data-width="100%"
                                             data-target="#addCompaniesFrame" 
-                                            data-url="{{ route('edit_companies',['id' => $company['comp_add_id']]) }}"
+                                            data-url="{{ route('edit_companies',['id' => $company['comp_addr_id']]) }}"
                                             data-placement="top"
                                             <button class="btn btn-action-btn btn-sm" type="button">
                                                 <i class="fa fa-edit"></i>
@@ -123,7 +123,7 @@
 
 
                                                 <?php
-                                                $bank_list = \Helpers::getBankAccListByCompId($company['comp_add_id']);
+                                                $bank_list = \Helpers::getBankAccListByCompId($company['comp_addr_id']);
                                                 ?>
 
                                                 @foreach($bank_list as $bank)
@@ -145,7 +145,7 @@
                                                             data-width="100%" 
                                                             data-target="#add_bank_account"
                                                             id="register" 
-                                                            data-url="{{ route('add_company_bank_account',['comp_add_id' => $company['comp_add_id'], 'bank_account_id' => $bank['bank_account_id']]) }}"
+                                                            data-url="{{ route('add_company_bank_account',['comp_addr_id' => $company['comp_addr_id'], 'bank_account_id' => $bank['bank_account_id']]) }}"
                                                             <button class="btn btn-action-btn btn-sm" type="button">
                                                                 <i class="fa fa-edit"></i>
                                                             </button>

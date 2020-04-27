@@ -21,7 +21,7 @@ class Company extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'comp_add_id';
+    protected $primaryKey = 'comp_addr_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -76,14 +76,14 @@ class Company extends BaseModel {
     public static function getAllCompanies($key) {
 
         $res = self::where('is_active', '!=', '2')
-                ->orderBy('comp_add_id', 'DESC');
+                ->orderBy('comp_addr_id', 'DESC');
         
         if (isset($key['search_keyword'])) {
             if ($key['search_keyword'] != "") {
                 $search_keyword = trim($key['search_keyword']);
                 $search_keyword = strtolower($search_keyword);
                 $res->where(function ($res) use ($search_keyword) {
-                    $res->where('mst_company.comp_add_id', 'LIKE', '%' . $search_keyword . '%')
+                    $res->where('mst_company.comp_addr_id', 'LIKE', '%' . $search_keyword . '%')
                             ->orWhere('mst_company.cmp_add', 'LIKE', '%' . $search_keyword . '%');
                 });
             }
@@ -100,7 +100,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        $res = self::with('state')->where(['comp_add_id'=>$id])->first();
+        $res = self::with('state')->where(['comp_addr_id'=>$id])->first();
 
         return $res ?: false;
     }
@@ -123,7 +123,7 @@ class Company extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
         
-        $res = self::where('comp_add_id', $companyId)->first()->update($compArr);
+        $res = self::where('comp_addr_id', $companyId)->first()->update($compArr);
         
         return $res ?: false;
     }
@@ -158,7 +158,7 @@ class Company extends BaseModel {
     
     public static function getCompNameByCompId($compId){
         
-        $compName = self::select('cmp_name')->where('comp_add_id', $compId)->first();
+        $compName = self::select('cmp_name')->where('comp_addr_id', $compId)->first();
 //        dd($compName);
         $CompIdArr = self::where(['cmp_name' => $compName->cmp_name])->get();
 //        dd($CompIdArr);
