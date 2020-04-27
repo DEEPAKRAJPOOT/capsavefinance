@@ -307,10 +307,10 @@ class userInvoiceController extends Controller
             $response['message'] = 'No Company detail is mapped with the user.';
             return $response;
         }
-        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($companyDetail->company_id);
+        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($user_id);
         $bankDetailsFound =!empty($BankDetails) && !$BankDetails->isEmpty();
         if (!$bankDetailsFound) {
-            $response['message'] = 'No BankDetail is found for the user.';
+            $response['message'] = 'No BankDetail is found for the User.';
             return $response;
         }
         $activeBankAcc = NULL;
