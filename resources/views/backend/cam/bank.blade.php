@@ -202,10 +202,10 @@
                            <td class="" tabindex="0" rowspan="1" colspan="1" width="12%">Name of Bank/NBFC</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Fund based Facility</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
-                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->fund_ason_date ?? '' }}" name="fund_date" id="fund_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->fund_ason_date ?? '' }}" name="fund_date" id="fund_date" placeholder="Date" style="max-width:100%;"> (Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Non-fund based Facility</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility Amount(Rs. Mn)</td>
-                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->nonfund_ason_date ?? '' }}" name="nonfund_date" id="nonfund_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as on <input type="text" class="col-md-10" value="{{$debtPosition->nonfund_ason_date ?? '' }}" name="nonfund_date" id="nonfund_date" placeholder="Date" style="max-width:100%;"> (Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
                         </tr>  
 
@@ -272,7 +272,7 @@
                            <td class="" tabindex="0" rowspan="1" colspan="1" width="20%">Name of the bank</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Loan name</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Facility amount(Mn)</td>
-                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as On <input type="text" class="col-md-10" value="{{$debtPosition->tbl_fund_ason_date ?? '' }}" name="tbl_fund_date" id="tblfund_ason_date" placeholder="Date"> (Rs. Mn)</td>
+                           <td class="" tabindex="0" rowspan="1" colspan="1">O/S as On <input type="text" class="col-md-10" value="{{$debtPosition->tbl_fund_ason_date ?? '' }}" name="tbl_fund_date" id="tblfund_ason_date" placeholder="Date" style="max-width:100%;"> (Rs. Mn)</td>
                            <td class="" tabindex="0" rowspan="1" colspan="1">Length of Relationship</td>
                         </tr>  
 
@@ -359,7 +359,7 @@
         if (input.value > 100) input.value = 100;
       }
     $(document).on("change keypress", ".alphaOnly", function (e) {
-        var regex = new RegExp("^[a-zA-Z]+$");
+        var regex = new RegExp("^[a-zA-Z ]+$");
         var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
         if (!regex.test(str)) {
             return false;
