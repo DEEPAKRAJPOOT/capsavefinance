@@ -6,6 +6,7 @@
 @include('layouts.backend.partials.admin_customer_links',['active' => 'invoice'])
 @endif
 <div class="content-wrapper">
+      <span id="storeSuccessMsg"></span>
     <section class="content-header">
         <div class="header-icon">
             <i class="fa fa-clipboard" aria-hidden="true"></i>
