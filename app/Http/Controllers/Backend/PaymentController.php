@@ -159,9 +159,19 @@ class PaymentController extends Controller {
 				'generated_by' => 0,
 			];
 			$paymentId = NULL;
+			
+			if($request->has('charges') && $request->action_type == 3){
+				$transaction = Transactions::find($request->charges);
+				if(isset($transaction) && (float)$transaction->outstanding <= 0){
+					$paymentData['is_refundable'] = '1';
+				}else{
+					$paymentData['is_refundable'] = '0';
+				}
+			}
+			
 			if (in_array($request->action_type, [1,3])) {
 				$paymentId = Payment::insertPayments($paymentData);
-				if (!is_int($paymentId)) {
+				if(!is_int($paymentId)){
 					Session::flash('error', $paymentId);
 					return back();
 				}
@@ -214,7 +224,7 @@ class PaymentController extends Controller {
 					'is_posted_in_taaly' => 0,
 					'created_at' =>  $mytime,
                     'created_by' =>  $user_id,
-				  ];
+                  ];
 			if($request->action_type == 3){
 				$res = $this->invRepo->saveRepaymentTrans($tran);
 			}

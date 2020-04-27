@@ -179,6 +179,26 @@ class Transactions extends BaseModel {
         return $data;
     }
 
+    public static function get_balance($trans_code,$user_id){
+
+        $dr = self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+            ->where('user_id','=',$user_id)
+            ->where('entry_type','=','0')
+            ->sum('amount');
+                                        
+        $cr = self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+            ->where('user_id','=',$user_id)
+            ->where('entry_type','=','1')
+            ->sum('amount');
+
+        return $dr - $cr;
+    }
+    
+    public  function getBalanceAttribute()
+    {
+        return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
+    }
+
     public static function getUnsettledTrans($userId){
         return self::whereIn('is_settled',[0,1])
                 ->whereNull('parent_trans_id')
@@ -378,6 +398,12 @@ class Transactions extends BaseModel {
 		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
+    public static function getJournals(){
+        
+    }
+
+
+
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)
     {
@@ -401,31 +427,17 @@ class Transactions extends BaseModel {
           return self::with(['biz','disburse','user', 'transType'])->where($whereCondition)->first();
     }
 
-
-    public static function get_balance($trans_code,$user_id){
-
-        $dr = self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-            ->where('user_id','=',$user_id)
-            ->where('entry_type','=','0')
-            ->sum('amount');
-                                        
-        $cr = self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-            ->where('user_id','=',$user_id)
-            ->where('entry_type','=','1')
-            ->sum('amount');
-
-        return $dr - $cr;
-    }
-    
-    public  function getBalanceAttribute()
-    {
-        return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
-    }
-
     public static function getUserBalance($user_id){
+        $dr = self::where('user_id','=',$user_id)
+        ->where('entry_type','=','0')
+        ->sum('amount');
 
-        $trans = self::select(DB::raw('max(concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)))as trans_code'))->where('user_id','=',$user_id)->get();
-        return self::get_balance($trans[0]->trans_code, $user_id);
+        $cr = self::where('user_id','=',$user_id)
+        ->where('entry_type','=','1')        
+        ->sum('amount');
+
+        return $dr-$cr;
+
     }
 
      /*** get all transaction  **/
@@ -562,7 +574,7 @@ class Transactions extends BaseModel {
         $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
         FROM `get_all_charges` t1 
         LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
-        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id HAVING remaining > 0";
+        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id";
         $result = \DB::SELECT(\DB::raw($query));
         return $result;
     }
