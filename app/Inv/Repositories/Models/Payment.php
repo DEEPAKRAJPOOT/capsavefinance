@@ -158,24 +158,24 @@ class Payment extends BaseModel {
         return $mode_of_pay;
     }
 
-    // public function getTransNameAttribute() {
-    //     $payment_type = $this->payment_type;
-    //     switch ($payment_type) {
-    //         case '1':
-    //             $attr = $this->utr_no;
-    //             break;
-    //         case '2':
-    //             $attr = $this->cheque_no;
-    //             break;
-    //         case '3':
-    //            $attr = $this->unr_no;
-    //             break;
-    //         default:
-    //            $attr = '';
-    //             break;
-    //     }
-    //     return $attr;
-    // }
+    public function getTransactionNoAttribute() {
+        $payment_type = $this->payment_type;
+        switch ($payment_type) {
+            case '1':
+                $attr = $this->utr_no;
+                break;
+            case '2':
+                $attr = $this->cheque_no;
+                break;
+            case '3':
+               $attr = $this->unr_no;
+                break;
+            default:
+               $attr = '';
+                break;
+        }
+        return $attr;
+    }
     
     /*** get all transaction  **/
     public static function getAllManualTransaction()
