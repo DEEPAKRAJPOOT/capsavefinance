@@ -15,7 +15,7 @@
          $("#invoice_approve_amount").val('');
          return false;
      }
-      if(invoice_approve_amount  > pro_limit)
+    /*  if(invoice_approve_amount  > pro_limit)
      {
          $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
          $("#submit").css("pointer-events","none");
@@ -26,7 +26,7 @@
          $("#msgProLimit").empty();
          $("#submit").css("pointer-events","auto");
          return true;
-     }
+     } */
      
 });
 
@@ -56,12 +56,12 @@
                       if(data.status==1)
                         {
                             $("#msgInvoiceDupli").text('Invoice No already exists');
-                            $("#submit").css("pointer-events","auto");
                             $("#submit").css("pointer-events","none");
                             return false;
                         }
                         else
                         {
+                             $("#submit").css("pointer-events","auto");
                             $("#msgInvoiceDupli").empty();
                            return true;
                         }

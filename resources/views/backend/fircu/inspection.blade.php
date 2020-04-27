@@ -51,7 +51,7 @@
                                 @forelse($fiLists as $key=>$fiList)
                                     <tr role="row" class="odd">
                                         <td><input type="checkbox" value="{{$fiList->biz_addr_id}}" class="address_id">{{$fiList->biz_addr_id}}</td>
-                                        <td>{{$addrType[$fiList->address_type]}}</td>
+                                        <td>{{ isset($addrType[$fiList->address_type]) ? $addrType[$fiList->address_type] : '' }}</td>
                                         <td>{{($fiList->biz_owner_id)? $fiList->owner->first_name: $fiList->business->biz_entity_name}}</td>                                      
                                         <td>{{$fiList->addr_1.' '.$fiList->city_name.' '.(isset($fiList->state->name)? $fiList->state->name: '').' '.$fiList->pin_code}}</td>                                      
                                         <td>

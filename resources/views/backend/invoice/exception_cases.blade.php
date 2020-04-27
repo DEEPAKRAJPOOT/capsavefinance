@@ -60,6 +60,7 @@
                                                                         <th> Inv Detail </th>
                                                                         <th> Inv Amount </th>
                                                                         <th> Updated By</th>
+                                                                        <th> Action</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>

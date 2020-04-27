@@ -15,7 +15,8 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
-
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 class BizInvoice extends BaseModel
 {
     /**
@@ -77,6 +78,7 @@ class BizInvoice extends BaseModel
         'is_bulk_upload',
         'status_update_time',
         'remark',
+        'limit_exceed',
         'created_by',
         'created_at',
         'updated_at',
@@ -94,8 +96,8 @@ class BizInvoice extends BaseModel
      */
 public static function saveInvoice($arrInvoice)
     {
-        $arrInvoiceVal = self::create($arrInvoice);
-        return ($arrInvoiceVal->invoice_id ?: false);
+        return  self::create($arrInvoice);
+        
     } 
     
     
@@ -124,8 +126,8 @@ public static function saveBulkInvoice($arrInvoice)
         $id = Auth::user()->user_id;    
         $result =  User::getSingleUserDetails($id);
         InvoiceStatusLog::saveInvoiceLog($invoiceId,7,$amount,$comment);
-        return self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
-       
+        return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
     } 
     
     public static function getDisbursedAmount($invid)
@@ -429,6 +431,7 @@ public static function saveBulkInvoice($arrInvoice)
                             'invoice_amount' => $res->invoice_approve_amount, 	
                             'invoice_approve_amount' => $res->invoice_approve_amount,
                             'remark' => $res->comm_txt,
+                            'limit_exceed' => $res->limit_exceed,
                             'is_bulk_upload' => 1,
                             'status_id' => $res->status_id,
                             'file_id' => $res->file_id,
