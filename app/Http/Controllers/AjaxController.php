@@ -4447,9 +4447,7 @@ if ($err) {
     // get user invoice list
     public function getUserInvoiceList(DataProviderInterface $dataProvider) {
         $user_id =  (int) $this->request->get('user_id');
-        $latestApp = $this->application->getUpdatedApp($user_id);
-        $appId = $latestApp->app_id ? $latestApp->app_id : null;
-        $userInvoice = $this->UserInvRepo->getUserInvoiceList($user_id, $appId);
+        $userInvoice = $this->UserInvRepo->getUserInvoiceList($user_id);
         $data = $dataProvider->getUserInvoiceList($this->request, $userInvoice);
         return $data;
     }

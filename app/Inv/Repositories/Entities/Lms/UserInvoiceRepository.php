@@ -132,7 +132,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	/**
 	 * Get AJAX list of user invoice result
 	 */
-	public function getUserInvoiceList($user_id, $appId) {
-		return UserInvoice::getUserInvoiceList($user_id, $appId);
+	public function getUserInvoiceList($user_id) {
+		return UserInvoice::getUserInvoiceList($user_id);
 	}
 }
