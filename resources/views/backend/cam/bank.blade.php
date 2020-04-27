@@ -115,13 +115,13 @@
                          <tr bgcolor="#19c38f">
                             <td></td>
                             <td></td>
-                            <td>Max </td>
-                            <td>Min</td>
-                            <td>Avg</td>
+                            <td width="5%">Max </td>
+                            <td width="5%">Min</td>
+                            <td width="5%">Avg</td>
                             <td>Inward</td>
-                            <td>% of total cheques presented</td>
+                            <td width="5%">% of total cheques presented</td>
                             <td>Outward</td>
-                            <td>% of total cheques deposited  </td>
+                            <td width="5%">% of total cheques deposited  </td>
                             <td>Credit</td>
                             <td>Debit</td>
                             <td>Over drawings in last 6 months</td>
@@ -132,18 +132,18 @@
                            <tr class="control-group-ba">
                               <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="{{$val['bank_name']}}" class="alphaOnly form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="{{$val['act_type']}}" class="alphaOnly form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="{{$val['uti_max']}}" class="numericOnly form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="{{$val['uti_min']}}" class="numericOnly form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="{{$val['uti_avg']}}" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="5" type="text" name="uti_max[]" value="{{$val['uti_max']}}" onchange="maxPercent(this);" class="maxPercent numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="5" type="text" name="uti_min[]" value="{{$val['uti_min']}}" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="5" type="text" name="uti_avg[]" value="{{$val['uti_avg']}}" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="{{number_format($val['chk_inward'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="{{$val['chk_presented_per']}}" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="5" type="text" name="chk_presented_per[]" value="{{$val['chk_presented_per']}}" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
                               <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="{{number_format($val['chk_outward'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="{{$val['chk_deposited_per']}}" class="numericOnly form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="{{number_format($val['submission_credit'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
-                              <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="{{number_format($val['submission_debbit'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="5" type="text" name="chk_deposited_per[]" value="{{$val['chk_deposited_per']}}" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="12" type="text" name="submission_credit[]" value="{{number_format($val['submission_credit'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
+                              <td width="12%"><input maxlength="12" type="text" name="submission_debbit[]" value="{{number_format($val['submission_debbit'])}}" class="numericOnly number_format form-control form-control-sm" /></td>
                               <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="{{$val['overdrawing_in_six_month']}}" class="numericOnly number_format col-md-8 form-control form-control-sm" />
+                                    <input maxlength="12" type="text" name="overdrawing_in_six_month[]" value="{{$val['overdrawing_in_six_month']}}" class="numericOnly number_format col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-ba"></i>
                                  </div>
                               </td>
@@ -154,18 +154,18 @@
                         <tr class="control-group-ba">
                            <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="alphaOnly form-control form-control-sm" /></td>
                            <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="alphaOnly form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="numericOnly form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="numericOnly form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="5" type="text" name="uti_max[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="5" type="text" name="uti_min[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="5" type="text" name="uti_avg[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
                            <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="5" type="text" name="chk_presented_per[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
                            <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
-                           <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="5" type="text" name="chk_deposited_per[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="12" type="text" name="submission_credit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                           <td width="12%"><input maxlength="12" type="text" name="submission_debbit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                            <td width="">
                               <div class="input-group-btn">
-                                 <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="numericOnly number_format col-md-8 form-control form-control-sm" />
+                                 <input maxlength="12" type="text" name="overdrawing_in_six_month[]" value="" class="numericOnly number_format col-md-8 form-control form-control-sm" />
                                  <i class="fa fa-plus-circle add-ptpq-block add-more-ba"></i>
                               </div>
                            </td>
@@ -176,18 +176,18 @@
                            <tr class="control-group-ba">
                                 <td width="12%"><input maxlength="100" type="text" name="bank_name_ba[]" value="" class="alphaOnly form-control form-control-sm" /></td>
                                 <td width="12%"><input maxlength="10" type="text" name="act_type[]" value="" class="alphaOnly form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="uti_max[]" value="" class="numericOnly form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="uti_min[]" value="" class="numericOnly form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="uti_avg[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="5" type="text" name="uti_max[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="5" type="text" name="uti_min[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="5" type="text" name="uti_avg[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
                                 <td width="12%"><input maxlength="3" type="text" name="chk_inward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="chk_presented_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="5" type="text" name="chk_presented_per[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
                                 <td width="12%"><input maxlength="3" type="text" name="chk_outward[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="8" type="text" name="chk_deposited_per[]" value="" class="numericOnly form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="10" type="text" name="submission_credit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
-                                <td width="12%"><input maxlength="10" type="text" name="submission_debbit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="5" type="text" name="chk_deposited_per[]" value="" onchange="maxPercent(this);" class="numericOnly form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="12" type="text" name="submission_credit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
+                                <td width="12%"><input maxlength="12" type="text" name="submission_debbit[]" value="" class="numericOnly number_format form-control form-control-sm" /></td>
                                 <td width="">
                                  <div class="input-group-btn">
-                                    <input maxlength="10" type="text" name="overdrawing_in_six_month[]" value="" class="numericOnly number_format col-md-8 form-control form-control-sm" />
+                                    <input maxlength="12" type="text" name="overdrawing_in_six_month[]" value="" class="numericOnly number_format col-md-8 form-control form-control-sm" />
                                     <i class="fa fa-times-circle remove-ptpq-block remove-ba"></i>
                                  </div>
                                 </td>
@@ -354,6 +354,10 @@
    _token = "{{ csrf_token() }}";
 </script>
 <script type="text/javascript">
+    function maxPercent(input) {
+        if (input.value < 0) input.value = 0;
+        if (input.value > 100) input.value = 100;
+      }
     $(document).on("change keypress", ".alphaOnly", function (e) {
         var regex = new RegExp("^[a-zA-Z]+$");
         var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
@@ -363,7 +367,6 @@
         return true;
     });
     $(document).on("change keypress", ".numericOnly", function (evt) {
-//        this.value = this.value.replace(/[^\d].+/,'');
         var self = $(this);
         self.val(self.val().replace(/[^0-9\.\,]/g, ''));
         if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 

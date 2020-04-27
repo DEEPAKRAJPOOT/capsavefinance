@@ -22,6 +22,7 @@
     <li>
         <a class=" {{($active=='charges') ? 'active': null }} " href="{{route('manage_charge', ['user_id' => request()->get('user_id')])}}">Charges</a>
     </li>
+
     @endcan
     @can('view_user_invoice')
     <li>
@@ -36,6 +37,14 @@
     @can('apport_settled_view')
     <li>
         <a class=" {{ ($active=='settledTrans')? 'active': null }} " href="{{route('apport_settled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Settled Tran.</a>
+    <li>
+      @endcan
+         
+<!--
+     @can('limit_management')
+     <li>
+        <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
+>>>>>>> f_2104_gajendra
     </li>
     @endcan
     @can('apport_refund_view')

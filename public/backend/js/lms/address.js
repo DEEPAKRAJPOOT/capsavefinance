@@ -49,26 +49,35 @@ pincode.addEventListener('input', function() {
 });
 
 function fillAddress(gstinId){
+    $('input[name=addr_1]').val('');
+    $('select[name=state_id] option:selected').prop('selected', true);
+    $('input[name=city_name]').val('');
+    $('input[name=pin_code]').val('');
+
     if(gstinId == ''){
         return false;
     }
     parent.$('.isloader').show();
     $.ajax({
-        url: messages.biz_gst_to_entity_karza,//"https://gst.karza.in/prod/v1/gst-verification"
+        url: messages.get_address_by_gst,
         type: "POST",
         data: {"consent": "Y","gstin": gstinId, "_token":messages.token},
         dataType:'json',
         error:function (xhr, status, errorThrown) {
-            parent$('.isloader').hide();
+            parent.$('.isloader').hide();
             alert(errorThrown);
         },
         success: function(res){
+            let temp = res;
+            let bizPanGstId = $('#gst_no option:selected').data('id');
             res = res.response;
             if(res == null){
                 parent.$('.isloader').hide();
                 alert('No Address associated with the entered GST.');
             }else if(res['statusCode'] == 101){
                 fillRegisteredAddress(res.result.pradr.adr);
+                $('input[name=biz_pan_gst_api_id]').val(temp.pgapiId);
+                $('input[name=biz_pan_gst_id]').val(bizPanGstId);
                 parent.$('.isloader').hide();
             }else{
                 parent.$('.isloader').hide();
