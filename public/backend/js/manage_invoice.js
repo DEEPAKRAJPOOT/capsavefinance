@@ -438,7 +438,11 @@ function uploadFile(app_id,id)
                 },
                 success: function (data) {
                         $(".isloader").hide(); 
-                        location.reload();
+                        if(data.msg=="")
+                         {
+                            localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                            location.reload();
+                         }
                     
 
                 }
