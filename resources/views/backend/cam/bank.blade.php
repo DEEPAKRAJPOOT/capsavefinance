@@ -359,7 +359,7 @@
         if (input.value > 100) input.value = 100;
       }
     $(document).on("change keypress", ".alphaOnly", function (e) {
-        var regex = new RegExp("^[a-zA-Z]+$");
+        var regex = new RegExp("^[a-zA-Z ]+$");
         var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
         if (!regex.test(str)) {
             return false;
