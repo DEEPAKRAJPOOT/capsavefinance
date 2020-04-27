@@ -80,7 +80,7 @@ class CompanyController extends Controller {
                     $status = $this->masterRepo->updateCompanies($arrCompaniesData, $company_id);
                 }
             } else {
-                $arrCompaniesData['comp_name_id'] = 1;
+                $arrCompaniesData['company_id'] = 1;
                 $arrCompaniesData['created_by'] = Auth::user()->user_id;
 //                $arrCompaniesData['created_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
 //                dd($arrCompaniesData);

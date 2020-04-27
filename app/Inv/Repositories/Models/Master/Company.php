@@ -43,7 +43,7 @@ class Company extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'comp_name_id',
+        'company_id',
         'cmp_name',
         'cmp_add',
         'gst_no',
