@@ -168,22 +168,15 @@ class Transactions extends BaseModel {
         ])){
             return $this->invoiceDisbursed->disbursal->disbursal_batch->batch_id;
         }
-        if($this->entry_type == 1 && $this->payment_id){
-            return $this->payment->transactionno;
-        }
     }
 
     public function getNarrationAttribute(){
         $data = '';
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= $this->BatchNo.' ';
-
-        if($this->modeOfPaymentName && $this->modeOfPaymentNo)
-        $data .= $this->modeOfPaymentName.': '.$this->modeOfPaymentNo.' ';
-
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
-
+        if($this->payment_id && !in_array($this->trans_type,[ config('lms.TRANS_TYPE.TDS')])){
+            $data .= $this->BatchNo.' ';
+            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
+            $data .= ' Payment Allocated as Normal: '.$this->payment->amount . ' '; 
+        }
         return $data;
     }
 
