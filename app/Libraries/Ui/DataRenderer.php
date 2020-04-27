@@ -4539,7 +4539,8 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'trans_type',
                         function ($dataRecords) {
-                        return $dataRecords->transType->trans_name;
+                            $tdsType = ($dataRecords->action_type == 3) ? '/TDS' : '';   
+                            return $dataRecords->transType->trans_name . $tdsType;
                     }) 
                     ->editColumn(
                         'updated_by',
