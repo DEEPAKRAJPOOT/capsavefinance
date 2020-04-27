@@ -28,7 +28,7 @@
                             @php 
                                 $balanceAmount = $repayment->amount;
                             @endphp
-                                    <tr>
+                                    {{-- <tr>
                                         <td>{{date('d-m-Y',strtotime($repayment->date_of_payment))}}</td>
                                         <td>{{date('d-M-Y',strtotime($repayment->created_at))}}</td>
                                         <td>{{ $repayment->transname }}</td>
@@ -36,7 +36,7 @@
                                         <td></td>
                                         <td>{{ number_format($repayment->amount,2) }}</td>
                                         <td>{{ number_format($repayment->amount,2) }}</td>
-                                    </tr>
+                                    </tr> --}}
                                 @foreach($repaymentTrails as $repay)
                                     @php 
                                         if($repay->entry_type=='1')

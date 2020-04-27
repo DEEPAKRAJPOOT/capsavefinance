@@ -65,6 +65,7 @@ class Payment extends BaseModel {
         'description',
         'is_settled',
         'is_manual',
+        'is_refundable',
         'created_at',
         'created_by',
         'updated_at',

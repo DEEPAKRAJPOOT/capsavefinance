@@ -377,12 +377,14 @@ cursor: pointer;
             var index = element.attr("index"); 
             var chargeData = userData['charges'][index];
             var amt = parseFloat(chargeData['remaining']);
+            var max = parseFloat(chargeData['debit_amount']);
             if(chargeData){
-                $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
+                //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
+                $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 if(userData['action_type']!=3){
                     $('#amount').val(amt.toFixed(2)); 
                 }
-                $('#amount').attr('max',amt.toFixed(2));
+                $('#amount').attr('max',max.toFixed(2));
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 $('#amount').val(0);
