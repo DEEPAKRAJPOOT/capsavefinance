@@ -115,7 +115,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}
 
 	public function getCompanyBankAcc($company_id) {
-		return UserBankAccount::getAllCompanyBankAcc($company_id);
+		return UserBankAccount::getAllUserBankAcc($company_id);
 	}
 
 	/**

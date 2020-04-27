@@ -113,7 +113,7 @@
                                   <thead>
                                        <tr>
                                         <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong><input type="checkbox" name=""></strong></span>
+                                           <span style="font-size: small;"><strong>#<!-- <input type="checkbox" name=""></strong> --></span>
                                         </td>
                                         <td rowspan="2" bgcolor="#f2f2f2">
                                            <span style="font-size: small;"><strong>Sr No</strong></span>

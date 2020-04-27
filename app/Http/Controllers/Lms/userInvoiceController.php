@@ -300,7 +300,7 @@ class userInvoiceController extends Controller
         ];
         if (empty($company_id)) {
             //get Company Id from relational Table
-            $company_id  = 1;
+            $company_id  = 8;
         }
         $companyDetail = $this->UserInvRepo->getCompanyDetail($company_id);
         if (empty($companyDetail) ) {
