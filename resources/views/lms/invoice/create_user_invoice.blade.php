@@ -113,7 +113,7 @@
                                   <thead>
                                        <tr>
                                         <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>#<!-- <input type="checkbox" name=""></strong> --></span>
+                                           <span style="font-size: small;"><strong><input type="checkbox" id="checkall"></strong></span>
                                         </td>
                                         <td rowspan="2" bgcolor="#f2f2f2">
                                            <span style="font-size: small;"><strong>Sr No</strong></span>
@@ -291,6 +291,7 @@
       cache : false,
       dataType    : 'json',
       success: function (res) {
+        $('#checkall').prop('checked', false);
         if (res.status == 1) {
           $('#table_tbody').html(atob(res.view));
         }else{
@@ -299,6 +300,14 @@
         }
       }
     })
+  })
+
+  $(document).on('click', '#checkall', function(argument) {
+    if ($(this).is(':checked')) {
+        $('.trans_check[type="checkbox"]').prop('checked', true);
+    }else{
+       $('.trans_check[type="checkbox"]').prop('checked', false);
+    }
   })
 </script>
 @endsection
