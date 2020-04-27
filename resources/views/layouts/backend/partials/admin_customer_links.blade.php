@@ -61,5 +61,5 @@
     <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
     </li>
-    @endcan
-</ul>
+    @endcan -->
+</ul>  
