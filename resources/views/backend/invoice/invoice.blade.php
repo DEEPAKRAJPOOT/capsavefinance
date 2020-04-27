@@ -78,7 +78,8 @@
                                        
                                             </div>
                                             <div class="col-md-1">	          
-                                                <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2  btn-app">Approve</button>
+                                      <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
+
                                                
                                             
                                             </div>
