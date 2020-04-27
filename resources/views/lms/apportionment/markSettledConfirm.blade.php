@@ -58,7 +58,7 @@
                                                 <tr>
                                                     <td>{{ Carbon\Carbon::parse($trans['trans_date'])->format('d-m-Y') }}</td>
                                                     <td>{{ $trans['invoice_no'] }}</td>
-                                                    <td>{{ $trans['trans_type'] }}</td>
+                                                    <td>{{ $trans['trans_name'] }}</td>
                                                     <td>₹ {{ number_format($trans['total_repay_amt'],2) }}</td>
                                                     <td>₹ {{ number_format($trans['outstanding_amt'],2) }}</td>
                                                     <td>{{ Carbon\Carbon::parse($trans['payment_date'])->format('d-m-Y') }}</td>

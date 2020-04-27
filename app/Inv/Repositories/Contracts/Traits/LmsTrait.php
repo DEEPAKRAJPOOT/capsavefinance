@@ -3,18 +3,20 @@ namespace App\Inv\Repositories\Contracts\Traits;
 
 use Auth;
 use Carbon\Carbon;
+use Dompdf\Helpers;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ApportionmentHelper;
+use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
-use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
-use App\Inv\Repositories\Models\Business;
-use App\Inv\Repositories\Models\Application;
-use App\Inv\Repositories\Models\BizPanGst;
-use App\Helpers\ApportionmentHelper;
-use App\Inv\Repositories\Models\Lms\RefundTransactions;
 
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\Lms\RefundTransactions;
+use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 
 trait LmsTrait
 {
@@ -240,7 +242,7 @@ trait LmsTrait
         }
 
         $transactionData = [];
-
+        $transactionData['link_trans_id'] = $data['link_trans_id'] ?? null;
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['invoice_disbursed_id'] = $data['invoice_disbursed_id'] ?? null;
         $transactionData['user_id'] = $userId ?? null;
@@ -387,7 +389,7 @@ trait LmsTrait
         
         if ($includeTrans) {
             $repayment = $this->lmsRepo->getTransactions(['trans_id' => $transId, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')])->first();
-            $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id' => $transId]);
+            $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id' => $transId]);
 
             $transaction = [];
             $transactions = [];
@@ -877,46 +879,41 @@ trait LmsTrait
     
     protected function calculateRefund($transId)
     {
-        $repayment = $this->lmsRepo->getTransactions(['trans_id'=>$transId,'trans_type'=>config('lms.TRANS_TYPE.REPAYMENT')])->first();
-        $repaymentTrails = $this->lmsRepo->getTransactions(['repay_trans_id'=>$transId]);
-
-        $repayDebitTotal = Transactions::where('repay_trans_id','=',$transId)
-        ->where('entry_type','=','0')
-        ->sum('amount');
+        $repayment = Payment::getPayments(['is_settled' => 1, 'payment_id' => $transId])->first();
         
-        $repayCreditTotal = Transactions::where('repay_trans_id','=',$transId)
+        $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id'=>$transId]);
+
+        $interestRefundTotal = Transactions::where('payment_id','=',$transId)
         ->where('entry_type','=','1')
-        ->sum('amount');
-        
-        $interestRefundTotal = Transactions::where('repay_trans_id','=',$transId)
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
+        ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
         ->sum('amount');
 
-        $interestRefundSettledTotal = Transactions::where('repay_trans_id','=',$transId)
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_REFUND'))
-        ->sum('settled_amount');
-
-        $interestOverdueTotal = Transactions::where('repay_trans_id','=',$transId)
+        $interestOverdueTotal = Transactions::where('payment_id','=',$transId)
+        ->where('entry_type','=','1')
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
         ->sum('amount');
         
-        $marginTotal = Transactions::where('repay_trans_id','=',$transId)
+        $marginTotal = Transactions::where('payment_id','=',$transId)
+        ->where('entry_type','=','1')
         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
         ->sum('amount');
         
-        $nonFactoredAmount = Transactions::where('repay_trans_id','=',$transId)
+        $nonFactoredAmount = Transactions::where('payment_id','=',$transId)
+        ->where('entry_type','=','1')
         ->where('trans_type','=',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
         ->sum('amount');
-        if($nonFactoredAmount==0){
-            $nonFactoredAmount = ($repayment->amount)-($repayDebitTotal+$marginTotal-$interestRefundSettledTotal);
-        }
+
+        $totalTdsAmount = Transactions::where('payment_id','=',$transId)
+        ->where('entry_type','=','1')
+        ->where('trans_type','=',config('lms.TRANS_TYPE.TDS'))
+        ->sum('amount');
         
-        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal-$interestRefundSettledTotal;
+        $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal+$totalTdsAmount;
 
         return ['repaymentTrails' => $repaymentTrails, 
         'repayment'=>$repayment,
         'nonFactoredAmount' => $nonFactoredAmount,
-        'interestRefund'=>$interestRefundTotal-$interestRefundSettledTotal,
+        'interestRefund'=>$interestRefundTotal,
         'interestOverdue'=>$interestOverdueTotal,
         'marginTotal'=>$marginTotal,
         'refundableAmount'=>$refundableAmount,

@@ -299,9 +299,9 @@
                         <a class="nav-link" href="{{route('unsettled_payments')}}">Unsettled Payments</a>
                     </li>                     
                     @endcan
-                    @can('payment_advice')
+                    @can('settled_payments')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('payment_advice')}}">Payment Advice</a>
+                        <a class="nav-link" href="{{route('settled_payments')}}">Settled Payment</a>
                     </li>                     
                     @endcan
                 </ul>

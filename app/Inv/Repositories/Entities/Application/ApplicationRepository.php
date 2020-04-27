@@ -1742,6 +1742,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {   
         return BusinessAddress::unsetDefaultAddress($user_id);
     }
+
+    /**
+    * update is_default to 0 in biz_addr where address_type is 6 by user id
+    */
+    public function updateGstHideAddress($data, $biz_pan_gst_id=null)
+    {   
+        return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
+    }
     
 }
+
 

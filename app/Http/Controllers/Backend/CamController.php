@@ -45,7 +45,9 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-
+use App\Inv\Repositories\Models\BankWorkCapitalFacility;
+use App\Inv\Repositories\Models\BankTermBusiLoan;
+use App\Inv\Repositories\Models\BankAnalysis;
 //date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
@@ -675,6 +677,24 @@ class CamController extends Controller
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
         $debtPosition = $fin->getDebtPosition($appId);
+        $dataWcf = [];
+        $dataTlbl = [];
+        $dataBankAna = [];
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataWcf = BankWorkCapitalFacility::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                          ->where('is_active', 1)->get();
+          $dataWcf = $dataWcf ? $dataWcf->toArray() : [];
+        } 
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataTlbl = BankTermBusiLoan::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                          ->where('is_active', 1)->get();
+          $dataTlbl = $dataTlbl ? $dataTlbl->toArray() : [];
+        } 
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataBankAna = BankAnalysis::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                            ->where('is_active', 1)->get();
+          $dataBankAna = $dataBankAna ? $dataBankAna->toArray() : [];
+        }
         $contents = array();
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
@@ -707,6 +727,9 @@ class CamController extends Controller
           'xlsx_html'=> $xlsx_html,
           'xlsx_pagination'=> $xlsx_pagination,
           'debtPosition'=> $debtPosition,
+          'dataWcf'=> $dataWcf,
+          'dataTlbl'=> $dataTlbl,
+          'dataBankAna'=> $dataBankAna
           ]);
     }
 
@@ -1868,17 +1891,20 @@ class CamController extends Controller
             $relationShipArr = [];
             $liftingArr = [];
             
-            $relationShipArr['biz_id']                = $allData['biz_id'];
-            $relationShipArr['app_id']                = $allData['app_id'];
-            $relationShipArr['year_of_association']   = $allData['year_of_association'];
-            $relationShipArr['payment_terms']         = $allData['payment_terms'];
-            $relationShipArr['grp_rating']            = $allData['grp_rating'];
-            $relationShipArr['contact_person']        = $allData['contact_person'];
-            $relationShipArr['contact_number']        = $allData['contact_number'];
-            $relationShipArr['security_deposit']      = $allData['security_deposit'];
-            $relationShipArr['note_on_lifting']       = $allData['note_on_lifting'];
-            $relationShipArr['reference_from_anchor'] = $allData['reference_from_anchor'];
-            $relationShipArr['anchor_risk_comments']  = $allData['anchor_risk_comments'];
+            $relationShipArr['biz_id']                  = $allData['biz_id'];
+            $relationShipArr['app_id']                  = $allData['app_id'];
+            $relationShipArr['year_of_association']     = $allData['year_of_association'];
+            $relationShipArr['payment_terms']           = $allData['payment_terms'];
+            $relationShipArr['grp_rating']              = $allData['grp_rating'];
+            $relationShipArr['contact_person']          = $allData['contact_person'];
+            $relationShipArr['contact_number']          = $allData['contact_number'];
+            $relationShipArr['dependence_on_anchor']    = $allData['dependence_on_anchor'];
+            $relationShipArr['qoq_ot_from_anchor']      = $allData['qoq_ot_from_anchor'];
+            $relationShipArr['cat_relevance_by_anchor'] = $allData['cat_relevance_by_anchor'];
+            $relationShipArr['security_deposit']        = $allData['security_deposit'];
+            $relationShipArr['note_on_lifting']         = $allData['note_on_lifting'];
+            $relationShipArr['reference_from_anchor']   = $allData['reference_from_anchor'];
+            $relationShipArr['anchor_risk_comments']    = $allData['anchor_risk_comments'];
             $anchorRelationData = $this->appRepo->getAnchorRelationDetails($allData['app_id']);
             if (!empty($anchorRelationData)) {
                 $relationShipArr['updated_by'] = $userId;
@@ -1911,8 +1937,10 @@ class CamController extends Controller
                    $liftingArr['mt_value'] = $value ?? 0;
                    $liftingArr['amount'] = $months[$i]['mt_amount'][$key] ?? 0;
                    if (!empty($liftingData)) {
+                      $liftingArr['updated_by'] = $userId;
                       $this->appRepo->updateLiftingDetail($liftingArr, $liftingArr['anchor_lift_detail_id']);
                    }else{
+                        $liftingArr['created_by'] = $userId;
                         $this->appRepo->creates($liftingArr);
                    }
                }
@@ -2019,23 +2047,38 @@ class CamController extends Controller
 
     public function saveBankDetail(Request $request) {
       try {
+            $resultFlag = false;
             $arrData['app_id'] = request()->get('app_id');
             $date = $request->get('debt_on');
+            $fund_date = $request->get('fund_date');
+            $nonfund_date = $request->get('nonfund_date');
+            $tblfund_date = $request->get('tbl_fund_date');
              if (empty($date)) {
                Session::flash('error',trans('Debt on field can\'t be empty'));
                return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
             }
             $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+            $arrData['fund_ason_date'] = $fund_date != null ? Carbon::createFromFormat('d/m/Y', $fund_date)->format('Y-m-d') : null;
+            $arrData['nonfund_ason_date'] = $nonfund_date != null ? Carbon::createFromFormat('d/m/Y', $nonfund_date)->format('Y-m-d') : null;
+            $arrData['tbl_fund_ason_date'] = $tblfund_date != null ? Carbon::createFromFormat('d/m/Y', $tblfund_date)->format('Y-m-d') : null;
             $arrData['debt_position_comments'] = request()->get('debt_position_comments');
             $arrData['created_by'] = Auth::user()->user_id;
             $bank_detail_id = $request->get('bank_detail_id');
             if (!empty($bank_detail_id)) {
               $result = FinanceModel::updatePerfios($arrData,'app_biz_bank_detail', $bank_detail_id ,'bank_detail_id');
+              $this->saveBankWorkCapitalFacility($request, $bank_detail_id);
+              $this->saveBankTermBusiLoan($request, $bank_detail_id);
+              $this->saveBankAnalysis($request, $bank_detail_id);
+              $resultFlag = true;
             }else{
-              $result = FinanceModel::insertPerfios($arrData, 'app_biz_bank_detail');
+              $result_id = FinanceModel::insertPerfios($arrData, 'app_biz_bank_detail');
+              $this->saveBankWorkCapitalFacility($request, $result_id);
+              $this->saveBankTermBusiLoan($request, $result_id);
+              $this->saveBankAnalysis($request, $result_id);
+              $resultFlag = true;
             }
             
-            if($result){
+            if($resultFlag){
                 Session::flash('message',trans('Bank detail saved successfully'));
             }else{
                 Session::flash('error',trans('Bank detail not saved'));

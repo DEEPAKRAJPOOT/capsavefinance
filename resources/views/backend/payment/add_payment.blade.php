@@ -72,7 +72,7 @@
                                                 <select class="form-control" name="action_type" id="action_type">
                                                     <option value="">Select Action Type</option>
                                                     <option value="1">Receipt</option>
-                                                    <option value="2">Wave Off</option>
+                                                    {{-- <option value="2">Wave Off</option> --}}
                                                     <option value="3">TDS</option>
                                                 </select>
                                                 <span id="action_type_error" class="error"></span>
@@ -338,11 +338,11 @@ cursor: pointer;
             switch (action_type) {
                 case "1":
                     if(trans_type==17){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -351,7 +351,7 @@ cursor: pointer;
                     break;
                 case "2":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -360,7 +360,7 @@ cursor: pointer;
                     break;
                 case "3":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -377,12 +377,14 @@ cursor: pointer;
             var index = element.attr("index"); 
             var chargeData = userData['charges'][index];
             var amt = parseFloat(chargeData['remaining']);
+            var max = parseFloat(chargeData['debit_amount']);
             if(chargeData){
-                $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
+                //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
+                $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 if(userData['action_type']!=3){
                     $('#amount').val(amt.toFixed(2)); 
                 }
-                $('#amount').attr('max',amt.toFixed(2));
+                $('#amount').attr('max',max.toFixed(2));
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 $('#amount').val(0);
@@ -551,7 +553,7 @@ cursor: pointer;
             success: function (res) {
                 var amt = parseFloat(res.amount);
                 if (res.status == 'success') {
-                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                     $('#amount').val(amt.toFixed(2));
                     $('#amount').attr('max',amt.toFixed(2));
                 }else{

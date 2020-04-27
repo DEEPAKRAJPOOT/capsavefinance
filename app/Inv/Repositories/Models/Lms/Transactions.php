@@ -119,11 +119,6 @@ class Transactions extends BaseModel {
     }
 
     public function getRefundableAmtAttribute(){
-        // return self::where('parent_trans_id','=',$this->trans_id)
-        // ->where('entry_type','=',1)
-        // ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
-        // ->sum('amount');
-
         return self::where('link_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE')]) 
@@ -161,6 +156,49 @@ class Transactions extends BaseModel {
         return $name;
     }
 
+    public function getBatchNoAttribute(){
+        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
+            return $this->txn_id;
+        }
+        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.MARGIN') ]) && !$this->payment_id && $this->refundTransaction != null){
+            return $this->refundTransaction->request->batch->batch_id;
+        }
+    }
+
+    public function getNarrationAttribute(){
+        $data = '';
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+        $data .= $this->BatchNo.' ';
+
+        if($this->modeOfPaymentName && $this->modeOfPaymentNo)
+        $data .= $this->modeOfPaymentName.': '.$this->modeOfPaymentNo.' ';
+
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+        $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
+
+        return $data;
+    }
+
+    public static function get_balance($trans_code,$user_id){
+
+        $dr = self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+            ->where('user_id','=',$user_id)
+            ->where('entry_type','=','0')
+            ->sum('amount');
+                                        
+        $cr = self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
+            ->where('user_id','=',$user_id)
+            ->where('entry_type','=','1')
+            ->sum('amount');
+
+        return $dr - $cr;
+    }
+    
+    public  function getBalanceAttribute()
+    {
+        return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
+    }
+
     public static function getUnsettledTrans($userId){
         return self::whereIn('is_settled',[0,1])
                 ->whereNull('parent_trans_id')
@@ -190,7 +228,7 @@ class Transactions extends BaseModel {
     public static function getRefundTrans($userId){
         return self::where('entry_type','1')
                 ->whereNotNull('parent_trans_id')
-                ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS')])
+                ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN')])
                 ->where('user_id','=',$userId)->get();
                 //->filter(function($item){
                 //    if(in_array($item->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS')])){
@@ -360,6 +398,14 @@ class Transactions extends BaseModel {
 		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
+    public static function getJournals(){
+        return self::where('entry_type','1')
+            ->whereNotNull('parent_trans_id')
+            ->where('is_posted_in_tally','=','0')
+            ->where('user_id','=',$userId)
+            ->get();
+    }
+
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)
     {
@@ -383,52 +429,17 @@ class Transactions extends BaseModel {
           return self::with(['biz','disburse','user', 'transType'])->where($whereCondition)->first();
     }
 
-
-    public static function get_balance($trans_code,$user_id){
-
-        $dr =  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-                    ->where('user_id','=',$user_id)
-                    ->where('soa_flag','=',1)
-                    ->whereNull('payment_id')
-                    ->where('entry_type','=','0')
-                    ->sum('amount');
-                    
-        $dr +=  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-                    ->where('user_id','=',$user_id)
-                    ->where('soa_flag','=',1)
-                    ->whereNotNull('payment_id')
-                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST_REFUND')])
-                    ->where('entry_type','=','0')
-                    ->sum('amount');
-                    
-        $cr =   self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-                    ->where('user_id','=',$user_id)
-                    ->where('soa_flag','=',1)
-                    ->whereNull('payment_id')
-                    ->where('entry_type','=','1')
-                    ->sum('amount');
-
-        $cr +=  self::whereRaw('concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)) <= ?',[$trans_code])
-                    ->where('user_id','=',$user_id)
-                    ->where('soa_flag','=',1)
-                    ->whereNotNull('payment_id')
-                    ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST_REFUND')])
-                    ->where('entry_type','=','1')
-                    ->sum('amount');
-        
-
-        return $dr - $cr;
-    }
-    
-    public  function getBalanceAttribute()
-    {
-        return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
-    }
-
     public static function getUserBalance($user_id){
+        $dr = self::where('user_id','=',$user_id)
+        ->where('entry_type','=','0')
+        ->sum('amount');
 
-        $trans = self::select(DB::raw('max(concat_ws("",user_id, DATE_FORMAT(created_at, "%y%m%d"), (1000000000+trans_id)))as trans_code'))->where('user_id','=',$user_id)->get();
-        return self::get_balance($trans[0]->trans_code, $user_id);
+        $cr = self::where('user_id','=',$user_id)
+        ->where('entry_type','=','1')        
+        ->sum('amount');
+
+        return $dr-$cr;
+
     }
 
      /*** get all transaction  **/
@@ -507,38 +518,13 @@ class Transactions extends BaseModel {
         return $modeNo;
     }
 
-    public function getBatchNoAttribute(){
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
-            return $this->txn_id;
-        }
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.INTEREST_REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.MARGIN') ]) && !$this->payment_id && $this->refundTransaction != null){
-            return $this->refundTransaction->request->batch->batch_id;
-        }
-    }
 
-    public function getNarrationAttribute(){
-        $data = '';
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= $this->BatchNo.' ';
-
-        if($this->modeOfPaymentName && $this->modeOfPaymentNo)
-        $data .= $this->modeOfPaymentName.': '.$this->modeOfPaymentNo.' ';
-
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
-
-        if($this->is_tds && $this->tds_cert)
-        $data .= ' TDS CERT No: '.$this->tds_cert ;
-
-        return $data;
-    }
 
     public static function getSoaList(){
 
         return self::select('transactions.*')
                     ->join('users', 'transactions.user_id', '=', 'users.user_id')
                     ->join('lms_users','users.user_id','lms_users.user_id')
-                    //->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
                     ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');
@@ -590,7 +576,7 @@ class Transactions extends BaseModel {
         $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
         FROM `get_all_charges` t1 
         LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
-        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id HAVING remaining > 0";
+        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id";
         $result = \DB::SELECT(\DB::raw($query));
         return $result;
     }

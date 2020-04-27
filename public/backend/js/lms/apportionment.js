@@ -17,6 +17,15 @@ class Apportionment {
                 {data: 'pay'},
                 {data: 'select'}
             ];
+            if(!this.data.payment_id){
+                columns = columns.filter(function(d){ 
+                    var gg = d.data;
+                    if($.inArray(gg, ['payment_date','pay'])<0 ){
+                        console.log(gg);
+                        return d;
+                    }
+                });
+            }
                 break;
             case 'settledTransactions':
             columns = [
@@ -34,10 +43,7 @@ class Apportionment {
                 {data: 'disb_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
-                {data: 'total_repay_amt'},                    
-                {data: 'payment_date'},
-                {data: 'pay'},
-                {data: 'select'}
+                {data: 'total_repay_amt'}
             ];
                 break;
         }

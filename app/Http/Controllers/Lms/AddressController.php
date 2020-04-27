@@ -111,9 +111,18 @@ class AddressController extends Controller
                     $arrAddressData['updated_at'] = \carbon\Carbon::now();
                     $status = $this->appRepo->updateUserAddress($arrAddressData, $userAddress_id);
                 }
+                $bizAddressId = $request->get('biz_addr_id');
             } else {
                 $arrAddressData['created_at'] = \carbon\Carbon::now();
                 $status = $this->appRepo->saveAddress($arrAddressData);
+                $bizAddressId = $status->biz_addr_id;
+            }
+
+            // update biz_pan_gst_api_id in biz_pan_gst table
+            if($request->has('gst_no')){
+                $this->appRepo->updateGstHideAddress(['is_gst_hide'=>1,'biz_addr_id'=>$bizAddressId,'biz_pan_gst_api_id'=>$arrAddressData['biz_pan_gst_api_id']], $arrAddressData['biz_pan_gst_id']);
+            }else{
+                //$arrAddressData['is_default'] = 0;
             }
             
             if ($status) {

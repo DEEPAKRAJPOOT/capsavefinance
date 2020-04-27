@@ -4,7 +4,8 @@ namespace App\Helpers;
 use Carbon\Carbon;
 use Dompdf\Helpers;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use DB;
+use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
@@ -63,7 +64,9 @@ class ManualApportionmentHelper{
             $intAccrualData['accrued_interest'] = $interestAmt;
             $intAccrualData['interest_rate'] = null;
             $intAccrualData['overdue_interest_rate'] = $odIntRate;
-            
+            $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone')   )->format('Y-m-d h:i:s');
+            $intAccrualData['created_by'] = Auth::user()->user_id;
+
             if($interest_accrual_id){
                 $recalwhereCond = [];
                 $recalwhereCond['interest_accrual_id'] = $interest_accrual_id;
@@ -78,15 +81,64 @@ class ManualApportionmentHelper{
     }
 
     private function monthlyIntPosting($invDisbId, $userId){
-        return InterestAccrual::select(DB::row("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
+        return InterestAccrual:://select('*')
+        select(\DB::row("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
         ->where('invoice_disbursed_id','=',$invDisbId)
-        ->groupByRaw('YEAR(interest_date), MONTH(interest_date)');
+        ->whereNull('overdue_interest_rate')
+        ->groupByRaw('YEAR(interest_date), MONTH(interest_date)')
+        ->get();
     }
 
     private function rearEndIntPosting($invDisbId,$userId){
-        return InterestAccrual::select(DB::row("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
+        return InterestAccrual:://select('*')
+        select(\DB::row("sum(accrued_interest) as totalInt, max(interest_date) as interestDate"))
         ->where('invoice_disbursed_id','=',$invDisbId)
-        ->groupBy('invoice_disbursed_id');
+        ->whereNull('overdue_interest_rate')
+        ->groupBy('invoice_disbursed_id')
+        ->get();
+    }
+
+    private function overDueIntPosting($invDisbId,$userId){
+        return InterestAccrual:://select('*')
+        select(\DB::raw("sum(accrued_interest) as totalInt, max(interest_date) as interestDate"))
+        ->where('invoice_disbursed_id','=',$invDisbId)
+        ->whereNotNull('overdue_interest_rate')
+        ->groupBy('invoice_disbursed_id')
+        ->get();
+    }
+
+    private function overDuePosting($invDisbId,$userId){
+        $interests = $this->overDueIntPosting($invDisbId, $userId);
+
+        foreach ($interests as $interest) {
+            $transId = Transactions::where('invoice_disbursed_id','=',$invDisbId)
+            ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+            ->where('entry_type','=',0)
+            ->value('trans_id');
+            
+            if($transId){
+                $whereCond = ['trans_id' => $transId];
+                $intTransData = [
+                    'invoice_disbursed_id' => $invDisbId,
+                    'user_id' => $userId,
+                    'trans_date' => $interest->interestDate,
+                    'amount' => $interest->totalInt,
+                    'entry_type' => 0,
+                    'trans_type' => config('lms.TRANS_TYPE.INTEREST_OVERDUE')
+                ];
+                $this->lmsRepo->saveTransaction($intTransData,$whereCond);
+            }else{
+                $intTransData = [
+                    'invoice_disbursed_id' => $invDisbId,
+                    'user_id' => $userId,
+                    'trans_date' => $interest->interestDate,
+                    'amount' => $interest->totalInt,
+                    'entry_type' => 0,
+                    'trans_type' => config('lms.TRANS_TYPE.INTEREST_OVERDUE')
+                ];
+                $this->lmsRepo->saveTransaction($intTransData);
+            }
+        }
     }
 
     private function interestPosting($invDisbId, $userId, $payFreq){
@@ -185,6 +237,8 @@ class ManualApportionmentHelper{
                     $intAccrualData['accrued_interest'] = $interestAmt;
                     $intAccrualData['interest_rate'] = ($intType==1)?$intRate:null;
                     $intAccrualData['overdue_interest_rate'] = ($intType==2)?$odIntRate:null;
+                    $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+                    $intAccrualData['created_by'] = Auth::user()->user_id;
                     
                     if($interest_accrual_id){
                         $recalwhereCond = [];
@@ -204,6 +258,7 @@ class ManualApportionmentHelper{
                 $loopStratDate = $this->addDays($loopStratDate,1);
             }
             $this->interestPosting($invDisbId, $userId, $payFreq);
+            $this->overDuePosting($invDisbId, $userId);
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
        } 

@@ -4183,19 +4183,8 @@ if ($err) {
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
         $repaymentAmtData = ((float)$repaymentAmtData<0)?0:$repaymentAmtData;
         return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
-        
-        // $debitAmt = 0;
-        // $creditAmt = 0;
-        
-        // if (isset($repaymentAmtData['debitAmtData']['amount'])) {
-        //     $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
-        // }
-        // if (isset($repaymentAmtData['creditAmtData']['amount'])) {
-        //     $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
-        // }        
-        // $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
-        // return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
     }
+    
     ////////////*  get business */////
     public function searchBusiness(Request $request)
     {
@@ -4404,6 +4393,15 @@ if ($err) {
         return $this->providerResult;
     }
 
+    public function getSettledPayments(DataProviderInterface $dataProvider) {
+        $user_id = $this->request->user_id;
+        $this->dataRecords = [];
+        if (!empty($user_id)) {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+        }
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
     
     public function checkBankAccExist(Request $req){
         

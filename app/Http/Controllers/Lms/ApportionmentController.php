@@ -42,17 +42,23 @@ class ApportionmentController extends Controller
             $oldData = [];
             $oldData['payment'] = (old('payment'))?old('payment'):[];
             $oldData['check'] = (old('check'))?old('check'):[];
+            $sanctionPageView = $request->has('sanctionPageView');
             $userId = $request->user_id;
-            $paymentId = $request->payment_id;
+            $paymentId = null;
+            $payment = null;
             $userDetails = $this->getUserDetails($userId); 
-            $payment = $this->getPaymentDetails($paymentId,$userId); 
+            if($request->has('payment_id')){
+                $paymentId = $request->payment_id;
+                $payment = $this->getPaymentDetails($paymentId,$userId); 
+            }
 
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
             ->with('payment',$payment) 
             ->with('userDetails', $userDetails)
-            ->with('oldData',$oldData);
+            ->with('oldData',$oldData)
+            ->with('sanctionPageView',$sanctionPageView);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -65,10 +71,12 @@ class ApportionmentController extends Controller
      */
     public function viewSettledTrans(Request $request){
         try {
+            $sanctionPageView = $request->has('sanctionPageView');
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId);
             return view('lms.apportionment.settledTransactions')
-                ->with('userDetails', $userDetails); 
+                ->with('userDetails', $userDetails)
+                ->with('sanctionPageView',$sanctionPageView); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -81,10 +89,12 @@ class ApportionmentController extends Controller
      */
     public function viewRefundTrans(Request $request){
         try {
+            $sanctionPageView = $request->has('sanctionPageView');
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
-            return view('lms.apportionment.RefundTransactions')
-                ->with('userDetails', $userDetails); 
+            return view('lms.apportionment.refundTransactions')
+                ->with('userDetails', $userDetails)
+                ->with('sanctionPageView',$sanctionPageView); 
 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -370,14 +380,18 @@ class ApportionmentController extends Controller
     public function listUnsettledTrans(Request $request){
         try {
             $userId = $request->user_id;
-            $paymentId = $request->payment_id;
-            
+            $paymentId = null;
             $payment_date = null;
-            $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
-            if(!empty($payment)){
-                $transactions = $this->getUnsettledTrans($userId);
-                return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment);
+            $payment = null;
+
+            if($request->has('payment_id')){
+                $paymentId = $request->payment_id;
+                $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
             }
+            
+            $transactions = $this->getUnsettledTrans($userId);
+            return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment);
+            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
@@ -495,15 +509,6 @@ class ApportionmentController extends Controller
 
     public function markSettleSave(Request $request){
         try {
-            $validator = Validator::make($request->all(), 
-                ["confirm" => 'required'],
-                ['confirm.required'=> 'Please indicate that you accept the Terms and Conditions']
-            );
-            if ($validator->fails()) {
-                Session::flash('error', $validator->messages()->first());
-                return redirect()->back()->withInput();
-            }
-
             if($request->session()->has('apportionment')){
                 $amtToSettle = 0; 
                 $transIds = [];
@@ -513,7 +518,7 @@ class ApportionmentController extends Controller
                 $checks = $request->session()->get('apportionment.check');
 
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
-                $repaymentAmt = $paymentDetails['amount']; 
+                $repaymentAmt = (float) $paymentDetails['amount']; 
                 
                 $invoiceList = [];
                 $transactionList = [];
@@ -533,12 +538,16 @@ class ApportionmentController extends Controller
                 }
 
                 foreach ($transactions as $trans){  
-                    $invoiceList[$trans->invoice_disbursed_id] = [
-                        'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
-                        'date_of_payment'=>$paymentDetails['date_of_payment']
-                    ];             
+                    if($trans->invoice_disbursed_id){
+
+                        $invoiceList[$trans->invoice_disbursed_id] = [
+                            'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
+                            'date_of_payment'=>$paymentDetails['date_of_payment']
+                        ];             
+                    }
                     $transactionList[] = [
                         'payment_id' => $paymentId,
+                        'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
@@ -564,7 +573,7 @@ class ApportionmentController extends Controller
                     if($refundAmt > 0){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
-                            'link_id' => $refundParentTrans->trans_id,
+                            'link_trans_id' => $refundParentTrans->trans_id,
                             'parent_trans_id' => $refundParentTrans->trans_id,
                             'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
                             'user_id' => $refundParentTrans->user_id,
@@ -579,17 +588,16 @@ class ApportionmentController extends Controller
                 if($unAppliedAmt > 0){
                     $transactionList[] = [
                         'payment_id' => $paymentId,
-                        'link_id' => $refundParentTrans->trans_id,
-                        'parent_trans_id' => $refundParentTrans->trans_id,
+                        'link_trans_id' => null,
+                        'parent_trans_id' => null,
                         'invoice_disbursed_id' => null,
-                        'user_id' => $refundParentTrans->user_id,
-                        'trans_date' => $invDisb['date_of_payment'],
+                        'user_id' => $trans->user_id,
+                        'trans_date' => $paymentDetails['date_of_payment'],
                         'amount' => $unAppliedAmt,
                         'entry_type' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT')
                     ];
                 }
-
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);

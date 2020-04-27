@@ -65,6 +65,7 @@ class Payment extends BaseModel {
         'description',
         'is_settled',
         'is_manual',
+        'is_refundable',
         'created_at',
         'created_by',
         'updated_at',
@@ -86,6 +87,34 @@ class Payment extends BaseModel {
     public function transaction(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
     }
+    public function creator(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id');
+    }
+    
+    public function getBusinessName() {
+        return $this->belongsTo(Business::class, 'biz_id');
+    }
+
+    public function getUserName() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function getCreatedByName() {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function transType(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type', 'id');
+    } 
+
+    public function getTransNameAttribute(){
+        $result = $this->transType->trans_name;
+        if($this->action_type == 3){
+            $result .= " /TDS";
+        }
+        return $result;
+    }
+
     /**
      * get Payment data list
      * 
@@ -120,22 +149,6 @@ class Payment extends BaseModel {
             $resp['message'] = preg_replace('#[^A-Za-z./\s\_]+#', '', $errorInfo[2]) ?? 'Some DB Error occured. Try again.';  
         }
         return $resp['status'] == 'success' ? $resp['code'] : $resp['message'];
-    }
-
-    public function getBusinessName() {
-       return $this->belongsTo(Business::class, 'biz_id');
-    }
-
-    public function getUserName() {
-       return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function getCreatedByName() {
-       return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function transType(){
-       return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type');
     }   
 
     public function getPaymentModeAttribute() {
@@ -145,24 +158,24 @@ class Payment extends BaseModel {
         return $mode_of_pay;
     }
 
-    public function getTransNameAttribute() {
-        $payment_type = $this->payment_type;
-        switch ($payment_type) {
-            case '1':
-                $attr = $this->utr_no;
-                break;
-            case '2':
-                $attr = $this->cheque_no;
-                break;
-            case '3':
-               $attr = $this->unr_no;
-                break;
-            default:
-               $attr = '';
-                break;
-        }
-        return $attr;
-    }
+    // public function getTransNameAttribute() {
+    //     $payment_type = $this->payment_type;
+    //     switch ($payment_type) {
+    //         case '1':
+    //             $attr = $this->utr_no;
+    //             break;
+    //         case '2':
+    //             $attr = $this->cheque_no;
+    //             break;
+    //         case '3':
+    //            $attr = $this->unr_no;
+    //             break;
+    //         default:
+    //            $attr = '';
+    //             break;
+    //     }
+    //     return $attr;
+    // }
     
     /*** get all transaction  **/
     public static function getAllManualTransaction()

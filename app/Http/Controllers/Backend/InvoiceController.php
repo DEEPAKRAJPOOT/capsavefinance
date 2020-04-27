@@ -676,23 +676,23 @@ class InvoiceController extends Controller {
                     $disburseAmount += $amount;
 
                     // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($userid, ['amount' => $amount, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 16);
+                    $transactionData = $this->createTransactionData($userid, ['amount' => $amount, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
                     $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
                     
                     // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
                     $intrstAmt = round($totalInterest, config('lms.DECIMAL_TYPE')['AMOUNT']);
                     if ($intrstAmt > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 9);
+                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.INTEREST'));
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['parent_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 9, 1);
+                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.INTEREST'), 1);
                         $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                     }
 
                     // Margin transaction $tranType = 10 
                     $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT']);
                     if ($marginAmt > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], 10, 1);
+                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.MARGIN'), 0);
                         $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
                     }
 

@@ -59,7 +59,7 @@
                                                     <th >App ID</th>       
 		                                     		<th >Virtual ID</th>		
 		                                     		<th >Customer Detail</th>
-													<th >Loan/Limit Offer</th>
+													<th >Product Limit</th>
 													<th >Utilize Limit</th>
 													<th >Available Limit</th>
                                                     <th >Anchor Detail</th>
