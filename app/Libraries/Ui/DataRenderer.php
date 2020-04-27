@@ -932,21 +932,23 @@ class DataRenderer implements DataProviderInterface
            
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) {                        
-                        return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
-                })
+                    function ($invoice) { 
+                    $id = Auth::user()->user_id;
+                    $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                    $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                    if($chkUser->id!=11) 
+                        {
+                           return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                
+                        }
+                        })
                  ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
-                           if($request->front)
-                           {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
-                           }
-                        else {
+                         
                               return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
         
-                        }
+                       
              })
              
               ->addColumn(
@@ -997,10 +999,12 @@ class DataRenderer implements DataProviderInterface
                      $id = Auth::user()->user_id;
                      $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                      $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                      
+                      if($chkUser->id!=11) 
+                     {
                       $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
                       $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option><option value="14">Reject</option></select></div>';
-                      return  $action;
+                     }
+                     return  $action;
                 })
                  ->filter(function ($query) use ($request) {
                   
@@ -1028,21 +1032,20 @@ class DataRenderer implements DataProviderInterface
 
                 ->addColumn(
                     'invoice_checkbox',
-                    function ($invoice) {                        
-                        return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$invoice->invoice_id.'">';
-                })
+                    function ($invoice) { 
+                        $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                       if( $chkUser->id!=11)
+                        {
+                          return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$invoice->invoice_id.'">';
+                        }
+                     })
                 ->addColumn(
                     'anchor_id',
                     function ($invoice) use ($request)  {     
-                        if($request->front)
-                        {
-                            return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                        return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
         
-                        }
-                        else {
-                            return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
-                        }
                 })
                ->addColumn(
                     'anchor_name',
@@ -1091,7 +1094,7 @@ class DataRenderer implements DataProviderInterface
                         $id = Auth::user()->user_id;
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                       if( $chkUser->id==1)
                         {
                              $customer  = 1;
                         }
@@ -1105,14 +1108,15 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                          $action = "";
-                    if($customer!=3)
-                      {    
-                         $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option>';
-                       if(in_array($customer, $expl)) 
-                       {
-                         $action .='<option value="8">Approve</option>';
-                       }
-                        $action .='<option value="14">Reject</option></select></div>';
+                    if($customer!=3 && $chkUser->id!=11)
+                      { 
+                          $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option>';
+                          if(in_array($customer, $expl)) 
+                          {
+                            $action .='<option value="8">Approve</option>';
+                          }
+                           $action .='<option value="14">Reject</option></select></div>';
+                        
                      }    
                         return  $action;
                 })
@@ -1293,8 +1297,9 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
-                      if($customer!=3)
-                      {   
+                      if($customer!=3 && $chkUser->id!=11)
+                      { 
+                        
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
@@ -1568,7 +1573,7 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
-                      if($customer!=3)
+                      if($customer!=3 && $chkUser->id!=11)
                       {  
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
@@ -1660,7 +1665,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'action',
                     function ($invoice) {
-                      $id = Auth::user()->user_id;
+                        $id = Auth::user()->user_id;
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                         if( $chkUser->id==1)
@@ -5224,10 +5229,15 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($disbursal) {
+                        $id = Auth::user()->user_id;
+                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                         $act = '';
                         $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
-                        $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
-                        
+                        if( $chkUser->id!=11)
+                        {  
+                           $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
+                        }
                         return $act;
                 })
                 ->filter(function ($query) use ($request) {
