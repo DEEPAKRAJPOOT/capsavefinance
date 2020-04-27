@@ -38,13 +38,6 @@
     <li>
         <a class=" {{ ($active=='settledTrans')? 'active': null }} " href="{{route('apport_settled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Settled Tran.</a>
     </li>
-      @endcan
-         
-<!--
-     @can('limit_management')
-     <li>
-        <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
-   </li>
     @endcan
     @can('apport_refund_view')
     <li>
@@ -55,10 +48,10 @@
     <li>
         <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('lms_get_transaction', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Cust. SOA</a>
     </li>
-    @endcan
-    @can('limit_management')
+    @endcan     
+    {{-- @can('limit_management')
     <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
     </li>
-    @endcan -->
+    @endcan  --}}
 </ul>  
