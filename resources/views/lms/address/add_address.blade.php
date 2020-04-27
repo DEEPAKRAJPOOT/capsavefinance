@@ -14,7 +14,7 @@
                 <select class="form-control" name="gst_no" id="gst_no" onchange="fillAddress(this.value)">
                     <option disabled value="" data-id="" selected>Select GST</option>
                     @foreach($gsts as $gst)
-                        @if($gst->is_shown == 0)
+                        @if($gst->is_gst_hide == 0)
                         <option value="{{$gst->pan_gst_hash}}" data-id="{{$gst->biz_pan_gst_id}}">{{$gst->pan_gst_hash}}</option>
                         @endif
                     @endforeach
