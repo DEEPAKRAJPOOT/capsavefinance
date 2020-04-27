@@ -399,10 +399,12 @@ class Transactions extends BaseModel {
     }
 
     public static function getJournals(){
-        
+        return self::where('entry_type','1')
+            ->whereNotNull('parent_trans_id')
+            ->where('is_posted_in_tally','=','0')
+            ->where('user_id','=',$userId)
+            ->get();
     }
-
-
 
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($attr)
