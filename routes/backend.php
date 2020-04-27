@@ -580,11 +580,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveBankDetail'
                 ]);
             }); //end of cam   
+                        
+            Route::get('copy-app-confirmBox', [
+                'as' => 'copy_app_confirmbox',
+                'uses' => 'Backend\RenewalController@copyAppConfirmbox'
+            ]);
             
-            Route::get('renew-application', [
+            Route::post('renew-application', [
                 'as' => 'renew_application',
                 'uses' => 'Backend\RenewalController@renewApplication'
             ]);
+
+            Route::get('renewal-application-list', [
+                'as' => 'renewal_application_list',
+                'uses' => 'Backend\RenewalController@renewalAppList'
+            ]);            
             
         });//end of application
 

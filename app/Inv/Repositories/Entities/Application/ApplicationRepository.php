@@ -2125,6 +2125,30 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function saveWfDetail($arrData)
     {
         return WfAppStage::saveWfDetail($arrData);
+    }
+
+    /**
+     * Get Applications Data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getApplicationsData($where=[])
+    {
+        return Application::getApplicationsData($where);
+    }   
+    
+    /**
+     * Get all renewal applications for data table
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getAllRenewalApps()
+    {
+        return Application::getAllRenewalApps();
     }    
 }
 

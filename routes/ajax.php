@@ -1017,4 +1017,10 @@ Route::group(
         'as' => 'check_applied_charge',
         'uses' => 'AjaxController@checkAppliedCharge'
     ]);       
+    
+    
+    Route::post('ajax-renewal-app-list', [
+        'as' => 'ajax_renewal_app_list',
+        'uses' => 'AjaxController@getRenewalAppList'
+    ]);     
 });

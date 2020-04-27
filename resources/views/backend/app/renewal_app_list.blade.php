@@ -24,11 +24,11 @@
         </div>
         <div class="header-title">
             <h3>Manage Application</h3>
-            <small>Application List</small>
+            <small>Renewal Application List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Manage Application</li>
-                <li class="active">My Application</li>
+                <li class="active">Renewal Application List</li>
             </ol>
         </div>
     </section>
@@ -50,6 +50,7 @@
                     ])
                     !!}
                 </div>
+                <!--
                 <div class="col-md-4">
 
                     {!!
@@ -60,6 +61,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
+                -->
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     
@@ -68,7 +70,7 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="appList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                    <table id="renewalAppList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
                                                 <th style="width:6%">{{ trans('backend.app_list_head.app_id') }}</th>
@@ -126,13 +128,63 @@
 @section('jscript')
 <script>
 
-    var messages = {
-        get_applications: "{{ URL::route('ajax_app_list') }}",
-        data_not_found: "{{ trans('error_messages.data_not_found') }}",
-        token: "{{ csrf_token() }}",
+var messages = {
+    get_renewal_applications: "{{ URL::route('ajax_renewal_app_list') }}",
+    data_not_found: "{{ trans('error_messages.data_not_found') }}",
+    token: "{{ csrf_token() }}",
 
-    };
+};
+    
+$(document).ready(function () {
+    //User Listing code
+    oTable = $('#renewalAppList').DataTable({
+        "dom": '<"top">rt<"bottom"flpi><"clear">',
+        autoWidth:false,
+        processing: true,
+        serverSide: true,
+        pageLength: 25,
+        searching: false,
+        bSort: false,
+            // "scrollY": 400,
+            // "scrollX": true,
+            // scrollCollapse: true,            
+        ajax: {
+            "url": messages.get_renewal_applications, // json datasource
+            "method": 'POST',
+            data: function (d) {
+                d.search_keyword = $('input[name=search_keyword]').val();
+                d.is_assign = $('select[name=is_assign]').val();
+                d._token = messages.token;
+            },
+            "error": function () {  // error handling
+
+                $("#appList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                $("#appList_processing").css("display", "none");
+            }
+        },
+       columns: [
+            {data: 'app_id'},
+            {data: 'biz_entity_name'},
+            {data: 'name'},
+            {data: 'contact'},
+            // {data: 'email'},
+           // {data: 'mobile_no'},
+            {data: 'assoc_anchor'},
+           // {data: 'user_type'},
+            {data: 'assignee'},
+            {data: 'assigned_by'},
+           // {data: 'shared_detail'},
+            {data: 'status'},
+            {data: 'action'}
+        ],
+        aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}]
+
+    });
+
+    //Search
+    $('#searchRenewaAppsBtn').on('click', function (e) {
+        oTable.draw();
+    });
+ });        
 </script>
-<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/application.js') }}" type="text/javascript"></script>
 @endsection

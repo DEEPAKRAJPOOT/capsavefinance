@@ -4377,4 +4377,10 @@ if ($err) {
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
     }
+    
+    public function getRenewalAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getAllRenewalApps();
+        $applications = $dataProvider->getRenewalAppList($this->request, $appList);
+        return $applications;        
+    }
 }

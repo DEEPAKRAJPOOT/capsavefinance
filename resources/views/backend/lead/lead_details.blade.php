@@ -32,11 +32,12 @@
                                 <div class="col-sm-6">
                                   <div class="head-sec">
                                      <div class="pull-right" style="margin-bottom: 10px;">
-                                         @can('create_application')
+                                        @can('create_application')
                                         <a href="{{route('create_application',['user_id' => request()->get('user_id')])}}">
-                                        @endcan
+                                            
                                             <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
                                         </a>
+                                        @endcan
                                      </div>
                                   </div>
                                </div>

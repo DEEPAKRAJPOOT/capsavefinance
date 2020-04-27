@@ -22,6 +22,18 @@ class RenewalController extends Controller {
         $this->userRepo = $user_repo;
     }
 
+    public function copyAppConfirmbox(Request $request)
+    {
+        $userId = $request->get('user_id');
+        $appId = $request->get('app_id');
+        $bizId = $request->get('biz_id');
+
+
+        return view('backend.app.copy_app_confirmbox')
+                        ->with('userId', $userId)
+                        ->with('appId', $appId)           
+                        ->with('bizId', $bizId); 
+    }    
 
     /**
      * Copy application
@@ -32,8 +44,12 @@ class RenewalController extends Controller {
     public function renewApplication(Request $request)
     {
         try {
-            //$userId = 568;
-            $userId = $request->get('user_id');   //510;
+
+            $userId = $request->get('user_id');   
+            $appId = $request->get('app_id'); 
+            $bizId = $request->get('biz_id'); 
+            
+            /*
             $where=[];
             $where['user_id'] = $userId;
             $appData = $this->appRepo->getAppDataByOrder($where , $orderBy = 'DESC');
@@ -42,23 +58,34 @@ class RenewalController extends Controller {
                 return redirect()->back(); 
             }
             
-                       
-                        
+            $appId = $appData->app_id;
+            $bizId = $appData->biz_id;          
+                 
+            //$userId = 568;
+            //$userId = 510;
+                                 
             //$appId = 435;
             //$bizId = 439;  
 
             //$appId = 391;
             //$bizId = 392;  
             
-            $appId = $appData->app_id;
-            $bizId = $appData->biz_id;
+            */
             
             $this->copyApplication($userId, $appId, $bizId);
-            Session::flash('message', 'Application is copied successfully');
-            return redirect()->route('application_list');
+            //Session::flash('message', 'Application is copied successfully');
+            Session::flash('is_accept', 1);
+            //echo '<script>$(document).ready(function(){ parent.jQuery("#confirmCopyApp").modal("hide"); });</script>';
+            return redirect()->route('company_details', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]);
+            //return redirect()->back();
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+    
+    public function renewalAppList()
+    {
+        return view('backend.app.renewal_app_list'); 
     }
 
 }

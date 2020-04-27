@@ -316,7 +316,7 @@ trait ApplicationTrait
             $bizData = $bizData ? $this->arrayExcept($bizData->toArray(), array_merge($excludeKeys, ['biz_id'])) : [];           
             $newBizData = $this->appRepo->createBusiness($bizData);
             $newBizId = $newBizData->biz_id;
-
+            
             //Get and save Biz Address
             /*
             $bizAddressesData  = $this->appRepo->getBizAddresses($newBizId);

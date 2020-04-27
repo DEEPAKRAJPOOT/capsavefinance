@@ -707,5 +707,50 @@ class Application extends BaseModel
                 ->get();
                        
         return ($appData ? $appData : []);        
-    }    
+    }
+
+    /**
+     * Get Applications Data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getApplicationsData($where=[])
+    {
+        /**
+         * $where is not an array
+         */
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $query = self::select('*');        
+       
+        if (isset($where['user_id'])) {
+            $query->where('user_id', $where['user_id']);            
+        }
+        
+        if (isset($where['status']) && is_array($where['status'])) {
+            $query->whereIn('status', $where['status']);            
+        }
+        
+        $result = $query->get();       
+        return $result ? $result: [];
+    }
+
+    public static function getAllRenewalApps()
+    {
+        $today = \Carbon\Carbon::now();
+        $currDate = $today->toDateString();       
+        $appData = self::select('app.*')
+                ->join('app_limit', 'app_limit.app_id', '=', 'app.app_id')
+                ->where('app.status', '1')
+                ->where('app_limit.status', '1')
+                ->where('app_limit.start_date', '>=', $currDate)
+                ->where('app_limit.end_date', '<=', $currDate)
+                ->orderBy('app.app_id', 'DESC');
+                       
+        return ($appData ? $appData : []);        
+    }
 }
