@@ -106,4 +106,10 @@ return [
      'required'=>':field is required.',
     'first_name_regex' => 'Please enter only alpha characters with/without space.',
     'last_name_regex' => 'Please enter only alpha characters.',
+
+
+    'apport_invalid_user_id' => "Invalid User",
+    'apport_invalid_repayment_id' => 'Invalid Re-Payment',
+    'apport_invalid_unapplied_amt' => 'Total requested amout to settle is greater than the repayment amt',
+
     ];

@@ -134,6 +134,23 @@
         </li>
     @endcan
     
+    @can('eod_process')
+        <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-table" aria-hidden="true"></i>
+                    <span class="menu-title">Manage EOD Process</span>
+                   <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="layoutsSubmenu1">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('eod_process') }}">EOD Process</a>
+                        </li>
+                    </ul>
+                </div>
+         </li>
+    @endcan 
+    
     @can('lms_get_customer_list')
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false" aria-controls="collapseExample">
@@ -282,9 +299,9 @@
                         <a class="nav-link" href="{{route('unsettled_payments')}}">Unsettled Payments</a>
                     </li>                     
                     @endcan
-                    @can('payment_advice')
+                    @can('settled_payments')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('payment_advice')}}">Payment Advice</a>
+                        <a class="nav-link" href="{{route('settled_payments')}}">Settled Payment</a>
                     </li>                     
                     @endcan
                 </ul>

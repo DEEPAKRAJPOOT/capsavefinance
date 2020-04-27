@@ -1255,27 +1255,32 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             Route::get('/edit-upload-document', [
                 'as' => 'pp_edit_upload_document',
-                'uses' => 'Backend\ApplicationController@editUploadDocument'
+                'uses' => 'Backend\ApplicationController@ppEditUploadDocument'
             ]);
 
             Route::post('/update-edit-upload-document', [
                 'as' => 'pp_update_edit_upload_document',
-                'uses' => 'Backend\ApplicationController@updateEditUploadDocument'
+                'uses' => 'Backend\ApplicationController@ppUpdateEditUploadDocument'
             ]);
             
         });   
         
         Route::group(['prefix' => 'payment'], function () {
             Route::get('payment_list', [
-                 'as' => 'payment_list',
+                'as' => 'payment_list',
                 'uses' => 'Backend\PaymentController@paymentList'
             ]);
 
             Route::get('unsettled_payments', [
-                 'as' => 'unsettled_payments',
+                'as' => 'unsettled_payments',
                 'uses' => 'Backend\PaymentController@unsettledPayment'
             ]); 
             
+            Route::get('settled_payments', [
+                'as' => 'settled_payments',
+                'uses' => 'Backend\PaymentController@settledPayment'
+            ]);
+
             Route::get('excel_payment_list', [
                  'as' => 'excel_payment_list',
                 'uses' => 'Backend\PaymentController@excelPaymentList'
@@ -1283,11 +1288,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('add_payment', [
                  'as' => 'add_payment',
                 'uses' => 'Backend\PaymentController@addPayment'
-            ]);      
+            ]);
             
-             Route::post('save_payment', [
+            Route::post('save_payment', [
                  'as' => 'save_payment',
                 'uses' => 'Backend\PaymentController@savePayment'
+            ]);
+
+            Route::get('edit_payment', [
+                 'as' => 'edit_payment',
+                'uses' => 'Backend\PaymentController@EditPayment'
+            ]);      
+
+            Route::post('update_payment', [
+                 'as' => 'update_payment',
+                'uses' => 'Backend\PaymentController@updatePayment'
             ]);  
              Route::get('excel_bulk_payment', [
                 'as' => 'excel_bulk_payment',
@@ -1302,13 +1317,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('payment_advice', [
                 'as' => 'payment_advice',
                'uses' => 'Backend\PaymentController@paymentAdviceList'
-           ]); 
+            ]); 
            
             // Payment Advice Excel Download
             Route::get('payment_advice_excel', [
                 'as' => 'payment_advice_excel',
                'uses' => 'Backend\PaymentController@paymentAdviceExcel'
-           ]); 
+            ]); 
 
          });
 

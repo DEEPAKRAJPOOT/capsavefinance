@@ -159,7 +159,7 @@ class Helper extends PaypalHelper
                 'is_complete' => $wf_status
             ];
             $appData = Application::getAppData((int) $app_id);
-            $user_id = $appData->user_id;
+            $user_id = (int)$appData->user_id;
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
@@ -293,7 +293,26 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
-    
+    public static function uploadUserLMSFile($attributes, $userId)
+    {
+        $inputArr = [];
+        if ($attributes['doc_file']) {
+            if (!Storage::exists('/public/Lms/' . $userId)) {
+                Storage::makeDirectory('/public/Lms/' . $userId, 0777, true);
+            }
+            $path = Storage::disk('public')->put('/Lms/' . $userId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
     public static function uploadInvoiceFile($attributes, $batch_id)
     {
        $userId = Auth::user()->user_id;
@@ -778,6 +797,7 @@ class Helper extends PaypalHelper
      */
     public static function getUserInfo($user_id = null)
     {
+        $user_id = !is_null($user_id) ? (int) $user_id : null;
         $getUserInfo = User::getfullUserDetail($user_id);
         return $getUserInfo;
     }
@@ -1393,5 +1413,82 @@ class Helper extends PaypalHelper
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');    
         $offerData = $appRepo->getPrgmLimitByAppId($appId);
         return $offerData && isset($offerData->offer);
-    }    
+    }  
+    
+    
+    public static function checkEodProcess()
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $whereCond=[];
+        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        //$whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
+        $whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        $eodProcess = $lmsRepo->getEodProcess($whereCond);
+        if ($eodProcess) {            
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+
+    public static function updateEodProcess($eodProcessCheckType, $status)
+    {
+        $eodProcessCheckTypeList = config('lms.EOD_PROCESS_CHECK_TYPE');
+       
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $data = [];
+        $data[$eodProcessCheckType] = $status;
+        
+        $today = \Carbon\Carbon::now();
+        
+        $sys_start_date_eq = $today->format('Y-m-d');
+        
+        $whereCond=[];
+        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
+        $whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
+        $eodProcess = $lmsRepo->getEodProcess($whereCond);
+        if ($eodProcess) {
+            $eod_process_id = $eodProcess->eod_process_id;
+            $lmsRepo->saveEodProcessLog($data, $eod_process_id);
+            
+            $eod_status = '';
+            if ($status == config('lms.EOD_FAIL_STATUS')) {
+                $eod_status = $status;
+            } else {
+                $whereCond=[];
+                $whereCond['eod_process_id'] = $eod_process_id;
+                $eodLog = $lmsRepo->getEodProcessLog($whereCond);
+                $statusArr=[];
+                if ($eodLog) {
+                    $statusArr[] = $eodLog->tally_status;
+                    $statusArr[] = $eodLog->int_accrual_status;
+                    $statusArr[] = $eodLog->repayment_status;
+                    $statusArr[] = $eodLog->disbursal_status;
+                    $statusArr[] = $eodLog->charge_post_status;
+                    $statusArr[] = $eodLog->overdue_int_accrual_status;
+                    $statusArr[] = $eodLog->disbursal_block_status;
+                    $eod_status = in_array(2, $statusArr) ? config('lms.EOD_PROCESS_STATUS.FAILED') : (in_array(0, $statusArr) ? '' : config('lms.EOD_PROCESS_STATUS.COMPLETED'));
+                }
+            }
+            
+            
+            if ($eod_status) {
+                $eodData = [];
+                $eodData['status'] = $eod_status;
+                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
+                $lmsRepo->saveEodProcess($eodData, $eod_process_id);
+            }
+           
+        }
+        
+    } 
+
+    public static function getDateTimeFieldInTz($fieldName)
+    {           
+        $tz = '+5:30';        //'timezone' => 'Asia/Kolkata',
+        $field = "CONVERT_TZ("+$fieldName+", '+00:00', '" . $tz . "')";
+        return $field;
+    }
 }

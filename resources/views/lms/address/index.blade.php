@@ -49,7 +49,7 @@
 						<div class="col-sm-12">
 							<div class="head-sec">
 
-								<a data-toggle="modal" data-target="#addAddressFrame" id="register" data-url ="{{route('add_addr',[ 'user_id' => $userInfo->user_id ])}}" data-height="310px" data-width="100%" data-placement="top" >
+								<a data-toggle="modal" data-target="#addAddressFrame" id="register" data-url ="{{route('add_addr',[ 'user_id' => $userInfo->user_id ])}}" data-height="450px" data-width="100%" data-placement="top" >
 									<button class="btn  btn-success btn-sm float-right mb-3" type="button">
 
 									<i class="fa fa-plus"></i> Add Address
@@ -62,12 +62,12 @@
 							<table id="AddressList" class="table table-striped dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoive-listing_info" style="width: 100%;">
 								<thead>
 									<tr role="row">
-										<th>Customer Id </th>
+										<th width="90px">Customer Id </th>
 										<th>Address</th>
 										<th>City</th>
 										<th>State</th>
 										<th>Pincode</th>
-										<th>RCU Status</th>
+										<th width="105px">Status</th>
 										<th>Action</th>
 									</tr>
 

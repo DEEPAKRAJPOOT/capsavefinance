@@ -57,6 +57,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
+use App\Inv\Repositories\Models\BizPanGst;
 
 /**
  * Application repository class
@@ -1011,7 +1012,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
-    public function getLimit($app_prgm_limit_id){
+    public function getLimit(int $app_prgm_limit_id){
         $prgmLimitData = AppProgramLimit::getLimit($app_prgm_limit_id);
         return $prgmLimitData ? $prgmLimitData : [];
     }
@@ -1706,7 +1707,50 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return UserBankAccount::seeUploadFilePopup($acc_id, $user_id);
 
     }
-}
+    
+    /**
+     * check the company bank account is by default set
+     * 
+     * @param type $attributes array
+     * @param type $id int
+     * @return type mixed
+     */
+    public function isDefalutCmpBankAcc($attributes, $is_default)
+    {
+        return UserBankAccount::isDefalutCmpBankAcc($attributes, $is_default);
+    }
+    
+    /*
+     *check bank account is unique for a company
+     */
+    public function getBankAccByCompany($attributes){
+        return UserBankAccount::getBankAccStatusByCompany($attributes);
+    }
 
+    /**
+    * Get all GSTs by user id  
+    */
+    public function getGSTsByUserId($user_id)
+    {   
+        return BizPanGst::getGSTsByUserId($user_id);
+    }
+
+    /**
+    * update is_default to 0 in biz_addr where address_type is 6 by user id
+    */
+    public function unsetDefaultAddress($user_id)
+    {   
+        return BusinessAddress::unsetDefaultAddress($user_id);
+    }
+
+    /**
+    * update is_default to 0 in biz_addr where address_type is 6 by user id
+    */
+    public function updateGstHideAddress($data, $biz_pan_gst_id=null)
+    {   
+        return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
+    }
+    
+}
 
 

@@ -34,6 +34,7 @@ class RefundController extends Controller
         $this->userRepo = $user_repo;
 		$this->lmsRepo = $lms_repo;
 		$this->middleware('checkBackendLeadAccess');
+                $this->middleware('checkEodProcess');
 	}
 
     /**
@@ -95,6 +96,11 @@ class RefundController extends Controller
 
     public function refundOffline(Request $request)
     {
+        if ($request->get('eod_process')) {
+            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+            return back();
+        }
+        
         $transactionIds = $request->get('transaction_ids');
         $disburseDate = $request->get('disburse_date');
         $creatorId = Auth::user()->user_id;
@@ -364,6 +370,11 @@ class RefundController extends Controller
 
 	public function sendRefund(Request $request)
 	{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+        
 		$transId = $request->trans_id;
 		$disburseIds = $request->disbursal_ids;
 
@@ -431,6 +442,11 @@ class RefundController extends Controller
 
         public function acceptReqStage(Request $request)
         {
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+        
             $reqId = $request->get('req_id');
             $isBackStage = $request->has('back_stage') && !empty($request->get('back_stage')) ? true : false;
             $comment = $request->get('sharing_comment');
@@ -524,6 +540,11 @@ class RefundController extends Controller
 
         public function processRefund(Request $request)
         {
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            
             $reqId = $request->get('req_id');
             $reqStatus = $request->get('status');
             $comment = $request->get('comment');
@@ -546,7 +567,7 @@ class RefundController extends Controller
                     if (count($nonFactoredAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($nonFactoredAmtData[0]) ? $nonFactoredAmtData[0]->amount : 0;
-                        //$trData['repay_trans_id'] = $transId;
+                        //$trData['payment_id'] = $transId;
                         $trData['soa_flag'] = 1;
                         $transType = config('lms.TRANS_TYPE.NON_FACTORED_AMT');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
@@ -558,7 +579,7 @@ class RefundController extends Controller
                     if (count($intRefundAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($intRefundAmtData[0]) ? $intRefundAmtData[0]->amount : 0;
-                        //$trData['repay_trans_id'] = $transId;
+                        //$trData['payment_id'] = $transId;
                         $trData['soa_flag'] = 1;
                         $transType = config('lms.TRANS_TYPE.INTEREST_REFUND');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
@@ -570,7 +591,7 @@ class RefundController extends Controller
                     if (count($marginReleasedAmtData) > 0) {
                         $trData = [];                
                         $trData['amount'] = isset($marginReleasedAmtData[0]) ? $marginReleasedAmtData[0]->amount : 0;
-                        //$trData['repay_trans_id'] = $transId;
+                        //$trData['payment_id'] = $transId;
                         $trData['soa_flag'] = 1;
                         $transType = config('lms.TRANS_TYPE.MARGIN');
                         $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);

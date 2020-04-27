@@ -398,7 +398,31 @@ class ApplicationController extends Controller
 				]);   
 	}
 
+	public function ppEditUploadDocument(Request $request)
+	{
+		$fileId = $request->get('app_doc_file_id');
+		$data = $this->docRepo->getAppDocFileById($fileId);
+
+		return view('backend.document.edit_upload_document', [
+					'data' => $data
+				]);   
+	}
+
 	public function updateEditUploadDocument(Request $request)
+	{
+		$fileId = $request->get('app_doc_file_id');
+		$comment = $request->get('comment');
+		$appId = (int)$request->app_id; //  fetch app id
+		$bizId = (int)$request->biz_id; //  fetch biz id
+		$data = ['comment' => $comment ];
+		$document_info = $this->docRepo->updateDocument($data, $fileId);
+
+		Session::flash('message',trans('success_messages.documentUpdated'));
+		return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
+
+	}
+
+	public function ppUpdateEditUploadDocument(Request $request)
 	{
 		$fileId = $request->get('app_doc_file_id');
 		$comment = $request->get('comment');
@@ -826,8 +850,6 @@ class ApplicationController extends Controller
 						return redirect()->back();                                            
 					}
 				} else if ($currStage->stage_code == 'opps_checker') {
-                                  $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
-                                  if($prcsAmt && isset($prcsAmt->offer)) {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
 				  $lmsCustomerArray = array(
@@ -849,7 +871,10 @@ class ApplicationController extends Controller
 				  		'start_date' => $curDate,
 				  		'end_date' => $endDate], $appLimitId);
 			  	}
-				  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+			  	
+			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+              	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+              	if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
@@ -864,7 +889,7 @@ class ApplicationController extends Controller
 						  continue;
 						foreach ($offer_charges as $key => $chrgs) {
 						  $ChargeMasterData = $this->appRepo->getTransTypeDataByChargeId($chrgs->charge_id);
-						  $ChargeId = $ChargeMasterData->id;
+						  $ChargeId = (int) $ChargeMasterData->id;
 						  $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
 						  $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
 						  if($chrgs->chrg_type == 1)
@@ -875,19 +900,19 @@ class ApplicationController extends Controller
 							if($userStateId == $companyStateId) {
 							  $fWGst = round((($pf_amt*18)/100),2);
 							  $fData['gst'] = $PrgmChrg->is_gst_applicable;
-							  $fData['igst'] = $fWGst;
+							  $fData['igst'] = 0; //$fWGst
 							  $fData['amount'] += $fWGst;
 
 							} else {
 							  $fWGst = round((($pf_amt*9)/100),2);
 							  $fData['gst'] = $PrgmChrg->is_gst_applicable;
-							  $fData['cgst'] = $fWGst;
-							  $fData['sgst'] = $fWGst;
-							  $totalGst = $fData['cgst'] + $fData['sgst'];
+							  $fData['cgst'] = 0; //$fWGst
+							  $fData['sgst'] = 0; //$fWGst;
+							  $totalGst = $fWGst + $fWGst; //$fData['cgst'] + $fData['sgst'];
 							  $fData['amount'] += $totalGst;
 							}
 						  }
-						  $fDebitData = $this->createTransactionData($user_id, $fData, null, $ChargeId);
+						  $fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
 						  $fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
 						}
 					  }

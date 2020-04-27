@@ -31,6 +31,7 @@ use App\Inv\Repositories\Models\Master\Constitution;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\Master\FacilityType;
 use App\Inv\Repositories\Models\Master\BaseRate;
+use App\Inv\Repositories\Models\Master\Activity;
 
 /**
  * 
@@ -668,5 +669,45 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return BaseRate::getBaseRateDropDown();
     }
+    
+    /*
+     * check that company is registered.
+     */
+    public function checkIsRegCompany($cmp_name,$is_reg) {
+        
+        $result = Company::checkIsRegCompany($cmp_name,$is_reg);
+  
+        return $result;
+    }
+    
+    /*
+     * check that company address is unique by company name.
+     */
+    public function getCompAddByCompanyName($attributes) {
+        
+        return Company::getCompAddByCompanyName($attributes);
+  
+    }
+    
+    /*
+     * get companies ids of same name by a particular company id.
+     */
+    public function getCompNameByCompId($compId) {
+        
+        return Company::getCompNameByCompId($compId);
+  
+    }
 
+    
+    /**
+     * Get Activity Data
+     * 
+     * @param array $whereCond
+     * @return type mixed     
+     * @throws InvalidDataTypeExceptions 
+     */
+    public function getActivity($whereCond=[])
+    {
+        return Activity::getActivity($whereCond);
+    }     
 }

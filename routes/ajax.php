@@ -214,12 +214,17 @@ Route::group(
         ]
     );
 
-   Route::post('get_to_settle_payments', [
+    Route::post('get_to_settle_payments', [
         'as' => 'get_to_settle_payments',
         'uses' => 'AjaxController@getToSettlePayments'
         ]
     );
 
+    Route::post('get_settled_payments', [
+        'as' => 'get_settled_payments',
+        'uses' => 'AjaxController@getSettledPayments'
+        ]
+    );
   
    //
     Route::post(
@@ -1017,4 +1022,35 @@ Route::group(
         'as' => 'check_applied_charge',
         'uses' => 'AjaxController@checkAppliedCharge'
     ]);       
+    
+    Route::post('check-eod-batch-process', [
+        'as' => 'check_eod_batch_process',
+        'uses' => 'AjaxController@checkEodProcess'
+    ]); 
+    
+    Route::post('update-eod-batch-process', [
+        'as' => 'update_eod_batch_process',
+        'uses' => 'AjaxController@updateEodProcessStatus'
+    ]);        
+    
+    Route::post('check-bank-acc-exist',[
+        'as' => 'check_bank_acc_exist',
+        'uses' => 'AjaxController@checkBankAccExist'
+    ]);
+    
+    Route::post('check-comp-add-exist',[
+        'as' => 'check_comp_add_exist',
+        'uses' => 'AjaxController@checkCompAddExist'
+    ]);
+
+    Route::post('get-user-invoice-list', [
+        'as' => 'get_user_invoice_list',
+        'uses' => 'AjaxController@getUserInvoiceList'
+    ]);   
+
+    Route::post('get_address_by_gst',[
+        'as' => 'get_address_by_gst',
+        'uses' => 'Karza\KarzaController@getAddressByGst'
+        ]
+    );
 });

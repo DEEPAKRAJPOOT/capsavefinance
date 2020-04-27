@@ -31,7 +31,8 @@
                                 'name' => 'savePayFrm',
                                 'autocomplete' => 'off',
                                 'id' => 'savePayFrm',
-                                'method'=> 'POST'
+                                'method'=> 'POST',
+                                'files' => true,
                                 )
                                 )
                                 !!}
@@ -71,7 +72,7 @@
                                                 <select class="form-control" name="action_type" id="action_type">
                                                     <option value="">Select Action Type</option>
                                                     <option value="1">Receipt</option>
-                                                    <option value="2">Wave Off</option>
+                                                    {{-- <option value="2">Wave Off</option> --}}
                                                     <option value="3">TDS</option>
                                                 </select>
                                                 <span id="action_type_error" class="error"></span>
@@ -153,13 +154,6 @@
                                                 <input type="text" name="igst_amt" id="igst_amt" readonly="readonly" class="form-control" value="">
                                             </div>
                                         </div>
-                                        <!--<div class="col-md-4">
-                                            <div class="form-group ">
-                                                <label for="txtCreditPeriod">Transaction Id<span class="error_message_label">*</span> </label>
-
-                                                <input type="text" name="txn_id" id="txn_id" class="form-control">
-                                            </div>
-                                        </div>  --> 
                                         <div class="col-md-4 payment-methods">
                                             <div class="form-group">
                                                 <label for="txtCreditPeriod">Payment Method <span class="error_message_label">*</span></label>
@@ -175,15 +169,21 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 payment-methods">
+                                        <div class="col-md-4 payment-methods" style="display: none;">
                                             <div class="form-group">
                                                 <span id="appendInput"></span>
                                             </div>
                                         </div>
                                         <div class="col-md-4 tds_certificate">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">TDS Certificate No <span class="error_message_label">*</span> </label>
+                                                <label for="txtCreditPeriod">TDS Certificate No </label>
                                                 <input type="text" id="tds_certificate_no" name="tds_certificate_no" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 tds_certificate">
+                                            <div class="custom-file upload-btn-cls mb-3 mt-4">
+                                                <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" multiple="">
+                                                <label class="custom-file-label" for="customFile">Choose Certificate File</label>
                                             </div>
                                         </div>
                                     </div>
@@ -338,11 +338,11 @@ cursor: pointer;
             switch (action_type) {
                 case "1":
                     if(trans_type==17){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -351,7 +351,7 @@ cursor: pointer;
                     break;
                 case "2":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -360,7 +360,7 @@ cursor: pointer;
                     break;
                 case "3":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -377,12 +377,14 @@ cursor: pointer;
             var index = element.attr("index"); 
             var chargeData = userData['charges'][index];
             var amt = parseFloat(chargeData['remaining']);
+            var max = parseFloat(chargeData['debit_amount']);
             if(chargeData){
-                $('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
+                //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
+                $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 if(userData['action_type']!=3){
                     $('#amount').val(amt.toFixed(2)); 
                 }
-                $('#amount').attr('max',amt.toFixed(2));
+                $('#amount').attr('max',max.toFixed(2));
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date());
                 $('#amount').val(0);
@@ -441,7 +443,10 @@ cursor: pointer;
                         required:$("#incl_gst:checked").val()>0?false:true,
                     },
                     tds_certificate_no:{
-                        required:true,
+                        required:false,
+                    },
+                    tds_certificate_no:{
+                        required:false,
                     }
                 },
                 messages: {
@@ -548,7 +553,7 @@ cursor: pointer;
             success: function (res) {
                 var amt = parseFloat(res.amount);
                 if (res.status == 'success') {
-                    $('#date_of_payment').datetimepicker('setStartDate', '2000-01-01');
+                    $('#date_of_payment').datetimepicker('setStartDate',  new Date());
                     $('#amount').val(amt.toFixed(2));
                     $('#amount').attr('max',amt.toFixed(2));
                 }else{
@@ -636,6 +641,14 @@ cursor: pointer;
             }
         });         
     });
-   
+
+    $('.getFileName').change(function(){
+        $(this).parent('div').children('.custom-file-label').html('Choose file');
+    });
+    
+    $('.getFileName').change(function(e) {
+        var fileName = e.target.files[0].name;
+        $(this).parent('div').children('.custom-file-label').html(fileName);
+    });
 </script>
 @endsection

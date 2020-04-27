@@ -33,5 +33,6 @@ return [
     'noBankAccount' => 'No Bank Account Found.',
     'disburseMarked' => 'Successfully disburse marked .',
     'downloadExcel' => 'Successfully download.',
+    'lms_eod_process_msg' => 'System is stopped, you can\'t do any transactions.',
 ];
 

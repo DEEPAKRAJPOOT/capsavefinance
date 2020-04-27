@@ -28,7 +28,7 @@
                         <button type="submit" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
                     </div>
                     <div class="col-md-7 text-right">
-                        <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addCompaniesFrame" data-url ="{{route('add_companies')}}" data-height="350px" data-width="100%" data-placement="top" >
+                        <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addCompaniesFrame" data-url ="{{route('add_companies')}}" data-height="400px" data-width="100%" data-placement="top" >
                             <i class="fa fa-plus"></i> Add Company
                         </a>
                     </div>
@@ -74,7 +74,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            
+                                        @if($company['is_reg'] == 1) 
                                         @can('add_bank_account')
                                         <a  data-toggle="modal" 
                                            data-height="400px" 
@@ -87,6 +87,7 @@
                                             </button>
                                         </a>
                                         @endcan
+                                        @endif
                                         <span style="margin-left:5px" >
                                         <a  
                                             data-toggle="modal" 

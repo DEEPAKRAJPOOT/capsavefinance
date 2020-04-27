@@ -217,4 +217,45 @@ class UserBankAccount extends BaseModel {
 
         return $res ?: false;
     }
+    
+    /**
+     * get Bank account data by company id
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function isDefalutCmpBankAcc($arr, $is_default)
+    {
+        if (!is_array($arr)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+//        dd($arr, $is_default);
+        $result = self::whereIn('company_id', $arr)
+                ->where('is_default', $is_default)
+                ->first();
+        
+        return $result;
+    }
+    
+    /**
+     * get Bank account status by company id
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function getBankAccStatusByCompany($where)
+    {
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        $res = self::where($where)->first();
+        
+        return $res ?: false;
+    }
 }
+

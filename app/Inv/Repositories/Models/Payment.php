@@ -61,14 +61,60 @@ class Payment extends BaseModel {
         'unr_no',
         'cheque_no',
         'tds_certificate_no',
+        'file_id',
         'description',
         'is_settled',
         'is_manual',
+        'is_refundable',
         'created_at',
         'created_by',
+        'updated_at',
+        'updated_by',
     ];
     
+    public function biz() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
+    }
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
     
+    public function lmsUser(){
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
+
+    public function transaction(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
+    }
+    public function creator(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id');
+    }
+    
+    public function getBusinessName() {
+        return $this->belongsTo(Business::class, 'biz_id');
+    }
+
+    public function getUserName() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function getCreatedByName() {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function transType(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type', 'id');
+    } 
+
+    public function getTransNameAttribute(){
+        $result = $this->transType->trans_name;
+        if($this->action_type == 3){
+            $result .= " /TDS";
+        }
+        return $result;
+    }
+
     /**
      * get Payment data list
      * 
@@ -103,41 +149,37 @@ class Payment extends BaseModel {
             $resp['message'] = preg_replace('#[^A-Za-z./\s\_]+#', '', $errorInfo[2]) ?? 'Some DB Error occured. Try again.';  
         }
         return $resp['status'] == 'success' ? $resp['code'] : $resp['message'];
-    }
+    }   
 
-    public function getBusinessName() {
-       return $this->hasOne(Business::class, 'biz_id');
-    }
-
-    public function getUserName() {
-       return $this->hasOne(User::class, 'user_id');
-    }
-
-
-    public static function getPaymentModeAttribute() {
+    public function getPaymentModeAttribute() {
         $payment_type = $this->payment_type;
         $payModes = config('payment.type') ?? [];
         $mode_of_pay = $payModes[$payment_type] ?? NULL;
         return $mode_of_pay;
     }
 
-    public static function getTransNameAttribute() {
-        $payment_type = $this->payment_type;
-        switch ($payment_type) {
-            case '1':
-                $attr = $this->utr_no;
-                break;
-            case '2':
-                $attr = $this->cheque_no;
-                break;
-            case '3':
-               $attr = $this->unr_no;
-                break;
-            default:
-               $attr = '';
-                break;
-        }
-        return $attr;
+    // public function getTransNameAttribute() {
+    //     $payment_type = $this->payment_type;
+    //     switch ($payment_type) {
+    //         case '1':
+    //             $attr = $this->utr_no;
+    //             break;
+    //         case '2':
+    //             $attr = $this->cheque_no;
+    //             break;
+    //         case '3':
+    //            $attr = $this->unr_no;
+    //             break;
+    //         default:
+    //            $attr = '';
+    //             break;
+    //     }
+    //     return $attr;
+    // }
+    
+    /*** get all transaction  **/
+    public static function getAllManualTransaction()
+    {
+          return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
     }
-     
 }

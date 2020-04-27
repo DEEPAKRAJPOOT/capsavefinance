@@ -47,16 +47,22 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                      $(".isloader").hide(); 
-                   if(data==2)
-                   {
+                     $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }                            
+                  else if(data==2)
+                 {
                       alert('Limit Exceed');
-                    }
-                    else
-                    {
-                        $("#moveCase").html('Invoice successfully sent to  approve ');
-                        $(th).parent('td').parent('tr').remove(); 
-                    }
+                 }
+                 else
+                 {
+
+                     $("#moveCase").html('Invoice successfully sent to  approve ');
+                     $(th).parent('td').parent('tr').remove(); 
+                 }
                 }
             });
         } else
@@ -386,20 +392,24 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
-                         $(".isloader").hide(); 
-                         if(data.msg=="")
-                         {
-                            localStorage.setItem('storageMsg', 'Invoice successfully moved');
-                            location.reload();
-                         }
-                         else
-                         {
-                             
-                            localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer');
-                            location.reload();
-                         }
-                     }
-               
+                    $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                   if(data.msg=="")
+                    {
+                       localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                       location.reload();
+                    }
+                    else
+                    {
+
+                       localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer');
+                       location.reload();
+                    }
+               }
             });
         } else
         {
@@ -437,15 +447,20 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
-                        $(".isloader").hide(); 
-                        if(data.msg=="")
-                         {
-                            localStorage.setItem('storageMsg', 'Invoice successfully moved');
-                            location.reload();
-                         }
-                    
 
-                }
+                     $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    if(data.msg=="")
+                    {
+                       localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                       location.reload();
+                    }
+
+              }
             });
         } else
         {
@@ -526,8 +541,13 @@ function uploadFile(app_id,id)
                     alert(errorThrown);
                 },
                 success: function (data) {
-                     $(".isloader").hide(); 
-                     if(data==2)
+                   $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                   if(data==2)
                     {
                       alert('Limit Exceed');
                     }
@@ -540,6 +560,7 @@ function uploadFile(app_id,id)
                       
                     }
                     
+
                 }
             });
         } else

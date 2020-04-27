@@ -25,6 +25,7 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Payment;
@@ -55,7 +56,7 @@ class AjaxController extends Controller {
     protected $lms_repo;
 
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -68,6 +69,7 @@ class AjaxController extends Controller {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
+        $this->UserInvRepo = $UserInvRepo;
     }
 
     /**
@@ -3615,22 +3617,17 @@ if ($err) {
         $res  = explode(',',$request->id);
         foreach($res as $key=>$val)
         {
-               
                 $attr =   $this->invRepo->getSingleBulkInvoice($val);
                 if($attr)
                 {
                    $invoice_id = NULL;  
                    if($attr->status==0)
                    {
-                     if($attr->status_id==8)
-                     {
-                        $userLimit = InvoiceTrait::ProgramLimit($attr);
-                        $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
-                        $attr['comm_txt'] = $updateInvoice['comm_txt'];
-                        $attr['status_id'] = $updateInvoice['status_id'];
-                        
-                     }
                       $res  =  $this->invRepo->saveFinalInvoice($attr);
+                      $invoice_id =  $res['invoice_id'];
+                      $userLimit =  InvoiceTrait::ProgramLimit($res);
+                      $updateInvoice=  InvoiceTrait::updateLimit($res->status_id,$userLimit,$res->invoice_approve_amount,$res,$invoice_id);  
+                     
                    }
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
@@ -3641,7 +3638,6 @@ if ($err) {
         }
         if($updateBulk)
         {
-              
                  return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
               
         }
@@ -4187,19 +4183,8 @@ if ($err) {
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
         $repaymentAmtData = ((float)$repaymentAmtData<0)?0:$repaymentAmtData;
         return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
-        
-        // $debitAmt = 0;
-        // $creditAmt = 0;
-        
-        // if (isset($repaymentAmtData['debitAmtData']['amount'])) {
-        //     $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
-        // }
-        // if (isset($repaymentAmtData['creditAmtData']['amount'])) {
-        //     $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
-        // }        
-        // $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
-        // return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
     }
+    
     ////////////*  get business */////
     public function searchBusiness(Request $request)
     {
@@ -4406,5 +4391,64 @@ if ($err) {
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
+    }
+
+    public function getSettledPayments(DataProviderInterface $dataProvider) {
+        $user_id = $this->request->user_id;
+        $this->dataRecords = [];
+        if (!empty($user_id)) {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+        }
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+    
+    public function checkBankAccExist(Request $req){
+        
+        $response['status'] = false;
+        $acc_no = $req->get('acc_no');
+        $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
+        $acc_id = $req->get('acc_id');
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'company_id' => $comp_id]);
+        
+        if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($acc_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+   
+   public function checkCompAddExist(Request $req){
+        
+        $response['status'] = false;
+        $cmp_name = $req->get('cmp_name');
+        $comp_add = $req->get('comp_add');
+        $comp_id = $req->get('comp_id');
+//        dd($comp_name, $comp_add, $comp_id);
+        $status = $this->masterRepo->getCompAddByCompanyName(['cmp_name' => $cmp_name, 'cmp_add' => $comp_add]);
+//        dd($status);
+       if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($comp_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+
+    // get user invoice list
+    public function getUserInvoiceList(DataProviderInterface $dataProvider) {
+        $user_id =  (int) $this->request->get('user_id');
+        $userInvoice = $this->UserInvRepo->getUserInvoiceList($user_id);
+        $data = $dataProvider->getUserInvoiceList($this->request, $userInvoice);
+        return $data;
     }
 }

@@ -14,6 +14,7 @@ try {
                 data: function (d) {
                     d.type = $('select[name=type]').val();
                     d.date = $('input[name=date]').val();
+                    d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -24,10 +25,12 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
-                {data: 'virtual_account_no.'},
-                {data: 'trans_by'},
+                {data: 'customer_name'},
+                {data: 'customer_detail'},
+                {data: 'trans_type'},
                 {data: 'comment'},
                 {data: 'created_by'},
+                {data: 'action'},
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2]}]
         });

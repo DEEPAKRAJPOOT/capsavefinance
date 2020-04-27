@@ -43,6 +43,7 @@ class Company extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'comp_name_id',
         'cmp_name',
         'cmp_add',
         'gst_no',
@@ -51,6 +52,7 @@ class Company extends BaseModel {
         'is_active',
         'state',
         'city',
+        'is_reg',
         'created_by',
         'updated_by'
     ];
@@ -106,6 +108,9 @@ class Company extends BaseModel {
         
      return $this->belongsTo('App\Inv\Repositories\Models\Master\State', 'state','id')->where(['is_active' => 1]);  
        
+   }    
+    function getStateDetail() { 
+     return $this->belongsTo('App\Inv\Repositories\Models\Master\State', 'state','id')->where(['is_active' => 1]);     
    }
 
     public static function updateCompanies($compArr, $companyId) {
@@ -130,5 +135,36 @@ class Company extends BaseModel {
         
     } 
     
+    public static function checkIsRegCompany($name,$is_reg) {
+        
+        if (empty($is_reg) || empty($name)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        $res = self::where(['cmp_name' => $name, 'is_reg' => $is_reg])->first();
+        
+        return $res;
+    }
+    
+    public static function getCompAddByCompanyName($where)
+    {
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        $res = self::where($where)->first();
+        
+        return $res ?: false;
+    }
+    
+    public static function getCompNameByCompId($compId){
+        
+        $compName = self::select('cmp_name')->where('company_id', $compId)->first();
+        
+        $CompIdArr = self::where(['cmp_name' => $compName->cmp_name])->get();
+        
+        return $CompIdArr;
+        
+    }
 
 }

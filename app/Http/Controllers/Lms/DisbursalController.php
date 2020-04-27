@@ -15,6 +15,9 @@ use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+
+use App\Helpers\ManualApportionmentHelper;
 
 class DisbursalController extends Controller
 {
@@ -41,6 +44,7 @@ class DisbursalController extends Controller
 		$this->lmsRepo = $lms_repo;
         $this->masterRepo = $master;
 		$this->middleware('checkBackendLeadAccess');
+            $this->middleware('checkEodProcess');
 	}
 	
 	/**
@@ -88,6 +92,12 @@ class DisbursalController extends Controller
 	 */
 	public function sendToBank(Request $request)
 	{
+            
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }       
+            
 		$invoiceIds = $request->invoiceids;
 		$customerRecords = $request->user_ids;
 		$disburseType = $request->disburse_type;
@@ -264,16 +274,14 @@ class DisbursalController extends Controller
      */
     public function processAccrualInterest()
     {
-		$minDisbursalDate = Disbursal::whereIn('status_id',[12,13])->min('int_accrual_start_dt');
-		$currentDate = $this->subDays(date('Y-m-d'),1);
-		while(strtotime($minDisbursalDate)<=strtotime($currentDate)){
-			$returnData = $this->calAccrualInterest(null,$minDisbursalDate);
-			$minDisbursalDate = $this->addDays($minDisbursalDate, 1);
-			foreach($returnData as $disbursal_id => $interest) {
-				echo "<br>\nDisbursal ID#{$disbursal_id} -  Accrued Interest {$interest}";
-			}
+		if (request()->get('eod_process')) {
+			//Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+			return response()->json(['error' => trans('backend_messages.lms_eod_batch_process_msg')]);
 		}
-        
+		echo "start-----------------";
+		$Obj = new ManualApportionmentHelper($this->lmsRepo);
+		$Obj->dailyIntAccrual();
+		echo "-------------------end";
     }
 
     /**

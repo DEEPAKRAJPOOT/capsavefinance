@@ -187,7 +187,7 @@ return [
         ZanySoft\Zip\ZipServiceProvider::class,
         App\Providers\KarzaServiceProvider::class,
         App\Providers\CibilServiceProvider::class,
-
+        Jenssegers\Agent\AgentServiceProvider::class,
     ],
 
     /*
@@ -245,6 +245,8 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'FinanceHelper' => App\Helpers\FinanceHelper::class,
         'ApportionmentHelper' => App\Helpers\ApportionmentHelper::class,
+        'Agent' => Jenssegers\Agent\Facades\Agent::class,
+        'ManualApportionmentHelper' => App\Helpers\ManualApportionmentHelper::class,
      ],
 
 ];

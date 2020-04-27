@@ -17,7 +17,7 @@ class ActivityLog extends BaseModel {
      *
      * @var integer
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'activity_log_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -58,14 +58,16 @@ class ActivityLog extends BaseModel {
         'session_id',
         'route_name',
         'user_id',
-        'proposal_id',
-        'activity_type_id',
+        'app_id',
+        'activity_id',
         'activity_desc',
         'email',
-        'username',
         'ip_address',
         'browser_info',
-        'device_type'
+        'source',
+        'device_type',
+        'created_by',
+        'created_at',        
     ];
 
 }

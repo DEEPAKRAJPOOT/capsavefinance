@@ -181,7 +181,6 @@ $messages = session()->get('message', false);
             
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
-                console.log(email);
                 let status = false;
                 $.ajax({
                     url: messages.check_exist_email,
