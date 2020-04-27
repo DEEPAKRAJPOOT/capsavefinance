@@ -25,6 +25,7 @@ class UserDetail extends BaseModel
     protected $fillable = [
         'user_detail_id',
         'user_id',
+        'is_overdue',
         'access_token',
         'created_by'
     ];
