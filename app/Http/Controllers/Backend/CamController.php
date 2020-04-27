@@ -45,7 +45,9 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-
+use App\Inv\Repositories\Models\BankWorkCapitalFacility;
+use App\Inv\Repositories\Models\BankTermBusiLoan;
+use App\Inv\Repositories\Models\BankAnalysis;
 //date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
