@@ -29,7 +29,7 @@ class BankAccountRequest extends FormRequest {
             'confim_acc_no' => 'required|numeric|digits_between:9,18|same:acc_no',
             'bank_id' => 'required',
             'ifsc_code' => 'required|alpha_num|max:11',
-            'branch_name' => 'required|regex:/^[a-zA-Z -]+$/|max:30',
+            'branch_name' => 'required|regex:/^[a-zA-Z0-9 -]+$/|max:30',
             'is_active' => 'required',
         ];
     }
