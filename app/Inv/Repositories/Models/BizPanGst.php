@@ -35,7 +35,7 @@ class BizPanGst extends BaseModel
         'parent_pan_gst_id',
         'biz_pan_gst_api_id',
         'biz_addr_id',
-        'is_shown',
+        'is_gst_hide',
         'created_by',
         'created_at',
         'updated_at',
