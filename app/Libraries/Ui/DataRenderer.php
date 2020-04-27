@@ -3865,13 +3865,13 @@ class DataRenderer implements DataProviderInterface
             ->addColumn(
                 'value_date',
                 function ($trans) {
-                    return date('d-m-Y',strtotime($trans->trans_date));
+                    return date('d-m-Y',strtotime($trans->parenttransdate));
                 }
             )
             ->editColumn(
                 'trans_date',
                 function ($trans) {
-                    return date('d-m-Y',strtotime($trans->created_at));
+                    return date('d-m-Y',strtotime($trans->trans_date));
                 }
             )
             ->editColumn(
