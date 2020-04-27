@@ -15,16 +15,15 @@
       <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">{{$billingDetails['address']}}</h2>
       <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">GSTIN: {{$billingDetails['gstin_no']}}</h2>
       <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</h2>
-      <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">State Code: 27</h2>
    </span>
-   <span style="margin-bottom: 10px; float: right;width: 40%;text-align: right;">
+   <span style="margin-bottom: 10px; float: right;width: 45%;text-align: right;">
       <span style="color: #777;">Original for Recipient:</span>
       <h2 style="font-size: 1.4em;margin: 0;line-height: 1.5;">Invoice No: {{$origin_of_recipient['invoice_no']}}</h2>
       <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Invoice Date: {{$origin_of_recipient['invoice_date']}}</h2>
       <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Reference No: #{{$origin_of_recipient['reference_no']}}</h2>
       <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Place of Supply: {{$origin_of_recipient['place_of_supply']}}</h2>
    </span>
-   <table border="1px" style="width: 100%;" align="center" cellspacing="0" cellpadding="1">
+   <table border="1px" style="width: 100%;clear: both;" align="center" cellspacing="0" cellpadding="1">
       <tr>
          <td style="border: 1px solid #ddd;padding: 5px;" rowspan="2" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>Sr No</strong></span>

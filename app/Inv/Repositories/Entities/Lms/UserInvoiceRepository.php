@@ -15,7 +15,10 @@ use App\Inv\Repositories\Models\Lms\UserInvoiceTrans;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\UserBankAccount;
+use App\Inv\Repositories\Models\User;
 
 /**
  * User Invoice Repository class
@@ -95,11 +98,24 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return LmsUser::getCustomers($user_id);
 	}
 
+
+	public function getUser($user_id) {
+		return User::getfullUserDetail((int)$user_id);
+	}
+
 	/**
      * Get state code by ajax
      */
 	public function getUserStateCodeList($state_code) {
 		return State::getUserStateCodeList($state_code);
+	}
+
+	public function getCompanyDetail($company_id) {
+		return Company::findCompanyById($company_id);
+	}
+
+	public function getCompanyBankAcc($company_id) {
+		return UserBankAccount::getAllCompanyBankAcc($company_id);
 	}
 
 	/**

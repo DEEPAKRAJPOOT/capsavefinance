@@ -72,7 +72,7 @@ class userInvoiceController extends Controller
             $sgst_rate = 0;
             $base_amt = $totalamount;
             if ($txn->gst == 1) {
-                $base_amt = $totalamount * 100/18;
+                $base_amt = $totalamount * 100/118;
                 if(!$is_state_diffrent) {
                     $igst_rate = 18;
                     $igst_amt = round((($base_amt * $igst_rate)/100),2);
@@ -114,8 +114,16 @@ class userInvoiceController extends Controller
             return response()->json($response);
         }
         $user_id = $request->get('user_id');
-        $userStateId = $companyStateId = 5;
-         if (empty(preg_replace('#[^0-9]+#', '', $user_id))) {
+        $userData = $this->UserInvRepo->getUser($user_id);
+        $userStateId = $userData->state_id;
+
+        $company_data = $this->_getCompanyDetail($user_id);
+        if ($company_data['status'] != 'success') {
+           return response()->json(['status' => 0,'message' => $company_data['message']]); 
+        }
+        $company_data = $company_data['data'];
+        $companyStateId = $company_data['state']->id;
+        if (empty(preg_replace('#[^0-9]+#', '', $user_id))) {
             $response['message'] = 'Invalid user Id found.';
              return response()->json($response);
         }
@@ -125,7 +133,7 @@ class userInvoiceController extends Controller
             return response()->json($response);
         }
         $is_state_diffrent = ($userStateId != $companyStateId);
-        $inv_data = $this->_calculateInvoiceTxns($txnsData);
+        $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
         $intrest_charges = $inv_data[0];
         view()->share(['intrest_charges' => $intrest_charges, 'checkbox' => true]);
         $view = view('lms.invoice.generate_invoice_txns');
@@ -152,12 +160,11 @@ class userInvoiceController extends Controller
         if($txnsData->isEmpty()){
             return response()->json(['status' => 0,'message' => 'No transaction found for the user.']); 
         }
-        $userStateId = $companyStateId = 5;
-        $is_state_diffrent = ($userStateId != $companyStateId);
-        $inv_data = $this->_calculateInvoiceTxns($txnsData);
-        $intrest_charges = $inv_data[0];
-        $total_sum_of_rental = $inv_data[1];
         $billingDetails = $this->_getBillingDetail($user_id);
+        if ($billingDetails['status'] != 'success') {
+           return response()->json(['status' => 0,'message' => $billingDetails['message']]); 
+        }
+        $billingDetails = $billingDetails['data'];
         $origin_of_recipient = [
             'reference_no' => $reference_no,
             'invoice_no' => $invoice_no,
@@ -165,6 +172,17 @@ class userInvoiceController extends Controller
             'invoice_date' => $invoice_date,
         ];
         $company_data = $this->_getCompanyDetail($user_id);
+        if ($company_data['status'] != 'success') {
+           return response()->json(['status' => 0,'message' => $company_data['message']]); 
+        }
+        $company_data = $company_data['data'];
+        $userData = $this->UserInvRepo->getUser($user_id);
+        $userStateId = $userData->state_id;
+        $companyStateId = $company_data['state']->id;
+        $is_state_diffrent = ($userStateId != $companyStateId);
+        $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
+        $intrest_charges = $inv_data[0];
+        $total_sum_of_rental = $inv_data[1];
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billingDetails,
@@ -186,7 +204,7 @@ class userInvoiceController extends Controller
         $invoice_type = $invData->invoice_type;
         $invoice_date = $invData->invoice_date;
         $company_id = $invData->comp_id;
-        $bank_id = $invData->bank_id;
+        $bank_account_id = $invData->bank_id;
         $totalTxnsInInvoice = $invData->userInvoiceTxns->toArray();
         $trans_ids = [];
         foreach ($totalTxnsInInvoice as $key => $value) {
@@ -203,19 +221,31 @@ class userInvoiceController extends Controller
         if($txnsData->isEmpty()){
             return response()->json(['status' => 0,'message' => 'No transaction found for the user.']); 
         }
-        $userStateId = $companyStateId = 5;
-        $is_state_diffrent = ($userStateId != $companyStateId);
-        $inv_data = $this->_calculateInvoiceTxns($txnsData);
-        $intrest_charges = $inv_data[0];
-        $total_sum_of_rental = $inv_data[1];
+        $userData = $this->UserInvRepo->getUser($user_id);
+        $userStateId = $userData->state_id;
+
+        $company_data = $this->_getCompanyDetail($user_id, $company_id, $bank_account_id);
+        if ($company_data['status'] != 'success') {
+           return response()->json(['status' => 0,'message' => $company_data['message']]); 
+        }
+        $company_data = $company_data['data'];
+        $companyStateId = $company_data['state']->id;
+
         $billingDetails = $this->_getBillingDetail($user_id);
+        if ($billingDetails['status'] != 'success') {
+           return response()->json(['status' => 0,'message' => $billingDetails['message']]); 
+        }
+        $billingDetails = $billingDetails['data'];
         $origin_of_recipient = [
             'reference_no' => $reference_no,
             'invoice_no' => $invoice_no,
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
         ];
-        $company_data = $this->_getCompanyDetail($user_id, $company_id);
+        $is_state_diffrent = ($userStateId != $companyStateId);
+        $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
+        $intrest_charges = $inv_data[0];
+        $total_sum_of_rental = $inv_data[1];
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billingDetails,
@@ -246,54 +276,121 @@ class userInvoiceController extends Controller
        public function createUserInvoice(Request $request) {
         try {
             $user_id = $request->get('user_id');
-            $isRelationBuilt = true;
-            if (!$isRelationBuilt) {
-               return redirect()->back()->withInput()->with('error', 'No relation is found between customer and company.');
-            }
             $billingDetails = $this->_getBillingDetail($user_id);
+            if ($billingDetails['status'] != 'success') {
+               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $billingDetails['message']); 
+            }
             $origin_of_recipient = $this->_getOriginRecipent($user_id);
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient]);
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails['data'], 'origin_of_recipient' => $origin_of_recipient]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
-    private function _getCompanyDetail($user_id, $company_id=null) {
-        $CompanyDetails = [
-            'comp_id' => '123',
-            'name' => 'CAPSAVE FINANCE PRIVATE LIMITED',
-            'address' => 'Unit 501, Wing D, Lotus Corporate Park, Western Exp. Highway, Goregaon (E), Mumbai - 400063',
-            'phone' => '+91 22 6173 7600',
-            'cin' => 'U67120MH1992PTC068062',
-            'email' => 'accounts@rentalpha.com',
-            'bank_id' => '137',
-            'bank_name' => 'HDFC Bank',
-            'acc_no' => '33607554763',
-            'branch_name' => 'SBI Bank Beera',
-            'ifsc_code' => 'SBIN0009257',
+    private function _getCompanyDetail($user_id, $company_id = null, $bank_account_id = null) {
+        $response = [
+            'status' => 'fail',
+            'message' => 'Company detail for the user not found.',
+            'data' => [],
         ];
-        return $CompanyDetails;
+        if (empty($company_id)) {
+            //get Company Id from relational Table
+            $company_id  = 1;
+        }
+        $companyDetail = $this->UserInvRepo->getCompanyDetail($company_id);
+        if (empty($companyDetail) ) {
+            $response['message'] = 'No Company detail is mapped with the user.';
+            return $response;
+        }
+        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($companyDetail->company_id);
+        $bankDetailsFound =!empty($BankDetails) && !$BankDetails->isEmpty();
+        if (!$bankDetailsFound) {
+            $response['message'] = 'No BankDetail is found for the user.';
+            return $response;
+        }
+        $activeBankAcc = NULL;
+        foreach ($BankDetails as $key => $bankDtls) {
+           if ($bankDtls->bank_account_id == $bank_account_id) {
+              $activeBankAcc = $bankDtls;
+              break;
+           }
+           if ($bankDtls->is_default == true) {
+              $activeBankAcc = $bankDtls;
+              break;
+           }
+        }
+        if (empty($activeBankAcc)) {
+            $response['message'] = 'No default Bank Detail found for the user.';
+            return $response;
+        }
+        $CompanyDetails = [
+            'comp_id' => $companyDetail->company_id,
+            'name' => $companyDetail->cmp_name,
+            'address' => $companyDetail->cmp_add,
+            'state' => $companyDetail->getStateDetail,
+            'city' => $companyDetail->city,
+            'phone' => '+91 22 6173 7600',
+            'email' => 'accounts@rentalpha.com',
+            'cin' => $companyDetail->cin_no,
+            'bank_id' => $activeBankAcc->bank_account_id,
+            'bank_name' => $activeBankAcc->bank->bank_name,
+            'acc_no' => $activeBankAcc->acc_no,
+            'branch_name' => $activeBankAcc->branch_name,
+            'ifsc_code' => $activeBankAcc->ifsc_code,
+        ];
+
+        $response['status'] = 'success';
+        $response['message'] = 'success';
+        $response['data'] = $CompanyDetails;
+        return $response;
     }
 
     private function _getBillingDetail($user_id) {
-        $billingDetails = [
-            'name' => 'Ador Powertron Limited',
-            'pan_no' => 'AAACA4269Q',
-            'gstin_no' => '27AAACA4269Q2Z5',
-            'address' => 'Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019',
+        $response = [
+            'status' => 'fail',
+            'message' => 'Pan Or GST no not found.',
+            'data' => [],
         ];
-        return $billingDetails;
+        $AllUserApps =  $this->UserInvRepo->getAppsByUserId($user_id);
+        $isDefaultAddrSet = !empty($AllUserApps) && !$AllUserApps->isEmpty();
+        if (!$isDefaultAddrSet) {
+            $response['message'] = 'No default address is found. Please set the default address first.';
+            return $response;
+        }
+        $AllUserApps = $AllUserApps[0];
+        $business = $AllUserApps->business;
+        $address = $AllUserApps->address[0];
+        $bizPanGst = $AllUserApps->bizPanGst;
+
+        $billingDetails = [
+            'name' => $business->biz_entity_name,
+            'address' => $address->addr_1 . ' '. $address->addr_2 . ' ' . $address->city_name . ' '.  ($address->state->name ?? '') . ', '. $address->pin_code,
+            'pan_no' => '',
+            'gstin_no' => '',
+        ];
+        foreach ($bizPanGst as $key => $pangst) {
+           if ($pangst->type == 1) {
+              $billingDetails['pan_no'] = $pangst->pan_gst_hash;
+           }else{
+              $billingDetails['gstin_no'] = $pangst->pan_gst_hash;
+           }
+        }
+        $response['status'] = 'success';
+        $response['message'] = 'success';
+        $response['data'] = $billingDetails;
+        return $response;
     }
 
     private function _getOriginRecipent($user_id) {
+        $CompanyDetails = $this->_getCompanyDetail($user_id)['data'];
         $reference_no = _getRand(10). $user_id;
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
-            'state_code' => 'MH',
+            'state_code' => $CompanyDetails['state']->state_code,
             'financial_year' => '19-20',
             'rand_4_no' => sprintf('%04d', rand(0, 9999)),
-            'state_name' => 'Maharashtra',
-            'address' => 'Unit 501, Wing D, Lotus Corporate Park, Western Exp. Highway, Goregaon (E), Mumbai - 400063',
+            'state_name' => $CompanyDetails['state']->name,
+            'address' => $CompanyDetails['address'],
         ];
         return $origin_of_recipient;
     }
@@ -317,15 +414,25 @@ class userInvoiceController extends Controller
             if($txnsData->isEmpty()){
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No remaining txns found for the invoice.');
             }
-            $userStateId = $companyStateId = 5;
+            $userData = $this->UserInvRepo->getUser($user_id);
+            $userStateId = $userData->state_id;
+            $company_data = $this->_getCompanyDetail($user_id);
+            if ($company_data['status'] != 'success') {
+                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $company_data['message']);
+            }
+            $company_data = $company_data['data'];
+            $companyStateId = $company_data['state']->id;
+            $billingDetails = $this->_getBillingDetail($user_id);
+            if ($billingDetails['status'] != 'success') {
+                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $billingDetails['message']);
+            }
+            $billingDetails = $billingDetails['data'];
             $is_state_diffrent = ($userStateId != $companyStateId);
-            $inv_data = $this->_calculateInvoiceTxns($txnsData);
+            $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
             $intrest_charges = $inv_data[0];
             $total_sum_of_rental = $inv_data[1];
             $arrUserData['created_at'] = \carbon\Carbon::now();
             $arrUserData['created_by'] = Auth::user()->user_id;
-            $billingDetails = $this->_getBillingDetail($user_id);
-            $CompanyDetails = $this->_getCompanyDetail($user_id);
             $userInvoiceData = [
                 'invoice_user_id' => $arrUserData['user_id'],
                 'app_id' => $arrUserData['app_id'] ?? NULL,
@@ -340,8 +447,8 @@ class userInvoiceController extends Controller
                 'place_of_supply' => $arrUserData['place_of_supply'],
                 'tot_no_of_trans' => count($arrUserData['trans_id']),
                 'tot_paid_amt' => $total_sum_of_rental ?? 0,
-                'comp_id' => $CompanyDetails['comp_id'],
-                'bank_id' => $CompanyDetails['bank_id'],
+                'comp_id' => $company_data['comp_id'],
+                'bank_id' => $company_data['bank_id'],
                 'is_active' => 1,
                 'created_at' => $arrUserData['created_at'],
                 'created_by' => $arrUserData['created_by'],
@@ -384,18 +491,4 @@ class userInvoiceController extends Controller
          return response()->json(['status' => 0,'message' => 'Selected application is not valid.']); 
        }
     }
-
-    /**
-     * Get Business Address by ajax
-     */
-    public function getBizUserInvoiceAddr(Request $request) {
-       try {
-        $user_id = $request->get('user_id');
-        $addr = 'Ador Powertron Limited Plot No-51, D-2 Block,Ram Nagar Complex,MIDC, Chinchwad, Pune, Maharashtra, 411019';
-        return response()->json($addr);
-       } catch(Exception $ex) {
-        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-       }
-    }
-
 }

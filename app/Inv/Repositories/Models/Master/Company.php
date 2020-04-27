@@ -108,6 +108,9 @@ class Company extends BaseModel {
         
      return $this->belongsTo('App\Inv\Repositories\Models\Master\State', 'state','id')->where(['is_active' => 1]);  
        
+   }    
+    function getStateDetail() { 
+     return $this->belongsTo('App\Inv\Repositories\Models\Master\State', 'state','id')->where(['is_active' => 1]);     
    }
 
     public static function updateCompanies($compArr, $companyId) {

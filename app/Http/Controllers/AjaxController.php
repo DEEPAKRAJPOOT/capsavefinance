@@ -25,6 +25,7 @@ use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
 use App\Http\Requests\Company\ShareholderFormRequest;
 use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Payment;
@@ -55,7 +56,7 @@ class AjaxController extends Controller {
     protected $lms_repo;
 
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -68,6 +69,7 @@ class AjaxController extends Controller {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
+        $this->UserInvRepo = $UserInvRepo;
     }
 
     /**
