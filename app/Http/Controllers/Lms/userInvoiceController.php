@@ -280,8 +280,13 @@ class userInvoiceController extends Controller
             if ($billingDetails['status'] != 'success') {
                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $billingDetails['message']); 
             }
+            $billingDetails = $billingDetails['data'];
             $origin_of_recipient = $this->_getOriginRecipent($user_id);
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails['data'], 'origin_of_recipient' => $origin_of_recipient]);
+            if ($origin_of_recipient['status'] != 'success') {
+                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $origin_of_recipient['message']); 
+            }
+            $origin_of_recipient = $origin_of_recipient['data'];
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -295,17 +300,17 @@ class userInvoiceController extends Controller
         ];
         if (empty($company_id)) {
             //get Company Id from relational Table
-            $company_id  = 1;
+            $company_id  = 8;
         }
         $companyDetail = $this->UserInvRepo->getCompanyDetail($company_id);
         if (empty($companyDetail) ) {
             $response['message'] = 'No Company detail is mapped with the user.';
             return $response;
         }
-        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($companyDetail->company_id);
+        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($user_id);
         $bankDetailsFound =!empty($BankDetails) && !$BankDetails->isEmpty();
         if (!$bankDetailsFound) {
-            $response['message'] = 'No BankDetail is found for the user.';
+            $response['message'] = 'No BankDetail is found for the User.';
             return $response;
         }
         $activeBankAcc = NULL;
@@ -321,6 +326,10 @@ class userInvoiceController extends Controller
         }
         if (empty($activeBankAcc)) {
             $response['message'] = 'No default Bank Detail found for the user.';
+            return $response;
+        }
+        if (empty($companyDetail->getStateDetail)) {
+            $response['message'] = 'State Detail not found for the the company.';
             return $response;
         }
         $CompanyDetails = [
@@ -382,7 +391,11 @@ class userInvoiceController extends Controller
     }
 
     private function _getOriginRecipent($user_id) {
-        $CompanyDetails = $this->_getCompanyDetail($user_id)['data'];
+        $CompanyDetails = $this->_getCompanyDetail($user_id);
+        if ($CompanyDetails['status'] != 'success') {
+            return $CompanyDetails;
+        }
+        $CompanyDetails = $CompanyDetails['data'];
         $reference_no = _getRand(10). $user_id;
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
@@ -392,7 +405,10 @@ class userInvoiceController extends Controller
             'state_name' => $CompanyDetails['state']->name,
             'address' => $CompanyDetails['address'],
         ];
-        return $origin_of_recipient;
+        $response['status'] = 'success';
+        $response['message'] = 'success';
+        $response['data'] = $origin_of_recipient;
+        return $response;
     }
 
 
@@ -458,12 +474,14 @@ class userInvoiceController extends Controller
             if(!empty($invoiceResp->user_invoice_id)){
                 $userInvoice_id = $invoiceResp->user_invoice_id;
                 foreach ($trans_ids as $key => $txn_id) {
+                   $update_transactions[] = $txn_id;
                    $user_invoice_trans_data[] = [
                         'user_invoice_id' => $userInvoice_id,
                         'trans_id' => $txn_id,
                    ]; 
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
+                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions);
                 if ($UserInvoiceTxns == true) {
                    return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('message', 'Invoice generated Successfully');
                 }

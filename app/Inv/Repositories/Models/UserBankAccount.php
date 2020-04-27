@@ -157,12 +157,19 @@ class UserBankAccount extends BaseModel {
      * @throws InvalidDataTypeExceptions
      * @throws BlankDataExceptions 
      */
-    public static function getAllCompanyBankAcc($comp_id)
-    {
-
+    public static function getAllCompanyBankAcc($comp_id){
         $res = self::select('user_bank_account.*', 'mb.bank_name as bank_name')
                 ->leftjoin('mst_bank as mb', 'user_bank_account.bank_id', '=', 'mb.id')
                 ->where('comp_addr_id','=',(int)$comp_id)
+                ->get();
+        
+        return $res ?: false;
+    }
+
+        public static function getAllUserBankAcc($user_id){
+        $res = self::select('user_bank_account.*', 'mb.bank_name as bank_name')
+                ->leftjoin('mst_bank as mb', 'user_bank_account.bank_id', '=', 'mb.id')
+                ->where('user_id','=',(int)$user_id)
                 ->get();
         
         return $res ?: false;

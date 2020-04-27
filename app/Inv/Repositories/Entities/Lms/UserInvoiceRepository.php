@@ -115,7 +115,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}
 
 	public function getCompanyBankAcc($company_id) {
-		return UserBankAccount::getAllCompanyBankAcc($company_id);
+		return UserBankAccount::getAllUserBankAcc($company_id);
 	}
 
 	/**
@@ -127,6 +127,11 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = []) {
 		return Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds);
+	}
+
+	public function updateIsInvoiceGenerated($transDataArray){
+		$data = ['is_invoice_generated' => 1];
+		return Transactions::updateIsInvoiceGenerated($transDataArray, $data);
 	}
 
 	/**
