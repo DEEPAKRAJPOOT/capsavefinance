@@ -37,15 +37,14 @@
     @can('apport_settled_view')
     <li>
         <a class=" {{ ($active=='settledTrans')? 'active': null }} " href="{{route('apport_settled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Settled Tran.</a>
-    <li>
+    </li>
       @endcan
          
 <!--
      @can('limit_management')
      <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
->>>>>>> f_2104_gajendra
-    </li>
+   </li>
     @endcan
     @can('apport_refund_view')
     <li>
@@ -61,5 +60,5 @@
     <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
     </li>
-    @endcan
-</ul>
+    @endcan -->
+</ul>  
