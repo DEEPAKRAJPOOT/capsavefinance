@@ -246,6 +246,7 @@ return [
         'FinanceHelper' => App\Helpers\FinanceHelper::class,
         'ApportionmentHelper' => App\Helpers\ApportionmentHelper::class,
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
+        'ManualApportionmentHelper' => App\Helpers\ManualApportionmentHelper::class,
      ],
 
 ];

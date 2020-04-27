@@ -4181,19 +4181,8 @@ if ($err) {
         $repaymentAmtData = $this->lmsRepo->getRepaymentAmount($userId, $transType);
         $repaymentAmtData = ((float)$repaymentAmtData<0)?0:$repaymentAmtData;
         return response()->json(['repayment_amount' => round($repaymentAmtData, 2)]);
-        
-        // $debitAmt = 0;
-        // $creditAmt = 0;
-        
-        // if (isset($repaymentAmtData['debitAmtData']['amount'])) {
-        //     $debitAmt = $repaymentAmtData['debitAmtData']['amount']; //+ $repaymentAmtData['debitAmtData']['cgst'] + $repaymentAmtData['debitAmtData']['sgst'] + $repaymentAmtData['debitAmtData']['igst'];
-        // }
-        // if (isset($repaymentAmtData['creditAmtData']['amount'])) {
-        //     $creditAmt = $repaymentAmtData['creditAmtData']['amount']; //+ $repaymentAmtData['creditAmtData']['cgst'] + $repaymentAmtData['creditAmtData']['sgst'] + $repaymentAmtData['creditAmtData']['igst'];
-        // }        
-        // $repaymentAmount = $debitAmt >= $creditAmt ? $debitAmt - $creditAmt : 0;
-        // return response()->json(['repayment_amount' => number_format($repaymentAmount, 2)]);
     }
+    
     ////////////*  get business */////
     public function searchBusiness(Request $request)
     {
@@ -4402,4 +4391,64 @@ if ($err) {
         return $this->providerResult;
     }
 
+    public function getSettledPayments(DataProviderInterface $dataProvider) {
+        $user_id = $this->request->user_id;
+        $this->dataRecords = [];
+        if (!empty($user_id)) {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+        }
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        return $this->providerResult;
+    }
+    
+    public function checkBankAccExist(Request $req){
+        
+        $response['status'] = false;
+        $acc_no = $req->get('acc_no');
+        $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
+        $acc_id = $req->get('acc_id');
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'company_id' => $comp_id]);
+        
+        if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($acc_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+   
+   public function checkCompAddExist(Request $req){
+        
+        $response['status'] = false;
+        $cmp_name = $req->get('cmp_name');
+        $comp_add = $req->get('comp_add');
+        $comp_id = $req->get('comp_id');
+//        dd($comp_name, $comp_add, $comp_id);
+        $status = $this->masterRepo->getCompAddByCompanyName(['cmp_name' => $cmp_name, 'cmp_add' => $comp_add]);
+//        dd($status);
+       if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($comp_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+
+    // get user invoice list
+    public function getUserInvoiceList(DataProviderInterface $dataProvider) {
+        $user_id =  (int) $this->request->get('user_id');
+        $latestApp = $this->application->getUpdatedApp($user_id);
+        $appId = $latestApp->app_id ? $latestApp->app_id : null;
+        $userInvoice = $this->UserInvRepo->getUserInvoiceList($user_id, $appId);
+        $data = $dataProvider->getUserInvoiceList($this->request, $userInvoice);
+        return $data;
+    }
 }

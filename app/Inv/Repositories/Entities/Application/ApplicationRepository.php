@@ -1012,7 +1012,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $prgmLimitOfferData ? $prgmLimitOfferData : [];
     }
 
-    public function getLimit($app_prgm_limit_id){
+    public function getLimit(int $app_prgm_limit_id){
         $prgmLimitData = AppProgramLimit::getLimit($app_prgm_limit_id);
         return $prgmLimitData ? $prgmLimitData : [];
     }
@@ -1715,9 +1715,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      * @param type $id int
      * @return type mixed
      */
-    public function isDefalutCmpBankAcc($attributes)
+    public function isDefalutCmpBankAcc($attributes, $is_default)
     {
-        return UserBankAccount::isDefalutCmpBankAcc($attributes);
+        return UserBankAccount::isDefalutCmpBankAcc($attributes, $is_default);
     }
     
     /*
@@ -1742,6 +1742,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {   
         return BusinessAddress::unsetDefaultAddress($user_id);
     }
+
+    /**
+    * update is_default to 0 in biz_addr where address_type is 6 by user id
+    */
+    public function updateGstHideAddress($data, $biz_pan_gst_id=null)
+    {   
+        return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
+    }
     
 }
+
 

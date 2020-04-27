@@ -1,225 +1,124 @@
-<div style="width: 700px;margin:auto;">
-   <p align="center">
-      <span style="color: #2d2d2d;font-size: xx-large;"><strong>{{$comp_name}}</strong></span>
-   </p>
-   <p align="center">
-      <span style="font-size: small;">
-         <strong>Registered office: {{$comp_registered_addr}}</strong>
-      </span>
-   </p>
-   <p align="center">
+   <h2 style="font-size: 2.2em;font-weight: normal;margin: 0;" align="center">{{$company_data['name']}}</h2>
+   <h2 style="font-size: small;" align="center">Registered office: {{$company_data['address']}}</h2>
+   <h2 align="center" style="font-size: small;">
       <span style="font-size: small;"><strong>Ph:</strong></span>
-      <span style="font-size: small;"> {{$phone}}; </span>
+      <span style="font-size: small;"> {{$company_data['phone']}}; </span>
       <span style="font-size: small;"><strong>CIN No:</strong></span>
-      <span style="font-size: small;">{{$cin}};</span>
-      <span style="font-size: small;"><strong>Email:</strong></span><span style="font-size: small;"> {{$email}}</span>
-   </p>
+      <span style="font-size: small;">{{$company_data['cin']}};</span>
+      <span style="font-size: small;"><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$company_data['email']}}">{{$company_data['email']}}</a></span>
+   </h2>
    <hr />
-   <p align="center" style="color: #000000;"><u><strong>GST Tax Invoice</strong></u></p>
-   <p style="font-size: small;text-align: right"><strong><u>Original for Recipient</u></strong></p>
-   <div style="text-align: center">
-      <table border="1px" style="width: 100%" align="center" cellspacing="0" cellpadding="1">
-         <tr>
-            <td width="70%"><span style="font-size: small"><strong>Billing Address: </strong></span></td>
-            <td width="30%"><span style="font-size: small"><strong>Invoice No: </strong> {{$invoice_no}}</span></td>
-         </tr>
-         <tr>
-            <td rowspan="3"><span style="font-size: small"><strong>{{$comp_billing_addr}}</strong></td>
-            <td><span style="font-size: small"><strong>Invoice Date: </strong> {{$invoice_date}}</span></td>
-         </tr>
-         <tr>
-            <td><span style="font-size: small"><strong>Reference No: </strong> {{$ref_no}}</span></td>
-         </tr>
-         <tr>
-            <td><span style="font-size: small"><strong>Place of Supply: </strong> {{$place_of_supply}}</span></td>
-         </tr>
-      </table>
-   </div> 
-   <div style="text-align: center;margin-top: 20px">
-      <table border="1px" style="width: 100%;" align="center" cellspacing="0" cellpadding="1">
-         <tr>
-            <td rowspan="2" bgcolor="#f2f2f2" width="10" height="7">
-               <span style="font-size: small;"><strong>Sr No</strong></span>
-            </td>
-            <td rowspan="2" bgcolor="#f2f2f2" width="20">
-               <span style="font-size: small;"><strong>Description</strong></span>
-            </td>
-            <td rowspan="2" bgcolor="#f2f2f2" width="15">
-               <span style="font-size: small;"><strong>SAC</strong></span>
-            </td>
-            <td rowspan="2" bgcolor="#f2f2f2" width="20">
-               <span style="font-size: small;"><strong>Base Amount (Rs)</strong></span>
-            </td>
-            <td colspan="2" bgcolor="#f2f2f2" width="40">
-               <span style="font-size: small;"><strong>SGST/UTGST</strong></span>
-            </td>
-            <td colspan="2" bgcolor="#f2f2f2" width="40">
-               <span style="font-size: small;"><strong>CGST</strong></span>
-            </td>
-            <td colspan="2" bgcolor="#f2f2f2" width="40">
-               <span style="font-size: small;"><strong>IGST</strong></span>
-            </td>
-            <td rowspan="2" bgcolor="#f2f2f2" width="15">
-               <span style="font-size: small;"><strong>Total Rental</strong></span>
-            </td>
-         </tr>
-         <tr>
-            <td bgcolor="#f2f2f2" width="10">
-               <span style="font-size: small;"><strong>Rate (%)</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2" width="30">
-               <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2" width="10">
-               <span style="font-size: small;"><strong>Rate (%)</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2" width="30">
-               <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2" width="10">
-               <span style="font-size: small;"><strong>Rate (%)</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2" width="30">
-               <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
-            </td>
-         </tr>
-         @php
-         $total_base_amt = 0;
-         $total_sgst_amt = 0;
-         $total_cgst_amt = 0;
-         $total_igst_amt = 0;
-         $sum_total_rental = 0;
-         $count = 0;
-         @endphp
-         @foreach($intrest_charges as $key => $txns)
-         @php
-         $total_base_amt += $txns['base_amt'];
-         $total_sgst_amt += $txns['sgst_amt'];
-         $total_cgst_amt += $txns['cgst_amt'];
-         $total_igst_amt += $txns['igst_amt'];
-         $sum_total_rental += $txns['total_rental'];
-         $count++;
-         @endphp
-          <tr>
-            <td>
-               <span style="font-size: small;">{{$count}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['desc']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['sac']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['base_amt']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['sgst_rate']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['sgst_amt']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['cgst_rate']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['cgst_amt']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['igst_rate']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['igst_amt']}}</span>
-            </td>
-            <td>
-               <span style="font-size: small;">{{$txns['total_rental']}}</span>
-            </td>
-         </tr>
-         @endforeach
-         <tr>
-            <td bgcolor="#f2f2f2">
-               <span style="font-size: small;"><strong>&nbsp;</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-               <span style="font-size: small;"><strong>Total</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>&nbsp;</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>{{$total_base_amt}}</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>&nbsp;</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>{{$total_sgst_amt}}</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>&nbsp;</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>{{$total_cgst_amt}}</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>&nbsp;</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>{{$total_igst_amt}}</strong></span>
-            </td>
-            <td bgcolor="#f2f2f2">
-              <span style="font-size: small;"><strong>{{$sum_total_rental}}</strong></span>
-            </td>
-         </tr>
-      </table>
-   </div>
-   <p><span style="font-family: 'Book Antiqua', serif;font-size: small;"><u><strong>Payment Instructions:</strong></u></span></p>
-   <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at par in Mumbai for <strong>Rs {{$sum_total_rental}} </strong> to </span>
-   <div style="margin-top: 10px;font-size: small;"><strong>{{$comp_name}}</strong></div>
-   <span style="font-size: small;"><strong>{{$comp_registered_addr}}</strong></span>
+   <h2  style="font-size: 1.8em;text-align: center; margin: 10px 0 10px; font-weight: 600;">GST TAX INVOICE</h2>
+   <span style="padding-left: 6px;margin-bottom: 10px;border-left: 6px solid #108763; float: left;width: 50%;">
+      <span style="color: #777;">BILLING ADDRESS:</span>
+      <h2 style="font-size: 1.4em;margin: 0;line-height: 1.5;">{{$billingDetails['name']}}</h2>
+      <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">{{$billingDetails['address']}}</h2>
+      <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">GSTIN: {{$billingDetails['gstin_no']}}</h2>
+      <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</h2>
+      <h2 style="font-size: small;font-family: unset;margin: 0;line-height: 1.5;">State Code: 27</h2>
+   </span>
+   <span style="margin-bottom: 10px; float: right;width: 40%;text-align: right;">
+      <span style="color: #777;">Original for Recipient:</span>
+      <h2 style="font-size: 1.4em;margin: 0;line-height: 1.5;">Invoice No: {{$origin_of_recipient['invoice_no']}}</h2>
+      <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Invoice Date: {{$origin_of_recipient['invoice_date']}}</h2>
+      <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Reference No: #{{$origin_of_recipient['reference_no']}}</h2>
+      <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Place of Supply: {{$origin_of_recipient['place_of_supply']}}</h2>
+   </span>
+   <table border="1px" style="width: 100%;" align="center" cellspacing="0" cellpadding="1">
+      <tr>
+         <td style="border: 1px solid #ddd;padding: 5px;" rowspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Sr No</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" rowspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Description</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" rowspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>SAC</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" rowspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Base Amount (Rs)</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" colspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>SGST/UTGST</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" colspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>CGST</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" colspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>IGST</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" rowspan="2" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Total Rental</strong></span>
+         </td>
+      </tr>
+      <tr>
+         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Rate (%)</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Rate (%)</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Rate (%)</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+            <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+         </td>
+      </tr>
+      @include('lms.invoice.generate_invoice_txns')
+   </table>
+   <p style="font-family: 'Book Antiqua', serif;font-size: small;"><u><strong>Payment Instructions:</strong></u></p>
+   <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at per in Mumbai for <strong>Rs {{$total_sum_of_rental ?? 0}} </strong> to </span>
+   <div style="margin-top: 10px;font-size: small;font-family: 'Book Antiqua', serif;"><strong>{{$company_data['name']}}</strong></div>
+   <span style="font-size: small;">{{$company_data['address']}}</span>
 
-   <p><span style="font-size: small;"><u><strong>RTGS Details:</strong></u></span></p>
-   <p lang="en-US" align="justify" style="font-family: 'Book Antiqua', serif;font-size: small;"><strong>Beneficiary: Capsave Finance Pvt. Ltd; HDFC Bank, ESCROW A/C NO: 50200030310781; Branch Name: A.K. Vaidya Marg, Mumbai; IFSC Code: HDFC0000212</strong></p>
+   <p align="justify" style="font-family: 'Book Antiqua', serif;font-size: small;"><strong>Beneficiary: {{$company_data['name']}}; {{$company_data['bank_name']}}, ESCROW A/C NO: {{$company_data['acc_no']}}; Branch Name: {{$company_data['branch_name']}}; IFSC Code: {{$company_data['ifsc_code']}}</strong></p>
+
    <table style="width: 100%" align="center" border="1" cellspacing="0" cellpadding="1">
       <tbody>
          <tr>
-            <td style="width: 30%">
+            <td style="border: 1px solid #ddd;padding: 5px;" style="width: 30%">
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>PAN: </strong></span>
             </td>
-            <td style="width: 70%">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$pan}}</span>
+            <td style="border: 1px solid #ddd;padding: 5px;" style="width: 70%">
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$billingDetails['pan_no']}}</span>
             </td>
          </tr>
          <tr>
-            <td>
+            <td style="border: 1px solid #ddd;padding: 5px;">
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>State:</strong></span>
             </td>
-            <td>
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$state}}</span>
+            <td style="border: 1px solid #ddd;padding: 5px;">
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$origin_of_recipient['place_of_supply']}}</span>
             </td>
          </tr>
          <tr>
-            <td>
+            <td style="border: 1px solid #ddd;padding: 5px;">
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>Address:</strong></span>
             </td>
-            <td>
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$comp_registered_addr}}</span>
+            <td style="border: 1px solid #ddd;padding: 5px;">
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$company_data['address']}}</span>
             </td>
          </tr>
          <tr>
-            <td>
+            <td style="border: 1px solid #ddd;padding: 5px;">
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>GSTIN:</strong></span>
             </td>
-            <td>
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$gstin}}</span>
+            <td style="border: 1px solid #ddd;padding: 5px;">
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$billingDetails['gstin_no']}}</span>
             </td>
          </tr>
       </tbody>
    </table>
    <p align="center"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</span></span></p>
-   <span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>FOR {{$comp_name}}</strong></span></span>
+   <span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>FOR {{$company_data['name']}}</strong></span></span>
    <p lang="en-US">&nbsp;</p>
    <p lang="en-US">&nbsp;</p>
    <p lang="en-US"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Authorized Signatory</strong></span></span></p>
    <p>&nbsp;</p>
-</div>

@@ -40,9 +40,9 @@ class AnchorInfoRequest extends FormRequest
 
     public function messages()
     {
-    	      $messages = [];
-        		$messages['year.0.required']  = 'Year field is required';
-        		$messages['year.0.string']  = 'Year Field must be string only';
+    	    $messages = [];
+            $messages['year.0.required']  = 'Year field is required';
+            $messages['year.0.string']  = 'Year Field must be string only';
             $messages['year.0.min']  = 'Year Field must be exact 4 chars';
             $messages['year.0.max']  = 'Year Field must be exact 4 chars';
             $messages['year.1.required']  = 'Year field is required';
@@ -51,8 +51,8 @@ class AnchorInfoRequest extends FormRequest
             $messages['year.1.max']  = 'Year Field must be exact 4 chars';
             $messages['mt_type.0.required']  = 'MT Type field is required';
             $messages['mt_type.0.string']  = 'MT Type must be string only';
-        		$messages['mt_type.0.min']  = 'MT Type must be at least 2 chars';
-        		$messages['mt_type.0.max']  = 'MT Type must be at most 3 chars';
+            $messages['mt_type.0.min']  = 'MT Type must be at least 2 chars';
+            $messages['mt_type.0.max']  = 'MT Type must be at most 3 chars';
             $messages['mt_type.1.required']  = 'MT Type field is required';
             $messages['mt_type.1.string']  = 'MT Type must be string only';
             $messages['mt_type.1.min']  = 'MT Type must be at least 2 chars';

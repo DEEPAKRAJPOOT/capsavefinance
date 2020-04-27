@@ -723,6 +723,17 @@ class User extends Authenticatable
 
     public function anchor_bank_details()
     {
-        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where(['is_active' => 1, 'is_default' => 1]);
+        return $this->belongsTo('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where(['is_active' => 1, 'is_default' => 1]);
+    }
+
+    public function supplier_bank_detail()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserBankAccount', 'user_id', 'user_id')->where(['is_default' => 1, 'is_active' => 1]);  
+     
+    }
+    public function lms_user()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id','user_id'); 
+     
     }
 }

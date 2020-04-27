@@ -850,8 +850,6 @@ class ApplicationController extends Controller
 						return redirect()->back();                                            
 					}
 				} else if ($currStage->stage_code == 'opps_checker') {
-                                  $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
-                                  if($prcsAmt && isset($prcsAmt->offer)) {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
 				  $lmsCustomerArray = array(
@@ -873,7 +871,10 @@ class ApplicationController extends Controller
 				  		'start_date' => $curDate,
 				  		'end_date' => $endDate], $appLimitId);
 			  	}
-				  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+			  	
+			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+              	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+              	if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
@@ -888,7 +889,7 @@ class ApplicationController extends Controller
 						  continue;
 						foreach ($offer_charges as $key => $chrgs) {
 						  $ChargeMasterData = $this->appRepo->getTransTypeDataByChargeId($chrgs->charge_id);
-						  $ChargeId = $ChargeMasterData->id;
+						  $ChargeId = (int) $ChargeMasterData->id;
 						  $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
 						  $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
 						  if($chrgs->chrg_type == 1)
@@ -911,7 +912,7 @@ class ApplicationController extends Controller
 							  $fData['amount'] += $totalGst;
 							}
 						  }
-						  $fDebitData = $this->createTransactionData($user_id, $fData, null, $ChargeId);
+						  $fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
 						  $fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
 						}
 					  }

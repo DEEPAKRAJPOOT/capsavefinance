@@ -52,7 +52,10 @@ return [
             'prefix' => env('DB_PREFIX', ''),
             //'strict' => true,
             'strict' => false,
-            'engine' => null,
+            'engine' => null, 
+            'options'   => [
+                \PDO::ATTR_EMULATE_PREPARES => true
+            ]
         ],
 
         'pgsql' => [

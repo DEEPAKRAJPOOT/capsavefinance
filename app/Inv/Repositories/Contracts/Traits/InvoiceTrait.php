@@ -392,11 +392,12 @@ trait InvoiceTrait
             $sum =  self::invoiceApproveLimit($attr);
             $limit   =  self::ProgramLimit($inv_details);
           if($inv_details['status_id']==8)  
-         {  
-                     if($limit  >= $sum)
+         {     
+              $finalsum = $sum-$inv_details['invoice_approve_amount'];
+                     if($limit  >= $finalsum)
                     {
-                        $remain_amount = (float) $limit-$sum;
-                       if((float)$remain_amount >=$inv_details['invoice_approve_amount'])
+                        $remain_amount = $limit-$finalsum;
+                       if($remain_amount >=$inv_details['invoice_approve_amount'])
                         { 
                            $status=8; 
                            $limit_exceed=0;
@@ -505,10 +506,14 @@ trait InvoiceTrait
         $uid = Auth::user()->user_id;
         if($status_id==8)  
          {  
-                     if($limit  >= $sum)
+               $rr['limit']  = $limit;
+               $rr['sum']  = $sum;
+                     if((float)$limit  >= $sum)
                     {
-                        $remain_amount =  $limit-$sum;
-                       if($remain_amount >=$inv_amout)
+                        $remain_amount =  (float)$limit-$sum;
+                         $rr['remain']  = $remain_amount;
+                          $rr['amount']  = $inv_amout;
+                       if((float)$remain_amount >=  $inv_amout)
                         { 
                            $status=8; 
                            $limit_exceed=0;
@@ -526,12 +531,12 @@ trait InvoiceTrait
                            $limit_exceed=1;
                        }
                  
-                return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>$status]);
+              //  return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>$status]);
            }
            if($status_id==7)  
            { 
                
-               return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>7]);
+               //return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>7]);
             }
        
          
@@ -539,11 +544,53 @@ trait InvoiceTrait
              
              if($dueDateGreaterCurrentdate)
              {
-                return BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28]); 
+               // return BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28]); 
              }
+              $rr['status']  = $status;
+             return $rr;
         
     }
    
+    public static function updateBulkLimit($limit,$inv_amout,$attr)
+    {
+        $cid  = $attr['supplier_id'];
+        $attribute['prgm_id']  = $attr['program_id'];
+        $attribute['user_id']  = $attr['supplier_id'];
+        $attribute['anchor_id']  = $attr['anchor_id'];
+        $sum  = self::invoiceApproveLimit($attribute);
+        $dueDateGreaterCurrentdate =  self::limitExpire($cid);
+        $uid = Auth::user()->user_id;
+         
+                     if((float)$limit  >= $sum)
+                    {
+                       $remain_amount =  (float)$limit-$sum;
+                        if((float)$remain_amount >=  $inv_amout)
+                        { 
+                            $datalist['comm_txt']  = 'Auto Aprove';
+                            $datalist['status_id'] = 8;
+                        }
+                        else 
+                        {
+                            $datalist['comm_txt']  = 'Limit exceed';
+                            $datalist['status_id'] = 28;
+                        }
+
+                    }
+                    else 
+                       {
+                          
+                            $datalist['comm_txt']  = 'Limit exceed';
+                            $datalist['status_id'] = 28;
+                       }
+            if($dueDateGreaterCurrentdate)
+             {
+                $datalist['comm_txt']  = 'User Limit has been expire';
+                $datalist['status_id'] = 28;
+             }
+             
+             return $datalist;
+        
+    }
    
    
    

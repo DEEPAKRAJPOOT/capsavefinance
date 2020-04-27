@@ -52,7 +52,7 @@ class ApportionmentHelper{
         $this->disbursalData =  Disbursal::where(['user_id'=>$this->transDetails->user_id])
         //->whereIn('status_id',[config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED'),config('lms.STATUS_ID.DISBURSED')])
         //->where('int_accrual_start_dt', '<', DB::raw(DATE("'".$this->transDetails->trans_date."'")))
-        ->orderBy('payment_due_date','asc')
+        // ->orderBy('payment_due_date','asc')
         ->orderBy('disbursal_id','asc')
         ->get();
     }
@@ -125,7 +125,7 @@ class ApportionmentHelper{
     private function setMarginSettled(&$disbursal){
         $this->marginSettled = Transactions::where('disbursal_id','=',$disbursal->disbursal_id)
                         ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
-                        ->whereNotNull('repay_trans_id')
+                        ->whereNotNull('payment_id')
                         ->where('entry_type','=','1')
                         ->sum('amount');
     }
@@ -166,7 +166,7 @@ class ApportionmentHelper{
     //             'amount' => $overduePaidAmt,
     //             'trans_date'=>$this->transDetails->trans_date,
     //             'disbursal_id'=>$disbursal->disbursal_id,
-    //             'repay_trans_id'=>$this->transDetails->trans_id
+    //             'payment_id'=>$this->transDetails->trans_id
     //         ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
     //         $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
     //     }
@@ -175,9 +175,9 @@ class ApportionmentHelper{
     private function setRepayBeforeCharges($userId){
         $this->repayBeforeCharges = Transactions::where('user_id','=',$userId)
         ->where('entry_type','=',0)
-        ->whereNull('repay_trans_id')
+        ->whereNull('payment_id')
         ->where('created_at', '<=', DB::raw(DATE("'".$this->transDetails->trans_date."'")))
-        ->whereHas('trans_detail', function($query){ 
+        ->whereHas('transType', function($query){ 
             $query->where('chrg_master_id','!=','0');
         })
         ->orderBy('trans_date','asc')->get()->toArray();
@@ -186,9 +186,9 @@ class ApportionmentHelper{
     private function setRepayAfterCharges($userId){
         $this->repayAfterCharges = Transactions::where('user_id','=',$userId)
         ->where('entry_type','=',0)
-        ->whereNull('repay_trans_id')
+        ->whereNull('payment_id')
         ->where('created_at', '>', DB::raw(DATE("'".$this->transDetails->trans_date."'")))
-        ->whereHas('trans_detail', function($query){ 
+        ->whereHas('transType', function($query){ 
             $query->where('chrg_master_id','!=','0');
         })
         ->orderBy('trans_date','asc')->get()->toArray();
@@ -237,7 +237,7 @@ class ApportionmentHelper{
                 'amount' => $interestPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'repay_trans_id'=>$this->transDetails->trans_id
+                'payment_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);
             
             $this->transaction['interestPaid'][$disbursal->disbursal_id] = $interestPaidData;
@@ -267,7 +267,7 @@ class ApportionmentHelper{
                     'amount' => $restInterestPaidAmt,
                     'trans_date'=>$this->transDetails->trans_date,
                     'disbursal_id'=>$disbursal->disbursal_id,
-                    'repay_trans_id'=>$this->transDetails->trans_id
+                    'payment_id'=>$this->transDetails->trans_id
                 ], null, config('lms.TRANS_TYPE.INTEREST_PAID'), 0);   
                 $this->transaction['unbookedInterestPaid'][$disbursal->disbursal_id] = $unbookedInterestPaidData;
             }
@@ -291,7 +291,7 @@ class ApportionmentHelper{
                 'amount' =>  $principalPaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'repay_trans_id'=>$this->transDetails->trans_id
+                'payment_id'=>$this->transDetails->trans_id
             ], null, ($this->isPrincipalSettle==2)?config('lms.TRANS_TYPE.INVOICE_KNOCKED_OFF'):config('lms.TRANS_TYPE.INVOICE_PARTIALLY_KNOCKED_OFF'), 0);
             $this->transaction['knockOff'][$disbursal->disbursal_id] = $knockOffData;
         }
@@ -306,7 +306,7 @@ class ApportionmentHelper{
                 'amount' => $interestRefund,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'repay_trans_id'=>$this->transDetails->trans_id
+                'payment_id'=>$this->transDetails->trans_id
             ], null,config('lms.TRANS_TYPE.INTEREST_REFUND'), 1);
             $this->transaction['interestRefund'][$disbursal->disbursal_id] = $refundData;
             $this->totalRefundAmount += $interestRefund;
@@ -355,7 +355,7 @@ class ApportionmentHelper{
                     'amount' => $overduePaidAmt,
                     'trans_date'=>$this->transDetails->trans_date,
                     'disbursal_id'=>$disbursal->disbursal_id,
-                    'repay_trans_id'=>$this->transDetails->trans_id
+                    'payment_id'=>$this->transDetails->trans_id
                 ], null, config('lms.TRANS_TYPE.INTEREST_OVERDUE'), 0);
                 $this->transaction['overdue'][$disbursal->disbursal_id] = $overdueData;
             }
@@ -394,7 +394,7 @@ class ApportionmentHelper{
                 $chargesSettledData = $this->createTransactionData($this->transDetails->user_id, [
                     'amount' => $chargePaidAmt,
                     'trans_date'=>$this->transDetails->trans_date,
-                    'repay_trans_id'=>$this->transDetails->trans_id,
+                    'payment_id'=>$this->transDetails->trans_id,
                     'parent_trans_id'=>$chargeDetail['trans_id']
                 ], null, $chargeDetail['trans_type'], 0);
                 $this->transaction['charges'][$chargeDetail['trans_id']] = $chargesSettledData;
@@ -490,7 +490,7 @@ class ApportionmentHelper{
                 'amount' => $overduePaidAmt,
                 'trans_date'=>$this->transDetails->trans_date,
                 'disbursal_id'=>$disbursal->disbursal_id,
-                'repay_trans_id'=>$this->transDetails->trans_id
+                'payment_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.MARGIN'), 1);
             $this->transaction['margin'][$disbursal->disbursal_id] = $overdueData;
         }
@@ -508,7 +508,7 @@ class ApportionmentHelper{
             $nonFactoredData = $this->createTransactionData($this->transDetails->user_id, [
                 'amount' => $this->balanceRepayAmount,
                 'trans_date'=>$this->transDetails->trans_date,
-                'repay_trans_id'=>$this->transDetails->trans_id
+                'payment_id'=>$this->transDetails->trans_id
             ], null, config('lms.TRANS_TYPE.NON_FACTORED_AMT'), 0);
             $this->transaction['nonFactoredAmt'][] = $nonFactoredData;
         }

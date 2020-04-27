@@ -9,23 +9,29 @@
 
 return [
     'TRANS_TYPE' => [
+        
+       'REVERSE' => '2',
+       'TDS'=>'7',
+       'INTEREST'=>'9',
+       'MARGIN'=>'10',
+       'PAYMENT_DISBURSED' =>'16',
+       'REPAYMENT'=> '17',
+       'INTEREST_OVERDUE'=>'33',
+       'REFUND'=>'32',
+       'NON_FACTORED_AMT' => '35',
+       'WAVED_OFF'=>'36',
+        /*
         'PAYMENT_RECEIVED' => '1',
-        'PAYMENT_REVERSE' => '2',
         'DISCOUNT_ON_PAYMENT' => '3',
         'PROCESSING_FEE' => '4',
         'CHEQUE_BOUNCE'=>'5',
         'LOAN_DISBURSED'=>'6',
-        'TDS'=>'7',
         'INCOME'=>'8',
-        'INTEREST'=>'9',
-        'MARGIN'=>'10',
         'PENALTY'=>'11',
         'GST'=>'12',
         'CGST'=>'13',
         'SGST'=>'14',
         'IGST'=>'15',
-        'PAYMENT_DISBURSED' =>'16',
-        'REPAYMENT'=> '17',
         'DOCUMENT_FEE'=>'20',
         'NACH_BOUNCE_CHARGE'=>'24',
         'SOA_PULL'=>'25',
@@ -34,9 +40,8 @@ return [
         'INVOICE_KNOCKED_OFF'=>'30',
         'INTEREST_REFUND'=>'31',
         'INTEREST_PAID'=>'32',
-        'INTEREST_OVERDUE'=>'33',
         'INVOICE_PARTIALLY_KNOCKED_OFF'=>'34',
-        'NON_FACTORED_AMT' => '35'
+        */
     ],
     'STATUS_ID' => [
         'DISBURSED'=>'12',
@@ -135,5 +140,9 @@ return [
         'CHARGE_POST' => 'charge_post_status',
         'OVERDUE_INT_ACCRUAL' => 'overdue_int_accrual_status',
         'DISBURSAL_BLOCK' => 'disbursal_block_status',
-    ]    
+    ],    
+    'DECIMAL_TYPE' => [
+        'PERCENTAGE' => '2',
+        'AMOUNT'=>'5'
+    ],    
 ];

@@ -214,12 +214,17 @@ Route::group(
         ]
     );
 
-   Route::post('get_to_settle_payments', [
+    Route::post('get_to_settle_payments', [
         'as' => 'get_to_settle_payments',
         'uses' => 'AjaxController@getToSettlePayments'
         ]
     );
 
+    Route::post('get_settled_payments', [
+        'as' => 'get_settled_payments',
+        'uses' => 'AjaxController@getSettledPayments'
+        ]
+    );
   
    //
     Route::post(
@@ -1038,4 +1043,14 @@ Route::group(
         'uses' => 'AjaxController@checkCompAddExist'
     ]);
 
+    Route::post('get-user-invoice-list', [
+        'as' => 'get_user_invoice_list',
+        'uses' => 'AjaxController@getUserInvoiceList'
+    ]);   
+
+    Route::post('get_address_by_gst',[
+        'as' => 'get_address_by_gst',
+        'uses' => 'Karza\KarzaController@getAddressByGst'
+        ]
+    );
 });
