@@ -242,7 +242,7 @@ trait LmsTrait
         }
 
         $transactionData = [];
-
+        $transactionData['link_trans_id'] = $data['link_trans_id'] ?? null;
         $transactionData['parent_trans_id'] = $data['parent_trans_id'] ?? null;
         $transactionData['invoice_disbursed_id'] = $data['invoice_disbursed_id'] ?? null;
         $transactionData['user_id'] = $userId ?? null;
