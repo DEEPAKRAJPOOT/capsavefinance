@@ -675,6 +675,24 @@ class CamController extends Controller
         $pending_rec = $fin->getPendingBankStatement($appId);        
         $bankdocs = $fin->getBankStatements($appId);
         $debtPosition = $fin->getDebtPosition($appId);
+        $dataWcf = [];
+        $dataTlbl = [];
+        $dataBankAna = [];
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataWcf = BankWorkCapitalFacility::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                          ->where('is_active', 1)->get();
+          $dataWcf = $dataWcf ? $dataWcf->toArray() : [];
+        } 
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataTlbl = BankTermBusiLoan::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                          ->where('is_active', 1)->get();
+          $dataTlbl = $dataTlbl ? $dataTlbl->toArray() : [];
+        } 
+        if(isset($debtPosition['bank_detail_id'])) {
+          $dataBankAna = BankAnalysis::where('bank_detail_id', $debtPosition['bank_detail_id'])
+                            ->where('is_active', 1)->get();
+          $dataBankAna = $dataBankAna ? $dataBankAna->toArray() : [];
+        }
         $contents = array();
         if (!empty($active_json_filename) && file_exists($this->getToUploadPath($appId, 'banking').'/'. $active_json_filename)) {
           $contents = json_decode(base64_decode(file_get_contents($this->getToUploadPath($appId, 'banking').'/'.$active_json_filename)),true);
@@ -707,6 +725,9 @@ class CamController extends Controller
           'xlsx_html'=> $xlsx_html,
           'xlsx_pagination'=> $xlsx_pagination,
           'debtPosition'=> $debtPosition,
+          'dataWcf'=> $dataWcf,
+          'dataTlbl'=> $dataTlbl,
+          'dataBankAna'=> $dataBankAna
           ]);
     }
 
