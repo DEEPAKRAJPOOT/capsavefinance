@@ -33,6 +33,7 @@ $role = (isset($role)) ? $role :     11;
                     @include('layouts.backend.invoice_status_links')
                     <div class="tab-content">
                         <div id="menu1" class=" active tab-pane "><br>
+                              <span id="moveCase" class="text-success"></span>
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">

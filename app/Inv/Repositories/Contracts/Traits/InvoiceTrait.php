@@ -467,7 +467,7 @@ trait InvoiceTrait
                    $attribute['invoice_id'] = $row;
                    $inv = InvoiceTrait::getInvoiceDetail($attribute);
                    $response =  self::updateApproveStatus($inv); 
-                   if($response==2)
+                   if($response==2 || $response==3 || $response==4)
                    {
                    
                      $msg.= $inv['invoice_no'].',';
@@ -495,20 +495,29 @@ trait InvoiceTrait
             $attr['prgm_id']   =   $inv_details['program_id'];
             $sum =  self::invoiceApproveLimit($attr);
             $limit   =  self::ProgramLimit($inv_details);
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
+            $isOverDue     =  self::isOverDue($inv_details['supplier_id']); /* get overdue by user_id*/
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
                   BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
-                 
+                  return 4;
            } 
-        
+           if($isOverDue->is_overdue==1)
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' => 'Overdue','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 3;
+
+            }   
             if($limit  >= $sum)
             {
-                $remain_amount =  (float) $limit-$sum;
-                if((float)$remain_amount >=$inv_details['invoice_approve_amount'])
+                $remain_amount =  $limit-$sum;
+                if($remain_amount >=$inv_details['invoice_approve_amount'])
                 {
-                           InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
-                    return BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                         InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                         BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                         return 1;
          
                 }
                 else 
@@ -520,6 +529,8 @@ trait InvoiceTrait
             {
                  return 2;
             }
+           
+           
     }
    /* Update bulk invoice status id according user limit */
     /* Use bulk and invoice table */
@@ -598,9 +609,11 @@ trait InvoiceTrait
         $attribute['user_id']  = $attr['supplier_id'];
         $attribute['anchor_id']  = $attr['anchor_id'];
         $sum  = self::invoiceApproveLimit($attribute);
-        $dueDateGreaterCurrentdate =  self::limitExpire($cid);
+        $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
+        $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
         $uid = Auth::user()->user_id;
-         
+          if($attr->status_id==8)
+          {
                      if((float)$limit  >= $sum)
                     {
                        $remain_amount =  (float)$limit-$sum;
@@ -618,16 +631,37 @@ trait InvoiceTrait
                     }
                     else 
                        {
-                          
                             $datalist['comm_txt']  = 'Limit exceed';
                             $datalist['status_id'] = 28;
                        }
-            if($dueDateGreaterCurrentdate)
-             {
-                $datalist['comm_txt']  = 'User Limit has been expire';
-                $datalist['status_id'] = 28;
-             }
-             
+                if($isOverDue->is_overdue==1)
+                {
+                     $datalist['comm_txt']  = 'Overdue';
+                     $datalist['status_id'] = 28;
+                
+                } 
+                if($dueDateGreaterCurrentdate)
+                {
+                      $datalist['comm_txt']  = 'User Limit has been expire';
+                      $datalist['status_id'] = 28;
+                }
+          }
+          if($attr->status_id==7)
+          {
+                $datalist['comm_txt']  = '';
+                $datalist['status_id'] = 7;
+                if($isOverDue->is_overdue==1)
+                {
+                     $datalist['comm_txt']  = 'Overdue';
+                     $datalist['status_id'] = 28;
+                
+                } 
+                if($dueDateGreaterCurrentdate)
+                {
+                      $datalist['comm_txt']  = 'User Limit has been expire';
+                      $datalist['status_id'] = 28;
+                }
+          }
              return $datalist;
         
     }
