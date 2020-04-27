@@ -850,6 +850,7 @@ class ApplicationController extends Controller
 				  		'end_date' => $endDate], $appLimitId);
 			  	}
 				  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                                  $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
 				  if($createCustomer != null) {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;

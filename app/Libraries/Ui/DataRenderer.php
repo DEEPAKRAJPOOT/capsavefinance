@@ -337,6 +337,7 @@ class DataRenderer implements DataProviderInterface
                                     }
                                 }
                             }
+                            $act = $act . '&nbsp;<a href="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" title="Copy Application" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> '; 
                             
                         }
                         return $act;

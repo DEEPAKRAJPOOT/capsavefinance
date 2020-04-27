@@ -687,23 +687,22 @@ class Application extends BaseModel
     }
     
     /**
-     * Get Renewal application
+     * Get Renewal applications
      * 
-     * @param int $userId
      * @return mixed
      * @throws BlankDataExceptions
      * @throws InvalidDataTypeExceptions
      */
-    public static function getRenewalApp($userId)
+    public static function getRenewalApp()
     {
-        $currDate = \Carbon\Carbon::now()->toDateString();       
+        $today = \Carbon\Carbon::now();
+        $currDate = $today->toDateString();       
         $appData = self::select('app.*')
                 ->join('app_limit', 'app_limit.app_id', '=', 'app.app_id')
-                ->where('app.user_id', $userId)
                 ->where('app.status', '1')
                 ->where('app_limit.status', '1')
-                //->where('app_limit.start_date', '>=', $currDate)
-                //->where('app_limit.end_date', '<=', $currDate)
+                ->where('app_limit.start_date', '>=', $currDate)
+                ->where('app_limit.end_date', '<=', $currDate)
                 ->orderBy('app.app_id', 'DESC')
                 ->get();
                        

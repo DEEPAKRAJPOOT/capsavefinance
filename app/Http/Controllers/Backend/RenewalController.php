@@ -33,27 +33,25 @@ class RenewalController extends Controller {
     {
         try {
             //$userId = 568;
-            $userId = 510;
-            /*
-            $appData = $this->appRepo->getRenewalApp($userId);
-            
-            
-            if (!isset($appData[0])) {
+            $userId = $request->get('user_id');   //510;
+            $where=[];
+            $where['user_id'] = $userId;
+            $appData = $this->appRepo->getAppDataByOrder($where , $orderBy = 'DESC');
+            if (!$appData) {
                 Session::flash('message', 'No application found for renewal');
-                return redirect()->back();            
+                return redirect()->back(); 
             }
             
-            $appId = $appData[0]->app_id;
-            $bizId = $appData[0]->biz_id;
-            */
-            
-            
+                       
+                        
             //$appId = 435;
             //$bizId = 439;  
 
-            $appId = 391;
-            $bizId = 392;  
-
+            //$appId = 391;
+            //$bizId = 392;  
+            
+            $appId = $appData->app_id;
+            $bizId = $appData->biz_id;
             
             $this->copyApplication($userId, $appId, $bizId);
             Session::flash('message', 'Application is copied successfully');

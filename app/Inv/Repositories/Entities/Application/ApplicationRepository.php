@@ -1721,16 +1721,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
     
     /**
-     * Get Renewal application
+     * Get Renewal applications
      * 
-     * @param int $userId
      * @return mixed
      * @throws BlankDataExceptions
      * @throws InvalidDataTypeExceptions
      */
-    public function getRenewalApp($userId)
+    public function getRenewalApp()
     {
-        return Application::getRenewalApp($userId);
+        return Application::getRenewalApp();
     }
     
     public function createBusiness($bizData)
