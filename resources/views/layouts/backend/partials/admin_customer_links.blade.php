@@ -44,8 +44,7 @@
      @can('limit_management')
      <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
->>>>>>> f_2104_gajendra
-    </li>
+   </li>
     @endcan
     @can('apport_refund_view')
     <li>
