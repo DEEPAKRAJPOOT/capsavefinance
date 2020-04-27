@@ -532,51 +532,60 @@ trait InvoiceTrait
         $attribute['user_id']  = $attr['supplier_id'];
         $attribute['anchor_id']  = $attr['anchor_id'];
         $sum  = self::invoiceApproveLimit($attribute);
+        $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
+        $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
         $uid = Auth::user()->user_id;
         if($status_id==8)  
          {  
-               $rr['limit']  = $limit;
-               $rr['sum']  = $sum;
+              
                      if((float)$limit  >= $sum)
                     {
                         $remain_amount =  (float)$limit-$sum;
-                         $rr['remain']  = $remain_amount;
-                          $rr['amount']  = $inv_amout;
-                       if((float)$remain_amount >=  $inv_amout)
+                        if((float)$remain_amount >=  $inv_amout)
                         { 
                            $status=8; 
-                           $limit_exceed=0;
+                           $limit_exceed='Auto Approve';
                         }
                         else 
                         {
                            $status=28; 
-                           $limit_exceed=1;
+                           $limit_exceed='Auto Approve, Limit exceed';
                         }
-
-                    }
+                       }
                     else 
                        {
                            $status=28; 
-                           $limit_exceed=1;
+                           $limit_exceed='Auto Approve, Limit exceed';
                        }
+               if($isOverDue->is_overdue==1)
+                {
+                   $status=28; 
+                   $limit_exceed='Auto Approve, Overdue';
+                }   
+               if($dueDateGreaterCurrentdate)
+                {
+                          $status=28; 
+                          $limit_exceed='User limit has been expire.'; 
+                }
                  
-              //  return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>$status]);
            }
            if($status_id==7)  
            { 
-               
-               //return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>7]);
-            }
-       
-         
-             $dueDateGreaterCurrentdate =  self::limitExpire($cid);
-             
-             if($dueDateGreaterCurrentdate)
-             {
-               // return BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['comm_txt' =>'User limit has been expire','status_id' =>28]); 
+               if($isOverDue->is_overdue==1)
+                {
+                    $status=28; 
+                    $limit_exceed='Overdue';
+                } 
+                if($dueDateGreaterCurrentdate)
+                 {
+                    $status=28; 
+                    $limit_exceed='User limit has been expire.'; 
+                 }
              }
-              $rr['status']  = $status;
-             return $rr;
+       
+            $res['status']  = $status;
+            $res['remark']  = $limit_exceed;
+            return $res;
         
     }
     /* Check Bulk invoice status */
