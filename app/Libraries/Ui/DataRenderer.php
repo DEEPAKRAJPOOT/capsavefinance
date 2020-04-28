@@ -5236,6 +5236,7 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         $app_id = $app->app_id;
+                        /*
                         if(Helpers::checkPermission('company_details')){
                            if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
@@ -5244,7 +5245,10 @@ class DataRenderer implements DataProviderInterface
                            return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
                         }else{
                             return "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
-                        } 
+                        }
+                        */
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);                        
+                        return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
                     }
                 )
                 ->addColumn(
@@ -5272,17 +5276,7 @@ class DataRenderer implements DataProviderInterface
                         $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
                         return $contact;
                     }
-                )
-                // ->addColumn(
-                //     'email',
-                //     function ($app) {                        
-                //         return $app->email ? $app->email : '';
-                // })
-                // ->addColumn(
-                //     'mobile_no',
-                //     function ($app) {                        
-                //         return $app->mobile_no ? $app->mobile_no : '';
-                // })                
+                )               
                 ->addColumn(
                     'assoc_anchor',
                     function ($app) {
@@ -5297,19 +5291,7 @@ class DataRenderer implements DataProviderInterface
                     }                    
                     return $achorName;
                     
-                })
-                // ->addColumn(
-                //     'user_type',
-                //     function ($app) {
-                //     if($app->user_type && $app->user_type==1){
-                //        $anchorUserType='Supplier'; 
-                //     }else if($app->user_type && $app->user_type==2){
-                //         $anchorUserType='Buyer';
-                //     }else{
-                //         $anchorUserType='';
-                //     }
-                //        return $anchorUserType;
-                // })                
+                })            
                 ->addColumn(
                     'assignee',
                     function ($app) {  
