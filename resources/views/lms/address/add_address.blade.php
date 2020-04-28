@@ -51,7 +51,7 @@
         <div class="row">
             <div class="form-group col-6">
                 <label for="address_type">Status</label><br />
-                <select class="form-control" name="rcu_status" id="rcu_status">
+                <select class="form-control" name="is_active" id="is_active">
                     <option disabled value="" selected>Select</option>
                     <option value="1">Active</option>
                     <option value="0">In-Active</option>

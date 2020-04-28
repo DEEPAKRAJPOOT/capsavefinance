@@ -3721,7 +3721,7 @@ class DataRenderer implements DataProviderInterface
     public function addressGetCustomers(Request $request, $data)
     {
         return DataTables::of($data)
-            ->rawColumns(['action', 'rcu_status'])
+            ->rawColumns(['action', 'is_active'])
             ->addColumn(
                 'biz_addr_id',
                 function ($data) {
@@ -3736,7 +3736,7 @@ class DataRenderer implements DataProviderInterface
                     $checked = ($data->is_default == 1) ? 'checked' : null;
                     $act = '';
 
-                    /*if ($data->rcu_status) {
+                    /*if ($data->is_active) {
                         $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
                     }*/
 
@@ -3751,7 +3751,7 @@ class DataRenderer implements DataProviderInterface
             )
 
             ->editColumn(
-                'rcu_status',
+                'is_active',
                 function ($data) {
                     if ($data->is_default) {
                         $is_default = '<span class="badge badge-info">Default</span>';
@@ -3759,7 +3759,7 @@ class DataRenderer implements DataProviderInterface
                         $is_default = '';
                     }
 
-                    if ($data->rcu_status) {
+                    if ($data->is_active) {
                         return '<span class="badge badge-success">Active</span> &nbsp;&nbsp;'.$is_default;
                     } else {
                         return '<span class="badge badge-warning current-status">InActive</span> &nbsp;&nbsp;'.$is_default;
