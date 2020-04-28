@@ -23,8 +23,9 @@ return [
     'google_recaptcha_key' => env('GOOGLE_RECAPTCHA_KEY', ''),
     'google_recaptcha_secret' => env('GOOGLE_RECAPTCHA_SECRET', ''),
     'app_status' => [
-        0 => 'In complete',
-        1 => 'Completed'
+        0 => 'Incomplete',
+        1 => 'Completed',
+        2 => 'Sanctioned',        
     ],
     //Roles Ids
     'anchor_role' => 11,
