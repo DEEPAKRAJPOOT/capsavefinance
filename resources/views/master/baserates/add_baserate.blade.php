@@ -25,6 +25,19 @@
         </div>
         <div class="row">
             <div class="form-group col-md-6">
+                <label for="start_date">Start Date</label>
+                <input type="text" name="from_date" readonly="readonly" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
+                {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
+            </div>
+
+            <div class="form-group col-md-6">
+                <label for="end_date">End Date</label>
+                <input type="text" name="to_date" readonly="readonly" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
+                {!! $errors->first('base_rate', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
                 <label for="is_active">Status</label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option value="" selected>Select</option>
