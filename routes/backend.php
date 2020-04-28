@@ -594,6 +594,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('renewal-application-list', [
                 'as' => 'renewal_application_list',
                 'uses' => 'Backend\RenewalController@renewalAppList'
+            ]); 
+            
+            Route::get('check-renewal-application', [
+                'as' => 'check_renewal_application',
+                'uses' => 'Backend\RenewalController@checkRenewalApps'
             ]);            
             
         });//end of application

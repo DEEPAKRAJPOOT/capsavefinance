@@ -88,4 +88,31 @@ class RenewalController extends Controller {
         return view('backend.app.renewal_app_list'); 
     }
 
+   /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function checkRenewalApps()
+    {
+                
+        $appData = $this->appRepo->getRenewalApp();
+        foreach($appData as $app) {
+            $appId  = $app->app_id;
+            $bizId  = $app->biz_id;
+            $userId = $app->user_id;
+            
+            $this->appRepo->updateAppDetails($appId, ['status' => 3]); //Ready for Renewal
+            
+            $user = $this->userRepo->getfullUserDetail($userId);
+            
+            $emailData['app_id']  = \Helpers::formatIdWithPrefix($appId, 'APP');
+            $emailData['lead_id'] = \Helpers::formatIdWithPrefix($userId, 'LEADID');
+            $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
+            $emailData['receiver_email'] = $user->email;
+                    
+            \Event::dispatch("APPLICATION_RENEWAL_MAIL", serialize($emailData));
+        }
+            
+    }    
 }

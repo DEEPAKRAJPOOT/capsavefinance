@@ -700,16 +700,16 @@ class UserEventsListener extends BaseEvent
         
     }
     
-    public function onRenewApplication($appData)
+    public function onRenewApplication($emailData)
     {
-        $user = unserialize($appData);
+        $user = unserialize($emailData);
         $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_RENEWAL_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%sender_user_name', '%sender_role_name','%receiver_user_name','%receiver_role_name','%lead_id' ,'%app_id','%entity_name','%comment'],
-                [$user['sender_user_name'],$user['sender_role_name'],$user['receiver_user_name'],$user['receiver_role_name'],$user['lead_id'],$user['app_id'],$user['entity_name'],$user['comment']],
+                ['%receiver_user_name', '%lead_id' ,'%app_id','%entity_name'],
+                [$user['receiver_user_name'],$user['lead_id'],$user['app_id'],$user['entity_name']],
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
