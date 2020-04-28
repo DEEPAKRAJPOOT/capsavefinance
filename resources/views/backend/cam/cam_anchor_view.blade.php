@@ -255,12 +255,12 @@
     
     $('#anchor_form').validate({
         rules: {
-            year: {
-               required: true 
-            },
-            mt_type: {
-                required: true
-            },
+//            year: {
+//               required: true 
+//            },
+//            mt_type: {
+//                required: true
+//            },
             year_of_association: {
                required: true
             },
@@ -290,12 +290,12 @@
             }
         },
         messages: {
-            year: {
-               required: 'Please enter year.' 
-            },
-            mt_type: {
-                required: 'Please slecet MT type.'
-            },
+//            year: {
+//               required: 'Please enter year.' 
+//            },
+//            mt_type: {
+//                required: 'Please slecet MT type.'
+//            },
             year_of_association: {
                required: 'Please slecet MT type.'
             },
