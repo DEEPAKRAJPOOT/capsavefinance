@@ -5362,9 +5362,10 @@ class DataRenderer implements DataProviderInterface
                     function ($app) use ($request) {
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
-                        if ($view_only && $app->status == 1) {
-                          //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
-                           if(Helpers::checkPermission('add_app_note')){
+                        if ($view_only && $app->status == 3) {
+                            
+                            /*
+                            if (Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
                             }
                             if(Helpers::checkPermission('send_case_confirmBox')){
@@ -5386,7 +5387,8 @@ class DataRenderer implements DataProviderInterface
                                     }
                                 }
                             }
-                            $act = $act . '&nbsp;<a href="#" title="Copy Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                            */
+                            $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
                             
                         }
                         return $act;

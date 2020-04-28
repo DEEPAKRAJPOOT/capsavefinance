@@ -77,13 +77,9 @@
                                                 <th style="width:20%">{{ trans('backend.app_list_head.biz_name') }}</th>
                                                 <th style="width:12%">{{ trans('backend.app_list_head.name') }}</th>
                                                 <th style="width:9%">{{ trans('backend.app_list_head.contact') }}</th>
-                                                {{-- <th>{{ trans('backend.app_list_head.email') }}</th>
-                                                <th>{{ trans('backend.app_list_head.mobile_no') }}</th> --}}
                                                 <th style="width:12%">{{ trans('backend.app_list_head.anchor') }}</th>
-                                                {{-- <th>{{ trans('backend.app_list_head.user_type') }}</th> --}}
                                                 <th style="width:12%">{{ trans('backend.app_list_head.assignee') }}</th>
                                                 <th style="width:12%">{{ trans('backend.app_list_head.assigned_by') }}</th>
-                                                {{--<th>{{ trans('backend.app_list_head.shared_detail') }}</th>--}}
                                                 <th style="width:5%">{{ trans('backend.app_list_head.status') }}</th>
                                                 <th style="width:12%">{{ trans('backend.app_list_head.action') }}</th>
                                             </tr>

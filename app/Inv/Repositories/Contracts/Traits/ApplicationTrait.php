@@ -332,7 +332,7 @@ trait ApplicationTrait
             $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id'])) : [];                
             $appData['biz_id'] = $newBizId;
             $appData['parent_app_id'] = $appId;
-            
+            $appData['status'] = 0;
             $newAppData = $this->appRepo->createApplication($appData);
             $newAppId = $newAppData->app_id;
             
@@ -358,6 +358,7 @@ trait ApplicationTrait
             foreach($ownAddressesData as $ownAddressData) {
                 $ownAddressArrData = $ownAddressData ? $this->arrayExcept($ownAddressData->toArray(), array_merge($excludeKeys, ['biz_addr_id'])) : [];
                 $ownAddressArrData['biz_id'] = $newBizId;
+                $ownAddressArrData['rcu_status'] = 0;
                 $ownAddressArrData['biz_owner_id'] = isset($newBizOwnersArr[$ownAddressArrData['biz_owner_id']]) ? $newBizOwnersArr[$ownAddressArrData['biz_owner_id']] : null;
                 $this->appRepo->saveAddress($ownAddressArrData);
             } 
