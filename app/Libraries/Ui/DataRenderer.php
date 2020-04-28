@@ -5322,7 +5322,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'action',
                 function ($data) {
-                return  "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->invoice_user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                return  "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
                 }
             )
             ->filter(function ($query) use ($request) {

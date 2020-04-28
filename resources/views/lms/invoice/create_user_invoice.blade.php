@@ -95,7 +95,7 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group m-0">
-                                                    <label class="m-0">Place of Supply: <span>{{$origin_of_recipient['state_name']}}</span>
+                                                    <label class="m-0">Place of Supply: <span>{{$billingDetails['state_name']}}</span>
                                                       <input type="hidden" name="place_of_supply" value="{{$origin_of_recipient['state_name']}}"></label>
                                                 </div>
                                             </div>
