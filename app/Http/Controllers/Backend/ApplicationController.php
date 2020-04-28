@@ -849,10 +849,10 @@ class ApplicationController extends Controller
 			  	}
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
               	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
               	if($prcsAmt && isset($prcsAmt->offer)) {
-				  if($createCustomer != null) {
-                                      $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
+				  if($createCustomer != null) {                                      
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
 					$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
