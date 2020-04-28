@@ -1,5 +1,6 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
+@include('layouts.backend.partials.admin_customer_links',['active'=>'userInvoice'])
 <div class="content-wrapper">
    <section class="content-header">
       <div class="header-icon">
