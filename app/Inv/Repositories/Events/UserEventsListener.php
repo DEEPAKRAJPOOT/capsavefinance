@@ -716,8 +716,20 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body) {
+                
+                
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $message->subject($mail_subject);
+                
+                if( env('SEND_MAIL_ACTIVE') == 1){
+                    $email = explode(',', env('SEND_MAIL'));
+                    $message->to($email);
+                    $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                    $message->cc(explode(',', env('SEND_MAIL_CC')));                    
+                }else{
+                    $message->to($user["receiver_email"], $user["receiver_user_name"]);
+                }
+        
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => array($user["receiver_email"]),
@@ -725,8 +737,9 @@ class UserEventsListener extends BaseEvent
                     'name' => $user['receiver_user_name'],
                     'subject' => $mail_subject,
                     'body' => $mail_body,
-                ];
+                ]; 
                 FinanceModel::logEmail($mailContent);
+                
             });
         }
     }

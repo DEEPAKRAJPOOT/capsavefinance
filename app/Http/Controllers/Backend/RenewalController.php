@@ -96,7 +96,8 @@ class RenewalController extends Controller {
     public function checkRenewalApps()
     {
                 
-        $appData = $this->appRepo->getRenewalApp();
+        $appData = $this->appRepo->getRenewalApp();        
+        $result = '';
         foreach($appData as $app) {
             $appId  = $app->app_id;
             $bizId  = $app->biz_id;
@@ -106,13 +107,24 @@ class RenewalController extends Controller {
             
             $user = $this->userRepo->getfullUserDetail($userId);
             
-            $emailData['app_id']  = \Helpers::formatIdWithPrefix($appId, 'APP');
-            $emailData['lead_id'] = \Helpers::formatIdWithPrefix($userId, 'LEADID');
-            $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
-            $emailData['receiver_email'] = $user->email;
-                    
-            \Event::dispatch("APPLICATION_RENEWAL_MAIL", serialize($emailData));
-        }
+            $endDate = $app->end_date;
+            $date = \Carbon\Carbon::parse($endDate);
+            $now  = \Carbon\Carbon::now();
+            $diffInDays = $date->diffInDays($now);
+
+            if ($diffInDays == 7) {
+                $emailData['app_id']  = \Helpers::formatIdWithPrefix($appId, 'APP');
+                $emailData['lead_id'] = \Helpers::formatIdWithPrefix($userId, 'LEADID');
+                $emailData['entity_name'] = 
+                $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
+                $emailData['receiver_email'] = $user->email;
+
+                \Event::dispatch("APPLICATION_RENEWAL_MAIL", serialize($emailData));
+            }
             
+            $result .= $result == "" ? "Applications are ready for renewal : " . $appId : ', ' . $appId;
+        }
+        
+        echo $result . "<br>Finished ...";
     }    
 }
