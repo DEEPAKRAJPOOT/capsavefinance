@@ -960,19 +960,6 @@ class ApplicationController extends Controller
 	 */
 	public function showBusinessInformation()
 	{
-            $userId = request()->get('user_id');
-            $where=[];
-            $where['user_id'] = $userId;
-            $where['status'] = [0,1];
-            $appData = $this->appRepo->getApplicationsData($where);
-            
-            $userData = $this->userRepo->getfullUserDetail($userId);           
-            $isAnchorLead = $userData && !empty($userData->anchor_id);
-            
-            if (isset($appData[0])) {
-                Session::flash('message', 'You can\'t create a new application before sanctions.');
-                return redirect()->back();
-            }
             
 		$states = State::getStateList()->get();
 		$product_types = $this->masterRepo->getProductDataList();
