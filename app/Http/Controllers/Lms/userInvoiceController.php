@@ -128,7 +128,6 @@ class userInvoiceController extends Controller
              return response()->json($response);
         }
         $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type);
-        dd($txnsData);
         if ($txnsData->isEmpty()) {
            $response['message'] = 'No transaction found for the user.';
             return response()->json($response);
