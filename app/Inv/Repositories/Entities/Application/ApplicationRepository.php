@@ -1373,9 +1373,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::getUpdatedApp($user_id);
     }  
 
-    public function addressGetCustomers($user_id, $biz_id)
+    public function addressGetCustomers($user_id, $biz_id, $address_type=null)
     {
-        return BusinessAddress::addressGetCustomer($user_id, $biz_id);
+        return BusinessAddress::addressGetCustomer($user_id, $biz_id, $address_type);
     }
 
     public function getAppDataByOrder($where , $orderBy = 'DESC')
