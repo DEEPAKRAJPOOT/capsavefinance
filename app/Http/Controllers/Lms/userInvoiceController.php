@@ -77,9 +77,9 @@ class userInvoiceController extends Controller
                     $igst_rate = 18;
                     $igst_amt = round((($base_amt * $igst_rate)/100),2);
                 } else {
-                    $igst_rate = 9;
+                    $cgst_rate = 9;
                     $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
-                    $igst_rate = 9;
+                    $sgst_rate = 9;
                     $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
                 }
             }
