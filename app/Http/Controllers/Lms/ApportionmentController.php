@@ -31,7 +31,8 @@ class ApportionmentController extends Controller
         $this->lmsRepo = $lms_repo;
         $this->dataProvider = $dataProvider;
         $this->userRepo = $user_repo;
-	}
+    }
+
     /**
      * View Unsettled Transactions of User
      * @param Request $request
@@ -191,6 +192,7 @@ class ApportionmentController extends Controller
              return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
+
     /**
      * save reversal Detail
      * @param Request $request
@@ -203,27 +205,36 @@ class ApportionmentController extends Controller
             $amount = $request->get('amount');
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            
             if (empty($TransDetail)) {
                 return redirect()->route('unsettled_payments')->with(['error' => 'Selected Transaction to be reversed is not valid']);
             }
             $outstandingAmount = $TransDetail->amount;
+            
             if ($amount > $outstandingAmount)  {
                 return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be reversed must be less than or equal to '. $outstandingAmount]);
             }
             if ($amount < 1)  {
                 return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be reversed must have some values ']);
             }
-
+            
             if (empty($comment))  {
                 return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Comment / Remarks is required to reversed the amount.']);
             }
+            
+            $paymentDetails = Payment::find($TransDetail->payment_id);
+            if (empty($TransDetail)) {
+                return redirect()->route('apport_settled_view')->with(['error' => 'Payment Detail missing for this transaction!']);
+            }
+
+            $transDateTime = date('Y-m-d H:i:s');
             $txnInsertData = [
                     'payment_id' => NULL,
                     'link_trans_id'=> $transId,
                     'parent_trans_id' => $TransDetail->parent_trans_id,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
-                    'trans_date' => date('Y-m-d H:i:s'),
+                    'trans_date' => $transDateTime,
                     'amount' => $amount,
                     'entry_type' => 0,
                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
@@ -232,8 +243,36 @@ class ApportionmentController extends Controller
                     'pay_from' => 1,
                     'is_settled' => 2,
             ];
+            $paymentData = [
+                'user_id' => $paymentDetails->user_id,
+                'biz_id' => $paymentDetails->biz_id,
+                'virtual_acc' => $paymentDetails->virtual_acc,
+                'action_type' => $paymentDetails->action_type,
+                'trans_type' => $paymentDetails->trans_type,
+                'parent_trans_id' => $paymentDetails->parent_trans_id,
+                'amount' => $amount,
+                'date_of_payment' => $transDateTime,
+                'gst' => $paymentDetails->gst,
+                'sgst_amt' => $paymentDetails->sgst_amt,
+                'cgst_amt' => $paymentDetails->cgst_amt,
+                'igst_amt' => $paymentDetails->igst_amt,
+                'payment_type' => $paymentDetails->payment_type,
+                'utr_no' => $paymentDetails->utr_no,
+                'unr_no' => $paymentDetails->unr_no,
+                'cheque_no' => $paymentDetails->cheque_no,
+                'tds_certificate_no' => $paymentDetails->tds_certificate_no,
+                'file_id' => $paymentDetails->file_id,
+                'description' => $paymentDetails->description,
+                'is_settled' => 0,
+                'is_manual' => $paymentDetails->is_manual,
+                'created_at' => $paymentDetails->created_at,
+                'created_by' => $paymentDetails->created_by,
+                'generated_by' => 1,
+                'is_refundable' => 1
+            ];
             $resp = $this->lmsRepo->saveTransaction($txnInsertData);
-            if (!empty($resp->trans_id)) {
+            $paymentId = Payment::insertPayments($paymentData);
+            if (!empty($resp->trans_id) && is_int($paymentId)) {
                 $commentData = [
                     'trans_id' => $resp->trans_id,
                     'comment' => $comment,
@@ -396,7 +435,6 @@ class ApportionmentController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
-
     
     /**
      * View Settled Transactions of User
@@ -427,7 +465,6 @@ class ApportionmentController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
-
 
     /**
      * Unsettled Transaction marked Settled
