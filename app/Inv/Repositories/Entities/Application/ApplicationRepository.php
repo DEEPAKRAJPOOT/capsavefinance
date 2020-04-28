@@ -1751,6 +1751,42 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
     }
     
+   /** get the user limit  **/
+   public function getUserLimit($user_id)
+   {
+       try
+       {
+           return AppLimit::getUserLimit($user_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   }
+   
+   /** get the user program  limit  **/
+   public function getUserProgramLimit($attr)
+   {
+       try
+       {
+           return AppProgramLimit::getUserProgramLimit($attr);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   } 
+     /** get the user offer program  limit  **/
+   public function getUserProgramOfferLimit($app_prgm_limit_id)
+   {
+       try
+       {
+           return AppLimit::getUserProgramOfferLimit($app_prgm_limit_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   }  
+   
+   
 }
 
 
