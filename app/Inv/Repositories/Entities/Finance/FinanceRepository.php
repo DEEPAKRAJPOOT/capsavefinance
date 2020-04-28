@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Financial\FinancialJiConfig;
 use App\Inv\Repositories\Models\Financial\FinancialVariablesTransConfig;
 use App\Inv\Repositories\Models\Financial\FinancialJournalItems;
 use App\Inv\Repositories\Models\Financial\FinancialJournalEntries;
+use App\Inv\Repositories\Models\BankWorkCapitalFacility;
 
 class FinanceRepository extends BaseRepositories implements FinanceInterface
 {
@@ -163,5 +164,13 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     public function getLatestBatch(array $where = array()) {
         $this->result = FinancialJournalItems::getLatestBatch($where);
         return $this->result;
+    }
+    
+    public function saveBankWcFacility($arrData) {
+        return BankWorkCapitalFacility::saveBankWcFacility($arrData);
+    }
+    
+    public function updateBankWcFacility($bankDetailId, $dataArr) {
+        return BankWorkCapitalFacility::updateBankWcFacility($bankDetailId, $dataArr);
     }
 }

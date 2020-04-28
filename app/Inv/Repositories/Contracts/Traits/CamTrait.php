@@ -20,9 +20,9 @@ use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-use App\Inv\Repositories\Models\BankWorkCapitalFacility;
-use App\Inv\Repositories\Models\BankTermBusiLoan;
-use App\Inv\Repositories\Models\BankAnalysis;
+//use App\Inv\Repositories\Models\BankWorkCapitalFacility;
+//use App\Inv\Repositories\Models\BankTermBusiLoan;
+//use App\Inv\Repositories\Models\BankAnalysis;
 
 trait CamTrait
 {

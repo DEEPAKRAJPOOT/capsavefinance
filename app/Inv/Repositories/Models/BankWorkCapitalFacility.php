@@ -2,14 +2,10 @@
 
 namespace App\Inv\Repositories\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use DB;
-use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class BankWorkCapitalFacility extends BaseModel
 {
-    use Notifiable;
     /**
      * The database table used by the model.
      *
@@ -37,13 +33,6 @@ class BankWorkCapitalFacility extends BaseModel
      * @var boolean
      */
     public $userstamps = true;
-    
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    //protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
@@ -66,4 +55,28 @@ class BankWorkCapitalFacility extends BaseModel
                         'updated_at',
                         'updated_by'
     ];
+    
+    public static function saveBankWcFacility($data) {
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }     
+        return self::create($data);
+    }
+    
+    public static function updateBankWcFacility($bankDetailId, $dataArr) {
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($bankDetailId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($dataArr)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        } 
+        $rowUpdate = self::where('bank_detail_id',(int) $bankDetailId)->update($dataArr);
+        return ($rowUpdate ? $rowUpdate : false);
+    }
 }
