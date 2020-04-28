@@ -2,20 +2,22 @@
 namespace App\Http\Controllers\Lms;
 
 use Auth;
-use Session;
 use Helpers;
+use Session;
 
 use PHPExcel; 
-use PHPExcel_IOFactory;
+use Carbon\Carbon;
 
-use Illuminate\Http\Request;
+use PHPExcel_IOFactory;
 use App\Libraries\Idfc_lib;
+use Illuminate\Http\Request;
+use App\Helpers\RefundHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
-
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
@@ -645,5 +647,25 @@ class RefundController extends Controller
 
             Session::flash('message',trans('backend_messages.disburseMarked'));
             return redirect()->route('lms_refund_sentbank');
+        }
+
+        public function paymentAdvise(Request $request){
+            if($request->has('payment_id')){
+                $paymentId = $request->get('payment_id');
+                $data = RefundHelper::calculateRefund($paymentId);
+                return view('lms.refund.payment_advise', $data);
+            }else{
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            }
+        }
+
+        public function createRefundRequest(Request $request){
+            if($request->has('paymentId')){
+                $paymentId = $request->get('paymentId');
+                $data = RefundHelper::createRefundRequest($paymentId);
+                return view('lms.refund.payment_advise', $data);
+            }else{
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            }
         }
 }

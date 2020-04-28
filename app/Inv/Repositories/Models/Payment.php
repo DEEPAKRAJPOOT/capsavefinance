@@ -114,6 +114,11 @@ class Payment extends BaseModel {
         }
         return $result;
     }
+     
+    public function getPaymentNameAttribute(){
+        $tdsType = ($this->action_type == 3) ? '/TDS' : '';   
+        return $this->transType->trans_name . $tdsType;
+    }
 
     /**
      * get Payment data list

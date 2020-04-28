@@ -4544,9 +4544,8 @@ class DataRenderer implements DataProviderInterface
                     }) 
                     ->editColumn(
                         'trans_type',
-                        function ($dataRecords) {
-                            $tdsType = ($dataRecords->action_type == 3) ? '/TDS' : '';   
-                            return $dataRecords->transType->trans_name . $tdsType;
+                        function ($dataRecords) {   
+                            return $dataRecords->paymentname;
                     }) 
                     ->editColumn(
                         'updated_by',
@@ -4563,7 +4562,7 @@ class DataRenderer implements DataProviderInterface
                             if($dataRecords->is_settled == 0){
                                 $btn .= "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
                             }elseif($dataRecords->is_refundable){
-                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('payment_refund_index', ['trans_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-undo"></a>';
+                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-undo"></a>';
                             } 
                             return $btn;
                     }) 

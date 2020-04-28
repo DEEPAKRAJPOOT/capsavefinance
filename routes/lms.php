@@ -177,6 +177,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             // manage refund routes 
 
+            Route::get('/refund/paymnet/advise',[
+                'as' => 'lms_refund_payment_advise',
+                'uses' => 'Lms\RefundController@paymentAdvise'
+            ]);
+
+            Route::post('/refund/request/create',[
+                'as' => 'lms_refund_request_create',
+                'uses' => 'Lms\RefundController@createRefundRequest'
+            ]);
+
             Route::get('/refund/refund-list', [
                 'as' => 'lms_refund_list',
                 'uses' => 'Lms\RefundController@customerList'
