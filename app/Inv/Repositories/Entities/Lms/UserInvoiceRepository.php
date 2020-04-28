@@ -19,6 +19,8 @@ use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
+use App\Inv\Repositories\Models\Lms\InvoiceNo;
 
 /**
  * User Invoice Repository class
@@ -98,9 +100,16 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return LmsUser::getCustomers($user_id);
 	}
 
-
 	public function getUser($user_id) {
 		return User::getfullUserDetail((int)$user_id);
+	}
+
+	public function getNextInv($data) {
+		return InvoiceNo::create($data);
+	}
+
+	public function getUserCurrCompany(int $user_id) {
+		return UserInvoiceRelation:: where(['user_id' => $user_id, 'is_active' => 1])->first();
 	}
 
 	/**
@@ -115,7 +124,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}
 
 	public function getCompanyBankAcc($company_id) {
-		return UserBankAccount::getAllCompanyBankAcc($company_id);
+		return UserBankAccount::getAllUserBankAcc($company_id);
 	}
 
 	/**
@@ -126,7 +135,20 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}
 
 	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = []) {
-		return Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds);
+		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds);
+		if (empty($transIds)) {
+			foreach ($UserInvoiceTxns as $key => $txn) {
+				if ($txn->getOutstandingAttribute() != 0) {
+					unset($UserInvoiceTxns[$key]);
+				}
+			}
+		}
+		return $UserInvoiceTxns;
+	}
+
+	public function updateIsInvoiceGenerated($transDataArray){
+		$data = ['is_invoice_generated' => 1];
+		return Transactions::updateIsInvoiceGenerated($transDataArray, $data);
 	}
 
 	/**

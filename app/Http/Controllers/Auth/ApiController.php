@@ -33,93 +33,100 @@ class ApiController
         $response['sapi'] = php_sapi_name();
         return $this->_setResponse($response, 405);
     }
-    $where = ['is_posted_in_tally' => '0'];
+    $where = ['is_posted_in_tally' => '0']; //, 'is_invoice_generated' => '1'
     $txnsData = Transactions::getTallyTxns($where);
     $batch_no = _getRand(15);
     $totalRecords = 0;
     $insertedData = array();
+    $tally_data = [];
     if (!$txnsData->isEmpty()) {
-        $tbl_cols = [
-            'batch_no',
-            'transactions_id',
-            'is_debit_credit',
-            'trans_type_id',
-            'tally_trans_type_id',
-            'tally_voucher_id',
-            'tally_voucher_code',
-            'tally_voucher_name',
-            'tally_voucher_date',
-            'invoice_no',
-            'invoice_date',
-            'ledger_name',
-            'amount',
-            'ref_no',
-            'ref_amount',
-            'acc_no',
-            'ifsc_code',
-            'bank_name',
-            'cheque_amount',
-            'cross_using',
-            'inst_no',
-            'inst_date',
-            'favoring_name',
-            'remarks',
-            'narration',
-          ];
-        $columns =  implode(', ', $tbl_cols);
-        $sql = "INSERT INTO rta_tally_entry ($columns) VALUES ";
         $i = 0;
+        $ignored_txns = [];
+        $parent_settled = [];
         foreach ($txnsData as $key => $txn) {
+            if (in_array($txn->parent_trans_id, $parent_settled)) {
+                $parent_array_key = array_search($txn->trans_id, $parent_settled);
+                $parentRecord = $txnsData[$parent_array_key];
+                $i++;
+                $tally_data[] = [
+                  'batch_no' =>  $batch_no,
+                  'transactions_id' =>  $txn->trans_id,
+                  'is_debit_credit' =>  $txn->entry_type,
+                  'trans_type' =>  $txn->transType->trans_name,
+                  'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
+                  'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
+                  'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+                  'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
+                  'tally_voucher_date' =>  $txn->trans_date,
+                  'invoice_no' =>  $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
+                  'invoice_date' =>  $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL,
+                  'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                  'amount' =>  $txn->amount,
+                  'ref_no' =>  $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? '',
+                  'ref_amount' =>  $txn->amount,
+                  'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
+                  'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
+                  'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
+                  'cheque_amount' =>  0,
+                  'cross_using' =>  0,
+                  'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
+                  'inst_no' =>  NULL,
+                  'inst_date' =>  NULL,
+                  'favoring_name' =>  0,
+                  'remarks' => $txn->comment ?? '',
+                  'narration' => $txn->comment ?? '',
+              ];
+              $selectedData[] = $txn->trans_id;
+              continue;
+            }
+            if ($txn->transType->tally_trans_type == 3) {
+                  if ($txn->getOutstandingAttribute() <= 0 || empty($txn->userinvoicetrans)) {
+                     $ignored_txns[] = $txn->trans_id;
+                     continue;
+                  }else{
+                    $parent_settled[] = $txn->trans_id;
+                  }
+            }
+            
+            if (in_array($txn->trans_id, $ignored_txns)) {
+              continue;
+            }
             $i++;
            $tally_data[] = [
             'batch_no' =>  $batch_no,
             'transactions_id' =>  $txn->trans_id,
-            'is_debit_credit' =>  $txn->entry_type == '1' ? 'Credit' : 'Debit',
-            'trans_type' =>  $txn->trans_name,
-            'tally_trans_type_id' =>  $txn->tally_trans_type,
-            'tally_voucher_id' =>  $txn->tally_voucher_id,
-            'tally_voucher_code' =>  $txn->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
-            'tally_voucher_name' =>  $txn->voucher_name,
+            'is_debit_credit' =>  $txn->entry_type,
+            'trans_type' =>  $txn->transType->trans_name,
+            'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
+            'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
+            'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+            'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
             'tally_voucher_date' =>  $txn->trans_date,
-            'invoice_no' =>  0,
-            'invoice_date' =>  NULL,
-            'ledger_name' =>  $txn->f_name. ' ' . $txn->m_name .' '. $txn->l_name,
+            'invoice_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
+            'invoice_date' =>  $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL,
+            'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
             'amount' =>  $txn->amount,
-            'ref_no' =>  0,
-            'ref_amount' =>  0,
-            'acc_no' =>  $txn->acc_no,
-            'ifsc_code' =>  $txn->ifsc_code,
-            'bank_name' =>  $txn->bank_name,
+            'ref_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? '',
+            'ref_amount' =>  $txn->amount,
+            'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
+            'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
+            'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
             'cheque_amount' =>  0,
             'cross_using' =>  0,
-            'mode_of_pay' =>  $txn->mode_of_pay,
+            'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
             'inst_no' =>  NULL,
             'inst_date' =>  NULL,
             'favoring_name' =>  0,
             'remarks' => $txn->comment ?? '',
             'narration' => $txn->comment ?? '',
           ];
-          /*
-          $values[] = "('" . implode("', '", $tally_data) . "')";
-          if ($i == 100) {
-            $query[] = $sql . implode(', ', $values);
-            $i = 0;
-            $values = array();
-          }
-          //Put it After Loop If entry in partition is required
-          if (!empty($values)) {
-            $query[] = $sql . implode(', ', $values);
-          }
-          if (!empty($query)) {
-             $res = \DB::insert($query[0]);
-             foreach ($query as  $q) {
-               \DB::insert($q);
-             }
-          }
-          */
           $selectedData[] = $txn->trans_id;
         }
         try {
+          if (empty($tally_data)) {
+             $response['message'] =  'No Records are selected to Post in tally.';
+             return $response;
+          }
           $res = \DB::table('tally_entry')->insert($tally_data);
         } catch (\Exception $e) {
           $errorInfo  = $e->errorInfo;
@@ -128,7 +135,7 @@ class ApiController
         if ($res === true) {
           $totalRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
           if ($totalRecords != count($selectedData)) {
-           $response['message'] =  'Some error occured. No Record can be posted in tally.';
+            $response['message'] =  'Some error occured. No Record can be posted in tally.';
           }else{
             $response['status'] = 'success';
             $batchData = [

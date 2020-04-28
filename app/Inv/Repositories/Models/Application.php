@@ -64,6 +64,7 @@ class Application extends BaseModel
         'user_id',
         'biz_id',
         'loan_amt',
+        'status',
         'status_id',
         'is_assigned',
         'curr_status_id',
@@ -713,5 +714,35 @@ class Application extends BaseModel
        $id = Auth::user()->user_id;
        $role_id = RoleUser::where(['user_id' => $id])->pluck('role_id');
        return Role::whereIn('id',$role_id)->first();
+    }
+    
+    /**
+     * Get Applications Data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getApplicationsData($where=[])
+    {
+        /**
+         * $where is not an array
+         */
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $query = self::select('*');        
+       
+        if (isset($where['user_id'])) {
+            $query->where('user_id', $where['user_id']);            
+        }
+        
+        if (isset($where['status']) && is_array($where['status'])) {
+            $query->whereIn('status', $where['status']);            
+        }
+        
+        $result = $query->get();       
+        return $result ? $result: [];
     }
 }

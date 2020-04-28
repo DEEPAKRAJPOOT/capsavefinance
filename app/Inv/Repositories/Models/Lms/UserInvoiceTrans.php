@@ -92,4 +92,8 @@ class UserInvoiceTrans extends BaseModel {
         $result = $query->get();
         return $result;
     }
+
+    public function getUserInvoice() {
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\UserInvoice', 'user_invoice_id', 'user_invoice_id');
+    }
 }

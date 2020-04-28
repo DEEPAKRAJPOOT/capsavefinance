@@ -80,9 +80,12 @@ class TransType extends BaseModel {
         }
     }
 
-    function charge()
-    {
+    function charge() {
        return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'chrg_master_id','id');
+    }  
+
+    function voucher() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Master\Voucher', 'id','trans_type_id');
     }  
 
     /** 

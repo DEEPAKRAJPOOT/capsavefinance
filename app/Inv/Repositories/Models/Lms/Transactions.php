@@ -134,6 +134,8 @@ class Transactions extends BaseModel {
         $parentTrans = self::find($this->parent_trans_id);
         if($parentTrans){
             $transDate = $parentTrans->trans_date;
+        }else{
+            $transDate = $this->trans_date;
         }
         return $transDate;
     }
@@ -157,25 +159,24 @@ class Transactions extends BaseModel {
     }
 
     public function getBatchNoAttribute(){
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
-            return $this->txn_id;
-        }
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.MARGIN') ]) && !$this->payment_id && $this->refundTransaction != null){
-            return $this->refundTransaction->request->batch->batch_id;
+
+        if($this->entry_type == 0 && $this->invoice_disbursed_id && !in_array($this->trans_type,[
+            config('lms.TRANS_TYPE.REVERSE'),
+            config('lms.TRANS_TYPE.TDS'),
+            config('lms.TRANS_TYPE.WAVED_OFF'),
+            config('lms.TRANS_TYPE.REFUND')
+        ])){
+            return $this->invoiceDisbursed->disbursal->disbursal_batch->batch_id;
         }
     }
 
     public function getNarrationAttribute(){
         $data = '';
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= $this->BatchNo.' ';
-
-        if($this->modeOfPaymentName && $this->modeOfPaymentNo)
-        $data .= $this->modeOfPaymentName.': '.$this->modeOfPaymentNo.' ';
-
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
-
+        if($this->payment_id && !in_array($this->trans_type,[ config('lms.TRANS_TYPE.TDS')])){
+            $data .= $this->BatchNo.' ';
+            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
+            $data .= ' Payment Allocated as Normal: '. number_format($this->payment->amount,2) . ' '; 
+        }
         return $data;
     }
 
@@ -398,11 +399,9 @@ class Transactions extends BaseModel {
 		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
-    public static function getJournals(){
-        return self::where('entry_type','1')
-            ->whereNotNull('parent_trans_id')
-            ->where('is_posted_in_tally','=','0')
-            ->where('user_id','=',$userId)
+    public static function getJournals(array $whereCond = []){
+        return self::whereNull('payment_id')
+            ->where($whereCond)
             ->get();
     }
 
@@ -455,12 +454,13 @@ class Transactions extends BaseModel {
      * @param array $data
      * @return mixed
      */
-    public static function updateTransaction($whereCondition, $data)
-    {
+    public static function updateTransaction($whereCondition, $data) {
         return self::where($whereCondition)->update($data);
     }
 
-
+    public static function updateIsInvoiceGenerated($transIds, $data) {
+        return self::whereIn('trans_id', $transIds)->update($data);
+    }
 
     public function getOppTransNameAttribute(){
         if($this->transType->chrg_master_id!='0'){
@@ -564,6 +564,10 @@ class Transactions extends BaseModel {
         return $repaymentAmount;
     }
 
+    public function userinvoicetrans(){
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans', 'trans_id', 'trans_id');
+    }
+
     
     public static function getAllChargesApplied(array $where = array()) {
         $cond = '';
@@ -582,20 +586,11 @@ class Transactions extends BaseModel {
     }
     
     public static function getTallyTxns(array $where = array()) {
-        $result = self::select('transactions.trans_id', 'transactions.payment_id repay_trans_id', 'transactions.parent_trans_id', 'transactions.user_id', 'users.f_name', 'users.m_name', 'users.l_name', 'transactions.biz_id', 'transactions.virtual_acc_id', 'transactions.disbursal_id', 'transactions.trans_date', 'transactions.trans_type', 'transactions.chrg_trans_id', 'transactions.amount', 'transactions.settled_amount', 'transactions.entry_type', 'user_bank_account.acc_name', 'user_bank_account.acc_no', 'mst_bank.bank_name', 'user_bank_account.ifsc_code' , 'transactions.is_settled', 'transactions.mode_of_pay', 'transactions.utr_no', 'transactions.unr_no', 'transactions.cheque_no', 'transactions.trans_by', 'transactions.pay_from', 'transactions.txn_id', 'transactions.is_posted_in_tally', 'transactions.comment', 'tally_voucher.trans_type_id', 'mst_trans_type.trans_name', 'mst_trans_type.credit_desc', 'mst_trans_type.debit_desc', 'mst_trans_type.tally_trans_type', 'tally_voucher.tally_voucher_id', 'tally_voucher.voucher_name', 'tally_voucher.created_at as voucher_date')
-            ->join('users', 'users.user_id', '=', 'transactions.user_id')
-            ->join('mst_trans_type', 'mst_trans_type.id', '=', 'transactions.trans_type')
-            ->join('tally_voucher', 'tally_voucher.trans_type_id', '=', 'mst_trans_type.id')
-            ->join('user_bank_account', 'user_bank_account.user_id', '=', 'transactions.user_id')
-            ->join('mst_bank', 'mst_bank.id', '=', 'user_bank_account.bank_id')
-            ->where($where)
-            ->groupBy('transactions.trans_id')
-            ->get();
-        return $result;
+        return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where($where)->get();
     }
 
     public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids){
-       $sql = self::with('transType')->where('user_id', '=', $userId);
+       $sql = self::with('transType')->whereNull('payment_id')->where(['user_id' => $userId, 'is_invoice_generated' => 0]);
        if (!empty($trans_ids)) {
           $sql->whereIn('trans_id', $trans_ids);
        }

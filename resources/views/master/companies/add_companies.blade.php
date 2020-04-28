@@ -5,11 +5,12 @@
     <form id="companiesForm" name="companiesForm" method="POST" action="{{route('save_companies')}}" target="_top">
         @csrf
 
-        {!! Form::hidden('company_id' , isset($comData['company_id']) ? $comData['company_id'] : null, ['id'=>'company_id'])  !!}
+        {!! Form::hidden('comp_addr_id' , isset($comData['comp_addr_id']) ? $comData['comp_addr_id'] : null, ['id'=>'comp_addr_id'])  !!}
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cmp_name">Company Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : 'CAPSAVE FINANCE CONSULTANCY'}}" readonly="readonly">
+                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : 'CAPSAVE FINANCE PRIVATE LIMITED
+'}}" readonly="readonly">
                 {!! $errors->first('cmp_name', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
@@ -109,11 +110,12 @@
                 if (gstnoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.error, label.gst_no_error').remove();
                     $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Please enter valid GSTIN Number</label>');
                     $(this).focus();
                 }
             } else {
-                $('label.gst_no_error, label#gst_no_error').remove();
+                $('label.error, label.pan_no_error').remove();
                 $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Special characters not allowed</label>');
                 $(this).focus();
             }
@@ -128,11 +130,12 @@
                 if (pannoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.error, label.pan_no_error').remove();
                     $(this).after('<label id="pan_no_error" class="error pan_no_error " for="pan_no">Please enter valid PAN Number</label>');
                     $(this).focus();
                 }
             } else {
-                $('label.pan_no_error, label#pan_no_error').remove();
+                $('label.error, label.pan_no_error').remove();
                 $(this).after('<label id="pan_no_error" class="error pan_no_error " for="pan_no">Special charactes not allowed</label>');
                 $(this).focus();
             }
@@ -148,11 +151,12 @@
                 if (cinnoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.error, label.cin_no_error').remove();
                     $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Please enter valid CIN Number</label>');
                     $(this).focus();
                 }
             } else {
-                $('label.cin_no_error, label#cin_no_error').remove();
+                $('label.error, label.cin_no_error').remove();
                 $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Special characters not allowed</label>');
                 $(this).focus();
             }
@@ -162,7 +166,7 @@
         $.validator.addMethod("unique_add", function (value, element) {
             var comp_add = value;
             var cmp_name = $('#cmp_name').val();
-            var comp_id = $('#company_id').val();
+            var comp_id = $('#comp_addr_id').val();
             var status = false;
 //            console.log(comp_id);
 //            if (gst_no.length < 1) {

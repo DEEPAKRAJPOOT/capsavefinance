@@ -57,9 +57,18 @@
                  {
                       alert('Limit Exceed');
                  }
+                 else if(data==3)
+                 {
+                     $("#moveCase").html('(Exception Cases) Overdue');
+                     $(th).parent('td').parent('tr').remove();  
+                 }
+                 else if(data==4)
+                 {
+                      $("#moveCase").html('(Exception Cases) User limit has been expire');
+                     $(th).parent('td').parent('tr').remove(); 
+                 }
                  else
                  {
-
                      $("#moveCase").html('Invoice successfully sent to  approve ');
                      $(th).parent('td').parent('tr').remove(); 
                  }
@@ -405,8 +414,8 @@ function uploadFile(app_id,id)
                     }
                     else
                     {
-
-                       localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer');
+                      
+                       localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer Or (Exception Cases)');
                        location.reload();
                     }
                }
@@ -547,17 +556,24 @@ function uploadFile(app_id,id)
                         parent.$("#iframeMessage").html(alertmsg);
                         return false;
                     }
-                   if(data==2)
+                    else if(data==2)
                     {
-                      alert('Limit Exceed');
+                         alert('Limit Exceed');
+                    }
+                    else if(data==3)
+                    {
+                        $("#moveCase").html('(Exception Cases) Overdue');
+                        $(th).parent('td').parent('tr').remove();  
+                    }
+                    else if(data==4)
+                    {
+                         $("#moveCase").html('(Exception Cases) User limit has been expire');
+                        $(th).parent('td').parent('tr').remove(); 
                     }
                     else
                     {
-                       
-                         $tr.remove();
-                        /// $(th).parent('td').parent('tr').remove(); 
-                        /// $("#moveCase").html('Invoice successfully sent to  approve ');
-                      
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $tr.remove();
                     }
                     
 

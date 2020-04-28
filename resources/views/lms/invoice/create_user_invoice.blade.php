@@ -1,5 +1,6 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
+@include('layouts.backend.partials.admin_customer_links',['active'=>'userInvoice'])
 <div class="content-wrapper">
    <section class="content-header">
       <div class="header-icon">
@@ -95,7 +96,7 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group m-0">
-                                                    <label class="m-0">Place of Supply: <span>{{$origin_of_recipient['state_name']}}</span>
+                                                    <label class="m-0">Place of Supply: <span>{{$billingDetails['state_name']}}</span>
                                                       <input type="hidden" name="place_of_supply" value="{{$origin_of_recipient['state_name']}}"></label>
                                                 </div>
                                             </div>
@@ -113,7 +114,7 @@
                                   <thead>
                                        <tr>
                                         <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong><input type="checkbox" name=""></strong></span>
+                                           <span style="font-size: small;"><strong><input type="checkbox" id="checkall"></strong></span>
                                         </td>
                                         <td rowspan="2" bgcolor="#f2f2f2">
                                            <span style="font-size: small;"><strong>Sr No</strong></span>
@@ -284,6 +285,7 @@
     }
     let data = {'invoice_type' : invoice_type};
     data['_token'] =  message.token;
+    $('.isloader').show();
     $.ajax({
       type:'POST',
       url : "{{route('get_invoice_transaction', ['user_id'=> $user_id])}}",
@@ -291,6 +293,8 @@
       cache : false,
       dataType    : 'json',
       success: function (res) {
+        $('.isloader').hide();
+        $('#checkall').prop('checked', false);
         if (res.status == 1) {
           $('#table_tbody').html(atob(res.view));
         }else{
@@ -299,6 +303,14 @@
         }
       }
     })
+  })
+
+  $(document).on('click', '#checkall', function(argument) {
+    if ($(this).is(':checked')) {
+        $('.trans_check[type="checkbox"]').prop('checked', true);
+    }else{
+       $('.trans_check[type="checkbox"]').prop('checked', false);
+    }
   })
 </script>
 @endsection

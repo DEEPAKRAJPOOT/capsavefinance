@@ -30,7 +30,7 @@
                     <div class="tab-content">
 
                         <div id="menu1" class=" active tab-pane "><br>
-
+  <span id="moveCase" class="text-success"></span>
 
                             <div class="card">
                                 <div class="card-body">

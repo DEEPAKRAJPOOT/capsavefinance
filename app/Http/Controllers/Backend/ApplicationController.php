@@ -873,9 +873,10 @@ class ApplicationController extends Controller
 			  	}
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
               	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
               	if($prcsAmt && isset($prcsAmt->offer)) {
-				  if($createCustomer != null) {
+				  if($createCustomer != null) {                                      
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
 					$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
@@ -983,7 +984,21 @@ class ApplicationController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	public function showBusinessInformation()
-	{
+	{            
+            $userId = request()->get('user_id');
+            $where=[];
+            $where['user_id'] = $userId;
+            $where['status'] = [0,1];
+            $appData = $this->appRepo->getApplicationsData($where);
+            
+            $userData = $this->userRepo->getfullUserDetail($userId);           
+            $isAnchorLead = $userData && !empty($userData->anchor_id);
+            
+            if (isset($appData[0])) {
+                Session::flash('message', 'You can\'t create a new application before sanctions.');
+                return redirect()->back();
+            }
+            
 		$states = State::getStateList()->get();
 		$product_types = $this->masterRepo->getProductDataList();
 		$industryList = $this->appRepo->getIndustryDropDown()->toArray();
@@ -1561,7 +1576,7 @@ class ApplicationController extends Controller
 		try{
 			$app_id = $request->get('app_id');
 			if($app_id){
-				$assignees = AppAssignment::getAppAssignees($app_id);
+				$assignees = AppAssignment::getAppAssignees((int) $app_id);
 
 				$data = array();
 				foreach($assignees as $key => $assignee){
@@ -1569,17 +1584,17 @@ class ApplicationController extends Controller
 
 				   
 					if($assignee->from_user_id){
-						$from_role_name = User::getUserRoles($assignee->from_user_id);
+						$from_role_name = User::getUserRoles((int) $assignee->from_user_id);
 						if($from_role_name->count()!=0)
 							$from_role_name = $from_role_name[0];
 					}
 
 					if($assignee->to_user_id){
-						$to_role_name = User::getUserRoles($assignee->to_user_id);
+						$to_role_name = User::getUserRoles((int) $assignee->to_user_id);
 						if($to_role_name->count()!=0)
 						$to_role_name = $to_role_name[0];
 					}else{
-						$to_role_name = Role::getRole($assignee->role_id);
+						$to_role_name = Role::getRole((int) $assignee->role_id);
 					}
 					
 				   // dump($to_role_name);
@@ -1750,7 +1765,8 @@ class ApplicationController extends Controller
 			$biz_id = (int)$request->post('biz_id');
 		   // dd($app_id,$biz_id , config('common.mst_status_id')['DISBURSED']);
 			$arrUpdateApp=[
-				'curr_status_id'=>config('common.mst_status_id')['DISBURSED'] 
+				'curr_status_id'=>config('common.mst_status_id')['DISBURSED'],
+                            'status' => 2,
 			];
 			$appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);           
 
