@@ -1945,8 +1945,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                 return $app->status == 1 ? 'Completed' : 'Incomplete';
-
+                    //return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    $app_status = config('common.app_status');                               
+                    return isset($app_status[$app->status]) ? $app_status[$app->status] : ''; 
                 })
                 ->addColumn(
                     'action',
