@@ -64,6 +64,7 @@ class Application extends BaseModel
         'user_id',
         'biz_id',
         'loan_amt',
+        'status',
         'status_id',
         'is_assigned',
         'curr_status_id',
