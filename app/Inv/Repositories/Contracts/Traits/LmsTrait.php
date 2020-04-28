@@ -152,7 +152,7 @@ trait LmsTrait
         $tenor = round($datediff / (60 * 60 * 24));
         $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
         $totalinterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
-        if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
+        if($invoice['program_offer']['payment_frequency'] == 1) {
             $interest = $totalinterest;
         }
         $disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);

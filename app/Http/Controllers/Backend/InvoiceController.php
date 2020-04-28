@@ -340,7 +340,7 @@ class InvoiceController extends Controller {
         }
         
         // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-        $transactionData = $this->createTransactionData($userid, ['amount' => $amount, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+        $transactionData = $this->createTransactionData($userId, ['amount' => $amount, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
         $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
         
         // // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
