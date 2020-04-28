@@ -175,7 +175,7 @@ class Transactions extends BaseModel {
         if($this->payment_id && !in_array($this->trans_type,[ config('lms.TRANS_TYPE.TDS')])){
             $data .= $this->BatchNo.' ';
             $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
-            $data .= ' Payment Allocated as Normal: '.$this->payment->amount . ' '; 
+            $data .= ' Payment Allocated as Normal: '. number_format($this->payment->amount,2) . ' '; 
         }
         return $data;
     }
