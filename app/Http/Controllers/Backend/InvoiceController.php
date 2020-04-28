@@ -404,6 +404,8 @@ class InvoiceController extends Controller {
         $expl  =  explode(",",$getPrgm->invoice_approval); 
         if ($attributes['exception']) {
             $statusId = 28;
+            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
+      
         } else {
           if(in_array($customer, $expl))  
           {

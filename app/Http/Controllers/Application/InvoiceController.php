@@ -145,6 +145,7 @@ class InvoiceController extends Controller {
         $biz_id = $res->biz_id;
         if ($attributes['exception']) {
             $statusId = 28;
+            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
         } else {
             $statusId = 7;
         }
@@ -173,8 +174,7 @@ class InvoiceController extends Controller {
             $result = $this->invRepo->save($arr);
 
         if ($result) {
-
-            $this->invRepo->saveInvoiceStatusLog($result, $statusId);
+            InvoiceTrait::getManualInvoiceStatus($result);
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

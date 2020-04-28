@@ -134,6 +134,8 @@ class Transactions extends BaseModel {
         $parentTrans = self::find($this->parent_trans_id);
         if($parentTrans){
             $transDate = $parentTrans->trans_date;
+        }else{
+            $transDate = $this->trans_date;
         }
         return $transDate;
     }
@@ -157,25 +159,24 @@ class Transactions extends BaseModel {
     }
 
     public function getBatchNoAttribute(){
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
-            return $this->txn_id;
-        }
-        if(in_array($this->trans_type ,[config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.MARGIN') ]) && !$this->payment_id && $this->refundTransaction != null){
-            return $this->refundTransaction->request->batch->batch_id;
+
+        if($this->entry_type == 0 && $this->invoice_disbursed_id && !in_array($this->trans_type,[
+            config('lms.TRANS_TYPE.REVERSE'),
+            config('lms.TRANS_TYPE.TDS'),
+            config('lms.TRANS_TYPE.WAVED_OFF'),
+            config('lms.TRANS_TYPE.REFUND')
+        ])){
+            return $this->invoiceDisbursed->disbursal->disbursal_batch->batch_id;
         }
     }
 
     public function getNarrationAttribute(){
         $data = '';
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= $this->BatchNo.' ';
-
-        if($this->modeOfPaymentName && $this->modeOfPaymentNo)
-        $data .= $this->modeOfPaymentName.': '.$this->modeOfPaymentNo.' ';
-
-        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
-        $data .= ' Repayment Allocated as Normal: '.$this->amount . ' TDS:0.00'.' ';
-
+        if($this->payment_id && !in_array($this->trans_type,[ config('lms.TRANS_TYPE.TDS')])){
+            $data .= $this->BatchNo.' ';
+            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
+            $data .= ' Payment Allocated as Normal: '. number_format($this->payment->amount,2) . ' '; 
+        }
         return $data;
     }
 

@@ -18,6 +18,7 @@ use App\Inv\Repositories\Models\Master\Cluster;
 use App\Inv\Repositories\Models\Master\RightType;
 use App\Inv\Repositories\Models\Master\Source;
 use App\Inv\Repositories\Models\Rights;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\RightCommission;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -3612,22 +3613,26 @@ if ($err) {
         return \Response::json(['success' => $result]);
     }
  
-    function uploadInvoice(Request $request) {
-      
+
+      function uploadInvoice(Request $request)
+      {
         $res  = explode(',',$request->id);
         foreach($res as $key=>$val)
         {
+
                 $attr =   $this->invRepo->getSingleBulkInvoice($val);
                 if($attr)
                 {
                    $invoice_id = NULL;  
                    if($attr->status==0)
                    {
-                      $res  =  $this->invRepo->saveFinalInvoice($attr);
-                      $invoice_id =  $res['invoice_id'];
-                      $userLimit =  InvoiceTrait::ProgramLimit($res);
-                      $updateInvoice=  InvoiceTrait::updateLimit($res->status_id,$userLimit,$res->invoice_approve_amount,$res,$invoice_id);  
-                     
+                       $userLimit = InvoiceTrait::ProgramLimit($attr);
+                        $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
+                        $attr['comm_txt'] = $updateInvoice['comm_txt'];
+                        $attr['status_id'] = $updateInvoice['status_id'];
+                        $res  =  $this->invRepo->saveFinalInvoice($attr);
+                        InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']); 
+
                    }
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
@@ -3636,145 +3641,19 @@ if ($err) {
                   $updateBulk  =  $this->invRepo->updateBulkUpload($attribute);  
                 }
         }
-        if($updateBulk)
-        {
-                 return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
-              
-        }
-        else
-        {
-                  return response()->json(['status' => 0,'message' => 'Something went wrong, Please try again']); 
-             
-        }
-        
-       /*$extension = $request['doc_file']->getClientOriginalExtension();
-       if($extension!="csv" || $extension!="csv")
-       {
-            return response()->json(['status' => 2]); 
-       }
-        $date = Carbon::now();
-        $data = array();
-        $id = Auth::user()->user_id;
-        $explode  =  explode(',',$request['supplier_bulk_id']);
-        $attributes['supplier_bulk_id']      =    $explode[0];
-        $userId     =    $attributes['supplier_bulk_id'];
-        $appId   = $explode[1]; 
-        if ($request['doc_file']) {
-            if (!Storage::exists('/public/user/' . $userId . '/invoice')) {
-                Storage::makeDirectory('/public/user/' . $userId . '/invoice', 0775, true);
+            if($updateBulk)
+            {
+
+                     return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
+
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/invoice', $request['doc_file'], null);
-            $inputArr['file_path'] = $path;
+            else
+            {
+                      return response()->json(['status' => 0,'message' => 'Something went wrong, Please try again']); 
+
+            }
         }
-        $batch_id =  $this->invRepo->saveBatchNo($path); 
-        $csvFilePath = storage_path("app/public/" . $inputArr['file_path']);
-        $file = fopen($csvFilePath, "r");
-        while (!feof($file)) {
-          
-            $rowData[] = explode(",",fgets($file));
-          }
-       
-        $i=0;
-      
-        $res =  $this->invRepo->getSingleAnchorDataByAppId($appId);
-        $biz_id  = $res->biz_id;
-       
-        $rowcount = count($rowData) -1;
-        foreach($rowData as $key=>$row)
-        {
-        
-          if($i > 0 && $i < $rowcount)  
-          {
-               
-                $whr  = ['status' =>0,'anchor_id' =>$request['anchor_bulk_id'],'supplier_id' => $request['supplier_bulk_id'], 'program_id' => $request['program_bulk_id']];
-                $invoice_no  = $row[0];
-                $invoice_date  = $row[1];
-                $invoice_due_date  = $row[2];
-                $invoice_amount  = $row[3];
-                $invoice_amount  = str_replace("\n","",$invoice_amount);
-                $invoice_due_date_validate  = $this->validateDate($invoice_due_date, $format = 'd/m/Y');
-                $invoice_date_validate  = $this->validateDate($invoice_date, $format = 'd/m/Y');
-                $res =  $this->invRepo->checkDuplicateInvoice($invoice_no,$attributes['supplier_bulk_id']);
-                if(strlen($invoice_date) < 10)
-               {
-                    return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It Should be "dd/mm/yy" format']); 
-               } 
-               else if(strlen($invoice_due_date) < 10)
-               {
-                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
-               } 
-               else if($invoice_no=='')
-               {
-                    return response()->json(['status' => 0,'message' => 'Please check invoice , Invoice should not be null']); 
-               } 
-               else if( $invoice_due_date_validate==false)
-               {
-                    return response()->json(['status' => 0,'message' => 'Please check the invoice date, It should be "dd/mm/yy" format']); 
-               }
-              else if( $invoice_date_validate==false)
-               {
-                    return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It Should be "dd/mm/yy" format']); 
-               } 
-               
-               else if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_due_date)) < strtotime(Carbon::parse($date)->format('d-m-Y')))
-               {
-                   return response()->json(['status' => 0,'message' => 'Please check the due invoice date, It should be greater than current date']); 
-               }
-               else if(strtotime(Carbon::createFromFormat('d/m/Y', $invoice_date)) > strtotime(Carbon::parse($date)->format('d-m-Y')))
-               {
-                   return response()->json(['status' => 0,'message' => 'Please check the  invoice date, It should be less than current date']); 
-               }
-               else if($invoice_amount=='')
-               {
-                    return response()->json(['status' => 0,'message' => 'Please check invoice amount, Amount should not be null']); 
-               } 
-               else if(!is_numeric($invoice_amount))
-               {
-                    return response()->json(['status' => 0,'message' => 'Please check invoice amount, string value not allowed']); 
-               } 
-               else if($res)
-               {
-                   return response()->json(['status' => 0,'message' => 'Please check invoice no, some one Invoice No already exists']); 
-               }
-                $invoice_amount =  $invoice_amount;
-                $data[$i]['anchor_id'] =  $request['anchor_bulk_id'];
-                $data[$i]['supplier_id'] = $request['supplier_bulk_id']; 
-                $data[$i]['program_id'] = $request['program_bulk_id'];
-                $data[$i]['app_id']    = $appId;
-                $data[$i]['biz_id']  = $biz_id;
-                $data[$i]['invoice_no'] = $invoice_no;
-                $data[$i]['tenor'] =  $request['tenor']; 
-                $data[$i]['invoice_due_date'] = ($invoice_due_date) ? Carbon::createFromFormat('d/m/Y', $invoice_due_date)->format('Y-m-d') : '';
-                $data[$i]['invoice_date'] = ($invoice_date) ? Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d') : '';
-                $data[$i]['invoice_approve_amount'] =  $invoice_amount;
-                $data[$i]['is_bulk_upload'] = 1;
-                $data[$i]['batch_id'] = $batch_id;
-                $data[$i]['created_by'] =  $id;
-                $data[$i]['created_at'] =  $date;
-          }
-           $i++;
-        }
-            
-              
-                if(count($data) > 0)
-               {
-                  $res = $this->invRepo->DeleteTempInvoice($whr);  
-                  $result = $this->invRepo->saveBulkTempInvoice($data);
-                  if( $result)
-                  {
-                      $getTempInvoice =  $this->invRepo->getTempInvoiceData($whr);
-                      return response()->json(['status' => 1,'data' =>$getTempInvoice]); 
-                  }
-                    else {
-                        return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
-                    }
-                }  
-                  else {
-                        return response()->json(['status' => 0,'message' => 'Something wrong, Please try again']); 
-                    }
-         
-        */
-     }
+
     function twoDateDiff($fdate,$tdate)
     {
             $curdate=strtotime($fdate);
@@ -4410,8 +4289,7 @@ if ($err) {
         $comp_id = (int)\Crypt::decrypt($req->get('comp_id'));
         $acc_id = $req->get('acc_id');
         $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'comp_addr_id' => $comp_id]);
-        
-        if($status == false){
+       if($status == false){
                 $response['status'] = 'true';
         }else{
            $response['status'] = 'false';

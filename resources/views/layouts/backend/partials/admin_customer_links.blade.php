@@ -49,9 +49,9 @@
         <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('lms_get_transaction', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Cust. SOA</a>
     </li>
     @endcan     
-    {{-- @can('limit_management')
+    @can('limit_management')
     <li>
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
     </li>
-    @endcan  --}}
+    @endcan 
 </ul>  
