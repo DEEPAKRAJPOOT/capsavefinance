@@ -5,7 +5,7 @@
 <div class="content-wrapper">
     @include('layouts.backend.partials.cam_nav')
     <div class="inner-container">
-        <form name="Anchorview" method="post" action="{{route('save_anchor_view')}}">
+        <form id="anchor_form" name="Anchorview" method="post" action="{{route('save_anchor_view')}}">
             @csrf
             <div class="data">
                 <h2 class="sub-title bg">RELATIONSHIP WITH ANCHOR COMPANY</h2>
@@ -252,5 +252,78 @@
         }
         
     }
+    
+    $('#anchor_form').validate({
+        rules: {
+//            year: {
+//               required: true 
+//            },
+//            mt_type: {
+//                required: true
+//            },
+            year_of_association: {
+               required: true
+            },
+            contact_person: {
+                required: true
+            },
+            payment_terms: {
+                required: true
+            },
+            grp_rating: {
+                required: true
+            },
+            contact_number: {
+                required: true
+            },
+            security_deposit: {
+                required: true
+            },
+            dependence_on_anchor: {
+                required: true
+            },
+            qoq_ot_from_anchor: {
+                required: true
+            },
+            cat_relevance_by_anchor: {
+                required: true
+            }
+        },
+        messages: {
+//            year: {
+//               required: 'Please enter year.' 
+//            },
+//            mt_type: {
+//                required: 'Please slecet MT type.'
+//            },
+            year_of_association: {
+               required: 'Please slecet MT type.'
+            },
+            contact_person: {
+                required: 'Please enter contact person.'
+            },
+            payment_terms: {
+                required: 'Please enter payment terms.'
+            },
+            grp_rating: {
+                required: 'Please enter grp rating.'
+            },
+            contact_number: {
+                required: 'Please enter contact number.'
+            },
+            security_deposit: {
+                required: 'Please enter security deposit.'
+            },
+            dependence_on_anchor: {
+                required: 'Please enter dependence on anchor.'
+            },
+            qoq_ot_from_anchor: {
+                required: 'Please enter Quarter on Quarter off-take from Anchor.'
+            },
+            cat_relevance_by_anchor: {
+                required: 'Please enter Categorization/ Relevance by Anchor.'
+            }
+        }
+    });
 </script>
 @endsection
