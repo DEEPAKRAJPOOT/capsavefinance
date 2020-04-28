@@ -107,6 +107,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'user_invoice_location',
                 'uses' => 'Lms\userInvoiceController@userInvoiceLocation'
             ]);
+            Route::post('get-bank-address', [
+                'as' => 'get_bank_address',
+                'uses' => 'Lms\userInvoiceController@getBankAddress'
+            ]);
             
             // disbursal routes
             Route::get('/disbursal/request-list', [

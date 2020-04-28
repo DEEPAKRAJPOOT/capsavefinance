@@ -522,4 +522,12 @@ class userInvoiceController extends Controller
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * POST method for get bank address
+     */
+    public function getBankAddress () {
+        $data = 'one';
+        return response()->json($data);
+    }
 }
