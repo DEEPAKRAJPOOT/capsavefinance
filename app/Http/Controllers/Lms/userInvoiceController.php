@@ -74,13 +74,13 @@ class userInvoiceController extends Controller
             if ($txn->gst == 1) {
                 $base_amt = $totalamount * 100/118;
                 if(!$is_state_diffrent) {
-                    $igst_rate = 18;
-                    $igst_amt = round((($base_amt * $igst_rate)/100),2);
-                } else {
                     $cgst_rate = 9;
                     $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
                     $sgst_rate = 9;
                     $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
+                } else {
+                   $igst_rate = 18;
+                    $igst_amt = round((($base_amt * $igst_rate)/100),2); 
                 }
             }
 
