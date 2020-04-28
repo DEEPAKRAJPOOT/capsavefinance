@@ -103,7 +103,9 @@ public function limitManagement(Request $request) {
         $userInfo = $this->userRepo->getCustomerDetail($user_id);
         $application = $this->appRepo->getCustomerApplications($user_id);
         $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
-
+        $customerLimit     =  $this->appRepo->getUserLimit($user_id);
+        $getUserProgramLimit   =  $this->appRepo->getUserProgramLimit($customerLimit);
+        
         foreach ($application as $key => $app) {
             if (isset($app->prgmLimits)) {
                 foreach ($app->prgmLimits as $value) {
@@ -119,12 +121,14 @@ public function limitManagement(Request $request) {
         $userInfo->total_limit = number_format($totalLimit);
         $userInfo->consume_limit = number_format($totalCunsumeLimit);
         $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-
+        
         return view('lms.customer.limit_management')
                         ->with([
                             'userInfo' => $userInfo,
                             'application' => $application,
-                            'anchors' => $anchors
+                            'anchors' => $anchors,
+                            'userlimit' => $customerLimit,
+                            'offerlimit' => $getUserProgramLimit
         ]);
     } catch (Exception $ex) {
         dd($ex);

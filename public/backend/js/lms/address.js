@@ -14,7 +14,7 @@ $(document).ready(function() {
                 required: true,
                 digits: true,
             },
-            'rcu_status': {
+            'is_active': {
                 required: true,
             },
         },
@@ -31,7 +31,7 @@ $(document).ready(function() {
             'pin_code': {
                 required: "Please enter pincode",
             },
-            'rcu_status': {
+            'is_active': {
                 required: "Please select status",
             },
         }

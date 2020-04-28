@@ -283,5 +283,17 @@ class AppProgramLimit extends BaseModel {
 
     public static function getTotalPrgmLimitByAppId($appId){
         return AppProgramLimit::where(['app_id'=>$appId])->sum('limit_amt');
-    }        
+    }   
+    
+   
+     public static function getUserProgramLimit($attr)
+    {
+        return  AppProgramLimit::with(['invoice','product','offer.anchor','offer.program'])->where(['app_limit_id'=>$attr->app_limit_id,'app_id'=>$attr->app_id])->groupBy('product_id')->get();
+    }
+  
+   public   function invoice()
+   {
+        return $this->hasMany('App\Inv\Repositories\Models\BizInvoice','app_id','app_id')->whereIn('status_id',[8,9,10,12]);
+   }
+   
 }

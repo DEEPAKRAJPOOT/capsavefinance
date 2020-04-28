@@ -1576,7 +1576,7 @@ class ApplicationController extends Controller
 		try{
 			$app_id = $request->get('app_id');
 			if($app_id){
-				$assignees = AppAssignment::getAppAssignees($app_id);
+				$assignees = AppAssignment::getAppAssignees((int) $app_id);
 
 				$data = array();
 				foreach($assignees as $key => $assignee){
@@ -1584,17 +1584,17 @@ class ApplicationController extends Controller
 
 				   
 					if($assignee->from_user_id){
-						$from_role_name = User::getUserRoles($assignee->from_user_id);
+						$from_role_name = User::getUserRoles((int) $assignee->from_user_id);
 						if($from_role_name->count()!=0)
 							$from_role_name = $from_role_name[0];
 					}
 
 					if($assignee->to_user_id){
-						$to_role_name = User::getUserRoles($assignee->to_user_id);
+						$to_role_name = User::getUserRoles((int) $assignee->to_user_id);
 						if($to_role_name->count()!=0)
 						$to_role_name = $to_role_name[0];
 					}else{
-						$to_role_name = Role::getRole($assignee->role_id);
+						$to_role_name = Role::getRole((int) $assignee->role_id);
 					}
 					
 				   // dump($to_role_name);
