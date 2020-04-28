@@ -1751,6 +1751,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
     }
     
+    /**
+     * Get Applications Data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getApplicationsData($where=[])
+    {
+        return Application::getApplicationsData($where);
+    } 
+    
 }
 
 
