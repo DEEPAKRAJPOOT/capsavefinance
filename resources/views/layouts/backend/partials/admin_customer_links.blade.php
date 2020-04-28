@@ -54,4 +54,9 @@
         <a class=" {{($active=='customer') ? 'active': null }} " href="{{route('limit_management', ['user_id' => request()->get('user_id')])}}">Limit Management</a>
     </li>
     @endcan 
+    @can('user_invoice_location')
+    <li>
+        <a class=" {{($active=='userLocation') ? 'active': null }} " href="{{route('user_invoice_location', ['user_id' => request()->get('user_id')])}}">User InVoice Location</a>
+    </li>
+    @endcan 
 </ul>  

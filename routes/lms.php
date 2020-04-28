@@ -102,6 +102,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'download_user_invoice',
                 'uses' => 'Lms\userInvoiceController@downloadUserInvoice'
             ]);
+
+            Route::get('user-invoice-location', [
+                'as' => 'user_invoice_location',
+                'uses' => 'Lms\userInvoiceController@userInvoiceLocation'
+            ]);
             
             // disbursal routes
             Route::get('/disbursal/request-list', [

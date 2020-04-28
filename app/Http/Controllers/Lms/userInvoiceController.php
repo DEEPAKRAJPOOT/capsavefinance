@@ -509,4 +509,17 @@ class userInvoiceController extends Controller
          return response()->json(['status' => 0,'message' => 'Selected application is not valid.']); 
        }
     }
+
+    /**
+     * Get user invoice location
+     */
+    public function userInvoiceLocation(Request $request) {
+        try {
+            $user_id = $request->get('user_id');
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            return view('lms.invoice.user_invoice_location')->with(['userInfo' => $userInfo]);
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }
