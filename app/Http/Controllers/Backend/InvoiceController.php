@@ -315,11 +315,9 @@ class InvoiceController extends Controller {
         $userId = $request->user_id;
         $disbursalBatchId = $request->disbursal_batch_id;
         $transId = $request->trans_id;
+        $fundedDate = $request->funded_date;
         $remarks = $request->remarks;
         $createdBy = Auth::user()->user_id;
-
-        $apiLogData['tran_id'] = $transId;
-        $apiLogData['comment'] = $remarks;
 
         $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
         $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
@@ -327,7 +325,8 @@ class InvoiceController extends Controller {
         if ($disbursalIds) {
             $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
                     'tran_id' => $transId,
-                    'status_id' => 12
+                    'status_id' => 12,
+                    'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
                 ], $disbursalIds);
             foreach ($disbursalIds as $key => $value) {
                 $this->lmsRepo->createDisbursalStatusLog($value, 12, $remarks, $createdBy);
@@ -340,6 +339,26 @@ class InvoiceController extends Controller {
             }
         }
         
+        // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
+        $transactionData = $this->createTransactionData($userid, ['amount' => $amount, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+        $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
+        
+        // // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
+        // $intrstAmt = round($totalInterest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+        // if ($intrstAmt > 0.00) {
+        //     $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.INTEREST'));
+        //     $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
+
+        //     $intrstCdtTrnsData = $this->createTransactionData($userid, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.INTEREST'), 1);
+        //     $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+        // }
+
+        // // Margin transaction $tranType = 10 
+        // $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT']);
+        // if ($marginAmt > 0.00) {
+        //     $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.MARGIN'), 0);
+        //     $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
+        // }
 
         Session::flash('message',trans('backend_messages.disburseMarked'));
         return redirect()->route('backend_get_sent_to_bank');
@@ -675,28 +694,7 @@ class InvoiceController extends Controller {
                     $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
                     $disburseAmount += $amount;
 
-                    // disburse transaction $tranType = 16 for payment acc. to mst_trans_type table
-                    $transactionData = $this->createTransactionData($userid, ['amount' => $amount, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
-                    $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
                     
-                    // interest transaction $tranType = 9 for interest acc. to mst_trans_type table
-                    $intrstAmt = round($totalInterest, config('lms.DECIMAL_TYPE')['AMOUNT']);
-                    if ($intrstAmt > 0.00) {
-                        $intrstDbtTrnsData = $this->createTransactionData($userid, ['amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.INTEREST'));
-                        $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
-
-                        $intrstCdtTrnsData = $this->createTransactionData($userid, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.INTEREST'), 1);
-                        $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
-                    }
-
-                    // Margin transaction $tranType = 10 
-                    $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT']);
-                    if ($marginAmt > 0.00) {
-                        $marginTrnsData = $this->createTransactionData($userid, ['amount' => $marginAmt, 'trans_date' => $disburseDate, 'invoice_disbursed_id' => $invoiceDisbursedId], config('lms.TRANS_TYPE.MARGIN'), 0);
-                        $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
-                    }
-
-                    $disbursalData['invoice'] = $invoice;
 
                 }
             }

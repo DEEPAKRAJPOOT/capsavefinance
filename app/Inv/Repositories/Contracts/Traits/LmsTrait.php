@@ -170,7 +170,6 @@ trait LmsTrait
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
         
-        $disbursalData['funded_date'] = null;
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 2 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;
         $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
         $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;
@@ -212,7 +211,7 @@ trait LmsTrait
         $disbursalData['status_id'] = ($disburseType == 2) ? 12 : 10;
         $disbursalData['disburse_type'] = $disburseType;
        
-        $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
+        $disbursalData['funded_date'] = ($disburseType == 1) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['status_update_time'] = $curData;
                         

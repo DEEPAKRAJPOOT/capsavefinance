@@ -23,19 +23,6 @@ class InvoiceDisbursed extends BaseModel {
 	 */
 	protected $primaryKey = 'invoice_disbursed_id';
 
-	/**
-	 * Maintain created_at and updated_at automatically
-	 *
-	 * @var boolean
-	 */
-	public $timestamps = true;
-
-	/**
-	 * Maintain created_by and updated_by automatically
-	 *
-	 * @var boolean
-	 */
-	public $userstamps = true;
 
 	/**
 	 * The attributes that are mass assignable.
