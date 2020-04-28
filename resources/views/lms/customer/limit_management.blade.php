@@ -26,7 +26,7 @@
                                 
                                 <tr>
                                     <td class="text-left" width="30%"><b>Total Limit</b></td>
-                                    <td><h6>{{ $userInfo->total_limit }}</h6> </td> 
+                                    <td>{{ number_format($userlimit->tot_limit_amt) }} </td> 
                                    <td class="text-left" width="30%"><b>Sales Manager</b></td>
                                     <td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>
                                
@@ -42,32 +42,59 @@
 				<div class="card-body">
 					<div class="row">
 						<div class="col-sm-12">
-
+                                                 @foreach($offerlimit as $limit)   
+                                                       @php $inv=0 @endphp      @foreach($limit->invoice as $invoice)    @php $inv+=$invoice->invoice_approve_amount; @endphp        @endforeach
 							<table class="table table-striped dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoive-listing_info" style="width: 100%;">
-								<thead>
+							   
+                                                            <thead>
 									<tr role="row">
-                                                                                <th>Product Name </th>
-										<th>Anchor Name </th>
+                                                                                 <th>Product Name </th>
+                                                                                <th>Anchor Name </th>
 										<th>Program Name</th>
-										<th> Product Limit</th>
-										<th>Utilize Product Limit </th>
-										<th>Remaining Product Limit</th>
+										<th>Program Offer Limit </th>
+										
 										
 									</tr>
 								</thead>
 								<tbody>
+                                                                @php $sum=0 @endphp    
+                                                                @foreach($limit->offer as $val) @php $sum+=$val->prgm_limit_amt; @endphp        
 								<tr role="row">
-                                                                                <td>Supply chain</td>
-										 <td>Maruti anchor</td>
-										<td>John Test Program</td>
-										 <td>100000</td>
-										 <td>60000</td>
-										 <td>40000</td>
+                                                                    <td> {{$limit->product->product_name}}</td>
+										 <td>{{ $val->anchor->comp_name}}</td>
+										 <td>{{ $val->program->prgm_name}}</td>
+										<td>{{ number_format($val->prgm_limit_amt)}}</td>
 										
-									</tr>	
+										
+									</tr>
+                                                                   @endforeach      
 								</tbody>
 							</table>
+                                                    
+                                                            
+                                                 
+                                                 @endforeach
 						</div>
+                                               <div class="col-sm-12">
+                                                           <div class="col-sm-8"></div>
+                                                           <div class="col-sm-4 pull-right" style="margin-right: 193px;">
+                                                                <table cellspacing="5"  border="0"  width="100%" class= no-footer overview-table> 
+                                                        <tr>
+                                                             <th>Total Approve </th> <th>:</th> <td>{{number_format($sum)}}</td> </tr><tr>
+                                                             <th>Product Limit</th><th>:</th>
+                                                             <td>{{ number_format($limit->limit_amt)}}</td></tr> <tr>
+                                                              <th> Utilize Product Limit</th><th>:</th>
+                                                             <td>{{number_format($inv)}}</td></tr> <tr>
+                                                              <th> Remaining Limit</th><th>:</th>
+                                                             <td>{{number_format($sum-$inv)}}</td>
+                                                        </tr>
+                                                     
+                                                    </table>
+                                                               
+                                                               
+                                                               
+                                                           </div>
+                                                       </div>
 					</div>
 				</div>
 			</div>

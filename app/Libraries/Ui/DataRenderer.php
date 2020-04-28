@@ -1330,6 +1330,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
     { 
+        
       return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','customer_detail','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
@@ -1397,11 +1398,11 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) use ($request) {
                        $act="";
                      /// $act .='<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="430px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                      if(($invoice->disbursal)) { 
+                      if(($invoice->invoice_disbursed)) { 
                       $act .='</br><a data-toggle="modal"  data-height="550px" 
                             data-width="100%" 
                             data-target="#viewInterestAccrual"
-                            data-url="' . route('view_interest_accrual', ['disbursal_id' =>$invoice->disbursal->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                            data-url="' . route('view_interest_accrual', ['disbursal_id' =>$invoice->invoice_disbursed->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
                       }
                             return $act;
                 })
