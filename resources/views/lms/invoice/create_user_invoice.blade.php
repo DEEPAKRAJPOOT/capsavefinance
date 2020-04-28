@@ -285,6 +285,7 @@
     }
     let data = {'invoice_type' : invoice_type};
     data['_token'] =  message.token;
+    $('.isloader').show();
     $.ajax({
       type:'POST',
       url : "{{route('get_invoice_transaction', ['user_id'=> $user_id])}}",
@@ -292,6 +293,7 @@
       cache : false,
       dataType    : 'json',
       success: function (res) {
+        $('.isloader').hide();
         $('#checkall').prop('checked', false);
         if (res.status == 1) {
           $('#table_tbody').html(atob(res.view));
