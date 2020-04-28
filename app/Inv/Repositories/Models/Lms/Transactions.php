@@ -399,11 +399,9 @@ class Transactions extends BaseModel {
 		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
-    public static function getJournals(){
-        return self::where('entry_type','1')
-            ->whereNotNull('parent_trans_id')
-            ->where('is_posted_in_tally','=','0')
-            ->where('user_id','=',$userId)
+    public static function getJournals(array $whereCond = []){
+        return self::whereNull('payment_id')
+            ->where($whereCond)
             ->get();
     }
 
@@ -592,7 +590,7 @@ class Transactions extends BaseModel {
     }
 
     public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids){
-       $sql = self::with('transType')->where(['user_id' => $userId, 'is_invoice_generated' => 0]);
+       $sql = self::with('transType')->whereNull('payment_id')->where(['user_id' => $userId, 'is_invoice_generated' => 0]);
        if (!empty($trans_ids)) {
           $sql->whereIn('trans_id', $trans_ids);
        }
