@@ -25,23 +25,25 @@
                 <div class="card-body">
 
 
-
-                    <form action="#" method="post"  id="invoice_location">
+                    <form action="{{route('save_user_invoice_location', ['user_id' => $user_id] )}}" method="post"  id="invoice_location">
                         @csrf
-                       
                         <div class="row">
                             <div class="form-group col-md-6">
                                  <label for="entity_type">Customer Primary Location   </label><br />
                                  <select class="form-control" name="customer_pri_loc" id="customer_pri_loc">
                                       <option disabled value="" selected>Select</option>
-                                      
+                                      @foreach($user_addr as $addr)
+                                      <option value="{{$addr->biz_addr_id}}">{{$addr->addr_1}}</option>
+                                      @endforeach
                                   </select>
                             </div>
                             <div class="form-group col-md-6">
                                  <label for="entity_type">Select Capsave Location</label><br />
                                  <select class="form-control" name="capsav_location" id="capsav_location">
                                       <option disabled value="" selected>Select</option>
-                                      
+                                      @foreach($capsave_addr as $addr)
+                                      <option value="{{$addr->comp_addr_id}}">{{$addr->cmp_add}} {{$addr->state}}</option>
+                                      @endforeach
                                   </select>
                             </div>
                           </div>
@@ -67,28 +69,53 @@
 <script type="text/javascript">
    var message = {
        token: "{{ csrf_token() }}",
-       user_id: "{{ $userInfo -> user_id }}",
-       get_bank_addr: "{{route('get_bank_address')}}",
+       user_id: "{{ $user_id }}",
    }
+</script>
+<script type="text/javascript">
 
-   $('#capsav_location').on('change', function() {
-       var capsav_location = $(this).val();
-       if(!capsav_location.length) {
-           return false;
-       };
-       $.ajax({
-          type:"POST",
-          data: {'capsav_location' : capsav_location, '_token':message.token},
-          url: message.get_bank_addr,
-          success:function(data){ 
-              console.log(data)
-            if (data.status == 1) {
-            }else{
-              alert(data.message);
-            }             
-          }
-       });
+    // GET state id for Capsave address
+   $('#capsav_location').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('lms/get-capsav-invoice-state')}}?state="+stateID,
+           success:function(data){
+            if(data) {
+                $.each(data,function(key,value) {
+                    $('#invoice_location').append('<input type="hidden" name="capsave_state" value="' + value + '">')
+                });
+            }
+           }
+        });
+    }else{
+        $("#capsav_location").empty();
+    }
+
    });
 
+   // GET state id for user address
+   $('#customer_pri_loc').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+        $.ajax({
+           type:"GET",
+           data: { "approved": "True"},
+           url:"{{url('lms/get-user-invoice-state')}}?state="+stateID,
+           success:function(data){
+            if(data) {
+                $.each(data,function(key,value) {
+                    $('#invoice_location').append('<input type="hidden" name="user_state" value="' + value + '">')
+                });
+            }
+           }
+        });
+    }else{
+        $("#customer_pri_loc").empty();
+    }
+
+   });
 </script>
 @endsection

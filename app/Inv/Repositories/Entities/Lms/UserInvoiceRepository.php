@@ -19,6 +19,8 @@ use App\Inv\Repositories\Models\Master\Company;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 
 /**
  * User Invoice Repository class
@@ -140,4 +142,25 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	public function getUserInvoiceList($user_id) {
 		return UserInvoice::getUserInvoiceList($user_id);
 	}
+
+	/**
+	 * Get capsave address from mst_company
+	 */
+	public function getCapsavAddr() {
+		return Company::getCapsavAddr();
+	}
+	/**
+	 * POST save capsave address from mst_company
+	 */
+	public function saveUserInvoiceLocation($userInvoiceData) {
+		return UserInvoiceRelation::saveUserInvoiceLocation($userInvoiceData);
+	}
+
+	/**
+	 * Get user address from mst_company
+	 */
+	public function getUserBizAddr() {
+		return BusinessAddress::getUserBizAddr();
+	}
+
 }

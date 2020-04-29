@@ -517,17 +517,64 @@ class userInvoiceController extends Controller
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            return view('lms.invoice.user_invoice_location')->with(['userInfo' => $userInfo]);
+            $capsave_addr = $this->UserInvRepo->getCapsavAddr();
+            $user_addr = $this->UserInvRepo->getUserBizAddr();
+            return view('lms.invoice.user_invoice_location')->with(['userInfo' => $userInfo, 'user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $user_addr]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
     /**
-     * POST method for get bank address
+     * POST save user invoice location
      */
-    public function getBankAddress () {
-        $data = 'one';
-        return response()->json($data);
+    public function saveUserInvoiceLocation(Request $request) {
+        try {
+            $arrUserData = $request->all();
+            $user_id = $request->get('user_id');
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+
+            $userInvoiceData = [
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'company_state_id' => $arrUserData['capsave_state'],
+                'biz_addr_state_id' => $arrUserData['user_state'],
+                'is_active' => 1,
+            ];
+
+            $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
+            if($status) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');
+            } else {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Some error occured while saving');
+            }
+            
+        } catch (Exception $ex) {
+             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
+
+    // user_invoice relation get state id for capsave
+    public function getCapsavInvoiceState(Request $request) {
+        $cities = DB::table("mst_company")
+            ->select("comp_addr_id", "state")
+            ->where("comp_addr_id",$request->state)
+            ->where("is_reg",1)
+            ->pluck("state", "comp_addr_id");
+
+            return response()->json($cities);
+    }
+
+    // user_invoice relation get state id for user
+    public function getUserInvoiceState(Request $request) {
+        $cities = DB::table("biz_addr")
+            ->select("biz_addr_id", "state_id")
+            ->where("biz_addr_id",$request->state)
+            ->where("is_active",1)
+            ->where("is_default",1)
+            ->where("address_type",6)
+            ->pluck("state_id", "biz_addr_id");
+            return response()->json($cities);
+    }
+
 }
