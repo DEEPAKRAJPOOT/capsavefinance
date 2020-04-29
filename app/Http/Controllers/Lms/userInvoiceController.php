@@ -114,7 +114,7 @@ class userInvoiceController extends Controller
             return response()->json($response);
         }
         $user_id = $request->get('user_id');
-        $userData = $this->UserInvRepo->getUser($user_id);
+        $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
         $userStateId = $userData->state_id;
 
         $company_data = $this->_getCompanyDetail($user_id);
@@ -176,7 +176,7 @@ class userInvoiceController extends Controller
            return response()->json(['status' => 0,'message' => $company_data['message']]); 
         }
         $company_data = $company_data['data'];
-        $userData = $this->UserInvRepo->getUser($user_id);
+        $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
         $userStateId = $userData->state_id;
         $companyStateId = $company_data['state']->id;
         $is_state_diffrent = ($userStateId != $companyStateId);
@@ -221,7 +221,7 @@ class userInvoiceController extends Controller
         if(empty($txnsData) || $txnsData->isEmpty()){
             return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No transaction found for the user.');
         }
-        $userData = $this->UserInvRepo->getUser($user_id);
+        $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
         $userStateId = $userData->state_id;
 
         $company_data = $this->_getCompanyDetail($user_id, $company_id, $bank_account_id);
@@ -440,7 +440,7 @@ class userInvoiceController extends Controller
             if(empty($txnsData) ||  $txnsData->isEmpty()){
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No remaining txns found for the invoice.');
             }
-            $userData = $this->UserInvRepo->getUser($user_id);
+            $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
             $userStateId = $userData->state_id;
             $company_data = $this->_getCompanyDetail($user_id);
             if ($company_data['status'] != 'success') {

@@ -106,6 +106,12 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return User::getfullUserDetail((int)$user_id);
 	}
 
+	public function getUserAddressByUserId($user_id) {
+		$userCompanyDetail = $this->getUserCurrCompany($user_id);
+        $biz_addr_id = $userCompanyDetail->biz_addr_id;
+        return BusinessAddress::find($biz_addr_id);
+	}
+
 	public function getNextInv($data) {
 		return InvoiceNo::create($data);
 	}
