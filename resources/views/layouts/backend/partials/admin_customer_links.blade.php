@@ -58,14 +58,14 @@
         
     @can('lms_get_transaction')
     <li>
-        <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('lms_get_transaction', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Cust. SOA</a>
+        <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('lms_get_transaction', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">SOA</a>
     </li>
     @endcan 
     
     
     @can('view_user_invoice')
     <li>
-        <a class=" {{($active=='userInvoice') ? 'active': null }} " href="{{route('view_user_invoice', [ 'user_id' =>  request()->get('user_id') ] )}}">Create Invoice</a>
+        <a class=" {{($active=='userInvoice') ? 'active': null }} " href="{{route('view_user_invoice', [ 'user_id' =>  request()->get('user_id') ] )}}">Int/Charge Invoice</a>
     </li>
     @endcan  
 </ul>  
