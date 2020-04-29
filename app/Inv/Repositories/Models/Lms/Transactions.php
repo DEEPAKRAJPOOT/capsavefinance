@@ -589,10 +589,15 @@ class Transactions extends BaseModel {
         return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where($where)->get();
     }
 
-    public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids){
-       $sql = self::with('transType')->whereNull('payment_id')->where(['user_id' => $userId, 'is_invoice_generated' => 0]);
+    public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids, $is_force = false){
+       $sql = self::with('transType')->whereNull('payment_id')->where(['user_id' => $userId, 'entry_type' => 0]);
        if (!empty($trans_ids)) {
-          $sql->whereIn('trans_id', $trans_ids);
+        if ($is_force) {
+            $sql->where('is_invoice_generated', '=', 0);
+        }
+        $sql->whereIn('trans_id', $trans_ids);
+       }else{
+          $sql->where('is_invoice_generated', '=', 0);
        }
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
             if($invoiceType == 'I')

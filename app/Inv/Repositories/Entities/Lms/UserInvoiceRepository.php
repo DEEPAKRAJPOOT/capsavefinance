@@ -94,8 +94,17 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 			return UserInvoice::getInvoices($whereCondition);
 	}	
 
+
+	public function getInvoiceById(int $user_invoice_id) {
+			return UserInvoice::getInvoiceById($user_invoice_id);
+	}	
+
 	public function getStateListCode() {
 		return State::getStateListCode();
+	}
+
+	public function getStateById(int $state_id) {
+		return State::getStateById($state_id);
 	}
 
 	public function getUserCustomerID($user_id) {
@@ -116,7 +125,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return InvoiceNo::create($data);
 	}
 
-	public function getUserCurrCompany(int $user_id) {
+	public function getUserCompanyRelation(int $user_id) {
 		return UserInvoiceRelation::getUserCurrCompany($user_id);
 	}
 
@@ -146,16 +155,19 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoice::findUserInvoiceById($userInvoice_id);
 	}
 
-	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = []) {
-		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds);
-		if (empty($transIds)) {
+	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = [], $is_force = false) {
+		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds, $is_force);
+		/*if (empty($transIds)) {
 			foreach ($UserInvoiceTxns as $key => $txn) {
 				if ($txn->getOutstandingAttribute() != 0) {
 					unset($UserInvoiceTxns[$key]);
 				}
 			}
-		}
+		}*/
 		return $UserInvoiceTxns;
+	}
+	public function getTxnByTransId(int $trans_id) {
+		return Transactions::find($trans_id);
 	}
 
 	public function updateIsInvoiceGenerated($transDataArray){
@@ -181,6 +193,10 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	 */
 	public function saveUserInvoiceLocation($userInvoiceData) {
 		return UserInvoiceRelation::saveUserInvoiceLocation($userInvoiceData);
+	}
+
+	public function getBusinessAddressByaddrId(int $biz_addr_id) {
+		return BusinessAddress::getAddressByAddrId($biz_addr_id);
 	}
 
 	/**

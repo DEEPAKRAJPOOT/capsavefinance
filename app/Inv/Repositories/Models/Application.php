@@ -471,7 +471,7 @@ class Application extends BaseModel
     
     public static function getAllAppsNbizByUserId($user_id){
         return self::with(['business', 'address' => function ($query){
-                    $query->where('is_default', '!=', 0);
+                    $query->where(['is_default' => 1, 'rcu_status' => 1, 'is_active' => 1]);
                 }, 'bizPanGst' => function ($query){
                    $query->where(['type' => '2', 'parent_pan_gst_id' => '0']);
                    $query->orWhere(['type' => '1']);
