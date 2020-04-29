@@ -34,10 +34,15 @@ class BaseRateController extends Controller {
     }
 
     public function getFormatedDate($strDate) {
-        $arr = explode(" ", $strDate);
-        $formated_date = explode("/", str_replace('-', '/', $arr[0]));
-        $new_format = $formated_date[2] . '/' . $formated_date[1] . '/' . $formated_date[0];
-        return $new_format ?: '';
+//        dd($strDate);
+        if($strDate == "0000-00-00 00:00:00"){
+            return '';
+        }else{
+            $arr = explode(" ", $strDate);
+            $formated_date = explode("/", str_replace('-', '/', $arr[0]));
+            $new_format = $formated_date[2] . '/' . $formated_date[1] . '/' . $formated_date[0];
+            return $new_format ?: '';
+        }
     }
 
     public function editBaseRate(Request $request) {
@@ -61,13 +66,13 @@ class BaseRateController extends Controller {
                 $baserate_data = $this->masterRepo->findBaseRateById($baserate_id);
                 if (!empty($baserate_data)) {
                     $validatedData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
-                    $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : '';
+                    $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
                     $validatedData['updated_by'] = Auth::user()->user_id;
                     $status = $this->masterRepo->updateBaseRate($validatedData, $baserate_id);
                 }
             } else {
                 $validatedData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
-                $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : '';
+                $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
                 $validatedData['created_by'] = Auth::user()->user_id;
 //                dd($validatedData);
                 $status = $this->masterRepo->saveBaseRate($validatedData);
