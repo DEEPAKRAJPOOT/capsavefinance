@@ -1553,6 +1553,14 @@ class DataRenderer implements DataProviderInterface
                         return $inv_amount;
                        
                 })
+                ->addColumn(            
+                    'remark',
+                    function ($invoice) {                        
+                    
+                 return $invoice->remark;
+                      
+                       
+                })
                  ->addColumn(
                     'action',
                     function ($invoice) use ($request) {
@@ -3074,7 +3082,7 @@ class DataRenderer implements DataProviderInterface
                     'customer_id',
                     function ($customer) {
                         $link = $customer->customer_id;
-                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id,'app_id' => $customer->app_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
                 ->addColumn(
@@ -3757,6 +3765,12 @@ class DataRenderer implements DataProviderInterface
     // LMS Customer Address
     public function addressGetCustomers(Request $request, $data)
     {
+        // start for default button
+        $currCompData = \App\Inv\Repositories\Models\Lms\UserInvoiceRelation::getUserCurrCompany($request->user_id);
+        $request->baid = ($currCompData)? $currCompData->biz_addr_id : 0;
+        // end for default button
+
+
         return DataTables::of($data)
             ->rawColumns(['action', 'is_active'])
             ->addColumn(
@@ -3777,7 +3791,7 @@ class DataRenderer implements DataProviderInterface
                         $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
                     }*/
 
-                    if (Helpers::checkPermission('edit_addr')) {
+                    if (Helpers::checkPermission('edit_addr') && $request->baid != $data->biz_addr_id) {
                         $act .= '<a data-toggle="modal"  data-height="450px" 
                             data-width="100%" 
                             data-target="#editAddressFrame"
