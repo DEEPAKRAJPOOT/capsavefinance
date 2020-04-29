@@ -3082,7 +3082,7 @@ class DataRenderer implements DataProviderInterface
                     'customer_id',
                     function ($customer) {
                         $link = $customer->customer_id;
-                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id,'app_id' => $customer->app_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
                 ->addColumn(

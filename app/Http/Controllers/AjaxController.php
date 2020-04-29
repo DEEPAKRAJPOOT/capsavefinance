@@ -3183,7 +3183,8 @@ if ($err) {
     }
 
      public function getLmsChargeLists(DataProviderInterface $dataProvider) { 
-     $chargesTransList = $this->lmsRepo->getAllTransCharges();
+      
+     $chargesTransList = $this->lmsRepo->getAllTransCharges($this->request->user_id);
      $chargesTransList = $dataProvider->getLmsChargeLists($this->request, $chargesTransList);
      return $chargesTransList;
     }
