@@ -38,7 +38,7 @@
         <div class="card-body">
             <div class="row">
 
-                <div class="col-md-4">
+                <div class="col-md-3">
 
                     {!!
                     Form::text('search_keyword',
@@ -50,16 +50,26 @@
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
 
                     {!!
                     Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Not Assigned'],
+                    [''=>'Select', '1'=>'Assigned','0'=> 'Not Assigned'],
                     null,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
                 </div>
+                <div class="col-md-3">
+
+                    {!!
+                    Form::select('status',
+                    [''=>'Status', '0'=>'Incomplete','1'=>'Completed','2'=> 'Sanctioned','3'=> 'Ready for Renewal','4' => 'Renewed'],
+                    null,
+                    array('id' => 'status',
+                    'class'=>'form-control'))
+                    !!}
+                </div>                
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     

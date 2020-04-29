@@ -359,6 +359,12 @@ class DataRenderer implements DataProviderInterface
                             $query->where('app.is_assigned', $is_assigned);
                         });
                     }
+                    if ($request->get('status') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $status = $request->get('status');
+                            $query->where('app.status', $status);
+                        });
+                    }                    
                     
                 })
                 ->make(true);

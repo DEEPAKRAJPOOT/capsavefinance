@@ -32,7 +32,7 @@
          </li>
     @endcan    
 
-    @canany(['application_pool','application_list', 'renewal_application_list'])
+    @canany(['application_pool','application_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-address-card-o"></i>
@@ -51,11 +51,7 @@
                         <a class="nav-link" href="{{ route('application_list') }}">My Application</a>
                         </li>   
                 @endcan 
-                @can('renewal_application_list')       
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('renewal_application_list') }}">Renewal Application</a>
-                        </li>   
-                @endcan                                         
+                                        
                 </ul>
             </div>
 
