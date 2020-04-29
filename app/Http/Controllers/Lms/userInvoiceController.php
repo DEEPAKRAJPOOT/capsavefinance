@@ -314,7 +314,7 @@ class userInvoiceController extends Controller
         $BankDetails = $this->UserInvRepo->getCompanyBankAcc($company_id);
         $bankDetailsFound =!empty($BankDetails) && !$BankDetails->isEmpty();
         if (!$bankDetailsFound) {
-            $response['message'] = 'No BankDetail is found for the User.';
+            $response['message'] = 'No BankDetail is found for the Company.';
             return $response;
         }
         $activeBankAcc = NULL;
@@ -329,7 +329,7 @@ class userInvoiceController extends Controller
            }
         }
         if (empty($activeBankAcc)) {
-            $response['message'] = 'No default Bank Detail found for the user.';
+            $response['message'] = 'No default Bank Detail found for the Company.';
             return $response;
         }
         if (empty($companyDetail->getStateDetail)) {
