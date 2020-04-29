@@ -19,7 +19,7 @@ label.fnt {
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 1px;
 	border-bottom-left-radius: 0px;
-	line-height: 36px;
+	line-height: 27px;
 	min-width: 65px;
 	text-align: center;
 	top: 29px;
@@ -400,6 +400,7 @@ table.remove-tr-bg tbody tr {
 	align-content: center;
 	line-height: 10px;
 	color: #138864;
+    z-index: 1;
 }
 
 .card-color {
@@ -820,14 +821,14 @@ ul.form-row-inline .li-row {
 
 .form-control::placeholder,
 input.form-control[type=date] {
-	color: #c5c5c5;
+	color: #495057;
 	font-size: 13px;
 	font-family: 'source-sans-pro-regular', sans-serif;
 	letter-spacing: 1px;
 }
 
 select.form-control {
-	color: #c5c5c5;
+	color: #495057;
 	font-size: 15px;
 	letter-spacing: 1px;
 }
@@ -1306,7 +1307,6 @@ span.multiselect-native-select select {
 
 /* Custom css add */
 
-
 table tr td{position:relative;}
 .sub-heading{background:#19c38f;}
 .sub-heading td{color:#fff}
@@ -1382,9 +1382,7 @@ ul.company-address li:nth-child(2){padding-left:10px;}
 .typesort-c, .timesort-c{padding:0;margin:0;width:100%;}
 .timesort-c{width:100%;}
 .table.table-bordered thead th, .table thead th{border-bottom-width:1px;}
-<<<<<<< HEAD
-=======
-.remaining{left: 16px;right: auto;background: transparent;color: #656060 !important;font-size: 14px;min-width: 30px;top:40px;}
+.remaining {left: 30px;right: auto;background: transparent;color: #656060 !important;font-size: 14px;min-width: 30px;top: 57px;position: absolute;}
 .mt-44{margin-top: 44px;}
 /*Tool Tip */
 [tooltip]{position:relative;}
@@ -1414,8 +1412,20 @@ ul.company-address li:nth-child(2){padding-left:10px;}
 [tooltip]:not([flow]):hover::before,[tooltip]:not([flow]):hover::after,[tooltip][flow^="up"]:hover::before,[tooltip][flow^="up"]:hover::after,[tooltip][flow^="down"]:hover::before,[tooltip][flow^="down"]:hover::after{-webkit-animation:tooltips-vert 300ms ease-out forwards;animation:tooltips-vert 300ms ease-out forwards;}
 [tooltip][flow^="left"]:hover::before,[tooltip][flow^="left"]:hover::after,[tooltip][flow^="right"]:hover::before,[tooltip][flow^="right"]:hover::after{-webkit-animation:tooltips-horz 300ms ease-out forwards;animation:tooltips-horz 300ms ease-out forwards;}
 
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: #495057;
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: #495057;
+}
+:-ms-input-placeholder { /* IE 10+ */
+  color: #495057;
+}
+:-moz-placeholder { /* Firefox 18- */
+  color: #495057;
+}
+.form-control:focus {
+    box-shadow: 0 1px 1px 2px #f5f5f5;
+}
 
 
-
-
->>>>>>> f_2104_gajendra
