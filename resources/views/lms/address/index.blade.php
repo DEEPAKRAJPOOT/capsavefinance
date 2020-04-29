@@ -67,6 +67,7 @@
 										<th>City</th>
 										<th>State</th>
 										<th>Pincode</th>
+										<th width="105px">RCU Status</th>
 										<th width="105px">Status</th>
 										<th>Action</th>
 									</tr>

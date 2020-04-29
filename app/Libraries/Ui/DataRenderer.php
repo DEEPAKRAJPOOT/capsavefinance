@@ -3772,7 +3772,7 @@ class DataRenderer implements DataProviderInterface
 
 
         return DataTables::of($data)
-            ->rawColumns(['action', 'is_active'])
+            ->rawColumns(['action', 'is_active', 'rcu_status'])
             ->addColumn(
                 'biz_addr_id',
                 function ($data) {
@@ -3814,6 +3814,17 @@ class DataRenderer implements DataProviderInterface
                         return '<span class="badge badge-success">Active</span> &nbsp;&nbsp;'.$is_default;
                     } else {
                         return '<span class="badge badge-warning current-status">InActive</span> &nbsp;&nbsp;'.$is_default;
+                    }
+                }
+            )
+
+            ->editColumn(
+                'rcu_status',
+                function ($data) {
+                    if ($data->rcu_status) {
+                        return '<span class="badge badge-success">Done</span>';
+                    } else {
+                        return '<span class="badge badge-warning current-status">Pending</span>';
                     }
                 }
             )
