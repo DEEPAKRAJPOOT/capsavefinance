@@ -191,7 +191,7 @@ trait InvoiceTrait
             {
                $multichk['status'] =0; 
                $inv_no_var.=$inv_no.',';
-               $multichk['multiVali1'] = '* Invoice date is not correct for following invoice Number ('.substr($inv_no_var,0,-1).'), Date format should be "dd-mm-yy"';
+               $multichk['multiVali1'] = '* Invoice date is not correct for following invoice Number ('.substr($inv_no_var,0,-1).'), Date format should be "dd-mm-yyyy"';
          
             }
             if(!is_numeric($amount) || $amount==0)
@@ -277,7 +277,7 @@ trait InvoiceTrait
         {
              $attr['status'] = 0;
              
-             $attr['message']=  'Invoice date ('.$dataAttr['inv_date'].') is not correct for Invoice Number <'.$dataAttr['inv_no'].'>, Date format should be "dd-mm-yy".';
+             $attr['message']=  'Invoice date ('.$dataAttr['inv_date'].') is not correct for Invoice Number <'.$dataAttr['inv_no'].'>, Date format should be "dd-mm-yyyy".';
              return  $attr;    
         } 
         else {
@@ -375,7 +375,7 @@ trait InvoiceTrait
         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
    }
 
-   
+  
    
   public static function getInvoiceDetail($attr)
   {

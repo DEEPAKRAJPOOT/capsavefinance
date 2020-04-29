@@ -9,11 +9,15 @@
 			<div class="form-group ">
 				<div class="row mt10">
 					<div class="col-6">
-						<label ><b>Transaction Id</b></label>
+						<label ><b>Transaction Id</b><span class="error_message_label">*</span></label>
 						<input type="text" name="trans_id" class="form-control" value="" placeholder="Transaction Id">
 					</div>
 					<div class="col-6">
-						<label for="txtPassword"><b>Remarks</b></label>
+						<label for="txtCreditPeriod"><b>Funded Date </b><span class="error_message_label">*</span> </label>
+						<input type="text" id="funded_date" name="funded_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+					</div>
+					<div class="col-6">
+						<label for="txtPassword"><b>Remarks</b><span class="error_message_label">*</span></label>
 						<textarea type="text" name="remarks" value="" class="form-control" placeholder="Remark" ></textarea>
 					</div>
 				</div>
@@ -29,40 +33,44 @@
 <script>
 
 $(document).ready(function () {
-		$('#manualDisburse').validate({ // initialize the plugin
-			
-			rules: {
-				'trans_id' : {
-					required : true,
-				},
-				'utr_no' : {
-					required : true,
-				},
-				'remarks' : {
-					required : true,
-				}
+	var date = new Date();
+	date.setDate(date.getDate() - 7);
+    $('#funded_date').datetimepicker('setStartDate',  date);
+
+	$('#manualDisburse').validate({ // initialize the plugin
+		
+		rules: {
+			'trans_id' : {
+				required : true,
 			},
-			messages: {
-				'trans_id': {
-					required: "Transaction Id required.",
-				}
-				,'utr_no': {
-					required: "UTR Number required.",
-				},
-				'remarks': {
-					required: "Remark required.",
-				}
+			'funded_date' : {
+				required : true,
+			},
+			'remarks' : {
+				required : true,
 			}
-		});
+		},
+		messages: {
+			'trans_id': {
+				required: "Transaction Id required.",
+			},
+			'funded_date': {
+				required: "Funded Date required.",
+			},
+			'remarks': {
+				required: "Remark required.",
+			}
+		}
+	});
 
-		$('#manualDisburse').validate();
+	$('#manualDisburse').validate();
 
-		$("#savedocument").click(function() {
-			if($('#manualDisburse').valid()) {
-				$('form#manualDisburse').submit();
-				$("#submitManualDisburse").attr("disabled","disabled");
-			}  
-		});            
+	$("#savedocument").click(function() {
+		if($('#manualDisburse').valid()) {
+			$('form#manualDisburse').submit();
+			$("#submitManualDisburse").attr("disabled","disabled");
+		}  
+	});            
 
 	});
 </script>

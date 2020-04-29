@@ -25,6 +25,7 @@ use App\Inv\Repositories\Models\LeadAssign;
 use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BizInvoice;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
@@ -1491,4 +1492,12 @@ class Helper extends PaypalHelper
         $field = "CONVERT_TZ("+$fieldName+", '+00:00', '" . $tz . "')";
         return $field;
     }
+    
+    
+           public   function invoiceAnchorLimitApprove($attr)
+        {
+             
+            return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['app_id' =>$attr['app_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_approve_amount');
+        }
+    
 }

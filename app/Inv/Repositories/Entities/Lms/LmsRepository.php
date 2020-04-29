@@ -1115,4 +1115,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return Transactions::calInvoiceRefund($invoiceDisbursalId, $paymentDate);
 	}
+	public static  function getInvoiceDisbursed($disbursalIds)
+	{
+		return InvoiceDisbursed::getInvoiceDisbursed($disbursalIds);
+	}
 }
