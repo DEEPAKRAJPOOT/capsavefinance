@@ -18,7 +18,7 @@ try {
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
-                        $("#requestList").append('<tbody class="appList-error"><tr><th colspan="8">' + messages.data_not_found + '</th></tr></tbody>');
+                        //$("#requestList").append('<tbody class="appList-error"><tr><th colspan="8">' + messages.data_not_found + '</th></tr></tbody>');
                         $("#requestList_processing").css("display", "none");
                     }
                 },
@@ -27,13 +27,11 @@ try {
                     {data: 'ref_code'},
                     {data: 'customer_id'},
                     {data: 'biz_entity_name'},                    
-                    {data: 'type'},
                     {data: 'amount'},
                     {data: 'created_at'},
                     {data: 'assignee'},
                     {data: 'assignedBy'},
-                    {data: 'status'},
-                    {data: 'action'}
+                    {data: 'status'}
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });

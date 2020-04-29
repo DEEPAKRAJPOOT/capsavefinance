@@ -177,7 +177,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             // manage refund routes 
 
-            Route::get('/refund/paymnet/advise',[
+            Route::get('/refund/request/advise',[
                 'as' => 'lms_refund_payment_advise',
                 'uses' => 'Lms\RefundController@paymentAdvise'
             ]);
@@ -186,6 +186,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_refund_request_create',
                 'uses' => 'Lms\RefundController@createRefundRequest'
             ]);
+
+            Route::get('/refund/request/view',[
+                'as' => 'lms_refund_request_view',
+                'uses' => 'Lms\RefundController@viewRefundRequest'
+            ]);
+
+            Route::get('/refund/list',[
+                'as' => 'lms_refund_new',
+                'uses' => 'Lms\RefundController@refundListNew'
+            ]);
+
+
+
+
+
 
             Route::get('/refund/refund-list', [
                 'as' => 'lms_refund_list',
@@ -218,11 +233,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@editBatch'
             ]);
 
-            Route::get('/refund/list',[
-                'as' => 'lms_refund_new',
-                'uses' => 'Lms\RefundController@refundListNew'
-            ]);
-
+           
             Route::get('/refund/pending',[
                 'as' => 'lms_refund_pending',
                 'uses' => 'Lms\RefundController@refundListPending'
@@ -233,9 +244,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@refundListApproved'
             ]);
 
-            Route::get('/refund/request',[
+            Route::get('/refund/queue',[
                 'as' => 'request_list',
-                'uses' => 'Lms\RefundController@refundListRequest'
+                'uses' => 'Lms\RefundController@refundListQueue'
             ]);
 
             Route::get('/refund/confirm',[

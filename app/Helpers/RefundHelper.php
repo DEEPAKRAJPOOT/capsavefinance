@@ -145,7 +145,6 @@ class RefundHelper{
     }
 
     public static function createType(array $refundTypeAmt, int $refundReqId){
-        
         $refundTypes = RefundType::get();
         $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
         $curUserId  = \Auth::user()->user_id;
@@ -163,9 +162,31 @@ class RefundHelper{
                 ]);
             }
         }
-
-        
     }
 
+    public static function getRequest(int $refundReqId){
+        $refundReq = RefundReq::find($refundReqId);
+        $payment = Payment::find($refundReq->payment_id);
+        $refundTrans = Transactions::whereHas('refundReqTrans', function($query)use($refundReqId){
+            $query->where('refund_req_id',$refundReqId);
+        })->get();
+        $refundTypes = RefundReqType::where('refund_req_id',$refundReq->refund_req_id)->with('refundType')->get();
+        $refundTypeAmt = [];
+        foreach ($refundTypes as $key => $value) {
+            $refundTypeAmt[$value->refundType->name] = $value->amount; 
+        }
+
+        return [
+            'repaymentTrails' => $refundTrans, 
+            'repayment'=>$payment,
+            'factoredAmount' =>$refundTypeAmt['TOTAL_FACTORED'] ?? 0,
+            'nonFactoredAmount' =>$refundTypeAmt['NON_FACTORED'] ?? 0,
+            'interestRefund'=>$refundTypeAmt['INTEREST_REFUND'] ?? 0,
+            'interestOverdue'=>$refundTypeAmt['OVERDUE_INTEREST'] ?? 0,
+            'marginTotal'=>$refundTypeAmt['MARGIN_RELEASED'] ?? 0,
+            'refundableAmount'=>$refundTypeAmt['TOTAL_REFUNDABLE_AMT'] ?? 0,
+            'paymentId' => $refundReq->payment_id
+        ]; 
+    }
 
 }

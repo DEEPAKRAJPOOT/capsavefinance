@@ -8,11 +8,10 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Request </h3>
-            <small>(Refund/Adjust/Wave Off)</small>
+            <h3>Manage Refund Request </h3>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li class="active">Manage Request </li>
+                <li class="active">Manage Refund Request </li>
             </ol>
         </div>
     </section>
@@ -20,8 +19,7 @@
 
     <div class="card">
         <div class="card-body">
-        @include('lms.common.partial.status_links')
-
+            @include('lms.common.partial.status_links')
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -57,11 +55,6 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('lms_move_next_stage','Move to Next Stage', 'modal-md')!!}
-{!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-md')!!}
-{!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
-{!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

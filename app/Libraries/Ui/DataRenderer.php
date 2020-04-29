@@ -4886,48 +4886,44 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'id',
             function ($data) {
-                return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$data->req_id.'">';
+                return '<input type="checkbox" name="refundRequest[]" value="'.$data->refund_req_id.'">';
             }
         )
         ->editColumn(
             'ref_code',
             function ($data) {
-                $result = '';
-                                           
-                $result .= '<a 
+                $result = '<a 
                 data-toggle="modal" 
                 data-target="#lms_view_process_refund" 
-                data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id, 'view' => 1 ]).'"
+                data-url="'.route('lms_refund_request_view', ['req_id' => $data->refund_req_id, 'view' => 1 ]).'"
                 data-height="400px" 
                 data-width="100%" 
                 data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm">' . $data->ref_code . '</a>';
-                
-                //$result .= $data->ref_code;                              
                 return $result;
             }
         )
         ->addColumn(
             'customer_id',
             function ($data) {
-                return $data->customer_id;  //$data->req_type_name;
+                return $data->payment->lmsUser->customer_id;  //$data->req_type_name;
             }
         )
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->user_id);  //$data->req_type_name;
+                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
             }
         )            
         ->editColumn(
             'type',
             function ($data) {
-                return config('lms.REQUEST_TYPE_DISP.'.$data->req_type);  //$data->req_type_name;
+                return config('lms.REQUEST_TYPE_DISP.1');  //$data->req_type_name;
             }
         )
         ->editColumn(
             'amount',
             function ($data) {
-                return number_format($data->amount,2);
+                return number_format($data->refund_amount,2);
             }
         )     
         ->editColumn(
@@ -4939,105 +4935,23 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'assignee',
             function ($data) {
-                $assignee = \Helpers::getReqCurrentAssignee($data->req_id);
-                //return $data->assignee .  '<br><small>(' . $data->assignee_role . ')</small>';
+                $assignee = \Helpers::getReqCurrentAssignee($data->refund_req_id);
                 return $assignee ? $assignee->assignee .  '<br><small>(' . $assignee->assignee_role . ')</small>' : '';
             }
         )
         ->addColumn(
             'assignedBy',
             function ($data) {
-                $from = \Helpers::getReqCurrentAssignee($data->req_id);
-                //return $data->assigned_by.  '<br><small>(' . $data->from_role . ')</small>';
+                $from = \Helpers::getReqCurrentAssignee($data->refund_req_id);
                 return $from ? $from->assigned_by .  '<br><small>(' . $from->from_role . ')</small>' : '';
             }
         )  
         ->editColumn(
             'status',
             function ($data){
-                /*$roleData = User::getBackendUser(\Auth::user()->user_id);
-                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
-                if (isset($roleData[0]) && $roleData[0]->is_superadmin != 1 && $isRequestOwner) {
-                    return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
-                } else {
-                }*/
-                return config('lms.REQUEST_STATUS_DISP.'. $data->req_status . '.SYSTEM');
+                return config('lms.REQUEST_STATUS_DISP.'. $data->status . '.SYSTEM');
             }
-        )   
-        ->editColumn(
-            'action',
-            function ($data){
-                $result = '';
-                $isLastStage = \Helpers::isReqInLastWfStage($data->req_id);
-                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
-                if ($isRequestOwner && $data->req_status < config('lms.REQUEST_STATUS.REFUND_QUEUE') ) {
-                    if ($isLastStage) {
-                        $data_target = "#lms_move_prev_stage";
-                        $route = route('lms_req_move_prev_stage', ['req_id' => $data->req_id, 'back_stage' => 1 ]);
-                        $url_title = 'Move to Previous Stage';
-                    } else {
-                        $data_target = "#lms_move_next_stage";
-                        $route = route('lms_req_move_next_stage', ['req_id' => $data->req_id ]);
-                        $url_title = 'Move to Next Stage';
-                    }
-                    $result .= '<a 
-                    data-toggle="modal" 
-                    data-target="' . $data_target . '" 
-                    data-url="'.$route.'"
-                    data-height="270px" 
-                    data-width="100%" 
-                    data-placement="top" title="' . $url_title . '" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
-     
-                    //$stage = \Helpers::getRequestCurrentStage($data->req_id);
-                    $statusList = \Helpers::getRequestStatusList($data->req_id);                     
-                    //if ($data->req_status == config('lms.REQUEST_STATUS.APPROVED')) {
-                    if (count($statusList) > 0) {
-                        if ($data->req_type == config('lms.REQUEST_TYPE.REFUND')) {                            
-                            $result .= '<a 
-                            data-toggle="modal" 
-                            data-target="#lms_view_process_refund" 
-                            data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id ]).'"
-                            data-height="400px" 
-                            data-width="100%" 
-                            data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
-                        }
-                    }
-                    /* 
-                    else {
-                        $statusList = \Helpers::getRequestStatusList($data->req_id);                
-                        if (count($statusList) > 0) {
-                            $result .= '<a 
-                            data-toggle="modal" 
-                            data-target="#lms_update_request_status" 
-                            data-url="'.route('lms_update_request_status', ['req_id' => $data->req_id ]).'"
-                            data-height="270px" 
-                            data-width="100%" 
-                            data-placement="top" title="Update Status" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a>';
-                        }                     
-                    }
-                    * 
-                    */
-                }
-                return $result;
-            }
-        )  
-        ->filter(function ($query) use ($request) {
-
-           /*  if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                $query->where(function ($query) use ($request) {
-                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
-                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
-                });
-            }
-            //if($request->get('user_ids')!= ''){
-                $query->where(function ($query) use ($request) {
-                    $query->whereIn('user_id',$request->user_ids);
-                });
-            //} */
-          
-        })                 
-     
+        )
         ->make(true);
     }
 

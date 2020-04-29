@@ -2,10 +2,12 @@
 namespace App\Inv\Repositories\Models\Lms\Refund;
 
 use DB;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\Master\RefundType;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
-use App\Inv\Repositories\Models\User;
 
 class RefundReqType extends BaseModel {
     /* The database table used by the model.
@@ -56,7 +58,7 @@ class RefundReqType extends BaseModel {
     } 
 
     public function refundType(){
-        return $this->belongsTo(refundType::class,'refund_type_id','refund_type_id');
+        return $this->belongsTo(RefundType::class,'refund_type_id','id');
     }
 
     public static function saveRefundReqTypeData($reqData=[], $reqId=null)
