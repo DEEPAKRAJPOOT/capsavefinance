@@ -2048,11 +2048,14 @@ class CamController extends Controller
             $fund_date = $request->get('fund_date');
             $nonfund_date = $request->get('nonfund_date');
             $tblfund_date = $request->get('tbl_fund_date');
-             if (empty($date)) {
+            /*
+            if (empty($date)) {
                Session::flash('error',trans('Debt on field can\'t be empty'));
                return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
             }
-            $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+             * 
+             */
+            $arrData['debt_on'] = !empty($date) ? Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d') : null;
             $arrData['fund_ason_date'] = $fund_date != null ? Carbon::createFromFormat('d/m/Y', $fund_date)->format('Y-m-d') : null;
             $arrData['nonfund_ason_date'] = $nonfund_date != null ? Carbon::createFromFormat('d/m/Y', $nonfund_date)->format('Y-m-d') : null;
             $arrData['tbl_fund_ason_date'] = $tblfund_date != null ? Carbon::createFromFormat('d/m/Y', $tblfund_date)->format('Y-m-d') : null;
