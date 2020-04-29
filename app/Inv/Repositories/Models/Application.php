@@ -64,7 +64,7 @@ class Application extends BaseModel
         'user_id',
         'biz_id',
         'loan_amt',
-        'status_id',
+        'status',        
         'is_assigned',
         'curr_status_id',
         'created_by',
@@ -220,7 +220,7 @@ class Application extends BaseModel
     {
         
         $roleData = User::getBackendUser(\Auth::user()->user_id);
-        $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name',
+        $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name', 'app.status',
                 'users.is_buyer as user_type', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 'assignee_r.name AS assignee', 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),

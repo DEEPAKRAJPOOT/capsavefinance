@@ -182,4 +182,13 @@ class BusinessAddress extends BaseModel
     public function gst(){
         return $this->hasOne('App\Inv\Repositories\Models\BizPanGst','biz_addr_id','biz_addr_id');
     }
+
+    public static function getUserBizAddr() {
+        $addr = self::select('biz_addr_id', 'addr_1', 'state_id' )
+                ->where('is_active',1)
+                ->where('is_default', 1)
+                ->where('address_type', 6)
+                ->get();
+        return $addr ? : false;
+    }
 }

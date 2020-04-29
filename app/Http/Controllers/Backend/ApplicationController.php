@@ -557,9 +557,12 @@ class ApplicationController extends Controller
 			// $response = $this->docRepo->isUploadedCheck($userId, $appId);
 			
 			// if ($response->count() < 1) {
-				
-				$this->appRepo->updateAppData($appId, ['status' => 1]);
-								  
+				//$appData = $this->appRepo->getAppData($appId);
+                                //$curStatus = $appData ? $appData->status : 0;                        
+                                $currentStage = Helpers::getCurrentWfStage($appId);
+                                if ($currentStage && $currentStage->order_no < 4 ) {                                  
+                                    $this->appRepo->updateAppData($appId, ['status' => 1]);
+                                }				  
 				Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
 			 
 				//Add application workflow stages                
@@ -873,10 +876,10 @@ class ApplicationController extends Controller
 			  	}
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
               	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
               	if($prcsAmt && isset($prcsAmt->offer)) {
-				  if($createCustomer != null) {
-                                      $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
+				  if($createCustomer != null) {                                      
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
 					$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
