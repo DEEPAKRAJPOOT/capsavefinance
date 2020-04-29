@@ -4,7 +4,7 @@
       <span style="font-size: small;"><strong>Ph:</strong></span>
       <span style="font-size: small;"> {{$company_data['phone']}}; </span>
       <span style="font-size: small;"><strong>CIN No:</strong></span>
-      <span style="font-size: small;">{{$company_data['cin']}};</span>
+      <span style="font-size: small;">{{$company_data['cin_no']}};</span>
       <span style="font-size: small;"><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$company_data['email']}}">{{$company_data['email']}}</a></span>
    </h2>
    <hr />
@@ -21,7 +21,7 @@
       <h2 style="font-size: 1.4em;margin: 0;line-height: 1.5;">Invoice No: {{$origin_of_recipient['invoice_no']}}</h2>
       <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Invoice Date: {{$origin_of_recipient['invoice_date']}}</h2>
       <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Reference No: #{{$origin_of_recipient['reference_no']}}</h2>
-      <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Place of Supply: {{$origin_of_recipient['place_of_supply']}}</h2>
+      <h2 style="font-size: 1.1em;font-family: unset;margin: 0;line-height: 1.5;color:#777;">Place of Supply: {{$billingDetails['state_name']}}</h2>
    </span>
    <table border="1px" style="width: 100%;clear: both;" align="center" cellspacing="0" cellpadding="1">
       <tr>
@@ -73,7 +73,7 @@
       @include('lms.invoice.generate_invoice_txns')
    </table>
    <p style="font-family: 'Book Antiqua', serif;font-size: small;"><u><strong>Payment Instructions:</strong></u></p>
-   <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at per in Mumbai for <strong>Rs {{$total_sum_of_rental ?? 0}} </strong> to </span>
+   <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at per in Mumbai for <strong>Rs {{sprintf('%.2F', $total_sum_of_rental) }} </strong> to </span>
    <div style="margin-top: 10px;font-size: small;font-family: 'Book Antiqua', serif;"><strong>{{$company_data['name']}}</strong></div>
    <span style="font-size: small;">{{$company_data['address']}}</span>
 
@@ -86,7 +86,7 @@
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>PAN: </strong></span>
             </td>
             <td style="border: 1px solid #ddd;padding: 5px;" style="width: 70%">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$billingDetails['pan_no']}}</span>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$company_data['pan_no']}}</span>
             </td>
          </tr>
          <tr>
@@ -110,7 +110,7 @@
                <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>GSTIN:</strong></span>
             </td>
             <td style="border: 1px solid #ddd;padding: 5px;">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$billingDetails['gstin_no']}}</span>
+               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$company_data['gst_no']}}</span>
             </td>
          </tr>
       </tbody>

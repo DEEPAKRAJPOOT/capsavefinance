@@ -263,7 +263,7 @@
         </li>
     -->
     @endcan
-    
+    <!--
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-file-text" aria-hidden="true"></i>
@@ -279,7 +279,7 @@
                 </ul>
             </div>
         </li>
-    
+    -->
         @canany(['payment_list','payment_advice'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">

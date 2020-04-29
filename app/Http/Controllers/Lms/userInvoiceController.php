@@ -114,7 +114,7 @@ class userInvoiceController extends Controller
             return response()->json($response);
         }
         $user_id = $request->get('user_id');
-        $userData = $this->UserInvRepo->getUser($user_id);
+        $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
         $userStateId = $userData->state_id;
 
         $company_data = $this->_getCompanyDetail($user_id);
@@ -176,7 +176,7 @@ class userInvoiceController extends Controller
            return response()->json(['status' => 0,'message' => $company_data['message']]); 
         }
         $company_data = $company_data['data'];
-        $userData = $this->UserInvRepo->getUser($user_id);
+        $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
         $userStateId = $userData->state_id;
         $companyStateId = $company_data['state']->id;
         $is_state_diffrent = ($userStateId != $companyStateId);
@@ -221,7 +221,7 @@ class userInvoiceController extends Controller
         if(empty($txnsData) || $txnsData->isEmpty()){
             return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No transaction found for the user.');
         }
-        $userData = $this->UserInvRepo->getUser($user_id);
+        $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
         $userStateId = $userData->state_id;
 
         $company_data = $this->_getCompanyDetail($user_id, $company_id, $bank_account_id);
@@ -311,10 +311,10 @@ class userInvoiceController extends Controller
             $response['message'] = 'No Company detail is mapped with the user.';
             return $response;
         }
-        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($user_id);
+        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($company_id);
         $bankDetailsFound =!empty($BankDetails) && !$BankDetails->isEmpty();
         if (!$bankDetailsFound) {
-            $response['message'] = 'No BankDetail is found for the User.';
+            $response['message'] = 'No BankDetail is found for the Company.';
             return $response;
         }
         $activeBankAcc = NULL;
@@ -329,7 +329,7 @@ class userInvoiceController extends Controller
            }
         }
         if (empty($activeBankAcc)) {
-            $response['message'] = 'No default Bank Detail found for the user.';
+            $response['message'] = 'No default Bank Detail found for the Company.';
             return $response;
         }
         if (empty($companyDetail->getStateDetail)) {
@@ -344,7 +344,9 @@ class userInvoiceController extends Controller
             'city' => $companyDetail->city,
             'phone' => '+91 22 6173 7600',
             'email' => 'accounts@rentalpha.com',
-            'cin' => $companyDetail->cin_no,
+            'pan_no' => $companyDetail->pan_no,
+            'gst_no' => $companyDetail->gst_no,
+            'cin_no' => $companyDetail->cin_no,
             'bank_id' => $activeBankAcc->bank_account_id,
             'bank_name' => $activeBankAcc->bank->bank_name,
             'acc_no' => $activeBankAcc->acc_no,
@@ -407,10 +409,11 @@ class userInvoiceController extends Controller
         $CompanyDetails = $CompanyDetails['data'];
         $reference_no = _getRand(10). $user_id;
         $invoice_no_id = $this->UserInvRepo->getNextInv(['user_id' => $user_id])->invoice_no_id;
+        $curr_date = date('y-m-d');
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
             'state_code' => $CompanyDetails['state']->state_code,
-            'financial_year' => '19-20',
+            'financial_year' => getFinancialYear($curr_date),
             'rand_4_no' => sprintf('%04d', $invoice_no_id ?? rand(0, 9999)),
             'state_name' => $CompanyDetails['state']->name,
             'address' => $CompanyDetails['address'],
@@ -440,7 +443,7 @@ class userInvoiceController extends Controller
             if(empty($txnsData) ||  $txnsData->isEmpty()){
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No remaining txns found for the invoice.');
             }
-            $userData = $this->UserInvRepo->getUser($user_id);
+            $userData = $this->UserInvRepo->getUserAddressByUserId($user_id);
             $userStateId = $userData->state_id;
             $company_data = $this->_getCompanyDetail($user_id);
             if ($company_data['status'] != 'success') {
@@ -525,6 +528,7 @@ class userInvoiceController extends Controller
      */
     public function userInvoiceLocation(Request $request) {
         try {
+            
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
@@ -543,20 +547,50 @@ class userInvoiceController extends Controller
             $arrUserData = $request->all();
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            $arrUserData['created_at'] = \carbon\Carbon::now();
+            $arrUserData['created_by'] = Auth::user()->user_id;
 
             $userInvoiceData = [
+                'user_id' => $arrUserData['user_id'],
                 'biz_addr_id' => $arrUserData['customer_pri_loc'],
                 'company_id' => $arrUserData['capsav_location'],
                 'company_state_id' => $arrUserData['capsave_state'],
                 'biz_addr_state_id' => $arrUserData['user_state'],
                 'is_active' => 1,
+                'created_at' => $arrUserData['created_at'],
+                'created_by' => $arrUserData['created_by'],
             ];
 
+            $userInvData = [
+                'user_id' => $arrUserData['user_id'],
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'is_active' => 1,
+            ];
+
+            if(!$arrUserData['capsave_state']) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Capsave Location"');
+            }
+            if(!$arrUserData['user_state']) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Customer Primary Location"');
+            }
+
+            $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
+            if($checkData) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Same address and company are already mapped and active');
+            } else {
+
+            }
+
+            $this->UserInvRepo->unPublishAddr($user_id);
+            $arrUserData['updated_at'] = \carbon\Carbon::now();
+            $arrUserData['updated_by'] = Auth::user()->user_id;
+            
             $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
             if($status) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');
             } else {
-                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Some error occured while saving');
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Some error occured while saving');
             }
             
         } catch (Exception $ex) {
@@ -569,7 +603,6 @@ class userInvoiceController extends Controller
         $cities = DB::table("mst_company")
             ->select("comp_addr_id", "state")
             ->where("comp_addr_id",$request->state)
-            ->where("is_reg",1)
             ->pluck("state", "comp_addr_id");
 
             return response()->json($cities);
@@ -585,6 +618,20 @@ class userInvoiceController extends Controller
             ->where("address_type",6)
             ->pluck("state_id", "biz_addr_id");
             return response()->json($cities);
+    }
+
+    public function unpublishUsereAddr(Request $request) {
+       try{
+        $user_id = $request->get('user_id');
+        $data = $this->UserInvRepo->unPublishAddr((int) $user_id);
+        if($data) {
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'All address are unpublished');
+        } else {
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Some error occured!');
+        }
+       } catch (Exception $ex) {
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+       }
     }
 
 }

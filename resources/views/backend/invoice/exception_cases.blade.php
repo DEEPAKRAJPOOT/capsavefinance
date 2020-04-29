@@ -59,6 +59,7 @@
                                                                         <th> Customer Detail </th>
                                                                         <th> Inv Detail </th>
                                                                         <th> Inv Amount </th>
+                                                                         <th> Remark</th>
                                                                         <th> Updated By</th>
                                                                         <th> Action</th>
                                                                     </tr>

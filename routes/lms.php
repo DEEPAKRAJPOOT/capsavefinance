@@ -124,6 +124,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\userInvoiceController@getUserInvoiceState'
             ]);
             
+            // user_invoice relation get state id for user
+            Route::get('get-user-invoice-unpublished', [
+                'as' => 'get_user_invoice_unpublished',
+                'uses' => 'Lms\userInvoiceController@unpublishUsereAddr'
+            ]);
+            
             // disbursal routes
             Route::get('/disbursal/request-list', [
                 'as' => 'lms_disbursal_request_list',

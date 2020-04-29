@@ -23,6 +23,7 @@ use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use App\Inv\Repositories\Models\Lms\InvoiceNo;
 use App\Inv\Repositories\Models\BusinessAddress;
 
+
 /**
  * User Invoice Repository class
  */
@@ -105,6 +106,12 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return User::getfullUserDetail((int)$user_id);
 	}
 
+	public function getUserAddressByUserId($user_id) {
+		$userCompanyDetail = $this->getUserCurrCompany($user_id);
+        $biz_addr_id = $userCompanyDetail->biz_addr_id;
+        return BusinessAddress::find($biz_addr_id);
+	}
+
 	public function getNextInv($data) {
 		return InvoiceNo::create($data);
 	}
@@ -125,7 +132,11 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}
 
 	public function getCompanyBankAcc($company_id) {
-		return UserBankAccount::getAllUserBankAcc($company_id);
+		return UserBankAccount::getAllCompanyBankAcc($company_id);
+	}
+
+	public function getUserBankAcc($user_id) {
+		return UserBankAccount::getAllUserBankAcc($user_id);
 	}
 
 	/**
@@ -177,6 +188,14 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	 */
 	public function getUserBizAddr() {
 		return BusinessAddress::getUserBizAddr();
+	}
+
+	public function unPublishAddr($user_id) {
+		return UserInvoiceRelation::unPublishAddr($user_id);
+	}
+
+	public function checkUserInvoiceLocation($userInvData) {
+		return UserInvoiceRelation::checkUserInvoiceLocation($userInvData);
 	}
 
 }

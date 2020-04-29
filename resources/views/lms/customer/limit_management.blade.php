@@ -37,7 +37,7 @@
                                         <th>Product Type </th> <th>: </th><td>{{$limit->product->product_name}}</td>  
                                     </tr>
                                     <tr>
-                                        <th>Proposed product limit </th> <th>: </th><td>{{$limit->limit_amt}}<td></td> 
+                                        <th>Proposed product limit </th> <th>: </th><td>{{number_format($limit->limit_amt)}}<td></td> 
                                     </tr>
 
 

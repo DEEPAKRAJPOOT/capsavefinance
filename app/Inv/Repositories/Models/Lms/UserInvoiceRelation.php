@@ -53,6 +53,10 @@ class UserInvoiceRelation extends BaseModel {
         'company_state_id',
         'biz_addr_state_id',
         'is_active',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
 
     /**
@@ -68,6 +72,16 @@ class UserInvoiceRelation extends BaseModel {
         return $data ? : false;
     }
 
+    public static function unPublishAddr(int $userId) {
+        $data = self::where('user_id', $userId)
+            ->update(['is_active' => 2]);
+        return $data;
+    }
+
+    public static function checkUserInvoiceLocation($userInvData) {
+        $data = self::where($userInvData)->first();
+        return $data ? : false;
+    }
 
 
     public static function getUserCurrCompany(int $user_id) {

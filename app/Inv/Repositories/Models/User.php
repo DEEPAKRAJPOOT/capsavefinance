@@ -644,7 +644,8 @@ class User extends Authenticatable
      
          public  function app()
     {
-         return $this->belongsTo('App\Inv\Repositories\Models\Application', 'user_id', 'user_id')->where(['status' =>1]);
+         return $this->belongsTo('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+
     }
 
     public function anchors(){
