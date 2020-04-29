@@ -184,7 +184,7 @@ class BusinessAddress extends BaseModel
     }
 
     public static function getUserBizAddr() {
-        $addr = self::select('biz_addr_id', 'addr_1', 'state_id' )
+        $addr = self::select('biz_addr_id', 'addr_1', 'addr_2', 'state_id' )
                 ->where('is_active',1)
                 ->where('is_default', 1)
                 ->where('address_type', 6)
