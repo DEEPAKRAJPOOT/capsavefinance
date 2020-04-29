@@ -74,6 +74,27 @@
 </script>
 <script type="text/javascript">
 
+$(document).ready(function () {
+      $('#invoice_location').validate({ // initialize the plugin
+         rules: {
+            'customer_pri_loc': {
+               required: true,
+            },
+            'capsav_location': {
+               required: true,
+            },
+         },
+         messages: {
+            'customer_pri_loc': {
+               required: "This field is required",
+            },
+            'capsav_location': {
+               required: "This field is required",
+            },
+         }
+      });
+   });
+
     // GET state id for Capsave address
    $('#capsav_location').on('change',function(){
     var stateID = $(this).val();
