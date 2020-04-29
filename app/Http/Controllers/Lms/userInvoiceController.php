@@ -554,7 +554,7 @@ class userInvoiceController extends Controller
                 'biz_addr_state_id' => $arrUserData['user_state'],
                 'is_active' => 1,
             ];
-
+            $this->UserInvRepo->unPublishAddr($user_id);
             $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
             if($status) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');
@@ -587,6 +587,21 @@ class userInvoiceController extends Controller
             ->where("address_type",6)
             ->pluck("state_id", "biz_addr_id");
             return response()->json($cities);
+    }
+
+    public function unpublishUsereAddr(Request $request) {
+       try{
+        $user_id = $request->get('user_id');
+        $data = $this->UserInvRepo->unPublishAddr((int) $user_id);
+        dd($data);
+        if($data) {
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'All address are unpublish please select address');
+        } else {
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Some error occured!');
+        }
+       } catch (Exception $ex) {
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+       }
     }
 
 }

@@ -182,4 +182,8 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return BusinessAddress::getUserBizAddr();
 	}
 
+	public function unPublishAddr($user_id) {
+		return UserInvoiceRelation::unPublishAddr($user_id);
+	}
+
 }

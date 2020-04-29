@@ -47,6 +47,7 @@ class UserInvoiceRelation extends BaseModel {
      */
     protected $fillable = [
         'user_invoice_rel_id',
+        'user_id',
         'company_id',
         'biz_addr_id',
         'company_state_id',
@@ -67,5 +68,10 @@ class UserInvoiceRelation extends BaseModel {
         return $data ? : false;
     }
 
+    public static function unPublishAddr(int $userId) {
+        $data = self::where('user_id', $userId)
+            ->update(['is_active' => 2]);
+        return $data;
+    }
 
 }
