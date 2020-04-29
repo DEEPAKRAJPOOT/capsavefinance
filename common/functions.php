@@ -45,6 +45,19 @@ function getInvestmentPaymentFrequency($id){
 	 return $productType[$id] ?? '';
 }
 
+function getFinancialYear($date = NULL){
+	if (empty($date)) {
+		return $date;
+	}
+	list($year, $month, $date) = explode('-', $date);
+	if ($month > 3) {
+		$financialYear = $year . '-' . ($year + 1);
+	}else{
+		$financialYear = $year - 1 . '-' . $year;
+	}
+	return $financialYear;
+}
+
 function _uuid_rand($strLen = 60){
 	$string = sprintf('%04x%04x%04x%05x%05x%04x%04x%04x%05x%05x%06x',
 		mt_rand(0, 0xffff), mt_rand(0, 0xffff),mt_rand(0, 0xffff),

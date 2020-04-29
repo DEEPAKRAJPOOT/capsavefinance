@@ -311,7 +311,7 @@ class userInvoiceController extends Controller
             $response['message'] = 'No Company detail is mapped with the user.';
             return $response;
         }
-        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($user_id);
+        $BankDetails = $this->UserInvRepo->getCompanyBankAcc($company_id);
         $bankDetailsFound =!empty($BankDetails) && !$BankDetails->isEmpty();
         if (!$bankDetailsFound) {
             $response['message'] = 'No BankDetail is found for the User.';
@@ -344,7 +344,9 @@ class userInvoiceController extends Controller
             'city' => $companyDetail->city,
             'phone' => '+91 22 6173 7600',
             'email' => 'accounts@rentalpha.com',
-            'cin' => $companyDetail->cin_no,
+            'pan_no' => $companyDetail->pan_no,
+            'gst_no' => $companyDetail->gst_no,
+            'cin_no' => $companyDetail->cin_no,
             'bank_id' => $activeBankAcc->bank_account_id,
             'bank_name' => $activeBankAcc->bank->bank_name,
             'acc_no' => $activeBankAcc->acc_no,
@@ -407,10 +409,11 @@ class userInvoiceController extends Controller
         $CompanyDetails = $CompanyDetails['data'];
         $reference_no = _getRand(10). $user_id;
         $invoice_no_id = $this->UserInvRepo->getNextInv(['user_id' => $user_id])->invoice_no_id;
+        $curr_date = date('y-m-d');
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
             'state_code' => $CompanyDetails['state']->state_code,
-            'financial_year' => '19-20',
+            'financial_year' => getFinancialYear($curr_date),
             'rand_4_no' => sprintf('%04d', $invoice_no_id ?? rand(0, 9999)),
             'state_name' => $CompanyDetails['state']->name,
             'address' => $CompanyDetails['address'],
