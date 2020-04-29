@@ -559,7 +559,7 @@ class userInvoiceController extends Controller
             if($status) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');
             } else {
-                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Some error occured while saving');
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Some error occured while saving');
             }
             
         } catch (Exception $ex) {
@@ -596,7 +596,7 @@ class userInvoiceController extends Controller
         if($data) {
             return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'All address are unpublish please select address');
         } else {
-            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Some error occured!');
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Some error occured!');
         }
        } catch (Exception $ex) {
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
