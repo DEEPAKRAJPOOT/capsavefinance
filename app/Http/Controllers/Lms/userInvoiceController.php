@@ -525,6 +525,7 @@ class userInvoiceController extends Controller
      */
     public function userInvoiceLocation(Request $request) {
         try {
+            
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
@@ -545,18 +546,35 @@ class userInvoiceController extends Controller
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
 
             $userInvoiceData = [
+                'user_id' => $arrUserData['user_id'],
                 'biz_addr_id' => $arrUserData['customer_pri_loc'],
                 'company_id' => $arrUserData['capsav_location'],
                 'company_state_id' => $arrUserData['capsave_state'],
                 'biz_addr_state_id' => $arrUserData['user_state'],
+                'biz_addr_state_id' => $arrUserData['user_state'],
                 'is_active' => 1,
             ];
 
+            $userInvData = [
+                'user_id' => $arrUserData['user_id'],
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'is_active' => 1,
+            ];
+
+            $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
+            if($checkData) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Same address and company are already mapped and active');
+            } else {
+
+            }
+
+            $this->UserInvRepo->unPublishAddr($user_id);
             $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
             if($status) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');
             } else {
-                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Some error occured while saving');
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Some error occured while saving');
             }
             
         } catch (Exception $ex) {
@@ -569,7 +587,6 @@ class userInvoiceController extends Controller
         $cities = DB::table("mst_company")
             ->select("comp_addr_id", "state")
             ->where("comp_addr_id",$request->state)
-            ->where("is_reg",1)
             ->pluck("state", "comp_addr_id");
 
             return response()->json($cities);
@@ -585,6 +602,20 @@ class userInvoiceController extends Controller
             ->where("address_type",6)
             ->pluck("state_id", "biz_addr_id");
             return response()->json($cities);
+    }
+
+    public function unpublishUsereAddr(Request $request) {
+       try{
+        $user_id = $request->get('user_id');
+        $data = $this->UserInvRepo->unPublishAddr((int) $user_id);
+        if($data) {
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'All address are unpublished');
+        } else {
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Some error occured!');
+        }
+       } catch (Exception $ex) {
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+       }
     }
 
 }

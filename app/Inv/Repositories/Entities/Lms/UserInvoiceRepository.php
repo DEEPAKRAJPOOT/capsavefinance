@@ -23,6 +23,7 @@ use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use App\Inv\Repositories\Models\Lms\InvoiceNo;
 use App\Inv\Repositories\Models\BusinessAddress;
 
+
 /**
  * User Invoice Repository class
  */
@@ -177,6 +178,14 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	 */
 	public function getUserBizAddr() {
 		return BusinessAddress::getUserBizAddr();
+	}
+
+	public function unPublishAddr($user_id) {
+		return UserInvoiceRelation::unPublishAddr($user_id);
+	}
+
+	public function checkUserInvoiceLocation($userInvData) {
+		return UserInvoiceRelation::checkUserInvoiceLocation($userInvData);
 	}
 
 }
