@@ -102,6 +102,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'download_user_invoice',
                 'uses' => 'Lms\userInvoiceController@downloadUserInvoice'
             ]);
+
+            Route::get('user-invoice-location', [
+                'as' => 'user_invoice_location',
+                'uses' => 'Lms\userInvoiceController@userInvoiceLocation'
+            ]);
+            Route::post('save-user-invoice-location', [
+                'as' => 'save_user_invoice_location',
+                'uses' => 'Lms\userInvoiceController@saveUserInvoiceLocation'
+            ]);
+
+            // user_invoice relation get state id for capsave
+            Route::get('get-capsav-invoice-state', [
+                'as' => 'get-capsav-invoice-state',
+                'uses' => 'Lms\userInvoiceController@getCapsavInvoiceState'
+            ]);
+
+            // user_invoice relation get state id for user
+            Route::get('get-user-invoice-state', [
+                'as' => 'get-user-invoice-state',
+                'uses' => 'Lms\userInvoiceController@getUserInvoiceState'
+            ]);
             
             // disbursal routes
             Route::get('/disbursal/request-list', [
