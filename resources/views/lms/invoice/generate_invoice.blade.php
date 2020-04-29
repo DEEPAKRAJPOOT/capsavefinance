@@ -73,7 +73,7 @@
       @include('lms.invoice.generate_invoice_txns')
    </table>
    <p style="font-family: 'Book Antiqua', serif;font-size: small;"><u><strong>Payment Instructions:</strong></u></p>
-   <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at per in Mumbai for <strong>Rs {{$total_sum_of_rental ?? 0}} </strong> to </span>
+   <span style="font-family: 'Book Antiqua', serif;font-size: small;">Please send your cheque/DD payable at per in Mumbai for <strong>Rs {{sprintf('%.2F', $total_sum_of_rental) }} </strong> to </span>
    <div style="margin-top: 10px;font-size: small;font-family: 'Book Antiqua', serif;"><strong>{{$company_data['name']}}</strong></div>
    <span style="font-size: small;">{{$company_data['address']}}</span>
 
