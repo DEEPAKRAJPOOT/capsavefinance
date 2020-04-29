@@ -14,6 +14,8 @@ use App\Inv\Repositories\Models\Financial\FinancialVariablesTransConfig;
 use App\Inv\Repositories\Models\Financial\FinancialJournalItems;
 use App\Inv\Repositories\Models\Financial\FinancialJournalEntries;
 use App\Inv\Repositories\Models\BankWorkCapitalFacility;
+use App\Inv\Repositories\Models\BankTermBusiLoan;
+use App\Inv\Repositories\Models\BankAnalysis;
 
 class FinanceRepository extends BaseRepositories implements FinanceInterface
 {
@@ -171,6 +173,34 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     }
     
     public function updateBankWcFacility($bankDetailId, $dataArr) {
-        return BankWorkCapitalFacility::updateBankWcFacility($bankDetailId, $dataArr);
+        return BankWorkCapitalFacility::updateBankWcFacility((int) $bankDetailId, $dataArr);
+    }
+    
+    public function getBankWcFacility($bankDetailId) {
+        return BankWorkCapitalFacility::getBankWcFacility((int) $bankDetailId);
+    }
+    
+    public function saveBankTermBusiLoan($arrData) {
+        return BankTermBusiLoan::saveBankTermBusiLoan($arrData);
+    }
+    
+    public function updateBankTermBusiLoan($bankDetailId, $dataArr) {
+        return BankTermBusiLoan::updateBankTermBusiLoan((int) $bankDetailId, $dataArr);
+    }
+    
+    public function getBankTermBusiLoan($bankDetailId) {
+        return BankTermBusiLoan::getBankTermBusiLoan((int) $bankDetailId);
+    }
+    
+    public function saveBankAnalysis($arrData) {
+        return BankAnalysis::saveBankAnalysis($arrData);
+    }
+    
+    public function updateBankAnalysis($bankDetailId, $dataArr) {
+        return BankAnalysis::updateBankAnalysis((int) $bankDetailId, $dataArr);
+    }
+    
+    public function getBankAnalysis($bankDetailId) {
+        return BankAnalysis::getBankAnalysis((int) $bankDetailId);
     }
 }
