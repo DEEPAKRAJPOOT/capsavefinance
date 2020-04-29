@@ -684,20 +684,14 @@ class CamController extends Controller
         $dataTlbl = [];
         $dataBankAna = [];
         if(isset($debtPosition['bank_detail_id'])) {
-//          $dataWcf = BankWorkCapitalFacility::where('bank_detail_id', $debtPosition['bank_detail_id'])
-//                          ->where('is_active', 1)->get();
           $dataWcf = $this->financeRepo->getBankWcFacility($debtPosition['bank_detail_id']);
           $dataWcf = $dataWcf ? $dataWcf->toArray() : [];
         } 
         if(isset($debtPosition['bank_detail_id'])) {
-//          $dataTlbl = BankTermBusiLoan::where('bank_detail_id', $debtPosition['bank_detail_id'])
-//                          ->where('is_active', 1)->get();
           $dataTlbl = $this->financeRepo->getBankTermBusiLoan($debtPosition['bank_detail_id']);
           $dataTlbl = $dataTlbl ? $dataTlbl->toArray() : [];
         } 
         if(isset($debtPosition['bank_detail_id'])) {
-//          $dataBankAna = BankAnalysis::where('bank_detail_id', $debtPosition['bank_detail_id'])
-//                            ->where('is_active', 1)->get();
           $dataBankAna = $this->financeRepo->getBankAnalysis($debtPosition['bank_detail_id']);
           $dataBankAna = $dataBankAna ? $dataBankAna->toArray() : [];
         }
