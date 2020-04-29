@@ -580,9 +580,7 @@ class userInvoiceController extends Controller
             }
 
             $this->UserInvRepo->unPublishAddr($user_id);
-            $arrUserData['updated_at'] = \carbon\Carbon::now();
-            $arrUserData['updated_by'] = Auth::user()->user_id;
-            
+
             $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
             if($status) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');

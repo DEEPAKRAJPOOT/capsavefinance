@@ -74,7 +74,7 @@ class UserInvoiceRelation extends BaseModel {
 
     public static function unPublishAddr(int $userId) {
         $data = self::where('user_id', $userId)
-            ->update(['is_active' => 2]);
+            ->update(['is_active' => 2, 'updated_at' => \carbon\Carbon::now(), 'updated_by' => Auth::user()->user_id]);
         return $data;
     }
 
