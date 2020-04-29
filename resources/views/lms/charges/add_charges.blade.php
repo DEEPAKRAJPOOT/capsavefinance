@@ -110,7 +110,7 @@
             <div class="form-group col-md-6 text-right">
                 <span  id="submitMsg" class="error"></span>
                 <input type="hidden"   id="id" name="id" >
-                <input type="hidden"   id="app_id" name="app_id"  value="{{$user->app->app_id}}">
+                <input type="hidden"   id="app_id" name="app_id"  value="{{$user->app['app_id']}}">
                 <input type="hidden"   id="pay_from" name="pay_from"  value="{{$user->is_buyer}}">
                 <input type="hidden"   id="charge_type" name="charge_type"  value="">
                 <input type="hidden"   id="programamount" name="programamount" >
