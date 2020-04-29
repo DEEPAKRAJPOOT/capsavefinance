@@ -88,7 +88,7 @@
                             @php $j = 0 @endphp
                             @foreach($data as $key => $val)
                                 <td colspan="2"><b>
-                                    <input type="text" name="year[{{$j}}]" value="{{$key}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input id="year_{{$key}}" type="text" name="year[]" value="{{$key}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('year.'.$j, '<span class="error">:message</span>') !!}
                                 </b></td>
                                 @php 
@@ -104,7 +104,7 @@
                             @endphp
                             @for($k=0;$k<2;$k++)
                                 <td colspan="2"><b>
-                                    <input type="text" name="year[{{$k}}]" value="{{old('year.'.$k)}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"></b>
+                                    <input id="year_{{$k}}" type="text" name="year[]" value="{{old('year.'.$k)}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"></b>
                                     {!! $errors->first('year.'.$k, '<span class="error">:message</span>') !!}
                                 </td>
                             @endfor
@@ -254,13 +254,14 @@
     }
     
     $('#anchor_form').validate({
+//        ignore: [],
         rules: {
-//            year: {
-//               required: true 
-//            },
-//            mt_type: {
-//                required: true
-//            },
+            'year[]': {
+               required: true 
+            },
+            'mt_type[]': {
+                required: true
+            },
             year_of_association: {
                required: true
             },
@@ -290,14 +291,14 @@
             }
         },
         messages: {
-//            year: {
-//               required: 'Please enter year.' 
-//            },
-//            mt_type: {
-//                required: 'Please slecet MT type.'
-//            },
+            'year[]': {
+               required: 'Please enter year.' 
+            },
+            'mt_type[]': {
+                required: 'Please slecet MT type.'
+            },
             year_of_association: {
-               required: 'Please slecet MT type.'
+               required: 'Please enter year of association.'
             },
             contact_person: {
                 required: 'Please enter contact person.'
@@ -306,7 +307,7 @@
                 required: 'Please enter payment terms.'
             },
             grp_rating: {
-                required: 'Please enter grp rating.'
+                required: 'Please enter group rating.'
             },
             contact_number: {
                 required: 'Please enter contact number.'
