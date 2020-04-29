@@ -102,7 +102,7 @@ class ChargeController extends Controller
               $app =  $this->lmsRepo->getUserDetails($user_id);
             
           }
-          dd($app);
+          
           $res  =  $this->lmsRepo->getTrnasType(['is_active' => 1,'chrg_type' => 2]);
           $result  =  $this->invRepo->getCustomerId($user_id);
           $program  =  $this->lmsRepo->getProgramUser($user_id);
