@@ -110,11 +110,12 @@
                 if (gstnoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.error, label.gst_no_error').remove();
                     $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Please enter valid GSTIN Number</label>');
                     $(this).focus();
                 }
             } else {
-                $('label.gst_no_error, label#gst_no_error').remove();
+                $('label.error, label.pan_no_error').remove();
                 $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Special characters not allowed</label>');
                 $(this).focus();
             }
@@ -129,11 +130,12 @@
                 if (pannoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.error, label.pan_no_error').remove();
                     $(this).after('<label id="pan_no_error" class="error pan_no_error " for="pan_no">Please enter valid PAN Number</label>');
                     $(this).focus();
                 }
             } else {
-                $('label.pan_no_error, label#pan_no_error').remove();
+                $('label.error, label.pan_no_error').remove();
                 $(this).after('<label id="pan_no_error" class="error pan_no_error " for="pan_no">Special charactes not allowed</label>');
                 $(this).focus();
             }
@@ -149,11 +151,12 @@
                 if (cinnoformat.test(values)) {
                     return true;
                 } else {
+                    $('label.error, label.cin_no_error').remove();
                     $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Please enter valid CIN Number</label>');
                     $(this).focus();
                 }
             } else {
-                $('label.cin_no_error, label#cin_no_error').remove();
+                $('label.error, label.cin_no_error').remove();
                 $(this).after('<label id="cin_no_error" class="error cin_no_error " for="cin_no">Special characters not allowed</label>');
                 $(this).focus();
             }

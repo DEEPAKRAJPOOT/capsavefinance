@@ -304,8 +304,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    $app_status = config('common.app_status');                    
+                    return isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
 
                 })
                 ->addColumn(
@@ -494,7 +494,7 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                    $userInfo=User::getUserByAnchorId((int) $app->anchor_id);
                        $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                     }else{
                       $achorName='';  
@@ -514,8 +514,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
+                    $app_status = config('common.app_status');                    
+                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
 
                 })
                 ->addColumn(
@@ -1330,6 +1330,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getBackendInvoiceListDisbursed(Request $request,$invoice)
     { 
+        
       return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','customer_detail','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
@@ -1397,11 +1398,11 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) use ($request) {
                        $act="";
                      /// $act .='<div class="d-flex inline-action-btn">&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceDisbursed" data-height="430px" data-width="100%" accesskey="" data-url ="'.route("invoice_success_status",["invoice_id" => $invoice->invoice_id,'app_id' => $invoice->app_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
-                      if(($invoice->disbursal)) { 
+                      if(($invoice->invoice_disbursed)) { 
                       $act .='</br><a data-toggle="modal"  data-height="550px" 
                             data-width="100%" 
                             data-target="#viewInterestAccrual"
-                            data-url="' . route('view_interest_accrual', ['disbursal_id' =>$invoice->disbursal->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                            data-url="' . route('view_interest_accrual', ['disbursal_id' =>$invoice->invoice_disbursed->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
                       }
                             return $act;
                 })
@@ -1944,8 +1945,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                 return $app->status == 1 ? 'Completed' : 'Incomplete';
-
+                    //return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    $app_status = config('common.app_status');                               
+                    return isset($app_status[$app->status]) ? $app_status[$app->status] : ''; 
                 })
                 ->addColumn(
                     'action',
@@ -3757,7 +3759,7 @@ class DataRenderer implements DataProviderInterface
     public function addressGetCustomers(Request $request, $data)
     {
         return DataTables::of($data)
-            ->rawColumns(['action', 'rcu_status'])
+            ->rawColumns(['action', 'is_active'])
             ->addColumn(
                 'biz_addr_id',
                 function ($data) {
@@ -3772,7 +3774,7 @@ class DataRenderer implements DataProviderInterface
                     $checked = ($data->is_default == 1) ? 'checked' : null;
                     $act = '';
 
-                    /*if ($data->rcu_status) {
+                    /*if ($data->is_active) {
                         $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
                     }*/
 
@@ -3787,7 +3789,7 @@ class DataRenderer implements DataProviderInterface
             )
 
             ->editColumn(
-                'rcu_status',
+                'is_active',
                 function ($data) {
                     if ($data->is_default) {
                         $is_default = '<span class="badge badge-info">Default</span>';
@@ -3795,7 +3797,7 @@ class DataRenderer implements DataProviderInterface
                         $is_default = '';
                     }
 
-                    if ($data->rcu_status) {
+                    if ($data->is_active) {
                         return '<span class="badge badge-success">Active</span> &nbsp;&nbsp;'.$is_default;
                     } else {
                         return '<span class="badge badge-warning current-status">InActive</span> &nbsp;&nbsp;'.$is_default;
@@ -5322,7 +5324,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'action',
                 function ($data) {
-                return  "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->invoice_user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                return  "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
                 }
             )
             ->filter(function ($query) use ($request) {

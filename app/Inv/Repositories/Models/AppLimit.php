@@ -4,6 +4,9 @@ namespace App\Inv\Repositories\Models;
 
 use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -69,5 +72,14 @@ class AppLimit extends BaseModel {
     public function app()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Application', 'app_id', 'app_id');
-    }    
+    }   
+    
+    
+    public static function getUserLimit($user_id)
+    {
+       return  self::where(['user_id'=>$user_id,'status' => 1])->first();
+    }
+    
+  
+      
 }

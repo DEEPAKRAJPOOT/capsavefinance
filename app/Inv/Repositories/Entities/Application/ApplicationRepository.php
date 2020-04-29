@@ -1373,9 +1373,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::getUpdatedApp($user_id);
     }  
 
-    public function addressGetCustomers($user_id, $biz_id)
+    public function addressGetCustomers($user_id, $biz_id, $address_type=null)
     {
-        return BusinessAddress::addressGetCustomer($user_id, $biz_id);
+        return BusinessAddress::addressGetCustomer($user_id, $biz_id, $address_type);
     }
 
     public function getAppDataByOrder($where , $orderBy = 'DESC')
@@ -1751,6 +1751,53 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
     }
     
+    /**
+     * Get Applications Data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getApplicationsData($where=[])
+    {
+        return Application::getApplicationsData($where);
+    } 
+    
+     /** get the user limit  **/
+   public function getUserLimit($user_id)
+   {
+       try
+       {
+           return AppLimit::getUserLimit($user_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   }
+   
+   /** get the user program  limit  **/
+   public function getUserProgramLimit($attr)
+   {
+       try
+       {
+           return AppProgramLimit::getUserProgramLimit($attr);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   } 
+     /** get the user offer program  limit  **/
+   public function getUserProgramOfferLimit($app_prgm_limit_id)
+   {
+       try
+       {
+           return AppLimit::getUserProgramOfferLimit($app_prgm_limit_id);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   }  
+   
+    
 }
-
 

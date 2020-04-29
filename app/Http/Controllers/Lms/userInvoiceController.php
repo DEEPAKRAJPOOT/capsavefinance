@@ -128,7 +128,7 @@ class userInvoiceController extends Controller
              return response()->json($response);
         }
         $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type);
-        if ($txnsData->isEmpty()) {
+        if (empty($txnsData) || $txnsData->isEmpty()) {
            $response['message'] = 'No transaction found for the user.';
             return response()->json($response);
         }
@@ -157,7 +157,7 @@ class userInvoiceController extends Controller
         }
         
         $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type, $trans_ids);
-        if($txnsData->isEmpty()){
+        if(empty($txnsData) ||  $txnsData->isEmpty()){
             return response()->json(['status' => 0,'message' => 'No transaction found for the user.']); 
         }
         $billingDetails = $this->_getBillingDetail($user_id);
@@ -197,7 +197,7 @@ class userInvoiceController extends Controller
     public function downloadUserInvoice(Request $request){
         $user_id = $request->get('user_id');
         $user_invoice_id = $request->get('user_invoice_id');
-        $invData = $this->UserInvRepo->getInvoices(['user_invoice_id'=> $user_invoice_id, 'invoice_user_id' => $user_id])[0];
+        $invData = $this->UserInvRepo->getInvoices(['user_invoice_id'=> $user_invoice_id, 'user_id' => $user_id])[0];
         $reference_no = $invData->reference_no;
         $invoice_no = $invData->invoice_no;
         $state_name = $invData->place_of_supply;
@@ -218,7 +218,7 @@ class userInvoiceController extends Controller
         }
         
         $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type, $trans_ids);
-        if($txnsData->isEmpty()){
+        if(empty($txnsData) || $txnsData->isEmpty()){
             return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No transaction found for the user.');
         }
         $userData = $this->UserInvRepo->getUser($user_id);
@@ -299,8 +299,12 @@ class userInvoiceController extends Controller
             'data' => [],
         ];
         if (empty($company_id)) {
-            //get Company Id from relational Table
-            $company_id  = 8;
+            $userCompanyDetail  = $this->UserInvRepo->getUserCurrCompany($user_id);
+            if (empty($userCompanyDetail)) {
+              $response['message'] = 'No Company detail is mapped with the user.';
+              return $response;
+            }
+            $company_id = $userCompanyDetail->company_id;
         }
         $companyDetail = $this->UserInvRepo->getCompanyDetail($company_id);
         if (empty($companyDetail) ) {
@@ -375,8 +379,13 @@ class userInvoiceController extends Controller
             'name' => $business->biz_entity_name,
             'address' => $address->addr_1 . ' '. $address->addr_2 . ' ' . $address->city_name . ' '.  ($address->state->name ?? '') . ', '. $address->pin_code,
             'pan_no' => '',
+            'state_name' => $address->state->name ?? '',
             'gstin_no' => '',
         ];
+        if (empty($billingDetails['state_name'])) {
+            $response['message'] = 'State Detail not found. Please update address with state first.';
+            return $response;
+        }
         foreach ($bizPanGst as $key => $pangst) {
            if ($pangst->type == 1) {
               $billingDetails['pan_no'] = $pangst->pan_gst_hash;
@@ -397,11 +406,12 @@ class userInvoiceController extends Controller
         }
         $CompanyDetails = $CompanyDetails['data'];
         $reference_no = _getRand(10). $user_id;
+        $invoice_no_id = $this->UserInvRepo->getNextInv(['user_id' => $user_id])->invoice_no_id;
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
             'state_code' => $CompanyDetails['state']->state_code,
             'financial_year' => '19-20',
-            'rand_4_no' => sprintf('%04d', rand(0, 9999)),
+            'rand_4_no' => sprintf('%04d', $invoice_no_id ?? rand(0, 9999)),
             'state_name' => $CompanyDetails['state']->name,
             'address' => $CompanyDetails['address'],
         ];
@@ -427,7 +437,7 @@ class userInvoiceController extends Controller
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No selected txns found for the invoice.');
             }
             $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type, $trans_ids);
-            if($txnsData->isEmpty()){
+            if(empty($txnsData) ||  $txnsData->isEmpty()){
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No remaining txns found for the invoice.');
             }
             $userData = $this->UserInvRepo->getUser($user_id);
@@ -450,7 +460,7 @@ class userInvoiceController extends Controller
             $arrUserData['created_at'] = \carbon\Carbon::now();
             $arrUserData['created_by'] = Auth::user()->user_id;
             $userInvoiceData = [
-                'invoice_user_id' => $arrUserData['user_id'],
+                'user_id' => $arrUserData['user_id'],
                 'app_id' => $arrUserData['app_id'] ?? NULL,
                 'pan_no' => $billingDetails['pan_no'],
                 'biz_gst_no' => $billingDetails['gstin_no'],

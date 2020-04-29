@@ -46,7 +46,7 @@ class UserInvoice extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'invoice_user_id',
+        'user_id',
         'app_id',
         'pan_no',
         'biz_gst_no',
@@ -149,8 +149,8 @@ class UserInvoice extends BaseModel {
     /**
      * GET AJAX result list
      */
-    public static function getUserInvoiceList($invoice_user_id, $appId = null) {
-        $result = self::where('invoice_user_id' , $invoice_user_id);
+    public static function getUserInvoiceList($user_id, $appId = null) {
+        $result = self::where('user_id' , $user_id);
         return $result ? : false;
     }
 }

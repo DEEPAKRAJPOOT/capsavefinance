@@ -64,7 +64,7 @@ class Application extends BaseModel
         'user_id',
         'biz_id',
         'loan_amt',
-        'status_id',
+        'status',        
         'is_assigned',
         'curr_status_id',
         'created_by',
@@ -220,7 +220,7 @@ class Application extends BaseModel
     {
         
         $roleData = User::getBackendUser(\Auth::user()->user_id);
-        $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name',
+        $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name', 'app.status',
                 'users.is_buyer as user_type', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 'assignee_r.name AS assignee', 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
@@ -713,5 +713,35 @@ class Application extends BaseModel
        $id = Auth::user()->user_id;
        $role_id = RoleUser::where(['user_id' => $id])->pluck('role_id');
        return Role::whereIn('id',$role_id)->first();
+    }
+    
+    /**
+     * Get Applications Data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getApplicationsData($where=[])
+    {
+        /**
+         * $where is not an array
+         */
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $query = self::select('*');        
+       
+        if (isset($where['user_id'])) {
+            $query->where('user_id', $where['user_id']);            
+        }
+        
+        if (isset($where['status']) && is_array($where['status'])) {
+            $query->whereIn('status', $where['status']);            
+        }
+        
+        $result = $query->get();       
+        return $result ? $result: [];
     }
 }
