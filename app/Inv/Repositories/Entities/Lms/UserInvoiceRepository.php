@@ -109,7 +109,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	}
 
 	public function getUserCurrCompany(int $user_id) {
-		return UserInvoiceRelation:: where(['user_id' => $user_id, 'is_active' => 1])->first();
+		return UserInvoiceRelation::getUserCurrCompany($user_id);
 	}
 
 	/**

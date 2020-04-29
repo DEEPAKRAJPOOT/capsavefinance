@@ -68,4 +68,10 @@ class UserInvoiceRelation extends BaseModel {
     }
 
 
+
+    public static function getUserCurrCompany(int $user_id) {
+        return self:: where(['user_id' => $user_id, 'is_active' => 1])->first();
+    }
+
+
 }
