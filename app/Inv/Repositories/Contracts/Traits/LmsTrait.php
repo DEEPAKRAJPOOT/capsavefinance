@@ -164,14 +164,14 @@ trait LmsTrait
         $disbursalData['disbursal_api_log_id'] = $invoice['disbursal_api_log_id'] ?? null;
         $disbursalData['disburse_amt'] = $disburseAmount ?? null;
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
-        $disbursalData['payment_due_date'] = ($invoice['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$invoice['disburse_date']). "+ $tenor Days")) : $invoice['invoice_due_date'];
+        $disbursalData['payment_due_date'] = null;
         $disbursalData['tenor_days'] =  $tenor ?? null;
         $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
         
-        $disbursalData['int_accrual_start_dt'] = ($disburseType == 2 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;
+        $disbursalData['int_accrual_start_dt'] = ($disburseType == 1 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;
         $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
         $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;
         
