@@ -70,11 +70,13 @@
         });
         
         $.validator.addMethod("greaterStart", function (value, element) {
-            var startDate = $('#start_date').val();
-            var endDate = $('#end_date').val();
-//            console.log(startDate,Date.parse(new Date(startDate)));
-//            console.log(endDate,Date.parse(new Date(endDate)));
-            return this.optional(element) || (Date.parse(endDate) >= Date.parse(startDate));
+            var startDate = ($('#start_date').val()).split('/');
+            var endDate = ($('#end_date').val()).split('/');
+            var startDateSum = parseInt(startDate[0]) + parseInt(startDate[1]) + parseInt(startDate[2]);
+            var endDateSum = parseInt(endDate[0]) + parseInt(endDate[1]) + parseInt(endDate[2]);
+            console.log(startDate,startDateSum);
+            console.log(endDate,endDateSum);
+            return this.optional(element) || endDateSum >= startDateSum;
         });
         
         $('#baseRateForm').validate({// initialize the plugin
