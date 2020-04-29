@@ -7,7 +7,7 @@
 
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="bank_id">Bank Name</label>
+                <label for="bank_id">Bank Name <span class="mandatory">*</span></label>
                 <select name="bank_id" id="bank_id" class='form-control'>
                     <option value="">Select Bank</option>
                     @foreach($bank_list as $key => $option)
@@ -18,14 +18,14 @@
             </div>
 
             <div class="form-group col-md-6">
-                <label for="base_rate">Base Rate(%)</label>
+                <label for="base_rate">Base Rate(%) <span class="mandatory">*</span></label>
                 <input type="text" class="form-control" name="base_rate" placeholder="Enter Base Rate Percentage">
                 {!! $errors->first('base_rate', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="start_date">Start Date</label>
+                <label for="start_date">Start Date <span class="mandatory">*</span></label>
                 <input type="text" name="start_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" value="">
                 {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
             </div>
@@ -38,11 +38,11 @@
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="is_active">Status</label><br />
+                <label for="is_active">Status <span class="mandatory">*</span></label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option value="" selected>Select</option>
                     <option value="1">Active</option>
-                    <option value="2">In-Active</option>
+                    <option value="0">In-Active</option>
                 </select>
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
@@ -64,22 +64,25 @@
         }, "Please specify a valid base rate percent");
 
         $("#end_date").datetimepicker({
-                format: 'dd/mm/yyyy',
-                autoclose: true,
-                minView : 2
-            });
-        
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView: 2
+        });
+
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
                 bank_id: {
                     required: true,
-                    digits: true,
+                    digits: true
                 },
                 base_rate: {
                     required: true,
                     number: true,
                     range: [0, 100],
-                    rate_percent: 'input[name="base_rate"]',
+                    rate_percent: 'input[name="base_rate"]'
+                },
+                start_date: {
+                    required: true
                 },
                 is_active: {
                     required: true,
@@ -88,14 +91,17 @@
             },
             messages: {
                 bank_id: {
-                    required: "Please Select Bank",
+                    required: "Please Select Bank"
                 },
                 base_rate: {
-                    required: "Please Enter Base Rate",
+                    required: "Please Enter Base Rate"
+                },
+                start_date: {
+                    required: "Please Enter Start Date"
                 },
                 is_active: {
-                    required: "Please Select Status of Base Rate",
-                },
+                    required: "Please Select Status of Base Rate"
+                }
             }
         });
     });

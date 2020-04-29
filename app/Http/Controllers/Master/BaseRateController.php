@@ -33,12 +33,20 @@ class BaseRateController extends Controller {
                         ->with(['bank_list' => $bank_list]);
     }
 
+    public function getFormatedDate($strDate) {
+        $arr = explode(" ", $strDate);
+        $formated_date = explode("/", str_replace('-', '/', $arr[0]));
+        $new_format = $formated_date[2] . '/' . $formated_date[1] . '/' . $formated_date[0];
+        return $new_format ?: '';
+    }
+
     public function editBaseRate(Request $request) {
         $baserate_id = preg_replace('#[^0-9]#', '', $request->get('id'));
         $baserate_data = $this->masterRepo->findBaseRateById($baserate_id);
         $bank_list = $this->masterRepo->getBankList()->toArray();
-//        dd($baserate_data);
-        return view('master.baserates.edit_baserate', ['baserate_data' => $baserate_data,'bank_list' => $bank_list]);
+        $baserate_data['start_date'] = $this->getFormatedDate($baserate_data->start_date);
+        $baserate_data['end_date'] = $this->getFormatedDate($baserate_data->end_date);
+        return view('master.baserates.edit_baserate', ['baserate_data' => $baserate_data, 'bank_list' => $bank_list]);
     }
 
     public function saveBaseRate(BankBaseRateRequest $request) {
@@ -52,6 +60,8 @@ class BaseRateController extends Controller {
                 $baserate_id = preg_replace('#[^0-9]#', '', $request->get('id'));
                 $baserate_data = $this->masterRepo->findBaseRateById($baserate_id);
                 if (!empty($baserate_data)) {
+                    $validatedData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
+                    $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : '';
                     $validatedData['updated_by'] = Auth::user()->user_id;
                     $status = $this->masterRepo->updateBaseRate($validatedData, $baserate_id);
                 }
