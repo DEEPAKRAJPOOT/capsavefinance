@@ -31,10 +31,11 @@
 	                                        <thead>
 	                                        	<tr role="row">                                                    
                                                     <th>Ref No</th>
+                                                    <th>Batch Id</th>
                                                     <th>Customer ID</th>
                                                     <th>Entity Name</th>     
                                                     <th>Bank Detail</th>
-													<th>Amount</th>
+                                                    <th>Amount</th>
                                                     <th>Updated At</th>
                                                     <th>Action</th>
 												</tr>
@@ -54,6 +55,7 @@
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

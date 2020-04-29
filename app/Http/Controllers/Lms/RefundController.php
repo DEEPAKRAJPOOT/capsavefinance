@@ -388,11 +388,12 @@ class RefundController extends Controller
     }
     
     public function updateDisburseRefund(Request $request) {
+
         $transNo = $request->trans_no;
         $remarks = $request->remarks;
-        $req_id = $request->req_id;
+        $refund_req_id = $request->refund_req_id;
         $disburse_date = $request->disburse_date;
-        $actual_refund_date = (!empty($disburse_date)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburse_date))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $actual_refund_date = (!empty($disburse_date)) ? date("Y-m-d", strtotime(str_replace('/','-',$disburse_date))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
 
         $apiLogData = [];
         $apiLogData['tran_no'] = $transNo;
@@ -400,11 +401,11 @@ class RefundController extends Controller
         $apiLogData['actual_refund_date'] = $actual_refund_date;
         $apiLogData['status'] = 8;
         
-        $this->lmsRepo->updateAprvlRqst($apiLogData,$req_id);
-        $this->finalRefundTransactions($req_id,$actual_refund_date);
+        $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
+        $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
 
         Session::flash('message',trans('backend_messages.disburseMarked'));
-        return redirect()->route('lms_refund_sentbank');
+        return redirect()->route('lms_refund_refunded');
     }
 
     

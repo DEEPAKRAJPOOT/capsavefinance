@@ -46,6 +46,7 @@ class RefundReqTrans extends BaseModel {
     protected $fillable = [
         'refund_req_id',
         'trans_id',
+        'refund_trans_id',
         'req_amount',
         'created_at',
         'created_by',

@@ -239,7 +239,7 @@ trait LmsTrait
         if(isset($data['soa_flag'])){
             $soaFlag = $data['soa_flag'];
         }else{
-            $soaFlag = in_array($transType,[10,35]) ? 0 : 1;
+            $soaFlag = in_array($transType,[10]) ? 0 : 1;
         }
 
         $transactionData = [];
@@ -260,7 +260,7 @@ trait LmsTrait
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
 
-        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
                         
         $transactionData['created_by'] = Auth::user()->user_id;
         $transactionData['created_at'] = $curData;
@@ -584,19 +584,22 @@ trait LmsTrait
         $transactions = RefundReqTrans::where('refund_req_id','=',$refundReqId)->get();
         foreach ($transactions as $key => $trans) {
             if($trans->req_amount>0){
-                $trans->transaction;
-                $refundData = $this->createTransactionData($trans->user_id, [
+                $refundData = $this->createTransactionData($trans->transaction->user_id, [
                     'amount' => $trans->req_amount,
                     'trans_date'=>$actualRefundDate,
-                    'disbursal_id'=>$trans->disbursal_id,
+                    'tds_per'=>0,
+                    'invoice_disbursed_id'=>$trans->transaction->invoice_disbursed_id,
+                    'parent_trans_id'=>$trans->transaction->parent_trans_id,
+                    'link_trans_id'=>$trans->transaction->trans_id,
                     'soa_flag'=>1
-                ], null, $trans->trans_type, 0);
+                ], config('lms.TRANS_TYPE.REFUND'), 0);
+
                 $trans_data =  Transactions::saveTransaction($refundData);
                 if($trans_data){
                     $updateData = [
-                        'new_trans_id'=> $trans_data->trans_id
+                        'refund_trans_id'=> $trans_data->trans_id
                     ];
-                    RefundReqTrans::saveRefundTransactionData($updateData,['refund_trans_id'=>$trans->refund_trans_id]);
+                    RefundReqTrans::saveRefundReqTransData($updateData,$trans->refund_trans_id);
                 }
             }
         }
