@@ -1554,6 +1554,14 @@ class DataRenderer implements DataProviderInterface
                         return $inv_amount;
                        
                 })
+                ->addColumn(            
+                    'remark',
+                    function ($invoice) {                        
+                    
+                 return $invoice->remark;
+                      
+                       
+                })
                  ->addColumn(
                     'action',
                     function ($invoice) use ($request) {
