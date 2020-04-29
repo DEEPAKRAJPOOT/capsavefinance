@@ -699,7 +699,6 @@ class LeadController extends Controller {
         //     ->where("state_id",$request->state_id)
         //     ->pluck("name");
         //     return response()->json($cities);
-        
         $cities = DB::table("mst_city")
             ->select("id","name")
             ->where("state_id",$request->state_id)
