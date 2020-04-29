@@ -339,7 +339,7 @@ class InvoiceController extends Controller {
 					$this->invRepo->saveInvoiceStatusLog($value, 12);
 				}
 			}
-			$result = $this->createTransactionEntries($disbursalIds, $userId,$fundedDate);
+			$updateTransaction = $this->updateTransactionInvoiceDisbursed($disbursalIds, $userId,$fundedDate);
 
 			Session::flash('message',trans('backend_messages.disburseMarked'));
 			return redirect()->route('backend_get_sent_to_bank');
@@ -349,9 +349,20 @@ class InvoiceController extends Controller {
 		}
 	}
 	
-	public function createTransactionEntries($disbursalIds, $userId, $fundedDate) {
+	public function updateTransactionInvoiceDisbursed($disbursalIds, $userId, $fundedDate) {
 		$invoiceDisbursed = $this->lmsRepo->getInvoiceDisbursed($disbursalIds)->toArray();
+		$selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+		
 		foreach ($invoiceDisbursed as $key => $value) {
+			$tenor = $value['tenor_days'];
+			$updateInvoiceDisbursed = $this->lmsRepo->updateInvoiceDisbursed([
+						'payment_due_date' => ($value['invoice']['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : $value['invoice']['invoice_due_date'],
+						'int_accrual_start_dt' => $selectDate,
+						'updated_by'] = Auth::user()->user_id,
+        				'updated_at'] = $curData
+					], $value['invoice_disbursed_id']);
+
 			$interest= 0;
 			$margin= 0;
 
