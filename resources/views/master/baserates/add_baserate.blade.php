@@ -72,7 +72,9 @@
         $.validator.addMethod("greaterStart", function (value, element) {
             var startDate = $('#start_date').val();
             var endDate = $('#end_date').val();
-            return this.optional(element) || Date.parse(endDate) >= Date.parse(startDate);
+//            console.log(startDate,Date.parse(new Date(startDate)));
+//            console.log(endDate,Date.parse(new Date(endDate)));
+            return this.optional(element) || (Date.parse(endDate) >= Date.parse(startDate));
         });
         
         $('#baseRateForm').validate({// initialize the plugin

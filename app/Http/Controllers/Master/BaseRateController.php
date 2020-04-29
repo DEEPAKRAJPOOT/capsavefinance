@@ -35,13 +35,11 @@ class BaseRateController extends Controller {
 
     public function getFormatedDate($strDate) {
 //        dd($strDate);
-        if($strDate == "0000-00-00 00:00:00"){
-            return '';
-        }else{
+        if(!empty($strDate)){
             $arr = explode(" ", $strDate);
             $formated_date = explode("/", str_replace('-', '/', $arr[0]));
             $new_format = $formated_date[2] . '/' . $formated_date[1] . '/' . $formated_date[0];
-            return $new_format ?: '';
+            return $new_format;
         }
     }
 
@@ -50,7 +48,7 @@ class BaseRateController extends Controller {
         $baserate_data = $this->masterRepo->findBaseRateById($baserate_id);
         $bank_list = $this->masterRepo->getBankList()->toArray();
         $baserate_data['start_date'] = $this->getFormatedDate($baserate_data->start_date);
-        $baserate_data['end_date'] = $this->getFormatedDate($baserate_data->end_date);
+        $baserate_data['end_date'] = $this->getFormatedDate(($baserate_data->end_date != null) ? $baserate_data->end_date : '');
         return view('master.baserates.edit_baserate', ['baserate_data' => $baserate_data, 'bank_list' => $bank_list]);
     }
 
