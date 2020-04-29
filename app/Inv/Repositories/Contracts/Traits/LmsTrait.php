@@ -145,15 +145,16 @@ trait LmsTrait
         * disburseType = 1 for online and 2 for manually
         */
         $disbursalData = [];
-        $interest = 0;
-        $now = strtotime($invoice['invoice_due_date']); // or your date as well
-        $your_date = strtotime($invoice['invoice_date']);
-        $datediff = abs($now - $your_date);
-        $tenor = round($datediff / (60 * 60 * 24));
-        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-        $totalinterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+        $interest= 0;
+        $margin= 0;
+
+        $tenor = $this->calculateTenorDays($invoice);
+        $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+
         if($invoice['program_offer']['payment_frequency'] == 1) {
-            $interest = $totalinterest;
+            $interest = $tInterest;
         }
         $disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
 
@@ -164,7 +165,7 @@ trait LmsTrait
         $disbursalData['disburse_amt'] = $disburseAmount ?? null;
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
         $disbursalData['payment_due_date'] = ($invoice['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$invoice['disburse_date']). "+ $tenor Days")) : $invoice['invoice_due_date'];
-        $disbursalData['tenor_days'] =  $invoice['program_offer']['tenor'] ?? null;
+        $disbursalData['tenor_days'] =  $tenor ?? null;
         $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;

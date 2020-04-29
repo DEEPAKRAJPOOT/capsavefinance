@@ -103,4 +103,9 @@ class InvoiceDisbursed extends BaseModel {
 		return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer');
 	}
 
+	public static function getInvoiceDisbursed($disbursalIds){
+		return self::whereIn('disbursal_id', $disbursalIds)
+				->with('invoice.program_offer')->get();
+	}
+
 }
