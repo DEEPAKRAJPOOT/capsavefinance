@@ -47,6 +47,7 @@ class UserInvoiceRelation extends BaseModel {
      */
     protected $fillable = [
         'user_invoice_rel_id',
+        'user_id',
         'company_id',
         'biz_addr_id',
         'company_state_id',
