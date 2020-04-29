@@ -668,5 +668,15 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return BaseRate::getBaseRateDropDown();
     }
+    
+    /*
+     * check that base rate is default set for a bank.
+     */
+    public function checkIsDefaultBaseRate($bankId, $isDefault) {
+        
+        $result = BaseRate::checkIsDefaultBaseRate($bankId, $isDefault);
+  
+        return $result;
+    }
 
 }

@@ -59,6 +59,21 @@ class BaseRateController extends Controller {
 //            dd($request->all());
             $status = false;
             $baserate_id = false;
+            
+            if($request->get('is_default') == 1){
+                $bankId = (int)$request->get('bank_id');
+                $isDefault = (int)$request->get('is_default');
+                $data = $this->masterRepo->checkIsDefaultBaseRate($bankId,$isDefault);
+                $baseRateData = $data ? $data->toArray() : '';
+//                dd($baseRateData);
+                if (!empty($baseRateData)) {
+                    $baseRateId = $baseRateData['id'];
+                    $baseRateData['is_default'] = 0;
+//                    dd($regComData);
+                    $this->masterRepo->updateBaseRate($baseRateData, $baseRateId);
+                }
+            }
+            
             if (!empty($request->get('id'))) {
                 $baserate_id = preg_replace('#[^0-9]#', '', $request->get('id'));
                 $baserate_data = $this->masterRepo->findBaseRateById($baserate_id);

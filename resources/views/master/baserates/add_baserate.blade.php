@@ -47,7 +47,7 @@
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
-                <label for="is_default">Is Default Base Rate?</label><br />
+                <label for="is_default">Is Default Base Rate? <span class="mandatory">*</span></label><br />
                 <select class="form-control" name="is_default" id="is_default">
                     <option value="" selected>Select</option>
                     <option value="1">YES</option>
@@ -111,6 +111,10 @@
                 is_active: {
                     required: true,
                     digits: true
+                },
+                is_default: {
+                    required: true,
+                    digits: true
                 }
             },
             messages: {
@@ -129,6 +133,9 @@
                 },
                 is_active: {
                     required: "Please Select Status of Base Rate"
+                },
+                is_default: {
+                    required: "Please Select Default Base Rate"
                 }
             }
         });

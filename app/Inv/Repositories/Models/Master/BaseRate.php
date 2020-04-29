@@ -46,6 +46,7 @@ class BaseRate extends BaseModel {
         'start_date',
         'end_date',
         'is_active',
+        'is_default',
         'created_by',
         'created_at',
         'updated_at',
@@ -74,6 +75,17 @@ class BaseRate extends BaseModel {
 
     public function userDetail(){
         return $this->belongsTo(User::class, 'created_by');
+    }
+    
+    public static function checkIsDefaultBaseRate($bankId,$isDefault) {
+        
+        if (empty($isDefault) || empty($bankId)) {
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+
+        $res = self::where(['bank_id' => $bankId, 'is_default' => $isDefault])->first();
+        
+        return $res;
     }
 
 }
