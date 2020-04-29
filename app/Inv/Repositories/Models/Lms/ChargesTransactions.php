@@ -50,11 +50,13 @@ class ChargesTransactions extends BaseModel
      */
     protected $fillable = [
         'chrg_trans_id',
+        'trans_id',
         'prgm_id',
         'chrg_master_id',
         'percent',
         'chrg_applicable_id',
         'amount',
+        'virtual_acc_id',
         'created_at',
         'created_by'
     ];
@@ -87,7 +89,7 @@ class ChargesTransactions extends BaseModel
     
     public function transaction()
     {
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','chrg_trans_id','chrg_trans_id');
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','trans_id','trans_id');
    
     }
     

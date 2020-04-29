@@ -415,7 +415,7 @@ class Transactions extends BaseModel {
     /*** save repayment transaction details for invoice  **/
     public static function saveCharge($attr)
     {
-        return self::insert($attr);
+        return self::create($attr);
     } 
     
     /*** get all transaction  **/
@@ -445,7 +445,7 @@ class Transactions extends BaseModel {
      /*** get all transaction  **/
     public static function getAllUserChargeTransaction()
     {
-          return self::with('user')->where('chrg_trans_id','!=',NULL)->groupBy('user_id')->get();
+          return self::with('user')->groupBy('user_id')->get();
     }   
      
     /**

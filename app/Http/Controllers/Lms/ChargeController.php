@@ -110,7 +110,7 @@ class ChargeController extends Controller
       
   
       
-       public function saveManualCharges(Request $request)
+    public function saveManualCharges(Request $request)
        {  
          
            $getUserState = $this->lmsRepo->getUserAddress($request->app_id);
@@ -172,29 +172,13 @@ class ChargeController extends Controller
                          $igst =  0;
                    }
                  }
+                
                     $id  = Auth::user()->user_id;
                     $mytime = Carbon::now(); 
-                    $arr  = [   "prgm_id" => $request->program_id,
-                                "chrg_master_id" =>$request->chrg_name,
-                                "percent" => $percent,
-                                "chrg_applicable_id" =>  $chrg_applicable_id,
-                                "amount" =>   $totalSumAmount,
-                                'created_by' =>  $id,
-                                'created_at' =>  $mytime ];
-                
-                  $chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);  
-              
-                  if( $chrgTransId)
-                  {
-                        $arr  = [ "user_id" =>  $request->user_id,
-                                  "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
-                                  "chrg_trans_id" =>  $chrgTransId->chrg_trans_id,
+                    $arr  = [ "user_id" =>  $request->user_id,
                                   "amount" =>   $totalSumAmount,
                                   "soa_flag" =>1,
-                                  "gst"   => $is_gst,
-                                  "cgst"   => $cgst,
-                                  "sgst"   => $sgst,
-                                  "igst"   => $igst,
+                                  "gst"   => 1,
                                   'entry_type' =>0,
                                   "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                                   "trans_type" => $getTransType->id,
@@ -203,6 +187,23 @@ class ChargeController extends Controller
                                   'created_at' =>  $mytime ];
                       
                          $res =   $this->lmsRepo->saveCharge($arr);
+                    
+                    
+                    $arr  = [   "prgm_id" => $request->program_id,
+                                'trans_id' => $res['trans_id'],
+                                "chrg_master_id" =>$request->chrg_name,
+                                "percent" => $percent,
+                                "chrg_applicable_id" =>  $chrg_applicable_id,
+                                "amount" =>   $totalSumAmount,
+                                "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
+                                'created_by' =>  $id,
+                                'created_at' =>  $mytime ];
+                
+                  $chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);  
+              
+                  if( $chrgTransId)
+                  {
+                        
                           if($res)
                         {
                                 Session::flash('message', 'Data has been saved');

@@ -296,4 +296,9 @@ class AppProgramLimit extends BaseModel {
         return $this->hasMany('App\Inv\Repositories\Models\BizInvoice','app_id','app_id')->whereIn('status_id',[8,9,10,12]);
    }
    
+   public static function getAvaliableUserLimit($attr)
+   {
+       
+       return self::where(['app_limit_id' => $attr['app_limit_id'],'app_id' => $attr['app_id'],'biz_id' => $attr['biz_id']])->sum('limit_amt');
+   }
 }

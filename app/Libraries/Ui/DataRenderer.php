@@ -2721,7 +2721,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'effective_date',
                     function ($charges) {
-                   return $charges->transaction->trans_date ?: 'N/A';
+                   return $charges->transaction->trans_date ? date('d-m-Y',strtotime($charges->transaction->trans_date)) : 'N/A';
                 }) 
                 ->addColumn(
                     'applicability',
@@ -2736,7 +2736,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'created_at',
                     function ($charges) {
-                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                    return ($charges->created_at) ? date('d-m-Y',strtotime($charges->created_at)) : '---';
                 })
                
                  ->filter(function ($query) use ($request) {
