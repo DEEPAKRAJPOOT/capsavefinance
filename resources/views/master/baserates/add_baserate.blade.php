@@ -47,7 +47,7 @@
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
-                <label for="is_default">Is Default Base Rate? <span class="mandatory">*</span></label><br />
+                <label for="is_default">Is Default Base Rate?</label><br />
                 <select class="form-control" name="is_default" id="is_default">
                     <option value="" selected>Select</option>
                     <option value="1">YES</option>
@@ -77,17 +77,17 @@
             autoclose: true,
             minView: 2
         });
-        
-        $.validator.addMethod("greaterStart", function (value, element) {
-            var startDate = ($('#start_date').val()).split('/');
-            var endDate = ($('#end_date').val()).split('/');
-            var startDateSum = parseInt(startDate[0]) + parseInt(startDate[1]) + parseInt(startDate[2]);
-            var endDateSum = parseInt(endDate[0]) + parseInt(endDate[1]) + parseInt(endDate[2]);
-            console.log(startDate,startDateSum);
-            console.log(endDate,endDateSum);
-            return this.optional(element) || endDateSum >= startDateSum;
-        });
-        
+
+        $.validator.addMethod("greaterStart", function (value, element, params) {
+            if (!/Invalid|NaN/.test(new Date(value))) {
+                return new Date(value) > new Date($(params).val());
+            }
+
+            return isNaN(value) && isNaN($(params).val())
+                    || (Number(value) > Number($(params).val()));
+            ;
+        },'Must be greater than {0}.');
+
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
                 bank_id: {
@@ -106,13 +106,9 @@
                 },
                 end_date: {
 //                    required: true,
-                    greaterStart: true
+                    greaterStart: "#start_date"
                 },
                 is_active: {
-                    required: true,
-                    digits: true
-                },
-                is_default: {
                     required: true,
                     digits: true
                 }
@@ -133,9 +129,6 @@
                 },
                 is_active: {
                     required: "Please Select Status of Base Rate"
-                },
-                is_default: {
-                    required: "Please Select Default Base Rate"
                 }
             }
         });
