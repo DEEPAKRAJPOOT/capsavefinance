@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use Session;
 use Helpers;
 // use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
@@ -76,9 +77,13 @@ class AddressController extends Controller
         $user_id = $request->get('user_id');
 
         $gsts = $this->appRepo->getGSTsByUserId($user_id);
+        // start for default button
+        $currCompData = UserInvoiceRelation::getUserCurrCompany($user_id);
+        $is_show_default = ($currCompData)? 0: 1;
+        // end for default button
 
         $state_list =  $this->master->getAddStateList()->toArray();
-        return view('lms.address.add_address')->with(['user_id' => $user_id, 'state_list' => $state_list, 'gsts' => $gsts]);
+        return view('lms.address.add_address')->with(['user_id' => $user_id, 'state_list' => $state_list, 'gsts' => $gsts, 'is_show_default'=> $is_show_default]);
     }
 
     public function saveAddress(Request $request)
@@ -142,10 +147,16 @@ class AddressController extends Controller
 
         $gsts = $this->appRepo->getGSTsByUserId($user_id);
 
+
         $userAddress_id = preg_replace('#[^0-9]#', '', $request->get('biz_addr_id'));
         $userAddress_data = $this->appRepo->findUserAddressyById($userAddress_id);
         $state_list = ['' => 'Please Select'] + $this->master->getAddStateList()->toArray();
 
-        return view('lms.address.edit_address', ['biz_addr_id' => $request->get('biz_addr_id'),  'userAddress_data' => $userAddress_data, 'user_id' => $user_id, 'state_list' => $state_list, 'gsts'=> $gsts]);
+        // start for default button
+        $currCompData = UserInvoiceRelation::getUserCurrCompany($user_id);
+        $is_show_default = ($currCompData)? 0: 1;
+        // end for default button
+
+        return view('lms.address.edit_address', ['biz_addr_id' => $request->get('biz_addr_id'),  'userAddress_data' => $userAddress_data, 'user_id' => $user_id, 'state_list' => $state_list, 'gsts'=> $gsts, 'is_show_default'=>$is_show_default]);
     }
 }
