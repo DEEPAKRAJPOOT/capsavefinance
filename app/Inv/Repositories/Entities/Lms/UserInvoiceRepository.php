@@ -188,4 +188,8 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoiceRelation::checkUserInvoiceLocation($userInvData);
 	}
 
+	public function getCustAndCapsLoc($user_id) {
+		return UserInvoiceRelation::getCustAndCapsLoc($user_id);
+	}
+
 }

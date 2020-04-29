@@ -4329,4 +4329,12 @@ if ($err) {
         $data = $dataProvider->getUserInvoiceList($this->request, $userInvoice);
         return $data;
     }
+
+    // get user invoice list
+    public function getCustAndCapsLoc(DataProviderInterface $dataProvider) {
+        $user_id =  (int) $this->request->get('user_id');
+        $cusCapLoc = $this->UserInvRepo->getCustAndCapsLoc($user_id);
+        $data = $dataProvider->getCustAndCapsLoc($this->request, $cusCapLoc);
+        return $data;
+    }
 }

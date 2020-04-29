@@ -5455,4 +5455,31 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+    /**
+     * get customer primary and capsave location
+     */
+    public function getCustAndCapsLoc(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['is_active', 'addr_1'])
+              
+            ->editColumn(
+                'created_at',
+                function ($user) {
+                return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+
+            })
+            ->addColumn('addr_1', function($trans){
+                return $trans->addr_1;
+            })
+            
+            ->addColumn(
+                'is_active',
+                function ($doa) {
+                    return ($doa->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label> </div></b>';
+            }) 
+            
+            ->make(true);
+    }
 }

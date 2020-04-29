@@ -61,6 +61,27 @@
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <table id="cusCapLoc_list" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoices_list_info" style="width: 100%;">
+            <thead>
+                <tr role="row">
+                <th>Reference No</th>
+                <th>Customer Location</th>
+                <th>Capsave Location</th>
+                <th>Created Date</th>
+                <th>Status</th> 
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            </table>
+            <div id="cusCapLoc_list_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+        </div>
+    </div>
+
 </div>
 
 
@@ -70,6 +91,8 @@
    var message = {
        token: "{{ csrf_token() }}",
        user_id: "{{ $user_id }}",
+       data_not_found: "{{ trans('error_messages.data_not_found') }}",
+       get_cust_and_cap_loca: "{{ URL::route('get_cust_and_cap_loca') }}",
    }
 </script>
 <script type="text/javascript">
@@ -139,4 +162,5 @@ $(document).ready(function () {
 
    });
 </script>
+<script type="text/javascript" src="{{ asset('backend/js/ajax-js/lms/cusCapLocation.js') }}"></script>
 @endsection
