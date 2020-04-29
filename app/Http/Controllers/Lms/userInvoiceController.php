@@ -554,6 +554,21 @@ class userInvoiceController extends Controller
                 'biz_addr_state_id' => $arrUserData['user_state'],
                 'is_active' => 1,
             ];
+
+            $userInvData = [
+                'user_id' => $arrUserData['user_id'],
+                'biz_addr_id' => $arrUserData['customer_pri_loc'],
+                'company_id' => $arrUserData['capsav_location'],
+                'is_active' => 1,
+            ];
+
+            $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
+            if($checkData) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Same address and company are already mapped and active');
+            } else {
+
+            }
+
             $this->UserInvRepo->unPublishAddr($user_id);
             $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
             if($status) {

@@ -74,4 +74,9 @@ class UserInvoiceRelation extends BaseModel {
         return $data;
     }
 
+    public static function checkUserInvoiceLocation($userInvData) {
+        $data = self::where($userInvData)->first();
+        return $data ? : false;
+    }
+
 }
