@@ -48,6 +48,11 @@
   });
  
     $(document).on('change','#program_id',function(){
+        var pid  = $(this).val();
+         if(pid=='')
+        {
+            return false;
+        }
         $(".chrg_name").empty();
         $("#msgprogram").html('');
         var postData =  ({'app_id':$("#app_id").val(),'prog_id':$("#program_id").val(),'_token':messages.token});
