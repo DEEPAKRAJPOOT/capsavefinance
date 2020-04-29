@@ -73,25 +73,25 @@
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{ sprintf('%.2F', $total_base_amt) }}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_base_amt)  ? sprintf('%.2F', $total_base_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{ sprintf('%.2F', $total_sgst_amt) }}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_sgst_amt) ? sprintf('%.2F', $total_sgst_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{ sprintf('%.2F', $total_cgst_amt) }}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_cgst_amt) ? sprintf('%.2F', $total_cgst_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{ sprintf('%.2F', $total_igst_amt) }}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_igst_amt) ? sprintf('%.2F', $total_igst_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>{{ sprintf('%.2F', $sum_total_rental) }}</strong></span>
