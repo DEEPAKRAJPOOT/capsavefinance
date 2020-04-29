@@ -57,7 +57,7 @@
                     <option value="0">In-Active</option>
                 </select>
             </div>
-            @if($is_show_default)
+            @if($is_show_default && 0)
             <div class="form-group col-6">
                 <label for="address_type">Set as Default</label><br />
                 <input type="checkbox" name="is_default" value="1" style="width: 25px; height: 25px;">
