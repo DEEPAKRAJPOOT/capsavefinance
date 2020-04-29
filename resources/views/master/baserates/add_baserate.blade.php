@@ -46,6 +46,15 @@
                 </select>
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
+            <div class="form-group col-md-6">
+                <label for="is_default">Is Default Base Rate?</label><br />
+                <select class="form-control" name="is_default" id="is_default">
+                    <option value="" selected>Select</option>
+                    <option value="1">YES</option>
+                    <option value="0">NO</option>
+                </select>
+                {!! $errors->first('is_default', '<span class="error">:message</span>') !!}
+            </div>
         </div>
         <div class="row">
             <div class="form-group col-md-12 text-right">
