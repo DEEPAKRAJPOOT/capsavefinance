@@ -27,6 +27,7 @@
 
                     <form action="{{route('save_user_invoice_location', ['user_id' => $user_id] )}}" method="post"  id="invoice_location">
                         @csrf
+                        <input type="hidden" value="{{$user_id}}" name="user_id">
                         <div class="row">
                             <div class="form-group col-md-6">
                                  <label for="entity_type">Customer Primary Location   </label><br />

@@ -525,6 +525,7 @@ class userInvoiceController extends Controller
      */
     public function userInvoiceLocation(Request $request) {
         try {
+            
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
@@ -545,9 +546,11 @@ class userInvoiceController extends Controller
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
 
             $userInvoiceData = [
+                'user_id' => $arrUserData['user_id'],
                 'biz_addr_id' => $arrUserData['customer_pri_loc'],
                 'company_id' => $arrUserData['capsav_location'],
                 'company_state_id' => $arrUserData['capsave_state'],
+                'biz_addr_state_id' => $arrUserData['user_state'],
                 'biz_addr_state_id' => $arrUserData['user_state'],
                 'is_active' => 1,
             ];
@@ -569,7 +572,6 @@ class userInvoiceController extends Controller
         $cities = DB::table("mst_company")
             ->select("comp_addr_id", "state")
             ->where("comp_addr_id",$request->state)
-            ->where("is_reg",1)
             ->pluck("state", "comp_addr_id");
 
             return response()->json($cities);
