@@ -26,7 +26,7 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="start_date">Start Date <span class="mandatory">*</span></label>
-                <input type="text" name="start_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" value="">
+                <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="">
                 {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
             </div>
 
@@ -63,12 +63,18 @@
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
         }, "Please specify a valid base rate percent");
 
-        $("#end_date").datetimepicker({
+        $("#end_date, #start_date").datetimepicker({
             format: 'dd/mm/yyyy',
             autoclose: true,
             minView: 2
         });
-
+        
+        jQuery.validator.addMethod("greaterStart", function (value, element) {
+            let startDate = $('#start_date').val();
+            let endDate = $('#end_date').val();
+            return this.optional(element) || Date.parse(endDate) >= Date.parse(startDate);
+        });
+        
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
                 bank_id: {
@@ -82,7 +88,12 @@
                     rate_percent: 'input[name="base_rate"]'
                 },
                 start_date: {
-                    required: true
+                    required: true,
+//                    smallerEnd: "#end_date"
+                },
+                end_date: {
+                    required: true,
+                    greaterStart: true
                 },
                 is_active: {
                     required: true,
@@ -97,7 +108,11 @@
                     required: "Please Enter Base Rate"
                 },
                 start_date: {
-                    required: "Please Enter Start Date"
+                    required: "Please Enter Start Date",
+//                    smallerEnd: "Must be smaller than end date."
+                },
+                end_date: {
+                    greaterStart: "Must be greater than start date."
                 },
                 is_active: {
                     required: "Please Select Status of Base Rate"
