@@ -20,9 +20,6 @@ use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-use App\Inv\Repositories\Models\BankWorkCapitalFacility;
-use App\Inv\Repositories\Models\BankTermBusiLoan;
-use App\Inv\Repositories\Models\BankAnalysis;
 
 trait CamTrait
 {
@@ -299,13 +296,12 @@ trait CamTrait
         $updateData = [];
         $updateData['is_active'] = 0;
         $updateData['updated_by'] = Auth::user()->user_id;
-        $updResult = BankWorkCapitalFacility::where('bank_detail_id', $bank_detail_id);
-        $updResult->update($updateData);
+        $this->financeRepo->updateBankWcFacility($bank_detail_id, $updateData);
         $arrData =[];
         if(isset($request->bank_name)) {
             foreach($request->bank_name as $key=>$val){
                 if($request->bank_name[$key] != null) {
-                    $arrData[$key]['bank_detail_id'] = $bank_detail_id;
+                    $arrData[$key]['bank_detail_id'] = (int) $bank_detail_id;
                     $arrData[$key]['bank_name'] = $request->bank_name[$key];
                     $arrData[$key]['fund_facility'] = $request->fund_facility[$key];
                     $arrData[$key]['fund_amt'] = str_replace(',', '', $request->fund_amt[$key]);
@@ -318,8 +314,8 @@ trait CamTrait
                     $arrData[$key]['created_at'] = \Carbon\Carbon::now();
                     $arrData[$key]['created_by'] = Auth::user()->user_id;
                 }
-            }  
-            BankWorkCapitalFacility::insert($arrData);          
+            }
+            $this->financeRepo->saveBankWcFacility($arrData);
         }        
     }
 
@@ -328,13 +324,12 @@ trait CamTrait
         $updateData = [];
         $updateData['is_active'] = 0;
         $updateData['updated_by'] = Auth::user()->user_id;
-        $updResult = BankTermBusiLoan::where('bank_detail_id', $bank_detail_id);
-        $updResult->update($updateData);
+        $this->financeRepo->updateBankTermBusiLoan($bank_detail_id, $updateData);
         $arrData =[];
         if(isset($request->bank_name_tlbl)) {
             foreach($request->bank_name_tlbl as $key=>$val){
                 if($request->bank_name_tlbl[$key] != null) {
-                    $arrData[$key]['bank_detail_id'] = $bank_detail_id;
+                    $arrData[$key]['bank_detail_id'] = (int) $bank_detail_id;
                     $arrData[$key]['bank_name_tlbl'] = $request->bank_name_tlbl[$key];
                     $arrData[$key]['loan_name'] = $request->loan_name[$key];
                     $arrData[$key]['facility_amt'] = str_replace(',', '', $request->facility_amt[$key]);
@@ -344,8 +339,8 @@ trait CamTrait
                     $arrData[$key]['created_at'] = \Carbon\Carbon::now();
                     $arrData[$key]['created_by'] = Auth::user()->user_id;
                 }
-            }  
-            BankTermBusiLoan::insert($arrData);          
+            }
+            $this->financeRepo->saveBankTermBusiLoan($arrData);
         }        
     }
     
@@ -354,13 +349,12 @@ trait CamTrait
         $updateData = [];
         $updateData['is_active'] = 0;
         $updateData['updated_by'] = Auth::user()->user_id;
-        $updResult = BankAnalysis::where('bank_detail_id', $bank_detail_id);
-        $updResult->update($updateData);
+        $this->financeRepo->updateBankAnalysis($bank_detail_id, $updateData);
         $arrData =[];
         if(isset($request->bank_name_ba)) {
             foreach($request->bank_name_ba as $key=>$val){
                 if($request->bank_name_ba[$key] != null) {
-                    $arrData[$key]['bank_detail_id'] = $bank_detail_id;
+                    $arrData[$key]['bank_detail_id'] = (int) $bank_detail_id;
                     $arrData[$key]['bank_name'] = $request->bank_name_ba[$key];
                     $arrData[$key]['act_type'] = $request->act_type[$key];
                     $arrData[$key]['uti_max'] = $request->uti_max[$key];
@@ -377,8 +371,8 @@ trait CamTrait
                     $arrData[$key]['created_at'] = \Carbon\Carbon::now();
                     $arrData[$key]['created_by'] = Auth::user()->user_id;
                 }
-            }  
-            BankAnalysis::insert($arrData);          
+            }
+            $this->financeRepo->saveBankAnalysis($arrData);
         }        
     }
 }

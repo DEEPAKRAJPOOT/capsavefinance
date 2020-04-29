@@ -321,7 +321,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                                 ->with('disbursal')
                                 ->with('transactions') 
 				->whereHas('acceptedOffer')
-				->where(['user_id' => $user_id, 'status' => 1])
+				->where(['user_id' => $user_id, 'status' => 2])
 				->get();
 	}    
 
@@ -332,7 +332,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	{
 		return Application::with('business')
 				->with('appLimit')
-				->where(['user_id' => $user_id, 'status' => 1])
+				->where(['user_id' => $user_id, 'status' => 2])
 				->get();
 	}    
     
