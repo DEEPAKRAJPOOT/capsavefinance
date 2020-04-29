@@ -27,6 +27,7 @@ try {
                 {data: 'City'},
                 {data: 'State'},
                 {data: 'Pincode'},
+                {data: 'rcu_status'},
                 {data: 'is_active'},
                 {data: 'action'},
                 ],
