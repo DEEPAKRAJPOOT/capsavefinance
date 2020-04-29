@@ -544,6 +544,8 @@ class userInvoiceController extends Controller
             $arrUserData = $request->all();
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            $arrUserData['created_at'] = \carbon\Carbon::now();
+            $arrUserData['created_by'] = Auth::user()->user_id;
 
             $userInvoiceData = [
                 'user_id' => $arrUserData['user_id'],
@@ -553,6 +555,8 @@ class userInvoiceController extends Controller
                 'biz_addr_state_id' => $arrUserData['user_state'],
                 'biz_addr_state_id' => $arrUserData['user_state'],
                 'is_active' => 1,
+                'created_at' => $arrUserData['created_at'],
+                'created_by' => $arrUserData['created_by'],
             ];
 
             $userInvData = [
@@ -570,6 +574,7 @@ class userInvoiceController extends Controller
             }
 
             $this->UserInvRepo->unPublishAddr($user_id);
+
             $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
             if($status) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');
