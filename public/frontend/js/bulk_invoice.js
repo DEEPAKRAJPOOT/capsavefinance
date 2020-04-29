@@ -1,3 +1,12 @@
+  $(document).ready(function(){
+    setInterval(function(){  localStorage.setItem('storageMsg',''); }, 1000);
+     var  msg = localStorage.getItem('storageMsg');
+    if(msg)
+     {
+       $("#storeSuccessMsg").html("<div class='alert-success alert' role='alert'><span><i class='fa fa-bell fa-lg' aria-hidden='true'></i></span>"+msg+"</div>");
+     }
+   })
+ 
  ///* upload image and get ,name  */
     $('input[name="file_id"]').change(function (e) {
         $("#customFile_msg").html('');
@@ -273,94 +282,125 @@
         return  Math.floor(days);
     } 
     /////////////// validation the time of final submit/////////////// 
-      $(document).on('click','#final_submit',function(e){
-        $("#final_submit_msg").hide();
-        var p_limit =  $("#pro_limit_hide").val();  
-        var sum = 0;
-       if ($('form#signupForm').validate().form()) {     
-        $(".batchInvoice" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please enter invoice no",
-        }
-        });
-          $(".batchInvoiceDueDate" ).rules( "add", {
-        required: true,
-    
-        messages: {
-        required: "Please enter currect invoice due date",
-        }
-        });
-          $(".batchInvoiceDate" ).rules( "add", {
-        required: true,
-     
-        messages: {
-        required: "Please enter currect invoice due date",
-        }
-        });
-          $(".subOfAmount" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please enter currect invoice amount",
-        }
-        });
-                
-        //////// check total amount /////////////
-        $(".subOfAmount").each(function() {
-        sum += parseInt($(this).val().replace(/,/g, ''));
-        });
-        if(sum >  p_limit)
-        {
-            $("#final_submit_msg").show(); 
-            e.preventDefault();
-        }
+    $(document).on('click', '#final_submit', function (e) {
         
-        ////////// check tanor date///////////////////
-        var count  = 0;
-        $(".batchInvoiceDate").each(function(i,v) { count++;
-        var  first =  $(".invoiceTanor"+count).val();
-        var  second = $(this).val();
-        var getDays  = parseInt(findDaysWithDate(first,second));
-        var tenor  = parseInt($('#tenor').val());
-         var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //As January is 0.
-        var yyyy = today.getFullYear();
-        var cDate  = dd+"/"+mm+"/"+yyyy;
-        var getOldDays  = findDaysWithDate(cDate,second);
-        var tenor  = $('#tenor').val();
-        var tenor_old_invoice  = $('#tenor_old_invoice').val();
-       /*if(getOldDays > tenor_old_invoice)
-        {
-           $("#tenorMsg").show(); 
-          $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
-           e.preventDefault();
-        }
-         else */
-        if(getDays > tenor)
-        {
-           $(".appendExcel"+count).css("background-color","#ea9292");
-           $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be '+tenor+' days'); 
-           e.preventDefault();
-        } 
-         else if(getDays < 0)
-        {
-           
-           $("#tenorMsg").show(); 
-           $("#tenorMsg").html('Invoice Due Date should be  greater than invoice date'); 
-           e.preventDefault();
-        }
-        else
-        {
-           $(".appendExcel"+count).css("background-color","white"); 
-        }
-        });
-       
-       } else {
-        /// alert();
-        }  
-     
+       var arr = $(".getUploadBulkId").map(function() {
+                return $(this).attr("data-id");
+              }).get().join();
+      if(confirm('Are you sure, You want to final submit'))
+      {
+        $('.isloader').show();   
+        var postData =  ({'id':arr,'_token':messages.token});
+        jQuery.ajax({
+         url: messages.upload_invoice_csv,
+                 method: 'post',
+                 dataType: 'json',
+                 data: postData,
+                 error: function (xhr, status, errorThrown) {
+                 alert(errorThrown);
+
+                 },
+                 success: function (data) {
+                       $('.isloader').hide();
+                       if(data.status==1)
+                       {
+                           localStorage.setItem('storageMsg', 'Invoice successfully saved');
+                           location.reload(); 
+                       }
+                 }
+         });  
+       }
+       else
+       {
+           return false;
+       }
+            ///var users = $('input:text.users').serialize();
+        /* $("#final_submit_msg").hide();
+        var p_limit = $("#pro_limit_hide").val();
+        var sum = 0;
+        if ($('form#signupForm').validate().form()) {
+            $(".batchInvoice").rules("add", {
+                required: true,
+                messages: {
+                    required: "Please enter invoice no",
+                }
+            });
+            $(".batchInvoiceDueDate").rules("add", {
+                required: true,
+
+                messages: {
+                    required: "Please enter currect invoice due date",
+                }
+            });
+            $(".batchInvoiceDate").rules("add", {
+                required: true,
+
+                messages: {
+                    required: "Please enter currect invoice due date",
+                }
+            });
+            $(".subOfAmount").rules("add", {
+                required: true,
+                messages: {
+                    required: "Please enter currect invoice amount",
+                }
+            });
+
+            //////// check total amount /////////////
+            $(".subOfAmount").each(function () {
+                sum += parseInt($(this).val().replace(/,/g, ''));
+            });
+            if (sum > p_limit)
+            {
+                $("#final_submit_msg").show();
+                e.preventDefault();
+            }
+
+            ////////// check tanor date///////////////////
+            var count = 0;
+            $(".batchInvoiceDate").each(function (i, v) {
+                count++;
+                var first = $(".invoiceTanor" + count).val();
+                var second = $(this).val();
+                var getDays = parseInt(findDaysWithDate(first, second));
+                var tenor = parseInt($('#tenor').val());
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth() + 1; //As January is 0.
+                var yyyy = today.getFullYear();
+                var cDate = dd + "/" + mm + "/" + yyyy;
+                var getOldDays = findDaysWithDate(cDate, second);
+                var tenor = $('#tenor').val();
+                var tenor_old_invoice = $('#tenor_old_invoice').val();
+                /*if(getOldDays > tenor_old_invoice)
+                 {
+                 $("#tenorMsg").show(); 
+                 $("#tenorMsg").html('Invoice Date & Current Date diffrence should be '+tenor_old_invoice+' days'); 
+                 e.preventDefault();
+                 }
+                 else 
+                if (getDays > tenor)
+                {
+                    $(".appendExcel" + count).css("background-color", "#ea9292");
+                    $("#tenorMsg").show();
+                    $("#tenorMsg").html('Invoice Date & Invoice Due Date diffrence should be ' + tenor + ' days');
+                    e.preventDefault();
+                } else if (getDays < 0)
+                {
+
+                    $("#tenorMsg").show();
+                    $("#tenorMsg").html('Invoice Due Date should be  greater than invoice date');
+                    e.preventDefault();
+                } else
+                {
+                    $(".appendExcel" + count).css("background-color", "white");
+                }
+            });
+
+        } else {
+            /// alert();
+        }  */
+
     });
     
     //////// String value not allowed in  amount filed//////////////////////
@@ -499,30 +539,34 @@
         }
     });
     
-     $(document).on('click','.deleteTempInv',function(){
-     if (confirm("Are you sure? You want to delete it.")) {
-      var temp_id =  $(this).attr('data-id'); 
-      var postData =  ({'temp_id':temp_id,'_token':messages.token});
-       jQuery.ajax({
-        url: messages.delete_temp_invoice,
+    $(document).on('click', '.deleteTempInv', function () {
+        if (confirm("Are you sure? You want to delete it.")) {
+            var invoice_bulk_upload_id = $(this).attr('data-id');
+            var numItems = $('.deleteTempInv').length;
+            var postData = ({'invoice_bulk_upload_id':invoice_bulk_upload_id, '_token': messages.token});
+            jQuery.ajax({
+                url: messages.delete_temp_invoice,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
                 error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
-                
+                    alert(errorThrown);
+
                 },
                 success: function (data) {
-                    if(data.status==1)
+                    if (data.status == 1)
                     {
-                         $(".finalButton").show();
-                         $("#deleteRow"+data.id).remove();
-                      }
-                  }
-                });
-            }
-            else
-            {
-                return false;
-            }
-         });        
+                        if(numItems==1)
+                        {
+                            location.reload();
+                        }
+                        $(".finalButton").show();
+                        $("#deleteRow" + data.id).remove();
+                    }
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });

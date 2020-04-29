@@ -70,4 +70,41 @@ class BankAnalysis extends BaseModel
                         'updated_at',
                         'updated_by'
     ];
+    
+    public static function saveBankAnalysis($data) {
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }     
+        return self::insert($data);
+    }
+    
+    public static function updateBankAnalysis($bankDetailId, $dataArr) {
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($bankDetailId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($dataArr)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        } 
+        $rowUpdate = self::where('bank_detail_id',(int) $bankDetailId)->update($dataArr);
+        return ($rowUpdate ? $rowUpdate : false);
+    }
+    
+    public static function getBankAnalysis($bankDetailId) {
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($bankDetailId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $result = self::where('bank_detail_id',(int) $bankDetailId)
+                ->where('is_active', 1)->get();
+        return ($result ? $result : []);
+    }
 }

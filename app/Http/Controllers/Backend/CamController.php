@@ -42,6 +42,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\FinanceInterface as InvFinanceRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
@@ -60,8 +61,9 @@ class CamController extends Controller
     protected $docRepo;
     protected $pdf;
     protected $genBlankfinJSON = TRUE;
+    protected $financeRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo, InvFinanceRepoInterface $finance_repo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
@@ -69,6 +71,7 @@ class CamController extends Controller
         $this->mstRepo = $mstRepo;
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
+        $this->financeRepo = $finance_repo;
     }
     
     /**
@@ -681,18 +684,15 @@ class CamController extends Controller
         $dataTlbl = [];
         $dataBankAna = [];
         if(isset($debtPosition['bank_detail_id'])) {
-          $dataWcf = BankWorkCapitalFacility::where('bank_detail_id', $debtPosition['bank_detail_id'])
-                          ->where('is_active', 1)->get();
+          $dataWcf = $this->financeRepo->getBankWcFacility($debtPosition['bank_detail_id']);
           $dataWcf = $dataWcf ? $dataWcf->toArray() : [];
         } 
         if(isset($debtPosition['bank_detail_id'])) {
-          $dataTlbl = BankTermBusiLoan::where('bank_detail_id', $debtPosition['bank_detail_id'])
-                          ->where('is_active', 1)->get();
+          $dataTlbl = $this->financeRepo->getBankTermBusiLoan($debtPosition['bank_detail_id']);
           $dataTlbl = $dataTlbl ? $dataTlbl->toArray() : [];
         } 
         if(isset($debtPosition['bank_detail_id'])) {
-          $dataBankAna = BankAnalysis::where('bank_detail_id', $debtPosition['bank_detail_id'])
-                            ->where('is_active', 1)->get();
+          $dataBankAna = $this->financeRepo->getBankAnalysis($debtPosition['bank_detail_id']);
           $dataBankAna = $dataBankAna ? $dataBankAna->toArray() : [];
         }
         $contents = array();
@@ -2053,11 +2053,14 @@ class CamController extends Controller
             $fund_date = $request->get('fund_date');
             $nonfund_date = $request->get('nonfund_date');
             $tblfund_date = $request->get('tbl_fund_date');
-             if (empty($date)) {
+            /*
+            if (empty($date)) {
                Session::flash('error',trans('Debt on field can\'t be empty'));
                return redirect()->route('cam_bank', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
             }
-            $arrData['debt_on'] = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+             * 
+             */
+            $arrData['debt_on'] = !empty($date) ? Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d') : null;
             $arrData['fund_ason_date'] = $fund_date != null ? Carbon::createFromFormat('d/m/Y', $fund_date)->format('Y-m-d') : null;
             $arrData['nonfund_ason_date'] = $nonfund_date != null ? Carbon::createFromFormat('d/m/Y', $nonfund_date)->format('Y-m-d') : null;
             $arrData['tbl_fund_ason_date'] = $tblfund_date != null ? Carbon::createFromFormat('d/m/Y', $tblfund_date)->format('Y-m-d') : null;
@@ -2066,15 +2069,15 @@ class CamController extends Controller
             $bank_detail_id = $request->get('bank_detail_id');
             if (!empty($bank_detail_id)) {
               $result = FinanceModel::updatePerfios($arrData,'app_biz_bank_detail', $bank_detail_id ,'bank_detail_id');
-              $this->saveBankWorkCapitalFacility($request, $bank_detail_id);
-              $this->saveBankTermBusiLoan($request, $bank_detail_id);
-              $this->saveBankAnalysis($request, $bank_detail_id);
+              $this->saveBankWorkCapitalFacility($request, (int) $bank_detail_id);
+              $this->saveBankTermBusiLoan($request, (int) $bank_detail_id);
+              $this->saveBankAnalysis($request, (int) $bank_detail_id);
               $resultFlag = true;
             }else{
               $result_id = FinanceModel::insertPerfios($arrData, 'app_biz_bank_detail');
-              $this->saveBankWorkCapitalFacility($request, $result_id);
-              $this->saveBankTermBusiLoan($request, $result_id);
-              $this->saveBankAnalysis($request, $result_id);
+              $this->saveBankWorkCapitalFacility($request, (int) $result_id);
+              $this->saveBankTermBusiLoan($request, (int) $result_id);
+              $this->saveBankAnalysis($request, (int) $result_id);
               $resultFlag = true;
             }
             
