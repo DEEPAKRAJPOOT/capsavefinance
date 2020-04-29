@@ -105,22 +105,36 @@ class RenewalController extends Controller {
             
             $this->appRepo->updateAppDetails($appId, ['status' => 3]); //Ready for Renewal
             
+            $userData = $this->userRepo->getfullUserDetail($userId);
+            /*
+            if ($userData && !empty($userData->anchor_id)) {
+                $toUserId = $this->userRepo->getLeadSalesManager($userId);
+            } else {
+                $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+            }
+            */
+            $roles = $this->appRepo->getBackStageUsers($appId, [4]);  //Assigned Sales Manager
+            $toUserId = isset($roles[0]) ? $roles[0]->user_id : null;
+            
             $user = $this->userRepo->getfullUserDetail($userId);
+            $salesUser = $this->userRepo->getfullUserDetail($toUserId);
             
             $endDate = $app->end_date;
             $date = \Carbon\Carbon::parse($endDate);
             $now  = \Carbon\Carbon::now();
             $diffInDays = $date->diffInDays($now);
 
-            if ($diffInDays == 7) {
+            //if ($diffInDays == 7) {
                 $emailData['app_id']  = \Helpers::formatIdWithPrefix($appId, 'APP');
                 $emailData['lead_id'] = \Helpers::formatIdWithPrefix($userId, 'LEADID');
                 $emailData['entity_name'] = 
                 $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                 $emailData['receiver_email'] = $user->email;
+                $emailData['sales_manager_name'] = $salesUser ? $salesUser->f_name .' '. $user->m_name .' '. $user->l_name : '';
+                $emailData['sales_manager_email'] = $salesUser ? $salesUser->email : '';
 
                 \Event::dispatch("APPLICATION_RENEWAL_MAIL", serialize($emailData));
-            }
+            //}
             
             $result .= $result == "" ? "Applications are ready for renewal : " . $appId : ', ' . $appId;
         }

@@ -727,12 +727,15 @@ class UserEventsListener extends BaseEvent
                     $message->bcc(explode(',', env('SEND_MAIL_BCC')));
                     $message->cc(explode(',', env('SEND_MAIL_CC')));                    
                 }else{
-                    $message->to($user["receiver_email"], $user["receiver_user_name"]);
+                    //$message->to($user["receiver_email"], $user["receiver_user_name"]);
+                    //$message->to($user["sales_manager_email"], $user["sales_manager_name"]);
+                    $email = [$user["receiver_email"],$user["sales_manager_email"]];
+                    $message->to($email);
                 }
         
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["receiver_email"]),
+                    'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['receiver_user_name'],
                     'subject' => $mail_subject,
