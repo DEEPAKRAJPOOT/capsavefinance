@@ -104,6 +104,7 @@ public function limitManagement(Request $request) {
         $application = $this->appRepo->getCustomerApplications($user_id);
         $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
         $customerLimit     =  $this->appRepo->getUserLimit($user_id);
+        $AvaliablecustomerLimit     =  $this->appRepo->getAvaliableUserLimit($customerLimit);
         $getUserProgramLimit   =  $this->appRepo->getUserProgramLimit($customerLimit);
         
         foreach ($application as $key => $app) {
@@ -128,7 +129,8 @@ public function limitManagement(Request $request) {
                             'application' => $application,
                             'anchors' => $anchors,
                             'userlimit' => $customerLimit,
-                            'offerlimit' => $getUserProgramLimit
+                            'offerlimit' => $getUserProgramLimit,
+                            'avaliablecustomerLimit' => $AvaliablecustomerLimit
         ]);
     } catch (Exception $ex) {
         dd($ex);
