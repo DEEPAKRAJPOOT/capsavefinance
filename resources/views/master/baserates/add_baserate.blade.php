@@ -69,9 +69,9 @@
             minView: 2
         });
         
-        jQuery.validator.addMethod("greaterStart", function (value, element) {
-            let startDate = $('#start_date').val();
-            let endDate = $('#end_date').val();
+        $.validator.addMethod("greaterStart", function (value, element) {
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
             return this.optional(element) || Date.parse(endDate) >= Date.parse(startDate);
         });
         
@@ -92,7 +92,7 @@
 //                    smallerEnd: "#end_date"
                 },
                 end_date: {
-                    required: true,
+//                    required: true,
                     greaterStart: true
                 },
                 is_active: {

@@ -73,6 +73,12 @@
             autoclose: true,
             minView: 2
         });
+        
+        $.validator.addMethod("greaterStart", function (value, element) {
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
+            return this.optional(element) || Date.parse(endDate) >= Date.parse(startDate);
+        });
 
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
@@ -90,7 +96,8 @@
                     required: true
                 },
                 end_date: {
-//                    required: true
+//                    required: true,
+                    greaterStart: true
                 },
                 is_active: {
                     required: true,
@@ -106,6 +113,9 @@
                 },
                 start_date: {
                     required: "Please Select Start Date"
+                },
+                end_date: {
+                    greaterStart: "Must be greater than start date."
                 },
                 is_active: {
                     required: "Please Select Status of Base Rate"
