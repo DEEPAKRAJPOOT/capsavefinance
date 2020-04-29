@@ -544,6 +544,8 @@ class userInvoiceController extends Controller
             $arrUserData = $request->all();
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            $arrUserData['created_at'] = \carbon\Carbon::now();
+            $arrUserData['created_by'] = Auth::user()->user_id;
 
             $userInvoiceData = [
                 'user_id' => $arrUserData['user_id'],
@@ -551,8 +553,9 @@ class userInvoiceController extends Controller
                 'company_id' => $arrUserData['capsav_location'],
                 'company_state_id' => $arrUserData['capsave_state'],
                 'biz_addr_state_id' => $arrUserData['user_state'],
-                'biz_addr_state_id' => $arrUserData['user_state'],
                 'is_active' => 1,
+                'created_at' => $arrUserData['created_at'],
+                'created_by' => $arrUserData['created_by'],
             ];
 
             $userInvData = [
@@ -562,6 +565,13 @@ class userInvoiceController extends Controller
                 'is_active' => 1,
             ];
 
+            if(!$arrUserData['capsave_state']) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Capsave Location"');
+            }
+            if(!$arrUserData['user_state']) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Customer Primary Location"');
+            }
+
             $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
             if($checkData) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Same address and company are already mapped and active');
@@ -570,6 +580,9 @@ class userInvoiceController extends Controller
             }
 
             $this->UserInvRepo->unPublishAddr($user_id);
+            $arrUserData['updated_at'] = \carbon\Carbon::now();
+            $arrUserData['updated_by'] = Auth::user()->user_id;
+            
             $status = $this->UserInvRepo->saveUserInvoiceLocation($userInvoiceData); 
             if($status) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'Address save Successfully');

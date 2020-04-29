@@ -53,6 +53,10 @@ class UserInvoiceRelation extends BaseModel {
         'company_state_id',
         'biz_addr_state_id',
         'is_active',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
 
     /**
