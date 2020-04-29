@@ -26,7 +26,7 @@ class BaseRate extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
@@ -43,6 +43,8 @@ class BaseRate extends BaseModel {
     protected $fillable = [
         'bank_id',
         'base_rate',
+        'start_date',
+        'end_date',
         'is_active',
         'created_by',
         'created_at',

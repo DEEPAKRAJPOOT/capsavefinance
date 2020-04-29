@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
@@ -44,7 +45,7 @@ class BaseRateController extends Controller {
         try {
             $filter['filter_search_keyword'] = $request->filter_search_keyword;
             $validatedData = $request->all();
-            
+//            dd($request->all());
             $status = false;
             $baserate_id = false;
             if (!empty($request->get('id'))) {
@@ -55,7 +56,10 @@ class BaseRateController extends Controller {
                     $status = $this->masterRepo->updateBaseRate($validatedData, $baserate_id);
                 }
             } else {
+                $validatedData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
+                $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : '';
                 $validatedData['created_by'] = Auth::user()->user_id;
+//                dd($validatedData);
                 $status = $this->masterRepo->saveBaseRate($validatedData);
             }
             if ($status) {

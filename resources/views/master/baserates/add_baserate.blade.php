@@ -26,14 +26,14 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="start_date">Start Date</label>
-                <input type="text" name="from_date" readonly="readonly" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
+                <input type="text" name="start_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" value="">
                 {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
             </div>
 
             <div class="form-group col-md-6">
                 <label for="end_date">End Date</label>
-                <input type="text" name="to_date" readonly="readonly" class="form-control form-control-sm date_of_birth datepicker-dis-fdate" value="">
-                {!! $errors->first('base_rate', '<span class="error">:message</span>') !!}
+                <input type="text" name="end_date" id="end_date" readonly="readonly" class="form-control">
+                {!! $errors->first('end_date', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
@@ -63,6 +63,12 @@
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
         }, "Please specify a valid base rate percent");
 
+        $("#end_date").datetimepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                minView : 2
+            });
+        
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
                 bank_id: {
