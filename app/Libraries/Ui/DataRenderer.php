@@ -2950,7 +2950,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'agency_name',
                     function ($user) {
-                    return $user->agency->comp_name;
+                    return isset($user->agency->comp_name) ? $user->agency->comp_name : '';
                 }) 
                 ->editColumn(
                     'email',
