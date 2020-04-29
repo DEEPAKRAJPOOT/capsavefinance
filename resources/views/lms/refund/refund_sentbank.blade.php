@@ -36,6 +36,7 @@
                                             <thead>
                                                 <tr role="row">                                                    
                                                     <th>Ref No</th>
+                                                    <th>Batch Id</th>
                                                     <th>Customer ID</th>
                                                     <th>Entity Name</th>     
                                                     <th>Bank Detail</th>

@@ -44,13 +44,9 @@ class RefundReq extends BaseModel {
     protected $fillable = [
         'ref_code',  
         'payment_id',  
+        'refund_req_batch_id',
         'refund_date',  
-        'refund_amount',  
-        'bank_account_id',  
-        'bank_name',  
-        'ifsc_code',  
-        'acc_no',  
-        'tran_no',  
+        'refund_amount',
         'status',  
         'comment',  
         'created_at',  
@@ -62,6 +58,10 @@ class RefundReq extends BaseModel {
     public function payment(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
     } 
+
+    public function batch(){
+        return $this->belongsTo('App\Inv\Repositories\Models\lms\Refund\RefundReqBatch','refund_req_batch_id','refund_req_batch_id');
+    }
 
     public static function createRefundReq($data){
         return self::insert($data);

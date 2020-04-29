@@ -20,13 +20,17 @@
     <div class="card">
         <div class="card-body">
             @include('lms.refund.common.status_links')
-            <form id="refundReqForm" action="{{ route('lms_refund_request_udate',['status' => 6, 'newStatus' => 7]) }}" method="post">
+            
+            {{-- <form id="refundReqForm" action="{{ route('lms_refund_request_udate',['status' => 6, 'newStatus' => 7]) }}" method="post"> --}}
             <div class="row">
-                @csrf	
+                {{-- @csrf	 --}}
                 <div class="card-body">
                     <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
-                            <button type="button" class="btn btn-success btn-sm ml-2" id="sentToBankBtn">Sent To Bank</button>
+                            {{-- <button type="button" class="btn btn-success btn-sm ml-2" id="sentToBankBtn">Sent To Bank</button> --}}
+                            <a data-url="{{ route('refund_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+                            <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;">Disburse Trigger</a>
+                            <input type="hidden" value="" name="transaction_ids" id="transaction_ids">
                         </div>
                     </div>
                 </div>
@@ -60,10 +64,13 @@
                     </div>
                 </div>
             </div>
-            </form>
+            {{-- </form> --}}
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('disburseInvoice','Refund Amount', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
+{!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
 @endsection
    
 @php 

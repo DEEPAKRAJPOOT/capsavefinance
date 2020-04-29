@@ -57,6 +57,7 @@ try {
                 },
                 columns: [
                     {data: 'ref_code'},
+                    {data: 'batch_no'},
                     {data: 'customer_id'},
                     {data: 'biz_entity_name'},                    
                     {data: 'banck_detail'},
@@ -138,15 +139,6 @@ $(document).on('click','#sentToBankBtn', function(){
     }
 }) 
 
-/*
-pendingBtn
-approveBtn
-refundQueueBtn
-sentToBankBtn
-*/
-
-
-
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#transaction_ids').val().trim();
         var dataUrl = $(this).attr('data-url');
@@ -155,7 +147,7 @@ sentToBankBtn
         $('#openDisburseInvoice').trigger('click');
     });
 
-    $(document).on('click', '.invoice_id', function(){
+    $(document).on('click', '.refund-request', function(){
         let current_id = $(this).val();
         if($(this).is(':checked')){
             let parent_inv_ids = $('#transaction_ids').val().trim();

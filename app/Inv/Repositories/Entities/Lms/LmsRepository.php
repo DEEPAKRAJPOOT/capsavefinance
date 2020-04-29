@@ -45,6 +45,7 @@ use App\Inv\Repositories\Models\Lms\TransactionComments;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 
 /**
  * Lms Repository class
@@ -1000,7 +1001,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function lmsGetCustomerRefund($ids)
     {
-        return ApprovalRequest::whereIn('req_id', $ids)
+        return RefundReq::whereIn('refund_req_id', $ids)
 			   ->get();
     } 
 
@@ -1020,10 +1021,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function updateAprvlRqst($data, $reqId)
 	{
 		if (!is_array($reqId)) {
-			return ApprovalRequest::where('req_id', $reqId)
+			return RefundReq::where('refund_req_id', $reqId)
 				->update($data);
 		} else {
-			return ApprovalRequest::whereIn('req_id', $reqId)
+			return RefundReq::whereIn('refund_req_id', $reqId)
 					->update($data);
 		}
 	}
@@ -1032,11 +1033,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {   
     	$disburseBatch = [];
         if ($data) {
-            $disburseBatch['batch_id'] = ($data['batch_id']) ?? null;
-            $disburseBatch['batch_tye'] = ($data['batch_type']) ?? null;
+            $disburseBatch['batch_no'] = ($data['batch_no']) ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
-        return RefundBatch::create($disburseBatch);
+        return RefundReqBatch::create($disburseBatch);
     }
     
     /**

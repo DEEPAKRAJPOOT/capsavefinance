@@ -4805,12 +4805,6 @@ class DataRenderer implements DataProviderInterface
             }
         )            
         ->editColumn(
-            'type',
-            function ($data) {
-                return config('lms.REQUEST_TYPE_DISP.1');  //$data->req_type_name;
-            }
-        )
-        ->editColumn(
             'amount',
             function ($data) {
                 return number_format($data->refund_amount,2);
@@ -4820,6 +4814,14 @@ class DataRenderer implements DataProviderInterface
             'created_at',
             function ($data) {
                 return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
+            }
+        )
+        ->editColumn(
+            'batch_no',
+            function ($data){
+                if($data->refund_req_batch_id){
+                    return $data->batch->batch_no;
+                }
             }
         )
         ->editColumn(
@@ -4847,7 +4849,11 @@ class DataRenderer implements DataProviderInterface
             function ($data){
                 $result = '';
                 if ((int)$data->status == (int)config('lms.REQUEST_STATUS.SEND_TO_BANK') ) {
-                    $result = '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('refund_udpate_disbursal', ['trans_id' => $data->trans_id,  'refund_batch_id' => $data->refund_batch_id,'req_id'=>$data->req_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
+                    $result = '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('refund_udpate_disbursal', [
+                    'payment_id' => $data->payment_id,  
+                    'refund_req_batch_id' => $data->refund_req_batch_id,
+                    'refund_req_id'=>$data->refund_req_id
+                    ]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
                 }
                 return $result;
             }

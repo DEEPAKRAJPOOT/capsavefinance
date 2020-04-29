@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans;
 
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
@@ -578,15 +579,15 @@ trait LmsTrait
         
     }
 
-    protected function finalRefundTransactions(int $trans_id, int $req_id)
+    protected function finalRefundTransactions(int $refundReqId, $actualRefundDate)
     {
-        $transactions = RefundTransactions::getRefundTransactions($req_id);
-        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $transactions = RefundReqTrans::where('refund_req_id','=',$refundReqId)->get();
         foreach ($transactions as $key => $trans) {
             if($trans->req_amount>0){
+                $trans->transaction;
                 $refundData = $this->createTransactionData($trans->user_id, [
                     'amount' => $trans->req_amount,
-                    'trans_date'=>$curData,
+                    'trans_date'=>$actualRefundDate,
                     'disbursal_id'=>$trans->disbursal_id,
                     'soa_flag'=>1
                 ], null, $trans->trans_type, 0);
@@ -595,7 +596,7 @@ trait LmsTrait
                     $updateData = [
                         'new_trans_id'=> $trans_data->trans_id
                     ];
-                    RefundTransactions::saveRefundTransactionData($updateData,['refund_trans_id'=>$trans->refund_trans_id]);
+                    RefundReqTrans::saveRefundTransactionData($updateData,['refund_trans_id'=>$trans->refund_trans_id]);
                 }
             }
         }

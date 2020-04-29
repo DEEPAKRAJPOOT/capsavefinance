@@ -259,11 +259,37 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\RefundController@updateRequestStatus'
             ]);
 
+            Route::get('/refund/confirm',[
+                'as' => 'refund_confirm',
+                'uses' => 'Lms\RefundController@refundConfirm'
+            ]);
+
+            Route::post('/refund-offline', [
+                'as' => 'refund_offline',
+                'uses' => 'Lms\RefundController@refundOffline'
+            ]);
+
+            Route::get('/refund-update-disbursal', [
+                'as' => 'refund_udpate_disbursal',
+                'uses' => 'Lms\RefundController@refundUpdateDisbursal'
+            ]);
+            
+            Route::post('/update-disburse-refund', [
+                'as' => 'updateDisburseRefund',
+                'uses' => 'Lms\RefundController@updateDisburseRefund'
+            ]);
+            
 
 
 
 
 
+
+
+
+
+
+            
 
 
 
@@ -290,16 +316,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/lms-edit-batch', [
                 'as' => 'lms_edit_batch',
                 'uses' => 'Lms\RefundController@editBatch'
-            ]);
-           
-            Route::get('/refund/confirm',[
-                'as' => 'refund_confirm',
-                'uses' => 'Lms\RefundController@refundConfirm'
-            ]);
-            
-            Route::post('/refund-offline', [
-                'as' => 'refund_offline',
-                'uses' => 'Lms\RefundController@refundOffline'
             ]);
 
             Route::get('refund/download-sentbank-data', [
