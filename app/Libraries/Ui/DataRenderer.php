@@ -4778,51 +4778,48 @@ class DataRenderer implements DataProviderInterface
     
     public function getApprovedRefundList(Request $request, $data){
         return DataTables::of($data)
-        ->rawColumns(['id','ref_code','assignee','banck_detail','action'])
-        ->editColumn(
-            'id',
-            function ($data) {
-                return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$data->req_id.'">';
-            }
-        )
+        ->rawColumns(['ref_code','assignee','banck_detail','action'])
         ->editColumn(
             'ref_code',
             function ($data) {
-                $result = '';
-                                           
-                $result .= '<a 
+                $result = '<a 
                 data-toggle="modal" 
                 data-target="#lms_view_process_refund" 
-                data-url="'.route('lms_view_process_refund', ['req_id' => $data->req_id, 'view' => 1 ]).'"
+                data-url="'.route('lms_refund_request_view', ['req_id' => $data->refund_req_id, 'view' => 1 ]).'"
                 data-height="400px" 
                 data-width="100%" 
                 data-placement="top" title="Process Refund" class="btn btn-action-btn btn-sm">' . $data->ref_code . '</a>';
-                
-                //$result .= $data->ref_code;                              
                 return $result;
             }
         )
         ->addColumn(
             'customer_id',
             function ($data) {
-                return $data->customer_id;  //$data->req_type_name;
+                return $data->payment->lmsUser->customer_id;  //$data->req_type_name;
             }
         )
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->user_id);  //$data->req_type_name;
+                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
             }
         )            
         ->editColumn(
+            'type',
+            function ($data) {
+                return config('lms.REQUEST_TYPE_DISP.1');  //$data->req_type_name;
+            }
+        )
+        ->editColumn(
             'amount',
             function ($data) {
-                return number_format($data->amount,2);
+                return number_format($data->refund_amount,2);
             }
-        )    
+        )     
         ->editColumn(
-            'batch_id',  function ($data) {
-                return $data->batch_id;
+            'created_at',
+            function ($data) {
+                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
             }
         )
         ->editColumn(
@@ -4836,49 +4833,27 @@ class DataRenderer implements DataProviderInterface
         )
         ->editColumn(
             'updated_at', function ($data) {
-                return $data->updated_at;
+                return \Helpers::convertDateTimeFormat($data->updated_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
             }
         )
         ->editColumn(
             'status',
             function ($data){
-                /*$roleData = User::getBackendUser(\Auth::user()->user_id);
-                $isRequestOwner = \Helpers::isRequestOwner($data->req_id, \Auth::user()->user_id);
-                if (isset($roleData[0]) && $roleData[0]->is_superadmin != 1 && $isRequestOwner) {
-                    return \Helpers::getApprRequestStatus($data->req_id, \Auth::user()->user_id);
-                } else {
-                }*/
-                return config('lms.REQUEST_STATUS_DISP.'. $data->req_status . '.SYSTEM');
+                return config('lms.REQUEST_STATUS_DISP.'. $data->status . '.SYSTEM');
             }
-        )   
+        )
         ->editColumn(
             'action',
             function ($data){
                 $result = '';
-                if ((int)$data->req_status == (int)config('lms.REQUEST_STATUS.SEND_TO_BANK') ) {
+                if ((int)$data->status == (int)config('lms.REQUEST_STATUS.SEND_TO_BANK') ) {
                     $result = '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('refund_udpate_disbursal', ['trans_id' => $data->trans_id,  'refund_batch_id' => $data->refund_batch_id,'req_id'=>$data->req_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
                 }
                 return $result;
             }
         )  
-        ->filter(function ($query) use ($request) {
-
-           /*  if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                $query->where(function ($query) use ($request) {
-                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
-                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
-                });
-            }
-            //if($request->get('user_ids')!= ''){
-                $query->where(function ($query) use ($request) {
-                    $query->whereIn('user_id',$request->user_ids);
-                });
-            //} */
-          
-        })                 
-     
         ->make(true);
+
     }
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
@@ -4886,7 +4861,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'id',
             function ($data) {
-                return '<input type="checkbox" name="refundRequest[]" value="'.$data->refund_req_id.'">';
+                return '<input class="refund-request" type="checkbox" name="refundRequest[]" value="'.$data->refund_req_id.'">';
             }
         )
         ->editColumn(

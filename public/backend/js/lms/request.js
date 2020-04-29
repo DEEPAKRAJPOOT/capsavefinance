@@ -1,5 +1,6 @@
 try {
     var oTable;
+    var reqIds = [];
     
     jQuery(document).ready(function ($) {
         //User Listing code
@@ -30,8 +31,7 @@ try {
                     {data: 'amount'},
                     {data: 'created_at'},
                     {data: 'assignee'},
-                    {data: 'assignedBy'},
-                    {data: 'status'}
+                    {data: 'assignedBy'}
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
@@ -57,7 +57,6 @@ try {
                 },
                 columns: [
                     {data: 'ref_code'},
-                    {data: 'batch_id'},
                     {data: 'customer_id'},
                     {data: 'biz_entity_name'},                    
                     {data: 'banck_detail'},
@@ -68,13 +67,6 @@ try {
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
         }
-        /*        
-        //Search
-        $('#searchbtn').on('click', function (e) {
-            oTable.draw();
-        }); 
-        */
-
     });
 } catch (e) {
     if (typeof console !== 'undefined') {
@@ -82,6 +74,76 @@ try {
     }
 }
 
+// $(document).on('change', '.refund-request', function(){
+//     var val = $(this).val();
+//     if($(this).is(":checked")){
+//         reqIds.push(val);
+//     }else{
+//         reqIds = $.grep(reqIds, function(value) { 
+//             return value != val; 
+//         });
+//     }
+// });
+
+$(document).on('click','#pendingBtn', function(){
+    var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
+    if(countCheckedCheckboxes <= 0){
+        return alert('Please select at least one record!');
+    }else{
+        $(this).addClass('btn-disabled');
+        if (confirm('Are you sure? You want to Submit it.')){
+            $("#refundReqForm").submit();
+        }else{
+            $(this).removeClass('btn-disabled');
+        }
+    }
+}) 
+$(document).on('click','#approveBtn', function(){
+    var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
+    if(countCheckedCheckboxes <= 0){
+        return alert('Please select at least one record!');
+    }else{
+        $(this).addClass('btn-disabled');
+        if (confirm('Are you sure? You want to approve it.')){
+            $("#refundReqForm").submit();
+        }else{
+            $(this).removeClass('btn-disabled');
+        }
+    }
+}) 
+$(document).on('click','#refundQueueBtn', function(){
+    var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
+    if(countCheckedCheckboxes <= 0){
+        return alert('Please select at least one record!');
+    }else{
+        $(this).addClass('btn-disabled');
+        if (confirm('Are you sure? You want to Disbursed it.')){
+            $("#refundReqForm").submit();
+        }else{
+            $(this).removeClass('btn-disabled');
+        }
+    }
+}) 
+$(document).on('click','#sentToBankBtn', function(){
+    var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
+    if(countCheckedCheckboxes <= 0){
+        return alert('Please select at least one record!');
+    }else{
+        $(this).addClass('btn-disabled');
+        if (confirm('Are you sure? You want to Sent To Bank it.')){
+            $("#refundReqForm").submit();
+        }else{
+            $(this).removeClass('btn-disabled');
+        }
+    }
+}) 
+
+/*
+pendingBtn
+approveBtn
+refundQueueBtn
+sentToBankBtn
+*/
 
 
 

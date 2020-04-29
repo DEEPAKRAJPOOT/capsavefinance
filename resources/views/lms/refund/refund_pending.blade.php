@@ -19,12 +19,14 @@
 
     <div class="card">
         <div class="card-body">
-            @include('lms.common.partial.status_links')
+            @include('lms.refund.common.status_links')
+            <form id="refundReqForm" action="{{ route('lms_refund_request_udate',['status' => 3, 'newStatus' => 5]) }}" method="post">
             <div class="row">
+                @csrf	
                 <div class="card-body">
                     <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
-                            <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Approve</a>
+                            <button type="button" class="btn btn-success btn-sm ml-2" id="approveBtn">Approve</button>
                         </div>
                     </div>
                 </div>
@@ -45,7 +47,6 @@
                                                     <th>Date</th>
                                                     <th>Assignee</th>	
                                                     <th>Assigned By</th>
-                                                    <th>Status</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -60,6 +61,7 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
     </div>
 </div>

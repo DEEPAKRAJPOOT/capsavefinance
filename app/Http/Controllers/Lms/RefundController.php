@@ -94,11 +94,175 @@ class RefundController extends Controller
     }
 
     public function updateRequestStatus(Request $request){
+        $refundRequests = $request->refundRequest;
+        $status = $request->status;
+        $newStatus  = $request->newStatus;
+
+        foreach ($refundRequests as $key => $reqId) {
+            RefundHelper::updateRequest($reqId, $status, $newStatus);            
+        }
+        $redirectRoute = null;
+        $message = null;
+        switch ($newStatus) {
+            case '1': //New Request,
+                $redirectRoute = 'lms_refund_new';
+                $message = "New Request Created Successfully!";
+                break;
+            case '2': //Deleted
+               $redirectRoute = null;
+                break;
+            case '3': //Pending
+               $redirectRoute = 'lms_refund_pending';
+               $message = "Successfully Submitted your Request!";
+                break;
+            case '4': //Rejected
+               $redirectRoute = null;
+                break;
+            case '5': //Approved
+               $redirectRoute = 'lms_refund_approved';
+               $message = "Successfully Approved your Request!";
+                break;
+            case '6': //Refund Queue
+               $redirectRoute = 'request_list';
+               $message = "Successfully Disbursed your Request!";
+                break;
+            case '7': //Sent to Bank
+               $redirectRoute = 'lms_refund_sentbank';
+               $message = "Successfully Sent To Bank your Request!";
+                break;
+            case '8': //Disbursed
+               $redirectRoute = 'lms_refund_refunded';
+               $message = "Successfully Refunded your Request!";
+                break;
+        }
+        Session::flash('message',$message);
+        return redirect()->route($redirectRoute);
+    }
+
+    public function downloadSentBank()
+    {
+        $allAprvls = $this->lmsRepo->getAprvlRqDataByIds()->toArray();
+        $downloadFlag = 1;
+        $exportData = [];
+        $filename = 'download-excel';
+
+        foreach ($allAprvls as $aprvl) {
+            $userid = $aprvl['payment']['user']['user_id'];
+            $disburseAmount = round($aprvl['refund_amount'], 5);
+
+            $exportData[$aprvl['refund_req_id']]['RefNo'] = $aprvl['payment']['lms_user']['virtual_acc_id'];
+            $exportData[$aprvl['refund_req_id']]['Amount'] = round($aprvl['refund_amount'], 5);
+            $exportData[$aprvl['refund_req_id']]['Debit_Acct_No'] = '12334445511111';
+            $exportData[$aprvl['refund_req_id']]['Debit_Acct_Name'] = 'testing name';
+            $exportData[$aprvl['refund_req_id']]['Debit_Mobile'] = '9876543210';
+            $exportData[$aprvl['refund_req_id']]['Ben_IFSC'] = $aprvl['ifsc_code'];
+            $exportData[$aprvl['refund_req_id']]['Ben_Acct_No'] = $aprvl['acc_no'];
+            $exportData[$aprvl['refund_req_id']]['Ben_BankName'] = $aprvl['bank_name'];
+            $exportData[$aprvl['refund_req_id']]['Ben_Name'] = $aprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
+            $exportData[$aprvl['refund_req_id']]['Ben_Email'] = $aprvl['payment']['user']['email'];
+            $exportData[$aprvl['refund_req_id']]['Ben_Mobile'] = $aprvl['payment']['user']['mobile_no'];
+            $exportData[$aprvl['refund_req_id']]['Mode_of_Pay'] = 'IFT';
+            $exportData[$aprvl['refund_req_id']]['Nature_of_Pay'] = 'MPYMT';
+            $exportData[$aprvl['refund_req_id']]['Remarks'] = 'test remarks';
+            $exportData[$aprvl['refund_req_id']]['Value_Date'] = date('Y-m-d');
+        }
+        $result = $this->export($exportData, $filename, $downloadFlag);
 
     }
 
+    public function export($data, $filename, $downloadFlag = 0) {
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Bank Disburse Excel")
+                ->setSubject("Bank Disburse Excel")
+                ->setDescription("Bank Disburse Excel")
+                ->setKeywords("Bank Disburse Excel")
+                ->setCategory("Bank Disburse Excel");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Client Code')
+                ->setCellValue('B1', 'Debit account no.')
+                ->setCellValue('C1', 'Transaction type code')
+                ->setCellValue('D1', 'Value date')
+                ->setCellValue('E1', 'Amount')
+                ->setCellValue('F1', 'Beneficary Name')
+                ->setCellValue('G1', 'Beneficary Accunt no.')
+                ->setCellValue('H1', 'IFSC code')
+                ->setCellValue('I1', 'Customer Ref no.')
+                ->setCellValue('J1', 'Beneficary email id')
+                ->setCellValue('K1', 'Beneficiary mobile no.')
+                ->setCellValue('L1', 'Remarks')
+                ->setCellValue('M1', 'Payment Type')
+                ->setCellValue('N1', 'Purpose code')
+                ->setCellValue('O1', 'Bene a/c type')
+                ->setCellValue('P1', 'Payable Location')
+                ->setCellValue('Q1', 'Print branch name')
+                ->setCellValue('R1', 'Mode of delivery')
+                ->setCellValue('S1', 'Transaction currency')
+                ->setCellValue('T1', 'BENE_ADD1')
+                ->setCellValue('U1', 'BENE_ADD2')
+                ->setCellValue('V1', 'BENE_ADD3')
+                ->setCellValue('W1', 'BENE_ADD4')
+                ->setCellValue('X1', 'Beneficiary ID')
+                ->setCellValue('Y1', 'Remote Printing')
+                ->setCellValue('Z1', 'Print Branch Location')
+                ->setCellValue('AA1', 'Nature Of Payment');
+        $rows = 2;
 
+        foreach($data as $rowData){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['Debit_Acct_No'] ?? '')
+                ->setCellValue('C' . $rows, $rowData['Trans_Type_Code'] ?? '')
+                ->setCellValue('D' . $rows, $rowData['Value_Date'] ?? '')
+                ->setCellValue('E' . $rows, $rowData['Amount'] ?? '')
+                ->setCellValue('F' . $rows, $rowData['Ben_Name'] ?? '')
+                ->setCellValue('G' . $rows, $rowData['Ben_Acct_No'] ?? '')
+                ->setCellValue('H' . $rows, $rowData['Ben_IFSC'] ?? '')
+                ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
+                ->setCellValue('J' . $rows, $rowData['Ben_Email'] ?? '')
+                ->setCellValue('K' . $rows, $rowData['Ben_Mobile'] ?? '')
+                ->setCellValue('L' . $rows, $rowData['Remarks'] ?? '')
+                ->setCellValue('M' . $rows, $rowData['Mode_of_Pay'] ?? '')
+                ->setCellValue('N' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('O' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('P' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Q' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('R' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('S' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('T' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('U' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('V' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('W' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('X' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Y' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('Z' . $rows, $rowData['column'] ?? '')
+                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? '');
 
+            $rows++;
+        }
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        if ($downloadFlag == 0) {
+            if (!Storage::exists('/public/docs/bank_excel')) {
+                Storage::makeDirectory('/public/docs/bank_excel');
+            }
+            $storage_path = storage_path('app/public/docs/bank_excel');
+            $filePath = $storage_path.'/'.$filename.'.xlsx';
+           $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter->save($filePath);
+
+            return [ 'status' => 1,
+                'file_path' => $filePath
+            ];
+        } else {
+            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter->save('php://output');
+        }
+    }
 
 
 
@@ -239,142 +403,14 @@ class RefundController extends Controller
         return redirect()->route('request_list');
     }
 
-    public function downloadSentBank()
-    {
-        $allAprvls = $this->lmsRepo->getAprvlRqDataByIds()->toArray();
-        $downloadFlag = 1;
-        $exportData = [];
-        $filename = 'download-excel';
 
-        foreach ($allAprvls as $aprvl) {
-            $userid = $aprvl['transaction']['user']['user_id'];
-            $disburseAmount = round($aprvl['amount'], 5);
 
-            $exportData[$aprvl['req_id']]['RefNo'] = $aprvl['transaction']['lms_user']['virtual_acc_id'];
-            $exportData[$aprvl['req_id']]['Amount'] = round($aprvl['amount'], 5);
-            $exportData[$aprvl['req_id']]['Debit_Acct_No'] = '12334445511111';
-            $exportData[$aprvl['req_id']]['Debit_Acct_Name'] = 'testing name';
-            $exportData[$aprvl['req_id']]['Debit_Mobile'] = '9876543210';
-            $exportData[$aprvl['req_id']]['Ben_IFSC'] = $aprvl['ifsc_code'];
-            $exportData[$aprvl['req_id']]['Ben_Acct_No'] = $aprvl['acc_no'];
-            $exportData[$aprvl['req_id']]['Ben_BankName'] = $aprvl['bank_name'];
-            $exportData[$aprvl['req_id']]['Ben_Name'] = $aprvl['transaction']['user']['f_name'].' '.$aprvl['transaction']['user']['l_name'];
-            $exportData[$aprvl['req_id']]['Ben_Email'] = $aprvl['transaction']['user']['email'];
-            $exportData[$aprvl['req_id']]['Ben_Mobile'] = $aprvl['transaction']['user']['mobile_no'];
-            $exportData[$aprvl['req_id']]['Mode_of_Pay'] = 'IFT';
-            $exportData[$aprvl['req_id']]['Nature_of_Pay'] = 'MPYMT';
-            $exportData[$aprvl['req_id']]['Remarks'] = 'test remarks';
-            $exportData[$aprvl['req_id']]['Value_Date'] = date('Y-m-d');
-        }
-        $result = $this->export($exportData, $filename, $downloadFlag);
-
-    }
-
-    public function export($data, $filename, $downloadFlag = 0) {
-        $sheet =  new PHPExcel();
-        $sheet->getProperties()
-                ->setCreator("Capsave")
-                ->setLastModifiedBy("Capsave")
-                ->setTitle("Bank Disburse Excel")
-                ->setSubject("Bank Disburse Excel")
-                ->setDescription("Bank Disburse Excel")
-                ->setKeywords("Bank Disburse Excel")
-                ->setCategory("Bank Disburse Excel");
     
-        $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A1', 'Client Code')
-                ->setCellValue('B1', 'Debit account no.')
-                ->setCellValue('C1', 'Transaction type code')
-                ->setCellValue('D1', 'Value date')
-                ->setCellValue('E1', 'Amount')
-                ->setCellValue('F1', 'Beneficary Name')
-                ->setCellValue('G1', 'Beneficary Accunt no.')
-                ->setCellValue('H1', 'IFSC code')
-                ->setCellValue('I1', 'Customer Ref no.')
-                ->setCellValue('J1', 'Beneficary email id')
-                ->setCellValue('K1', 'Beneficiary mobile no.')
-                ->setCellValue('L1', 'Remarks')
-                ->setCellValue('M1', 'Payment Type')
-                ->setCellValue('N1', 'Purpose code')
-                ->setCellValue('O1', 'Bene a/c type')
-                ->setCellValue('P1', 'Payable Location')
-                ->setCellValue('Q1', 'Print branch name')
-                ->setCellValue('R1', 'Mode of delivery')
-                ->setCellValue('S1', 'Transaction currency')
-                ->setCellValue('T1', 'BENE_ADD1')
-                ->setCellValue('U1', 'BENE_ADD2')
-                ->setCellValue('V1', 'BENE_ADD3')
-                ->setCellValue('W1', 'BENE_ADD4')
-                ->setCellValue('X1', 'Beneficiary ID')
-                ->setCellValue('Y1', 'Remote Printing')
-                ->setCellValue('Z1', 'Print Branch Location')
-                ->setCellValue('AA1', 'Nature Of Payment');
-        $rows = 2;
+    
 
-        foreach($data as $rowData){
-            $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
-                ->setCellValue('B' . $rows, $rowData['Debit_Acct_No'] ?? '')
-                ->setCellValue('C' . $rows, $rowData['Trans_Type_Code'] ?? '')
-                ->setCellValue('D' . $rows, $rowData['Value_Date'] ?? '')
-                ->setCellValue('E' . $rows, $rowData['Amount'] ?? '')
-                ->setCellValue('F' . $rows, $rowData['Ben_Name'] ?? '')
-                ->setCellValue('G' . $rows, $rowData['Ben_Acct_No'] ?? '')
-                ->setCellValue('H' . $rows, $rowData['Ben_IFSC'] ?? '')
-                ->setCellValue('I' . $rows, $rowData['RefNo'] ?? '')
-                ->setCellValue('J' . $rows, $rowData['Ben_Email'] ?? '')
-                ->setCellValue('K' . $rows, $rowData['Ben_Mobile'] ?? '')
-                ->setCellValue('L' . $rows, $rowData['Remarks'] ?? '')
-                ->setCellValue('M' . $rows, $rowData['Mode_of_Pay'] ?? '')
-                ->setCellValue('N' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('O' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('P' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('Q' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('R' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('S' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('T' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('U' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('V' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('W' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('X' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('Y' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('Z' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? '');
 
-            $rows++;
-        }
 
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        // header('Cache-Control: max-age=1');
 
-        // // If you're serving to IE over SSL, then the following may be needed
-        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        // header ('Pragma: public'); // HTTP/1.0
-        if ($downloadFlag == 0) {
-            if (!Storage::exists('/public/docs/bank_excel')) {
-                Storage::makeDirectory('/public/docs/bank_excel');
-            }
-            $storage_path = storage_path('app/public/docs/bank_excel');
-            $filePath = $storage_path.'/'.$filename.'.xlsx';
-           $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-            $objWriter->save($filePath);
-
-            return [ 'status' => 1,
-                'file_path' => $filePath
-            ];
-        } else {
-            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-            $objWriter->save('php://output');
-        }
-    }
-
-	
     
 	
 	/**

@@ -17,7 +17,7 @@
     </section>    
     <div class="card">
         <div class="card-body">
-            @include('lms.common.partial.status_links')
+            @include('lms.refund.common.status_links')
             <div class="row">
                 <div class="card-body">
                     <div class="row pull-right">
@@ -32,11 +32,10 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-                                        <table id="requestList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                        <table id="approvedList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">                                                    
                                                     <th>Ref No</th>
-                                                    <th>Batch Id</th>
                                                     <th>Customer ID</th>
                                                     <th>Entity Name</th>     
                                                     <th>Bank Detail</th>
@@ -60,6 +59,9 @@
         </div>
     </div>
 </div>
+}
+{!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

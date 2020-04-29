@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Manage Refund</h3>
-            <small>(Refund Queue)</small>
+            <small>(Disbursed Queue)</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li class="active">Manage Refund </li>
@@ -19,12 +19,14 @@
 
     <div class="card">
         <div class="card-body">
-            @include('lms.common.partial.status_links')
+            @include('lms.refund.common.status_links')
+            <form id="refundReqForm" action="{{ route('lms_refund_request_udate',['status' => 6, 'newStatus' => 7]) }}" method="post">
             <div class="row">
+                @csrf	
                 <div class="card-body">
                     <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
-                            <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Sent to Bank</a>
+                            <button type="button" class="btn btn-success btn-sm ml-2" id="sentToBankBtn">Sent To Bank</button>
                         </div>
                     </div>
                 </div>
@@ -45,7 +47,6 @@
                                                     <th>Date</th>
                                                     <th>Assignee</th>	
                                                     <th>Assigned By</th>
-                                                    <th>Status</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -59,6 +60,7 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
     </div>
 </div>

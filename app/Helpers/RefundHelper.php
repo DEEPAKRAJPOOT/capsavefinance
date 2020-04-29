@@ -189,4 +189,16 @@ class RefundHelper{
         ]; 
     }
 
+    public static function updateRequest(int $refundReqId, int $curStatus, int $newStatus){
+        $updatedRecord = null;
+        $refundReq = RefundReq::where('refund_req_id','=',$refundReqId)
+        ->where('status','=',$curStatus)
+        ->first();
+        if($refundReq && $newStatus){
+            $refundReq->status = $newStatus;
+            $updatedRecord = $refundReq->save();
+        }
+        return $updatedRecord;
+    }
+
 }

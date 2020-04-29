@@ -17,12 +17,14 @@
 
     <div class="card">
         <div class="card-body">
-            @include('lms.common.partial.status_links')
+            @include('lms.refund.common.status_links')
+            <form id="refundReqForm" action="{{ route('lms_refund_request_udate',['status' => 1, 'newStatus' => 3]) }}" method="post">
             <div class="row">
+                @csrf	
                 <div class="card-body">
                     <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
-                            <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Pending</a>
+                            <button type="button" class="btn btn-success btn-sm ml-2" id="pendingBtn">Submit</button>
                         </div>
                     </div>
                 </div>
@@ -43,7 +45,6 @@
                                                     <th>Date</th>
                                                     <th>Assignee</th>	
                                                     <th>Assigned By</th>
-                                                    <th>Status</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -57,16 +58,16 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('lms_view_process_refund','View Refund Request', 'modal-lg')!!}
 @endsection
-
 @section('jscript')
     <script>
         var messages = {
             url: "{{ URL::route('lms_get_request_list') }}",
-            lms_edit_batch: "{{ URL::route('lms_edit_batch') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
             status:"1",

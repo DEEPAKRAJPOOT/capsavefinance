@@ -19,7 +19,7 @@
 
     <div class="card">
         <div class="card-body">
-            @include('lms.common.partial.status_links')
+            @include('lms.refund.common.status_links')
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -31,7 +31,6 @@
 	                                        <thead>
 	                                        	<tr role="row">                                                    
                                                     <th>Ref No</th>
-                                                    <th>Batch Id</th>
                                                     <th>Customer ID</th>
                                                     <th>Entity Name</th>     
                                                     <th>Bank Detail</th>
