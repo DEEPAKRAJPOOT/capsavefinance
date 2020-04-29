@@ -5470,14 +5470,17 @@ class DataRenderer implements DataProviderInterface
                 return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
 
             })
-            ->addColumn('addr_1', function($trans){
-                return $trans->addr_1;
+            ->addColumn('addr_1', function($data){
+                return $data->user_invoice_rel_id;
             })
             
             ->addColumn(
                 'is_active',
-                function ($doa) {
-                    return ($doa->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label> </div></b>';
+                function ($data) {
+                    $id = $data->user_invoice_rel_id;
+                    $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                    $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
+                    return $status;
             }) 
             
             ->make(true);

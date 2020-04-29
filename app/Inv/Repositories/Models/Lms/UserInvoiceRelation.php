@@ -95,7 +95,7 @@ class UserInvoiceRelation extends BaseModel {
     }
 
     public function userBizAddr() {
-        return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress', 'addr_1', 'addr_2');
+        return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress', 'addr_1');
     }
     public function capsavBizAddr() {
         return $this->hasMany('App\Inv\Repositories\Models\Master\Company', 'cmp_add');

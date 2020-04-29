@@ -529,7 +529,7 @@ class userInvoiceController extends Controller
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
-            $user_addr = $this->UserInvRepo->getUserBizAddr();
+            $user_addr = $this->UserInvRepo->getUserBizAddr($user_id);
             return view('lms.invoice.user_invoice_location')->with(['userInfo' => $userInfo, 'user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $user_addr]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

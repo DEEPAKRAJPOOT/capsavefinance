@@ -176,8 +176,8 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	/**
 	 * Get user address from mst_company
 	 */
-	public function getUserBizAddr() {
-		return BusinessAddress::getUserBizAddr();
+	public function getUserBizAddr($user_id) {
+		return BusinessAddress::getUserBizAddr($user_id);
 	}
 
 	public function unPublishAddr($user_id) {
