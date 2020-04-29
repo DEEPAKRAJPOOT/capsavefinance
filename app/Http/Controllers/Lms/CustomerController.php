@@ -63,7 +63,7 @@ public function listAppliction(Request $request) {
         $userInfo = $this->userRepo->getCustomerDetail($user_id);
         $application = $this->appRepo->getCustomerApplications($user_id);
         $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
-
+       
         foreach ($application as $key => $app) {
             if (isset($app->prgmLimits)) {
                 foreach ($app->prgmLimits as $value) {
