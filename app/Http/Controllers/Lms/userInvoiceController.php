@@ -594,7 +594,7 @@ class userInvoiceController extends Controller
         $user_id = $request->get('user_id');
         $data = $this->UserInvRepo->unPublishAddr((int) $user_id);
         if($data) {
-            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'All address are unpublish please select address');
+            return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('message', 'All address are unpublished');
         } else {
             return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Some error occured!');
         }
