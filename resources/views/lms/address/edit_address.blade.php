@@ -56,7 +56,7 @@
                     <option {{$userAddress_data->is_active == 0 ? 'selected' : ''}} value="0">In-Active</option>
                 </select>
             </div>
-            @if($is_show_default)
+            @if($is_show_default && $userAddress_data->rcu_status)
             <div class="form-group col-6">
                 <label for="address_type">Set as Default</label><br />
                 <input type="checkbox" name="is_default" value="1" {{($userAddress_data->is_default)? 'checked': ''}} style="width: 25px; height: 25px;">
