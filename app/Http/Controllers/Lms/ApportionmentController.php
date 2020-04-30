@@ -652,6 +652,22 @@ class ApportionmentController extends Controller
                     return redirect()->back()->withInput();
                 }
 
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                    /** Mark Payment Settled */
+                    $payment = Payment::find($paymentId);
+                    $payment->is_settled = 1;
+                    $payment->save();
+                    foreach ($invoiceList as $invDisb) {
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    }
+                    $request->session()->forget('apportionment');
+                }
+
+                $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
                     $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                     $refundParentTrans = $refundData->get('parent_transaction');
@@ -688,19 +704,8 @@ class ApportionmentController extends Controller
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
-
-                    /** Mark Payment Settled */
-                    $payment = Payment::find($paymentId);
-                    $payment->is_settled = 1;
-                    $payment->save();
-                    foreach ($invoiceList as $invDisb) {
-                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                        $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
-                    }
-                    $request->session()->forget('apportionment');
-
-                    return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
                 }
+                return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
             return redirect()->back('unsettled_payments', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
