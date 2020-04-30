@@ -50,6 +50,8 @@
                                 <tr role="row">
                                     <th>Bank Name</th>
                                     <th>Base Rate (%)</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
                                     <th>Created At</th>
                                     <th>Created By</th>
                                     <th>Status</th>

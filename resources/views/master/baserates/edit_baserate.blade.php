@@ -8,7 +8,7 @@
         <input type="hidden" class="form-control" name="id" maxlength="5" value="{{$baserate_data->id}}">
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="bank_id">Bank Name</label>
+                <label for="bank_id">Bank Name <span class="mandatory">*</span></label>
                 <select name="bank_id" id="bank_id" class='form-control'>
                     <option value="">Select Bank</option>
                     @foreach($bank_list as $key => $option)
@@ -18,19 +18,41 @@
                 {!! $errors->first('bank_id', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
-                <label for="base_rate">Base Rate(%)</label>
+                <label for="base_rate">Base Rate(%) <span class="mandatory">*</span></label>
                 <input type="text" class="form-control" id="name" name="base_rate" value="{{$baserate_data->base_rate}}" placeholder="Enter Base Rate Percentage" maxlength="50">
                 {!! $errors->first('base_rate', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="chrg_type">Status</label><br />
+                <label for="start_date">Start Date <span class="mandatory">*</span></label>
+                <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="{{$baserate_data->start_date}}">
+                {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
+            </div>
+
+            <div class="form-group col-md-6">
+                <label for="end_date">End Date</label>
+                <input type="text" name="end_date" id="end_date" readonly="readonly" class="form-control" value="{{$baserate_data->end_date}}">
+                {!! $errors->first('end_date', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option value="" selected>Select</option>
                     <option {{$baserate_data->is_active == 1 ? 'selected' : ''}} value="1">Active</option>
-                    <option {{$baserate_data->is_active == 2 ? 'selected' : ''}} value="2">In-Active</option>
+                    <option {{$baserate_data->is_active == 0 ? 'selected' : ''}} value="0">In-Active</option>
                 </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="is_default">Is Default Base Rate? <span class="mandatory">*</span></label><br />
+                <select class="form-control" name="is_default" id="is_default">
+                    <option value="" selected>Select</option>
+                    <option {{$baserate_data->is_default == 1 ? 'selected' : ''}} value="1">YES</option>
+                    <option {{$baserate_data->is_default == 0 ? 'selected' : ''}} value="0">NO</option>
+                </select>
+                {!! $errors->first('is_default', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
@@ -54,35 +76,70 @@
         $.validator.addMethod("rate_percent", function (value, element) {
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
         }, "Please specify a valid base rate percent");
+        
+        $("#end_date").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView: 2
+        });
+        
+        $.validator.addMethod("greaterStart", function (value, element, params) {
+            if (!/Invalid|NaN/.test(new Date(value))) {
+                return new Date(value) > new Date($(params).val());
+            }
+
+            return isNaN(value) && isNaN($(params).val())
+                    || (Number(value) > Number($(params).val()));
+            
+        });
 
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
                 bank_id: {
                     required: true,
-                    digits: true,
+                    digits: true
                 },
                 base_rate: {
                     required: true,
                     number: true,
                     range: [0, 100],
-                    rate_percent: 'input[name="base_rate"]',
+                    rate_percent: 'input[name="base_rate"]'
                 },
-                
+                start_date: {
+                    required: true
+                },
+                end_date: {
+//                    required: true,
+                    greaterStart: "#start_date"
+                },
                 is_active: {
+                    required: true,
+                    digits: true
+                },
+                is_default: {
                     required: true,
                     digits: true
                 }
             },
             messages: {
                 bank_id: {
-                    required: "Please Select Bank",
+                    required: "Please Select Bank"
                 },
                 base_rate: {
-                    required: "Please Enter Base Rate",
+                    required: "Please Enter Base Rate"
+                },
+                start_date: {
+                    required: "Please Select Start Date"
+                },
+                end_date: {
+                    greaterStart: "Must be greater than start date."
                 },
                 is_active: {
-                    required: "Please Select Status of Base Rate",
+                    required: "Please Select Status of Base Rate"
                 },
+                is_default: {
+                    required: "Please Select Status for Default Base Rate"
+                }
             }
         });
     });
