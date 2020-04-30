@@ -49,8 +49,10 @@ class userInvoiceController extends Controller
     public function listUserInvoice(Request $request) {
         try {
             $user_id = $request->get('user_id');
-            $userInfo = $this->userRepo->getCustomerDetail($user_id);
-            return view('lms.invoice.user_invoice_list')->with(['userInfo' => $userInfo]);
+            $result = $this->getUserLimitDetais($user_id);
+            return view('lms.invoice.user_invoice_list')->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -491,4 +493,43 @@ class userInvoiceController extends Controller
          return response()->json(['status' => 0,'message' => 'Selected application is not valid.']); 
        }
     }
+    
+     /* use function for the manage sention tabs */ 
+    
+    public  function  getUserLimitDetais($user_id) 
+   {
+            try {
+                $totalLimit = 0;
+                $totalCunsumeLimit = 0;
+                $consumeLimit = 0;
+                $transactions = 0;
+                $userInfo = $this->userRepo->getCustomerDetail($user_id);
+                $application = $this->appRepo->getCustomerApplications($user_id);
+                $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+
+                foreach ($application as $key => $app) {
+                    if (isset($app->prgmLimits)) {
+                        foreach ($app->prgmLimits as $value) {
+                            $totalLimit += $value->limit_amt;
+                        }
+                    }
+                    if (isset($app->acceptedOffers)) {
+                        foreach ($app->acceptedOffers as $value) {
+                            $totalCunsumeLimit += $value->prgm_limit_amt;
+                        }
+                    }
+                }
+                $userInfo->total_limit = number_format($totalLimit);
+                $userInfo->consume_limit = number_format($totalCunsumeLimit);
+                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+                
+                $data['userInfo'] = $userInfo;
+                $data['application'] = $application;
+                $data['anchors'] = $anchors;
+                return $data;
+            } catch (Exception $ex) {
+                dd($ex);
+            }
+    }
+   
 }

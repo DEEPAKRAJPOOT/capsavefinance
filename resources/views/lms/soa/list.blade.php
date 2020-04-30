@@ -29,7 +29,12 @@
     @endif
 
     <div class="card">
-        <div class="card-body">       
+        <div class="card-body">    
+            @if(request()->get('sanctionPageView'))
+             <div class="table-responsive ps ps--theme_default w-100">
+                      @include('lms.customer.limit_details')
+                    </div>
+            @endif
             <div class="row" id="client_details"></div>   
             <div class="row">
                 <div class="col-md-3">

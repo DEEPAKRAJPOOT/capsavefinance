@@ -31,6 +31,11 @@
     @endif
     <div class="card">
         <div class="card-body">   
+             @if($sanctionPageView)
+             <div class="table-responsive ps ps--theme_default w-100">
+                      @include('lms.customer.limit_details')
+                    </div>
+             @endif     
         @if(!$sanctionPageView)    
             @include('lms.apportionment.common.userDetails')
         @endif
