@@ -367,6 +367,7 @@ class Transactions extends BaseModel {
     {
         $invoice = self::where('invoice_disbursed_id','=',$invDesbId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->where('entry_type','=','0')
         ->whereHas('invoiceDisbursed',function($query){
             $query->whereHas('invoice', function($query){
                 $query->whereHas('program_offer',function($query){
@@ -376,15 +377,26 @@ class Transactions extends BaseModel {
         })
         ->first();
 
+        $payDisbursedIds = self::where('entry_type','=','0')
+        ->where('invoice_disbursed_id','=',$invDesbId)
+        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+        ->pluck('trans_id');
+
         $intRefund = 0;
         $totalDebitAmt = self::where('entry_type','=','0')
         ->where('invoice_disbursed_id','=',$invDesbId)
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
+        ->where(function($query){
+            $query->whereIn('trans_type',[$payDisbursedIds]);
+            $query->OrwhereIn('trans_type',[$payDisbursedIds]);
+        })
         ->sum('amount');
         
         $totalCreditAmt =  self::where('entry_type','=','1')
         ->where('invoice_disbursed_id','=',$invDesbId)
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
+        ->where(function($query){
+            $query->whereIn('trans_type',[$payDisbursedIds]);
+            $query->OrwhereIn('trans_type',[$payDisbursedIds]);
+        })
         ->sum('amount');
         $invoice2 = $invoice;
 
