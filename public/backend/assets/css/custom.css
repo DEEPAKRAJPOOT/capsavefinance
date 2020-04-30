@@ -1422,8 +1422,9 @@ ul.company-address li:nth-child(2){padding-left:10px;}
 .relative{position: relative;}
 .mb-21{margin-bottom: 21px;}
 select.form-control:not([size]):not([multiple]) {height: calc(2.25rem + 1px);}
-ul.custom-tab li a{ color: #7a7b7c;}
-ul.custom-tab li a:hover {color: #138864 !important;border-color: #ffffff #ffffff #138864 !important;}
-ul.custom-tab li a:focus {color: #138864 !important;border-color: #ffffff #ffffff #138864 !important;}
-ul.custom-tab li a.active {color: #138864 !important;border-color: #fff #fff #138864 !important;}
+ul.custom-tab{border: 0 !important;}
+ul.custom-tab li a{color: #7a7b7c;border-radius:  0 !important; border: 0 !important;padding: 5px 10px !important;}
+ul.custom-tab li a:hover {color: #ffffff !important;border-color: 0 !important;background: #138864 !important;}
+ul.custom-tab li a:focus {color: #fff !important;border-color: 0 !important;}
+ul.custom-tab li a.active {color: #ffffff !important;border-color:0 !important;background: #138864 !important;}
 
