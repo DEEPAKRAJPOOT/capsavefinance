@@ -65,8 +65,8 @@ class ManualApportionmentHelper{
             //$intrest = $disbursed->total_interest;
         }
         
-        $Dr = Transactions::#whereRaw("Date(trans_date) <=?",[$transDate]) ->
-        where('invoice_disbursed_id','=',$invDisbId)
+        $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+        ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
         ->where(function($query) use($transIds){
             $query->whereIn('trans_id',$transIds);
@@ -76,8 +76,8 @@ class ManualApportionmentHelper{
 
         //$Dr += $intrest;
     
-        $Cr =  Transactions::#whereRaw("Date(trans_date) <=?",[$transDate]) ->
-        where('invoice_disbursed_id','=',$invDisbId)
+        $Cr =  Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+        ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
         ->where(function($query) use($transIds){
             $query->whereIn('trans_id',$transIds);
