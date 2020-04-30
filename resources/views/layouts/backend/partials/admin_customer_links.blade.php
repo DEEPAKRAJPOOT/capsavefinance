@@ -1,4 +1,4 @@
-<ul class="main-menu">
+<ul class="main-menu custom-tab">
     <li>
         <a class=" {{ ($active=='summary')? 'active': null }} " href="{{ route('lms_get_customer_applications', [ 'user_id' =>  request()->get('user_id')]) }}">Summary</a>
     </li>
