@@ -50,7 +50,7 @@ class userInvoiceController extends Controller
         try {
             $user_id = $request->get('user_id');
             $result = $this->getUserLimitDetais($user_id);
-            return view('lms.invoice.user_invoice_list')->with(['userInfo' =>  $result['userInfo'],
+            return view('lms.invoice.user_invoice_list')->with(['user_id' => $user_id,'userInfo' =>  $result['userInfo'],
                             'application' => $result['application'],
                             'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
