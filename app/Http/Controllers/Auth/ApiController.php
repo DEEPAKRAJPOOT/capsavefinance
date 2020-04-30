@@ -87,13 +87,11 @@ class ApiController
                      $ignored_txns[] = $txn->trans_id;
                      continue;
                   }
-            }
-
-            $parent_settled[] = $txn->trans_id;
-            
+            }            
             if (in_array($txn->trans_id, $ignored_txns)) {
               continue;
             }
+            $parent_settled[] = $txn->trans_id;
             $i++;
            $tally_data[] = [
             'batch_no' =>  $batch_no,
