@@ -73,7 +73,7 @@
                                                     <div>
                                                         <ul class="mh-line">
                                                             <li>{{$origin_of_recipient['state_code']}}/ </li>
-                                                            <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" placeholder="" maxlength="3" /></li>
+                                                            <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" autocomplete="off" maxlength="3" /></li>
                                                             <li>/{{$origin_of_recipient['financial_year']}}/{{$origin_of_recipient['rand_4_no']}}</li>
                                                         </ul>
                                                     </div> 
@@ -87,11 +87,16 @@
                                                     <input type="text" name="invoice_date" id="invoice_date" class="form-control" placeholder="dd/mm/yyyy" readonly maxlength="10" />
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="reference_no" value="{{$origin_of_recipient['reference_no']}}">
                                             <input type="hidden" name="invoice_no" id="invoice_no" value="{{$origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}">
-                                            <div class="col-md-12">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="m-0">Reference No: <span>#{{$origin_of_recipient['reference_no']}}</span></label>
+                                                    <label class="m-0">Reference No:</label>
+                                                    <select class="form-control" name="reference_no" id="reference_no">
+                                                      <option value="" disabled selected>Select Reference Application</option>
+                                                      @foreach($allApplications as $app)
+                                                        <option value="{{ \Helpers::formatIdWithPrefix($app->app_id) }}">{{ $app->biz_entity_name }}</option>
+                                                      @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
@@ -201,7 +206,6 @@
        user_id: "{{ $user_id }}",
        encData: "{{ $encData }}",
        state_name: "{{ $origin_of_recipient['state_name'] }}",
-       get_app_gstin_url: "{{route('get_app_gstin')}}",
        invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
        invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
    }
@@ -253,6 +257,7 @@
     $('#invoice_type_error').remove();
     $('#invoice_user_code_error').remove();
     $('#invoice_date_error').remove();
+    $('#reference_no_error').remove();
     let invoice_type = $('#invoice_type').val();
     if (!invoice_type) {
       $('#invoice_type').after('<span id="invoice_type_error" class="error">Please select invoice type</span>');
@@ -269,6 +274,13 @@
     if (!invoice_date) {
       $('#invoice_date').after('<span id="invoice_date_error" class="error">Please select invoice Date</span>');
       $('#invoice_date').focus();
+      return false;
+    }
+
+    let reference_no = $('#reference_no').val();
+    if (!reference_no) {
+      $('#reference_no').after('<span id="reference_no_error" class="error">Please select Reference Appliction</span>');
+      $('#reference_no').focus();
       return false;
     }
     if($('.trans_check:checked').length == 0){

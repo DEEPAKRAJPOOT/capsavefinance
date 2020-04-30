@@ -101,25 +101,7 @@ class UserInvoice extends BaseModel {
         }
     }
 
-    /**
-     * Get Invoices
-     *      
-     * @param array $whereCondition | optional
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public static function getInvoices($whereCondition=[]) {
-        if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
-        $query = self::with('userInvoiceTxns');  
-        if (!empty($whereCondition)) {
-            $query->where($whereCondition);
-        }
-        $result = $query->get();
-        return $result;
-    }
-
+    
     public static function getInvoiceById(int $user_invoice_id){
        return self::where('user_invoice_id', '=', $user_invoice_id)->first();
     }

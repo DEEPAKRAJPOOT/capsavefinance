@@ -82,12 +82,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\userInvoiceController@saveUserInvoice'
             ]);
 
-            // get gstins in user invoice 
-            Route::post('get_app_gstin', [
-                'as' => 'get_app_gstin',
-                'uses' => 'Lms\userInvoiceController@getGstinOfApp'
-            ]);
-
             Route::post('get-user-state-code', [
                 'as' => 'get_user_state_code',
                 'uses' => 'Lms\userInvoiceController@getUserStateCode'

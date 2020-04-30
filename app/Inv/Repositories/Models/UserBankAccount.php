@@ -165,15 +165,6 @@ class UserBankAccount extends BaseModel {
         
         return $res ?: false;
     }
-
-        public static function getAllUserBankAcc($user_id){
-        $res = self::select('user_bank_account.*', 'mb.bank_name as bank_name')
-                ->leftjoin('mst_bank as mb', 'user_bank_account.bank_id', '=', 'mb.id')
-                ->where('user_id','=',(int)$user_id)
-                ->get();
-        
-        return $res ?: false;
-    }
     
     /**
      * get Bank account data by company id

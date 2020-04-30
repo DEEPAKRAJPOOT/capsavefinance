@@ -51,32 +51,6 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	protected function update(array $attributes, $id) {        
 	}
 
-	
-
-	public function getBizId($appId = null) {
-		$records =  Application::where('app_id', $appId)->first();
-		return $records->biz_id ?? NULL;
-	}
-
-
-	public function getGSTs($appId = null) {
-		$biz_id = $this->getBizId($appId);
-		$gsts = [];
-		if (!empty($biz_id)) {
-			$gsts = BizPanGst::where(['biz_id' => $biz_id, 'type' => 2])->where('parent_pan_gst_id', '!=', 0)->get();
-		}
-		return $gsts->isEmpty() ? [] : $gsts;
-	}
-
-	public function getPAN($appId = null) {
-		$biz_id = $this->getBizId($appId);
-		$pan = [];
-		if (!empty($biz_id)) {
-			$pan = BizPanGst::where(['biz_id' => $biz_id, 'type' => 1])->where('parent_pan_gst_id', '=', 0)->get();
-		}
-		return $pan->isEmpty() ? [] : $pan;
-	}
-
 	public function getAppsByUserId($userId = null) {
 		$apps = Application::getAllAppsNbizByUserId($userId);
 		return $apps->isEmpty() ? [] : $apps;
@@ -90,35 +64,12 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoiceTrans::saveUserInvoiceTxns($invoices_txns,$whereCondition);
 	}
 
-	public function getInvoices($whereCondition=[]) {
-			return UserInvoice::getInvoices($whereCondition);
-	}	
-
-
 	public function getInvoiceById(int $user_invoice_id) {
 			return UserInvoice::getInvoiceById($user_invoice_id);
 	}	
 
-	public function getStateListCode() {
-		return State::getStateListCode();
-	}
-
 	public function getStateById(int $state_id) {
 		return State::getStateById($state_id);
-	}
-
-	public function getUserCustomerID($user_id) {
-		return LmsUser::getCustomers($user_id);
-	}
-
-	public function getUser($user_id) {
-		return User::getfullUserDetail((int)$user_id);
-	}
-
-	public function getUserAddressByUserId($user_id) {
-		$userCompanyDetail = $this->getUserCurrCompany($user_id);
-        $biz_addr_id = $userCompanyDetail->biz_addr_id;
-        return BusinessAddress::find($biz_addr_id);
 	}
 
 	public function getNextInv($data) {
@@ -133,30 +84,12 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return Company::getCompanyRegAddr();
 	}
 
-	/**
-     * Get state code by ajax
-     */
-	public function getUserStateCodeList($state_code) {
-		return State::getUserStateCodeList($state_code);
-	}
-
 	public function getCompanyDetail($company_id) {
 		return Company::findCompanyById($company_id);
 	}
 
 	public function getCompanyBankAcc($company_id) {
 		return UserBankAccount::getAllCompanyBankAcc($company_id);
-	}
-
-	public function getUserBankAcc($user_id) {
-		return UserBankAccount::getAllUserBankAcc($user_id);
-	}
-
-	/**
-     * Get User invoice id
-     */
-	public function findUserInvoiceById($userInvoice_id) {
-		return UserInvoice::findUserInvoiceById($userInvoice_id);
 	}
 
 	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = [], $is_force = false) {
@@ -203,13 +136,6 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return BusinessAddress::getAddressByAddrId($biz_addr_id);
 	}
 
-	/**
-	 * Get user address from mst_company
-	 */
-	public function getUserBizAddr($user_id) {
-		return BusinessAddress::getUserBizAddr($user_id);
-	}
-
 	public function unPublishAddr($user_id) {
 		return UserInvoiceRelation::unPublishAddr($user_id);
 	}
@@ -220,6 +146,10 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getCustAndCapsLoc($user_id) {
 		return UserInvoiceRelation::getCustAndCapsLoc($user_id);
+	}
+
+	public function getUserAllApplicationsDetail(int $user_id) {
+		return Application::getApplicationsDetail($user_id);
 	}
 
 }
