@@ -26,13 +26,13 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="start_date">Start Date <span class="mandatory">*</span></label>
-                <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="">
+                <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="{{old('start_date')}}">
                 {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
             </div>
 
             <div class="form-group col-md-6">
                 <label for="end_date">End Date</label>
-                <input type="text" name="end_date" id="end_date" readonly="readonly" class="form-control">
+                <input type="text" name="end_date" id="end_date" readonly="readonly" class="form-control" value="{{old('end_date')}}">
                 {!! $errors->first('end_date', '<span class="error">:message</span>') !!}
             </div>
         </div>
