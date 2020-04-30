@@ -1376,7 +1376,7 @@ ul.company-address li:nth-child(2){padding-left:10px;}
 .typesort-c, .timesort-c{padding:0;margin:0;width:100%;}
 .timesort-c{width:100%;}
 .table.table-bordered thead th, .table thead th{border-bottom-width:1px;}
-.remaining {left: 16px;right: auto;background: transparent;color: #656060 !important;font-size: 14px;min-width: 30px;top: 10px;position: absolute;}
+.remaining {left: 16px;right: auto;background: transparent;color: #656060 !important;font-size: 14px;min-width: 30px;top: 8px;position: absolute;}
 .mt-44{margin-top: 44px;}
 /*Tool Tip */
 [tooltip]{position:relative;}
