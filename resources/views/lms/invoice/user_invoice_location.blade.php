@@ -18,13 +18,13 @@
             </ol>
         </div>
     </section>
-
     <div class="row grid-margin mt-3">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
-
-
+                    <div class="table-responsive ps ps--theme_default w-100" style="margin-bottom: 20px;">
+                     @include('lms.customer.limit_details')
+                    </div>
                     <form action="{{route('save_user_invoice_location', ['user_id' => $user_id] )}}" method="post"  id="invoice_location">
                         @csrf
                         <div class="row">

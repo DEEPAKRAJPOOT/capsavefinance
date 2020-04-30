@@ -218,8 +218,8 @@ class Transactions extends BaseModel {
 
     public static function getSettledTrans($userId){
         return self::where('entry_type','1')
-                ->whereNotNull('parent_trans_id')
-                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND')])
+                //->whereNotNull('parent_trans_id')
+                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
                     return $item->refundoutstanding > 0;
@@ -228,8 +228,8 @@ class Transactions extends BaseModel {
 
     public static function getRefundTrans($userId){
         return self::where('entry_type','1')
-                ->whereNotNull('parent_trans_id')
-                ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN')])
+                //->whereNotNull('parent_trans_id')
+                ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get();
                 //->filter(function($item){
                 //    if(in_array($item->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS')])){
