@@ -711,9 +711,7 @@ class userInvoiceController extends Controller
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
        }
     }
-<<<<<<< HEAD
 
-=======
     
      /* use function for the manage sention tabs */ 
     
