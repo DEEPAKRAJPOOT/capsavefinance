@@ -97,12 +97,12 @@ class Apportionment {
                     let value =  parseFloat($(this).attr('max'));
                     let id = $(this).attr('id');
                     if(paymentAmt>=value){
-                        $(this).val(value);
+                        $(this).val(value.toFixed(2));
                         $(this).attr('readonly',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt = paymentAmt-value;
                     }else{
-                        $(this).val(paymentAmt);
+                        $(this).val(paymentAmt.toFixed(2));
                         $(this).attr('readonly',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt= 0;
