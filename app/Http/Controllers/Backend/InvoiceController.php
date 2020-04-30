@@ -358,6 +358,7 @@ class InvoiceController extends Controller {
 			$tenor = $value['tenor_days'];
 			$updateInvoiceDisbursed = $this->lmsRepo->updateInvoiceDisbursed([
 						'payment_due_date' => ($value['invoice']['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : $value['invoice']['invoice_due_date'],
+						'status_id' => 12,
 						'int_accrual_start_dt' => $selectDate,
 						'updated_by' => Auth::user()->user_id,
         				'updated_at' => $curData
