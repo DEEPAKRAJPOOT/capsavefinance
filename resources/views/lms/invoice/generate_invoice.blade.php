@@ -1,11 +1,11 @@
-   <h2 style="font-size: 2.2em;font-weight: normal;margin: 0;" align="center">{{$company_data['name']}}</h2>
-   <h2 style="font-size: small;" align="center">Registered office: {{$company_data['address']}}</h2>
+   <h2 style="font-size: 2.2em;font-weight: normal;margin: 0;" align="center">{{$registeredCompany->cmp_name}}</h2>
+   <h2 style="font-size: small;" align="center">Registered office: {{$registeredCompany->cmp_add}}</h2>
    <h2 align="center" style="font-size: small;">
       <span style="font-size: small;"><strong>Ph:</strong></span>
-      <span style="font-size: small;"> {{$company_data['phone']}}; </span>
+      <span style="font-size: small;"> {{$registeredCompany->cmp_mobile}}; </span>
       <span style="font-size: small;"><strong>CIN No:</strong></span>
-      <span style="font-size: small;">{{$company_data['cin_no']}};</span>
-      <span style="font-size: small;"><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$company_data['email']}}">{{$company_data['email']}}</a></span>
+      <span style="font-size: small;">{{$registeredCompany->cin_no}};</span>
+      <span style="font-size: small;"><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$registeredCompany->cscsfsfs}}">{{$registeredCompany->cmp_email}}</a></span>
    </h2>
    <hr />
    <h2  style="font-size: 1.8em;text-align: center; margin: 10px 0 10px; font-weight: 600;">GST TAX INVOICE</h2>

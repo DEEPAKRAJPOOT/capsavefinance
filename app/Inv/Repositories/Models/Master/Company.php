@@ -177,4 +177,11 @@ class Company extends BaseModel {
         return $addr ? : false;
     }
 
+    // get registered address
+    public static function getCompanyRegAddr() {
+       $addr = self::where(['is_active' => 1, 'is_reg' => 1])
+                ->get();
+        return $addr ? : false;
+    }
+
 }

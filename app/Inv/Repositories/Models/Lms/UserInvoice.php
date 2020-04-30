@@ -61,6 +61,7 @@ class UserInvoice extends BaseModel {
         'invoice_state_code',
         'place_of_supply',
         'comp_addr_id',
+        'registered_comp_id',
         'bank_id',
         'tot_paid_amt',
         'tot_no_of_trans',

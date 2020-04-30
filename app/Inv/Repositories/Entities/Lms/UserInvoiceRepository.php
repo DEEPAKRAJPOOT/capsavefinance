@@ -129,6 +129,10 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoiceRelation::getUserCurrCompany($user_id);
 	}
 
+	public function getCompanyRegAddr() {
+		return Company::getCompanyRegAddr();
+	}
+
 	/**
      * Get state code by ajax
      */
