@@ -617,7 +617,8 @@ class userInvoiceController extends Controller
             if($user_addr->count() > 1){
                 return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple default addresses found.');
             }
-            return view('lms.invoice.user_invoice_location')->with(['user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $user_addr]);
+            $result = $this->getUserLimitDetais($user_id);
+            return view('lms.invoice.user_invoice_location')->with(['user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $user_addr,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -632,16 +633,12 @@ class userInvoiceController extends Controller
             $user_id = $request->get('user_id');
             $arrUserData['created_at'] = \carbon\Carbon::now();
             $arrUserData['created_by'] = Auth::user()->user_id;
-
-
-
             if(empty($arrUserData['capsave_state'])) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Capsave Location"');
             }
             if(empty($arrUserData['user_state'])) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Customer Primary Location"');
             }
-
             $userInvoiceData = [
                 'user_id' => $arrUserData['user_id'],
                 'biz_addr_id' => $arrUserData['customer_pri_loc'],
@@ -652,14 +649,12 @@ class userInvoiceController extends Controller
                 'created_at' => $arrUserData['created_at'],
                 'created_by' => $arrUserData['created_by'],
             ];
-
             $userInvData = [
                 'user_id' => $arrUserData['user_id'],
                 'biz_addr_id' => $arrUserData['customer_pri_loc'],
                 'company_id' => $arrUserData['capsav_location'],
                 'is_active' => 1,
             ];
-
             $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
             if($checkData) {
                 return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'Same address and company are already mapped and active');
