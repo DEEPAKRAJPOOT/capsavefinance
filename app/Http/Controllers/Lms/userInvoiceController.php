@@ -630,6 +630,15 @@ class userInvoiceController extends Controller
             $arrUserData['created_at'] = \carbon\Carbon::now();
             $arrUserData['created_by'] = Auth::user()->user_id;
 
+
+
+            if(empty($arrUserData['capsave_state'])) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Capsave Location"');
+            }
+            if(empty($arrUserData['user_state'])) {
+                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Customer Primary Location"');
+            }
+
             $userInvoiceData = [
                 'user_id' => $arrUserData['user_id'],
                 'biz_addr_id' => $arrUserData['customer_pri_loc'],
@@ -647,13 +656,6 @@ class userInvoiceController extends Controller
                 'company_id' => $arrUserData['capsav_location'],
                 'is_active' => 1,
             ];
-
-            if(empty($arrUserData['capsave_state'])) {
-                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Capsave Location"');
-            }
-            if(empty($arrUserData['user_state'])) {
-                return redirect()->route('user_invoice_location', ['user_id' => $user_id])->with('error', 'State are not present in "Customer Primary Location"');
-            }
 
             $checkData = $this->UserInvRepo->checkUserInvoiceLocation($userInvData);
             if($checkData) {
