@@ -230,7 +230,7 @@ class ManualApportionmentHelper{
             $intType = 1;
             
             $loopStratDate = $startDate ?? $intAccrualStartDate;
-            
+             
             while(strtotime($curdate) > strtotime($loopStratDate)){
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId);
                 if($balancePrincipal > 0){
