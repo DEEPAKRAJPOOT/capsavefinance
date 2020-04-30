@@ -297,6 +297,454 @@
          </table>
    </div>
 
+<!--fffffffffff-->
+        <div class="data">
+            <h2 class="sub-title bg">Anchor Criteria</h2>
+            <div class="pl-4 pr-4 pb-4 pt-2">
+
+                <table class="table table-bordered overview-table" id="myTable3">
+
+                    <thead>
+                        <tr bgcolor="#ccc">
+                            <th>Parameter</th>
+                            <th>Criteria</th>
+                            <th>Actual  </th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="working_capital_facility">
+
+                        <tr>
+                            <td> Vintage with Anchor</td>
+                            <td>{{isset($anchorRelationData['year_of_association']) ? $anchorRelationData['year_of_association'] . ' Years' : ''}}</td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Dependence on Anchor </td>
+                            <td>{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] . '%' : ''}} </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Quarter on Quarter off take from Anchor </td>
+                            <td>{{isset($anchorRelationData['qoq_ot_from_anchor']) ? $anchorRelationData['qoq_ot_from_anchor'] : ''}} </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Categorization/ Relevance by Anchor </td>
+                            <td>{{isset($anchorRelationData['cat_relevance_by_anchor']) ? $anchorRelationData['cat_relevance_by_anchor'] : ''}}</td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Repayment track record with Anchor </td>
+                            <td>Delay of twice a year </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="data mt-4">
+            <h2 class="sub-title bg">Surrogate Criteria (3 out of 5 parameters)</h2>
+            <div class="pl-4 pr-4 pb-4 pt-2">
+                <table class="table table-bordered overview-table" id="myTable3">
+                    <thead>
+                        <tr bgcolor="#ccc">
+                            <th>Parameter</th>
+                            <th>Criteria</th>
+                            <th>Actual </th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>Second/Third Generation Trader</td>
+                            <td>
+                                <label class="checkbox-inline mr-3">
+                                    <input type="radio" name="radio"> Yes
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="radio"> No
+                                </label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Alternate business of trader </td>
+                            <td>
+                                <label class="checkbox-inline mr-3">
+                                    <input type="radio" name="radio"> Yes
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="radio"> No
+                                </label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Self occupied/self owned property </td>
+                            <td>Yes </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Trade reference check</td>
+                            <td>Positive </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Advance/sales tax payment </td>
+                            <td>
+                                <label class="checkbox-inline mr-3">
+                                    <input type="radio" name="radio"> Yes
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="radio"> No
+                                </label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control">
+                            </td>
+                            <td>
+                                <textarea rows="1" class="form-control"></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="data mt-4">
+            <h2 class="sub-title bg">Relationship With Anchor Company</h2>
+            <div class="pl-4 pr-4 pb-4 pt-2">
+
+                <table class="table table-bordered overview-table" id="myTable3">
+                    <tbody>
+                        <tr>
+                            <td width="27%">Years of Association with Group</td>
+                            <td colspan="4">Since {{isset($anchorRelationData['year_of_association']) ? $anchorRelationData['year_of_association'] . ' Years' : ''}} </td>
+
+                        </tr>
+                        
+                        <tr>
+                            <td rowspan="3">Comments on Relationship with the Group, if any</td>
+                            <td colspan="2"></td>
+                            <td width="24%">Qty (In MT)</td>
+                            <td width="24%">Value (In Rs. Mn)</td>
+
+                        </tr>
+
+                        @php $months_r = ['April', 'May' , 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'] @endphp
+                        @if(count($data) > 0)
+                            @php $m = 0 @endphp
+                            @foreach($data as $k => $val)
+                            @php $mt_val_ye = 0; $mt_amounta = 0; @endphp 
+                            @foreach($months_r as $key => $month)
+                                @php
+                                $mt_val_ye += !empty($data[$k]['mt_value'][$key]) ? $data[$k]['mt_value'][$key] : 0;
+                                $mt_amounta += !empty($data[$k]['mt_amount'][$key]) ? $data[$k]['mt_amount'][$key] : 0;
+                                @endphp
+                              @endforeach
+                              <tr>
+                                <td colspan="2">{{$k}}</td>
+                                <td>{{$mt_val_ye}}</td>
+                                <td>{{$mt_amounta}}</td>
+                              </tr>
+                              @php $m++; @endphp
+                            @endforeach
+                        @endif
+
+                        <tr>
+                           <td rowspan="4">Dependence  on the Group</td>
+                          <td width="24%" rowspan="2"><p>&nbsp;</p></td>
+                          <td width="24%" rowspan="2">Total Purchases of traded material(Rs. Mn)</td>
+                          <td rowspan="2">Purchases From Group (Rs. Mn)</td>
+                          <td>% of Dependence</td>
+                        </tr>
+                         <tr>
+                           <td>On total traded material purchase</td>
+                         </tr>
+                         @if(count($data) > 0)
+                            @php $n = 0 @endphp
+                            @foreach($data as $k => $val)
+                            @php $mt_amountam = 0; @endphp 
+                            @foreach($months_r as $key => $month)
+                                @php
+                                $mt_amountam += !empty($data[$k]['mt_amount'][$key]) ? $data[$k]['mt_amount'][$key] : 0;
+                                @endphp
+                              @endforeach
+                              <tr>
+                                <td>{{$k}}</td>
+                                <td>&nbsp;</td>
+                                <td>{{$mt_amountam}}</td>
+                                <td>&nbsp;</td>
+                           </tr>
+                            @php $n++; @endphp
+                            @endforeach
+                        @endif
+                        
+                        <tr>
+                          <td>Payment Terms with the Group</td>
+                          <td colspan="4">{{isset($anchorRelationData['payment_terms']) ? $anchorRelationData['payment_terms'] : ''}}</td>
+                        </tr>
+                        <tr>
+                          <td>Rating / Reference by the Group</td>
+                          <td colspan="4">{{isset($anchorRelationData['grp_rating']) ? $anchorRelationData['grp_rating'] : ''}}</td>
+                        </tr>
+                        <tr>
+                          <td>Contact Person in Group Co. / Contact No.</td>
+                          <td colspan="4">{{isset($anchorRelationData['contact_person']) ? $anchorRelationData['contact_person'] : ''}} / {{isset($anchorRelationData['contact_number']) ? $anchorRelationData['contact_number'] : ''}}</td>
+                        </tr>
+                        <tr>
+                          <td>Security Deposit with Anchor Company</td>
+                          <td colspan="4">{{isset($anchorRelationData['security_deposit']) ? $anchorRelationData['security_deposit'] : ''}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="clearfix"></div>
+          </div>
+        </div>     
+        <div class="data mt-4">
+            <h2 class="sub-title bg">Month on Month Lifting with Anchor Company</h2>
+            <div class="pl-4 pr-4 pb-4 pt-2">
+                
+              <table class="table table-bordered overview-table" id="myTable">
+                    <thead>
+                      <tr>
+                        <th>Month</th>
+                        @if(count($data) > 0)
+                            @php $j = 0 @endphp
+                            @foreach($data as $key => $val)
+                                <th colspan="2" class="text-center">{{$key}}</th>
+                                @php 
+                                $year = 'year_'.$j;
+                                $$year = $key;
+                                $j++;
+                                @endphp
+                            @endforeach
+                        @endif
+                      </tr>
+                    @php 
+
+                    $year_0_kg = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'KG'? 'selected' : '';
+                    $year_0_ton = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'TON'? 'selected' : '';
+                    $year_0_unit = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'UNIT'? 'selected' : '';
+                    $year_1_kg = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'KG'? 'selected' : '' ;
+                    $year_1_ton = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'TON'? 'selected' : '';
+                    $year_1_unit = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'UNIT'? 'selected' : '';
+
+                    @endphp
+                    </thead>
+                    <tbody>
+                      <tr class="sub-heading">
+                        @php 
+                        $mt_type0 = !empty($data[$year_0]['mt_type']) ? $data[$year_0]['mt_type'] : '';
+                        $mt_type1 = !empty($data[$year_1]['mt_type']) ? $data[$year_1]['mt_type'] : '' ;
+                        @endphp
+                        <td></td>
+                        <td>Qty (in MT) {{$mt_type0}}</td>
+                        <td> Rs In Mn</td>
+                        <td>Qty (in MT) {{$mt_type1}}</td>
+                        <td> Rs In Mn</td>
+                      </tr>
+                      @php $myKey = 0; $mt_val_y0 = 0; $mt_val_y1 = 0; $mt_amount0 = 0; $mt_amount1 = 0; @endphp 
+                      @php $months = ['April', 'May' , 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'] @endphp
+                      @foreach($months as $key => $month)
+                      @php 
+                      $mt_val_y0 += !empty($data[$year_0]['mt_value'][$key]) ? $data[$year_0]['mt_value'][$key] : 0;
+                      $mt_val_y1 += !empty($data[$year_1]['mt_value'][$key]) ? $data[$year_1]['mt_value'][$key] : 0;
+                      $mt_amount0 += !empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : 0;
+                      $mt_amount1 += !empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : 0;
+                      @endphp
+                      <tr>
+                        <td>{{$month}}</td>
+                        <td width="20%">{{!empty($data[$year_0]['mt_value'][$key]) ? $data[$year_0]['mt_value'][$key] : ''}}</td>
+                        <td width="20%">{{!empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : ''}}</td>
+                        <td width="20%">{{!empty($data[$year_1]['mt_value'][$key]) ? $data[$year_1]['mt_value'][$key] : ''}}</td>
+                        <td width="20%">{{!empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : ''}}</td>
+                      </tr>
+                      @endforeach
+                      <tr>
+                        <td><b>Total</b></td>
+                        <td>{{$mt_val_y0}}</td>
+                        <td>{{$mt_amount0}}</td>
+                        <td>{{$mt_val_y1}}</td>
+                        <td>{{$mt_amount1}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+              <div class="clearfix"></div>
+          </div>
+        </div>
+        @if(isset($dataWcf) && count($dataWcf)>0)
+        <div class="data mt-4">
+            <h2 class="sub-title bg">Working Capital Facility</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+
+                <table class="table table-bordered overview-table" id="myTable3">
+
+                    <thead>
+                        <tr bgcolor="#ccc">
+                            <th> Name of Bank/ NBFC</th>
+                            <th>Fund based Facility </th>
+                            <th>Facility Amount(Rs. Mn) </th>
+                            <th>O/S as on {{$debtPosition->fund_ason_date ?? '' }} (Rs. Mn) </th>
+                            <th>Non-fund based Facility </th>
+                            <th>Facility Amount(Rs. Mn) </th>
+                            <th>O/S as on {{$debtPosition->nonfund_ason_date ?? '' }} (Rs. Mn) </th>
+                            <th>Length of Relationship </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($dataWcf as $key =>$val)
+                        <tr>
+                            <td>{{$val['bank_name']}}</td>
+                            <td>{{$val['fund_facility']}}</td>
+                            <td>₹{{number_format($val['fund_amt'])}}</td>
+                            <td>₹{{number_format($val['fund_os_amt'])}}</td>
+                            <td>{{$val['nonfund_facility']}}</td>
+                            <td>₹{{number_format($val['nonfund_amt'])}}</td>
+                            <td>₹{{number_format($val['nonfund_os_amt'])}}</td>
+                            <td>{{$val['relationship_len']}}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        @endif
+        @if(isset($dataTlbl) && count($dataTlbl)>0)
+        <div class="data mt-4">
+            <h2 class="sub-title bg">Term Loans & Business Loans</h2>
+              <div class="pl-4 pr-4 pb-4 pt-2">
+                <table class="table table-bordered overview-table" id="myTable3">
+                    <thead>
+                        <tr bgcolor="#ccc">
+                            <th>Name of the bank     </th>
+                            <th>Loan name     </th>
+                            <th>facility amount(Mn)     </th>
+                            <th>O/S as On {{$debtPosition->tbl_fund_ason_date ?? '' }} </th>
+                            <th>length of relationship  </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($dataTlbl as $key =>$val)
+                        <tr>
+                            <td>{{$val['bank_name_tlbl']}}</td>
+                            <td>{{$val['loan_name']}}</td>
+                            <td>₹{{number_format($val['facility_amt'])}}</td>
+                            <td>₹{{number_format($val['facility_os_amt'])}}</td>
+                            <td>{{$val['relationship_len_tlbl']}}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        @endif
+    @if(isset($dataBankAna) && count($dataBankAna)>0)
+    <div class="data mt-4">
+        <h2 class="sub-title bg">Banking Analysis</h2>
+        <div class="pl-4 pr-4 pb-4 pt-2">
+	<table class="table table-bordered overview-table" id="myTable3">
+            <thead>
+               <tr bgcolor="#ccc">
+                  <th>Name of Bank</th>
+                  <th>Acct. Type</th>
+                  <th colspan="3">Utilization %</th>
+                  <th colspan="4">Cheque Return</th>
+                  <th colspan="2">Summations</th>
+                  <th></th>
+               </tr>
+            </thead>
+            <tbody id="working_capital_facility">
+              <tr class="sub-heading">
+                  <td></td>
+                  <td></td>
+                  <td>Max </td>
+                  <td>Min</td>
+                  <td>Avg</td>
+                  <td>Inward</td>
+                  <td>% of total cheques presented</td>
+                  <td>Outward</td>
+                  <td>% of total cheques deposited  </td>
+                  <td>Credit</td>
+                  <td>Debit</td>
+                  <td>Over drawings in last 6 months</td>
+              </tr>
+              @foreach($dataBankAna as $key =>$val)
+              <tr>
+                  <td>{{$val['bank_name']}}</td>
+                  <td>{{$val['act_type']}}</td>
+                  <td>{{$val['uti_max']}}</td>
+                  <td>{{$val['uti_min']}}</td>
+                  <td>{{$val['uti_avg']}}</td>
+                  <td>{{number_format($val['chk_inward'])}}</td>
+                  <td>{{$val['chk_presented_per']}}</td>
+                  <td>{{number_format($val['chk_outward'])}}</td>
+                  <td>{{$val['chk_deposited_per']}}</td>
+                  <td>{{number_format($val['submission_credit'])}}</td>
+                  <td>{{number_format($val['submission_debbit'])}}</td>
+                  <td>{{$val['overdrawing_in_six_month']}}</td>
+              </tr>
+              @endforeach
+            </tbody>
+        </table>
+       <div class="clearfix"></div>
+    </div>
+  </div>
+  @endif
+<!--eeeeeeeeeeee-->
    <div class="data mt-4">
       <table class="table" cellpadding="0" cellspacing="0">
         <tr>

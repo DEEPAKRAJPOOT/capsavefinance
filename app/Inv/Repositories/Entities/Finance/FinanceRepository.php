@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\Financial\FinancialJournalEntries;
 use App\Inv\Repositories\Models\BankWorkCapitalFacility;
 use App\Inv\Repositories\Models\BankTermBusiLoan;
 use App\Inv\Repositories\Models\BankAnalysis;
+use App\Inv\Repositories\Models\FinanceModel;
 
 class FinanceRepository extends BaseRepositories implements FinanceInterface
 {
@@ -202,5 +203,9 @@ class FinanceRepository extends BaseRepositories implements FinanceInterface
     
     public function getBankAnalysis($bankDetailId) {
         return BankAnalysis::getBankAnalysis((int) $bankDetailId);
+    }
+    
+    public function getDebtPosition($appID) {
+        return FinanceModel::getDebtPosition((int) $appID);
     }
 }
