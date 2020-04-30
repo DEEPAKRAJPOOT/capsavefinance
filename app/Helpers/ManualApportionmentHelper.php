@@ -38,8 +38,17 @@ class ManualApportionmentHelper{
         ->whereNull('payment_id') 
         ->whereNull('link_trans_id') 
         ->whereNull('parent_trans_id')
-        ->whereIn('trans_type',[ config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
         ->pluck('trans_id')->toArray();
+        
+        $transIds2 = Transactions::whereRaw("Date(trans_date) <?",[$transDate]) 
+        ->where('invoice_disbursed_id','=',$invDisbId) 
+        ->whereNull('payment_id') 
+        ->whereNull('link_trans_id') 
+        ->whereNull('parent_trans_id')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
+        ->pluck('trans_id')->toArray();
+        $transIds = array_merge($transIds,$transIds2);
 
         $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
         ->where('invoice_disbursed_id','=',$invDisbId)
