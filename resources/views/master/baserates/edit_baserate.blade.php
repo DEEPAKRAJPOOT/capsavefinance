@@ -4,6 +4,7 @@
 <div class="modal-body text-left">
     <form id="baseRateForm" name="baseRateForm" method="POST" action="{{route('save_base_rate')}}" target="_top">
         @csrf
+        {!! Form::hidden('is_default', $baserate_data->is_default ? $baserate_data->is_default : 0)  !!}
         <input type="hidden" name="filter_search_keyword" id ="filter_search_keyword" value="">
         <input type="hidden" class="form-control" name="id" maxlength="5" value="{{$baserate_data->id}}">
         <div class="row">
@@ -45,15 +46,6 @@
                     <option {{$baserate_data->is_active == 0 ? 'selected' : ''}} value="0">In-Active</option>
                 </select>
             </div>
-            <div class="form-group col-md-6">
-                <label for="is_default">Is Default Base Rate? <span class="mandatory">*</span></label><br />
-                <select class="form-control" name="is_default" id="is_default">
-                    <option value="" selected>Select</option>
-                    <option {{$baserate_data->is_default == 1 ? 'selected' : ''}} value="1">YES</option>
-                    <option {{$baserate_data->is_default == 0 ? 'selected' : ''}} value="0">NO</option>
-                </select>
-                {!! $errors->first('is_default', '<span class="error">:message</span>') !!}
-            </div>
         </div>
         <div class="row">
             <div class="form-group col-md-12 text-right">
@@ -82,16 +74,6 @@
             autoclose: true,
             minView: 2
         });
-        
-        $.validator.addMethod("greaterStart", function (value, element, params) {
-            if (!/Invalid|NaN/.test(new Date(value))) {
-                return new Date(value) > new Date($(params).val());
-            }
-
-            return isNaN(value) && isNaN($(params).val())
-                    || (Number(value) > Number($(params).val()));
-            
-        });
 
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
@@ -108,15 +90,7 @@
                 start_date: {
                     required: true
                 },
-                end_date: {
-//                    required: true,
-                    greaterStart: "#start_date"
-                },
                 is_active: {
-                    required: true,
-                    digits: true
-                },
-                is_default: {
                     required: true,
                     digits: true
                 }
@@ -131,14 +105,8 @@
                 start_date: {
                     required: "Please Select Start Date"
                 },
-                end_date: {
-                    greaterStart: "Must be greater than start date."
-                },
                 is_active: {
                     required: "Please Select Status of Base Rate"
-                },
-                is_default: {
-                    required: "Please Select Status for Default Base Rate"
                 }
             }
         });
