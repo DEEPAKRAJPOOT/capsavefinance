@@ -361,12 +361,12 @@ class DisbursalController extends Controller
          */
         public function viewInterestAccrual(Request $request)
         {
-            $disbursalId = $request->get('disbursal_id');            
+            $disbursalId = $request->get('invoice_disbursed_id');            
             $whereCond = [];
-            $whereCond['disbursal_id'] = $disbursalId;
+            $whereCond['invoice_disbursed_id'] = $disbursalId;
 			//$whereCond['interest_date_eq'] = $intAccrualDt;      
-			$disbursalData = $this->lmsRepo->getDisbursalRequests($whereCond)->first();          
-			
+			$disbursalData = $this->lmsRepo->getInvoiceDisbursalRequests($whereCond)->first();          
+			// dd($disbursalData);
 			$intAccrualData = $this->lmsRepo->getAccruedInterestData($whereCond);    
             //dd('rrrrrr', $intAccrualData);
             return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData]);

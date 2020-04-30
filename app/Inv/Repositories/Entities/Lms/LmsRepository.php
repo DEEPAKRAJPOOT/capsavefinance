@@ -176,9 +176,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
-	public function getDisbursalRequests($whereCondition=[])
+	public function getInvoiceDisbursalRequests($whereCondition=[])
 	{
-		return Disbursal::getDisbursalRequests($whereCondition);
+		return InvoiceDisbursed::getInvoiceDisbursalRequests($whereCondition);
 	}
 	
 	/**
