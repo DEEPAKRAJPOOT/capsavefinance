@@ -80,7 +80,7 @@ class ApiController
               continue;
             }
             if ($txn->transType->tally_trans_type == 3) {
-                  if ($txn->getOutstandingAttribute() <= 0 || empty($txn->userinvoicetrans)) {
+                  if ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) {
                      $ignored_txns[] = $txn->trans_id;
                      continue;
                   }else{

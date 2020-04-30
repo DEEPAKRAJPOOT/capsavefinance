@@ -16,6 +16,7 @@ class BankBaseRateRequest extends Request {
         return $rules = [
             'bank_id' => 'required|numeric',
             'base_rate' => 'required|numeric|between:0,99.99|regex:/^\d+(\.\d{1,2})?$/',
+            'start_date' => 'required',
             'is_active' => 'required',
         ];
     }

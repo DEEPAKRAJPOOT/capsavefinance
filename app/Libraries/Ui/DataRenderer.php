@@ -695,7 +695,8 @@ class DataRenderer implements DataProviderInterface
      * Get Invoice list for backend
      */
     public function getBackendInvoiceList(Request $request,$invoice)
-    {   
+    {  
+        
         return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
            
@@ -4267,6 +4268,14 @@ class DataRenderer implements DataProviderInterface
                         ->addColumn(
                                 'base_rate', function ($baserates) {
                             return $baserates->base_rate;
+                        })
+                        ->addColumn(
+                                'start_date', function ($baserates) {
+                            return ($baserates->start_date) ? date('d-M-Y', strtotime($baserates->start_date)) : '---';
+                        })
+                        ->addColumn(
+                                'end_date', function ($baserates) {
+                            return ($baserates->end_date) ? date('d-M-Y', strtotime($baserates->end_date)) : '---';
                         })
                         ->addColumn(
                                 'created_at', function ($baserates) {

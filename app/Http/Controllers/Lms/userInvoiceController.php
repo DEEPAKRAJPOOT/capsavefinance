@@ -65,6 +65,13 @@ class userInvoiceController extends Controller
             if (empty($userCompanyRelation)) {
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No Relation found between Company and User.'); 
             }
+            $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+            if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
+               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Company Registered address not found..'); 
+            }
+            if ($registeredCompany->count() != 1) {
+               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Multiple Company Registered addresses found..'); 
+            }
             $company_id = $userCompanyRelation->company_id;
             $biz_addr_id = $userCompanyRelation->biz_addr_id;
             $user_invoice_rel_id = $userCompanyRelation->user_invoice_rel_id;
@@ -128,8 +135,8 @@ class userInvoiceController extends Controller
             'address' => $companyDetail->cmp_add,
             'state' => $companyDetail->getStateDetail,
             'city' => $companyDetail->city,
-            'phone' => '+91 22 6173 7600',
-            'email' => 'accounts@rentalpha.com',
+            'phone' => $companyDetail->cmp_mobile,
+            'email' => $companyDetail->cmp_email,
             'pan_no' => $companyDetail->pan_no,
             'gst_no' => $companyDetail->gst_no,
             'cin_no' => $companyDetail->cin_no,
@@ -259,6 +266,14 @@ class userInvoiceController extends Controller
            return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
         }
 
+        $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+        if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
+           return response()->json(['status' => 0,'message' => "Company Registered address not found.."]); 
+        }
+        if ($registeredCompany->count() != 1) {
+           return response()->json(['status' => 0,'message' => "Multiple Company Registered addresses found.."]); 
+        }
+
         $requestedData = $request->all();
         $decryptedData = _decrypt($requestedData['encData']);
         if (empty($decryptedData)) {
@@ -302,6 +317,7 @@ class userInvoiceController extends Controller
             'origin_of_recipient' => $origin_of_recipient, 
             'intrest_charges' => $intrest_charges,
             'total_sum_of_rental' => $total_sum_of_rental,
+            'registeredCompany' => $registeredCompany[0],
         ];
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
@@ -321,6 +337,14 @@ class userInvoiceController extends Controller
             if (!is_array($trans_ids) || empty($trans_ids)) {
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No selected txns found for the invoice.');
             }
+            $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+            if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
+               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Company Registered address not found..'); 
+            }
+            if ($registeredCompany->count() != 1) {
+               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Multiple Company Registered addresses found..'); 
+            }
+            $registeredCompany = $registeredCompany[0];
             $requestedData = $request->all();
             $decryptedData = _decrypt($requestedData['encData']);
             if (empty($decryptedData)) {
@@ -372,6 +396,7 @@ class userInvoiceController extends Controller
                 'tot_no_of_trans' => count($requestedData['trans_id']),
                 'tot_paid_amt' => $total_sum_of_rental ?? 0,
                 'comp_addr_id' => $company_data['comp_id'],
+                'registered_comp_id' => $registeredCompany->comp_addr_id,
                 'bank_id' => $company_data['bank_id'],
                 'is_active' => 1,
                 'created_at' => $requestedData['created_at'],
@@ -417,6 +442,7 @@ class userInvoiceController extends Controller
         $invoice_type = $invData->invoice_type;
         $invoice_date = $invData->invoice_date;
         $company_id = $invData->comp_addr_id;
+        $registered_comp_id = $invData->registered_comp_id;
         $bank_account_id = $invData->bank_id;
         $totalTxnsInInvoice = $invData->userInvoiceTxns->toArray();
         $trans_ids = [];
@@ -479,23 +505,25 @@ class userInvoiceController extends Controller
                 'desc' => $transDetail->transType->trans_name,
                 'sac' => $transDetail->transType->sac_code,
                 'base_amt' => round($base_amt,2),
-                'sgst_rate' => $sgst_rate,
-                'sgst_amt' => $sgst_amt,
-                'cgst_rate' => $cgst_rate,
-                'cgst_amt' =>  $cgst_amt,
-                'igst_rate' => $igst_rate,
-                'igst_amt' =>  $igst_amt,
+                'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
+                'sgst_amt' => ($sgst_amt != 0 ? $sgst_amt : 0),
+                'cgst_rate' => ($cgst_rate != 0 ? $cgst_rate : 0),
+                'cgst_amt' =>  ($cgst_amt != 0 ? $cgst_amt : 0),
+                'igst_rate' => ($igst_rate != 0 ? $igst_rate : 0),
+                'igst_amt' =>  ($igst_amt != 0 ? $igst_amt : 0),
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
             $intrest_charges[$key]['total_rental'] =  $total_rental; 
         }
+        $registeredCompany = $this->UserInvRepo->getCompanyDetail($registered_comp_id);
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billingDetails,
             'origin_of_recipient' => $origin_of_recipient, 
             'intrest_charges' => $intrest_charges,
             'total_sum_of_rental' => $total_sum_of_rental,
+            'registeredCompany' => $registeredCompany,
         ];
         return $this->viewInvoiceAsPDF($data, true);
     }

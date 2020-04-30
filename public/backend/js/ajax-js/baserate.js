@@ -26,6 +26,8 @@ try {
            columns: [
                     {data: 'bank_id'},
                     {data: 'base_rate'},
+                    {data: 'start_date'},
+                    {data: 'end_date'},
                     {data: 'created_at'},
                     {data: 'created_by'},
                     {data: 'is_active'},

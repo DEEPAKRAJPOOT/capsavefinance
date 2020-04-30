@@ -56,6 +56,7 @@ class AppProgramLimit extends BaseModel {
         'anchor_id',
         'prgm_id',
         'product_id',
+        'status',
         'limit_amt',
         'start_date',
         'end_date',
@@ -218,7 +219,7 @@ class AppProgramLimit extends BaseModel {
 
    
     public function app(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id')->where(['status' =>2]);  
     }
       
     public static function getSingleLimit($aid){
