@@ -423,8 +423,10 @@ class Transactions extends BaseModel {
             });
         })
         ->first();
-
-        $interestAmt = $invoice->amount;
+        $interestAmt = 0;
+        if($invoice){
+            $interestAmt = $invoice->amount;
+        }
 
         $intRefund = 0;
         $totalDebitAmt = self::where('entry_type','=','0')
