@@ -82,7 +82,7 @@ class ManualApportionmentHelper{
 
     private function monthlyIntPosting($invDisbId, $userId){
         return InterestAccrual:://select('*')
-        select(\DB::row("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
+        select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->whereNull('overdue_interest_rate')
         ->groupByRaw('YEAR(interest_date), MONTH(interest_date)')
@@ -91,7 +91,7 @@ class ManualApportionmentHelper{
 
     private function rearEndIntPosting($invDisbId,$userId){
         return InterestAccrual:://select('*')
-        select(\DB::row("sum(accrued_interest) as totalInt, max(interest_date) as interestDate"))
+        select(\DB::raw("sum(accrued_interest) as totalInt, max(interest_date) as interestDate"))
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->whereNull('overdue_interest_rate')
         ->groupBy('invoice_disbursed_id')
