@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-tabs custom-tab" role="tablist">
     <li class="nav-item itemBackground">
         @if($flag == 1)
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_invoice') active @endif"  href="{{Route('backend_get_invoice',[ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ])}}">Pending</a>
