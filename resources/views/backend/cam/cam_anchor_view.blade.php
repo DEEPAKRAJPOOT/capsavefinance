@@ -34,7 +34,7 @@
                                     {!! $errors->first('grp_rating', '<span class="error">:message</span>') !!}
                                 </td>
                                 <td>Security Deposit with Anchor Company</td>
-                                <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" id="security_deposit" name="security_deposit" class="form-control " value="{{isset($anchorRelationData['security_deposit']) ? $anchorRelationData['security_deposit'] : ''}}" maxlength="15" oninput="">
+                                <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" id="security_deposit" name="security_deposit" class="number_format form-control" value="{{isset($anchorRelationData['security_deposit']) ? number_format($anchorRelationData['security_deposit']) : ''}}" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('security_deposit', '<span class="error">:message</span>') !!}
                                 </td>
                             </tr>
@@ -46,7 +46,7 @@
                                 </td>
                                 <td> Contact No.</td>
                                 <td>
-                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{isset($anchorRelationData['contact_number']) ? $anchorRelationData['contact_number'] : ''}}" minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{isset($anchorRelationData['contact_number']) ? $anchorRelationData['contact_number'] : ''}}" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('contact_number', '<span class="error">:message</span>') !!}
                                 </td>
                                 
@@ -275,7 +275,9 @@
                 required: true
             },
             contact_number: {
-                required: true
+                required: true,
+                minlength: 10,
+                maxlength: 10
             },
             security_deposit: {
                 required: true
@@ -301,7 +303,7 @@
                required: 'Please enter year of association.'
             },
             contact_person: {
-                required: 'Please enter contact person.'
+                required: 'Please enter contact person name.'
             },
             payment_terms: {
                 required: 'Please enter payment terms.'
@@ -310,7 +312,9 @@
                 required: 'Please enter group rating.'
             },
             contact_number: {
-                required: 'Please enter contact number.'
+                required: 'Please enter contact number.',
+                minlength: 'The contact number must be at least 10 digit.',
+                maxlength: 'The contact number must be at least 10 digit.'
             },
             security_deposit: {
                 required: 'Please enter security deposit.'

@@ -1901,7 +1901,7 @@ class CamController extends Controller
             $relationShipArr['dependence_on_anchor']    = $allData['dependence_on_anchor'];
             $relationShipArr['qoq_ot_from_anchor']      = $allData['qoq_ot_from_anchor'];
             $relationShipArr['cat_relevance_by_anchor'] = $allData['cat_relevance_by_anchor'];
-            $relationShipArr['security_deposit']        = $allData['security_deposit'];
+            $relationShipArr['security_deposit']        = str_replace(',', '', $allData['security_deposit']);
             $relationShipArr['note_on_lifting']         = $allData['note_on_lifting'];
             $relationShipArr['reference_from_anchor']   = $allData['reference_from_anchor'];
             $relationShipArr['anchor_risk_comments']    = $allData['anchor_risk_comments'];
