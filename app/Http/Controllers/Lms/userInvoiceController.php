@@ -505,12 +505,12 @@ class userInvoiceController extends Controller
                 'desc' => $transDetail->transType->trans_name,
                 'sac' => $transDetail->transType->sac_code,
                 'base_amt' => round($base_amt,2),
-                'sgst_rate' => $sgst_rate,
-                'sgst_amt' => $sgst_amt,
-                'cgst_rate' => $cgst_rate,
-                'cgst_amt' =>  $cgst_amt,
-                'igst_rate' => $igst_rate,
-                'igst_amt' =>  $igst_amt,
+                'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
+                'sgst_amt' => ($sgst_amt != 0 ? $sgst_amt : 0),
+                'cgst_rate' => ($cgst_rate != 0 ? $cgst_rate : 0),
+                'cgst_amt' =>  ($cgst_amt != 0 ? $cgst_amt : 0),
+                'igst_rate' => ($igst_rate != 0 ? $igst_rate : 0),
+                'igst_amt' =>  ($igst_amt != 0 ? $igst_amt : 0),
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
