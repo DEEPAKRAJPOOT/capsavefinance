@@ -66,7 +66,7 @@
             <table id="cusCapLoc_list" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoices_list_info" style="width: 100%;">
             <thead>
                 <tr role="row">
-                <th>Reference No</th>
+                <th>#</th>
                 <th>Customer Location</th>
                 <th>Capsave Location</th>
                 <th>Created Date</th>
