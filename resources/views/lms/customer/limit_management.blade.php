@@ -1,6 +1,7 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
 @include('layouts.backend.partials.admin_customer_links',['active'=>'customer'])
+
 <div class="content-wrapper">
  <div class="row"> 
      <div class=" col-lg-12 m-auto">
