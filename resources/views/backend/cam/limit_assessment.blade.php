@@ -18,15 +18,19 @@
                             <div class="col-md-3">
                                 <div class="form-group INR">
                                     <label>Total Credit Assessed</label>
-                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:24px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure" {{isset($limitData->tot_limit_amt)? 'disabled': ''}}>
+                                    <div class="relative">
+                                    <a href="javascript:void(0);" class="remaining" style="top:24px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <input type="text" class="form-control number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure" {{isset($limitData->tot_limit_amt)? 'disabled': ''}}>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group INR">
                                     <label>Available Credit Assessed</label>
-                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:24px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                    <input type="text" class="form-control form-control-sm number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure (offered)" disabled>
+                                    <div class="relative">
+                                    <a href="javascript:void(0);" class="remaining" style="top:24px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <input type="text" class="form-control number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure (offered)" disabled>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -37,7 +41,7 @@
                             </div>-->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label>Select Product Type</label>
+                                    <label class="mb-21">Select Product Type</label>
                                     <select class="form-control" name="product_id" id="product_id">
                                         <option value="">Select Product</option>
                                         <option value="1" {{(old('product_id') == 1)?'selected': ''}}>Supply Chain</option>
@@ -52,14 +56,16 @@
 
                             <div class="col-md-3">
                                 <div class="form-group INR">
-                                    <label>Proposed Product Limit</label><span class="limit float-right"></span>
+                                    <label class="mb-0">Proposed Product Limit</label><span class="limit float-right"></span>
                                     <div class="text-success">
                                     @if($balance != '')
                                         <small>Remaining Limit Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}</small>
                                     @endif
                                     </div>
+				    <div class="relative">	
                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control number_format" name="limit_amt" id="limit_amt" value="{{old('limit_amt')}}" maxlength="15" placeholder="Enter Proposed Product Limit">
+				    </div>
                                 </div>
                             </div>
                             <div class="col-md-1">
