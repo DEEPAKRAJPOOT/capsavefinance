@@ -871,6 +871,7 @@ class ApplicationController extends Controller
 				  		'start_date' => $curDate,
 				  		'end_date' => $endDate], $appLimitId);
 				  	$this->appRepo->updatePrgmLimitByLimitId([
+				  		'status' => 1,
 				  		'start_date' => $curDate,
 				  		'end_date' => $endDate], $appLimitId);
 			  	}

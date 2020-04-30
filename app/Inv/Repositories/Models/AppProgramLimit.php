@@ -56,6 +56,7 @@ class AppProgramLimit extends BaseModel {
         'anchor_id',
         'prgm_id',
         'product_id',
+        'status',
         'limit_amt',
         'start_date',
         'end_date',

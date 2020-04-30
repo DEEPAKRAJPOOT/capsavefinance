@@ -47,7 +47,7 @@
                   <div class="col-md-2 text-right">
                       <label>&nbsp;</label><br>
                        @can('create_user_invoice')
-                        <a href="{{ route('create_user_invoice', [ 'user_id' => $userInfo->user_id ] ) }}" >
+                        <a href="{{ route('create_user_invoice', [ 'user_id' => $user_id ] ) }}" >
                             <button class="btn  btn-success btn-sm" type="button"><i class="fa fa-plus"></i> Create Invoice</button>
                         </a>
                         @endcan
@@ -102,7 +102,7 @@
       get_to_settle_payments: "{{ route('get_to_settle_payments') }}",
       data_not_found: "{{ trans('error_messages.data_not_found') }}",
       token: "{{ csrf_token() }}",
-      user_id:"{{ $userInfo->user_id }}",
+      user_id:"{{ $user_id }}",
     };
 
     $("#from_date").datetimepicker({

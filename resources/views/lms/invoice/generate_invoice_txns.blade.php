@@ -18,7 +18,7 @@
       @endphp
       <tr>
          @if(!empty($checkbox))
-         <td style="border: 1px solid #ddd;padding: 5px;">
+         <td style="border: 1px solid #ddd;padding: 5px;text-align: center;">
             <span style="font-size: small;"><input type="checkbox" class="trans_check" name="trans_id[]" value="{{$txns['trans_id']}}"></span>
          </td>
          @endif

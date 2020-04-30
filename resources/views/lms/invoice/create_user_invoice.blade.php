@@ -97,7 +97,8 @@
                                             <div class="col-md-12">
                                                 <div class="form-group m-0">
                                                     <label class="m-0">Place of Supply: <span>{{$billingDetails['state_name']}}</span>
-                                                      <input type="hidden" name="place_of_supply" value="{{$origin_of_recipient['state_name']}}"></label>
+                                                      <input type="hidden" name="place_of_supply" value="{{$billingDetails['state_name']}}"></label>
+                                                      <input type="hidden" name="encData" value="{{$encData}}"></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -198,6 +199,7 @@
    var message = {
        token: "{{ csrf_token() }}",
        user_id: "{{ $user_id }}",
+       encData: "{{ $encData }}",
        state_name: "{{ $origin_of_recipient['state_name'] }}",
        get_app_gstin_url: "{{route('get_app_gstin')}}",
        invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
@@ -225,6 +227,7 @@
     let formData = new FormData(myForm);
     formData.append('_token', message.token);
     formData.append('state_name', message.state_name);
+    formData.append('encData', message.encData);
     $.ajax({
       type:'POST',
       url : "{{route('preview_user_invoice', ['user_id'=> $user_id])}}",
@@ -288,7 +291,7 @@
     $('.isloader').show();
     $.ajax({
       type:'POST',
-      url : "{{route('get_invoice_transaction', ['user_id'=> $user_id])}}",
+      url : "{{route('get_invoice_transaction', ['user_id'=> $user_id, 'encData'=> $encData])}}",
       data: data,
       cache : false,
       dataType    : 'json',

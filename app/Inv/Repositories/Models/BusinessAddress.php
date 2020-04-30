@@ -81,6 +81,10 @@ class BusinessAddress extends BaseModel
         return $this->belongsTo('App\Inv\Repositories\Models\Business','biz_id','biz_id');
     }
 
+    public static function getAddressByAddrId($biz_addr_id){
+        return self::with('business')->where('biz_addr_id', $biz_addr_id)->first();
+    }
+
     public function owner(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizOwner','biz_owner_id','biz_owner_id');
     }
