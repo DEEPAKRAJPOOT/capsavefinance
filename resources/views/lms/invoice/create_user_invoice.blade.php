@@ -92,9 +92,8 @@
                                                 <div class="form-group">
                                                     <label class="m-0">Reference No:</label>
                                                     <select class="form-control" name="reference_no" id="reference_no">
-                                                      <option value="" disabled selected>Select Reference Application</option>
                                                       @foreach($allApplications as $app)
-                                                        <option value="{{ \Helpers::formatIdWithPrefix($app->app_id) }}">{{ $app->biz_entity_name }}</option>
+                                                        <option selected value="{{ \Helpers::formatIdWithPrefix($app->app_id) }}">{{ $app->biz_entity_name }} ({{ \Helpers::formatIdWithPrefix($app->app_id) }})</option>
                                                       @endforeach
                                                     </select>
                                                 </div>
