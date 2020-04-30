@@ -443,11 +443,11 @@ class Transactions extends BaseModel {
 			if($payment_date){
 				$invoice = $invoice->whereDate('interest_date','<',$payment_date);
 			}    
-            $intRefund = $invoice->sum('accrued_interest');
+            $intRefundable = $invoice->sum('accrued_interest');
+            $intRefund = $interestAmt - $intRefundable; 
+            $intRefund = ($intRefund <= 0)?0:$intRefund;
         }
-        $intRefund = $interestAmt - $intRefund; 
         
-        $intRefund = ($intRefund <= 0)?0:$intRefund;
 
         return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
