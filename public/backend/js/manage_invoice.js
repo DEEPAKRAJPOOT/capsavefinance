@@ -1,3 +1,11 @@
+  $(document).ready(function(){
+    setInterval(function(){  localStorage.setItem('storageMsg',''); }, 1000);
+     var  msg = localStorage.getItem('storageMsg');
+    if(msg)
+     {
+       $("#storeSuccessMsg").html("<div class='alert-success alert' role='alert'><span><i class='fa fa-bell fa-lg' aria-hidden='true'></i></span>"+msg+"</div>");
+     }
+   })
  $(document).ready(function () {
        
          document.getElementById('invoice_approve_amount').addEventListener('input', event =>
@@ -21,11 +29,14 @@
 
     ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.approveInv', function () {
+          
         $("#moveCase").html('');
         if (confirm('Are you sure? You want to approve it.'))
-        {
+        {  $(".isloader").show(); 
             var invoice_id = $(this).attr('data-id');
-            var postData = ({'invoice_id': invoice_id, 'status': 8, '_token': messages.token});
+            var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': 8, '_token': messages.token});
             th = this;
             jQuery.ajax({
                 url: messages.update_invoice_approve,
@@ -36,10 +47,16 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                   
-                     $("#moveCase").html('Invoice successfully sent to  approve ');
-                     $(th).parent('td').parent('tr').remove();
-                   
+                      $(".isloader").hide(); 
+                   if(data==2)
+                   {
+                      alert('Limit Exceed');
+                    }
+                    else
+                    {
+                        $("#moveCase").html('Invoice successfully sent to  approve ');
+                        $(th).parent('td').parent('tr').remove(); 
+                    }
                 }
             });
         } else
@@ -51,9 +68,11 @@
     
      ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.disburseInv', function () {
+       
         $("#moveCase").html('');
         if (confirm('Are you sure? You want to disbursement queue.'))
         {
+            $(".isloader").show(); 
             var invoice_id = $(this).attr('data-id');
             var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
             th = this;
@@ -66,7 +85,7 @@
                     alert(errorThrown);
                 },
                 success: function (data) {
-                   
+                      $(".isloader").hide(); 
                      $("#moveCase").html('Invoice successfully sent to  disbursement queue ');
                      $(th).parent('td').parent('tr').remove();
                    
@@ -339,38 +358,48 @@ function uploadFile(app_id,id)
 
 
     $(document).on('click', '#bulkApprove', function () {
+       
         $("#moveCase").html('');
         var arr = [];
         i = 0;
         th = this;
         $(".chkstatus:checked").each(function () {
             arr[i++] = $(this).val();
+           
         });
+     
         if (arr.length == 0) {
             alert('Please select atleast one checked');
             return false;
         }
-        if (confirm('Are you sure? You want to approve it.'))
-        {
+        if (confirm('Are you sure, You want to approve it.'))
+        {     $(".isloader").show(); 
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
-            jQuery.ajax({
+          jQuery.ajax({
                 url: messages.update_bulk_invoice,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
-                error: function (xhr, status, errorThrown) {
+                 error: function (xhr, status, errorThrown) {
                     alert(errorThrown);
 
                 },
                 success: function (data) {
-                    if (data == 1)
-                    {
-                        
-                        location.reload();
-                    }
-
-                }
+                         $(".isloader").hide(); 
+                         if(data.msg=="")
+                         {
+                            localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                            location.reload();
+                         }
+                         else
+                         {
+                             
+                            localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer');
+                            location.reload();
+                         }
+                     }
+               
             });
         } else
         {
@@ -382,6 +411,7 @@ function uploadFile(app_id,id)
 
 
     $(document).on('click', '#bulkDisburseApprove', function () {
+       
         $("#moveCase").html('');
         var arr = [];
         i = 0;
@@ -394,7 +424,7 @@ function uploadFile(app_id,id)
             return false;
         }
         if (confirm('Are you sure? You want to disbursement queue.'))
-        {
+        {    $(".isloader").show(); 
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
             jQuery.ajax({
@@ -407,11 +437,9 @@ function uploadFile(app_id,id)
 
                 },
                 success: function (data) {
-                    if (data == 1)
-                    {
-                        
+                        $(".isloader").hide(); 
                         location.reload();
-                    }
+                    
 
                 }
             });
@@ -454,7 +482,9 @@ function uploadFile(app_id,id)
     
      ///////////////////////For Invoice Approve////////////////////////
     $(document).on('change', '.approveInv1', function () {
+       
         var status = $(this).val();
+        $("#moveCase").html('');
         if (status == 0)
         {
             return false;
@@ -477,10 +507,12 @@ function uploadFile(app_id,id)
         }
         if (confirm('Are you sure? You want to ' + st + ' it.'))
         {
-            th = this;
+             $(".isloader").show(); 
             var invoice_id = $(this).attr('data-id');
-            var postData = ({'invoice_id': invoice_id, 'status': status, '_token': messages.token});
-            th = this;
+             var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            var $tr = $(this).closest('tr');
             jQuery.ajax({
                 url: messages.update_invoice_approve,
                 method: 'post',
@@ -490,7 +522,20 @@ function uploadFile(app_id,id)
                     alert(errorThrown);
                 },
                 success: function (data) {
-                    $(th).closest('tr').remove();
+                     $(".isloader").hide(); 
+                     if(data==2)
+                    {
+                      alert('Limit Exceed');
+                    }
+                    else
+                    {
+                       
+                         $tr.remove();
+                        /// $(th).parent('td').parent('tr').remove(); 
+                        /// $("#moveCase").html('Invoice successfully sent to  approve ');
+                      
+                    }
+                    
                 }
             });
         } else

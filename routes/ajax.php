@@ -380,7 +380,7 @@ Route::group(
         'uses' => 'AjaxController@getCustomerId'
         ]
     );       
-             Route::post(
+          Route::post(
         'backend_activity_invoice_list',
         [
         'as' => 'backend_activity_invoice_list',

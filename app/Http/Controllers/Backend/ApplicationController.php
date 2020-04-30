@@ -533,9 +533,12 @@ class ApplicationController extends Controller
 			// $response = $this->docRepo->isUploadedCheck($userId, $appId);
 			
 			// if ($response->count() < 1) {
-				
-				$this->appRepo->updateAppData($appId, ['status' => 1]);
-								  
+				//$appData = $this->appRepo->getAppData($appId);
+                                //$curStatus = $appData ? $appData->status : 0;                        
+                                $currentStage = Helpers::getCurrentWfStage($appId);
+                                if ($currentStage && $currentStage->order_no < 4 ) {                                  
+                                    $this->appRepo->updateAppData($appId, ['status' => 1]);
+                                }				  
 				Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
 			 
 				//Add application workflow stages                
@@ -826,8 +829,6 @@ class ApplicationController extends Controller
 						return redirect()->back();                                            
 					}
 				} else if ($currStage->stage_code == 'opps_checker') {
-                                  $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
-                                  if($prcsAmt && isset($prcsAmt->offer)) {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
 				  $lmsCustomerArray = array(
@@ -849,9 +850,18 @@ class ApplicationController extends Controller
 				  		'start_date' => $curDate,
 				  		'end_date' => $endDate], $appLimitId);
 			  	}
+<<<<<<< HEAD
 				  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
                                   $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
 				  if($createCustomer != null) {
+=======
+			  	
+			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
+              	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+              	if($prcsAmt && isset($prcsAmt->offer)) {
+				  if($createCustomer != null) {                                      
+>>>>>>> pankaj_F_4033_28apr2020
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
 					$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
@@ -959,7 +969,24 @@ class ApplicationController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	public function showBusinessInformation()
+<<<<<<< HEAD
 	{
+=======
+	{            
+            $userId = request()->get('user_id');
+            $where=[];
+            $where['user_id'] = $userId;
+            $where['status'] = [0,1];
+            $appData = $this->appRepo->getApplicationsData($where);
+            
+            $userData = $this->userRepo->getfullUserDetail($userId);           
+            $isAnchorLead = $userData && !empty($userData->anchor_id);
+            
+            if (isset($appData[0])) {
+                Session::flash('message', 'You can\'t create a new application before sanctions.');
+                return redirect()->back();
+            }
+>>>>>>> pankaj_F_4033_28apr2020
             
 		$states = State::getStateList()->get();
 		$product_types = $this->masterRepo->getProductDataList();
@@ -1727,7 +1754,8 @@ class ApplicationController extends Controller
 			$biz_id = (int)$request->post('biz_id');
 		   // dd($app_id,$biz_id , config('common.mst_status_id')['DISBURSED']);
 			$arrUpdateApp=[
-				'curr_status_id'=>config('common.mst_status_id')['DISBURSED'] 
+				'curr_status_id'=>config('common.mst_status_id')['DISBURSED'],
+                            'status' => 2,
 			];
 			$appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);           
 

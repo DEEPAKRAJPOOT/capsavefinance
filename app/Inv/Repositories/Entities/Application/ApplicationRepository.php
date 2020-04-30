@@ -1721,6 +1721,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
     
     /**
+<<<<<<< HEAD
      * Get Renewal applications
      * 
      * @return mixed
