@@ -21,11 +21,11 @@ try {
                 }
             },
             columns: [
-                { data: 'user_invoice_rel_id' },
-                { data: 'biz_addr_id' },
-                { data: 'company_id' },
-                { data: 'created_at' },
-                { data: 'is_active' },
+                { data: 'sr_no' },
+               { data: 'comp_addr' },
+               { data: 'user_addr' },
+               { data: 'created_at' },
+               { data: 'is_active' },
             ],
             aoColumnDefs: [{ 'bSortable': false, 'aTargets': [0, 1] }]
         });
