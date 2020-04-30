@@ -5447,7 +5447,10 @@ class DataRenderer implements DataProviderInterface
                 }
             })
             ->addColumn('select', function($trans){
-                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                $result = '';
+                if($trans->payment){
+                    $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                }
                 return $result;
             })
             ->make(true);

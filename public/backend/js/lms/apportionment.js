@@ -216,7 +216,7 @@ class Apportionment {
            }
            var transId = checkedName.replace(/[^0-9]/g, '');
            var givenUrl = data.trans_waiveoff_url;
-           var targetUrl = givenUrl + '?trans_id=' + transId;
+           var targetUrl = givenUrl + '&trans_id=' + transId;
            if(data.payment_id){
                 targetUrl += '&payment_id=' + data.payment_id;
             }
@@ -234,7 +234,7 @@ class Apportionment {
            var checkedName = $('input:checkbox:checked').attr('name');
            var transId = checkedName.replace(/[^0-9]/g, '');
            var givenUrl = data.trans_reversal_url;
-           var targetUrl = givenUrl + '?trans_id=' + transId;
+           var targetUrl = givenUrl + '&trans_id=' + transId;
            if(data.payment_id){
                 targetUrl += '&payment_id=' + data.payment_id;
             }

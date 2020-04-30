@@ -8,11 +8,11 @@
 @endsection
 
 @section('content')
-@if($sanctionPageView)
+@if($sanctionPageView == true)
     @include('layouts.backend.partials.admin_customer_links',['active'=>'unsettledTrans'])
 @endif
 <div class="content-wrapper">
-    @if(!$sanctionPageView)
+    @if(!$sanctionPageView == true)
     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
@@ -30,13 +30,13 @@
     @endif
     <div class="card">
         <div class="card-body"> 
-        @if(!$sanctionPageView)      
+        @if($sanctionPageView == false)   
             @include('lms.apportionment.common.userDetails')
             @if($paymentId)
             @include('lms.apportionment.common.paymentDetails')
             @endif
         @endif
-            <form action="{{ route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId]) }}" method="post" onsubmit="return apport.validateMarkSettled(this)">
+            <form action="{{ route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" method="post" onsubmit="return apport.validateMarkSettled(this)">
              @csrf	
             <div class="row">
                 @include('lms.apportionment.common.listUnsettledTransactions')
@@ -58,13 +58,12 @@
 
 @section('jscript')
 <script>
-
     var messages = {
         url: "{{ URL::route('apport_unsettled_list') }}",
-        trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff') }}",
+        trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff',['sanctionPageView' => $sanctionPageView]) }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",
-        payment_amt: "{{$payment['payment_amt']}}",
+        payment_amt: "{{ $payment_amt }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         old_data: {!! json_encode($oldData) !!},
         token: "{{ csrf_token() }}",

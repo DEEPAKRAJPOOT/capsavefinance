@@ -33,15 +33,30 @@ class ManualApportionmentHelper{
     }
 
     private function getpaymentSettled($transDate, $invDisbId){
+        $transIds = Transactions::whereRaw("Date(trans_date) <?",[$transDate]) 
+        ->where('invoice_disbursed_id','=',$invDisbId) 
+        ->whereNull('payment_id') 
+        ->whereNull('link_trans_id') 
+        ->whereNull('parent_trans_id')
+        ->whereIn('trans_type',[ config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
+        ->pluck('trans_id')->toArray();
 
-        $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
+        $Dr = Transactions::whereRaw("Date(trans_date) <?",[$transDate])
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
+        ->where(function($query) use($transIds){
+            $query->whereIn('trans_id',$transIds);
+            $query->OrwhereIn('parent_trans_id',$transIds);
+        })
         ->sum('amount');
     
-        $Cr =  Transactions::where('trans_date','<=',$transDate)
+        $Cr =  Transactions::whereRaw("Date(trans_date) <?",[$transDate])
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
+        ->where(function($query) use($transIds){
+            $query->whereIn('trans_id',$transIds);
+            $query->OrwhereIn('parent_trans_id',$transIds);
+        })
         ->sum('amount');
 
         return $Dr-$Cr;
@@ -216,7 +231,8 @@ class ManualApportionmentHelper{
             
             $loopStratDate = $startDate ?? $intAccrualStartDate;
             
-            while(strtotime($curdate) >= strtotime($loopStratDate)){
+            while(strtotime($curdate) > strtotime($loopStratDate)){
+                $loopStratDate = $this->addDays($loopStratDate,1);
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId);
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) === strtotime($odStartDate)){
@@ -255,7 +271,7 @@ class ManualApportionmentHelper{
                     break;
                 }
                 
-                $loopStratDate = $this->addDays($loopStratDate,1);
+               
             }
             $this->interestPosting($invDisbId, $userId, $payFreq);
             $this->overDuePosting($invDisbId, $userId);
