@@ -72,7 +72,15 @@ class RenewalController extends Controller {
             
             */
             
-            $this->copyApplication($userId, $appId, $bizId);
+            $result = $this->copyApplication($userId, $appId, $bizId);
+            
+            $arrActivity = [];
+            $arrActivity['activity_code'] = 'application_renewal';
+            $arrActivity['activity_desc'] = 'Application is renewed successfully';
+            $arrActivity['user_id'] = $userId;
+            $arrActivity['app_id'] = $appId;
+            \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
+        
             //Session::flash('message', 'Application is copied successfully');
             Session::flash('is_accept', 1);
             //echo '<script>$(document).ready(function(){ parent.jQuery("#confirmCopyApp").modal("hide"); });</script>';

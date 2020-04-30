@@ -335,7 +335,7 @@ trait ApplicationTrait
             $appData['biz_id'] = $newBizId;
             $appData['parent_app_id'] = $appId;
             $appData['status'] = 0;
-            //$appData['renewal_status'] = 2;
+            $appData['renewal_status'] = 0;
             $newAppData = $this->appRepo->createApplication($appData);
             $newAppId = $newAppData->app_id;
             
@@ -581,6 +581,12 @@ trait ApplicationTrait
             //\DB::rollback(); dd($ownerData);
 
             \DB::commit();
+            
+            $result = [];
+            $result['new_app_id'] = $newAppId;
+            $result['new_biz_id'] = $newBizId;
+            
+            return $result;
             // all good
         } catch (\Exception $e) {
             \DB::rollback();
