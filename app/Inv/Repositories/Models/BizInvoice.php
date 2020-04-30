@@ -161,7 +161,7 @@ public static function saveBulkInvoice($arrInvoice)
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC')->get();
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
