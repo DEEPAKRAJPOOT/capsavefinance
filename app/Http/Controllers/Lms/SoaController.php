@@ -46,7 +46,8 @@ class SoaController extends Controller
 	{	
 		$userData = [];
 		if($request->has('user_id')){
-			$user = $this->userRepo->lmsGetCustomer($request->user_id);
+                     $result = $this->getUserLimitDetais($request->user_id);
+                     $user = $this->userRepo->lmsGetCustomer($request->user_id);
 			if($user && $user->app_id){
 				$userData['user_id'] = $user->user_id;
 				$userData['customer_id'] = $user->customer_id;
@@ -58,7 +59,48 @@ class SoaController extends Controller
 			}
 		}
 		
-		return view('lms.soa.list')->with('user',$userData);              
+		return view('lms.soa.list')->with('user',$userData)->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]); 
+			              
 	}
+        
+         /* use function for the manage sention tabs */ 
+    
+    public  function  getUserLimitDetais($user_id) 
+   {
+            try {
+                $totalLimit = 0;
+                $totalCunsumeLimit = 0;
+                $consumeLimit = 0;
+                $transactions = 0;
+                $userInfo = $this->userRepo->getCustomerDetail($user_id);
+                $application = $this->appRepo->getCustomerApplications($user_id);
+                $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+
+                foreach ($application as $key => $app) {
+                    if (isset($app->prgmLimits)) {
+                        foreach ($app->prgmLimits as $value) {
+                            $totalLimit += $value->limit_amt;
+                        }
+                    }
+                    if (isset($app->acceptedOffers)) {
+                        foreach ($app->acceptedOffers as $value) {
+                            $totalCunsumeLimit += $value->prgm_limit_amt;
+                        }
+                    }
+                }
+                $userInfo->total_limit = number_format($totalLimit);
+                $userInfo->consume_limit = number_format($totalCunsumeLimit);
+                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+                
+                $data['userInfo'] = $userInfo;
+                $data['application'] = $application;
+                $data['anchors'] = $anchors;
+                return $data;
+            } catch (Exception $ex) {
+                dd($ex);
+            }
+    }
 
 }

@@ -1499,5 +1499,6 @@ class Helper extends PaypalHelper
              
             return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['app_id' =>$attr['app_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_approve_amount');
         }
+        
     
 }

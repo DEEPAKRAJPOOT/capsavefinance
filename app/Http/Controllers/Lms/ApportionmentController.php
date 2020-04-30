@@ -22,16 +22,18 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Helpers\ManualApportionmentHelper;
 
 class ApportionmentController extends Controller
 {
 
-    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo){
+    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo,InvAppRepoInterface $app_repo){
         $this->lmsRepo = $lms_repo;
         $this->dataProvider = $dataProvider;
         $this->userRepo = $user_repo;
-    }
+        $this->appRepo = $app_repo;
+	}
 
     /**
      * View Unsettled Transactions of User
@@ -57,7 +59,7 @@ class ApportionmentController extends Controller
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
                 $payment_amt = $payment['payment_amt']; 
             }
-
+            $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
@@ -65,7 +67,10 @@ class ApportionmentController extends Controller
             ->with('payment_amt', $payment_amt)
             ->with('userDetails', $userDetails)
             ->with('oldData',$oldData)
-            ->with('sanctionPageView',$sanctionPageView);
+            ->with('sanctionPageView',$sanctionPageView)
+            ->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -84,9 +89,13 @@ class ApportionmentController extends Controller
             }
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId);
+             $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails)
-                ->with('sanctionPageView',$sanctionPageView); 
+                ->with('sanctionPageView',$sanctionPageView)
+                 ->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]);    
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -105,10 +114,13 @@ class ApportionmentController extends Controller
             }
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
+             $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.refundTransactions')
                 ->with('userDetails', $userDetails)
-                ->with('sanctionPageView',$sanctionPageView); 
-
+                ->with('sanctionPageView',$sanctionPageView) 
+                 ->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -825,4 +837,44 @@ class ApportionmentController extends Controller
     // public function manualRearendPostCalculation(int $transId, int $paymentId){
 
     // }
+    
+    
+     /* use function for the manage sention tabs */ 
+    
+    public  function  getUserLimitDetais($user_id) 
+   {
+            try {
+                $totalLimit = 0;
+                $totalCunsumeLimit = 0;
+                $consumeLimit = 0;
+                $transactions = 0;
+                $userInfo = $this->userRepo->getCustomerDetail($user_id);
+                $application = $this->appRepo->getCustomerApplications($user_id);
+                $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+
+                foreach ($application as $key => $app) {
+                    if (isset($app->prgmLimits)) {
+                        foreach ($app->prgmLimits as $value) {
+                            $totalLimit += $value->limit_amt;
+                        }
+                    }
+                    if (isset($app->acceptedOffers)) {
+                        foreach ($app->acceptedOffers as $value) {
+                            $totalCunsumeLimit += $value->prgm_limit_amt;
+                        }
+                    }
+                }
+                $userInfo->total_limit = number_format($totalLimit);
+                $userInfo->consume_limit = number_format($totalCunsumeLimit);
+                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+                
+                $data['userInfo'] = $userInfo;
+                $data['application'] = $application;
+                $data['anchors'] = $anchors;
+                return $data;
+            } catch (Exception $ex) {
+                dd($ex);
+            }
+    }
+   
 }

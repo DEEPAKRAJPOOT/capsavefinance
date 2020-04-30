@@ -10,6 +10,7 @@
 @section('content')
 @if($sanctionPageView == true)
     @include('layouts.backend.partials.admin_customer_links',['active'=>'unsettledTrans'])
+                
 @endif
 <div class="content-wrapper">
     @if(!$sanctionPageView == true)
@@ -30,7 +31,12 @@
     @endif
     <div class="card">
         <div class="card-body"> 
-        @if($sanctionPageView == false)   
+          @if($sanctionPageView)
+             <div class="table-responsive ps ps--theme_default w-100">
+                      @include('lms.customer.limit_details')
+                    </div>
+             @endif     	
+        @if(!$sanctionPageView)      
             @include('lms.apportionment.common.userDetails')
             @if($paymentId)
             @include('lms.apportionment.common.paymentDetails')
