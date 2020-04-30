@@ -203,7 +203,7 @@ class ApportionmentController extends Controller
             $txnInsertData = [
                     'payment_id' => NULL,
                     'link_trans_id'=> $transId,
-                    'parent_trans_id' => $TransDetail->parent_trans_id,
+                    'parent_trans_id' => $TransDetail->parent_trans_id??$transId,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
