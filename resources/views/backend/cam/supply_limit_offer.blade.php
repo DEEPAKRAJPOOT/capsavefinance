@@ -5,6 +5,8 @@
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
+    <input type="hidden" value="{{isset($offerData->base_rate)? $offerData->base_rate: ''}}" name="base_rate">
+    <input type="hidden" value="{{isset($offerData->bank_id)? $offerData->bank_id: ''}}" name="bank_id">
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
     <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id" id="offer_id">
     
@@ -927,14 +929,15 @@
     });
 
     function fillPrograms(anchor_id, programs){
-        let html = '<option value="" data-sub_limit="0" data-min_rate="0" data-max_rate="0" data-min_limit="0" data-max_limit="0">Select Program</option>';
+        let html = '<option value="" data-sub_limit="0" data-min_rate="0" data-max_rate="0" data-min_limit="0" data-max_limit="0" data-base_rate="0" data-bank_id="0">Select Program</option>';
         $.each(programs, function(i,program){
             if(program.prgm_name != null && program.anchor_id == anchor_id){
 
                 let base_rate = (program.base_rate != null)? program.base_rate.base_rate: 0;
+                let bank_id = (program.base_rate != null)? program.base_rate.bank_id: 0;
                 let min_rate = parseFloat(program.min_interest_rate) + parseFloat(base_rate);
                 let max_rate = parseFloat(program.max_interest_rate) + parseFloat(base_rate);
-                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-min_rate="'+min_rate.toFixed(2)+'"  data-max_rate="'+max_rate.toFixed(2)+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
+                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-base_rate="'+base_rate+'" data-bank_id="'+bank_id+'" data-min_rate="'+min_rate.toFixed(2)+'"  data-max_rate="'+max_rate.toFixed(2)+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
             }
         });
         $('#program_id').html(html);
@@ -950,6 +953,12 @@
             $('input[name="document_fee"]').val(""); 
         }
                         
+        let base_rate = $('#program_id option:selected').data('base_rate');
+        let bank_id = $('#program_id option:selected').data('bank_id');
+        $('input[name="bank_id"]').val(bank_id);
+        $('input[name="base_rate"]').val(base_rate);
+
+
         unsetError('input[name=prgm_limit_amt]');
         unsetError('input[name=interest_rate]');
         let program_min_rate = $('#program_id option:selected').data('min_rate');

@@ -313,8 +313,8 @@
             },
             contact_number: {
                 required: 'Please enter contact number.',
-                minlength: 'The contact number must be at least 10 digit.',
-                maxlength: 'The contact number must be at least 10 digit.'
+                minlength: 'The contact number must be 10 digit.',
+                maxlength: 'The contact number must be 10 digit.'
             },
             security_deposit: {
                 required: 'Please enter security deposit.'
