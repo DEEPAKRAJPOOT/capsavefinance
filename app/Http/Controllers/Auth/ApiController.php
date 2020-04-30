@@ -48,6 +48,9 @@ class ApiController
                 $parent_array_key = array_search($txn->trans_id, $parent_settled);
                 $parentRecord = $txnsData[$parent_array_key];
                 $i++;
+                if ($txn->trans_type == $parentRecord->trans_type) {
+                  continue;
+                }
                 $tally_data[] = [
                   'batch_no' =>  $batch_no,
                   'transactions_id' =>  $txn->trans_id,
@@ -72,7 +75,7 @@ class ApiController
                   'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
                   'inst_no' =>  NULL,
                   'inst_date' =>  NULL,
-                  'favoring_name' =>  0,
+                  'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
                   'remarks' => $txn->comment ?? '',
                   'narration' => $txn->comment ?? '',
               ];
@@ -83,14 +86,12 @@ class ApiController
                   if ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) {
                      $ignored_txns[] = $txn->trans_id;
                      continue;
-                  }else{
-                    $parent_settled[] = $txn->trans_id;
                   }
-            }
-            
+            }            
             if (in_array($txn->trans_id, $ignored_txns)) {
               continue;
             }
+            $parent_settled[] = $txn->trans_id;
             $i++;
            $tally_data[] = [
             'batch_no' =>  $batch_no,
@@ -116,7 +117,7 @@ class ApiController
             'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
             'inst_no' =>  NULL,
             'inst_date' =>  NULL,
-            'favoring_name' =>  0,
+            'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
             'remarks' => $txn->comment ?? '',
             'narration' => $txn->comment ?? '',
           ];
