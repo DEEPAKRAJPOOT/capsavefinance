@@ -44,8 +44,8 @@ class ApiController
         $ignored_txns = [];
         $parent_settled = [];
         foreach ($txnsData as $key => $txn) {
-            if (in_array($txn->parent_trans_id, $parent_settled)) {
-                $parent_array_key = array_search($txn->trans_id, $parent_settled);
+            if (isset($parent_settled[$txn->parent_trans_id])) {
+                $parent_array_key = $parent_settled[$txn->parent_trans_id];
                 $parentRecord = $txnsData[$parent_array_key];
                 $i++;
                 if ($txn->trans_type == $parentRecord->trans_type) {
@@ -83,7 +83,8 @@ class ApiController
               continue;
             }
             if ($txn->transType->tally_trans_type == 3) {
-                  if ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) {
+                  // if ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) {
+                  if (empty($txn->userinvoicetrans)) {
                      $ignored_txns[] = $txn->trans_id;
                      continue;
                   }
@@ -91,7 +92,7 @@ class ApiController
             if (in_array($txn->trans_id, $ignored_txns)) {
               continue;
             }
-            $parent_settled[] = $txn->trans_id;
+            $parent_settled[$txn->trans_id] = $key;
             $i++;
            $tally_data[] = [
             'batch_no' =>  $batch_no,
