@@ -695,7 +695,8 @@ class DataRenderer implements DataProviderInterface
      * Get Invoice list for backend
      */
     public function getBackendInvoiceList(Request $request,$invoice)
-    {   
+    {  
+        
         return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
            
