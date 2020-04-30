@@ -423,33 +423,33 @@ class Transactions extends BaseModel {
             });
         })
         ->first();
+        $intRefund = 0;
+        $invoice2 = null;
         $interestAmt = 0;
         if($invoice){
             $interestAmt = $invoice->amount;
-        }
-
-        $intRefund = 0;
-        $totalDebitAmt = self::where('entry_type','=','0')
-        ->where('invoice_disbursed_id','=',$invDesbId)
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
-        ->sum('amount');
+            
+            $totalDebitAmt = self::where('entry_type','=','0')
+            ->where('invoice_disbursed_id','=',$invDesbId)
+            ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
+            ->sum('amount');
         
-        $totalCreditAmt =  self::where('entry_type','=','1')
-        ->where('invoice_disbursed_id','=',$invDesbId)
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
-        ->sum('amount');
-        $invoice2 = $invoice;
-
-        if($totalDebitAmt <= $totalCreditAmt){
-            $invoice = $invoice->accruedInterest();
-			if($payment_date){
-				$invoice = $invoice->whereDate('interest_date','<',$payment_date);
-			}    
-            $intRefundable = $invoice->sum('accrued_interest');
-            $intRefund = $interestAmt - $intRefundable; 
-            $intRefund = ($intRefund <= 0)?0:$intRefund;
+            $totalCreditAmt =  self::where('entry_type','=','1')
+            ->where('invoice_disbursed_id','=',$invDesbId)
+            ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
+            ->sum('amount');
+            $invoice2 = $invoice;
+            
+            if($totalDebitAmt <= $totalCreditAmt){
+                $invoice = $invoice->accruedInterest();
+                if($payment_date){
+                    $invoice = $invoice->whereDate('interest_date','<',$payment_date);
+                }    
+                $intRefundable = $invoice->sum('accrued_interest');
+                $intRefund = $interestAmt - $intRefundable; 
+                $intRefund = ($intRefund <= 0)?0:$intRefund;
+            }
         }
-        
 
         return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }

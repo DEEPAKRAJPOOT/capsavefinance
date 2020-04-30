@@ -672,7 +672,7 @@ class ApportionmentController extends Controller
                     $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                     $refundParentTrans = $refundData->get('parent_transaction');
                     $refundAmt = $refundData->get('amount');
-                    if($refundAmt > 0){
+                    if($refundAmt > 0 && $refundParentTrans){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
                             'link_trans_id' => $refundParentTrans->trans_id,
