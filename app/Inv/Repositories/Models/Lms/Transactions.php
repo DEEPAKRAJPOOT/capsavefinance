@@ -424,6 +424,8 @@ class Transactions extends BaseModel {
         })
         ->first();
 
+        $interestAmt = $invoice->amount;
+
         $intRefund = 0;
         $totalDebitAmt = self::where('entry_type','=','0')
         ->where('invoice_disbursed_id','=',$invDesbId)
@@ -443,8 +445,11 @@ class Transactions extends BaseModel {
 			}    
             $intRefund = $invoice->sum('accrued_interest');
         }
+        $intRefund = $interestAmt - $intRefund; 
         
-		return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
+        $intRefund = ($intRefund <= 0)?0:$intRefund;
+
+        return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
     public static function getJournals(array $whereCond = []){
