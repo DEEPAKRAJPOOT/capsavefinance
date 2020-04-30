@@ -850,18 +850,12 @@ class ApplicationController extends Controller
 				  		'start_date' => $curDate,
 				  		'end_date' => $endDate], $appLimitId);
 			  	}
-<<<<<<< HEAD
-				  $createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
-                                  $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
-				  if($createCustomer != null) {
-=======
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
               	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
               	if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {                                      
->>>>>>> pankaj_F_4033_28apr2020
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
 					$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
@@ -969,9 +963,6 @@ class ApplicationController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	public function showBusinessInformation()
-<<<<<<< HEAD
-	{
-=======
 	{            
             $userId = request()->get('user_id');
             $where=[];
@@ -986,7 +977,6 @@ class ApplicationController extends Controller
                 Session::flash('message', 'You can\'t create a new application before sanctions.');
                 return redirect()->back();
             }
->>>>>>> pankaj_F_4033_28apr2020
             
 		$states = State::getStateList()->get();
 		$product_types = $this->masterRepo->getProductDataList();
