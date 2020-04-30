@@ -686,12 +686,8 @@ class CamController extends Controller
         if(isset($debtPosition['bank_detail_id'])) {
           $dataWcf = $this->financeRepo->getBankWcFacility($debtPosition['bank_detail_id']);
           $dataWcf = $dataWcf ? $dataWcf->toArray() : [];
-        } 
-        if(isset($debtPosition['bank_detail_id'])) {
           $dataTlbl = $this->financeRepo->getBankTermBusiLoan($debtPosition['bank_detail_id']);
           $dataTlbl = $dataTlbl ? $dataTlbl->toArray() : [];
-        } 
-        if(isset($debtPosition['bank_detail_id'])) {
           $dataBankAna = $this->financeRepo->getBankAnalysis($debtPosition['bank_detail_id']);
           $dataBankAna = $dataBankAna ? $dataBankAna->toArray() : [];
         }
@@ -1945,7 +1941,7 @@ class CamController extends Controller
                    }
                }
            }
-           return redirect()->back()->with('message', 'Lifiting Data Saved Successfully.');
+           return redirect()->back()->with('message', 'Anchor Data Saved Successfully.');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
