@@ -65,8 +65,8 @@ class ManualApportionmentHelper{
             //$intrest = $disbursed->total_interest;
         }
         
-        $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
-        ->where('invoice_disbursed_id','=',$invDisbId)
+        $Dr = Transactions::#whereRaw("Date(trans_date) <=?",[$transDate]) ->
+        where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
         ->where(function($query) use($transIds){
             $query->whereIn('trans_id',$transIds);
@@ -76,8 +76,8 @@ class ManualApportionmentHelper{
 
         //$Dr += $intrest;
     
-        $Cr =  Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
-        ->where('invoice_disbursed_id','=',$invDisbId)
+        $Cr =  Transactions::#whereRaw("Date(trans_date) <=?",[$transDate]) ->
+        where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
         ->where(function($query) use($transIds){
             $query->whereIn('trans_id',$transIds);
@@ -127,7 +127,7 @@ class ManualApportionmentHelper{
         select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->whereNull('overdue_interest_rate')
-        ->whereDate('interest_date', '<', $transDate)
+        ->whereDate('interest_date', '<=', $transDate)
         ->groupByRaw('YEAR(interest_date), MONTH(interest_date)')
         ->get();
     }
@@ -137,7 +137,7 @@ class ManualApportionmentHelper{
         select(\DB::raw("sum(accrued_interest) as totalInt, max(interest_date) as interestDate"))
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->whereNull('overdue_interest_rate')
-        ->whereDate('interest_date', '<', $transDate)
+        ->whereDate('interest_date', '<=', $transDate)
         ->groupBy('invoice_disbursed_id')
         ->get();
     }
