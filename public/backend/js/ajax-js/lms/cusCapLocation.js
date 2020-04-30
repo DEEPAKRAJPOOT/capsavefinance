@@ -22,8 +22,8 @@ try {
             },
             columns: [
                 { data: 'sr_no' },
-               { data: 'comp_addr' },
                { data: 'user_addr' },
+               { data: 'comp_addr' },
                { data: 'created_at' },
                { data: 'is_active' },
             ],
