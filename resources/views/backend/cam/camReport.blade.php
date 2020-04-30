@@ -326,7 +326,7 @@
                         </tr>
                         <tr>
                             <td>Dependence on Anchor </td>
-                            <td>{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] . '%' : ''}} </td>
+                            <td>{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] : ''}} </td>
                             <td>
                                 <input type="text" class="form-control">
                             </td>
