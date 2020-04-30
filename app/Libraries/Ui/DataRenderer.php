@@ -5492,4 +5492,44 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+    /**
+    * get customer primary and capsave location
+    */
+   public function getCustAndCapsLoc(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->rawColumns(['is_active'])
+           ->editColumn(
+               'sr_no',
+               function ($user) {
+               return $this->sr_no++;
+           })  
+           ->editColumn(
+               'created_at',
+               function ($user) {
+               return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+           })  
+           ->editColumn(
+               'comp_addr',
+               function ($user) {
+               return $user->capsavBizAddr->cmp_add;
+           })  
+           ->editColumn(
+               'user_addr',
+               function ($user) {
+               return $user->userBizAddr->addr_1;
+           })
+           ->addColumn(
+               'is_active',
+               function ($data) {
+                   $id = $data->user_invoice_rel_id;
+                   $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                   $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
+                   return $status;
+           })
+           
+           ->make(true);
+   }
+
 }
