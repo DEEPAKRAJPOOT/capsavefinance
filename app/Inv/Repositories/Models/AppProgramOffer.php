@@ -58,6 +58,8 @@ class AppProgramOffer extends BaseModel {
         'loan_amount',
         'loan_offer',        
         'interest_rate',        
+        'base_rate',        
+        'bank_id',        
         'tenor',        
         'tenor_old_invoice',        
         'margin',
