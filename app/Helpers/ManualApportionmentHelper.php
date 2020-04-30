@@ -232,7 +232,7 @@ class ManualApportionmentHelper{
             $loopStratDate = $startDate ?? $intAccrualStartDate;
             
             while(strtotime($curdate) > strtotime($loopStratDate)){
-                $loopStratDate = $this->addDays($loopStratDate,1);
+               
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId);
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) === strtotime($odStartDate)){
@@ -275,6 +275,7 @@ class ManualApportionmentHelper{
             }
             $this->interestPosting($invDisbId, $userId, $payFreq);
             $this->overDuePosting($invDisbId, $userId);
+            $loopStratDate = $this->addDays($loopStratDate,1);
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
        } 
