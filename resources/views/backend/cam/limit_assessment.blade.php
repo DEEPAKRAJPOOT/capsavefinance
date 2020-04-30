@@ -19,7 +19,7 @@
                                 <div class="form-group INR">
                                     <label>Total Credit Assessed</label>
                                     <div class="relative">
-                                    <a href="javascript:void(0);" class="remaining" style="top:24px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control number_format" name="tot_limit_amt" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt): '' }}" maxlength="15" placeholder="Total Exposure" {{isset($limitData->tot_limit_amt)? 'disabled': ''}}>
                                     </div>
                                 </div>
@@ -28,7 +28,7 @@
                                 <div class="form-group INR">
                                     <label>Available Credit Assessed</label>
                                     <div class="relative">
-                                    <a href="javascript:void(0);" class="remaining" style="top:24px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control number_format" name="available_exposure" value="{{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $totOfferedLimit): '' }}" maxlength="15" placeholder="Available Exposure (offered)" disabled>
                                     </div>
                                 </div>
