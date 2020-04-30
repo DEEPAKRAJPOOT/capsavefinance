@@ -46,9 +46,9 @@ use App\Inv\Repositories\Contracts\FinanceInterface as InvFinanceRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
 use App\Inv\Repositories\Contracts\Traits\CommonTrait;
 use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
-use App\Inv\Repositories\Models\BankWorkCapitalFacility;
-use App\Inv\Repositories\Models\BankTermBusiLoan;
-use App\Inv\Repositories\Models\BankAnalysis;
+//use App\Inv\Repositories\Models\BankWorkCapitalFacility;
+//use App\Inv\Repositories\Models\BankTermBusiLoan;
+//use App\Inv\Repositories\Models\BankAnalysis;
 //date_default_timezone_set('Asia/Kolkata');
 
 class CamController extends Controller
@@ -150,8 +150,8 @@ class CamController extends Controller
                 }
                 $arrCamData['total_exposure_amount'] = round($total,2);
             }
-           $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
-           $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
+            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
+            $current_status=($getAppDetails)?$getAppDetails['curr_status_id']:'';
 
             return view('backend.cam.overview')->with([
                 'arrCamData' =>$arrCamData ,
