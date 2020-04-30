@@ -66,6 +66,7 @@ class userInvoiceController extends Controller
                 return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No Relation found between Company and User.'); 
             }
             $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+            $allApplications  = $this->UserInvRepo->getUserAllApplicationsDetail($user_id);
             if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Company Registered address not found..'); 
             }
@@ -86,7 +87,7 @@ class userInvoiceController extends Controller
             }
             $encData = _encrypt("$user_id|$company_id|$biz_addr_id|$user_invoice_rel_id");
             $origin_of_recipient = $origin_of_recipient['data'];
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData]);
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -266,6 +267,10 @@ class userInvoiceController extends Controller
            return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
         }
 
+        if (empty(preg_replace('#[^A-Z0-9]+#', '', strtoupper($reference_no)))) {
+           return response()->json(['status' => 0,'message' => "Invalid Reference No.."]); 
+        }
+
         $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
         if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
            return response()->json(['status' => 0,'message' => "Company Registered address not found.."]); 
@@ -334,15 +339,19 @@ class userInvoiceController extends Controller
             $invoice_type = $request->get('invoice_type');
             $trans_ids = $request->get('trans_id');
             $invoice_date = $request->get('invoice_date');
+            $reference_no = $request->get('reference_no');
             if (!is_array($trans_ids) || empty($trans_ids)) {
-                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No selected txns found for the invoice.');
+                return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No selected txns found for the invoice.');
+            }
+            if (empty(preg_replace('#[^A-Z0-9]+#', '', strtoupper($reference_no)))) {
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Invalid Reference No found.');
             }
             $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
             if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
-               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Company Registered address not found..'); 
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Company Registered address not found..'); 
             }
             if ($registeredCompany->count() != 1) {
-               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Multiple Company Registered addresses found..'); 
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Multiple Company Registered addresses found..'); 
             }
             $registeredCompany = $registeredCompany[0];
             $requestedData = $request->all();
@@ -354,6 +363,7 @@ class userInvoiceController extends Controller
             if ($url_user_id != $user_id) {
                return response()->json(['status' => 0,'message' => 'Data can not be modified.']); 
             }
+
             $companyDetail = $this->_getCompanyDetail($company_id);
             if ($companyDetail['status'] != 'success') {
                return response()->json(['status' => 0,'message' => $companyDetail['message']]); 
@@ -387,7 +397,7 @@ class userInvoiceController extends Controller
                 'biz_gst_no' => $billing_data['gstin_no'],
                 'gst_addr' => $billing_data['address'],
                 'biz_entity_name' => $billing_data['name'],
-                'reference_no' => $requestedData['reference_no'],
+                'reference_no' => $reference_no,
                 'invoice_type' => $requestedData['invoice_type'],
                 'invoice_no' => $requestedData['invoice_no'],
                 'invoice_date' => Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d H:i:s'),
@@ -587,23 +597,6 @@ class userInvoiceController extends Controller
           return $pdf->download('pdfview.pdf');
         }
         return view('lms.invoice.generate_invoice');
-    }
-
-    /**
-     * Get Business Address by ajax
-     */
-    public function getGstinOfApp(Request $request) {
-       try {
-        $appID = $request->get('app_id');
-        $gstInfo = $this->UserInvRepo->getGSTs($appID)->toArray();
-        $panInfo = $this->UserInvRepo->getPAN($appID)->toArray();
-        if (empty($gstInfo) || empty($panInfo)) {
-          return response()->json(['status' => 0,'message' => 'Selected application is not valid.']); 
-        }
-        return response()->json(['status' => 1,'gstInfo' => $gstInfo, 'panInfo' => $panInfo]); 
-       } catch(Exception $ex) {
-         return response()->json(['status' => 0,'message' => 'Selected application is not valid.']); 
-       }
     }
 
     /**
