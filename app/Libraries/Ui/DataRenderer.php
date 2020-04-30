@@ -1402,7 +1402,7 @@ class DataRenderer implements DataProviderInterface
                       $act .='</br><a data-toggle="modal"  data-height="550px" 
                             data-width="100%" 
                             data-target="#viewInterestAccrual"
-                            data-url="' . route('view_interest_accrual', ['disbursal_id' =>$invoice->invoice_disbursed->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                            data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
                       }
                             return $act;
                 })
