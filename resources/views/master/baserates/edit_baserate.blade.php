@@ -83,10 +83,14 @@
             minView: 2
         });
         
-        $.validator.addMethod("greaterStart", function (value, element) {
-            var startDate = $('#start_date').val();
-            var endDate = $('#end_date').val();
-            return this.optional(element) || Date.parse(endDate) >= Date.parse(startDate);
+        $.validator.addMethod("greaterStart", function (value, element, params) {
+            if (!/Invalid|NaN/.test(new Date(value))) {
+                return new Date(value) > new Date($(params).val());
+            }
+
+            return isNaN(value) && isNaN($(params).val())
+                    || (Number(value) > Number($(params).val()));
+            
         });
 
         $('#baseRateForm').validate({// initialize the plugin
@@ -106,7 +110,7 @@
                 },
                 end_date: {
 //                    required: true,
-                    greaterStart: true
+                    greaterStart: "#start_date"
                 },
                 is_active: {
                     required: true,
@@ -134,7 +138,7 @@
                     required: "Please Select Status of Base Rate"
                 },
                 is_default: {
-                    required: "Please Select Default Base Rate"
+                    required: "Please Select Status for Default Base Rate"
                 }
             }
         });

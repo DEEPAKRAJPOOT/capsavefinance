@@ -85,8 +85,8 @@
 
             return isNaN(value) && isNaN($(params).val())
                     || (Number(value) > Number($(params).val()));
-            ;
-        },'Must be greater than {0}.');
+            
+        });
 
         $('#baseRateForm').validate({// initialize the plugin
             rules: {
@@ -111,6 +111,10 @@
                 is_active: {
                     required: true,
                     digits: true
+                },
+                is_default: {
+                    required: true,
+                    digits: true
                 }
             },
             messages: {
@@ -129,6 +133,9 @@
                 },
                 is_active: {
                     required: "Please Select Status of Base Rate"
+                },
+                is_default: {
+                    required: "Please Select Status for Default Base Rate"
                 }
             }
         });
