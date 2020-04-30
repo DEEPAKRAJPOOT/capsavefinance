@@ -614,7 +614,7 @@ class userInvoiceController extends Controller
                return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple / No default addresses found.');
             }
             $user_addr = $userAddresswithAppNbiz[0]->address;
-            if($user_addr->count() > 1){
+            if(empty($user_addr) ||  $user_addr->count() > 1){
                 return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple default addresses found.');
             }
             $result = $this->getUserLimitDetais($user_id);
