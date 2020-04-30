@@ -33,6 +33,7 @@ class ManualApportionmentHelper{
     }
 
     private function getpaymentSettled($transDate, $invDisbId, $payFreq){
+        $intrest = 0;
         if($payFreq == 2){
             $disbTransIds = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
@@ -60,6 +61,8 @@ class ManualApportionmentHelper{
             ->whereNull('parent_trans_id')
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
             ->pluck('trans_id')->toArray();
+            $disbursed = InvoiceDisbursed::find($invDisbId);
+            $intrest = $disbursed->total_interest;
         }
         
         $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
@@ -70,6 +73,8 @@ class ManualApportionmentHelper{
             $query->OrwhereIn('parent_trans_id',$transIds);
         })
         ->sum('amount');
+
+        $Dr += $intrest;
     
         $Cr =  Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
         ->where('invoice_disbursed_id','=',$invDisbId)
