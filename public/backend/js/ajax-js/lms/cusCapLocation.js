@@ -22,8 +22,8 @@ try {
             },
             columns: [
                 { data: 'user_invoice_rel_id' },
-                { data: 'addr_1' },
-                { data: 'cmp_add' },
+                { data: 'biz_addr_id' },
+                { data: 'company_id' },
                 { data: 'created_at' },
                 { data: 'is_active' },
             ],

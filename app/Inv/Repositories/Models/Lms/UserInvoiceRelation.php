@@ -90,7 +90,7 @@ class UserInvoiceRelation extends BaseModel {
 
 
     public static function getCustAndCapsLoc($user_id, $appId = null) {
-       $result = self::where(['user_id' => $user_id])->with('userBizAddr', 'capsavBizAddr')->orderBy('user_invoice_rel_id' , 'DESC');
+       $result = self::where(['user_id' => $user_id])->orderBy('user_invoice_rel_id' , 'DESC');
         return $result ? : false;
     }
 

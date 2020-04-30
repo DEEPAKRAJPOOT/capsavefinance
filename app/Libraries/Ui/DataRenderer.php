@@ -5462,16 +5462,13 @@ class DataRenderer implements DataProviderInterface
     public function getCustAndCapsLoc(Request $request, $data)
     {
         return DataTables::of($data)
-            ->rawColumns(['is_active', 'addr_1'])
+            ->rawColumns(['is_active'])
               
             ->editColumn(
                 'created_at',
                 function ($user) {
                 return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
 
-            })
-            ->addColumn('addr_1', function($data){
-                return $data->user_invoice_rel_id;
             })
             
             ->addColumn(
