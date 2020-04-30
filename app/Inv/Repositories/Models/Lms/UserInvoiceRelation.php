@@ -74,7 +74,7 @@ class UserInvoiceRelation extends BaseModel {
 
     public static function unPublishAddr(int $userId) {
         $data = self::where('user_id', $userId)
-            ->update(['is_active' => 2]);
+            ->update(['is_active' => 2, 'updated_at' => \carbon\Carbon::now(), 'updated_by' => Auth::user()->user_id]);
         return $data;
     }
 
@@ -86,6 +86,19 @@ class UserInvoiceRelation extends BaseModel {
 
     public static function getUserCurrCompany(int $user_id) {
         return self:: where(['user_id' => $user_id, 'is_active' => 1])->first();
+    }
+
+
+    public static function getCustAndCapsLoc($user_id, $appId = null) {
+       $result = self::where(['user_id' => $user_id])->orderBy('user_invoice_rel_id' , 'DESC');
+        return $result ? : false;
+    }
+
+    public function userBizAddr() {
+        return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress', 'addr_1');
+    }
+    public function capsavBizAddr() {
+        return $this->hasMany('App\Inv\Repositories\Models\Master\Company', 'cmp_add');
     }
 
 
