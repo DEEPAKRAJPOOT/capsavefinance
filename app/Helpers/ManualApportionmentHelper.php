@@ -61,8 +61,8 @@ class ManualApportionmentHelper{
             ->whereNull('parent_trans_id')
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
             ->pluck('trans_id')->toArray();
-            $disbursed = InvoiceDisbursed::find($invDisbId);
-            $intrest = $disbursed->total_interest;
+            //$disbursed = InvoiceDisbursed::find($invDisbId);
+            //$intrest = $disbursed->total_interest;
         }
         
         $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
@@ -74,7 +74,7 @@ class ManualApportionmentHelper{
         })
         ->sum('amount');
 
-        $Dr += $intrest;
+        //$Dr += $intrest;
     
         $Cr =  Transactions::whereRaw("Date(trans_date) <=?",[$transDate])
         ->where('invoice_disbursed_id','=',$invDisbId)
