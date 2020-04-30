@@ -671,6 +671,7 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     }
     
     /*
+
      * check that company is registered.
      */
     public function checkIsRegCompany($cmp_name, $is_reg) {
@@ -697,7 +698,16 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return Company::getCompNameByCompId($compId);
   
     }
-
+    
+    /*
+     * check that base rate is default set for a bank.
+     */
+    public function checkIsDefaultBaseRate($bankId, $isDefault) {
+        
+        $result = BaseRate::checkIsDefaultBaseRate($bankId, $isDefault);
+  
+        return $result;
+    }
     
     /**
      * Get Activity Data
