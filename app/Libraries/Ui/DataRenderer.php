@@ -363,12 +363,13 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('status') != '') {
                         $query->where(function ($query) use ($request) {
                             $status = $request->get('status');
-                            if ($status == 4) {
+                            //if ($status == 4) {
                                 //$query->whereNotNull('app.parent_app_id');
-                                $query->where('app.status', $status);
-                            } else {
-                                $query->where('app.status', $status);
-                            }
+                            //    $query->where('app.status', $status);
+                            //} else {
+                                //$query->where('app.status', $status);                                
+                            //}
+                            $query->where('app.renewal_status', $status);
                         });
                     }                    
                     

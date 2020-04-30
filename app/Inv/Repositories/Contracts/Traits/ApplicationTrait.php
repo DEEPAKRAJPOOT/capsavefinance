@@ -327,12 +327,15 @@ trait ApplicationTrait
             }
             */
             
+            $this->appRepo->updateAppDetails($appId, ['renewal_status' => 2]); //Ready for Renewal  
+                      
             //Get and save Application data
             $appData  = $this->appRepo->getAppDataByAppId($appId);
             $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id'])) : [];                
             $appData['biz_id'] = $newBizId;
             $appData['parent_app_id'] = $appId;
             $appData['status'] = 0;
+            //$appData['renewal_status'] = 2;
             $newAppData = $this->appRepo->createApplication($appData);
             $newAppId = $newAppData->app_id;
             

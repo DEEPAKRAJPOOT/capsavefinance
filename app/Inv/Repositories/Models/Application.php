@@ -65,9 +65,11 @@ class Application extends BaseModel
         'user_id',
         'biz_id',
         'loan_amt',
-        'status_id',
+        'status',
         'is_assigned',
         'curr_status_id',
+        'app_type',
+        'renewal_status',
         'created_by',
         'created_at',
         'updated_at',
@@ -783,7 +785,7 @@ class Application extends BaseModel
                 ->join('app_limit', 'app_limit.app_id', '=', 'app.app_id')                     
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')
-                ->whereIn('app.status', [3,4])
+                ->whereIn('app.renewal_status', [1])
                 ->where('app_limit.status', '1');
                         
                 //->where('app_limit.start_date', '>=', $currDate)

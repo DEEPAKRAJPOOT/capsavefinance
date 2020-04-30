@@ -103,7 +103,7 @@ class RenewalController extends Controller {
             $bizId  = $app->biz_id;
             $userId = $app->user_id;
             
-            $this->appRepo->updateAppDetails($appId, ['status' => 3]); //Ready for Renewal
+            $this->appRepo->updateAppDetails($appId, ['renewal_status' => 1]); //Ready for Renewal
             
             $userData = $this->userRepo->getfullUserDetail($userId);
             /*
