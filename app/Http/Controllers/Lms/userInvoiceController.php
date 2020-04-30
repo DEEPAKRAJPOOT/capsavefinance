@@ -610,7 +610,7 @@ class userInvoiceController extends Controller
             $user_id = $request->get('user_id');
             $userAddresswithAppNbiz = $this->UserInvRepo->getAppsByUserId($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
-            if ($userAddresswithAppNbiz->count() != 1) {
+            if (!empty($userAddresswithAppNbiz) && $userAddresswithAppNbiz->count() != 1) {
                return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple / No default addresses found.');
             }
             $user_addr = $userAddresswithAppNbiz[0]->address;
