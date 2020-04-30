@@ -496,7 +496,7 @@
                                 <td>{{$mt_val_ye}}</td>
                                 <td>{{$mt_amounta}}</td>
                               </tr>
-                              $m++;
+                              @php $m++; @endphp
                             @endforeach
                         @endif
 
@@ -525,7 +525,7 @@
                                 <td>{{$mt_amountam}}</td>
                                 <td>&nbsp;</td>
                            </tr>
-                              $n++;
+                            @php $n++; @endphp
                             @endforeach
                         @endif
                         
