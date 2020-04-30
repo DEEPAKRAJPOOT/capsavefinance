@@ -53,7 +53,6 @@
 
                     </form>
 
-                    <a href="{{ route('get_user_invoice_unpublished', ['user_id' => $user_id]) }}" class="btn  btn-success btn-sm">Address Unpublish</a>
 
 
 
