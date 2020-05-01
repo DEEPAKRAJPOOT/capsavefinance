@@ -95,39 +95,7 @@ class Disbursal extends BaseModel {
 		}
 	}
 	
-	/**
-	 * Get Disbursal Requests
-	 *      
-	 * @param array $whereCondition | optional
-	 * @return mixed
-	 * @throws InvalidDataTypeExceptions
-	 */
-	public static function getDisbursalRequests($whereCondition=[])
-	{
-		if (!is_array($whereCondition)) {
-			throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
-		}
-		
-		$query = self::select('*');
-				
-		if (!empty($whereCondition)) {
-			if (isset($whereCondition['int_accrual_start_dt'])) {
-				$query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
-				unset($whereCondition['int_accrual_start_dt']);
-			} 
-
-            if (isset($whereCondition['status_id'])) {
-                $query->whereIn('status_id', $whereCondition['status_id']);
-                unset($whereCondition['status_id']);
-            }
-                        
-            $query->where($whereCondition);
-        }
-        $query->orderBy('disburse_date', 'ASC');
-        $query->orderBy('disbursal_id', 'ASC');
-        $result = $query->get();        
-        return $result ? $result : [];
-    }
+	
     
     /**
      * Get Program Offer Data

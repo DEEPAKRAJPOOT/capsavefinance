@@ -3,104 +3,76 @@
 @include('layouts.backend.partials.admin_customer_links',['active'=>'customer'])
 
 <div class="content-wrapper">
-	<div class="row grid-margin mt-3">
-		<div class="  col-md-12  ">
-                     <div class="card">
-			     <div class="card-body">
-                    <div class="table-responsive ps ps--theme_default w-100">
-                        <table class="table  table-td-right">
-                                <tbody>
-                                <tr>
-                                    <td class="text-left" width="30%"><b>Business Name</b></td>
-                                    <td> {{$userInfo->biz->biz_entity_name}}	</td> 
-                                     <td class="text-left" width="30%"><b>Full Name</b></td>
-                                    <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td> 
-                                   
-                                </tr>
-                                <tr>
-                                    <td class="text-left" width="30%"><b>Email</b></td>
-                                    <td>{{$userInfo->email}}	</td> 
-                                     <td class="text-left" width="30%"><b>Mobile</b></td>
-                                    <td>{{$userInfo->mobile_no}} </td> 
-                                </tr>
-                                
-                                <tr>
-                                    <td class="text-left" width="30%"><b>Total Limit</b></td>
-                                    <td>{{ number_format($userlimit->tot_limit_amt) }} </td> 
-                                   <td class="text-left" width="30%"><b>Sales Manager</b></td>
-                                    <td>{{ (isset($userInfo->anchor->salesUser)) ? $userInfo->anchor->salesUser->f_name.' '.$userInfo->anchor->salesUser->m_name.' '.$userInfo->anchor->salesUser->l_name : '' }} </td>
-                               
-                                    
-                                </tr>
-                               
-                            </tbody>
-                        </table>
-                    </div>
-                </div>	
-			
-			<div class="card">
-				<div class="card-body">
-					<div class="row">
-						<div class="col-sm-12">
-                                                 @foreach($offerlimit as $limit)   
-                                                       @php $inv=0 @endphp      @foreach($limit->invoice as $invoice)    @php $inv+=$invoice->invoice_approve_amount; @endphp        @endforeach
-							<table class="table table-striped dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoive-listing_info" style="width: 100%;">
-							   
-                                                            <thead>
-									<tr role="row">
-                                                                                 <th>Product Name </th>
-                                                                                <th>Anchor Name </th>
-										<th>Program Name</th>
-										<th>Program Offer Limit </th>
-										
-										
-									</tr>
-								</thead>
-								<tbody>
-                                                                @php $sum=0 @endphp    
-                                                                @foreach($limit->offer as $val) @php $sum+=$val->prgm_limit_amt; @endphp        
-								<tr role="row">
-                                                                    <td> {{$limit->product->product_name}}</td>
-										 <td>{{ $val->anchor->comp_name}}</td>
-										 <td>{{ $val->program->prgm_name}}</td>
-										<td>{{ number_format($val->prgm_limit_amt)}}</td>
-										
-										
-									</tr>
-                                                                   @endforeach      
-								</tbody>
-							</table>
-                                                    
-                                                            
-                                                 
-                                                 @endforeach
-						</div>
-                                               <div class="col-sm-12">
-                                                           <div class="col-sm-8"></div>
-                                                           <div class="col-sm-4 pull-right" style="margin-right: 193px;">
-                                                                <table cellspacing="5"  border="0"  width="100%" class= no-footer overview-table> 
-                                                        <tr>
-                                                             <th>Total Approve </th> <th>:</th> <td>{{number_format($sum)}}</td> </tr><tr>
-                                                             <th>Product Limit</th><th>:</th>
-                                                             <td>{{ number_format($limit->limit_amt)}}</td></tr> <tr>
-                                                              <th> Utilize Product Limit</th><th>:</th>
-                                                             <td>{{number_format($inv)}}</td></tr> <tr>
-                                                              <th> Remaining Limit</th><th>:</th>
-                                                             <td>{{number_format($sum-$inv)}}</td>
-                                                        </tr>
-                                                     
-                                                    </table>
-                                                               
-                                                               
-                                                               
-                                                           </div>
-                                                       </div>
-					</div>
-				</div>
-			</div>
-		</div></div>
-	</div>
+ <div class="row"> 
+     <div class=" col-lg-12 m-auto">
+      <div class="card">
+         <div class="card-body limit-management"> 
+            <div class="limit-title"> 
+           <div class="row">
+             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                 <label>Total Credit Assessed </label>
+                 <div class="label-bottom">{{ number_format($userlimit->tot_limit_amt) }}</div>
+               </div>
+             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                 <label>Available Credit Assessed	 </label>
+                 <div class="label-bottom">{{ number_format($userlimit->tot_limit_amt-$avaliablecustomerLimit) }}   </div>
+               </div>
+             </div>
+             </div>
+         @foreach($offerlimit as $limit)                         
+          <div class="limit-odd">  
+           <div class="row">
+             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                 <label>Product Type </label>
+                 <div class="label-bottom">Supply Chain</div>
+               </div>
+             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                 <label>Proposed product limit </label>
+                 <div class="label-bottom">600,000</div>
+               </div>
+             </div>
+          
+            @foreach($limit->offer as $val) 
+            @php 
+        
+            $inv_limit =  (new \App\Helpers\Helper)->invoiceAnchorLimitApprove($val);
+          
+            @endphp  
+           <div class="row">
+             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                 <label>Anchor </label>
+                 <div class="label-bottom">{{ $val->anchor->comp_name}}</div>
+               </div>
+             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                 <label>Anchor sub program </label>
+                 <div class="label-bottom">{{ $val->program->prgm_name}}</div>
+               </div>
+               
+            <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                 <label>Program Limit </label>
+                 <div class="label-bottom">{{number_format($val->prgm_limit_amt)}}</div>
+               </div>
+             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                 <label>Utilize Limit	 </label>
+                 <div class="label-bottom">{{number_format($inv_limit)}}</div>
+               </div>
+               <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                 <label>Available Limit </label>
+                 <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
+               </div>
+               </div>
+             @endforeach 
+        </div>
+      
+	@endforeach
+         </div>
+      </div>
+  </div>
 </div>
+
+ </div>
+     
+  
 @endsection
 
 @section('additional_css')

@@ -127,6 +127,8 @@
                                             <td>
                                                 @if($app['status'] == 1)
                                                 <button type="button" class="btn btn-success btn-sm">Complete</button>
+                                                @elseif($app['status'] == 2)
+                                                <button type="button" class="btn btn-success btn-sm">Sanctioned</button>
                                                 @else
                                                 <button type="button" class="btn btn-info btn-sm">Not Complete</button>
                                                 @endif 

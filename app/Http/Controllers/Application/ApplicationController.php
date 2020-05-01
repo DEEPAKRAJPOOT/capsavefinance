@@ -504,8 +504,13 @@ class ApplicationController extends Controller
             $userId = Auth::user()->user_id;
             // $response = $this->docRepo->isUploadedCheck($userId, $appId);
             // if ($response->count() < 1) {
+                //$appData = $this->appRepo->getAppData($appId);
+                //$curStatus = $appData ? $appData->status : 0;                        
+                $currentStage = Helpers::getCurrentWfStage($appId);
+                if ($currentStage && $currentStage->order_no < 4 ) {                                  
+                    $this->appRepo->updateAppData($appId, ['status' => 1]);
+                }                
                 
-                $this->appRepo->updateAppData($appId, ['status' => 1]);
                 
                 Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
              

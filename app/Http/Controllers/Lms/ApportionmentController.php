@@ -22,16 +22,18 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Helpers\ManualApportionmentHelper;
 
 class ApportionmentController extends Controller
 {
 
-    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo){
+    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo,InvAppRepoInterface $app_repo){
         $this->lmsRepo = $lms_repo;
         $this->dataProvider = $dataProvider;
         $this->userRepo = $user_repo;
-    }
+        $this->appRepo = $app_repo;
+	}
 
     /**
      * View Unsettled Transactions of User
@@ -41,25 +43,34 @@ class ApportionmentController extends Controller
     public function viewUnsettledTrans(Request $request){
         try {
             $oldData = [];
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $oldData['payment'] = (old('payment'))?old('payment'):[];
             $oldData['check'] = (old('check'))?old('check'):[];
-            $sanctionPageView = $request->has('sanctionPageView');
             $userId = $request->user_id;
             $paymentId = null;
             $payment = null;
+            $payment_amt = 0;
             $userDetails = $this->getUserDetails($userId); 
-            if($request->has('payment_id')){
+            if($request->has('payment_id') && $request->payment_id){
                 $paymentId = $request->payment_id;
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
+                $payment_amt = $payment['payment_amt']; 
             }
-
+            $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
             ->with('payment',$payment) 
+            ->with('payment_amt', $payment_amt)
             ->with('userDetails', $userDetails)
             ->with('oldData',$oldData)
-            ->with('sanctionPageView',$sanctionPageView);
+            ->with('sanctionPageView',$sanctionPageView)
+            ->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -72,12 +83,19 @@ class ApportionmentController extends Controller
      */
     public function viewSettledTrans(Request $request){
         try {
-            $sanctionPageView = $request->has('sanctionPageView');
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId);
+             $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails)
-                ->with('sanctionPageView',$sanctionPageView); 
+                ->with('sanctionPageView',$sanctionPageView)
+                 ->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]);    
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -90,13 +108,19 @@ class ApportionmentController extends Controller
      */
     public function viewRefundTrans(Request $request){
         try {
-            $sanctionPageView = $request->has('sanctionPageView');
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId); 
+             $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.refundTransactions')
                 ->with('userDetails', $userDetails)
-                ->with('sanctionPageView',$sanctionPageView); 
-
+                ->with('sanctionPageView',$sanctionPageView) 
+                 ->with(['userInfo' =>  $result['userInfo'],
+                            'application' => $result['application'],
+                            'anchors' =>  $result['anchors']]); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -109,10 +133,14 @@ class ApportionmentController extends Controller
      */
     public function getTransDetailWaiveOff(Request $request){
         try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $transId = $request->get('trans_id');
             $payment_id = $request->get('payment_id');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
-            return view('lms.apportionment.waiveOffTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id]); 
+            return view('lms.apportionment.waiveOffTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView]); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -125,10 +153,14 @@ class ApportionmentController extends Controller
      */
     public function getTransDetailReversal(Request $request){
         try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $transId = $request->get('trans_id');
             $payment_id = $request->get('payment_id');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
-            return view('lms.apportionment.reversalTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id]); 
+            return view('lms.apportionment.reversalTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView]); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -141,33 +173,37 @@ class ApportionmentController extends Controller
      */
     public function saveWaiveOffDetail(Request $request){
         try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $transId = $request->get('trans_id');
             $paymentId = $request->get('payment_id');
             $amount = $request->get('amount');
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
             if (empty($TransDetail)) {
-                return redirect()->route('unsettled_payments')->with(['error' => 'Selected Transaction to be waived off is not valid']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Selected Transaction to be waived off is not valid']);
             }
             $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || $TransDetail->transType->id == 9);
             if(!$is_interest_charges){
-                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Waive off is possible only Interest and Charges.']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waive off is possible only Interest and Charges.']);
             }
             $outstandingAmount = $TransDetail->getOutstandingAttribute();
             if ($amount > $outstandingAmount)  {
-                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be Waived Off must be less than or equal to '. $outstandingAmount]);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Waived Off must be less than or equal to '. $outstandingAmount]);
             }
             if ($amount < 1)  {
-                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be Waived Off must have some values ']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Waived Off must have some values ']);
             }
 
             if (empty($comment))  {
-                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Comment / Remarks is required to waive off the amount.']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to waive off the amount.']);
             }
             $txnInsertData = [
                     'payment_id' => NULL,
                     'link_trans_id'=> $transId,
-                    'parent_trans_id' => $TransDetail->parent_trans_id,
+                    'parent_trans_id' => $TransDetail->parent_trans_id??$transId,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
                     'trans_date' => date('Y-m-d H:i:s'),
@@ -186,10 +222,10 @@ class ApportionmentController extends Controller
                     'comment' => $comment,
                 ];
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
-                return redirect()->route('apport_unsettled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully waived off']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully waived off']);
             }
         } catch (Exception $ex) {
-             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
+             return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
 
@@ -200,6 +236,10 @@ class ApportionmentController extends Controller
      */
     public function saveReversalDetail(Request $request){
         try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $transId = $request->get('trans_id');
             $paymentId = $request->get('payment_id');
             $amount = $request->get('amount');
@@ -207,24 +247,24 @@ class ApportionmentController extends Controller
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
             
             if (empty($TransDetail)) {
-                return redirect()->route('unsettled_payments')->with(['error' => 'Selected Transaction to be reversed is not valid']);
+                return redirect()->route('apport_settled_view', ['payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Selected Transaction to be reversed is not valid']);
             }
             $outstandingAmount = $TransDetail->amount;
             
             if ($amount > $outstandingAmount)  {
-                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be reversed must be less than or equal to '. $outstandingAmount]);
+                return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be reversed must be less than or equal to '. $outstandingAmount]);
             }
             if ($amount < 1)  {
-                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Amount to be reversed must have some values ']);
+                return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be reversed must have some values ']);
             }
             
             if (empty($comment))  {
-                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['error' => 'Comment / Remarks is required to reversed the amount.']);
+                return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to reversed the amount.']);
             }
             
             $paymentDetails = Payment::find($TransDetail->payment_id);
             if (empty($TransDetail)) {
-                return redirect()->route('apport_settled_view')->with(['error' => 'Payment Detail missing for this transaction!']);
+                return redirect()->route('apport_settled_view',[ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Payment Detail missing for this transaction!']);
             }
 
             $transDateTime = date('Y-m-d H:i:s');
@@ -278,10 +318,10 @@ class ApportionmentController extends Controller
                     'comment' => $comment,
                 ];
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
-                return redirect()->route('apport_settled_view', ['trans_id' => $transId, 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id])->with(['message' => 'Amount successfully reversed']);
+                return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully reversed']);
             }
         } catch (Exception $ex) {
-             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
+             return redirect()->route('apport_settled_view',['payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
 
@@ -471,6 +511,10 @@ class ApportionmentController extends Controller
      */
     public function markSettleConfirmation(ApportionmentRequest $request){
         try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             $amtToSettle = 0;
             $unAppliedAmt = 0;
             $transIds = [];
@@ -537,6 +581,7 @@ class ApportionmentController extends Controller
                 'userDetails' => $userDetails,
                 'transactions' => $transactionList,
                 'unAppliedAmt' => $unAppliedAmt,
+                'sanctionPageView'=>$sanctionPageView
             ]);
 
         } catch (Exception $ex) {
@@ -546,6 +591,10 @@ class ApportionmentController extends Controller
 
     public function markSettleSave(Request $request){
         try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
             if($request->session()->has('apportionment')){
                 $amtToSettle = 0; 
                 $transIds = [];
@@ -603,11 +652,27 @@ class ApportionmentController extends Controller
                     return redirect()->back()->withInput();
                 }
 
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                    /** Mark Payment Settled */
+                    $payment = Payment::find($paymentId);
+                    $payment->is_settled = 1;
+                    $payment->save();
+                    foreach ($invoiceList as $invDisb) {
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    }
+                    $request->session()->forget('apportionment');
+                }
+
+                $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
                     $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                     $refundParentTrans = $refundData->get('parent_transaction');
                     $refundAmt = $refundData->get('amount');
-                    if($refundAmt > 0){
+                    if($refundAmt > 0 && $refundParentTrans){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
                             'link_trans_id' => $refundParentTrans->trans_id,
@@ -639,22 +704,11 @@ class ApportionmentController extends Controller
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
-
-                    /** Mark Payment Settled */
-                    $payment = Payment::find($paymentId);
-                    $payment->is_settled = 1;
-                    $payment->save();
-                    foreach ($invoiceList as $invDisb) {
-                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                        $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
-                    }
-                    $request->session()->forget('apportionment');
-
-                    return redirect()->route('apport_settled_view', ['user_id' =>$userId])->with(['message' => 'Successfully marked settled']);
                 }
+                return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->back('unsettled_payments', [ 'payment_id' => $paymentId, 'user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
@@ -788,4 +842,44 @@ class ApportionmentController extends Controller
     // public function manualRearendPostCalculation(int $transId, int $paymentId){
 
     // }
+    
+    
+     /* use function for the manage sention tabs */ 
+    
+    public  function  getUserLimitDetais($user_id) 
+   {
+            try {
+                $totalLimit = 0;
+                $totalCunsumeLimit = 0;
+                $consumeLimit = 0;
+                $transactions = 0;
+                $userInfo = $this->userRepo->getCustomerDetail($user_id);
+                $application = $this->appRepo->getCustomerApplications($user_id);
+                $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+
+                foreach ($application as $key => $app) {
+                    if (isset($app->prgmLimits)) {
+                        foreach ($app->prgmLimits as $value) {
+                            $totalLimit += $value->limit_amt;
+                        }
+                    }
+                    if (isset($app->acceptedOffers)) {
+                        foreach ($app->acceptedOffers as $value) {
+                            $totalCunsumeLimit += $value->prgm_limit_amt;
+                        }
+                    }
+                }
+                $userInfo->total_limit = number_format($totalLimit);
+                $userInfo->consume_limit = number_format($totalCunsumeLimit);
+                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+                
+                $data['userInfo'] = $userInfo;
+                $data['application'] = $application;
+                $data['anchors'] = $anchors;
+                return $data;
+            } catch (Exception $ex) {
+                dd($ex);
+            }
+    }
+   
 }

@@ -47,17 +47,21 @@ class UserInvoice extends BaseModel {
      */
     protected $fillable = [
         'user_id',
-        'app_id',
+        'user_invoice_rel_id',
+        'user_gst_state_id',
+        'comp_gst_state_id',
         'pan_no',
         'biz_gst_no',
         'gst_addr',
+        'biz_entity_name',
         'reference_no',
         'invoice_type',
         'invoice_no',
         'invoice_date',
         'invoice_state_code',
         'place_of_supply',
-        'comp_id',
+        'comp_addr_id',
+        'registered_comp_id',
         'bank_id',
         'tot_paid_amt',
         'tot_no_of_trans',
@@ -97,23 +101,9 @@ class UserInvoice extends BaseModel {
         }
     }
 
-    /**
-     * Get Invoices
-     *      
-     * @param array $whereCondition | optional
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public static function getInvoices($whereCondition=[]) {
-        if (!is_array($whereCondition)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
-        $query = self::with('userInvoiceTxns');  
-        if (!empty($whereCondition)) {
-            $query->where($whereCondition);
-        }
-        $result = $query->get();
-        return $result;
+    
+    public static function getInvoiceById(int $user_invoice_id){
+       return self::where('user_invoice_id', '=', $user_invoice_id)->first();
     }
 
     public function userInvoiceTxns(){

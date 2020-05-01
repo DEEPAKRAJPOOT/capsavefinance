@@ -47,11 +47,16 @@ class UserInvoiceRelation extends BaseModel {
      */
     protected $fillable = [
         'user_invoice_rel_id',
+        'user_id',
         'company_id',
         'biz_addr_id',
         'company_state_id',
         'biz_addr_state_id',
         'is_active',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
 
     /**
@@ -66,6 +71,36 @@ class UserInvoiceRelation extends BaseModel {
         $data = self::create($userInvoiceData);
         return $data ? : false;
     }
+
+    public static function unPublishAddr(int $userId) {
+        $data = self::where('user_id', $userId)
+            ->update(['is_active' => 2, 'updated_at' => \carbon\Carbon::now(), 'updated_by' => Auth::user()->user_id]);
+        return $data;
+    }
+
+    public static function checkUserInvoiceLocation($userInvData) {
+        $data = self::where($userInvData)->first();
+        return $data ? : false;
+    }
+
+
+    public static function getUserCurrCompany(int $user_id) {
+        return self:: where(['user_id' => $user_id, 'is_active' => 1])->first();
+    }
+
+
+    public static function getCustAndCapsLoc($user_id, $appId = null) {
+       $result = self::where(['user_id' => $user_id])->orderBy('user_invoice_rel_id' , 'DESC');
+        return $result ? : false;
+    }
+
+    public function userBizAddr() {
+       return $this->belongsTo('App\Inv\Repositories\Models\BusinessAddress', 'biz_addr_id', 'biz_addr_id');
+   }
+   
+   public function capsavBizAddr() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Master\Company', 'company_id', 'comp_addr_id');
+   }
 
 
 }

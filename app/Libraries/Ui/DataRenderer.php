@@ -304,8 +304,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    $app_status = config('common.app_status');                    
+                    return isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
 
                 })
                 ->addColumn(
@@ -401,7 +401,7 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                       $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
                        $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                     }else{
                       $achorName='';  
@@ -494,7 +494,7 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                    $userInfo=User::getUserByAnchorId((int) $app->anchor_id);
                        $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                     }else{
                       $achorName='';  
@@ -514,8 +514,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
+                    $app_status = config('common.app_status');                    
+                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
 
                 })
                 ->addColumn(
@@ -695,7 +695,8 @@ class DataRenderer implements DataProviderInterface
      * Get Invoice list for backend
      */
     public function getBackendInvoiceList(Request $request,$invoice)
-    {   
+    {  
+        
         return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
            
@@ -1077,7 +1078,6 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
-                          $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         return $inv_amount;
                 })
                     ->addColumn(            
@@ -1402,7 +1402,7 @@ class DataRenderer implements DataProviderInterface
                       $act .='</br><a data-toggle="modal"  data-height="550px" 
                             data-width="100%" 
                             data-target="#viewInterestAccrual"
-                            data-url="' . route('view_interest_accrual', ['disbursal_id' =>$invoice->invoice_disbursed->disbursal_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                            data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
                       }
                             return $act;
                 })
@@ -1552,6 +1552,14 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
+                       
+                })
+                ->addColumn(            
+                    'remark',
+                    function ($invoice) {                        
+                    
+                 return $invoice->remark;
+                      
                        
                 })
                  ->addColumn(
@@ -1945,8 +1953,9 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                 return $app->status == 1 ? 'Completed' : 'Incomplete';
-
+                    //return $app->status == 1 ? 'Completed' : 'Incomplete';
+                    $app_status = config('common.app_status');                               
+                    return isset($app_status[$app->status]) ? $app_status[$app->status] : ''; 
                 })
                 ->addColumn(
                     'action',
@@ -2721,7 +2730,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'effective_date',
                     function ($charges) {
-                   return $charges->transaction->trans_date ?: 'N/A';
+                   return $charges->transaction->trans_date ? date('d-m-Y',strtotime($charges->transaction->trans_date)) : 'N/A';
                 }) 
                 ->addColumn(
                     'applicability',
@@ -2736,7 +2745,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'created_at',
                     function ($charges) {
-                    return ($charges->created_at) ? date('d-M-Y',strtotime($charges->created_at)) : '---';
+                    return ($charges->created_at) ? date('d-m-Y',strtotime($charges->created_at)) : '---';
                 })
                
                  ->filter(function ($query) use ($request) {
@@ -2942,7 +2951,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'agency_name',
                     function ($user) {
-                    return $user->agency->comp_name;
+                    return isset($user->agency->comp_name) ? $user->agency->comp_name : '';
                 }) 
                 ->editColumn(
                     'email',
@@ -3074,7 +3083,7 @@ class DataRenderer implements DataProviderInterface
                     'customer_id',
                     function ($customer) {
                         $link = $customer->customer_id;
-                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id,'app_id' => $customer->app_id])."\" rel=\"tooltip\"   >$link</a> ";
                     }
                 )
                 ->addColumn(
@@ -3757,8 +3766,14 @@ class DataRenderer implements DataProviderInterface
     // LMS Customer Address
     public function addressGetCustomers(Request $request, $data)
     {
+        // start for default button
+        $currCompData = \App\Inv\Repositories\Models\Lms\UserInvoiceRelation::getUserCurrCompany($request->user_id);
+        $request->baid = ($currCompData)? $currCompData->biz_addr_id : 0;
+        // end for default button
+
+
         return DataTables::of($data)
-            ->rawColumns(['action', 'is_active'])
+            ->rawColumns(['action', 'is_active', 'rcu_status'])
             ->addColumn(
                 'biz_addr_id',
                 function ($data) {
@@ -3777,7 +3792,7 @@ class DataRenderer implements DataProviderInterface
                         $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($data->biz_addr_id, $request->get('user_id')) . '"  class="make_default" name="add"><label for="add">Default</label> ';
                     }*/
 
-                    if (Helpers::checkPermission('edit_addr')) {
+                    if (Helpers::checkPermission('edit_addr') && $request->baid != $data->biz_addr_id) {
                         $act .= '<a data-toggle="modal"  data-height="450px" 
                             data-width="100%" 
                             data-target="#editAddressFrame"
@@ -3800,6 +3815,17 @@ class DataRenderer implements DataProviderInterface
                         return '<span class="badge badge-success">Active</span> &nbsp;&nbsp;'.$is_default;
                     } else {
                         return '<span class="badge badge-warning current-status">InActive</span> &nbsp;&nbsp;'.$is_default;
+                    }
+                }
+            )
+
+            ->editColumn(
+                'rcu_status',
+                function ($data) {
+                    if ($data->rcu_status) {
+                        return '<span class="badge badge-success">Done</span>';
+                    } else {
+                        return '<span class="badge badge-warning current-status">Pending</span>';
                     }
                 }
             )
@@ -3929,7 +3955,7 @@ class DataRenderer implements DataProviderInterface
                     });
                 }
 
-                if($request->get('search_keyword')!= ''){
+                if($request->get('customer_id')!= ''){
                     $query->where(function ($query) use ($request) {
                         $customer_id = trim($request->get('customer_id'));
                         $query->where('customer_id', '=', "$customer_id");
@@ -4242,6 +4268,14 @@ class DataRenderer implements DataProviderInterface
                         ->addColumn(
                                 'base_rate', function ($baserates) {
                             return $baserates->base_rate;
+                        })
+                        ->addColumn(
+                                'start_date', function ($baserates) {
+                            return ($baserates->start_date) ? date('d-M-Y', strtotime($baserates->start_date)) : '---';
+                        })
+                        ->addColumn(
+                                'end_date', function ($baserates) {
+                            return ($baserates->end_date) ? date('d-M-Y', strtotime($baserates->end_date)) : '---';
                         })
                         ->addColumn(
                                 'created_at', function ($baserates) {
@@ -5316,7 +5350,10 @@ class DataRenderer implements DataProviderInterface
                 }
             })
             ->addColumn('select', function($trans){
-                $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                $result = '';
+                if($trans->payment){
+                    $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
+                }
                 return $result;
             })
             ->make(true);
@@ -5349,4 +5386,44 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+    /**
+    * get customer primary and capsave location
+    */
+   public function getCustAndCapsLoc(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->rawColumns(['is_active'])
+           ->editColumn(
+               'sr_no',
+               function ($user) {
+               return $this->sr_no++;
+           })  
+           ->editColumn(
+               'created_at',
+               function ($user) {
+               return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+           })  
+           ->editColumn(
+               'comp_addr',
+               function ($user) {
+               return $user->capsavBizAddr->cmp_add;
+           })  
+           ->editColumn(
+               'user_addr',
+               function ($user) {
+               return $user->userBizAddr->addr_1;
+           })
+           ->addColumn(
+               'is_active',
+               function ($data) {
+                   $id = $data->user_invoice_rel_id;
+                   $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                   $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
+                   return $status;
+           })
+           
+           ->make(true);
+   }
+
 }

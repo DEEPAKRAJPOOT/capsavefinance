@@ -73,7 +73,7 @@
                                                     <div>
                                                         <ul class="mh-line">
                                                             <li>{{$origin_of_recipient['state_code']}}/ </li>
-                                                            <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" placeholder="" maxlength="3" /></li>
+                                                            <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" autocomplete="off" maxlength="3" /></li>
                                                             <li>/{{$origin_of_recipient['financial_year']}}/{{$origin_of_recipient['rand_4_no']}}</li>
                                                         </ul>
                                                     </div> 
@@ -87,17 +87,22 @@
                                                     <input type="text" name="invoice_date" id="invoice_date" class="form-control" placeholder="dd/mm/yyyy" readonly maxlength="10" />
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="reference_no" value="{{$origin_of_recipient['reference_no']}}">
                                             <input type="hidden" name="invoice_no" id="invoice_no" value="{{$origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}">
-                                            <div class="col-md-12">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="m-0">Reference No: <span>#{{$origin_of_recipient['reference_no']}}</span></label>
+                                                    <label class="m-0">Reference No:</label>
+                                                    <select class="form-control" name="reference_no" id="reference_no">
+                                                      @foreach($allApplications as $app)
+                                                        <option selected value="{{ \Helpers::formatIdWithPrefix($app->app_id) }}">{{ $app->biz_entity_name }} ({{ \Helpers::formatIdWithPrefix($app->app_id) }})</option>
+                                                      @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group m-0">
                                                     <label class="m-0">Place of Supply: <span>{{$billingDetails['state_name']}}</span>
-                                                      <input type="hidden" name="place_of_supply" value="{{$origin_of_recipient['state_name']}}"></label>
+                                                      <input type="hidden" name="place_of_supply" value="{{$billingDetails['state_name']}}"></label>
+                                                      <input type="hidden" name="encData" value="{{$encData}}"></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -198,8 +203,8 @@
    var message = {
        token: "{{ csrf_token() }}",
        user_id: "{{ $user_id }}",
+       encData: "{{ $encData }}",
        state_name: "{{ $origin_of_recipient['state_name'] }}",
-       get_app_gstin_url: "{{route('get_app_gstin')}}",
        invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
        invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
    }
@@ -225,6 +230,7 @@
     let formData = new FormData(myForm);
     formData.append('_token', message.token);
     formData.append('state_name', message.state_name);
+    formData.append('encData', message.encData);
     $.ajax({
       type:'POST',
       url : "{{route('preview_user_invoice', ['user_id'=> $user_id])}}",
@@ -250,6 +256,7 @@
     $('#invoice_type_error').remove();
     $('#invoice_user_code_error').remove();
     $('#invoice_date_error').remove();
+    $('#reference_no_error').remove();
     let invoice_type = $('#invoice_type').val();
     if (!invoice_type) {
       $('#invoice_type').after('<span id="invoice_type_error" class="error">Please select invoice type</span>');
@@ -266,6 +273,13 @@
     if (!invoice_date) {
       $('#invoice_date').after('<span id="invoice_date_error" class="error">Please select invoice Date</span>');
       $('#invoice_date').focus();
+      return false;
+    }
+
+    let reference_no = $('#reference_no').val();
+    if (!reference_no) {
+      $('#reference_no').after('<span id="reference_no_error" class="error">Please select Reference Appliction</span>');
+      $('#reference_no').focus();
       return false;
     }
     if($('.trans_check:checked').length == 0){
@@ -288,7 +302,7 @@
     $('.isloader').show();
     $.ajax({
       type:'POST',
-      url : "{{route('get_invoice_transaction', ['user_id'=> $user_id])}}",
+      url : "{{route('get_invoice_transaction', ['user_id'=> $user_id, 'encData'=> $encData])}}",
       data: data,
       cache : false,
       dataType    : 'json',

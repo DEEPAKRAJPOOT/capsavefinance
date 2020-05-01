@@ -3181,7 +3181,8 @@ if ($err) {
     }
 
      public function getLmsChargeLists(DataProviderInterface $dataProvider) { 
-     $chargesTransList = $this->lmsRepo->getAllTransCharges();
+      
+     $chargesTransList = $this->lmsRepo->getAllTransCharges($this->request->user_id);
      $chargesTransList = $dataProvider->getLmsChargeLists($this->request, $chargesTransList);
      return $chargesTransList;
     }
@@ -4327,6 +4328,14 @@ if ($err) {
         $user_id =  (int) $this->request->get('user_id');
         $userInvoice = $this->UserInvRepo->getUserInvoiceList($user_id);
         $data = $dataProvider->getUserInvoiceList($this->request, $userInvoice);
+        return $data;
+    }
+
+    // get user invoice list
+    public function getCustAndCapsLoc(DataProviderInterface $dataProvider) {
+        $user_id =  (int) $this->request->get('user_id');
+        $cusCapLoc = $this->UserInvRepo->getCustAndCapsLoc($user_id);
+        $data = $dataProvider->getCustAndCapsLoc($this->request, $cusCapLoc);
         return $data;
     }
 }

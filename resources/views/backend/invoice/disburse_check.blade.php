@@ -50,7 +50,7 @@ foreach ($apps as $app) {
 		<div class="col-4">
 			<div class="form-group">
 				<label for="nonFactoredAmount"># Amount Disburse</label>
-				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ number_format($finalDisburseAmt) }}">
+				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ number_format((float)$finalDisburseAmt, 2, '.', '') }}">
 			</div>
 		</div>
 	</div>
@@ -172,7 +172,7 @@ foreach ($apps as $app) {
 									}
 									@endphp
 
-									<td> <i class="fa fa-inr"></i> {{ number_format($invoiceTotal) }}</td>
+									<td> <i class="fa fa-inr"></i> {{ number_format((float)$invoiceTotal, 2, '.', '') }}</td>
 									@php
 									$fundedAmount = 0;
 									$apps = $customer->app;
@@ -185,7 +185,7 @@ foreach ($apps as $app) {
 									}
 									@endphp
 
-									<td> <i class="fa fa-inr"></i> {{ number_format($fundedAmount) }}</td>
+									<td> <i class="fa fa-inr"></i> {{ number_format((float)$fundedAmount, 2, '.', '') }}</td>
 
 									@php 
 									$disburseAmount = 0;
@@ -218,9 +218,9 @@ foreach ($apps as $app) {
 										}
 									}
 									@endphp
-									<td> <i class="fa fa-inr"></i> {{ number_format($totalMargin) }}</td>
-									<td> <i class="fa fa-inr"></i> {{ number_format($totalInterest) }}</td>
-									<td> <i class="fa fa-inr"></i> {{ number_format($disburseAmount) }}</td>
+									<td> <i class="fa fa-inr"></i> {{ number_format((float)$totalMargin, 2, '.', '') }}</td>
+									<td> <i class="fa fa-inr"></i> {{ number_format((float)$totalInterest, 2, '.', '') }}</td>
+									<td> <i class="fa fa-inr"></i> {{ number_format((float)$disburseAmount, 2, '.', '') }}</td>
 									@php 
 
 									$finalDisburseAmt +=  $disburseAmount;

@@ -9,6 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Batches</h3>
+            <small>&nbsp;</small>
         </div>
     </section>
     <div class="card">

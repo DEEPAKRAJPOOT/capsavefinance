@@ -146,17 +146,19 @@ trait LmsTrait
         * disburseType = 1 for online and 2 for manually
         */
         $disbursalData = [];
-        $interest = 0;
-        $now = strtotime($invoice['invoice_due_date']); // or your date as well
-        $your_date = strtotime($invoice['invoice_date']);
-        $datediff = abs($now - $your_date);
-        $tenor = round($datediff / (60 * 60 * 24));
-        $fundedAmount = $invoice['invoice_approve_amount'] - (($invoice['invoice_approve_amount']*$invoice['program_offer']['margin'])/100);
-        $totalinterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
-        if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
-            $interest = $totalinterest;
+        $interest= 0;
+        $margin= 0;
+
+        $tenor = $this->calculateTenorDays($invoice);
+        $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+
+        if($invoice['program_offer']['payment_frequency'] == 1) {
+            $interest = $tInterest;
         }
-        $disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+        //$disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+        $disburseAmount = round($fundedAmount, config('lms.DECIMAL_TYPE')['AMOUNT']);
 
         $disbursalData['disbursal_id'] = $invoice['disbursal_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
@@ -164,15 +166,14 @@ trait LmsTrait
         $disbursalData['disbursal_api_log_id'] = $invoice['disbursal_api_log_id'] ?? null;
         $disbursalData['disburse_amt'] = $disburseAmount ?? null;
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
-        $disbursalData['payment_due_date'] = ($invoice['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$invoice['disburse_date']). "+ $tenor Days")) : $invoice['invoice_due_date'];
-        $disbursalData['tenor_days'] =  $invoice['program_offer']['tenor'] ?? null;
+        $disbursalData['payment_due_date'] = null;
+        $disbursalData['tenor_days'] =  $tenor ?? null;
         $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
         
-        $disbursalData['funded_date'] = null;
-        $disbursalData['int_accrual_start_dt'] = ($disburseType == 2 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;
+        $disbursalData['int_accrual_start_dt'] = ($disburseType == 1 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;
         $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
         $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;
         
@@ -213,7 +214,7 @@ trait LmsTrait
         $disbursalData['status_id'] = ($disburseType == 2) ? 12 : 10;
         $disbursalData['disburse_type'] = $disburseType;
        
-        $disbursalData['funded_date'] = ($disburseType == 2) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
+        $disbursalData['funded_date'] = ($disburseType == 1) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['status_update_time'] = $curData;
                         

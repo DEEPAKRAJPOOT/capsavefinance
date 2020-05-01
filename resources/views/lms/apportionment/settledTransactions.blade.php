@@ -31,6 +31,11 @@
     @endif
     <div class="card">
         <div class="card-body">   
+             @if($sanctionPageView)
+             <div class="table-responsive ps ps--theme_default w-100">
+                      @include('lms.customer.limit_details')
+                    </div>
+             @endif     
         @if(!$sanctionPageView)    
             @include('lms.apportionment.common.userDetails')
         @endif
@@ -54,7 +59,7 @@
 
     var messages = {
         url: "{{ URL::route('apport_settled_list') }}",
-        trans_reversal_url: "{{ URL::route('apport_trans_reversal') }}",
+        trans_reversal_url: "{{ URL::route('apport_trans_reversal',['sanctionPageView'=>$sanctionPageView]) }}",
         user_id: "{{$userDetails['user_id']}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",

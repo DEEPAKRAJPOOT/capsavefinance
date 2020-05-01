@@ -97,12 +97,12 @@ class Apportionment {
                     let value =  parseFloat($(this).attr('max'));
                     let id = $(this).attr('id');
                     if(paymentAmt>=value){
-                        $(this).val(value);
+                        $(this).val(value.toFixed(2));
                         $(this).attr('readonly',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt = paymentAmt-value;
                     }else{
-                        $(this).val(paymentAmt);
+                        $(this).val(paymentAmt.toFixed(2));
                         $(this).attr('readonly',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt= 0;
@@ -216,7 +216,7 @@ class Apportionment {
            }
            var transId = checkedName.replace(/[^0-9]/g, '');
            var givenUrl = data.trans_waiveoff_url;
-           var targetUrl = givenUrl + '?trans_id=' + transId;
+           var targetUrl = givenUrl + '&trans_id=' + transId;
            if(data.payment_id){
                 targetUrl += '&payment_id=' + data.payment_id;
             }
@@ -234,7 +234,7 @@ class Apportionment {
            var checkedName = $('input:checkbox:checked').attr('name');
            var transId = checkedName.replace(/[^0-9]/g, '');
            var givenUrl = data.trans_reversal_url;
-           var targetUrl = givenUrl + '?trans_id=' + transId;
+           var targetUrl = givenUrl + '&trans_id=' + transId;
            if(data.payment_id){
                 targetUrl += '&payment_id=' + data.payment_id;
             }

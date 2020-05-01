@@ -178,9 +178,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
-	public function getDisbursalRequests($whereCondition=[])
+	public function getInvoiceDisbursalRequests($whereCondition=[])
 	{
-		return Disbursal::getDisbursalRequests($whereCondition);
+		return InvoiceDisbursed::getInvoiceDisbursalRequests($whereCondition);
 	}
 	
 	/**
@@ -1114,5 +1114,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static  function calInvoiceRefund($invoiceDisbursalId, $paymentDate)
 	{
 		return Transactions::calInvoiceRefund($invoiceDisbursalId, $paymentDate);
+	}
+	public static  function getInvoiceDisbursed($disbursalIds)
+	{
+		return InvoiceDisbursed::getInvoiceDisbursed($disbursalIds);
 	}
 }

@@ -8,9 +8,9 @@
         <tbody> 
             <tr>
                 <td><b>Principal Amount</b></td>
-                <td>{{ $disbursal->principal_amount}}</td>
+                <td>{{ number_format((float)$disbursal->invoice->invoice_approve_amount, 2, '.', '') }}</td>
                 <td><b>Disburse Amount</b></td>
-                <td>{{ $disbursal->disburse_amount}}</td>
+                <td>{{ $disbursal->disburse_amt}}</td>
             </tr>
             <tr>
                 <td><b>Interest Rate:</b></td>
@@ -20,23 +20,27 @@
             </tr>
             <tr>
                 <td><b>Penal days:</b></td>
-                <td>{{$disbursal->penal_days}}</td>
+                <td>{{$disbursal->accruedInterestNotNull->count() }}</td>
                 <td><b>Penal Amount:</b></td>
-                <td>{{$disbursal->penalty_amount}}</td>
+                <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
             </tr>
             <tr>
                 <td><b>Accrued Interest till date</b></td>
-                <td>{{$disbursal->accured_interest}}</td>
+                @foreach($disbursal->accruedInterest as $item)
+                <td>{{ Carbon\Carbon::parse($item->interest_date)->format('d-m-Y')}}</td>
+                @break
+                @endforeach
+
                 <td><p>Grace Period</p></td>
                 <td>@if($disbursal->grace_period>0) {{$disbursal->grace_period}} @if($disbursal->grace_period>1) Days @else Day @endif @endif</td>
             </tr>
-            <tr>
+           {{--<tr>
                 <td><b>Outstanding Amount:</b></td>
            
                 <td>{{ (($disbursal->disburse_amount + $disbursal->total_interest) - $disbursal->settlement_amount) }}</td>
                 <td><b>Total Outstanding Amount:</b></td>
                 <td>{{ ($disbursal->disburse_amount + $disbursal->total_interest - $disbursal->settlement_amount + $disbursal->penalty_amount) }}</td>
-            </tr>
+            </tr> --}}
         </tbody>
     </table>
 
@@ -52,15 +56,15 @@
             </tr>
         </thead>
         <tbody>
-            @if (count($data) > 0)
+            @if ($disbursal->accruedInterest->count() > 0)
                 @php $total_accrued_interest = 0;  @endphp
-                @foreach($data as $item)
+                @foreach($disbursal->accruedInterest as $item)
                     <tr role="row" @if($item->overdue_interest_rate) style="background-color: #f57d7d3d"@endif>
-                        <td>{{ $item->interest_date }}</td>
-                        <td class="text-right">{{ $item->principal_amount }}</td>
+                        <td>{{  Carbon\Carbon::parse($item->interest_date)->format('d-m-Y') }}</td>
+                        <td class="text-right">{{ number_format((float)$item->principal_amount, 2, '.', '') }}</td>
                         {{-- <td class="text-right">{{ $item->interest_rate }}</td>
                         <td class="text-right">{{ $item->overdue_interest_rate }}</td> --}}
-                        <td class="text-right">{{ $item->accrued_interest }}</td>                    
+                        <td class="text-right">{{ number_format((float)$item->accrued_interest, 2, '.', '') }}</td>                    
                     </tr>   
                     {{-- @php $total_accrued_interest = $total_accrued_interest + $item->accrued_interest;  @endphp --}}
                 @endforeach

@@ -321,7 +321,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                                 ->with('disbursal')
                                 ->with('transactions') 
 				->whereHas('acceptedOffer')
-				->where(['user_id' => $user_id, 'status' => 1])
+				->where(['user_id' => $user_id, 'status' => 2])
 				->get();
 	}    
 
@@ -332,7 +332,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	{
 		return Application::with('business')
 				->with('appLimit')
-				->where(['user_id' => $user_id, 'status' => 1])
+				->where(['user_id' => $user_id, 'status' => 2])
 				->get();
 	}    
     
@@ -1781,6 +1781,18 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        try
        {
            return AppProgramLimit::getUserProgramLimit($attr);
+       } catch (Exception $ex) {
+             return $ex;
+       }
+       
+   } 
+   
+     /** get the get Avaliable User Limit   **/
+   public function getAvaliableUserLimit($attr)
+   {
+       try
+       {
+           return AppProgramLimit::getAvaliableUserLimit($attr);
        } catch (Exception $ex) {
              return $ex;
        }

@@ -64,8 +64,7 @@ class Application extends BaseModel
         'user_id',
         'biz_id',
         'loan_amt',
-        'status',
-        'status_id',
+        'status',        
         'is_assigned',
         'curr_status_id',
         'created_by',
@@ -221,7 +220,7 @@ class Application extends BaseModel
     {
         
         $roleData = User::getBackendUser(\Auth::user()->user_id);
-        $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name',
+        $appData = self::distinct()->select('app.app_id','app.biz_id','app.user_id','biz.biz_entity_name', 'app.status',
                 'users.is_buyer as user_type', DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 'assignee_r.name AS assignee', 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),
@@ -472,7 +471,7 @@ class Application extends BaseModel
     
     public static function getAllAppsNbizByUserId($user_id){
         return self::with(['business', 'address' => function ($query){
-                    $query->where('is_default', '!=', 0);
+                    $query->where(['is_default' => 1, 'rcu_status' => 1, 'is_active' => 1]);
                 }, 'bizPanGst' => function ($query){
                    $query->where(['type' => '2', 'parent_pan_gst_id' => '0']);
                    $query->orWhere(['type' => '1']);

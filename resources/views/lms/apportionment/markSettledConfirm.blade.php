@@ -82,7 +82,7 @@
                 </div>
             </div>
             
-            <form action="{{ route('apport_mark_settle_save',[ 'user_id' => $userId , 'payment_id' => $paymentId]) }}" method="post" >
+            <form action="{{ route('apport_mark_settle_save',[ 'user_id' => $userId , 'payment_id' => $paymentId,'sanctionPageView'=>$sanctionPageView]) }}" method="post" >
              @csrf	
                 <div class="row pull-left">
                     <div class="col-md-12">

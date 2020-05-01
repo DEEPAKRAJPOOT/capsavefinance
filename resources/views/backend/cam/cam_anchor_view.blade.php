@@ -34,7 +34,7 @@
                                     {!! $errors->first('grp_rating', '<span class="error">:message</span>') !!}
                                 </td>
                                 <td>Security Deposit with Anchor Company</td>
-                                <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" id="security_deposit" name="security_deposit" class="form-control " value="{{isset($anchorRelationData['security_deposit']) ? $anchorRelationData['security_deposit'] : ''}}" maxlength="15" oninput="">
+                                <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" id="security_deposit" name="security_deposit" class="number_format form-control" value="{{isset($anchorRelationData['security_deposit']) ? number_format($anchorRelationData['security_deposit']) : ''}}" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('security_deposit', '<span class="error">:message</span>') !!}
                                 </td>
                             </tr>
@@ -46,7 +46,7 @@
                                 </td>
                                 <td> Contact No.</td>
                                 <td>
-                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{isset($anchorRelationData['contact_number']) ? $anchorRelationData['contact_number'] : ''}}" minlength="10" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{isset($anchorRelationData['contact_number']) ? $anchorRelationData['contact_number'] : ''}}" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('contact_number', '<span class="error">:message</span>') !!}
                                 </td>
                                 
@@ -88,7 +88,7 @@
                             @php $j = 0 @endphp
                             @foreach($data as $key => $val)
                                 <td colspan="2"><b>
-                                    <input type="text" name="year[{{$j}}]" value="{{$key}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input id="year_{{$key}}" type="text" name="year[]" value="{{$key}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('year.'.$j, '<span class="error">:message</span>') !!}
                                 </b></td>
                                 @php 
@@ -104,7 +104,7 @@
                             @endphp
                             @for($k=0;$k<2;$k++)
                                 <td colspan="2"><b>
-                                    <input type="text" name="year[{{$k}}]" value="{{old('year.'.$k)}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"></b>
+                                    <input id="year_{{$k}}" type="text" name="year[]" value="{{old('year.'.$k)}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"></b>
                                     {!! $errors->first('year.'.$k, '<span class="error">:message</span>') !!}
                                 </td>
                             @endfor
@@ -254,13 +254,14 @@
     }
     
     $('#anchor_form').validate({
+//        ignore: [],
         rules: {
-//            year: {
-//               required: true 
-//            },
-//            mt_type: {
-//                required: true
-//            },
+            'year[]': {
+               required: true 
+            },
+            'mt_type[]': {
+                required: true
+            },
             year_of_association: {
                required: true
             },
@@ -274,7 +275,9 @@
                 required: true
             },
             contact_number: {
-                required: true
+                required: true,
+                minlength: 10,
+                maxlength: 10
             },
             security_deposit: {
                 required: true
@@ -290,26 +293,28 @@
             }
         },
         messages: {
-//            year: {
-//               required: 'Please enter year.' 
-//            },
-//            mt_type: {
-//                required: 'Please slecet MT type.'
-//            },
+            'year[]': {
+               required: 'Please enter year.' 
+            },
+            'mt_type[]': {
+                required: 'Please slecet MT type.'
+            },
             year_of_association: {
-               required: 'Please slecet MT type.'
+               required: 'Please enter year of association.'
             },
             contact_person: {
-                required: 'Please enter contact person.'
+                required: 'Please enter contact person name.'
             },
             payment_terms: {
                 required: 'Please enter payment terms.'
             },
             grp_rating: {
-                required: 'Please enter grp rating.'
+                required: 'Please enter group rating.'
             },
             contact_number: {
-                required: 'Please enter contact number.'
+                required: 'Please enter contact number.',
+                minlength: 'The contact number must be 10 digit.',
+                maxlength: 'The contact number must be 10 digit.'
             },
             security_deposit: {
                 required: 'Please enter security deposit.'

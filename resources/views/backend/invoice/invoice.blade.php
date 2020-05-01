@@ -191,15 +191,6 @@
       width: 80px;
       cursor: pointer;
    }
-    .itemBackground 
-    { 
-      border: 2px solid blanchedalmond;  
-      background-color:#138864;
-    }
-     .itemBackgroundColor 
-    { 
-      color:white;
-    }
 </style>    
 <script>
  var messages = {

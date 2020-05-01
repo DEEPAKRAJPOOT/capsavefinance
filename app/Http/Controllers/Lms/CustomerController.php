@@ -63,7 +63,7 @@ public function listAppliction(Request $request) {
         $userInfo = $this->userRepo->getCustomerDetail($user_id);
         $application = $this->appRepo->getCustomerApplications($user_id);
         $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
-
+       
         foreach ($application as $key => $app) {
             if (isset($app->prgmLimits)) {
                 foreach ($app->prgmLimits as $value) {
@@ -92,6 +92,7 @@ public function listAppliction(Request $request) {
 }
 
 
+
 public function limitManagement(Request $request) {
     
     try {
@@ -104,6 +105,7 @@ public function limitManagement(Request $request) {
         $application = $this->appRepo->getCustomerApplications($user_id);
         $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
         $customerLimit     =  $this->appRepo->getUserLimit($user_id);
+        $AvaliablecustomerLimit     =  $this->appRepo->getAvaliableUserLimit($customerLimit);
         $getUserProgramLimit   =  $this->appRepo->getUserProgramLimit($customerLimit);
         
         foreach ($application as $key => $app) {
@@ -128,7 +130,8 @@ public function limitManagement(Request $request) {
                             'application' => $application,
                             'anchors' => $anchors,
                             'userlimit' => $customerLimit,
-                            'offerlimit' => $getUserProgramLimit
+                            'offerlimit' => $getUserProgramLimit,
+                            'avaliablecustomerLimit' => $AvaliablecustomerLimit
         ]);
     } catch (Exception $ex) {
         dd($ex);

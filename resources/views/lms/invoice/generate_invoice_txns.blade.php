@@ -18,7 +18,7 @@
       @endphp
       <tr>
          @if(!empty($checkbox))
-         <td style="border: 1px solid #ddd;padding: 5px;">
+         <td style="border: 1px solid #ddd;padding: 5px;text-align: center;">
             <span style="font-size: small;"><input type="checkbox" class="trans_check" name="trans_id[]" value="{{$txns['trans_id']}}"></span>
          </td>
          @endif
@@ -32,28 +32,28 @@
             <span style="font-size: small;">{{$txns['sac']}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['base_amt']}}</span>
+            <span style="font-size: small;">{{sprintf('%.2F', $txns['base_amt'])}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['sgst_rate']}}</span>
+            <span style="font-size: small;">{{ !empty($txns['sgst_rate']) ? sprintf('%.2F', $txns['sgst_rate']) : '-'}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['sgst_amt']}}</span>
+            <span style="font-size: small;">{{ !empty($txns['sgst_amt']) ? sprintf('%.2F', $txns['sgst_amt']) : '-'}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['cgst_rate']}}</span>
+            <span style="font-size: small;">{{ !empty($txns['cgst_rate']) ? sprintf('%.2F', $txns['cgst_rate']) : '-'}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['cgst_amt']}}</span>
+            <span style="font-size: small;">{{ !empty($txns['cgst_amt']) ? sprintf('%.2F', $txns['cgst_amt']) : '-'}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['igst_rate']}}</span>
+            <span style="font-size: small;">{{ !empty($txns['igst_rate']) ? sprintf('%.2F', $txns['igst_rate']) : '-'}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['igst_amt']}}</span>
+            <span style="font-size: small;">{{ !empty($txns['igst_amt']) ? sprintf('%.2F', $txns['igst_amt']) : '-'}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;">
-            <span style="font-size: small;">{{$txns['total_rental']}}</span>
+            <span style="font-size: small;">{{sprintf('%.2F', $txns['total_rental'])}}</span>
          </td>
       </tr>
       @endforeach
@@ -73,28 +73,28 @@
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{$total_base_amt}}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_base_amt)  ? sprintf('%.2F', $total_base_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{$total_sgst_amt}}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_sgst_amt) ? sprintf('%.2F', $total_sgst_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{$total_cgst_amt}}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_cgst_amt) ? sprintf('%.2F', $total_cgst_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{$total_igst_amt}}</strong></span>
+            <span style="font-size: small;"><strong>{{ !empty($total_igst_amt) ? sprintf('%.2F', $total_igst_amt) : '-' }}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-            <span style="font-size: small;"><strong>{{$sum_total_rental}}</strong></span>
+            <span style="font-size: small;"><strong>{{ sprintf('%.2F', $sum_total_rental) }}</strong></span>
          </td>
       </tr>
    @else

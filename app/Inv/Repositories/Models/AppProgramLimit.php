@@ -56,6 +56,7 @@ class AppProgramLimit extends BaseModel {
         'anchor_id',
         'prgm_id',
         'product_id',
+        'status',
         'limit_amt',
         'start_date',
         'end_date',
@@ -218,7 +219,7 @@ class AppProgramLimit extends BaseModel {
 
    
     public function app(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id');  
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id')->where(['status' =>2]);  
     }
       
     public static function getSingleLimit($aid){
@@ -296,4 +297,9 @@ class AppProgramLimit extends BaseModel {
         return $this->hasMany('App\Inv\Repositories\Models\BizInvoice','app_id','app_id')->whereIn('status_id',[8,9,10,12]);
    }
    
+   public static function getAvaliableUserLimit($attr)
+   {
+       
+       return self::where(['app_limit_id' => $attr['app_limit_id'],'app_id' => $attr['app_id'],'biz_id' => $attr['biz_id']])->sum('limit_amt');
+   }
 }

@@ -23,19 +23,6 @@ class InvoiceDisbursed extends BaseModel {
 	 */
 	protected $primaryKey = 'invoice_disbursed_id';
 
-	/**
-	 * Maintain created_at and updated_at automatically
-	 *
-	 * @var boolean
-	 */
-	public $timestamps = true;
-
-	/**
-	 * Maintain created_by and updated_by automatically
-	 *
-	 * @var boolean
-	 */
-	public $userstamps = true;
 
 	/**
 	 * The attributes that are mass assignable.
@@ -109,11 +96,53 @@ class InvoiceDisbursed extends BaseModel {
 	}
 
 	public function accruedInterest(){
-        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id');
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id')->orderBy('interest_date', 'DESC');
     }
 	
 	public function appProgramOffer(){
 		return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer');
 	}
 
+	public static function getInvoiceDisbursed($disbursalIds){
+		return self::whereIn('disbursal_id', $disbursalIds)
+				->with('invoice.program_offer')->get();
+	}
+
+	public function accruedInterestNotNull(){
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id')->whereNotNull('overdue_interest_rate');
+    }
+	/**
+	 * Get Disbursal Requests
+	 *      
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function getInvoiceDisbursalRequests($whereCondition=[])
+	{
+		if (!is_array($whereCondition)) {
+			throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+		}
+		
+		$query = self::select('*')
+			->with('invoice','accruedInterestNotNull');
+				
+		if (!empty($whereCondition)) {
+			if (isset($whereCondition['int_accrual_start_dt'])) {
+				$query->where('int_accrual_start_dt', '>=', $whereCondition['int_accrual_start_dt']);
+				unset($whereCondition['int_accrual_start_dt']);
+			} 
+
+            if (isset($whereCondition['status_id'])) {
+                $query->whereIn('status_id', $whereCondition['status_id']);
+                unset($whereCondition['status_id']);
+            }
+                        
+            $query->where($whereCondition);
+        }
+        $query->orderBy('created_at', 'ASC');
+        $query->orderBy('invoice_disbursed_id', 'ASC');
+        $result = $query->get();        
+        return $result ? $result : [];
+    }
 }
