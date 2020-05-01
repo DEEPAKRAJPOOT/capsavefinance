@@ -72,7 +72,9 @@
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.anchor_limit') }}
                                                     <span class="error_message_label">*</span> </label>
-                                                <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a> {!! Form::text('anchor_limit','', ['class'=>'form-control number_format','placeholder'=>trans('backend.add_program.enter_anchor_limit')])!!}
+                                                <div class="relative">
+                                                <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a> {!! Form::text('anchor_limit','', ['class'=>'form-control number_format','placeholder'=>trans('backend.add_program.enter_anchor_limit')])!!}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
