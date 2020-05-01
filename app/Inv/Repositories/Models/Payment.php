@@ -107,6 +107,9 @@ class Payment extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type', 'id');
     } 
 
+    public function refundReq(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReq','payment_id','payment_id');
+    }
     public function getTransNameAttribute(){
         $result = $this->transType->trans_name;
         if($this->action_type == 3){

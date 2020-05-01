@@ -40,21 +40,38 @@ class RefundController extends Controller
     }
       
     public function paymentAdvise(Request $request){
-        if($request->has('payment_id')){
+        try{
+            $this->validate($request,[
+                'payment_id'=>'required|integer',
+            ],[
+                'payment_id.required' => 'Payment Detail missing',
+                'payment_id.required' => 'Payment ID must be integre'
+            ]);
             $paymentId = $request->get('payment_id');
             $data = RefundHelper::calculateRefund($paymentId);
             return view('lms.refund.createRefundRequest', $data);
-        }else{
+        }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
     public function createRefundRequest(Request $request){
-        if($request->has('paymentId')){
+        try{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $this->validate($request,[
+                'paymentId'=>'required|integer',
+            ],[
+                'paymentId.required' => 'Payment Detail missing',
+                'paymentId.required' => 'Payment ID must be integre'
+            ]);
             $paymentId = $request->get('paymentId');
             $data = RefundHelper::createRefundRequest($paymentId);
+            Session::flash('is_accept', 1);
             return view('lms.refund.viewRefundRequest', $data);
-        }else{
+        }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
@@ -84,59 +101,194 @@ class RefundController extends Controller
     }
 
     public function viewRefundRequest(Request $request){
-        if($request->has('req_id')){
-            $refundReqId = $request->get('req_id');
-            $data = RefundHelper::getRequest($refundReqId);
-            return view('lms.refund.viewRefundRequest', $data);
-        }else{
+        try{
+            if($request->has('req_id')){
+                $refundReqId = $request->get('req_id');
+                $data = RefundHelper::getRequest($refundReqId);
+                return view('lms.refund.viewRefundRequest', $data);
+            }else{
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            }
+        }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
     public function updateRequestStatus(Request $request){
-        $refundRequests = $request->refundRequest;
-        $status = $request->status;
-        $newStatus  = $request->newStatus;
+        try{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $refundRequests = $request->refundRequest;
+            $status = $request->status;
+            $newStatus  = $request->newStatus;
 
-        foreach ($refundRequests as $key => $reqId) {
-            RefundHelper::updateRequest($reqId, $status, $newStatus);            
+            foreach ($refundRequests as $key => $reqId) {
+                RefundHelper::updateRequest($reqId, $status, $newStatus);            
+            }
+            $redirectRoute = null;
+            $message = null;
+            switch ($newStatus) {
+                case '1': //New Request,
+                    $redirectRoute = 'lms_refund_new';
+                    $message = "New Request Created Successfully!";
+                    break;
+                case '2': //Deleted
+                $redirectRoute = null;
+                    break;
+                case '3': //Pending
+                $redirectRoute = 'lms_refund_pending';
+                $message = "Successfully Submitted your Request!";
+                    break;
+                case '4': //Rejected
+                $redirectRoute = null;
+                    break;
+                case '5': //Approved
+                $redirectRoute = 'lms_refund_approved';
+                $message = "Successfully Approved your Request!";
+                    break;
+                case '6': //Refund Queue
+                $redirectRoute = 'request_list';
+                $message = "Successfully Disbursed your Request!";
+                    break;
+                case '7': //Sent to Bank
+                $redirectRoute = 'lms_refund_sentbank';
+                $message = "Successfully Sent To Bank your Request!";
+                    break;
+                case '8': //Disbursed
+                $redirectRoute = 'lms_refund_refunded';
+                $message = "Successfully Refunded your Request!";
+                    break;
+            }
+            Session::flash('message',$message);
+            return redirect()->route($redirectRoute);
+        }catch(Exception $exception){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
-        $redirectRoute = null;
-        $message = null;
-        switch ($newStatus) {
-            case '1': //New Request,
-                $redirectRoute = 'lms_refund_new';
-                $message = "New Request Created Successfully!";
-                break;
-            case '2': //Deleted
-               $redirectRoute = null;
-                break;
-            case '3': //Pending
-               $redirectRoute = 'lms_refund_pending';
-               $message = "Successfully Submitted your Request!";
-                break;
-            case '4': //Rejected
-               $redirectRoute = null;
-                break;
-            case '5': //Approved
-               $redirectRoute = 'lms_refund_approved';
-               $message = "Successfully Approved your Request!";
-                break;
-            case '6': //Refund Queue
-               $redirectRoute = 'request_list';
-               $message = "Successfully Disbursed your Request!";
-                break;
-            case '7': //Sent to Bank
-               $redirectRoute = 'lms_refund_sentbank';
-               $message = "Successfully Sent To Bank your Request!";
-                break;
-            case '8': //Disbursed
-               $redirectRoute = 'lms_refund_refunded';
-               $message = "Successfully Refunded your Request!";
-                break;
+    }
+
+    public function refundConfirm(Request $request){
+        try{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $disburseType = $request->get('disburse_type');
+            $reqIds = $request->get('transaction_ids');
+            $record = array_filter(explode(",",$reqIds));
+            if(empty($record))  {
+                Session::flash('message', trans('backend_messages.noSelectedCustomer'));
+                Session::flash('operation_status', 1);
+                return view('lms.common.refund_request');
+            }
+            $allrecords = array_unique($record);
+            $allrecords = array_map('intval', $allrecords);
+
+            $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
+            return view('lms.refund.refund_confirm')->with(['data'=>$data, 'transIds'=>$reqIds]); 
+        }catch(Exception $exception){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
-        Session::flash('message',$message);
-        return redirect()->route($redirectRoute);
+    }
+
+    public function refundOffline(Request $request)
+    {
+        try{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            
+            $transactionIds = $request->get('transaction_ids');
+            $record = array_filter(explode(",",$transactionIds));
+            $disburseDate = $request->get('disburse_date');
+            $creatorId = Auth::user()->user_id;
+            $validator = Validator::make($request->all(), [
+            'disburse_date' => 'required'
+            ]);
+            
+            if ($validator->fails()) {
+                Session::flash('error', $validator->messages()->first());
+                return redirect()->back()->withInput();
+            }
+
+            if(empty($record)){
+                return redirect()->route('request_list');
+            }
+            $allrecords = array_unique($record);
+            $allrecords = array_map('intval', $allrecords);
+            $allAprvls = $this->lmsRepo->getAprvlRqDataByIds($allrecords)->toArray();
+
+            foreach ($allAprvls as $aprvl) {
+                if($aprvl['payment']['user']['is_buyer'] == 2 && empty($aprvl['payment']['user']['anchor_bank_details'])){
+                    return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
+                } elseif ($aprvl['payment']['user']['is_buyer'] == 1 && empty($aprvl['payment']['lms_user']['bank_details'])) {
+                    return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
+                }
+            }
+
+            $disburseAmount = 0;
+            $exportData = [];
+            $aprvlRfd = [];
+            $disbursalIds = [];
+            $batchNo= _getRand(12);
+
+            foreach ($allAprvls as $aprvl) {
+                $userid = $aprvl['payment']['user']['user_id'];
+                $disburseAmount += round($aprvl['refund_amount'], 5);
+
+                $refId = $aprvl['payment']['lms_user']['virtual_acc_id'];
+
+                $aprvlRfd['bank_account_id'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank_account_id'] : $aprvl['payment']['lms_user']['bank_details']['bank_account_id'];
+                $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                $aprvlRfd['bank_name'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank']['bank_name'] : $aprvl['payment']['lms_user']['bank_details']['bank']['bank_name'] ;
+                $aprvlRfd['ifsc_code'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['payment']['lms_user']['bank_details']['ifsc_code'];
+                $aprvlRfd['acc_no'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['acc_no'] : $aprvl['payment']['lms_user']['bank_details']['acc_no'];           
+                $aprvlRfd['status'] = 7;
+            
+                if (isset($aprvlRfd)) {
+                    $refundDisbursed = $this->lmsRepo->updateAprvlRqst($aprvlRfd, $aprvl['refund_req_id']);
+                }
+
+                $exportData[$userid]['RefNo'] = $refId;
+                $exportData[$userid]['Amount'] = $disburseAmount;
+                $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
+                $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
+                $exportData[$userid]['Debit_Mobile'] = '9876543210';
+                $exportData[$userid]['Ben_IFSC'] = $aprvlRfd['ifsc_code'];
+                $exportData[$userid]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
+                $exportData[$userid]['Ben_BankName'] = $aprvlRfd['bank_name'];
+                $exportData[$userid]['Ben_Name'] = $aprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
+                $exportData[$userid]['Ben_Email'] = $aprvl['payment']['user']['email'];
+                $exportData[$userid]['Ben_Mobile'] = $aprvl['payment']['user']['mobile_no'];
+                $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
+                $exportData[$userid]['Remarks'] = 'test remarks';
+                $exportData[$userid]['Value_Date'] = date('Y-m-d');
+            } 
+            
+            $result = $this->export($exportData, $batchNo);
+            $file['file_path'] = ($result['file_path']) ?? null;
+            if ($file) {
+                $createBatchFileData = $this->createBatchFileData($file);
+                $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+                if ($createBatchFile) {
+                    $data['batch_no'] = $batchNo;
+                    $createBatch = $this->lmsRepo->createRefundBatch($createBatchFile, $data);
+                    if($createBatch) {
+                        $updateDisbursal = $this->lmsRepo->updateAprvlRqst([
+                                'refund_req_batch_id' => $createBatch->refund_req_batch_id
+                            ], $allrecords);
+                    }
+                }
+            }
+
+            Session::flash('message',trans('backend_messages.proccessed'));
+            return redirect()->route('lms_refund_sentbank');
+        }catch(Exception $exception){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 
     public function downloadSentBank()
@@ -274,148 +426,52 @@ class RefundController extends Controller
         }
     }
 
-    public function refundConfirm(Request $request){
-        $disburseType = $request->get('disburse_type');
-        $reqIds = $request->get('transaction_ids');
-        $record = array_filter(explode(",",$reqIds));
-        if(empty($record))  {
-            Session::flash('message', trans('backend_messages.noSelectedCustomer'));
-            Session::flash('operation_status', 1);
-            return view('lms.common.refund_request');
-        }
-        $allrecords = array_unique($record);
-        $allrecords = array_map('intval', $allrecords);
-
-        $data = $this->lmsRepo->lmsGetCustomerRefund($allrecords);
-        return view('lms.refund.refund_confirm')->with(['data'=>$data, 'transIds'=>$reqIds]); 
-    }
-
-    public function refundOffline(Request $request)
-    {
-        if ($request->get('eod_process')) {
-            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
-            return back();
-        }
-        
-        $transactionIds = $request->get('transaction_ids');
-        $record = array_filter(explode(",",$transactionIds));
-        $disburseDate = $request->get('disburse_date');
-        $creatorId = Auth::user()->user_id;
-        $validator = Validator::make($request->all(), [
-           'disburse_date' => 'required'
-        ]);
-        
-        if ($validator->fails()) {
-            Session::flash('error', $validator->messages()->first());
-            return redirect()->back()->withInput();
-        }
-
-        if(empty($record)){
-            return redirect()->route('request_list');
-        }
-        $allrecords = array_unique($record);
-        $allrecords = array_map('intval', $allrecords);
-        $allAprvls = $this->lmsRepo->getAprvlRqDataByIds($allrecords)->toArray();
-
-        foreach ($allAprvls as $aprvl) {
-            if($aprvl['payment']['user']['is_buyer'] == 2 && empty($aprvl['payment']['user']['anchor_bank_details'])){
-                return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
-            } elseif ($aprvl['payment']['user']['is_buyer'] == 1 && empty($aprvl['payment']['lms_user']['bank_details'])) {
-                return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
-            }
-        }
-
-        $disburseAmount = 0;
-        $exportData = [];
-        $aprvlRfd = [];
-        $disbursalIds = [];
-        $batchNo= _getRand(12);
-
-        foreach ($allAprvls as $aprvl) {
-            $userid = $aprvl['payment']['user']['user_id'];
-            $disburseAmount += round($aprvl['refund_amount'], 5);
-
-            $refId = $aprvl['payment']['lms_user']['virtual_acc_id'];
-
-            $aprvlRfd['bank_account_id'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank_account_id'] : $aprvl['payment']['lms_user']['bank_details']['bank_account_id'];
-            $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-            $aprvlRfd['bank_name'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank']['bank_name'] : $aprvl['payment']['lms_user']['bank_details']['bank']['bank_name'] ;
-            $aprvlRfd['ifsc_code'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['payment']['lms_user']['bank_details']['ifsc_code'];
-            $aprvlRfd['acc_no'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['acc_no'] : $aprvl['payment']['lms_user']['bank_details']['acc_no'];           
-            $aprvlRfd['status'] = 7;
-           
-            if (isset($aprvlRfd)) {
-                $refundDisbursed = $this->lmsRepo->updateAprvlRqst($aprvlRfd, $aprvl['refund_req_id']);
-            }
-
-            $exportData[$userid]['RefNo'] = $refId;
-            $exportData[$userid]['Amount'] = $disburseAmount;
-            $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
-            $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
-            $exportData[$userid]['Debit_Mobile'] = '9876543210';
-            $exportData[$userid]['Ben_IFSC'] = $aprvlRfd['ifsc_code'];
-            $exportData[$userid]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
-            $exportData[$userid]['Ben_BankName'] = $aprvlRfd['bank_name'];
-            $exportData[$userid]['Ben_Name'] = $aprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
-            $exportData[$userid]['Ben_Email'] = $aprvl['payment']['user']['email'];
-            $exportData[$userid]['Ben_Mobile'] = $aprvl['payment']['user']['mobile_no'];
-            $exportData[$userid]['Mode_of_Pay'] = 'IFT';
-            $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
-            $exportData[$userid]['Remarks'] = 'test remarks';
-            $exportData[$userid]['Value_Date'] = date('Y-m-d');
-        } 
-        
-        $result = $this->export($exportData, $batchNo);
-        $file['file_path'] = ($result['file_path']) ?? null;
-        if ($file) {
-            $createBatchFileData = $this->createBatchFileData($file);
-            $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
-            if ($createBatchFile) {
-                $data['batch_no'] = $batchNo;
-                $createBatch = $this->lmsRepo->createRefundBatch($createBatchFile, $data);
-                if($createBatch) {
-                    $updateDisbursal = $this->lmsRepo->updateAprvlRqst([
-                            'refund_req_batch_id' => $createBatch->refund_req_batch_id
-                        ], $allrecords);
-                }
-            }
-        }
-
-        Session::flash('message',trans('backend_messages.proccessed'));
-        return redirect()->route('lms_refund_sentbank');
-    }
-
     public function refundUpdateDisbursal(Request $request){
-        $payment_id = $request->get('payment_id');
-        $refund_req_batch_id = $request->get('refund_req_batch_id');
-        $refund_req_id = $request->get('refund_req_id');
-        return view('lms.refund.update_refund_disbursal')
+        try{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $payment_id = $request->get('payment_id');
+            $refund_req_batch_id = $request->get('refund_req_batch_id');
+            $refund_req_id = $request->get('refund_req_id');
+            return view('lms.refund.update_refund_disbursal')
                 ->with([
                     'payment_id' => $payment_id, 
                     'refund_req_batch_id' => $refund_req_batch_id,
                     'refund_req_id' => $refund_req_id
                 ]);
+        }catch(Exception $exception){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
     
     public function updateDisburseRefund(Request $request) {
+        try{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $transNo = $request->trans_no;
+            $remarks = $request->remarks;
+            $refund_req_id = $request->refund_req_id;
+            $disburse_date = $request->disburse_date;
+            $actual_refund_date = (!empty($disburse_date)) ? date("Y-m-d", strtotime(str_replace('/','-',$disburse_date))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
 
-        $transNo = $request->trans_no;
-        $remarks = $request->remarks;
-        $refund_req_id = $request->refund_req_id;
-        $disburse_date = $request->disburse_date;
-        $actual_refund_date = (!empty($disburse_date)) ? date("Y-m-d", strtotime(str_replace('/','-',$disburse_date))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-
-        $apiLogData = [];
-        $apiLogData['tran_no'] = $transNo;
-        $apiLogData['comment'] = $remarks;
-        $apiLogData['actual_refund_date'] = $actual_refund_date;
-        $apiLogData['status'] = 8;
-        
-        $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
-        $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
- 
-        Session::flash('message',trans('backend_messages.disburseMarked'));
-        return redirect()->route('lms_refund_refunded');
+            $apiLogData = [];
+            $apiLogData['tran_no'] = $transNo;
+            $apiLogData['comment'] = $remarks;
+            $apiLogData['actual_refund_date'] = $actual_refund_date;
+            $apiLogData['status'] = 8;
+            
+            $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
+            $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
+    
+            Session::flash('message',trans('backend_messages.disburseMarked'));
+            return redirect()->route('lms_refund_refunded');
+        }catch(Exception $exception){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 	/**
 	 * Display a listing of the refund.
@@ -546,19 +602,19 @@ class RefundController extends Controller
             }
         }
         
-        public function updateRequestStatus(Request $request)
-        {
-            $reqId = $request->get('req_id');
-            $reqData = $this->lmsRepo->getApprRequestData($reqId);
-            $curReqStatus = $reqData ? $reqData->status : '';
+        // public function updateRequestStatus(Request $request)
+        // {
+        //     $reqId = $request->get('req_id');
+        //     $reqData = $this->lmsRepo->getApprRequestData($reqId);
+        //     $curReqStatus = $reqData ? $reqData->status : '';
             
-            $statusList = \Helpers::getRequestStatusList($reqId);
-            $statusList = ['' => 'Select Status'] + $statusList;                
+        //     $statusList = \Helpers::getRequestStatusList($reqId);
+        //     $statusList = ['' => 'Select Status'] + $statusList;                
                            
-            return view('lms.common.view_request_status')
-                    ->with('reqId', $reqId)
-                    ->with('statusList', $statusList);            
-        }
+        //     return view('lms.common.view_request_status')
+        //             ->with('reqId', $reqId)
+        //             ->with('statusList', $statusList);            
+        // }
         
         public function saveRequestStatus(Request $request)
         {

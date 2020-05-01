@@ -30,8 +30,8 @@ try {
                     {data: 'biz_entity_name'},                    
                     {data: 'amount'},
                     {data: 'created_at'},
-                    {data: 'assignee'},
-                    {data: 'assignedBy'}
+                    // {data: 'assignee'},
+                    // {data: 'assignedBy'}
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });

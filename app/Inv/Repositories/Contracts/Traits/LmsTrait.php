@@ -582,7 +582,11 @@ trait LmsTrait
 
     protected function finalRefundTransactions(int $refundReqId, $actualRefundDate)
     {
-        $transactions = RefundReqTrans::where('refund_req_id','=',$refundReqId)->get();
+        $transactions = RefundReqTrans::where('refund_req_id','=',$refundReqId)
+        ->whereHas('transaction',function($query){
+            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')]);
+        })
+        ->get();
         foreach ($transactions as $key => $trans) {
             if($trans->req_amount>0){
                 $refundData = $this->createTransactionData($trans->transaction->user_id, [
@@ -590,7 +594,7 @@ trait LmsTrait
                     'trans_date'=>$actualRefundDate,
                     'tds_per'=>0,
                     'invoice_disbursed_id'=>$trans->transaction->invoice_disbursed_id,
-                    'parent_trans_id'=>$trans->transaction->parent_trans_id,
+                    'parent_trans_id'=>$trans->transaction->parent_trans_id??$trans->transaction->trans_id,
                     'link_trans_id'=>$trans->transaction->trans_id,
                     'soa_flag'=>1
                 ], config('lms.TRANS_TYPE.REFUND'), 0);

@@ -14,3 +14,37 @@
 	</div>
 </div>
 @endsection
+
+
+@section('jscript')
+<script>
+   
+    var messages = {
+        is_accept: "{{ Session::get('is_accept') }}",    
+        error_code : "{{ Session::has('error_code') }}",
+    };
+    
+    $(document).ready(function(){
+        var targetModel = 'paymentRefundInvoice';
+        var parent =  window.parent;                
+        
+        if (messages.error_code) {
+            parent.$('.isloader').hide();
+        }
+        
+        if(messages.is_accept == 1){
+           parent.jQuery("#"+targetModel).modal('hide');  
+           parent.oTable.draw();
+           parent.$('.isloader').hide();           
+        }
+
+        $('#close_btn').click(function() {
+            //alert('targetModel ' + targetModel);
+            parent.$('#'+targetModel).modal('hide');
+        });        
+            
+    })
+    
+    
+    </script>
+@endsection

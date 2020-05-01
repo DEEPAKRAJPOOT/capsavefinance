@@ -8,15 +8,14 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Refund Request </h3>
+            <h3>Manage Refund </h3>
+            <small>(Refunded)</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li class="active">Manage Refund Request </li>
+                <li class="active">Manage Refund </li>
             </ol>
         </div>
     </section>
-
-
     <div class="card">
         <div class="card-body">
             @include('lms.refund.common.status_links')
@@ -26,10 +25,10 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="approvedList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-	                                        <thead>
-	                                        	<tr role="row">                                                    
+                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
+                                        <table id="approvedList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                            <thead>
+                                                <tr role="row">                                                    
                                                     <th>Ref No</th>
                                                     <th>Batch Id</th>
                                                     <th>Customer ID</th>
@@ -38,14 +37,14 @@
                                                     <th>Amount</th>
                                                     <th>Updated At</th>
                                                     <th>Action</th>
-												</tr>
-	                                        </thead>
-	                                        <tbody>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
 
-	                                        </tbody>
-                                    	</table>
-							  		</div>
-                            		<div id="approvedList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="requestList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -71,7 +70,3 @@
 </script>
 <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>
 @endsection
-
-
-
-

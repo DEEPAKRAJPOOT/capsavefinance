@@ -43,8 +43,8 @@
                                                     <th>Entity Name</th>                                                    
 													<th>Amount</th>
                                                     <th>Date</th>
-                                                    <th>Assignee</th>	
-                                                    <th>Assigned By</th>
+                                                    {{-- <th>Assignee</th>	
+                                                    <th>Assigned By</th> --}}
 												</tr>
 	                                        </thead>
 	                                        <tbody>

@@ -45,8 +45,8 @@
                                                     <th>Entity Name</th>                                                    
 													<th>Amount</th>
                                                     <th>Date</th>
-                                                    <th>Assignee</th>	
-                                                    <th>Assigned By</th>
+                                                    {{-- <th>Assignee</th>	
+                                                    <th>Assigned By</th> --}}
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -65,6 +65,7 @@
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('lms_view_process_refund','View Refund Request', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

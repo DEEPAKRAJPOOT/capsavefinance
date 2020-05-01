@@ -9,12 +9,13 @@
         </div>
         <div class="header-title">
             <h3>Manage Refund </h3>
+            <small>(Sent to Bank)</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li class="active">Manage Refund </li>
             </ol>
         </div>
-    </section>    
+    </section>
     <div class="card">
         <div class="card-body">
             @include('lms.refund.common.status_links')
@@ -31,7 +32,7 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
+                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
                                         <table id="approvedList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">                                                    
@@ -60,7 +61,6 @@
         </div>
     </div>
 </div>
-}
 {!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
 @endsection
@@ -78,7 +78,3 @@
 </script>
 <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>
 @endsection
-
-
-
-
