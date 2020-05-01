@@ -211,7 +211,7 @@ class ApportionmentController extends Controller
                     'entry_type' => 1,
                     'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF'),
                     'gl_flag' => 0,
-                    'soa_flag' => 0,
+                    'soa_flag' => 1,
                     'pay_from' => 1,
                     'is_settled' => 2,
             ];
@@ -279,7 +279,7 @@ class ApportionmentController extends Controller
                     'entry_type' => 0,
                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
                     'gl_flag' => 0,
-                    'soa_flag' => 0,
+                    'soa_flag' => 1,
                     'pay_from' => 1,
                     'is_settled' => 2,
             ];
@@ -640,6 +640,7 @@ class ApportionmentController extends Controller
                         'trans_date' => $paymentDetails['date_of_payment'],
                         'amount' => $payments[$trans->trans_id],
                         'entry_type' => 1,
+                        'soa_flag' => 1,
                         'trans_type' => $trans->trans_type
                     ];
                     $amtToSettle += $payments[$trans->trans_id];
@@ -681,6 +682,7 @@ class ApportionmentController extends Controller
                             'user_id' => $refundParentTrans->user_id,
                             'trans_date' => $invDisb['date_of_payment'],
                             'amount' => $refundAmt,
+                            'soa_flag' => 1,
                             'entry_type' => 1,
                             'trans_type' => config('lms.TRANS_TYPE.REFUND')
                         ];
