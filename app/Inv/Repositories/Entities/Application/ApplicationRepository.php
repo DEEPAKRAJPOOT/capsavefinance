@@ -1731,6 +1731,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {   
         return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
     }
+
+    /**
+    * Get GSTs by user id which are associated to application 
+    */
+    public function getAppGSTsByUserId($user_id)
+    {   
+        return BizPanGst::getAppGSTsByUserId($user_id);
+    }
 }
 
 

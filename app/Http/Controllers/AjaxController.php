@@ -3972,7 +3972,7 @@ if ($err) {
         $user_id =   (int) $this->request->get('user_id');
         $latestApp = $this->application->getUpdatedApp($user_id);
         $bizId = $latestApp->biz_id ? $latestApp->biz_id : null;
-        $customersList = $this->application->addressGetCustomers($user_id, $bizId, 6);
+        $customersList = $this->application->addressGetCustomers($user_id, $bizId, [0,6]);
         $users = $dataProvider->addressGetCustomers($this->request, $customersList);
         return $users;
     }

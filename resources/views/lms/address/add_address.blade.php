@@ -8,13 +8,13 @@
         {!! Form::hidden('biz_pan_gst_id') !!}
         @csrf
 
-        <div class="row">
+        <div class="row" style="display: none;">
             <div class="form-group col-md-6">
                 <label for="address_type">GST Number <small>(if you want to prefill address based on GST)</small></label><br />
                 <select class="form-control" name="gst_no" id="gst_no" onchange="fillAddress(this.value)">
                     <option disabled value="" data-id="" selected>Select GST</option>
                     @foreach($gsts as $gst)
-                        @if($gst->is_gst_hide == 0)
+                        @if($gst->is_gst_hide == 0 && !in_array($gst->pan_gst_hash, $app_gsts))
                         <option value="{{$gst->pan_gst_hash}}" data-id="{{$gst->biz_pan_gst_id}}">{{$gst->pan_gst_hash}}</option>
                         @endif
                     @endforeach
@@ -79,6 +79,12 @@ var messages = {
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}"
 };
+
+$(document).ready(function(){
+    if($('#gst_no option').length > 1){
+        $('#gst_no').parent('div').parent('div').show();
+    }
+})
 </script>
 <script src="{{ asset('backend/js/lms/address.js') }}"></script>
 @endsection
