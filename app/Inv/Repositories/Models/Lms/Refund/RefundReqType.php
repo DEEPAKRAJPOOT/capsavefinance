@@ -15,7 +15,7 @@ class RefundReqType extends BaseModel {
      * @var string
      */
 
-    protected $table = 'lms_refund_req_type_h';
+    protected $table = 'lms_refund_req_type';
 
     /**
      * Custom primary key is set for the table

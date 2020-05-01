@@ -15,7 +15,7 @@ class RefundReqTrans extends BaseModel {
      * @var string
      */
 
-    protected $table = 'lms_refund_req_trans_h';
+    protected $table = 'lms_refund_req_trans';
 
     /**
      * Custom primary key is set for the table

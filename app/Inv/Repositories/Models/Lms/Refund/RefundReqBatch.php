@@ -13,7 +13,7 @@ class RefundReqBatch extends BaseModel {
      * @var string
      */
 
-    protected $table = 'lms_refund_req_batch_h';
+    protected $table = 'lms_refund_req_batch';
 
     /**
      * Custom primary key is set for the table

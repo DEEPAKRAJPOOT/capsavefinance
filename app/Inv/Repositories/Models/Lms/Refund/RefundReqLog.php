@@ -13,7 +13,7 @@ class RefundReqLog extends BaseModel {
      * @var string
      */
 
-    protected $table = 'lms_refund_req_log_h';
+    protected $table = 'lms_refund_req_log';
 
     /**
      * Custom primary key is set for the table
