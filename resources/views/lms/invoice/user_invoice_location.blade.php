@@ -31,30 +31,27 @@
                             <div class="form-group col-md-6">
                                  <label for="entity_type">Customer Primary Location   </label><br />
                                  <select class="form-control" name="customer_pri_loc" id="customer_pri_loc">
-                                      @foreach($user_addr as $addr)
-                                      <option value="{{$addr->biz_addr_id}}">{{$addr->addr_1}} {{$addr->addr_2}} {{$addr->city_name}} {{$addr->state_name}} {{$addr->pin_code}}</option>
+                                      @foreach($user_addr as $u_addr)
+                                      <option value="{{$u_addr->biz_addr_id}}">{{$u_addr->addr_1}} {{$u_addr->addr_2}} {{$u_addr->city_name}} {{$u_addr->state_name}} {{$u_addr->pin_code}}</option>
                                       @endforeach
                                   </select>
+                                  <input type="hidden" name="user_state" id="user_state" value="{{$user_addr[0]->state_id}}">
                             </div>
                             <div class="form-group col-md-6">
                                  <label for="entity_type">Select Capsave Location</label><br />
                                  <select class="form-control" name="capsav_location" id="capsav_location">
                                       <option disabled value="" selected>Select</option>
-                                      @foreach($capsave_addr as $addr)
-                                      <option value="{{$addr->comp_addr_id}}">{{$addr->cmp_add}} {{$addr->city}}, {{$addr->state_name}} {{$addr->pincode}}</option>
+                                      @foreach($capsave_addr as $c_addr)
+                                      <option state="{{$c_addr->state_id}}" value="{{$c_addr->comp_addr_id}}">{{$c_addr->cmp_add}} {{$c_addr->city}}, {{$c_addr->state_name}} {{$c_addr->pincode}}</option>
                                       @endforeach
                                   </select>
+                                  <input type="hidden" name="capsave_state" id="capsave_state" value="">
                             </div>
                           </div>
                              <div class="form-group mb-0 mt-1 d-flex justify-content-between pull-right">
                                  <input type="submit" class="btn btn-success btn-sm" name="user_invoice_location" id="user_invoice_location" value="Submit"/>
                             </div>
-
                     </form>
-
-
-
-
                 </div>
             </div>
         </div>
@@ -118,49 +115,10 @@ $(document).ready(function () {
       });
    });
 
-    // GET state id for Capsave address
-   $('#capsav_location').on('change',function(){
-    var stateID = $(this).val();
-    if(stateID){
-        $.ajax({
-           type:"GET",
-           data: { "approved": "True"},
-           url:"{{url('lms/get-capsav-invoice-state')}}?state="+stateID,
-           success:function(data){
-            if(data) {
-                $.each(data,function(key,value) {
-                    $('#invoice_location').append('<input type="hidden" name="capsave_state" value="' + value + '">')
-                });
-            }
-           }
-        });
-    }else{
-        $("#capsav_location").empty();
-    }
-
-   });
-
-   // GET state id for user address
-   $('#customer_pri_loc').on('change',function(){
-    var stateID = $(this).val();
-    if(stateID){
-        $.ajax({
-           type:"GET",
-           data: { "approved": "True"},
-           url:"{{url('lms/get-user-invoice-state')}}?state="+stateID,
-           success:function(data){
-            if(data) {
-                $.each(data,function(key,value) {
-                    $('#invoice_location').append('<input type="hidden" name="user_state" value="' + value + '">')
-                });
-            }
-           }
-        });
-    }else{
-        $("#customer_pri_loc").empty();
-    }
-
-   });
+  $(document).on('change', '#capsav_location', function () {
+   let state_id =  $(this).find("option:selected").attr('state');
+   $('#capsave_state').val(state_id);
+  })
 </script>
 <script type="text/javascript" src="{{ asset('backend/js/ajax-js/lms/cusCapLocation.js') }}"></script>
 @endsection

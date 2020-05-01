@@ -410,6 +410,7 @@ class userInvoiceController extends Controller
                 'tot_paid_amt' => $total_sum_of_rental ?? 0,
                 'comp_addr_id' => $company_data['comp_id'],
                 'registered_comp_id' => $registeredCompany->comp_addr_id,
+                'comp_addr_register' => $registeredCompany->cmp_add . ' ' . $registeredCompany->city,
                 'bank_id' => $company_data['bank_id'],
                 'is_active' => 1,
                 'created_at' => $requestedData['created_at'],
