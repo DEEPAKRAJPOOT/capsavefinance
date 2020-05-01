@@ -106,18 +106,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\userInvoiceController@saveUserInvoiceLocation'
             ]);
 
-            // user_invoice relation get state id for capsave
-            Route::get('get-capsav-invoice-state', [
-                'as' => 'get-capsav-invoice-state',
-                'uses' => 'Lms\userInvoiceController@getCapsavInvoiceState'
-            ]);
-
-            // user_invoice relation get state id for user
-            Route::get('get-user-invoice-state', [
-                'as' => 'get-user-invoice-state',
-                'uses' => 'Lms\userInvoiceController@getUserInvoiceState'
-            ]);
-            
             // user_invoice relation get state id for user
             Route::get('get-user-invoice-unpublished', [
                 'as' => 'get_user_invoice_unpublished',

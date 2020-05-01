@@ -123,6 +123,10 @@ class Payment extends BaseModel {
         return $this->transType->trans_name . $tdsType;
     }
 
+    public static function getTallyTxns(array $where = array()) {
+        return self::with('user', 'lmsUser', 'transType')->where(['is_settled' => 1, 'generated_by' => 0, 'is_refundable' => 1])->where($where)->get();
+    }
+
     /**
      * get Payment data list
      * 

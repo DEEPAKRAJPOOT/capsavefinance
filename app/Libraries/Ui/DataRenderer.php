@@ -5410,12 +5410,22 @@ class DataRenderer implements DataProviderInterface
            ->editColumn(
                'comp_addr',
                function ($user) {
-               return $user->capsavBizAddr->cmp_add;
+               return $user->capsavBizAddr->cmp_add .' '. $user->capsavBizAddr->city;
            })  
            ->editColumn(
                'user_addr',
                function ($user) {
-               return $user->userBizAddr->addr_1;
+               return $user->userBizAddr->addr_1. ' '. $user->userBizAddr->addr_2. ' '. $user->userBizAddr->city_name;
+           })  
+           ->editColumn(
+               'comp_state',
+               function ($user) {
+               return $user->getCompanyState->name;
+           })  
+           ->editColumn(
+               'user_state',
+               function ($user) {
+               return $user->getUserState->name;
            })
            ->addColumn(
                'is_active',

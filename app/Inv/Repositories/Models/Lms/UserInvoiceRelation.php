@@ -94,6 +94,14 @@ class UserInvoiceRelation extends BaseModel {
         return $result ? : false;
     }
 
+    public function getCompanyState(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\State','company_state_id','id');
+    }
+
+    public function getUserState(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\State','biz_addr_state_id','id');
+    }
+
     public function userBizAddr() {
        return $this->belongsTo('App\Inv\Repositories\Models\BusinessAddress', 'biz_addr_id', 'biz_addr_id');
    }
