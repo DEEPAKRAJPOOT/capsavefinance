@@ -90,7 +90,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span> </label>
-                                            <input type="text" maxlength="10" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
+                                            <input type="text" minlength="3" maxlength="25" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice No">
                                             <span id="msgInvoiceDupli" class="error"></span>  
                                         </div>
                                     </div> 
