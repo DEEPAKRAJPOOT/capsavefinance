@@ -31,9 +31,8 @@
                             <div class="form-group col-md-6">
                                  <label for="entity_type">Customer Primary Location   </label><br />
                                  <select class="form-control" name="customer_pri_loc" id="customer_pri_loc">
-                                      <option disabled value="" selected>Select</option>
                                       @foreach($user_addr as $addr)
-                                      <option value="{{$addr->biz_addr_id}}">{{$addr->addr_1}}</option>
+                                      <option value="{{$addr->biz_addr_id}}">{{$addr->addr_1}} {{$addr->addr_2}} {{$addr->city_name}} {{$addr->state_name}} {{$addr->pin_code}}</option>
                                       @endforeach
                                   </select>
                             </div>
@@ -42,7 +41,7 @@
                                  <select class="form-control" name="capsav_location" id="capsav_location">
                                       <option disabled value="" selected>Select</option>
                                       @foreach($capsave_addr as $addr)
-                                      <option value="{{$addr->comp_addr_id}}">{{$addr->cmp_add}} {{$addr->state}}</option>
+                                      <option value="{{$addr->comp_addr_id}}">{{$addr->cmp_add}} {{$addr->city}}, {{$addr->state_name}} {{$addr->pincode}}</option>
                                       @endforeach
                                   </select>
                             </div>
@@ -68,7 +67,9 @@
                 <tr role="row">
                 <th>#</th>
                 <th>Customer Location</th>
+                <th>Customer State</th>
                 <th>Capsave Location</th>
+                <th>Capsave State</th>
                 <th>Created Date</th>
                 <th>Status</th> 
                 </tr>

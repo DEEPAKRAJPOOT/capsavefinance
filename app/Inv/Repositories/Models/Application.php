@@ -468,23 +468,6 @@ class Application extends BaseModel
                 ->get();
         return $appData ? $appData : [];
     }
-    
-    public static function getAllAppsNbizByUserId($user_id){
-        return self::with(['business', 'address' => function ($query){
-                    $query->where(['is_default' => 1, 'rcu_status' => 1, 'is_active' => 1]);
-                }, 'bizPanGst' => function ($query){
-                   $query->where(['type' => '2', 'parent_pan_gst_id' => '0']);
-                   $query->orWhere(['type' => '1']);
-                }])
-                ->where('app.user_id', $user_id)
-                ->whereHas('address', function ($query){
-                    $query->where('is_default', '!=', 0);
-                })
-                ->whereHas('bizPanGst', function ($query){
-                    $query->where(['type' => '2', 'parent_pan_gst_id' => '0']);
-                    $query->orWhere(['type' => '1']);
-                })->get();
-    }
 
     public function bizPanGst(){
       return $this->hasMany('App\Inv\Repositories\Models\BizPanGst', 'biz_id','biz_id');    

@@ -22,6 +22,7 @@ use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use App\Inv\Repositories\Models\Lms\InvoiceNo;
 use App\Inv\Repositories\Models\BusinessAddress;
+use App\Inv\Repositories\Models\Business;
 
 
 /**
@@ -51,9 +52,9 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	protected function update(array $attributes, $id) {        
 	}
 
-	public function getAppsByUserId($userId = null) {
-		$apps = Application::getAllAppsNbizByUserId($userId);
-		return $apps->isEmpty() ? [] : $apps;
+	public function getAddressByUserId(int $userId, array $where = []) {
+		$address = Business::getAddressByUserId($userId, $where);
+		return $address->isEmpty() ? [] : $address;
 	}
 
 	public function saveUserInvoice($invoices,$whereCondition=[]) {

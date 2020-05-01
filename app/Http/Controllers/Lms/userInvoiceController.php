@@ -608,17 +608,13 @@ class userInvoiceController extends Controller
     public function userInvoiceLocation(Request $request) {
         try {
             $user_id = $request->get('user_id');
-            $userAddresswithAppNbiz = $this->UserInvRepo->getAppsByUserId($user_id);
+            $userAddresswithbiz = $this->UserInvRepo->getAddressByUserId($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
-            if (empty($userAddresswithAppNbiz) || $userAddresswithAppNbiz->count() != 1) {
+            if (empty($userAddresswithbiz) || $userAddresswithbiz->count() != 1) {
                return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple / No default addresses found.');
             }
-            $user_addr = $userAddresswithAppNbiz[0]->address;
-            if(empty($user_addr) ||  $user_addr->count() > 1){
-                return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple default addresses found.');
-            }
             $result = $this->getUserLimitDetais($user_id);
-            return view('lms.invoice.user_invoice_location')->with(['user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $user_addr,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]);
+            return view('lms.invoice.user_invoice_location')->with(['user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $userAddresswithbiz,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

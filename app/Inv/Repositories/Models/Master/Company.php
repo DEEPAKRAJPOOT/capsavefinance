@@ -171,8 +171,9 @@ class Company extends BaseModel {
 
     // get capsave address
     public static function getCapsavAddr() {
-       $addr = self::select('comp_addr_id', 'cmp_add', 'state' )
-                ->where('is_active',1)
+       $addr = self::select('mst_company.comp_addr_id', 'mst_company.cmp_add', 'mst_company.city', 'mst_company.pincode', 'mst_state.name as state_name')
+                ->join('mst_state', 'mst_state.id', '=', 'mst_company.state')
+                ->where('mst_company.is_active', 1)
                 ->get();
         return $addr ? : false;
     }
