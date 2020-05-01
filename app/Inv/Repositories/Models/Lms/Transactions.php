@@ -101,6 +101,10 @@ class Transactions extends BaseModel {
         return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id');
     }
 
+    public function userInvTrans(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans','trans_id','trans_id');
+    } 
+
     public function getsettledAmtAttribute(){
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
