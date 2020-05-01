@@ -67,7 +67,7 @@
         
         $.validator.addMethod("rate_percent", function (value, element) {
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
-        }, "Please specify a valid base rate percent");
+        }, "base rate can't be exceed two digits after decimal.");
         
         $("#end_date").datetimepicker({
             format: 'dd/mm/yyyy',
