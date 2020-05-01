@@ -156,6 +156,7 @@ trait InvoiceTrait
          $inv_no_var2   = ""; 
          $inv_no_var3   = ""; 
          $inv_no_var4   = ""; 
+         $inv_no_var5   = ""; 
          $multichk['status']   = 1;
          $mytime = Carbon::now();
          $cDate   =  $mytime->toDateTimeString();
@@ -219,6 +220,13 @@ trait InvoiceTrait
                    $multichk['multiVali4'] = '* You cannot upload invoice for following invoice Number ('.substr($inv_no_var3,0,-1).') as limit is not sanctioned or offer is not approved.';
           
             }
+              if(strlen($inv_no) < 3 || strlen($inv_no) > 25)
+          {
+                    $multichk['status'] =0;
+                    $inv_no_var4.=$inv_no.',';
+                    $multichk['multiVali5'] = '* Following invoice Number ('.substr($inv_no_var4,0,-1).')  length allow between 3 to 25';
+
+          }
             if($chlLmsCusto['status']==1)
            {
                  $getDupli  = self::checkDuplicateInvoice($inv_no,$chlLmsCusto['user_id']);
@@ -227,12 +235,13 @@ trait InvoiceTrait
                  {
                      
                       $multichk['status'] =0;
-                      $inv_no_var4.=$inv_no.',';
-                      $multichk['multiVali5'] = '* Following invoice Number ('.substr($inv_no_var4,0,-1).') already exists in our system.';
+                      $inv_no_var5.=$inv_no.',';
+                      $multichk['multiVali6'] = '* Following invoice Number ('.substr($inv_no_var5,0,-1).') already exists in our system.';
           
                  }
                  
            }
+         
          
             
         }
