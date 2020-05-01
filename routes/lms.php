@@ -159,8 +159,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/soa/list', [
                 'as' => 'lms_get_transaction',
                 'uses' => 'Lms\SoaController@list'
-            ]);
-            
+            ]);            
             Route::get('/charges/manage_charge', [
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'
@@ -299,20 +298,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'updateDisburseRefund',
                 'uses' => 'Lms\RefundController@updateDisburseRefund'
             ]);
-            
-
-
-
-
-
-
-
-
-
-
-            
-
-
 
             Route::get('/refund/refund-list', [
                 'as' => 'lms_refund_list',

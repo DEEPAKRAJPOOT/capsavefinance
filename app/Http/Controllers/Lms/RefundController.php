@@ -2,25 +2,25 @@
 namespace App\Http\Controllers\Lms;
 
 use Auth;
-use Helpers;
 use Session;
+use Helpers;
 
 use PHPExcel; 
-use Carbon\Carbon;
-
 use PHPExcel_IOFactory;
-use App\Libraries\Idfc_lib;
+
 use Illuminate\Http\Request;
-use App\Helpers\RefundHelper;
+use App\Libraries\Idfc_lib;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use Carbon\Carbon;
+use App\Helpers\RefundHelper;
 
 class RefundController extends Controller
 {
@@ -38,7 +38,7 @@ class RefundController extends Controller
 		$this->middleware('checkBackendLeadAccess');
                 $this->middleware('checkEodProcess');
     }
-    
+      
     public function paymentAdvise(Request $request){
         if($request->has('payment_id')){
             $paymentId = $request->get('payment_id');
@@ -243,9 +243,19 @@ class RefundController extends Controller
 
             $rows++;
         }
+
+        // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
         header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        // header('Cache-Control: max-age=1');
+
+        // // If you're serving to IE over SSL, then the following may be needed
+        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        // header ('Pragma: public'); // HTTP/1.0
         if ($downloadFlag == 0) {
             if (!Storage::exists('/public/docs/bank_excel')) {
                 Storage::makeDirectory('/public/docs/bank_excel');
@@ -403,19 +413,10 @@ class RefundController extends Controller
         
         $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
         $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
-
+ 
         Session::flash('message',trans('backend_messages.disburseMarked'));
         return redirect()->route('lms_refund_refunded');
     }
-
-    
-    
-
-
-
-
-    
-	
 	/**
 	 * Display a listing of the refund.
 	 *
@@ -509,182 +510,181 @@ class RefundController extends Controller
                     
 	}
 
-    public function acceptReqStage(Request $request)
-    {
-        if ($request->get('eod_process')) {
-            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
-            return back();
-        }
-    
-        $reqId = $request->get('req_id');
-        $isBackStage = $request->has('back_stage') && !empty($request->get('back_stage')) ? true : false;
-        $comment = $request->get('sharing_comment');
-        
-        try {    
-            
-            //if(count($reqdDocs) == 0)  {
-            //    Session::flash('error_code', 'no_docs_found');
-            //    return redirect()->back();                                            
-            //
-            
-            $addlData=[];
-            $addlData['sharing_comment'] = $comment;
-            if ($isBackStage) {
-                //dd('$isBackStage', $isBackStage, $request->all());
-                $this->moveRequestToPrevStage($reqId, $addlData);
-            } else {
-                //dd('$isNextStage', $request->all());
-                $this->moveRequestToNextStage($reqId, $addlData);
+        public function acceptReqStage(Request $request)
+        {
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
             }
-                    
-            Session::flash('is_accept', 1);
-            return redirect()->back();
-
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-    
-    public function updateRequestStatus_old(Request $request)
-    {
-        $reqId = $request->get('req_id');
-        $reqData = $this->lmsRepo->getApprRequestData($reqId);
-        $curReqStatus = $reqData ? $reqData->status : '';
         
-        $statusList = \Helpers::getRequestStatusList($reqId);
-        $statusList = ['' => 'Select Status'] + $statusList;                
-                        
-        return view('lms.common.view_request_status')
-                ->with('reqId', $reqId)
-                ->with('statusList', $statusList);            
-    }
-    
-    public function saveRequestStatus(Request $request)
-    {
-        $reqId = $request->get('req_id');
-        $reqStatus = $request->get('status');
-        $comment = $request->get('comment');
-        
-        try {    
+            $reqId = $request->get('req_id');
+            $isBackStage = $request->has('back_stage') && !empty($request->get('back_stage')) ? true : false;
+            $comment = $request->get('sharing_comment');
             
-            //if(count($reqdDocs) == 0)  {
-            //    Session::flash('error_code', 'no_docs_found');
-            //    return redirect()->back();                                            
-            //
-            
-            $addlData=[];
-            $addlData['status'] = $reqStatus;
-            $addlData['sharing_comment'] = $comment;
-            $this->updateApprRequest($reqId, $addlData);
-                    
-            Session::flash('is_accept', 1);
-            return redirect()->back();
-
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-    
-    public function viewProcessRefund(Request $request)
-    {
-        $reqId = $request->get('req_id');
-        $viewFlag = $request->get('view');
-        
-        $reqData = $this->lmsRepo->getApprRequestData($reqId);
-        $transId = $reqData ? $reqData->trans_id : '';
-        $currStatus = $reqData ? $reqData->status : '';
-        
-        $refundData = $this->getRefundData($transId);
-        
-        $statusList = \Helpers::getRequestStatusList($reqId);
-        $statusList = ['' => 'Select Status'] + $statusList;    
-        
-        return view('lms.common.refund_process')
-                ->with('reqId', $reqId)
-                ->with('refundData', $refundData)
-                ->with('currStatus', $currStatus)
-                ->with('statusList', $statusList)
-                ->with('viewFlag', $viewFlag); 
-    }
-
-    public function processRefund(Request $request)
-    {
-        if ($request->get('eod_process')) {
-            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
-            return back();
-        }
-        
-        $reqId = $request->get('req_id');
-        $reqStatus = $request->get('status');
-        $comment = $request->get('comment');
-        
-        try {    
-            
-            //if(count($reqdDocs) == 0)  {
-            //    Session::flash('error_code', 'no_docs_found');
-            //    return redirect()->back();                                            
-            //
-            if ($request->has('process') && !empty($request->get('process')) ) {
-                $reqData = $this->lmsRepo->getApprRequestData($reqId);
-                $curReqStatus = $reqData ? $reqData->status : '';
-                $trAmount = $reqData ? $reqData->amount : 0;
-                $userId = $reqData ? $reqData->user_id : 0;
-                $transId = $reqData ? $reqData->trans_id : 0;
-                /*
-                //Non Factored Amount
-                $nonFactoredAmtData = $this->lmsRepo->getRefundData($transId, 'NON_FACTORED');
-                if (count($nonFactoredAmtData) > 0) {
-                    $trData = [];                
-                    $trData['amount'] = isset($nonFactoredAmtData[0]) ? $nonFactoredAmtData[0]->amount : 0;
-                    //$trData['payment_id'] = $transId;
-                    $trData['soa_flag'] = 1;
-                    $transType = config('lms.TRANS_TYPE.NON_FACTORED_AMT');
-                    $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
-                    $this->appRepo->saveTransaction($ptrData);
-                }
+            try {    
                 
-                //Interest Refund Amount                    
-                $intRefundAmtData = $this->lmsRepo->getRefundData($transId, 'INTEREST_REFUND');
-                if (count($intRefundAmtData) > 0) {
-                    $trData = [];                
-                    $trData['amount'] = isset($intRefundAmtData[0]) ? $intRefundAmtData[0]->amount : 0;
-                    //$trData['payment_id'] = $transId;
-                    $trData['soa_flag'] = 1;
-                    $transType = config('lms.TRANS_TYPE.INTEREST_REFUND');
-                    $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
-                    $this->appRepo->saveTransaction($ptrData);
-                }
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
                 
-                //Margin Amount
-                $marginReleasedAmtData = $this->lmsRepo->getRefundData($transId, 'MARGIN_RELEASED');
-                if (count($marginReleasedAmtData) > 0) {
-                    $trData = [];                
-                    $trData['amount'] = isset($marginReleasedAmtData[0]) ? $marginReleasedAmtData[0]->amount : 0;
-                    //$trData['payment_id'] = $transId;
-                    $trData['soa_flag'] = 1;
-                    $transType = config('lms.TRANS_TYPE.MARGIN');
-                    $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
-                    $this->appRepo->saveTransaction($ptrData);
-                }*/
                 $addlData=[];
-                $addlData['status'] = config('lms.REQUEST_STATUS.REFUND_QUEUE');
                 $addlData['sharing_comment'] = $comment;
-                $this->updateApprRequest($reqId, $addlData);
-            } else {
+                if ($isBackStage) {
+                    //dd('$isBackStage', $isBackStage, $request->all());
+                    $this->moveRequestToPrevStage($reqId, $addlData);
+                } else {
+                    //dd('$isNextStage', $request->all());
+                    $this->moveRequestToNextStage($reqId, $addlData);
+                }
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }
+        
+        public function updateRequestStatus(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqData = $this->lmsRepo->getApprRequestData($reqId);
+            $curReqStatus = $reqData ? $reqData->status : '';
+            
+            $statusList = \Helpers::getRequestStatusList($reqId);
+            $statusList = ['' => 'Select Status'] + $statusList;                
+                           
+            return view('lms.common.view_request_status')
+                    ->with('reqId', $reqId)
+                    ->with('statusList', $statusList);            
+        }
+        
+        public function saveRequestStatus(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $reqStatus = $request->get('status');
+            $comment = $request->get('comment');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                
                 $addlData=[];
                 $addlData['status'] = $reqStatus;
                 $addlData['sharing_comment'] = $comment;
-                $this->updateApprRequest($reqId, $addlData);                    
+                $this->updateApprRequest($reqId, $addlData);
+                        
+                Session::flash('is_accept', 1);
+                return redirect()->back();
+
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }
+        
+        public function viewProcessRefund(Request $request)
+        {
+            $reqId = $request->get('req_id');
+            $viewFlag = $request->get('view');
+            
+            $reqData = $this->lmsRepo->getApprRequestData($reqId);
+            $transId = $reqData ? $reqData->trans_id : '';
+            $currStatus = $reqData ? $reqData->status : '';
+            
+            $refundData = $this->getRefundData($transId);
+            
+            $statusList = \Helpers::getRequestStatusList($reqId);
+            $statusList = ['' => 'Select Status'] + $statusList;    
+            
+            return view('lms.common.refund_process')
+                    ->with('reqId', $reqId)
+                    ->with('refundData', $refundData)
+                    ->with('currStatus', $currStatus)
+                    ->with('statusList', $statusList)
+                    ->with('viewFlag', $viewFlag); 
+        }
+
+        public function processRefund(Request $request)
+        {
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
             }
             
-            Session::flash('is_accept', 1);
-            return redirect()->back();
+            $reqId = $request->get('req_id');
+            $reqStatus = $request->get('status');
+            $comment = $request->get('comment');
+            
+            try {    
+                
+                //if(count($reqdDocs) == 0)  {
+                //    Session::flash('error_code', 'no_docs_found');
+                //    return redirect()->back();                                            
+                //
+                if ($request->has('process') && !empty($request->get('process')) ) {
+                    $reqData = $this->lmsRepo->getApprRequestData($reqId);
+                    $curReqStatus = $reqData ? $reqData->status : '';
+                    $trAmount = $reqData ? $reqData->amount : 0;
+                    $userId = $reqData ? $reqData->user_id : 0;
+                    $transId = $reqData ? $reqData->trans_id : 0;
+                    /*
+                    //Non Factored Amount
+                    $nonFactoredAmtData = $this->lmsRepo->getRefundData($transId, 'NON_FACTORED');
+                    if (count($nonFactoredAmtData) > 0) {
+                        $trData = [];                
+                        $trData['amount'] = isset($nonFactoredAmtData[0]) ? $nonFactoredAmtData[0]->amount : 0;
+                        //$trData['payment_id'] = $transId;
+                        $trData['soa_flag'] = 1;
+                        $transType = config('lms.TRANS_TYPE.NON_FACTORED_AMT');
+                        $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
+                        $this->appRepo->saveTransaction($ptrData);
+                    }
+                    
+                    //Interest Refund Amount                    
+                    $intRefundAmtData = $this->lmsRepo->getRefundData($transId, 'INTEREST_REFUND');
+                    if (count($intRefundAmtData) > 0) {
+                        $trData = [];                
+                        $trData['amount'] = isset($intRefundAmtData[0]) ? $intRefundAmtData[0]->amount : 0;
+                        //$trData['payment_id'] = $transId;
+                        $trData['soa_flag'] = 1;
+                        $transType = config('lms.TRANS_TYPE.INTEREST_REFUND');
+                        $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
+                        $this->appRepo->saveTransaction($ptrData);
+                    }
+                    
+                    //Margin Amount
+                    $marginReleasedAmtData = $this->lmsRepo->getRefundData($transId, 'MARGIN_RELEASED');
+                    if (count($marginReleasedAmtData) > 0) {
+                        $trData = [];                
+                        $trData['amount'] = isset($marginReleasedAmtData[0]) ? $marginReleasedAmtData[0]->amount : 0;
+                        //$trData['payment_id'] = $transId;
+                        $trData['soa_flag'] = 1;
+                        $transType = config('lms.TRANS_TYPE.MARGIN');
+                        $ptrData = $this->createTransactionData($userId, $trData, null, $transType, $entryType = 0);
+                        $this->appRepo->saveTransaction($ptrData);
+                    }*/
+                    $addlData=[];
+                    $addlData['status'] = config('lms.REQUEST_STATUS.REFUND_QUEUE');
+                    $addlData['sharing_comment'] = $comment;
+                    $this->updateApprRequest($reqId, $addlData);
+                } else {
+                    $addlData=[];
+                    $addlData['status'] = $reqStatus;
+                    $addlData['sharing_comment'] = $comment;
+                    $this->updateApprRequest($reqId, $addlData);                    
+                }
+                
+                Session::flash('is_accept', 1);
+                return redirect()->back();
 
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }            
-    }
+            } catch (Exception $ex) {
+                return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }            
+        }
 
-   
-    
+
 }

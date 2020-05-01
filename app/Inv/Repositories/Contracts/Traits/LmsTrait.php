@@ -240,7 +240,7 @@ trait LmsTrait
         if(isset($data['soa_flag'])){
             $soaFlag = $data['soa_flag'];
         }else{
-            $soaFlag = in_array($transType,[10]) ? 0 : 1;
+            $soaFlag = in_array($transType,[10,35]) ? 0 : 1;
         }
 
         $transactionData = [];
