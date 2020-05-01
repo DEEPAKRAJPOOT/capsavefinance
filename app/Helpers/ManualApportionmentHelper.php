@@ -32,6 +32,14 @@ class ManualApportionmentHelper{
         return $calDate;
     }
 
+    Private function setMonthlyInterestSoaFlag($invDisbId, $intAccrualDate, $soaFlag){
+        Transactions::where('invoice_disbursed_id','=',$invDisbId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->where('entry_type','=',0)
+        ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
+        ->update(['soa_flag'=>$soaFlag]);
+    }
+
     private function getpaymentSettled($transDate, $invDisbId, $payFreq){
         $intrest = 0;
         if($payFreq == 2){
@@ -318,6 +326,9 @@ class ManualApportionmentHelper{
                 $this->interestPosting($invDisbId, $userId, $payFreq, $loopStratDate);
                 $this->overDuePosting($invDisbId, $userId);
                 $loopStratDate = $this->addDays($loopStratDate,1);
+            }
+            if($payFreq == 2){
+                $this->setMonthlyInterestSoaFlag($invDisbId, $curdate, 1);
             }
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

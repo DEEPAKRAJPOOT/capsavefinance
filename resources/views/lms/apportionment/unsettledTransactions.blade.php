@@ -19,7 +19,7 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manual Aapprotionment</h3>
+            <h3>Manual Apportionment</h3>
             <small>Unsettled Transactions</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
