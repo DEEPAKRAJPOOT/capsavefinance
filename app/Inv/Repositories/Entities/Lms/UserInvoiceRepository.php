@@ -94,13 +94,15 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getUserInvoiceTxns($userId, $invoiceType = 'I', $transIds = [], $is_force = false) {
 		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds, $is_force);
-		/*if (empty($transIds)) {
+		if (empty($transIds)) {
 			foreach ($UserInvoiceTxns as $key => $txn) {
-				if ($txn->getOutstandingAttribute() != 0) {
+				$waiveOffAmount = $txn->getWaiveOffAmount();
+				$txn->amount = $txn->amount -$waiveOffAmount;
+				if ($txn->amount == 0) {
 					unset($UserInvoiceTxns[$key]);
 				}
 			}
-		}*/
+		}
 		return $UserInvoiceTxns;
 	}
 	public function getTxnByTransId(int $trans_id) {
