@@ -61,7 +61,7 @@
 
         $.validator.addMethod("rate_percent", function (value, element) {
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
-        }, "Please specify a valid base rate percent");
+        }, "base rate can't be exceed two digits after decimal.");
         
         const toDate = (dateStr) => {
             const [day, month, year] = dateStr.split("/")
