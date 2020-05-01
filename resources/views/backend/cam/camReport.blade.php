@@ -573,20 +573,20 @@
                       </tr>
                     @php 
 
-                    $year_0_kg = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'KG'? 'selected' : '';
-                    $year_0_ton = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'TON'? 'selected' : '';
-                    $year_0_unit = !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'UNIT'? 'selected' : '';
-                    $year_1_kg = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'KG'? 'selected' : '' ;
-                    $year_1_ton = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'TON'? 'selected' : '';
-                    $year_1_unit = !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'UNIT'? 'selected' : '';
+                    $year_0_kg = isset($year_0) && isset($data[$year_0]['mt_type']) && !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'KG'? 'selected' : '';
+                    $year_0_ton = isset($year_0) && isset($data[$year_0]['mt_type']) && !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'TON'? 'selected' : '';
+                    $year_0_unit = isset($year_0) && isset($data[$year_0]['mt_type']) && !empty($data[$year_0]['mt_type']) && $data[$year_0]['mt_type'] == 'UNIT'? 'selected' : '';
+                    $year_1_kg = isset($year_1) && isset($data[$year_1]['mt_type']) && !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'KG'? 'selected' : '' ;
+                    $year_1_ton = isset($year_1) && isset($data[$year_1]['mt_type']) && !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'TON'? 'selected' : '';
+                    $year_1_unit = isset($year_1) && isset($data[$year_1]['mt_type']) && !empty($data[$year_1]['mt_type']) && $data[$year_1]['mt_type'] == 'UNIT'? 'selected' : '';
 
                     @endphp
                     </thead>
                     <tbody>
                       <tr class="sub-heading">
                         @php 
-                        $mt_type0 = !empty($data[$year_0]['mt_type']) ? $data[$year_0]['mt_type'] : '';
-                        $mt_type1 = !empty($data[$year_1]['mt_type']) ? $data[$year_1]['mt_type'] : '' ;
+                        $mt_type0 = isset($year_0) && isset($data[$year_0]['mt_type']) && !empty($data[$year_0]['mt_type']) ? $data[$year_0]['mt_type'] : '';
+                        $mt_type1 = isset($year_1) && isset($data[$year_1]['mt_type']) && !empty($data[$year_1]['mt_type']) ? $data[$year_1]['mt_type'] : '' ;
                         @endphp
                         <td></td>
                         <td>Qty (in MT) {{$mt_type0}}</td>
@@ -598,17 +598,17 @@
                       @php $months = ['April', 'May' , 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'] @endphp
                       @foreach($months as $key => $month)
                       @php 
-                      $mt_val_y0 += !empty($data[$year_0]['mt_value'][$key]) ? $data[$year_0]['mt_value'][$key] : 0;
-                      $mt_val_y1 += !empty($data[$year_1]['mt_value'][$key]) ? $data[$year_1]['mt_value'][$key] : 0;
-                      $mt_amount0 += !empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : 0;
-                      $mt_amount1 += !empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : 0;
+                      $mt_val_y0 += isset($year_0) && isset($data[$year_0]['mt_value'][$key]) && !empty($data[$year_0]['mt_value'][$key]) ? $data[$year_0]['mt_value'][$key] : 0;
+                      $mt_val_y1 += isset($year_1) && isset($data[$year_1]['mt_value'][$key]) && !empty($data[$year_1]['mt_value'][$key]) ? $data[$year_1]['mt_value'][$key] : 0;
+                      $mt_amount0 += isset($year_0) && isset($data[$year_0]['mt_amount'][$key]) && !empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : 0;
+                      $mt_amount1 += isset($year_1) && isset($data[$year_1]['mt_amount'][$key]) && !empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : 0;
                       @endphp
                       <tr>
                         <td>{{$month}}</td>
-                        <td width="20%">{{!empty($data[$year_0]['mt_value'][$key]) ? $data[$year_0]['mt_value'][$key] : ''}}</td>
-                        <td width="20%">{{!empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : ''}}</td>
-                        <td width="20%">{{!empty($data[$year_1]['mt_value'][$key]) ? $data[$year_1]['mt_value'][$key] : ''}}</td>
-                        <td width="20%">{{!empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : ''}}</td>
+                        <td width="20%">{{isset($year_0) && isset($data[$year_0]['mt_value'][$key]) && !empty($data[$year_0]['mt_value'][$key]) ? $data[$year_0]['mt_value'][$key] : ''}}</td>
+                        <td width="20%">{{isset($year_0) && isset($data[$year_0]['mt_amount'][$key]) && !empty($data[$year_0]['mt_amount'][$key]) ? $data[$year_0]['mt_amount'][$key] : ''}}</td>
+                        <td width="20%">{{isset($year_1) && isset($data[$year_1]['mt_value'][$key]) && !empty($data[$year_1]['mt_value'][$key]) ? $data[$year_1]['mt_value'][$key] : ''}}</td>
+                        <td width="20%">{{isset($year_1) && isset($data[$year_1]['mt_amount'][$key]) && !empty($data[$year_1]['mt_amount'][$key]) ? $data[$year_1]['mt_amount'][$key] : ''}}</td>
                       </tr>
                       @endforeach
                       <tr>
