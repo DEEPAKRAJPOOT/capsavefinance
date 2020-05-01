@@ -1,21 +1,21 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-<form id="manualDisburse" method="POST" action="{{ Route('updateDisburseRefund') }}" target="_top">
+<form id="manualDisburse" method="POST" action="{{ Route('updateDisburseRefund',[ 'payment_id' => $payment_id, 'refund_req_batch_id' => $refund_req_batch_id, 'refund_req_id' => $refund_req_id ]) }}" target="_top">
 	@csrf
-	<input type="hidden" value="{{ $trans_id }}" name="trans_id">  
-	<input type="hidden" value="{{ $req_id }}" name="req_id">  
-	<input type="hidden" value="{{ $refund_batch_id }}" name="refund_batch_id"> 
-
 	<div class="row">
 		<div class="col-12">
 			<div class="form-group ">
 				<div class="row mt10">
 					<div class="col-6">
-						<label ><b>Transaction Id</b></label>
+						<label><b>Transaction Id</b></label>
 						<input type="text" name="trans_no" class="form-control" value="" placeholder="Transaction Id">
 					</div>
 					<div class="col-6">
-						<label for="txtPassword"><b>Remarks</b></label>
+						<label><b>Disbursed Date</b></label>
+						<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+					</div>
+					<div class="col-12">
+						<label><b>Remarks</b></label>
 						<textarea type="text" name="remarks" value="" class="form-control" placeholder="Remark" ></textarea>
 					</div>
 				</div>
@@ -31,6 +31,13 @@
 <script>
 
 $(document).ready(function () {
+	$('.datepicker-dis-fdate').datetimepicker({
+        useCurrent:true,
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        minView: 2, 
+        defaultDate:new Date(),
+    })
 		$('#manualDisburse').validate({ // initialize the plugin
 			
 			rules: {

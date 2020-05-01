@@ -8,29 +8,23 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Request </h3>
-            <small>(Refund/Adjust/Wave Off)</small>
+            <h3>Manage Refund </h3>
+            <small>(Sent to Bank)</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li class="active">Manage Request </li>
+                <li class="active">Manage Refund </li>
             </ol>
         </div>
     </section>
-
-
     <div class="card">
         <div class="card-body">
-        @include('lms.common.partial.status_links')
-
-            <div class="card">
+            @include('lms.refund.common.status_links')
             <div class="row">
                 <div class="card-body">
-                    <div class="row">
-
+                    <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
                             <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Download Excel</a>
                         </div>
-                        <input type="hidden" value="" name="transaction_ids" id="transaction_ids"> 
                     </div>
                 </div>
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -38,40 +32,35 @@
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="approvedList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-	                                        <thead>
-	                                        	<tr role="row">                                                    
+                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
+                                        <table id="approvedList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                            <thead>
+                                                <tr role="row">                                                    
                                                     <th>Ref No</th>
                                                     <th>Batch Id</th>
                                                     <th>Customer ID</th>
                                                     <th>Entity Name</th>     
                                                     <th>Bank Detail</th>
-													<th>Amount</th>
+                                                    <th>Amount</th>
                                                     <th>Updated At</th>
                                                     <th>Action</th>
-												</tr>
-	                                        </thead>
-	                                        <tbody>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
 
-	                                        </tbody>
-                                    	</table>
-							  		</div>
-                            		<div id="approvedList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="requestList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                </div>
-
             </div>
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('lms_move_next_stage','Move to Next Stage', 'modal-md')!!}
-{!!Helpers::makeIframePopup('lms_move_prev_stage','Move to Previous Stage', 'modal-md')!!}
-{!!Helpers::makeIframePopup('lms_update_request_status','Update Status', 'modal-md')!!}
 {!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
 @endsection
@@ -89,7 +78,3 @@
 </script>
 <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>
 @endsection
-
-
-
-

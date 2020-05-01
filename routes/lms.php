@@ -159,13 +159,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/soa/list', [
                 'as' => 'lms_get_transaction',
                 'uses' => 'Lms\SoaController@list'
-            ]);
-           Route::get('/charges/manage_charge', [
+            ]);            
+            Route::get('/charges/manage_charge', [
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'
             ]);
           
-           
             Route::post('save_manual_charges', [
                 'as' => 'save_manual_charges',
                 'uses' => 'Lms\ChargeController@saveManualCharges'
@@ -175,11 +174,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_lms_charges',
                 'uses' => 'Lms\ChargeController@editLmsCharges'
             ]);
-             Route::get('/list-lms-charges', [
+             
+            Route::get('/list-lms-charges', [
                 'as' => 'list_lms_charges',
                 'uses' => 'Lms\ChargeController@listLmsCharges'
             ]);
-             
              
             Route::get('view-interest-accrual', [
                 'as' => 'view_interest_accrual',
@@ -195,85 +194,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms-payment-settlement',
                 'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
             ]);
-            
-            // manage refund routes 
-
-            Route::get('/refund/refund-list', [
-                'as' => 'lms_refund_list',
-                'uses' => 'Lms\RefundController@customerList'
-            ]);
-                          
+                     
             Route::get('view-interest-accrual', [
                 'as' => 'view_interest_accrual',
                 'uses' => 'Lms\DisbursalController@viewInterestAccrual'
             ]);
-
-            Route::get('/confirm-refund', [
-                'as' => 'confirm_refund',
-                'uses' => 'Lms\RefundController@confirmRefund'
-            ]);
             
-            Route::post('/send-refund', [
-                'as' => 'lms_send_refund',
-                'uses' => 'Lms\RefundController@sendRefund'
-            ]);
-
-
-            Route::get('/lms-create-batch', [
-                'as' => 'lms_create_batch',
-                'uses' => 'Lms\RefundController@createBatch'
-            ]);
-
-            Route::get('/lms-edit-batch', [
-                'as' => 'lms_edit_batch',
-                'uses' => 'Lms\RefundController@editBatch'
-            ]);
-
-            Route::get('/refund/list',[
-                'as' => 'lms_refund_new',
-                'uses' => 'Lms\RefundController@refundListNew'
-            ]);
-
-            Route::get('/refund/pending',[
-                'as' => 'lms_refund_pending',
-                'uses' => 'Lms\RefundController@refundListPending'
-            ]);
-
-            Route::get('/refund/approved',[
-                'as' => 'lms_refund_approved',
-                'uses' => 'Lms\RefundController@refundListApproved'
-            ]);
-
-            Route::get('/refund/request',[
-                'as' => 'request_list',
-                'uses' => 'Lms\RefundController@refundListRequest'
-            ]);
-
-            Route::get('/refund/confirm',[
-                'as' => 'refund_confirm',
-                'uses' => 'Lms\RefundController@refundConfirm'
-            ]);
-            
-            Route::post('/refund-offline', [
-                'as' => 'refund_offline',
-                'uses' => 'Lms\RefundController@refundOffline'
-            ]);
-
-            Route::get('refund/download-sentbank-data', [
-                'as' => 'download_sentbank',
-                'uses' => 'Lms\RefundController@downloadSentBank'
-            ]);
-
-            Route::get('/refund/sentbank',[
-                'as' => 'lms_refund_sentbank',
-                'uses' => 'Lms\RefundController@refundListSentBank'
-            ]);
-
-            Route::get('/refund/refunded',[
-                'as' => 'lms_refund_refunded',
-                'uses' => 'Lms\RefundController@refundListRefunded'
-            ]);
-
             // Business address
             Route::get('/address', [
                 'as' => 'addr_get_customer_list',
@@ -294,13 +220,115 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_addr',
                 'uses' => 'Lms\AddressController@editAddress'
             ]);
-              Route::post('/copy_app', [
-                    'as' => 'copy_app',
-                    'uses' => 'Lms\CopyController@duplicateApp'
-                ]); 
-            // end address
-            });    
             
+            Route::post('/copy_app', [
+                'as' => 'copy_app',
+                'uses' => 'Lms\CopyController@duplicateApp'
+            ]); 
+            // end address
+            
+            // manage refund routes 
+
+            Route::get('/refund/request/advise',[
+                'as' => 'lms_refund_payment_advise',
+                'uses' => 'Lms\RefundController@paymentAdvise'
+            ]);
+
+            Route::post('/refund/request/create',[
+                'as' => 'lms_refund_request_create',
+                'uses' => 'Lms\RefundController@createRefundRequest'
+            ]);
+
+            Route::get('/refund/list',[
+                'as' => 'lms_refund_new',
+                'uses' => 'Lms\RefundController@refundListNew'
+            ]);
+
+            Route::get('/refund/pending',[
+                'as' => 'lms_refund_pending',
+                'uses' => 'Lms\RefundController@refundListPending'
+            ]);
+
+            Route::get('/refund/approved',[
+                'as' => 'lms_refund_approved',
+                'uses' => 'Lms\RefundController@refundListApproved'
+            ]);
+
+            Route::get('/refund/queue',[
+                'as' => 'request_list',
+                'uses' => 'Lms\RefundController@refundListQueue'
+            ]);
+
+            Route::get('/refund/sentbank',[
+                'as' => 'lms_refund_sentbank',
+                'uses' => 'Lms\RefundController@refundListSentBank'
+            ]);
+
+            Route::get('/refund/refunded',[
+                'as' => 'lms_refund_refunded',
+                'uses' => 'Lms\RefundController@refundListRefunded'
+            ]); 
+
+            Route::get('/refund/request/view',[
+                'as' => 'lms_refund_request_view',
+                'uses' => 'Lms\RefundController@viewRefundRequest'
+            ]);
+
+            Route::post('/refund/request/update',[
+                'as' => 'lms_refund_request_udate',
+                'uses' => 'Lms\RefundController@updateRequestStatus'
+            ]);
+
+            Route::get('/refund/confirm',[
+                'as' => 'refund_confirm',
+                'uses' => 'Lms\RefundController@refundConfirm'
+            ]);
+
+            Route::post('/refund-offline', [
+                'as' => 'refund_offline',
+                'uses' => 'Lms\RefundController@refundOffline'
+            ]);
+
+            Route::get('/refund-update-disbursal', [
+                'as' => 'refund_udpate_disbursal',
+                'uses' => 'Lms\RefundController@refundUpdateDisbursal'
+            ]);
+            
+            Route::post('/update-disburse-refund', [
+                'as' => 'updateDisburseRefund',
+                'uses' => 'Lms\RefundController@updateDisburseRefund'
+            ]);
+
+            Route::get('/refund/refund-list', [
+                'as' => 'lms_refund_list',
+                'uses' => 'Lms\RefundController@customerList'
+            ]);
+
+            Route::get('/confirm-refund', [
+                'as' => 'confirm_refund',
+                'uses' => 'Lms\RefundController@confirmRefund'
+            ]);
+            
+            Route::post('/send-refund', [
+                'as' => 'lms_send_refund',
+                'uses' => 'Lms\RefundController@sendRefund'
+            ]);
+
+            Route::get('/lms-create-batch', [
+                'as' => 'lms_create_batch',
+                'uses' => 'Lms\RefundController@createBatch'
+            ]);
+
+            Route::get('/lms-edit-batch', [
+                'as' => 'lms_edit_batch',
+                'uses' => 'Lms\RefundController@editBatch'
+            ]);
+
+            Route::get('refund/download-sentbank-data', [
+                'as' => 'download_sentbank',
+                'uses' => 'Lms\RefundController@downloadSentBank'
+            ]);
+
             Route::get('req-move-next-stage',[
                 'as' => 'lms_req_move_next_stage',
                 'uses' => 'Lms\RefundController@moveReqToNextStage'
@@ -334,6 +362,17 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lms_process_refund',
                 'uses' => 'Lms\RefundController@processRefund'
             ]); 
+
+
+
+
+
+
+
+
+
+
+            
 
             Route::get('/apportionment/unsettled/view',[
                 'as' => 'apport_unsettled_view',
@@ -414,9 +453,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'apport_reversal_save',
                 'uses' => 'Lms\ApportionmentController@saveReversalDetail'
             ]);
-
-        });
-        
-        //end of application
+        });   
+    });    
+    //end of application
 });
 

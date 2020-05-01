@@ -9,7 +9,7 @@
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_approved') active @endif"  href="{{Route('lms_refund_approved')}}">Approved</a>
     </li>
     <li class="nav-item itemBackground">
-        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='request_list') active @endif"  href="{{Route('request_list')}}">Refund Queue</a>
+        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='request_list') active @endif"  href="{{Route('request_list')}}">Disbursed Queue</a>
     </li>
 
     <li class="nav-item itemBackground">

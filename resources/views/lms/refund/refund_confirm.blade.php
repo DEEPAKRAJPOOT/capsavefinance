@@ -6,19 +6,22 @@ $finalDisburseAmt = 0;
 @foreach($data as $customer)
 
 	@php 
-		$finalDisburseAmt += round($customer->amount, 2);
+		$finalDisburseAmt += round($customer->refund_amount, 2);
+		$cust[$customer->payment->user_id] = 1;
 	@endphp
 
 
 @endforeach
-
+@php
+	$totalCustomer = count($cust);
+@endphp
 <div class="row">
 	<div class="col-12 row">
 
 		<div class="col-4">
 			<div class="form-group">
 				<label for="marginAmount"># No of Cust.</label>
-				<input type="text" name="" class="form-control" readonly="true" value="{{ $data->count() }}">
+				<input type="text" name="" class="form-control" readonly="true" value="{{ $totalCustomer }}">
 			</div>
 		</div>
 		<div class="col-4">
