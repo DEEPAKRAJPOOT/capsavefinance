@@ -63,12 +63,12 @@
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
         }, "base rate can't be exceed two digits after decimal.");
         
-        const toDate = (dateStr) => {
-            const [day, month, year] = dateStr.split("/")
-            return new Date(year, month - 1, day);
-        }
-        
-        var startdate = toDate($('#start_date').val());
+//        const toDate = (dateStr) => {
+//            const [day, month, year] = dateStr.split("/")
+//            return new Date(year, month - 1, day);
+//        }
+//        
+//        var startdate = toDate($('#start_date').val());
 
         $("#start_date").datetimepicker({
             format: 'dd/mm/yyyy',
