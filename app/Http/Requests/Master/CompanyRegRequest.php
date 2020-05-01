@@ -49,6 +49,8 @@ class CompanyRegRequest extends Request
         return $messages = [
             'cmp_name.required' => trans('master_messages.required'),
             'cmp_add.required' => trans('master_messages.required'),
+            'cmp_email.required' => trans('master_messages.required'),
+            'cmp_mobile.required' => trans('master_messages.required'),
             'gst_no.required' => trans('master_messages.required'),
             'gst_no.regex' => trans('master_messages.gstno'),
             'pan_no.required' => trans('master_messages.required'),
