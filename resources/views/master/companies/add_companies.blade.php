@@ -206,8 +206,8 @@
             return this.optional(element) || (status === true);
         });
 
-        $.validator.addMethod("onlyletters", function (value, element) {
-            return this.optional(element) || /^[A-Za-z. ]*$/.test(value);
+        $.validator.addMethod("alphanumericdot", function (value, element) {
+            return this.optional(element) || /^[A-Za-z0-9 -.,]*$/.test(value);
         });
         
         $(this).on('input', '.number_format', function (event) {
@@ -222,11 +222,11 @@
         $('#companiesForm').validate({// initialize the plugin
             rules: {
                 'cmp_name': {
-                    required: true,
-                    onlyletters: true
+                    required: true
                 },
                 'cmp_add': {
                     required: true,
+                    alphanumericdot: true,
                     unique_add: true
                 },
                 'cmp_email': {
@@ -265,11 +265,11 @@
             },
             messages: {
                 'cmp_name': {
-                    required: "Please enter Company Name",
-                    onlyletters: "Only letters, dot and space allowed."
+                    required: "Please enter Company Name"
                 },
                 'cmp_add': {
                     required: "Please enter Company Address",
+                    alphanumericdot: "Some special characters are allowed",
                     unique_add: 'The company branch is already present at this address.'
                 },
                 'gst_no': {
