@@ -118,6 +118,10 @@ class Transactions extends BaseModel {
         return round(($this->amount - $this->getsettledAmtAttribute()),2);
     }
 
+    public function getWaiveOffAmount(){
+        return self::where(['parent_trans_id' => $this->trans_id, 'trans_type' => 36])->sum('amount');
+    }
+
     public function getRefundableAmtAttribute(){
         return self::where('link_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
@@ -442,8 +446,7 @@ class Transactions extends BaseModel {
     }
 
      /*** get all transaction  **/
-    public static function getAllUserChargeTransaction()
-    {
+    public static function getAllUserChargeTransaction() {
           return self::with('user')->groupBy('user_id')->get();
     }   
      
@@ -600,10 +603,12 @@ class Transactions extends BaseModel {
           $sql->where('is_invoice_generated', '=', 0);
        }
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
-            if($invoiceType == 'I')
+            if($invoiceType == 'I') {
                  $query->where('id','=','9');
-             else
+                 // $query->orWhere('id','=','33');
+             }  else {
                 $query->where('chrg_master_id','!=','0');
+            }
         })->get();
     }
 }
