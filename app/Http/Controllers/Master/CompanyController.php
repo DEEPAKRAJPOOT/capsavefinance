@@ -76,13 +76,11 @@ class CompanyController extends Controller {
                 $companies_data = $this->masterRepo->findCompanyById($company_id);
                 if (!empty($companies_data)) {
                     $arrCompaniesData['updated_by'] = Auth::user()->user_id;
-//                    $arrCompaniesData['updated_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
                     $status = $this->masterRepo->updateCompanies($arrCompaniesData, $company_id);
                 }
             } else {
                 $arrCompaniesData['company_id'] = 1;
                 $arrCompaniesData['created_by'] = Auth::user()->user_id;
-//                $arrCompaniesData['created_at'] = Helpers::convertDateTimeFormat(\carbon\Carbon::now());
 //                dd($arrCompaniesData);
                 $status = $this->masterRepo->saveCompanies($arrCompaniesData);
             }
