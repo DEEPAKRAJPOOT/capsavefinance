@@ -98,7 +98,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 			foreach ($UserInvoiceTxns as $key => $txn) {
 				$waiveOffAmount = $txn->getWaiveOffAmount();
 				$txn->amount = $txn->amount -$waiveOffAmount;
-				if ($txn->amount > 0) {
+				if ($txn->amount == 0) {
 					unset($UserInvoiceTxns[$key]);
 				}
 			}
