@@ -62,11 +62,27 @@
         $.validator.addMethod("rate_percent", function (value, element) {
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
         }, "Please specify a valid base rate percent");
+        
+        const toDate = (dateStr) => {
+            const [day, month, year] = dateStr.split("/")
+            return new Date(year, month - 1, day);
+        }
+        
+        var startdate = toDate($('#start_date').val());
 
-        $("#end_date, #start_date").datetimepicker({
+        $("#start_date").datetimepicker({
             format: 'dd/mm/yyyy',
             autoclose: true,
-            minView: 2
+            minView: 2,
+            endDate: new Date()
+        });
+        
+        $("#end_date").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView: 2,
+            useCurrent: false,
+            startDate: new Date()
         });
 
 //        $.validator.addMethod("greaterStart", function (value, element, params) {
