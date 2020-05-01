@@ -72,7 +72,8 @@
         $("#end_date").datetimepicker({
             format: 'dd/mm/yyyy',
             autoclose: true,
-            minView: 2
+            minView: 2,
+            startDate: new Date()
         });
 
         $('#baseRateForm').validate({// initialize the plugin
