@@ -58,7 +58,7 @@ class ApiController
               'tally_voucher_code' =>  $pmnt->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
               'tally_voucher_name' =>  $pmnt->transType->voucher->voucher_name,
               'tally_voucher_date' =>  $pmnt->date_of_payment,
-              'invoice_no' =>   NULL,
+              'invoice_no' =>   '',
               'invoice_date' =>  NULL,
               'ledger_name' =>  $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name,
               'amount' =>  $pmnt->amount,
@@ -236,7 +236,10 @@ class ApiController
         }
         if ($res === true) {
           $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
-          $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
+          $totalPaymentsRecords = 0;
+          if (!empty($selectedPaymentData)) {
+            $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
+          }
           $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
           if ($totalRecords != (count($selectedData) + count($selectedPaymentData))) {
             $response['message'] =  'Some error occured. No Record can be posted in tally.';
