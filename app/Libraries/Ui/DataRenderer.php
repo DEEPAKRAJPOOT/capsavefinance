@@ -4857,7 +4857,7 @@ class DataRenderer implements DataProviderInterface
             'batch_no',
             function ($data){
                 if($data->refund_req_batch_id){
-                    return $data->batch->batch_no;
+                    //return $data->batch->batch_no;
                 }
             }
         )
