@@ -41,6 +41,7 @@ class ApiController
     $totalRecords = 0;
     $insertedData = array();
     $selectedPaymentData = array();
+    $selectedData = array();
     $tally_data = [];
     if (!$txnsData->isEmpty() || !$paymentData->isEmpty()) {
         $i = 0;
