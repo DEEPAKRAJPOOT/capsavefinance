@@ -587,6 +587,19 @@ trait LmsTrait
             $query->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')]);
         })
         ->get();
+        $transactionsTds = RefundReqTrans::where('refund_req_id','=',$refundReqId)
+        ->whereHas('refundReq', function($query){
+            $query->whereHas('payment',function($query){
+                $query->where('is_refundable','=',1);
+            });
+        })
+        ->whereHas('transaction',function($query){
+            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS')]);
+        })
+        ->get();
+
+        $transactions = $transactions->merge($transactionsTds); 
+        
         foreach ($transactions as $key => $trans) {
             if($trans->req_amount>0){
                 $refundData = $this->createTransactionData($trans->transaction->user_id, [
