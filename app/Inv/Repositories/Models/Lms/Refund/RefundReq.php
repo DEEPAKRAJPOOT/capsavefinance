@@ -2,10 +2,12 @@
 namespace App\Inv\Repositories\Models\Lms\Refund;
 
 use DB;
+use Dompdf\Helpers;
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
-use App\Inv\Repositories\Models\User;
 
 class RefundReq extends BaseModel {
     /* The database table used by the model.
@@ -60,7 +62,7 @@ class RefundReq extends BaseModel {
     } 
 
     public function batch(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch','refund_req_batch_id','refund_req_batch_id');
+        return $this->belongsTo(RefundReqBatch::class,'refund_req_batch_id','refund_req_batch_id');
     }
 
     public static function createRefundReq($data){
