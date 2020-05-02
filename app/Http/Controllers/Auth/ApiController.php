@@ -236,7 +236,10 @@ class ApiController
           $res = $errorInfo;
         }
         if ($res === true) {
-          $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
+          $totalTxnRecords = 0;
+          if (!empty($selectedData)) {
+            $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
+          }
           $totalPaymentsRecords = 0;
           if (!empty($selectedPaymentData)) {
             $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
