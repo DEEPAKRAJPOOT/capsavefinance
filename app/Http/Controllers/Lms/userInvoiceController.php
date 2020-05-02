@@ -391,6 +391,7 @@ class userInvoiceController extends Controller
             $total_sum_of_rental = $inv_data[1];
             $requestedData['created_at'] = \carbon\Carbon::now();
             $requestedData['created_by'] = Auth::user()->user_id;
+            
             $userInvoiceData = [
                 'user_id' => $requestedData['user_id'],
                 'user_invoice_rel_id' => $user_invoice_rel_id,
