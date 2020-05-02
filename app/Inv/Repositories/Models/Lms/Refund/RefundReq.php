@@ -60,7 +60,7 @@ class RefundReq extends BaseModel {
     } 
 
     public function batch(){
-        return $this->belongsTo('App\Inv\Repositories\Models\lms\Refund\RefundReqBatch','refund_req_batch_id','refund_req_batch_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch','refund_req_batch_id','refund_req_batch_id');
     }
 
     public static function createRefundReq($data){
