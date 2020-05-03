@@ -166,8 +166,8 @@ class Transactions extends BaseModel {
                 $name .= $parentTrans->transType->trans_name.' ';
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND')]))
-                    $name .= $linkTrans->transType->trans_name.' ';
+                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE')]))
+                        $name .= $linkTrans->transType->trans_name.' ';
                 }
             }
         }
