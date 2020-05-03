@@ -630,7 +630,7 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id' => null,
                     'user_id' => $userId,
                     'trans_date' => $paymentDetails['date_of_payment'],
-                    'amount' => $paymentDetails['amount'],
+                    'amount' => 0,
                     'entry_type' => 1,
                     'soa_flag' => 1,
                     'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')

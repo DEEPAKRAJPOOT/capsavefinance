@@ -3884,7 +3884,7 @@ class DataRenderer implements DataProviderInterface
                 return $trans->batchNo;
             })
             ->addColumn('narration',function($trans){
-                return $trans->narration;
+                return "<b>".$trans->narration."<b>";
             })
             ->addColumn(
                 'virtual_acc_id',
@@ -3913,18 +3913,63 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'currency',
                 function ($trans) {
-                    return 'INR';
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                        return '';
+                    }else{
+                        return 'INR';
+                    }
                 }
             )
             ->addColumn(
                 'sub_amount',
                 function($trans){
-                    if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')])){
+                    if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
                         return number_format($trans->amount,2);
                     }
                 }   
+            )->editColumn(
+                'debit',
+                function ($trans) {
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                        return '';
+                    }
+                    elseif($trans->entry_type=='0'){
+                        return number_format($trans->amount,2);
+                    }else{
+                        return '0.00';
+                    }
+                }
             )
             ->editColumn(
+                'credit',
+                function ($trans) {
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                        return '';
+                    }
+                    elseif($trans->entry_type=='1'){
+                        return '('.number_format($trans->amount,2).')';
+                    }else{
+                        return '(0.00)';
+                    }
+                }
+            )
+            ->editColumn(
+                'balance',
+                function ($trans) {
+
+                    $data = '';
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                        $data = '';
+                    }
+                    elseif($trans->balance<0){
+                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
+                    }else{
+                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
+                    }
+                    return $data;
+                }
+            )
+            /*->editColumn(
                 'debit',
                 function ($trans) {
                     if(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){  
@@ -3939,7 +3984,10 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'credit',
                 function ($trans) {
-                    if(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                        return '';
+                    }
+                    elseif(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){
                         if($trans->entry_type=='1'){
                             return '('.number_format($trans->amount,2).')';
                         }else{
@@ -3952,14 +4000,17 @@ class DataRenderer implements DataProviderInterface
                 'balance',
                 function ($trans) {
                     $data = '';
-                    if($trans->balance<0){
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                        return '';
+                    }
+                    elseif($trans->balance<0){
                         $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
                     }else{
                         $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
                     }
                     return $data;
                 }
-            )
+            )*/
             ->filter(function ($query) use ($request) {
 
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){

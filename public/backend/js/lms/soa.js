@@ -26,11 +26,11 @@ try {
             },
             fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
                 if(aData.payment_id){
-                    $(nRow).css('background', 'rgba(19, 136, 100, 0.2)');
+                    $(nRow).css('background', '#ffcc0078');
                     $(nRow).css('line-height', '1');
                 }
                 if(aData.trans_type==' Repayment'){
-                    $(nRow).css('background', 'rgba(19, 136, 100, 0.45)');
+                    $(nRow).css('background', '#f3c714');
                 }
             },
             columns: [
@@ -43,7 +43,7 @@ try {
                 {data: 'invoice_no'},
                 {data: 'narration'},
                 {data: 'currency'},
-                {data: 'sub_amount'},
+                // {data: 'sub_amount'},
                 {data: 'debit'},
                 {data: 'credit'},
                 {data: 'balance'}
