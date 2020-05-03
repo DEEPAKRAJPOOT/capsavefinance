@@ -446,7 +446,7 @@ class Transactions extends BaseModel {
 
                 $interestRemainingRefund = ($interestDue+$interestReversed)-($interestWaivedOff)-($interestTDS)-($interestToBeRefunded);
 
-                $intRefund = round(($totalInterestAmt)-($interestRemainingRefund),2);
+                $intRefund = round(($interestRemainingRefund)-($totalInterestAmt),2);
                 
                 $intRefund = ($intRefund <= 0)?0:$intRefund;
             }
