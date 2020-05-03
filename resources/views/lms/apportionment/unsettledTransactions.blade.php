@@ -50,7 +50,7 @@
             <div class="row pull-right">
                 <div class="col-md-12" >
                     @if($paymentId) <input type="submit" value="Mark Settled" class="btn btn-success btn-sm"> @endif
-                    <input type="button" value="Wave Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+                    <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
                 </div>
             </div>
             </form>

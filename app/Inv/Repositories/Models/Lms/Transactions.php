@@ -105,6 +105,10 @@ class Transactions extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans','trans_id','trans_id');
     } 
 
+    public function userInvParentTrans(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans','trans_id','parent_trans_id');
+    }
+
     public function refundReqTrans(){
         return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
     }

@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Add Repayment & Wave Off</h3>
+            <h3>Add Repayment & Waived Off</h3>
             <!-- <small>Application List</small> -->
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Payment</li>
-                <li class="active">Add Repayment & Wave Off</li>
+                <li class="active">Add Repayment & Waived Off</li>
             </ol>
         </div>
     </section>
@@ -72,7 +72,7 @@
                                                 <select class="form-control" name="action_type" id="action_type">
                                                     <option value="">Select Action Type</option>
                                                     <option value="1">Receipt</option>
-                                                    {{-- <option value="2">Wave Off</option> --}}
+                                                    {{-- <option value="2">Waived Off</option> --}}
                                                     <option value="3">TDS</option>
                                                 </select>
                                                 <span id="action_type_error" class="error"></span>

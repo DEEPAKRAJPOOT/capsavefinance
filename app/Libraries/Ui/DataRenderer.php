@@ -3874,8 +3874,9 @@ class DataRenderer implements DataProviderInterface
                 $data = '';
                 if($trans->userInvTrans){
                     return $trans->userInvTrans->getUserInvoice->invoice_no;
-                }
-                if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
+                }elseif($trans->userInvParentTrans){
+                    return $trans->userInvParentTrans->getUserInvoice->invoice_no;
+                }elseif($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
                     return $trans->invoiceDisbursed->invoice->invoice_no;
                 }
                 return $data;

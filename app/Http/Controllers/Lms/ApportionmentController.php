@@ -187,7 +187,7 @@ class ApportionmentController extends Controller
             }
             $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || $TransDetail->transType->id == 9);
             if(!$is_interest_charges){
-                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waive off is possible only Interest and Charges.']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest and Charges.']);
             }
             $outstandingAmount = $TransDetail->getOutstandingAttribute();
             if ($amount > $outstandingAmount)  {
@@ -198,7 +198,7 @@ class ApportionmentController extends Controller
             }
 
             if (empty($comment))  {
-                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to waive off the amount.']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to Waived off the amount.']);
             }
             $txnInsertData = [
                     'payment_id' => NULL,
