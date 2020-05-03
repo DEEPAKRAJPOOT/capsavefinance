@@ -25,7 +25,10 @@ try {
                 }
             },
             fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-                if(aData.payment_id){
+                var iscolor = 1; 
+                if (aData.trans_type.indexOf('TDS') > -1)
+                {iscolor = null; }
+                if(aData.payment_id && iscolor){
                     $(nRow).css('background', '#ffcc0078');
                     $(nRow).css('line-height', '1');
                 }

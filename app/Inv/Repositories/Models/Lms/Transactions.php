@@ -193,7 +193,7 @@ class Transactions extends BaseModel {
         if(in_array($this->trans_type,[ config('lms.TRANS_TYPE.REPAYMENT')])){
             $data .= $this->BatchNo.' ';
             $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
-            $data .= ' Payment Allocated as Normal: '. number_format($this->payment->amount,2) . ' '; 
+            $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' '; 
         }
         return $data;
     }
