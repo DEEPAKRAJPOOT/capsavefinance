@@ -712,6 +712,7 @@ class ApportionmentController extends Controller
                         'trans_date' => $paymentDetails['date_of_payment'],
                         'amount' => $unAppliedAmt,
                         'entry_type' => 1,
+                        'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT')
                     ];
                 }
