@@ -628,7 +628,7 @@ class ApportionmentController extends Controller
                     'link_trans_id' => null,
                     'parent_trans_id' => null,
                     'invoice_disbursed_id' => null,
-                    'user_id' => $trans->user_id,
+                    'user_id' => $userId,
                     'trans_date' => $paymentDetails['date_of_payment'],
                     'amount' => $paymentDetails['amount'],
                     'entry_type' => 1,
