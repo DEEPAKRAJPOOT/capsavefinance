@@ -401,12 +401,12 @@ class Transactions extends BaseModel {
             
             $totalDebitAmt = self::where('entry_type','=','0')
             ->where('invoice_disbursed_id','=',$invDesbId)
-            ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
             ->sum('amount');
         
             $totalCreditAmt =  self::where('entry_type','=','1')
             ->where('invoice_disbursed_id','=',$invDesbId)
-            ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
             ->sum('amount');
 
             if($totalDebitAmt <= $totalCreditAmt){
