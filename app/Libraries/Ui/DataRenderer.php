@@ -3853,8 +3853,8 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
-            ->addColumn('repay_trans_id', function($trans){
-                return $trans->repay_trans_id;
+            ->addColumn('payment_id', function($trans){
+                return $trans->payment_id;
             })
             ->addColumn('customer_id', function($trans){
                 $data = '';
@@ -3916,23 +3916,35 @@ class DataRenderer implements DataProviderInterface
                     return 'INR';
                 }
             )
+            ->addColumn(
+                'sub_amount',
+                function($trans){
+                    if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')])){
+                        return number_format($trans->amount,2);
+                    }
+                }   
+            )
             ->editColumn(
                 'debit',
                 function ($trans) {
-                    if($trans->entry_type=='0'){
-                        return number_format($trans->amount,2);
-                    }else{
-                        return '0.00';
+                    if(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){  
+                        if($trans->entry_type=='0'){
+                            return number_format($trans->amount,2);
+                        }else{
+                            return '0.00';
+                        }
                     }
                 }
             )
             ->editColumn(
                 'credit',
                 function ($trans) {
-                    if($trans->entry_type=='1'){
-                        return '('.number_format($trans->amount,2).')';
-                    }else{
-                        return '(0.00)';
+                    if(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){
+                        if($trans->entry_type=='1'){
+                            return '('.number_format($trans->amount,2).')';
+                        }else{
+                            return '(0.00)';
+                        }
                     }
                 }
             )

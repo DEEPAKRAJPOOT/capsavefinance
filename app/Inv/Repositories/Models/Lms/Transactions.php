@@ -104,6 +104,7 @@ class Transactions extends BaseModel {
     public function userInvTrans(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans','trans_id','trans_id');
     } 
+
     public function refundReqTrans(){
         return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
     }
@@ -189,7 +190,7 @@ class Transactions extends BaseModel {
 
     public function getNarrationAttribute(){
         $data = '';
-        if($this->payment_id && !in_array($this->trans_type,[ config('lms.TRANS_TYPE.TDS')])){
+        if(in_array($this->trans_type,[ config('lms.TRANS_TYPE.REPAYMENT')])){
             $data .= $this->BatchNo.' ';
             $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
             $data .= ' Payment Allocated as Normal: '. number_format($this->payment->amount,2) . ' '; 
@@ -379,58 +380,14 @@ class Transactions extends BaseModel {
         });
     }
 
-    // public static function calInvoiceRefund($invDesbId,$payment_date=null)
-    // {
-    //     $invoice = self::where('invoice_disbursed_id','=',$invDesbId)
-    //     ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
-    //     ->where('entry_type','=','0')
-    //     ->whereHas('invoiceDisbursed',function($query){
-    //         $query->whereHas('invoice', function($query){
-    //             $query->whereHas('program_offer',function($query){
-    //                 $query->where('payment_frequency','=',1);
-    //             });
-    //         });
-    //     })
-    //     ->first();
-
-    //     $payDisbursedIds = self::where('entry_type','=','0')
-    //     ->where('invoice_disbursed_id','=',$invDesbId)
-    //     ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
-    //     ->pluck('trans_id');
-
-    //     $intRefund = 0;
-    //     $totalDebitAmt = self::where('entry_type','=','0')
-    //     ->where('invoice_disbursed_id','=',$invDesbId)
-    //     ->where(function($query){
-    //         $query->whereIn('trans_type',[$payDisbursedIds]);
-    //         $query->OrwhereIn('trans_type',[$payDisbursedIds]);
-    //     })
-    //     ->sum('amount');
-        
-    //     $totalCreditAmt =  self::where('entry_type','=','1')
-    //     ->where('invoice_disbursed_id','=',$invDesbId)
-    //     ->where(function($query){
-    //         $query->whereIn('trans_type',[$payDisbursedIds]);
-    //         $query->OrwhereIn('trans_type',[$payDisbursedIds]);
-    //     })
-    //     ->sum('amount');
-    //     $invoice2 = $invoice;
-
-    //     if($totalDebitAmt <= $totalCreditAmt){
-    //         $invoice = $invoice->accruedInterest();
-	// 		if($payment_date){
-	// 			$invoice = $invoice->whereDate('interest_date','<',$payment_date);
-	// 		}    
-    //         $intRefund = $invoice->sum('accrued_interest');
-    //     }
-        
-	// 	return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
-    // }
-
     public static function calInvoiceRefund($invDesbId,$payment_date=null)
     {
+        $intRefund = 0;
+        $invoice2 = null;
+
         $invoice = self::where('invoice_disbursed_id','=',$invDesbId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->where('entry_type', '0')
         ->whereHas('invoiceDisbursed',function($query){
             $query->whereHas('invoice', function($query){
                 $query->whereHas('program_offer',function($query){
@@ -439,11 +396,8 @@ class Transactions extends BaseModel {
             });
         })
         ->first();
-        $intRefund = 0;
-        $invoice2 = null;
-        $interestAmt = 0;
+        $invoice2 = $invoice;
         if($invoice){
-            $interestAmt = $invoice->amount;
             
             $totalDebitAmt = self::where('entry_type','=','0')
             ->where('invoice_disbursed_id','=',$invDesbId)
@@ -454,15 +408,46 @@ class Transactions extends BaseModel {
             ->where('invoice_disbursed_id','=',$invDesbId)
             ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.MARGIN')])
             ->sum('amount');
-            $invoice2 = $invoice;
-            
+
             if($totalDebitAmt <= $totalCreditAmt){
-                $invoice = $invoice->accruedInterest();
+                $accruedInterest = $invoice->accruedInterest();
                 if($payment_date){
-                    $invoice = $invoice->whereDate('interest_date','<',$payment_date);
-                }    
-                $intRefundable = $invoice->sum('accrued_interest');
-                $intRefund = $interestAmt - $intRefundable; 
+                    $accruedInterest = $accruedInterest->whereDate('interest_date','<',$payment_date);
+                } 
+                $totalInterestAmt = round($accruedInterest->sum('accrued_interest'),2);
+
+                $credit = [];
+                $debit = [];
+                $interestTrails = self::where('parent_trans_id','=',$invoice->trans_id)->get()->toArray();
+                foreach ($interestTrails as $key => $value) {
+                    if($value['entry_type'] == '1'){
+                        if(isset($data[$value['trans_type']])){
+                            $credit[$value['trans_type']] += $value['amount'];
+                        }else{
+                            $credit[$value['trans_type']] = $value['amount'];
+                        }
+                    }
+                    else{
+                        if(isset($debit[$value['trans_type']])){
+                            $debit[$value['trans_type']] += $value['amount'];
+                        }else{
+                            $debit[$value['trans_type']] = $value['amount'];
+                        }
+                    }
+                }
+
+                $interestDue = (float)$invoice->amount;
+                $interestSettled = isset($credit[config('lms.TRANS_TYPE.INTEREST')])?(float)$credit[config('lms.TRANS_TYPE.INTEREST')]:0;
+                $interestToBeRefunded = isset($credit[config('lms.TRANS_TYPE.REFUND')])?(float)$credit[config('lms.TRANS_TYPE.REFUND')]:0;
+                $interestWaivedOff = isset($credit[config('lms.TRANS_TYPE.WAVED_OFF')])?(float)$credit[config('lms.TRANS_TYPE.WAVED_OFF')]:0;
+                $interestTDS = isset($credit[config('lms.TRANS_TYPE.TDS')])?(float)$credit[config('lms.TRANS_TYPE.TDS')]:0;
+                $interestRefunded = isset($debit[config('lms.TRANS_TYPE.REFUND')])?(float)$debit[config('lms.TRANS_TYPE.REFUND')]:0;
+                $interestReversed = isset($debit[config('lms.TRANS_TYPE.REVERSE')])?(float)$debit[config('lms.TRANS_TYPE.REVERSE')]:0;
+
+                $interestRemainingRefund = ($interestDue+$interestReversed)-($interestWaivedOff)-($interestTDS)-($interestToBeRefunded);
+
+                $intRefund = round(($totalInterestAmt)-($interestRemainingRefund),2);
+                
                 $intRefund = ($intRefund <= 0)?0:$intRefund;
             }
         }
@@ -596,7 +581,7 @@ class Transactions extends BaseModel {
                     ->join('users', 'transactions.user_id', '=', 'users.user_id')
                     ->join('lms_users','users.user_id','lms_users.user_id')
                     ->where('soa_flag','=',1)
-                    ->where('amount','>',0)
+                    //->where('amount','>',0)
                     ->orderBy('user_id', 'asc')
                     ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');

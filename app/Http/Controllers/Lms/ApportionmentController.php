@@ -623,6 +623,19 @@ class ApportionmentController extends Controller
                     ->get();
                 }
 
+                $transactionList[] = [
+                    'payment_id' => $paymentId,
+                    'link_trans_id' => null,
+                    'parent_trans_id' => null,
+                    'invoice_disbursed_id' => null,
+                    'user_id' => $trans->user_id,
+                    'trans_date' => $paymentDetails['date_of_payment'],
+                    'amount' => $paymentDetails['amount'],
+                    'entry_type' => 1,
+                    'soa_flag' => 1,
+                    'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')
+                ];
+
                 foreach ($transactions as $trans){  
                     if($trans->invoice_disbursed_id){
 
@@ -646,7 +659,7 @@ class ApportionmentController extends Controller
                     $amtToSettle += $payments[$trans->trans_id];
                 }
 
-                $unAppliedAmt = $repaymentAmt-$amtToSettle;
+                $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
                 if($amtToSettle > $repaymentAmt){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
