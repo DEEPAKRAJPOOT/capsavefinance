@@ -49,7 +49,7 @@ class ApiController
         $parent_settled = [];
         if (!$paymentData->isEmpty()) {
           foreach ($paymentData as $key => $pmnt) {
-            $accountDetails = $pmnt->userRelation->companyBankDetails;
+            $accountDetails = $pmnt->userRelation->companyBankDetails ?? '';
             if (empty($accountDetails)) {
                  $response['message'] =  'No Relation Found between customer('. $pmnt->user_id .') and Company with Bank';
                  return $response;
