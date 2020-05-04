@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
+use Carbon\Carbon;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
@@ -107,5 +108,13 @@ class AppLimit extends BaseModel {
     public static  function getUserApproveLimit($user_id)
     {
         return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor'])->where(['user_id'=>$user_id])->get();
+    }
+    
+    public static function checkUserAdhoc($attr)
+    {
+        $mytime = Carbon::now();
+        $dateTime  =  $mytime->toDateTimeString();
+        return self::where(['user_id' => $attr['user_id'],'status' => 1,'limit_type' => 1])->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`') ->sum('tot_limit_amt');
+       
     }
 }

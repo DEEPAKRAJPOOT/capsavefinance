@@ -382,7 +382,8 @@ class InvoiceController extends Controller {
 
     /*   save invoice */
 
-    public function saveInvoice(Request $request) {        
+    public function saveInvoice(Request $request) {   
+       
         if ($request->get('eod_process')) {
             Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
             return back();
@@ -420,7 +421,16 @@ class InvoiceController extends Controller {
             $statusId = 7;
           }
         }
-      
+       //////* chk the adhoc condition  
+       //created by gajendra chauhan*/
+        if(isset($attributes['limit_type']))
+        {
+            $is_adhoc=1;
+        }
+        else
+        {
+            $is_adhoc=0;
+        }
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
         $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
@@ -439,6 +449,7 @@ class InvoiceController extends Controller {
             'prgm_offer_id' => $attributes['prgm_offer_id'],
             'status_id' => $statusId,
             'remark' => $attributes['remark'],
+            'is_adhoc' => $is_adhoc,
             'file_id' => $userFile->file_id,
             'created_by' => $id,
             'updated_by' => $id,
@@ -446,7 +457,13 @@ class InvoiceController extends Controller {
         $result = $this->invRepo->save($arr);
        
         if ($result) {
-            InvoiceTrait::getManualInvoiceStatus($result);
+            if($is_adhoc==0)
+            {
+              InvoiceTrait::getManualInvoiceStatus($result);
+            }
+            else {
+               $this->invRepo->saveInvoiceStatusLog($result['invoice_id'],$statusId); 
+            }
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

@@ -381,7 +381,7 @@ trait InvoiceTrait
 
      public static  function invoiceApproveLimit($attr)
    {
-        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
    }
 
   
@@ -681,6 +681,12 @@ trait InvoiceTrait
   public static function isOverDue($user_id)
   {
     return  UserDetail::where('user_id',$user_id)->first();
+  }
+   /* Check adhoc limit */
+   /* Created by gajendra chahan  */
+  public static function adhocLimit($attr)
+  {
+     return  BizInvoice::where(['supplier_id' =>$attr['user_id'],'is_adhoc' =>1])->sum('invoice_approve_amount');
   }
    
 }

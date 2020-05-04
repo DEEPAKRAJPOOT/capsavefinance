@@ -82,8 +82,10 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label> <span id="pro_limit" class="error"></span>
-                                        
-                                            
+                                            <span id="adhoc_msg" style="display:none">
+                                                <input name="limit_type" type="checkbox" id="limit_type" class="get_adhoc" value="1">
+                                            Adhoc
+                                            </span>
                                             <select readonly="readonly" class="form-control getTenor" id="supplier_id" name="supplier_id">
                                              
                                             </select>
@@ -344,6 +346,7 @@ var messages = {
     front_program_list: "{{ URL::route('front_program_list') }}",
     front_supplier_list: "{{ URL::route('front_supplier_list') }}",
     get_tenor: "{{ URL::route('get_tenor') }}",
+    get_adhoc: "{{ URL::route('get_adhoc') }}",
     check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
    };
  
