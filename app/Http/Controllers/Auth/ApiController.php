@@ -215,7 +215,7 @@ class ApiController
                   'acc_no' =>  $accountDetails->acc_no ?? '',
                   'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
                   'bank_name' =>  $accountDetails->bank->bank_name ?? '',
-                  'cheque_amount' =>  $cheque_amount,
+                  'cheque_amount' =>  0,
                   'cross_using' =>  '',
                   'mode_of_pay' =>  1,
                   'inst_no' =>  NULL,
