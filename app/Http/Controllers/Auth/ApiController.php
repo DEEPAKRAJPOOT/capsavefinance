@@ -100,12 +100,6 @@ class ApiController
             $userName = $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name;
             $trans_type_name = $txn->getTransNameAttribute();
             $txn_trans_type_id = $txn->transType->tally_trans_type;
-            if ($txn->trans_type == 32 && $txn->entry_type == 1) {
-               $txn_trans_type_id = 3;
-            }
-            if ($txn->trans_type == 32 && $txn->entry_type == 0) {
-               $txn_trans_type_id = 1;
-            }
             $cheque_amount = 0;
             if ($txn->trans_type == 16 && $txn->entry_type == 0) {
               $disburse_amt = $txn->invoiceDisbursed->disburse_amt;
@@ -125,6 +119,12 @@ class ApiController
                 $i++;
                 if ($txn->trans_type == $parentRecord->trans_type && $txn_trans_type_id == 3) {
                   continue;
+                }
+                if ($txn->trans_type == 32 && $txn->entry_type == 1) {
+                   $txn_trans_type_id = 3;
+                }
+                if ($txn->trans_type == 32 && $txn->entry_type == 0) {
+                   $txn_trans_type_id = 1;
                 }
                 $tally_data[] = [
                   'batch_no' =>  $batch_no,
@@ -231,6 +231,12 @@ class ApiController
               if ($txn->trans_type == 16 && $txn->entry_type == 0) {
                 $invoice_no = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
                 $invoice_date = $txn->invoiceDisbursed->invoice->invoice_date ?? NULL;
+              }
+              if ($txn->trans_type == 32 && $txn->entry_type == 1) {
+                 $txn_trans_type_id = 3;
+              }
+              if ($txn->trans_type == 32 && $txn->entry_type == 0) {
+                 $txn_trans_type_id = 1;
               }
               $tally_data[] = [
                 'batch_no' =>  $batch_no,
