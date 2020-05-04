@@ -131,7 +131,7 @@ class FinanceController extends Controller {
                         "trans_type" => $fetchedArr['trans_type'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" => $voucherDate,
-                        // "dr_/_cr" => $fetchedArr['entry_type'],
+                        "dr_/_cr" => $fetchedArr['entry_type'],
                         "dr_ledger_name" => ($entry_type == 'credit' ? $fetchedArr['trans_type'] : $fetchedArr['ledger_name']),
                         "dr_amount" => $fetchedArr['amount'],
                         "ref_no" => $fetchedArr['ref_no'],
