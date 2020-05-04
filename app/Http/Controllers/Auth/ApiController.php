@@ -74,7 +74,7 @@ class ApiController
               'acc_no' =>  $accountDetails->acc_no ?? '',
               'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
               'bank_name' =>  $accountDetails->bank->bank_name ?? '',
-              'cheque_amount' =>  $pmnt->amount,
+              'cheque_amount' =>  0,
               'cross_using' =>  $pmnt->payment_type == 2 ? 'a/c payee' : '',
               'mode_of_pay' =>  $pmnt->payment_type,
               'inst_no' =>  NULL,
@@ -105,6 +105,12 @@ class ApiController
             }
             if ($txn->trans_type == 32 && $txn->entry_type == 0) {
                $txn_trans_type_id = 1;
+            }
+            $cheque_amount = 0;
+            if ($txn->trans_type == 16 && $txn->entry_type == 0) {
+              $disburse_amt = $txn->invoiceDisbursed->disburse_amt;
+              $total_interest = $txn->invoiceDisbursed->total_interest;
+              $cheque_amount = round($disburse_amt - $total_interest, 2);
             }
 
             if (isset($parent_settled[$txn->parent_trans_id])) {
@@ -139,7 +145,7 @@ class ApiController
                   'acc_no' =>  $accountDetails->acc_no ?? '',
                   'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
                   'bank_name' =>  $accountDetails->bank->bank_name ?? '',
-                  'cheque_amount' =>  0,
+                  'cheque_amount' =>  $cheque_amount,
                   'cross_using' =>  '',
                   'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
                   'inst_no' =>  $txn->invoiceDisbursed->disbursal->tran_id ?? NULL,
@@ -209,7 +215,7 @@ class ApiController
                   'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
                   'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
                   'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
-                  'cheque_amount' =>  0,
+                  'cheque_amount' =>  $cheque_amount,
                   'cross_using' =>  '',
                   'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
                   'inst_no' =>  NULL,
@@ -245,7 +251,7 @@ class ApiController
                 'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
                 'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
                 'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
-                'cheque_amount' =>  0,
+                'cheque_amount' =>  $cheque_amount,
                 'cross_using' =>  '',
                 'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
                 'inst_no' =>  $txn->invoiceDisbursed->disbursal->tran_id ?? NULL,
