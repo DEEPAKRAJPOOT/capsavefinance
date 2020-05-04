@@ -93,7 +93,7 @@ class ApiController
               continue;
             }
             $accountDetails = $txn->userRelation->companyBankDetails ?? NULL;
-            if (empty($accountDetails)) {
+            if (empty($accountDetails) && !empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
                  $response['message'] =  'No Relation Found between customer('. $txn->user_id .') and Company with Bank';
                  return $response;
             }
