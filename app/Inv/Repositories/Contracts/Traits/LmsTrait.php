@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans;
 
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
@@ -260,7 +261,7 @@ trait LmsTrait
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
 
-        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
                         
         $transactionData['created_by'] = Auth::user()->user_id;
         $transactionData['created_at'] = $curData;
@@ -579,24 +580,44 @@ trait LmsTrait
         
     }
 
-    protected function finalRefundTransactions(int $trans_id, int $req_id)
+    protected function finalRefundTransactions(int $refundReqId, $actualRefundDate)
     {
-        $transactions = RefundTransactions::getRefundTransactions($req_id);
-        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $transactions = RefundReqTrans::where('refund_req_id','=',$refundReqId)
+        ->whereHas('transaction',function($query){
+            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')]);
+        })
+        ->get();
+        $transactionsTds = RefundReqTrans::where('refund_req_id','=',$refundReqId)
+        ->whereHas('refundReq', function($query){
+            $query->whereHas('payment',function($query){
+                $query->where('is_refundable','=',1);
+            });
+        })
+        ->whereHas('transaction',function($query){
+            $query->whereIn('trans_type',[config('lms.TRANS_TYPE.TDS')]);
+        })
+        ->get();
+
+        $transactions = $transactions->merge($transactionsTds); 
+        
         foreach ($transactions as $key => $trans) {
             if($trans->req_amount>0){
-                $refundData = $this->createTransactionData($trans->user_id, [
+                $refundData = $this->createTransactionData($trans->transaction->user_id, [
                     'amount' => $trans->req_amount,
-                    'trans_date'=>$curData,
-                    'disbursal_id'=>$trans->disbursal_id,
+                    'trans_date'=>$actualRefundDate,
+                    'tds_per'=>0,
+                    'invoice_disbursed_id'=>$trans->transaction->invoice_disbursed_id,
+                    'parent_trans_id'=>$trans->transaction->parent_trans_id??$trans->transaction->trans_id,
+                    'link_trans_id'=>$trans->transaction->trans_id,
                     'soa_flag'=>1
-                ], null, $trans->trans_type, 0);
+                ], config('lms.TRANS_TYPE.REFUND'), 0);
+
                 $trans_data =  Transactions::saveTransaction($refundData);
                 if($trans_data){
                     $updateData = [
-                        'new_trans_id'=> $trans_data->trans_id
+                        'refund_trans_id'=> $trans_data->trans_id
                     ];
-                    RefundTransactions::saveRefundTransactionData($updateData,['refund_trans_id'=>$trans->refund_trans_id]);
+                    RefundReqTrans::saveRefundReqTransData($updateData,$trans->refund_trans_id);
                 }
             }
         }

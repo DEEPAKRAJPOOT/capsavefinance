@@ -6,6 +6,7 @@ use Event;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Payment;
 use App\Libraries\Bsa_lib;
 use App\Libraries\Perfios_lib;
 use Storage;
@@ -35,16 +36,56 @@ class ApiController
     }
     $where = ['is_posted_in_tally' => '0']; //, 'is_invoice_generated' => '1'
     $txnsData = Transactions::getTallyTxns($where);
+    $paymentData = Payment::getTallyTxns($where);
     $batch_no = _getRand(15);
     $totalRecords = 0;
     $insertedData = array();
+    $selectedPaymentData = array();
+    $selectedData = array();
     $tally_data = [];
-    if (!$txnsData->isEmpty()) {
+    if (!$txnsData->isEmpty() || !$paymentData->isEmpty()) {
         $i = 0;
         $ignored_txns = [];
         $parent_settled = [];
+        if (!$paymentData->isEmpty()) {
+          foreach ($paymentData as $key => $pmnt) {
+            $tally_data[] = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  96,
+              'is_debit_credit' =>  '1',
+              'trans_type' =>  $pmnt->transType->trans_name,
+              'tally_trans_type_id' =>  $pmnt->transType->tally_trans_type,
+              'tally_voucher_id' =>  $pmnt->transType->voucher->tally_voucher_id,
+              'tally_voucher_code' =>  $pmnt->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+              'tally_voucher_name' =>  $pmnt->transType->voucher->voucher_name,
+              'tally_voucher_date' =>  $pmnt->date_of_payment,
+              'invoice_no' =>   '',
+              'invoice_date' =>  NULL,
+              'ledger_name' =>  $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name,
+              'amount' =>  $pmnt->amount,
+              'ref_no' =>  '',
+              'ref_amount' =>  $pmnt->amount,
+              'acc_no' =>  '',
+              'ifsc_code' =>  '',
+              'bank_name' =>  '',
+              'cheque_amount' =>  0,
+              'cross_using' =>  0,
+              'mode_of_pay' =>  1,
+              'inst_no' =>  NULL,
+              'inst_date' =>  NULL,
+              'favoring_name' =>  $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name,
+              'remarks' => $pmnt->comment ?? '',
+              'narration' => $pmnt->comment ?? '',
+              ];
+              $selectedPaymentData[] = $pmnt->payment_id;
+          }
+        }
+
         foreach ($txnsData as $key => $txn) {
             if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0) {
+              continue;
+            }
+            if ($txn->trans_type == 32 && $txn->entry_type == 1) {
               continue;
             }
             if (isset($parent_settled[$txn->parent_trans_id])) {
@@ -96,34 +137,92 @@ class ApiController
             }
             $parent_settled[$txn->trans_id] = $key;
             $i++;
-           $tally_data[] = [
-            'batch_no' =>  $batch_no,
-            'transactions_id' =>  $txn->trans_id,
-            'is_debit_credit' =>  $txn->entry_type,
-            'trans_type' =>  $txn->transType->trans_name,
-            'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
-            'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
-            'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
-            'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
-            'tally_voucher_date' =>  $txn->trans_date,
-            'invoice_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
-            'invoice_date' =>  $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL,
-            'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
-            'amount' =>  $txn->amount,
-            'ref_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? '',
-            'ref_amount' =>  $txn->amount,
-            'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
-            'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
-            'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
-            'cheque_amount' =>  0,
-            'cross_using' =>  0,
-            'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
-            'inst_no' =>  NULL,
-            'inst_date' =>  NULL,
-            'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
-            'remarks' => $txn->comment ?? '',
-            'narration' => $txn->comment ?? '',
-          ];
+            if (!empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
+                  $gstData['base_amount'] = $txn->userinvoicetrans->base_amount;
+              if ($txn->userinvoicetrans->sgst_amount != 0) {
+                  $gstData['sgst'] = $txn->userinvoicetrans->sgst_amount;
+              } 
+              if ($txn->userinvoicetrans->cgst_amount != 0) {
+                  $gstData['cgst'] = $txn->userinvoicetrans->cgst_amount;
+              } 
+              if ($txn->userinvoicetrans->igst_amount != 0) {
+                  $gstData['igst'] = $txn->userinvoicetrans->igst_amount;
+              }
+              foreach ($gstData as $gst_key => $gst_val) {
+                 $gst_trans_amount = $gst_val;
+                switch ($gst_key) {
+                  case 'base_amount':
+                    $gst_trans_type = $txn->transType->trans_name;
+                    break;
+                  case 'sgst':
+                    $gst_trans_type = 'SGST + CGST';
+                    break;
+                  case 'cgst':
+                    $gst_trans_type = 'SGST + CGST';
+                    break;
+                  case 'igst':
+                    $gst_trans_type = 'IGST';
+                    break;
+                }
+                $tally_data[] = [
+                  'batch_no' =>  $batch_no,
+                  'transactions_id' =>  $txn->trans_id,
+                  'is_debit_credit' =>  $txn->entry_type,
+                  'trans_type' =>  $gst_trans_type,
+                  'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
+                  'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
+                  'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+                  'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
+                  'tally_voucher_date' =>  $txn->trans_date,
+                  'invoice_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
+                  'invoice_date' =>  $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL,
+                  'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                  'amount' =>  $gst_trans_amount,
+                  'ref_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? '',
+                  'ref_amount' =>  $gst_trans_amount,
+                  'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
+                  'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
+                  'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
+                  'cheque_amount' =>  0,
+                  'cross_using' =>  0,
+                  'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
+                  'inst_no' =>  NULL,
+                  'inst_date' =>  NULL,
+                  'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                  'remarks' => $txn->comment ?? '',
+                  'narration' => $txn->comment ?? '',
+                ];
+              }
+            }else{
+              $tally_data[] = [
+                'batch_no' =>  $batch_no,
+                'transactions_id' =>  $txn->trans_id,
+                'is_debit_credit' =>  $txn->entry_type,
+                'trans_type' =>  $txn->transType->trans_name,
+                'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
+                'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
+                'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+                'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
+                'tally_voucher_date' =>  $txn->trans_date,
+                'invoice_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
+                'invoice_date' =>  $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL,
+                'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                'amount' =>  $txn->amount,
+                'ref_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? '',
+                'ref_amount' =>  $txn->amount,
+                'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
+                'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
+                'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
+                'cheque_amount' =>  0,
+                'cross_using' =>  0,
+                'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
+                'inst_no' =>  NULL,
+                'inst_date' =>  NULL,
+                'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                'remarks' => $txn->comment ?? '',
+                'narration' => $txn->comment ?? '',
+             ];
+            }
           $selectedData[] = $txn->trans_id;
         }
         try {
@@ -137,8 +236,16 @@ class ApiController
           $res = $errorInfo;
         }
         if ($res === true) {
-          $totalRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
-          if ($totalRecords != count($selectedData)) {
+          $totalTxnRecords = 0;
+          if (!empty($selectedData)) {
+            $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
+          }
+          $totalPaymentsRecords = 0;
+          if (!empty($selectedPaymentData)) {
+            $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
+          }
+          $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
+          if ($totalRecords != (count($selectedData) + count($selectedPaymentData))) {
             $response['message'] =  'Some error occured. No Record can be posted in tally.';
           }else{
             $response['status'] = 'success';

@@ -34,7 +34,7 @@
 
 $(document).ready(function () {
 	var date = new Date();
-	date.setDate(date.getDate() - 7);
+	date.setDate(date.getDate() - 60);
     $('#funded_date').datetimepicker('setStartDate',  date);
 
 	$('#manualDisburse').validate({ // initialize the plugin

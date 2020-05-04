@@ -2,48 +2,50 @@
 
 namespace App\Inv\Repositories\Entities\Lms;
 
-use App\Http\Requests\Request;
-use Carbon\Carbon;
 use DB;
 use Session;
+use Carbon\Carbon;
+use App\Http\Requests\Request;
+use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Models\Lms\Batch;
+use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Lms\Refund;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\Lms\Charges;
+use App\Inv\Repositories\Models\Lms\WfStage;
+use App\Inv\Repositories\Models\Lms\BatchLog;
+use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Models\Lms\Variables;
+use App\Inv\Repositories\Models\Master\GstTax;
+use App\Inv\Repositories\Models\Lms\EodProcess;
+use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Contracts\LmsInterface;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Lms\RefundBatch;
+use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\EodProcessLog;
+use App\Inv\Repositories\Models\Lms\RequestAssign;
+use App\Inv\Repositories\Models\Lms\DisbursalBatch;
+use App\Inv\Repositories\Models\Lms\DisburseApiLog;
+use App\Inv\Repositories\Models\Lms\RequestWfStage;
+use App\Inv\Repositories\Models\Lms\ApprovalRequest;
+use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
+use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
+use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
+use App\Inv\Repositories\Models\Lms\ChargesTransactions;
+use App\Inv\Repositories\Models\Lms\TransactionComments;
+use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
-use App\Inv\Repositories\Models\LmsUser;
-use App\Inv\Repositories\Models\User;
-use App\Inv\Repositories\Models\Business;
-use App\Inv\Repositories\Models\Application;
-use App\Inv\Repositories\Models\BizInvoice;
-use App\Inv\Repositories\Models\ProgramCharges;
-use App\Inv\Repositories\Models\AppProgramOffer;
-use App\Inv\Repositories\Models\Lms\Disbursal;
-use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
-use App\Inv\Repositories\Models\Lms\Charges;
-use App\Inv\Repositories\Models\Lms\DisburseApiLog;
-use App\Inv\Repositories\Models\Lms\TransType;
-use App\Inv\Repositories\Models\Lms\Transactions;
-use App\Inv\Repositories\Models\Lms\TransactionComments;
-use App\Inv\Repositories\Models\Lms\ChargesTransactions;
-use App\Inv\Repositories\Models\Lms\InterestAccrual;
-use App\Inv\Repositories\Models\Master\GstTax;
-use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
-use App\Inv\Repositories\Models\Lms\Batch;
-use App\Inv\Repositories\Models\Lms\BatchLog;
-use App\Inv\Repositories\Models\Lms\DisbursalBatch;
-use App\Inv\Repositories\Models\UserFile;
-use App\Inv\Repositories\Models\Lms\ApprovalRequest;
-use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
-use App\Inv\Repositories\Models\Lms\RequestAssign;
-use App\Inv\Repositories\Models\Lms\WfStage;
-use App\Inv\Repositories\Models\Lms\RequestWfStage;
-use App\Inv\Repositories\Models\Lms\Variables;
-use App\Inv\Repositories\Models\Lms\Refund;
-use App\Inv\Repositories\Models\Lms\RefundBatch;
-use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
-use App\Inv\Repositories\Models\Master\RoleUser;
-use App\Inv\Repositories\Models\Lms\EodProcess;
-use App\Inv\Repositories\Models\Lms\EodProcessLog;
-use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 
 /**
  * Lms Repository class
@@ -664,8 +666,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRequestList($request)
    {
-
-	  return ApprovalRequest::getAllApprRequests(['status'=>(int) $request->status]);
+		return RefundReq::where('status','=',$request->status)->get();
    }
 
    public function createBatch()
@@ -1000,19 +1001,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function lmsGetCustomerRefund($ids)
     {
-        return ApprovalRequest::whereIn('req_id', $ids)
+        return RefundReq::whereIn('refund_req_id', $ids)
 			   ->get();
     } 
 
     public function getAprvlRqDataByIds($ids = [])
     {	
     	if (empty($ids)) {
-	        return ApprovalRequest::with(['transaction.user.anchor_bank_details.bank', 'transaction.lmsUser.bank_details.bank'])
+	        return RefundReq::with(['payment.user.anchor_bank_details.bank', 'payment.lmsUser.bank_details.bank'])
 	        	->where('status', 7)
 			   	->get();
     	} else {
-    		return ApprovalRequest::whereIn('req_id', $ids)
-			   	->with(['transaction.user.anchor_bank_details.bank', 'transaction.lmsUser.bank_details.bank'])
+    		return RefundReq::whereIn('refund_req_id', $ids)
+			   	->with(['payment.user.anchor_bank_details.bank', 'payment.lmsUser.bank_details.bank'])
 			   	->get();
     	}
     }
@@ -1020,10 +1021,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function updateAprvlRqst($data, $reqId)
 	{
 		if (!is_array($reqId)) {
-			return ApprovalRequest::where('req_id', $reqId)
+			return RefundReq::where('refund_req_id', $reqId)
 				->update($data);
 		} else {
-			return ApprovalRequest::whereIn('req_id', $reqId)
+			return RefundReq::whereIn('refund_req_id', $reqId)
 					->update($data);
 		}
 	}
@@ -1032,11 +1033,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {   
     	$disburseBatch = [];
         if ($data) {
-            $disburseBatch['batch_id'] = ($data['batch_id']) ?? null;
-            $disburseBatch['batch_tye'] = ($data['batch_type']) ?? null;
+            $disburseBatch['batch_no'] = ($data['batch_no']) ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
         }
-        return RefundBatch::create($disburseBatch);
+        return RefundReqBatch::create($disburseBatch);
     }
     
     /**

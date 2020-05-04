@@ -187,7 +187,7 @@ class ApportionmentController extends Controller
             }
             $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || $TransDetail->transType->id == 9);
             if(!$is_interest_charges){
-                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waive off is possible only Interest and Charges.']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest and Charges.']);
             }
             $outstandingAmount = $TransDetail->getOutstandingAttribute();
             if ($amount > $outstandingAmount)  {
@@ -198,7 +198,7 @@ class ApportionmentController extends Controller
             }
 
             if (empty($comment))  {
-                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to waive off the amount.']);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to Waived off the amount.']);
             }
             $txnInsertData = [
                     'payment_id' => NULL,
@@ -623,6 +623,19 @@ class ApportionmentController extends Controller
                     ->get();
                 }
 
+                $transactionList[] = [
+                    'payment_id' => $paymentId,
+                    'link_trans_id' => null,
+                    'parent_trans_id' => null,
+                    'invoice_disbursed_id' => null,
+                    'user_id' => $userId,
+                    'trans_date' => $paymentDetails['date_of_payment'],
+                    'amount' => 0,
+                    'entry_type' => 1,
+                    'soa_flag' => 1,
+                    'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')
+                ];
+
                 foreach ($transactions as $trans){  
                     if($trans->invoice_disbursed_id){
 
@@ -646,7 +659,7 @@ class ApportionmentController extends Controller
                     $amtToSettle += $payments[$trans->trans_id];
                 }
 
-                $unAppliedAmt = $repaymentAmt-$amtToSettle;
+                $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
                 if($amtToSettle > $repaymentAmt){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
@@ -699,6 +712,7 @@ class ApportionmentController extends Controller
                         'trans_date' => $paymentDetails['date_of_payment'],
                         'amount' => $unAppliedAmt,
                         'entry_type' => 1,
+                        'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT')
                     ];
                 }

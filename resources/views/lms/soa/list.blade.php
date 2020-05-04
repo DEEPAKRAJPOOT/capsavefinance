@@ -107,6 +107,7 @@
 													<th>Invoice No</th>
                                                     <th>Narration</th>
                                                     <th>Currency</th>
+                                                    {{-- <th>Sub Amount</th> --}}
 													<th>Debit</th>
 													<th>Credit</th>
                                                     <th>Balance</th>

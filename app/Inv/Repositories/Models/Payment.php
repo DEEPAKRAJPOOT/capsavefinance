@@ -107,12 +107,24 @@ class Payment extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransType', 'trans_type', 'id');
     } 
 
+    public function refundReq(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReq','payment_id','payment_id');
+    }
     public function getTransNameAttribute(){
         $result = $this->transType->trans_name;
         if($this->action_type == 3){
             $result .= " /TDS";
         }
         return $result;
+    }
+     
+    public function getPaymentNameAttribute(){
+        $tdsType = ($this->action_type == 3) ? '/TDS' : '';   
+        return $this->transType->trans_name . $tdsType;
+    }
+
+    public static function getTallyTxns(array $where = array()) {
+        return self::with('user', 'lmsUser', 'transType')->where(['is_settled' => 1, 'generated_by' => 0, 'is_refundable' => 1])->where($where)->get();
     }
 
     /**

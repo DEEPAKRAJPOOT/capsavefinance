@@ -23,7 +23,9 @@ try {
             columns: [
                 { data: 'sr_no' },
                { data: 'user_addr' },
+               { data: 'user_state' },
                { data: 'comp_addr' },
+               { data: 'comp_state' },
                { data: 'created_at' },
                { data: 'is_active' },
             ],

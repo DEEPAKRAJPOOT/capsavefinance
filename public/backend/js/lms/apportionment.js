@@ -211,7 +211,7 @@ class Apportionment {
            var checkedName = $('input:checkbox:checked').attr('name');
            var transtype = $('input:checkbox:checked').attr('transtype');
            if (!transtype && transtype != 'charges' && transtype != 'interest') {
-                 alert('Waive off is not allowed except charges and interests');
+                 alert('Waived off is not allowed except charges and interests');
                  return false;
            }
            var transId = checkedName.replace(/[^0-9]/g, '');

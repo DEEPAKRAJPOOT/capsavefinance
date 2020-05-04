@@ -133,10 +133,12 @@
         });
         $("#invoice_no" ).rules( "add", {
         required: true,
-        maxlength: 20,
+        minlength: 3,
+        maxlength: 25,
         messages: {
-        required: "Please enter Invoice No",
-        maxlength: "Maximum 20  characters are necessary",
+        required: "Please enter invoice no.",
+        minlength: "Minimum 3  characters are required.",
+        maxlength: "Maximum 25  characters are required.",
         }
         });
         
