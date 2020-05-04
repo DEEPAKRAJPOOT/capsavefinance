@@ -286,9 +286,13 @@ class AppProgramLimit extends BaseModel {
     }   
     
    
-     public static function getUserProgramLimit($attr)
+       
+  
+
+    
+    public static function getUserProgramLimit($user_id)
     {
-        return  AppProgramLimit::with(['invoice','product','offer.anchor','offer.program'])->where(['app_limit_id'=>$attr->app_limit_id,'app_id'=>$attr->app_id])->groupBy('product_id')->get();
+        return  AppLimit::with(['product','offer.anchor','offer.program'])->where(['user_id'=>$user_id])->groupBy('app_id')->get();
     }
   
    public   function invoice()
