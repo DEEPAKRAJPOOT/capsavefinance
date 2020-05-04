@@ -131,7 +131,7 @@ class ApiController
                 continue;
             }
             if ($tally_voucher_type_id == 3) {
-                if ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) {
+                if (($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
                    $ignored_txns[] = $txn->trans_id;
                    continue;
                 }
