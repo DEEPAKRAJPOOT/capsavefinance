@@ -651,7 +651,7 @@ class Transactions extends BaseModel {
     }
 
     public function getParentTxn() {
-        return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where('trans_id', $this->trans_id)->first();
+        return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where('trans_id', $this->parent_trans_id)->first();
     }
 
     public function userRelation() {
