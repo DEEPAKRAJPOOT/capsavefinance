@@ -314,8 +314,7 @@ class Transactions extends BaseModel {
 
     public static function getUnsettledInvoices($data = [])
     {
-
-        $query = self::whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+        $query = self::whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.INTEREST')])
         ->whereNull('payment_id')  
         ->whereNull('link_trans_id')  
         ->whereNull('parent_trans_id');
@@ -332,10 +331,18 @@ class Transactions extends BaseModel {
             $query->where('user_id','=',$data['user_id']);
         }
 
-        return $query->get()->filter(function($item) {
-            return $item->outstanding > 0;
-        });
+        $transactions = $query->get();
 
+        $unsettledInvoices = [];
+        foreach ($transactions as $key => $value) {
+            if(isset($unsettledInvoices[$value->invoice_disbursed_id]) && $value->outstanding > 0){
+                $unsettledInvoices[$value->invoice_disbursed_id] += $value->outstanding;
+            }elseif($value->outstanding > 0){
+                $unsettledInvoices[$value->invoice_disbursed_id] = $value->outstanding;
+            }
+        }
+
+        return $unsettledInvoices;
     }
 
     public static function getUnsettledInvoiceTransactions($data = [])

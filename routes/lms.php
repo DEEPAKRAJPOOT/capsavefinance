@@ -183,11 +183,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
             ]);
                      
-            Route::get('view-interest-accrual', [
-                'as' => 'view_interest_accrual',
-                'uses' => 'Lms\DisbursalController@viewInterestAccrual'
-            ]);
-            
             // Business address
             Route::get('/address', [
                 'as' => 'addr_get_customer_list',

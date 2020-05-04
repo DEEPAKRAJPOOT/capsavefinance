@@ -64,7 +64,7 @@
                         <td class="text-right">{{ number_format((float)$item->principal_amount, 2, '.', '') }}</td>
                         {{-- <td class="text-right">{{ $item->interest_rate }}</td>
                         <td class="text-right">{{ $item->overdue_interest_rate }}</td> --}}
-                        <td class="text-right">{{ number_format((float)$item->accrued_interest, 2, '.', '') }}</td>                    
+                        <td class="text-right">{{ number_format((float)$item->accrued_interest, 3, '.', '') }}</td>                    
                     </tr>   
                     {{-- @php $total_accrued_interest = $total_accrued_interest + $item->accrued_interest;  @endphp --}}
                 @endforeach
