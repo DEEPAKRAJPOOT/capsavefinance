@@ -20,6 +20,7 @@ try {
                 data: function (d) {
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d.is_assign = $('select[name=is_assign]').val();
+                    d.status = $('select[name=status]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -48,7 +49,7 @@ try {
         });
 
         //Search
-        $('#searchbtn').on('click', function (e) {
+        $('#searchbtn').on('click', function (e) {            
             oTable.draw();
         });    
                      

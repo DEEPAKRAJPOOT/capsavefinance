@@ -186,4 +186,20 @@ class BusinessAddress extends BaseModel
     public function gst(){
         return $this->hasOne('App\Inv\Repositories\Models\BizPanGst','biz_addr_id','biz_addr_id');
     }
+    
+    /**
+     * Get All Addresses
+     * 
+     * @param array $whereCond
+     * @return type
+     */
+    public static function getBizAddresses($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result ? $result : [];
+    }
 }

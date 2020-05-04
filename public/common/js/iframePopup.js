@@ -112,6 +112,8 @@ var iframe_ids = [
         'previewUserInvoiceFrame',
         'viewDetailFrame',
         'editPaymentFrm',
+        'confirmCopyApp',
+        'confirmEnhanceLimit',
     ];
 
 iframe_ids.forEach(function(id) {

@@ -1059,4 +1059,9 @@ Route::group(
         'uses' => 'AjaxController@getCustAndCapsLoc'
         ]
     );
+    
+    Route::post('ajax-renewal-app-list', [
+        'as' => 'ajax_renewal_app_list',
+        'uses' => 'AjaxController@getRenewalAppList'
+    ]);     
 });

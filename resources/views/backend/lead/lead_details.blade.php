@@ -32,11 +32,12 @@
                                 <div class="col-sm-6">
                                   <div class="head-sec">
                                      <div class="pull-right" style="margin-bottom: 10px;">
-                                         @can('create_application')
+                                        @can('create_application')
                                         <a href="{{route('create_application',['user_id' => request()->get('user_id')])}}">
-                                        @endcan
+                                            
                                             <button class="btn  btn-success btn-sm" type="button">+ Create Application</button>
                                         </a>
+                                        @endcan
                                      </div>
                                   </div>
                                </div>
@@ -129,6 +130,8 @@
                                                 <button type="button" class="btn btn-success btn-sm">Complete</button>
                                                 @elseif($app['status'] == 2)
                                                 <button type="button" class="btn btn-success btn-sm">Sanctioned</button>
+                                                @elseif($app['status'] == 3)
+                                                <button type="button" class="btn btn-success btn-sm">Closed</button>                                                
                                                 @else
                                                 <button type="button" class="btn btn-info btn-sm">Not Complete</button>
                                                 @endif 

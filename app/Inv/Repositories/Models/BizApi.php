@@ -76,6 +76,33 @@ class BizApi extends BaseModel
        
    }
    
+    /**
+     * Get Business Api Data
+     * 
+     * @param array $whereCond
+     * @return type
+     */
+    public static function getBizApiData($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }   
+    
+    /**
+     * Save Biz Api Data
+     * 
+     * @param array $bizApiData
+     * @return mixed
+     */
+    public static function saveBizApiData($bizApiData)
+    {
+        return self::create($bizApiData);
+    }    
+   
 }
 
 

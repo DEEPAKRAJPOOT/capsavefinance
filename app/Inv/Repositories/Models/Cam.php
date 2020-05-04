@@ -193,5 +193,21 @@ class Cam extends BaseModel
         return Cam::where('biz_id','=',$bizId)->where('app_id','=',$appId)->first();
     }
 
+    /**
+     * Get Cam Report Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getCamReportData($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }   
+    
 
 }
