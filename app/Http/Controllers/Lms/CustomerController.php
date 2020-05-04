@@ -101,37 +101,12 @@ public function limitManagement(Request $request) {
         $consumeLimit = 0;
         $transactions = 0;
         $user_id = $request->get('user_id');
-        $userInfo = $this->userRepo->getCustomerDetail($user_id);
-        $application = $this->appRepo->getCustomerApplications($user_id);
-        $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
         $customerLimit     =  $this->appRepo->getUserLimit($user_id);
         $AvaliablecustomerLimit     =  $this->appRepo->getAvaliableUserLimit($customerLimit);
-        $getUserProgramLimit   =  $this->appRepo->getUserProgramLimit($customerLimit);
-        
-        foreach ($application as $key => $app) {
-            if (isset($app->prgmLimits)) {
-                foreach ($app->prgmLimits as $value) {
-                    $totalLimit += $value->limit_amt;
-                }
-            }
-            if (isset($app->acceptedOffers)) {
-                foreach ($app->acceptedOffers as $value) {
-                    $totalCunsumeLimit += $value->prgm_limit_amt;
-                }
-            }
-        }
-        $userInfo->total_limit = number_format($totalLimit);
-        $userInfo->consume_limit = number_format($totalCunsumeLimit);
-        $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-        
+        $getUserProgramLimit   =  $this->appRepo->getUserProgramLimit($user_id);
         return view('lms.customer.limit_management')
-                        ->with([
-                            'userInfo' => $userInfo,
-                            'application' => $application,
-                            'anchors' => $anchors,
-                            'userlimit' => $customerLimit,
-                            'offerlimit' => $getUserProgramLimit,
-                            'avaliablecustomerLimit' => $AvaliablecustomerLimit
+                        ->with(['userAppLimit' => $getUserProgramLimit,
+                                'avaliablecustomerLimit' => $AvaliablecustomerLimit
         ]);
     } catch (Exception $ex) {
         dd($ex);

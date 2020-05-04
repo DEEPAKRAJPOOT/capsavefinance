@@ -82,6 +82,8 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label> <span id="pro_limit" class="error"></span>
+                                        
+                                            
                                             <select readonly="readonly" class="form-control getTenor" id="supplier_id" name="supplier_id">
                                              
                                             </select>

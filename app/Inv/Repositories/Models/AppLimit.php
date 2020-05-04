@@ -80,6 +80,32 @@ class AppLimit extends BaseModel {
        return  self::where(['user_id'=>$user_id,'status' => 1])->first();
     }
     
-  
-      
+    public static function getUserProgramLimit($user_id)
+    {
+       return  self::where(['user_id'=>$user_id,'status' => 1])->first();
+    }
+     public function anchor(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
+    }
+
+    public function program(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+    }
+
+    public function offer(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
+    }     
+      public function product(){
+        return $this->hasOne('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
+    }  
+    
+     public function programLimit(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit','app_limit_id','app_limit_id');
+    }
+   
+    
+    public static  function getUserApproveLimit($user_id)
+    {
+        return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor'])->where(['user_id'=>$user_id])->get();
+    }
 }

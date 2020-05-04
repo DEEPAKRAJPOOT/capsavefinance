@@ -1776,11 +1776,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
    }
    
    /** get the user program  limit  **/
-   public function getUserProgramLimit($attr)
+   public function getUserProgramLimit($user_id)
    {
        try
        {
-           return AppProgramLimit::getUserProgramLimit($attr);
+           return AppLimit::getUserApproveLimit($user_id);
        } catch (Exception $ex) {
              return $ex;
        }
