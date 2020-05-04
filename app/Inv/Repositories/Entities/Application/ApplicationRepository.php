@@ -58,6 +58,18 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
 use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\BizApi;
+use App\Inv\Repositories\Models\BizGstLog;
+use App\Inv\Repositories\Models\BizPerfios;
+use App\Inv\Repositories\Models\AppProduct;
+use App\Inv\Repositories\Models\AppDocProduct;
+use App\Inv\Repositories\Models\AppBizFinDetail;
+use App\Inv\Repositories\Models\AppBizBankDetail;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
+use App\Inv\Repositories\Models\UserAppDoc;
+use App\Inv\Repositories\Models\CamHygiene;
+use App\Inv\Repositories\Models\WfAppStage;
 
 /**
  * Application repository class
