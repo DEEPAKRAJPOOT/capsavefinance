@@ -136,7 +136,7 @@ class ApiController
                    continue;
                 }
             } 
-            if (in_array($txn->trans_type, [config(lms.TRANS_TYPE.TDS), config(lms.TRANS_TYPE.REFUND), config(lms.TRANS_TYPE.NON_FACTORED_AMT), config(lms.TRANS_TYPE.WAVED_OFF)]) && $txn->entry_type == 1) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF')]) && $txn->entry_type == 1) {
                $tally_voucher_type_id = 3;
             }
             if ($txn->trans_type == 32 && $txn->entry_type == 0) {
