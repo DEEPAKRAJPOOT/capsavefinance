@@ -201,6 +201,12 @@ class FinanceController extends Controller {
                         ];
                     if ($fetchedArr['voucher_type'] == 'Bank Payment') {
                         $interestRow = [];
+                        $company_row['dr_/_cr'] = 'Debit';
+                        $records['PAYMENT'][] = $company_row;
+                        $bank_row['dr_/_cr'] = 'Credit';
+                        $bank_row['voucher_date'] = '';
+                        $bank_row['reference_no'] = '';
+                        $bank_row['amount'] = '';
                         if (!empty($fetchedArr['cheque_amount']) && ($fetchedArr['amount']-$fetchedArr['cheque_amount']) > 0) {
                             $interestRow = [
                                 "voucher_no" => $fetchedArr['voucher_code'],
@@ -222,14 +228,9 @@ class FinanceController extends Controller {
                                 "favoring_name" => '',
                                 "remarks" => '',
                                 "narration" => "Being Interest Booked " .(!empty($fetchedArr['ref_no']) ? "Invoice No " . $fetchedArr['ref_no'] : "Batch no " . $fetchedArr['batch_no']),
-                            ];  
+                            ]; 
+                            $bank_row['amount'] = $fetchedArr['cheque_amount']; 
                         }
-                        $company_row['dr_/_cr'] = 'Debit';
-                        $records['PAYMENT'][] = $company_row;
-                        $bank_row['dr_/_cr'] = 'Credit';
-                        $bank_row['voucher_date'] = '';
-                        $bank_row['reference_no'] = '';
-                        $bank_row['amount'] = '';
                         $records['PAYMENT'][] = $bank_row;
                         if (!empty($interestRow)) {
                          $records['PAYMENT'][] = $interestRow;  
