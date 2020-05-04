@@ -49,31 +49,37 @@ class ApiController
         $parent_settled = [];
         if (!$paymentData->isEmpty()) {
           foreach ($paymentData as $key => $pmnt) {
+            $accountDetails = $pmnt->userRelation->companyBankDetails;
+            if (empty($accountDetails)) {
+                 $response['message'] =  'No Relation Found between customer('. $pmnt->user_id .') and Company with Bank';
+                 return $response;
+            }
+            $userName = $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name;
             $tally_data[] = [
               'batch_no' =>  $batch_no,
-              'transactions_id' =>  96,
+              'transactions_id' =>  NULL,
               'is_debit_credit' =>  '1',
               'trans_type' =>  $pmnt->transType->trans_name,
               'tally_trans_type_id' =>  $pmnt->transType->tally_trans_type,
               'tally_voucher_id' =>  $pmnt->transType->voucher->tally_voucher_id,
-              'tally_voucher_code' =>  $pmnt->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+              'tally_voucher_code' =>  $pmnt->transType->voucher->voucher_no,
               'tally_voucher_name' =>  $pmnt->transType->voucher->voucher_name,
               'tally_voucher_date' =>  $pmnt->date_of_payment,
               'invoice_no' =>   '',
               'invoice_date' =>  NULL,
-              'ledger_name' =>  $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name,
+              'ledger_name' =>  $userName,
               'amount' =>  $pmnt->amount,
               'ref_no' =>  '',
               'ref_amount' =>  $pmnt->amount,
-              'acc_no' =>  '',
-              'ifsc_code' =>  '',
-              'bank_name' =>  '',
-              'cheque_amount' =>  0,
+              'acc_no' =>  $accountDetails->acc_no ?? '',
+              'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+              'bank_name' =>  $accountDetails->bank->bank_name ?? '',
+              'cheque_amount' =>  $pmnt->amount,
               'cross_using' =>  0,
-              'mode_of_pay' =>  1,
+              'mode_of_pay' =>  $pmnt->payment_type,
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name,
+              'favoring_name' =>  $userName,
               'remarks' => $pmnt->comment ?? '',
               'narration' => $pmnt->comment ?? '',
               ];
@@ -81,52 +87,72 @@ class ApiController
           }
         }
 
+
         foreach ($txnsData as $key => $txn) {
             if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0) {
               continue;
             }
-            if ($txn->trans_type == 32 && $txn->entry_type == 1) {
-              continue;
+            $accountDetails = $txn->userRelation->companyBankDetails ?? NULL;
+            if (empty($accountDetails)) {
+                 $response['message'] =  'No Relation Found between customer('. $txn->user_id .') and Company with Bank';
+                 return $response;
             }
+            $userName = $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name;
+            $trans_type_name = $txn->getTransNameAttribute();
+            $txn_trans_type_id = $txn->transType->tally_trans_type;
+            if ($txn->trans_type == 32 && $txn->entry_type == 1) {
+               $txn_trans_type_id = 3;
+            }
+            if ($txn->trans_type == 32 && $txn->entry_type == 0) {
+               $txn_trans_type_id = 1;
+            }
+
             if (isset($parent_settled[$txn->parent_trans_id])) {
                 $parent_array_key = $parent_settled[$txn->parent_trans_id];
                 $parentRecord = $txnsData[$parent_array_key];
+                $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+                $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+                if ($parentRecord->trans_type == 16 && $parentRecord->entry_type == 0) {
+                  $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+                  $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+                }
                 $i++;
-                if ($txn->trans_type == $parentRecord->trans_type) {
+                if ($txn->trans_type == $parentRecord->trans_type && $txn_trans_type_id == 3) {
                   continue;
                 }
                 $tally_data[] = [
                   'batch_no' =>  $batch_no,
                   'transactions_id' =>  $txn->trans_id,
                   'is_debit_credit' =>  $txn->entry_type,
-                  'trans_type' =>  $txn->transType->trans_name,
-                  'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
+                  'trans_type' =>  $trans_type_name,
+                  'tally_trans_type_id' =>  $txn_trans_type_id,
                   'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
-                  'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+                  'tally_voucher_code' =>  $txn->transType->voucher->voucher_no,
                   'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
                   'tally_voucher_date' =>  $txn->trans_date,
-                  'invoice_no' =>  $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
-                  'invoice_date' =>  $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL,
-                  'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                  'invoice_no' =>  $invoice_no,
+                  'invoice_date' =>  $invoice_date,
+                  'ledger_name' =>  $userName,
                   'amount' =>  $txn->amount,
-                  'ref_no' =>  $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? '',
+                  'ref_no' =>  $invoice_no,
                   'ref_amount' =>  $txn->amount,
-                  'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
-                  'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
-                  'bank_name' =>  $txn->invoiceDisbursed->disbursal->bank_name ?? '',
+                  'acc_no' =>  $accountDetails->acc_no ?? '',
+                  'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+                  'bank_name' =>  $accountDetails->bank->bank_name ?? '',
                   'cheque_amount' =>  0,
                   'cross_using' =>  0,
                   'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
                   'inst_no' =>  NULL,
                   'inst_date' =>  NULL,
-                  'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                  'favoring_name' =>  $userName,
                   'remarks' => $txn->comment ?? '',
                   'narration' => $txn->comment ?? '',
               ];
               $selectedData[] = $txn->trans_id;
               continue;
             }
-            if ($txn->transType->tally_trans_type == 3) {
+
+            if ($txn_trans_type_id == 3) {
                   if ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) {
                      $ignored_txns[] = $txn->trans_id;
                      continue;
@@ -169,14 +195,14 @@ class ApiController
                   'transactions_id' =>  $txn->trans_id,
                   'is_debit_credit' =>  $txn->entry_type,
                   'trans_type' =>  $gst_trans_type,
-                  'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
+                  'tally_trans_type_id' =>  $txn_trans_type_id,
                   'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
-                  'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+                  'tally_voucher_code' =>  $txn->transType->voucher->voucher_no,
                   'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
                   'tally_voucher_date' =>  $txn->trans_date,
                   'invoice_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
                   'invoice_date' =>  $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL,
-                  'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                  'ledger_name' =>  $userName,
                   'amount' =>  $gst_trans_amount,
                   'ref_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? '',
                   'ref_amount' =>  $gst_trans_amount,
@@ -188,27 +214,33 @@ class ApiController
                   'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
                   'inst_no' =>  NULL,
                   'inst_date' =>  NULL,
-                  'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                  'favoring_name' =>  $userName,
                   'remarks' => $txn->comment ?? '',
                   'narration' => $txn->comment ?? '',
                 ];
               }
             }else{
+              $invoice_no = $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+              $invoice_date = $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+              if ($txn->trans_type == 16 && $txn->entry_type == 0) {
+                $invoice_no = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
+                $invoice_date = $txn->invoiceDisbursed->invoice->invoice_date ?? NULL;
+              }
               $tally_data[] = [
                 'batch_no' =>  $batch_no,
                 'transactions_id' =>  $txn->trans_id,
                 'is_debit_credit' =>  $txn->entry_type,
-                'trans_type' =>  $txn->transType->trans_name,
-                'tally_trans_type_id' =>  $txn->transType->tally_trans_type,
+                'trans_type' =>  $trans_type_name,
+                'tally_trans_type_id' =>  $txn_trans_type_id,
                 'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
-                'tally_voucher_code' =>  $txn->transType->voucher->voucher_name . '('. (date("Y") - 1) .'-'. date('y') .')',
+                'tally_voucher_code' =>  $txn->transType->voucher->voucher_no,
                 'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
                 'tally_voucher_date' =>  $txn->trans_date,
-                'invoice_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL,
-                'invoice_date' =>  $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL,
-                'ledger_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                'invoice_no' =>  $invoice_no,
+                'invoice_date' =>  $invoice_date,
+                'ledger_name' =>  $userName,
                 'amount' =>  $txn->amount,
-                'ref_no' =>  $txn->userinvoicetrans->getUserInvoice->invoice_no ?? '',
+                'ref_no' =>  $invoice_no ?? '',
                 'ref_amount' =>  $txn->amount,
                 'acc_no' =>  $txn->invoiceDisbursed->disbursal->acc_no ?? '',
                 'ifsc_code' =>  $txn->invoiceDisbursed->disbursal->ifsc_code ?? '',
@@ -218,7 +250,7 @@ class ApiController
                 'mode_of_pay' =>  $txn->invoiceDisbursed->disbursal->disburse_type ?? 1,
                 'inst_no' =>  NULL,
                 'inst_date' =>  NULL,
-                'favoring_name' =>  $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name,
+                'favoring_name' =>  $userName,
                 'remarks' => $txn->comment ?? '',
                 'narration' => $txn->comment ?? '',
              ];
