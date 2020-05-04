@@ -303,7 +303,7 @@ trait ApplicationTrait
         return $data;
     }
     
-    protected function copyApplication($userId, $appId, $bizId)
+    protected function copyApplication($userId, $appId, $bizId, $appType=null)
     {
         \DB::beginTransaction();
 
@@ -336,6 +336,7 @@ trait ApplicationTrait
             $appData['parent_app_id'] = $appId;
             $appData['status'] = 0;
             $appData['renewal_status'] = 0;
+            $appData['app_type'] = $appType;
             $newAppData = $this->appRepo->createApplication($appData);
             $newAppId = $newAppData->app_id;
             

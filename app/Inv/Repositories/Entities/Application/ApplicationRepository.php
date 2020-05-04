@@ -1704,7 +1704,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public static function getAppLimitIdByUserIdAppId($userId, $appId)
     {
-        return AppLimit::where('user_id',$userId)->where('app_id', $appId)
+        return AppLimit::where('user_id',$userId)->where('app_id', $appId)->orderBy('app_limit_id', 'DESC')
                 ->pluck('app_limit_id')->first();
     }
 
@@ -1721,7 +1721,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
     
     /**
-<<<<<<< HEAD
      * Get Renewal applications
      * 
      * @return mixed
@@ -2150,6 +2149,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAllRenewalApps()
     {
         return Application::getAllRenewalApps();
+    }   
+    
+    public function updateAppLimit($data, $whereCond=[])
+    {
+        return AppLimit::updateAppLimit($data, $whereCond);
+    }
+
+    public function updatePrgmLimit($data, $whereCond=[])
+    {
+        return AppProgramLimit::updatePrgmLimit($data, $whereCond);
     }    
 }
 

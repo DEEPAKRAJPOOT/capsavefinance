@@ -27,12 +27,13 @@ class RenewalController extends Controller {
         $userId = $request->get('user_id');
         $appId = $request->get('app_id');
         $bizId = $request->get('biz_id');
-
+        $appType = $request->has('app_type') ? $request->get('app_type') : null;
 
         return view('backend.app.copy_app_confirmbox')
                         ->with('userId', $userId)
                         ->with('appId', $appId)           
-                        ->with('bizId', $bizId); 
+                        ->with('bizId', $bizId)
+                        ->with('appType', $appType); 
     }    
 
     /**
@@ -48,6 +49,7 @@ class RenewalController extends Controller {
             $userId = $request->get('user_id');   
             $appId = $request->get('app_id'); 
             $bizId = $request->get('biz_id'); 
+            $appType = $request->get('app_type'); 
             
             /*
             $where=[];
@@ -72,7 +74,7 @@ class RenewalController extends Controller {
             
             */
             
-            $result = $this->copyApplication($userId, $appId, $bizId);
+            $result = $this->copyApplication($userId, $appId, $bizId, $appType);
             
             $arrActivity = [];
             $arrActivity['activity_code'] = 'application_renewal';
@@ -103,7 +105,7 @@ class RenewalController extends Controller {
      */
     public function checkRenewalApps()
     {
-                
+                                               
         $appData = $this->appRepo->getRenewalApp();        
         $result = '';
         foreach($appData as $app) {

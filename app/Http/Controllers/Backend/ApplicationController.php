@@ -841,6 +841,15 @@ class ApplicationController extends Controller
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
 			  	$endDate = date('Y-m-d', strtotime('+1 years'));
 			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
+                                
+                                $appData = $this->appRepo->getAppData($app_id);
+                                if ($appData && in_array($appData->app_type, [1,2]) ) {
+                                    $parentAppId = $appData->parent_app_id;
+                                    $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
+                                    $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $curDate], ['app_id' => $parentAppId]);
+                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $curDate], ['app_id' => $parentAppId, 'product_id' => 1]);                                    
+                                }
+                                
         		if (!is_null($appLimitId)) {
 				  	$this->appRepo->saveAppLimit([
 				  		'status' => 1,

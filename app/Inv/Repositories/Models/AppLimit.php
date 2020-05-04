@@ -48,6 +48,7 @@ class AppLimit extends BaseModel {
         'tot_limit_amt',
         'start_date',
         'end_date',
+        'actual_end_date',
         'created_at',
         'created_by',
         'updated_at',        
@@ -69,5 +70,19 @@ class AppLimit extends BaseModel {
     public function app()
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Application', 'app_id', 'app_id');
+    }
+
+    public static function updateAppLimit($data, $whereCond=[]){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }        
+        
+        if (count($whereCond) > 0) {
+            return self::where($whereCond)->update($data);
+        }
     }    
 }

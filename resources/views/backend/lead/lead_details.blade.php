@@ -130,6 +130,8 @@
                                                 <button type="button" class="btn btn-success btn-sm">Complete</button>
                                                 @elseif($app['status'] == 2)
                                                 <button type="button" class="btn btn-success btn-sm">Sanctioned</button>
+                                                @elseif($app['status'] == 3)
+                                                <button type="button" class="btn btn-success btn-sm">Closed</button>                                                
                                                 @else
                                                 <button type="button" class="btn btn-info btn-sm">Not Complete</button>
                                                 @endif 

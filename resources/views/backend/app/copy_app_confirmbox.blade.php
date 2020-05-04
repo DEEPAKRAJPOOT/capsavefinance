@@ -21,9 +21,15 @@
                    <label class='error'>You cannot move this application to next stage as offer still not created.</label><br>
                    @endif                                  
                    
-                  
+                  @if ($appType == 2)
+                    Are you sure to copy application for limit enhancement?<br>
+                  @else
                     Are you sure to copy/renew the application?<br>
-                    
+                  @endif  
+                  <br>
+                  <br>
+                  <br>
+                  <br>
                     @php 
                     $confirmBtn = 'Yes';
                     $closeBtn = 'No';
@@ -45,7 +51,8 @@
                     {!! Form::hidden('app_id', $appId) !!}
                     {!! Form::hidden('biz_id', $bizId) !!}
                     {!! Form::hidden('user_id', $userId) !!}
-
+                    {!! Form::hidden('app_type', $appType) !!}
+                    
                 <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>

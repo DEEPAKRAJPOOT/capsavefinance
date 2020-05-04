@@ -121,8 +121,8 @@
 {!!Helpers::makeIframePopup('sendNextstage','Send Next Stage', 'modal-md')!!}
 {!!Helpers::makeIframePopup('viewApprovers','View Approver List', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('viewSharedDetails','View Shared Details', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('confirmCopyApp','Copy/Renew Application', 'modal-lg')!!}
-
+{!!Helpers::makeIframePopup('confirmCopyApp','Copy/Renew Application', 'modal-md')!!}
+{!!Helpers::makeIframePopup('confirmEnhanceLimit','Limit Enhancement', 'modal-md')!!}
 @endsection
 @section('additional_css')
 <style>

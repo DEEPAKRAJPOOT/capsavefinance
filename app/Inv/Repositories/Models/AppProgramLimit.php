@@ -59,6 +59,7 @@ class AppProgramLimit extends BaseModel {
         'limit_amt',
         'start_date',
         'end_date',
+        'actual_end_date',
         'created_at',
         'created_by',
         'updated_at',        
@@ -283,5 +284,19 @@ class AppProgramLimit extends BaseModel {
 
     public static function getTotalPrgmLimitByAppId($appId){
         return AppProgramLimit::where(['app_id'=>$appId])->sum('limit_amt');
-    }        
+    }  
+    
+    public static function updatePrgmLimit($data, $whereCond=[]){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }        
+        
+        if (count($whereCond) > 0) {
+            return self::where($whereCond)->update($data);
+        }
+    }    
 }
