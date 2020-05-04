@@ -156,7 +156,7 @@ class FinanceController extends Controller {
                     $cr_amount_sum += ($entry_type == 'debit' ? $fetchedArr['amount'] : 0);
                     $journal[] = $j; 
                 }else{
-                     $fetchedArr['cheque_amount'] = ($fetchedArr['cheque_amount'] == 0 ? $fetchedArr['cheque_amount'] : '');
+                     $fetchedArr['cheque_amount'] = ($fetchedArr['cheque_amount'] != 0 ? $fetchedArr['cheque_amount'] : '');
                      $company_row = [
                             "voucher_no" => $fetchedArr['voucher_code'],
                             "voucher_type" => $fetchedArr['voucher_type'],
@@ -164,6 +164,7 @@ class FinanceController extends Controller {
                             "ledger_name" => $fetchedArr['ledger_name'],
                             "amount" => $fetchedArr['amount'],
                             "dr_/_cr" => $fetchedArr['entry_type'],
+                            "trans_type" => $fetchedArr['trans_type'],
                             "reference_no" => $fetchedArr['ref_no'],
                             "reference_amount" => $fetchedArr['ref_amount'],
                             "transaction_type" => '',
@@ -175,8 +176,8 @@ class FinanceController extends Controller {
                             "inst_no" => '',
                             "inst_date" => '',
                             "favoring_name" => '',
-                            "remarks" => $fetchedArr['narration'],
-                            "narration" => 'Bein payment towards invoice no ----',
+                            "remarks" => '',
+                            "narration" => 'Being payment towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
                     $bank_row = [
                             "voucher_no" => $fetchedArr['voucher_code'],
@@ -185,6 +186,7 @@ class FinanceController extends Controller {
                             "ledger_name" => $fetchedArr['bank_name'],
                             "amount" => $fetchedArr['amount'],
                             "dr_/_cr" => $fetchedArr['entry_type'],
+                            "trans_type" => $fetchedArr['trans_type'],
                             "reference_no" => $fetchedArr['ref_no'],
                             "reference_amount" => $fetchedArr['ref_amount'],
                             "transaction_type" => $fetchedArr['mode_of_pay'],
@@ -196,26 +198,46 @@ class FinanceController extends Controller {
                             "inst_no" => $fetchedArr['inst_no'],
                             "inst_date" => $fetchedArr['inst_date'],
                             "favoring_name" => $fetchedArr['favoring_name'],
-                            "remarks" => $fetchedArr['narration'],
-                            "narration" => $fetchedArr['narration'],
+                            "remarks" => '',
+                            "narration" => 'Being payment towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
-                    /*if ($entry_type == 'debit') {
-                        $records['PAYMENT'][] = $company_row;
-                        $bank_row['dr_/_cr'] = 'Credit';
-                        $records['PAYMENT'][] = $bank_row;
-                    }else{
-                        $bank_row['dr_/_cr'] = 'Dedit';
-                        $records['PAYMENT'][] = $bank_row;
-                        $records['PAYMENT'][] = $company_row;
-                    }*/
                     if ($fetchedArr['voucher_type'] == 'Bank Payment') {
+                        $interestRow = [];
                         $company_row['dr_/_cr'] = 'Debit';
                         $records['PAYMENT'][] = $company_row;
                         $bank_row['dr_/_cr'] = 'Credit';
                         $bank_row['voucher_date'] = '';
                         $bank_row['reference_no'] = '';
                         $bank_row['amount'] = '';
+                        if (!empty($fetchedArr['cheque_amount']) && ($fetchedArr['amount']-$fetchedArr['cheque_amount']) > 0) {
+                            $interestRow = [
+                                "voucher_no" => $fetchedArr['voucher_code'],
+                                "voucher_type" => $fetchedArr['voucher_type'],
+                                "voucher_date" => '',
+                                "ledger_name" => 'Interest',
+                                "amount" => ($fetchedArr['amount']-$fetchedArr['cheque_amount']),
+                                "dr_/_cr" => 'Credit',
+                                "trans_type" => $fetchedArr['trans_type'],
+                                "reference_no" => $fetchedArr['ref_no'],
+                                "reference_amount" => ($fetchedArr['amount']-$fetchedArr['cheque_amount']),
+                                "transaction_type" => '',
+                                "a_/_c_no" => '',
+                                "ifsc_code" => '',
+                                "bank_name" => '',
+                                "cheque_amount" => '',
+                                "cross_using" => '',
+                                "inst_no" => '',
+                                "inst_date" => '',
+                                "favoring_name" => '',
+                                "remarks" => '',
+                                "narration" => "Being Interest Booked " .(!empty($fetchedArr['ref_no']) ? "Invoice No " . $fetchedArr['ref_no'] : "Batch no " . $fetchedArr['batch_no']),
+                            ]; 
+                            $bank_row['amount'] = $fetchedArr['cheque_amount']; 
+                        }
                         $records['PAYMENT'][] = $bank_row;
+                        if (!empty($interestRow)) {
+                         $records['PAYMENT'][] = $interestRow;  
+                        }
                     }else{
                         $bank_row['dr_/_cr'] = 'Debit';
                         $records['PAYMENT'][] = $bank_row;
