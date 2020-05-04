@@ -81,7 +81,7 @@
             format: 'dd/mm/yyyy',
             autoclose: true,
             minView: 2,
-            startDate: new Date()
+//            startDate: new Date()
         });
 
 //        $.validator.addMethod("greaterStart", function (value, element, params) {
