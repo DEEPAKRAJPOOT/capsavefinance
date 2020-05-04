@@ -29,11 +29,27 @@ class RenewalController extends Controller {
         $bizId = $request->get('biz_id');
         $appType = $request->has('app_type') ? $request->get('app_type') : null;
 
+        $where=[];
+        $where['user_id'] = $userId;
+        $where['status'] = [0,1];
+        $appData = $this->appRepo->getApplicationsData($where);
+
+        $userData = $this->userRepo->getfullUserDetail($userId);           
+        $isAnchorLead = $userData && !empty($userData->anchor_id);
+
+        $flag = 0; 
+        if (isset($appData[0])) {
+        //    Session::flash('message', 'You can\'t create a new application before sanctions.');
+        //    return redirect()->back();
+            $flag = 1; 
+        }
+            
         return view('backend.app.copy_app_confirmbox')
                         ->with('userId', $userId)
                         ->with('appId', $appId)           
                         ->with('bizId', $bizId)
-                        ->with('appType', $appType); 
+                        ->with('appType', $appType)
+                        ->with('flag', $flag);
     }    
 
     /**
@@ -50,6 +66,12 @@ class RenewalController extends Controller {
             $appId = $request->get('app_id'); 
             $bizId = $request->get('biz_id'); 
             $appType = $request->get('app_type'); 
+            $flag = $request->get('flag'); 
+            
+            if ($flag == '1') {
+                Session::flash('error_code', 'active_app_found');
+                return redirect()->back();            
+            }
             
             /*
             $where=[];

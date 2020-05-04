@@ -17,25 +17,33 @@
             <div class="row">                
                <div class="col-12">
                     
-                   @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_found')
-                   <label class='error'>You cannot move this application to next stage as offer still not created.</label><br>
+                   @if (Session::has('error_code') && Session::get('error_code') == 'active_app_found')
+                   <label class='error'>You can't create a new application before sanctions.</label><br>
                    @endif                                  
+                  
                    
-                  @if ($appType == 2)
-                    Are you sure to copy application for limit enhancement?<br>
+                  @if ($flag == 1)
+                     You can't create a new application before sanctions.<br>
+                    @php 
+                    $confirmBtn = 'Yes';
+                    $closeBtn = 'Close';
+                    @endphp                        
                   @else
-                    Are you sure to copy/renew the application?<br>
-                  @endif  
-                  <br>
-                  <br>
-                  <br>
-                  <br>
+                    @if ($appType == 2)
+                      Are you sure to copy application for limit enhancement?<br>
+                    @else
+                      Are you sure to copy/renew the application?<br>
+                    @endif  
+
                     @php 
                     $confirmBtn = 'Yes';
                     $closeBtn = 'No';
                     @endphp                    
-                   
-
+                 @endif  
+                    <br>
+                    <br>
+                    <br>
+                    <br>
                     
                     
               </div>
@@ -52,8 +60,11 @@
                     {!! Form::hidden('biz_id', $bizId) !!}
                     {!! Form::hidden('user_id', $userId) !!}
                     {!! Form::hidden('app_type', $appType) !!}
+                    {!! Form::hidden('flag', $flag) !!}
                     
+                @if ($flag == '0')    
                 <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
+                @endif
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>
@@ -75,7 +86,8 @@ var messages = {
     redirect_url : "{{ route('copy_app_confirmbox', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]) }}"
  };
      $(document).ready(function(){        
-        var targetModel = 'confirmCopyApp';
+        var app_type = $("input[name=app_type]").val(); 
+        var targetModel = app_type == '1' ? 'confirmCopyApp' : 'confirmEnhanceLimit';        
         var parent =  window.parent;  
         
         if (messages.error_code) {
