@@ -64,7 +64,7 @@
 
                     {!!
                     Form::select('status',
-                    [''=>'Renewal Status', '1'=>'Ready for Renewal','2' => 'Renewed'],
+                    [''=>'Status', '1'=>'Ready for Renewal','2' => 'Renewed', '3' => 'Limit Enhanced'],
                     null,
                     array('id' => 'status',
                     'class'=>'form-control'))

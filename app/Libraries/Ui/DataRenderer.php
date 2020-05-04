@@ -187,15 +187,25 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         $app_id = $app->app_id;
+                        $parent_app_id = $app->parent_app_id;
+                        $ret = '';
                         if(Helpers::checkPermission('company_details')){
                            if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
-                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
-                        }else{
-                            return "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                           $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                                                     
+                        } else {
+                            $ret = "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                        }
+                        
+                        if (!empty($parent_app_id)) {
+                            $aData = Application::getAppData((int)$parent_app_id);
+                            $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                         } 
+                           
+                        return $ret;
                     }
                 )
                 ->addColumn(
@@ -370,13 +380,18 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('status') != '') {
                         $query->where(function ($query) use ($request) {
                             $status = $request->get('status');
-                            //if ($status == 4) {
-                                //$query->whereNotNull('app.parent_app_id');
-                            //    $query->where('app.status', $status);
-                            //} else {
-                                //$query->where('app.status', $status);                                
-                            //}
-                            $query->where('app.renewal_status', $status);
+                            if ($status == 3) {
+                                $query->where('app.app_type', 2);
+                            } else {
+                                
+                                //if ($status == 4) {
+                                    //$query->whereNotNull('app.parent_app_id');
+                                //    $query->where('app.status', $status);
+                                //} else {
+                                    //$query->where('app.status', $status);                                
+                                //}
+                                $query->where('app.renewal_status', $status);
+                            }
                         });
                     }                    
                     
