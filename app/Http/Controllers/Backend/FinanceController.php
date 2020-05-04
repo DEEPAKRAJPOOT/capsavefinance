@@ -156,6 +156,7 @@ class FinanceController extends Controller {
                     $cr_amount_sum += ($entry_type == 'debit' ? $fetchedArr['amount'] : 0);
                     $journal[] = $j; 
                 }else{
+                     $fetchedArr['cheque_amount'] = ($fetchedArr['cheque_amount'] == 0 ? $fetchedArr['cheque_amount'] : '');
                      $company_row = [
                             "voucher_no" => $fetchedArr['voucher_code'],
                             "voucher_type" => $fetchedArr['voucher_type'],
