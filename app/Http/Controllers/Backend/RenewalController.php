@@ -77,8 +77,13 @@ class RenewalController extends Controller {
             $result = $this->copyApplication($userId, $appId, $bizId, $appType);
             
             $arrActivity = [];
-            $arrActivity['activity_code'] = 'application_renewal';
-            $arrActivity['activity_desc'] = 'Application is renewed successfully';
+            if ($appType == 1) {
+                $arrActivity['activity_code'] = 'application_renewal';
+                $arrActivity['activity_desc'] = 'Application is renewed successfully';
+            } else if ($appType == 2){
+                $arrActivity['activity_code'] = 'limit_enhancement';
+                $arrActivity['activity_desc'] = 'Application is copied for limit enhancement successfully';
+            }
             $arrActivity['user_id'] = $userId;
             $arrActivity['app_id'] = $appId;
             \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));

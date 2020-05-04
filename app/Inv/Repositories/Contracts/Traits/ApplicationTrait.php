@@ -550,13 +550,13 @@ trait ApplicationTrait
                 }                  
             }  
             
-            $wfStageArr = [1, 2, 5, 10, 15, 16];
+            $wfStageArr = [1, 2, 5, 10];
             foreach($wfStageArr as $wfStageId) {
                 $wfData=[];
                 $wfData['biz_app_id'] = $newAppId;
                 $wfData['user_id'] = $userId;
                 $wfData['wf_stage_id'] = $wfStageId;
-                $stats = $wfStageId == 16 ? 1 : 0;
+                $stats = $wfStageId == 10 ? 0 : 1;
                 $wfData['app_wf_status'] = $stats;
                 $wfData['is_complete'] = $stats;
                 $this->appRepo->saveWfDetail($wfData);
