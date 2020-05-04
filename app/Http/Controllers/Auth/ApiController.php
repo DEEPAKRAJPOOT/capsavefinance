@@ -51,7 +51,7 @@ class ApiController
           foreach ($paymentData as $key => $pmnt) {
             $accountDetails = $pmnt->userRelation->companyBankDetails ?? '';
             if (empty($accountDetails)) {
-                 $response['message'] =  'No Relation Found between customer('. $pmnt->user_id .') and Company with Bank';
+                 $response['message'] =  'No Relation Found between customer('. $pmnt->user_id .') and Companyyyy with Bank';
                  return $response;
             }
             $userName = $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name;
