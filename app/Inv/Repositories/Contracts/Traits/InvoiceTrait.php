@@ -487,7 +487,39 @@ trait InvoiceTrait
         }
         return $msg;
     }
-    
+   /* Update single invoice status id according user limit */
+    /* Use bulk and invoice table */
+    /* Created by gajendra chahan  */
+      public static  function updateAdhocApproveStatus($attr)
+   {
+            $limitData[]="";
+            $mytime = Carbon::now();
+            $cDate   =  $mytime->toDateTimeString();
+            $uid = Auth::user()->user_id;
+            $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id']); /* get App limit by user_id*/
+            $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
+            if($dueDateGreaterCurrentdate)
+            {
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 4;
+           } 
+           if($isOverDue->is_overdue==1)
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' => 'Overdue','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 3;
+
+            }   
+            else 
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$attr['status_id']); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$attr['status_id'],'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 1;
+            }
+           
+           
+    } 
     /* Update single invoice status id according user limit */
     /* Use bulk and invoice table */
     /* Created by gajendra chahan  */
@@ -498,6 +530,10 @@ trait InvoiceTrait
             $cDate   =  $mytime->toDateTimeString();
             $uid = Auth::user()->user_id;
             $inv_details =  self::getInvoiceDetail($attr);
+            if($inv_details['is_adhoc']==1)
+            {
+                return self::updateAdhocApproveStatus($inv_details);
+            }
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']);
             $attr['user_id']   =   $inv_details['supplier_id'];
             $attr['anchor_id'] =   $inv_details['anchor_id'];

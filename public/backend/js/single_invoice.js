@@ -112,9 +112,10 @@
         var tenor  = $('#tenor').val();
         var tenor_old_invoice  = $('#tenor_old_invoice').val();
         var invoice_approve_amount = $("#invoice_approve_amount").val();
-        var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
-        var pro_limit_hide  = $('#pro_limit_hide').val();
-         var is_adhok  = $("#limit_type").is(":checked");
+        var invoice_approve_amount = parseInt(invoice_approve_amount.replace(/\,/g,''));
+        var pro_limit_hide  = parseInt($('#pro_limit_hide').val());
+        var is_adhok  = $("#limit_type").is(":checked");
+        
      if ($('form#signupForm').validate().form()) {  
        $("#anchor_id" ).rules( "add", {
         required: true,
@@ -193,8 +194,10 @@
         }
        else if(is_adhok==true)
        {
+           
          if(invoice_approve_amount > pro_limit_hide)
         {
+         
            $("#msgProLimit").show(); 
            $("#msgProLimit").html('Invoice amount limit exceed'); 
            e.preventDefault();
@@ -223,7 +226,8 @@
   //////////////////// onchange anchor  id get data /////////////////
  
   $(document).on('change','.changeAnchor',function(){
-      
+      $("#limit_type").prop("checked", false);
+      $("#adhoc_msg").hide();
       var anchor_id =  $("#anchor_id").val(); 
       if(anchor_id=='')
       {
@@ -278,6 +282,8 @@
 });
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.changeSupplier',function(){
+      $("#limit_type").prop("checked", false);
+      $("#adhoc_msg").hide();
       $("#invoice_date").val('');
       var program_id =  $(this).val(); 
       var anchor_id =  $("#anchor_id").val(); 
@@ -408,8 +414,8 @@
                         $("#tenor").val(tenor);
                        if(data.is_adhoc==1)
                        {
-                        $("#pro_limit").html('Adhoc. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
-                        $("#pro_remain_limit").html('Remaining Adhoc. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit").html('Adhoc Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_remain_limit").html('Remaining Adhoc Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
                         $("#pro_limit_hide").val(data.remain_limit); 
                     }
                     else
