@@ -111,6 +111,12 @@
                     <option {{$charge_data->chrg_tiger_id == 2 ? 'selected' : ''}} value="2">First Invoice Disbursement</option>                    
                 </select>
             </div>
+            <div class="form-group col-md-6 float-md-right">
+                <label for="sac_code">SAC Code</label>
+                <input type="text" class="form-control" id="sac_code" name="sac_code" value="{{$charge_data->sac_code}}" placeholder="Enter SAC Code" maxlength="10" onkeyup="sac_validation()">
+            </div>
+        </div>
+        <div class="row">
             <div class="form-group col-md-6">
                 <label for="chrg_type">Status</label><br />
                 <select class="form-control" name="is_active" id="is_active">
@@ -214,6 +220,12 @@
                 'chrg_applicable_id': {
                     required: true,
                 },
+
+                'sac_code': {
+                    required: true,
+                    digits: true,
+                    maxlength: 10,
+                },
                 'is_active': {
                     required: true,
                     isChrgApplied: {
@@ -237,6 +249,10 @@
                 'chrg_applicable_id': {
                     required: "Please Select Approved limit",
                 },
+
+                'sac_code': {
+                    required: "Please enter SAC Code",
+                },
                 'is_active': {
                     required: "Please select charge Status",
                 },
@@ -254,5 +270,12 @@
             }
         });         
     });
+
+    function sac_validation() {
+        var val = document.getElementById('sac_code').value;
+        if(isNaN(val)) {
+            document.getElementById('sac_code').value = ""
+        }
+    }
 </script>
 @endsection
