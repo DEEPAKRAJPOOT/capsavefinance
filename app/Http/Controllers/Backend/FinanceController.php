@@ -199,7 +199,7 @@ class FinanceController extends Controller {
                             "remarks" => '',
                             "narration" => 'Being '.$fetchedArr['trans_type'].' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
-                    if ($fetchedArr['voucher_type'] == 'Bank Payment') {
+                    if ($fetchedArr['voucher_type'] == 'Payment') {
                         $interestRow = [];
                         $company_row['dr_/_cr'] = 'Debit';
                         $records['PAYMENT'][] = $company_row;
