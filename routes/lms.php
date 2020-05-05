@@ -355,7 +355,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
 
 
-            
+            Route::get('/apportionment/running/view',[
+                'as' => 'apport_running_view',
+                'uses' => 'Lms\ApportionmentController@viewRunningTrans'
+            ]);
 
             Route::get('/apportionment/unsettled/view',[
                 'as' => 'apport_unsettled_view',
@@ -370,6 +373,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/apportionment/refund/view',[
                 'as' => 'apport_refund_view',
                 'uses' => 'Lms\ApportionmentController@viewRefundTrans'
+            ]);
+
+            Route::post('/apportionment/running/list',[
+                'as' => 'apport_running_list',
+                'uses' => 'Lms\ApportionmentController@listrunningTrans'
             ]);
 
             Route::post('/apportionment/unsettled/list',[

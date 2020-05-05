@@ -46,6 +46,16 @@ class Apportionment {
                 {data: 'total_repay_amt'}
             ];
                 break;
+            case 'runningTransactions':
+                columns = [
+                    {data: 'disb_date'},
+                    {data: 'invoice_no'},
+                    {data: 'trans_type'},
+                    {data: 'total_repay_amt'},                    
+                    {data: 'outstanding_amt'},
+                    {data: 'select'}
+                ];
+                break;
         }
         return columns;
     }
@@ -271,6 +281,9 @@ jQuery(document).ready(function ($) {
     }
     if($('#settledTransactions').length){
         oTable = apport.datatableView('settledTransactions');
+    }
+    if($('#runningTransactions').length){
+        oTable = apport.datatableView('runningTransactions');
     }
 
 });

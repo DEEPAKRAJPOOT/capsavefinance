@@ -130,7 +130,7 @@ class ManualApportionmentHelper{
             $transRunningId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
             ->where('entry_type','=',0)
-            ->where('is_posted','=',0)
+            //->where('is_posted','=',0)
             ->whereMonth('trans_date', date('m', strtotime($odue->interestDate)))
             ->value('trans_running_id');
             
@@ -194,7 +194,7 @@ class ManualApportionmentHelper{
                $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                ->where('entry_type','=',0)
-               ->where('is_posted','=',0)
+               //->where('is_posted','=',0)
                ->whereDate('trans_date',$interest->interestDate)
                ->value('trans_running_id');
             }
@@ -202,7 +202,7 @@ class ManualApportionmentHelper{
                 $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->where('is_posted','=',0)
+                //->where('is_posted','=',0)
                 ->whereMonth('trans_date', date('m', strtotime($interest->interestDate)))
                 ->value('trans_running_id');
                 

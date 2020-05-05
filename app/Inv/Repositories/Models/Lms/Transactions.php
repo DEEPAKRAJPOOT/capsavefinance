@@ -48,6 +48,7 @@ class Transactions extends BaseModel {
         'link_trans_id',
         'parent_trans_id',
         'invoice_disbursed_id',
+        'trans_running_id',
         'user_id',
         'trans_date',
         'trans_type',
@@ -111,6 +112,10 @@ class Transactions extends BaseModel {
 
     public function refundReqTrans(){
         return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
+    }
+
+    public function transRunning(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransactionsRunning','trans_running_id','trans_running_id');
     }
 
     public function getsettledAmtAttribute(){

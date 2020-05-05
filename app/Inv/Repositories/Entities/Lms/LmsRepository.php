@@ -1090,6 +1090,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return EodProcess::updateEodProcess($data, $whereCond);
     }
 
+	public static function getRunningTrans($userId){
+		return TransactionsRunning::getRunningTrans($userId);
+	}
+	
 	public static function getUnsettledTrans($userId){
 		return Transactions::getUnsettledTrans($userId);
 	}
