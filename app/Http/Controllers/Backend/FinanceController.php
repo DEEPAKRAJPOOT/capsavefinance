@@ -164,7 +164,6 @@ class FinanceController extends Controller {
                             "ledger_name" => $fetchedArr['ledger_name'],
                             "amount" => $fetchedArr['amount'],
                             "dr_/_cr" => $fetchedArr['entry_type'],
-                            "trans_type" => $fetchedArr['trans_type'],
                             "reference_no" => $fetchedArr['ref_no'],
                             "reference_amount" => $fetchedArr['ref_amount'],
                             "transaction_type" => '',
@@ -177,7 +176,7 @@ class FinanceController extends Controller {
                             "inst_date" => '',
                             "favoring_name" => '',
                             "remarks" => '',
-                            "narration" => 'Being payment towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
+                            "narration" => 'Being '. $fetchedArr['trans_type'] .' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
                     $bank_row = [
                             "voucher_no" => $fetchedArr['voucher_code'],
@@ -186,7 +185,6 @@ class FinanceController extends Controller {
                             "ledger_name" => $fetchedArr['bank_name'],
                             "amount" => $fetchedArr['amount'],
                             "dr_/_cr" => $fetchedArr['entry_type'],
-                            "trans_type" => $fetchedArr['trans_type'],
                             "reference_no" => $fetchedArr['ref_no'],
                             "reference_amount" => $fetchedArr['ref_amount'],
                             "transaction_type" => $fetchedArr['mode_of_pay'],
@@ -199,7 +197,7 @@ class FinanceController extends Controller {
                             "inst_date" => $fetchedArr['inst_date'],
                             "favoring_name" => $fetchedArr['favoring_name'],
                             "remarks" => '',
-                            "narration" => 'Being payment towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
+                            "narration" => 'Being '.$fetchedArr['trans_type'].' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
                     if ($fetchedArr['voucher_type'] == 'Bank Payment') {
                         $interestRow = [];
@@ -217,7 +215,6 @@ class FinanceController extends Controller {
                                 "ledger_name" => 'Interest',
                                 "amount" => ($fetchedArr['amount']-$fetchedArr['cheque_amount']),
                                 "dr_/_cr" => 'Credit',
-                                "trans_type" => $fetchedArr['trans_type'],
                                 "reference_no" => $fetchedArr['ref_no'],
                                 "reference_amount" => ($fetchedArr['amount']-$fetchedArr['cheque_amount']),
                                 "transaction_type" => '',
