@@ -2632,6 +2632,11 @@ class DataRenderer implements DataProviderInterface
                     return $charges->chrg_name;
                 })
                 ->addColumn(
+                    'sac_code',
+                    function ($charges) {
+                    return $charges->sac_code;
+                })
+                ->addColumn(
                     'chrg_type',
                     function ($charges) {
                     return ($charges->chrg_type == '1') ? 'Auto' : 'Manual';

@@ -121,14 +121,22 @@
                     <option value="2">First Invoice Disbursement</option>
                 </select>
             </div>
-            <div class="form-group col-md-6">
-                <label for="chrg_type">Status</label><br />
-                <select class="form-control" name="is_active" id="is_active">
-                    <option value="" selected>Select</option>
-                    <option value="1">Active</option>
-                    <option value="2">In-Active</option>
-                </select>
+
+            <div class="form-group col-md-6 float-md-right">
+                <label for="sac_code">SAC Code</label>
+                <input type="text" class="form-control" id="sac_code" name="sac_code" placeholder="Enter SAC Code" maxlength="10" onkeyup="sac_validation()">
             </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                    <label for="chrg_type">Status</label><br />
+                    <select class="form-control" name="is_active" id="is_active">
+                        <option value="" selected>Select</option>
+                        <option value="1">Active</option>
+                        <option value="2">In-Active</option>
+                    </select>
+                </div>
         </div>
         <div class="row">
             <div class="form-group col-md-12 text-right">
@@ -181,6 +189,11 @@
                 'chrg_tiger_id': {
                     required: true,
                 },
+                'sac_code': {
+                    required: true,
+                    digits: true,
+                    maxlength: 4,
+                },
                 'chrg_applicable_id': {
                     required: true,
                 },
@@ -210,6 +223,9 @@
                 'chrg_tiger_id': {
                     required: "Please Select Charge Trigger",
                 },
+                'sac_code': {
+                    required: "Please enter SAC Code",
+                },
                 'chrg_applicable_id': {
                     required: "Please Select Approved limit",
                 },
@@ -230,5 +246,14 @@
             }
         });        
     });
+
+    function sac_validation() {
+        var val = document.getElementById('sac_code').value;
+        if(isNaN(val)) {
+            document.getElementById('sac_code').value = ""
+        } else if(val.length > 4) {
+            document.getElementById('sac_code').value = ""
+        }
+    }
 </script>
 @endsection
