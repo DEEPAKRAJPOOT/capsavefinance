@@ -252,11 +252,20 @@ trait InvoiceTrait
      {   
             $attr[]="";
             $lms_user_id =    LmsUser::where('customer_id',$attr['cusomer_id'])->pluck('user_id');
-            $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->first();
+            $app_user_id   =  Application::whereIn('user_id',$lms_user_id)->where('status',2)->pluck('app_id');
+            $app_id =    AppLimit::whereIn('app_id',$app_user_id)->where('status',1)->first();
             $res =  AppProgramOffer::whereHas('productHas')->where(['app_id' => $app_id['app_id'],'anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->first();
             if ($res) {
-              
-                  $limit =  AppProgramOffer::whereHas('productHas')->where('app_id',$app_id['app_id'])->where(['anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+                $is_enhance  =    Application::whereIn('user_id',$lms_user_id)->where(['status' =>2,'app_type' => 2])->count();  
+                if($is_enhance==1)
+                {
+                  $limit =  AppProgramOffer::whereHas('productHas')->where(['anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+                }
+                else
+                {
+                    $limit =  AppProgramOffer::whereHas('productHas')->where('app_id',$app_id['app_id'])->where(['anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+                  
+                }
                   $attr['status_id'] = 7;
                   $attr['status'] = 1;
                   $attr['user_id'] = $app_id['user_id'];
@@ -365,7 +374,8 @@ trait InvoiceTrait
  
    public static function ProgramLimit($getDetails)
    {
-        return   AppProgramOffer::whereHas('productHas')->where('app_id',$getDetails['app_id'])->where(['anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+
+        return   AppProgramOffer::whereHas('productHas')->where(['app_id' => $getDetails['app_id'],'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
         
    }
      /* check the user app limit  */
@@ -382,7 +392,15 @@ trait InvoiceTrait
 
      public static  function invoiceApproveLimit($attr)
    {
-        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+        $is_enhance  =    Application::where(['user_id' => $attr['user_id'],'status' =>2,'app_type' => 2])->count();  
+       if($is_enhance==1)
+       {
+         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+       }
+       else
+       {
+        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_approve_amount');
+       }
    }
 
   
@@ -817,7 +835,7 @@ trait InvoiceTrait
    /* Created by gajendra chahan  */
   public static function adhocLimit($attr)
   {
-     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1])->sum('invoice_approve_amount');
+     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_approve_amount');
   }
    
    public static function checkUserAdhoc($attr)

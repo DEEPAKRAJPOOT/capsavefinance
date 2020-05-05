@@ -1498,7 +1498,7 @@ class Helper extends PaypalHelper
            public   function invoiceAnchorLimitApprove($attr)
         {
              
-            return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['app_id' =>$attr['app_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+            return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
         }
         
          public   function ProgramProductLimit($limit_id)

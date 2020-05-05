@@ -351,7 +351,7 @@
    
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.getTenor',function(){
-       $(".isloader").show(); 
+      
       var program_id =  $("#program_id").val(); 
       var anchor_id =  $("#anchor_id").val(); 
       var supplier_id  = $(this).val();
@@ -364,6 +364,7 @@
             $("#adhoc_msg").hide();
              return false; 
       }
+       $(".isloader").show(); 
      var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.get_tenor,
