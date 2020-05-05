@@ -425,6 +425,7 @@ class userInvoiceController extends Controller
                    $user_invoice_trans_data[] = [
                         'user_invoice_id' => $userInvoice_id,
                         'trans_id' => $txnsRec['trans_id'],
+                        'sac_code' => $txnsRec['sac'],
                         'base_amount' => $txnsRec['base_amt'],
                         'sgst_rate' => $txnsRec['sgst_rate'],
                         'sgst_amount' => $txnsRec['sgst_amt'],
@@ -515,10 +516,11 @@ class userInvoiceController extends Controller
             $sgst_amt = $invTrans['sgst_amount'];
             $sgst_rate = $invTrans['sgst_rate'];
             $base_amt = $invTrans['base_amount'];
+            $sac_code = $invTrans['sac_code'];
             $intrest_charges[$key] = array(
                 'trans_id' => $invTrans['trans_id'],
                 'desc' => $transDetail->transType->trans_name,
-                'sac' => $transDetail->transType->Charge->sac_code,
+                'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
                 'sgst_amt' => ($sgst_amt != 0 ? $sgst_amt : 0),
