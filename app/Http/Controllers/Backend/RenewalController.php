@@ -103,7 +103,7 @@ class RenewalController extends Controller {
                 $arrActivity['activity_code'] = 'application_renewal';
                 $arrActivity['activity_desc'] = 'Application is renewed successfully';
             } else if ($appType == 2){
-                $arrActivity['activity_code'] = 'limit_enhancement';
+                $arrActivity['activity_code'] = 'user_limit_enhancement';
                 $arrActivity['activity_desc'] = 'Application is copied for limit enhancement successfully';
             }
             $arrActivity['user_id'] = $userId;
