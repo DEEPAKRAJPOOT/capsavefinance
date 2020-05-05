@@ -518,7 +518,7 @@ class userInvoiceController extends Controller
             $intrest_charges[$key] = array(
                 'trans_id' => $invTrans['trans_id'],
                 'desc' => $transDetail->transType->trans_name,
-                'sac' => $transDetail->transType->sac_code,
+                'sac' => $transDetail->transType->Charge->sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
                 'sgst_amt' => ($sgst_amt != 0 ? $sgst_amt : 0),
