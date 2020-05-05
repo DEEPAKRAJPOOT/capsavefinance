@@ -103,7 +103,7 @@ class TransactionsRunning extends BaseModel {
     }
 
     public function getOutstandingAttribute(){
-        return 0;
+        return $this->amount - $this->transaction->sum('amount');
     }
 
     /**
@@ -138,6 +138,7 @@ class TransactionsRunning extends BaseModel {
     public static function getRunningTrans($userId){
         return self::where('user_id','=',$userId)
         //->where('soa_flag','=',0)
+        ->orderBy('trans_date','asc')
         ->get();
     }
 
