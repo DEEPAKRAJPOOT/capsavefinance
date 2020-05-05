@@ -647,7 +647,7 @@ class Transactions extends BaseModel {
     }
     
     public static function getTallyTxns(array $where = array()) {
-        return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->whereNull('payment_id')->where($where)->get();
+        return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where($where)->get();
     }
 
     

@@ -114,6 +114,9 @@ class ApiController
               $invoice_no = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
               $invoice_date = $txn->invoiceDisbursed->invoice->invoice_date ?? NULL;
             }
+            if ($txn->trans_type == 16 && $txn->entry_type == 1) {
+              continue;
+            }
             if (!empty($txn->parent_trans_id)) {
                 $parentRecord  = $txn->getParentTxn();
                 $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
