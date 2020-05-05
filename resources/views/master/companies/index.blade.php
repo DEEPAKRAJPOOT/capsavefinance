@@ -28,7 +28,7 @@
                         <button type="submit" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
                     </div>
                     <div class="col-md-7 text-right">
-                        <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addCompaniesFrame" data-url ="{{route('add_companies')}}" data-height="400px" data-width="100%" data-placement="top" >
+                        <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addCompaniesFrame" data-url ="{{route('add_companies')}}" data-height="450px" data-width="100%" data-placement="top" >
                             <i class="fa fa-plus"></i> Add Company
                         </a>
                     </div>
@@ -92,7 +92,7 @@
                                         <a  
                                             data-toggle="modal" 
                                             title="Edit Company Detail"
-                                            data-height="350px" 
+                                            data-height="450px" 
                                             data-width="100%"
                                             data-target="#addCompaniesFrame" 
                                             data-url="{{ route('edit_companies',['id' => $company['comp_addr_id']]) }}"

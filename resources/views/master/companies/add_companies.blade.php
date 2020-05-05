@@ -9,14 +9,27 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="cmp_name">Company Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : 'CAPSAVE FINANCE PRIVATE LIMITED
-'}}" readonly="readonly">
+
+                <input type="text" class="form-control" id="cmp_name" name="cmp_name" placeholder="Enter Company Name" maxlength="50" value="{{ isset($comData['cmp_name']) ? $comData['cmp_name'] : 'CAPSAVE FINANCE PRIVATE LIMITED'}}" readonly="readonly">
+
                 {!! $errors->first('cmp_name', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
                 <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
                 <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" maxlength="100" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
                 {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="cmp_email">Registered Email <span class="mandatory">*</span></label>
+                <input type="email" class="form-control" id="cmp_email" name="cmp_email" placeholder="Enter Comapny Email ID" maxlength="50" value="{{ isset($comData['cmp_email']) ? $comData['cmp_email'] : old('cmp_email')}}">
+                {!! $errors->first('cmp_email', '<span class="error">:message</span>') !!}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="cmp_mobile">Phone No.<span class="mandatory">*</span></label>
+                <input type="text" class="form-control number_format" id="cmp_mobile" name="cmp_mobile" placeholder="Enter Comapny Phone No." maxlength="15" value="{{ isset($comData['cmp_mobile']) ? $comData['cmp_mobile'] : old('cmp_mobile')}}">
+                {!! $errors->first('cmp_mobile', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
@@ -62,13 +75,9 @@
 
             </div>
             <div class="form-group col-md-6">
-                <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
-                <select class="form-control" name="is_active" id="is_active">
-                    <option value="" selected>Select</option>
-                    <option {{$comData['is_active'] == 1 ? 'selected' : ''}} value="1">Active</option>
-                    <option {{$comData['is_active'] == 0 ? 'selected' : ''}} value="0">In-Active</option>
-                </select>
-                {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
+                <label for="pincode">Pin Code</label>
+                <input type="text" class="form-control number_format" id="pincode" name="pincode" placeholder="Enter Pin Code" maxlength="6" value="{{ isset($comData['pincode']) ? $comData['pincode'] : old('pincode')}}">
+                {!! $errors->first('pincode', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
@@ -80,6 +89,15 @@
                     <option {{$comData['is_reg'] == 0 ? 'selected' : ''}} value="0">No</option>
                 </select>
                 {!! $errors->first('is_reg', '<span class="error">:message</span>') !!}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
+                <select class="form-control" name="is_active" id="is_active">
+                    <option value="" selected>Select</option>
+                    <option {{$comData['is_active'] == 1 ? 'selected' : ''}} value="1">Active</option>
+                    <option {{$comData['is_active'] == 0 ? 'selected' : ''}} value="0">In-Active</option>
+                </select>
+                {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="row">
@@ -99,6 +117,7 @@
     };
 </script>
 <script type="text/javascript">
+    
     $(document).ready(function () {
 
         $(this).on('blur', ".gstnumber", function () {
@@ -110,12 +129,14 @@
                 if (gstnoformat.test(values)) {
                     return true;
                 } else {
-                    $('label.error, label.gst_no_error').remove();
+                     $('label.error, label.gst_no_error').remove();
                     $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Please enter valid GSTIN Number</label>');
                     $(this).focus();
                 }
             } else {
-                $('label.error, label.pan_no_error').remove();
+
+                $('label.error, label.gst_no_error').remove();
+
                 $(this).after('<label id="gst_no_error" class="error gst_no_error" for="gst_no">Special characters not allowed</label>');
                 $(this).focus();
             }
@@ -168,11 +189,6 @@
             var cmp_name = $('#cmp_name').val();
             var comp_id = $('#comp_addr_id').val();
             var status = false;
-//            console.log(comp_id);
-//            if (gst_no.length < 1) {
-//                $('#cmp_add').val('');
-//                $('#gst_no').focus();
-//            }
             $.ajax({
                 url: messages.check_comp_add_exist,
                 type: 'POST',
@@ -194,19 +210,38 @@
             return this.optional(element) || (status === true);
         });
 
-        $.validator.addMethod("onlyletters", function (value, element) {
-            return this.optional(element) || /^[A-Za-z. ]*$/.test(value);
+        $.validator.addMethod("alphanumericdot", function (value, element) {
+            return this.optional(element) || /^[A-Za-z0-9 -.,]*$/.test(value);
+        });
+        
+        $(this).on('input', '.number_format', function (event) {
+            if (event.which >= 37 && event.which <= 40)
+                return;
+
+            $(this).val(function (index, value) {
+                return value.replace(/\D/g, "");
+            });
         });
 
         $('#companiesForm').validate({// initialize the plugin
             rules: {
                 'cmp_name': {
-                    required: true,
-                    onlyletters: true
+                    required: true
                 },
                 'cmp_add': {
                     required: true,
+                    alphanumericdot: true,
                     unique_add: true
+                },
+                'cmp_email': {
+                    required: true,
+                    email: true,
+                    maxlength: 50
+                },
+                'cmp_mobile': {
+                    required: true,
+                    number: true,
+                    maxlength: 15
                 },
                 'gst_no': {
                     required: true,
@@ -234,11 +269,11 @@
             },
             messages: {
                 'cmp_name': {
-                    required: "Please enter Company Name",
-                    onlyletters: "Only letters, dot and space allowed."
+                    required: "Please enter Company Name"
                 },
                 'cmp_add': {
                     required: "Please enter Company Address",
+                    alphanumericdot: "Some special characters are allowed",
                     unique_add: 'The company branch is already present at this address.'
                 },
                 'gst_no': {
