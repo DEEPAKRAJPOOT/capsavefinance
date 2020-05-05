@@ -1763,8 +1763,6 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
     }
     
-
-    
      /** get the user limit  **/
    public function getUserLimit($user_id)
    {
@@ -2219,6 +2217,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return WfAppStage::saveWfDetail($arrData);
     }
 
+
     /**
      * Get Applications Data
      * 
@@ -2252,5 +2251,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppProgramLimit::updatePrgmLimit($data, $whereCond);
     }      
+
+
+    /**
+    * Get GSTs by user id which are associated to application 
+    */
+    public function getAppGSTsByUserId($user_id)
+    {   
+        return BizPanGst::getAppGSTsByUserId($user_id);
+    }
+
 }
 

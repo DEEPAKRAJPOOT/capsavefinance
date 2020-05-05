@@ -144,7 +144,7 @@ class BusinessAddress extends BaseModel
             ->groupBy('user_id', 'Address', 'City', 'State', 'Pincode')
             ->orderBy('biz_addr_id', 'DESC');
             if($address_type != null){
-                $result->where('biz_addr.address_type', $address_type);
+                $result->whereIn('biz_addr.address_type', $address_type);
             }
         return $result;
     }

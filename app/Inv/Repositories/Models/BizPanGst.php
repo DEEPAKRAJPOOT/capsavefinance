@@ -50,6 +50,11 @@ class BizPanGst extends BaseModel
         BizPanGst::where('biz_addr_id', $data['biz_addr_id'])->update(['is_gst_hide'=>0, 'biz_addr_id'=>0]);
         return BizPanGst::where('biz_pan_gst_id', $biz_pan_gst_id)->update($data);
     }
+
+    //GST's which are associated with application
+    public static function getAppGSTsByUserId($user_id){
+        return BizPanGst::where(['user_id'=> $user_id, 'type'=> 2, 'status'=> 1])->where('parent_pan_gst_id', '=', 0)->pluck('pan_gst_hash', 'biz_id')->toArray();
+    }
    
     /**
      * Get Biz Pan Gst Data
