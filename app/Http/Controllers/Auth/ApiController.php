@@ -54,6 +54,8 @@ class ApiController
                  $response['message'] =  'No Relation Found between customer('. $pmnt->user_id .') and Company with Bank';
                  return $response;
             }
+            $inst_no = $pmnt->refundReq->tran_no ?? NULL;
+            $inst_date = $pmnt->refundReq->actual_refund_date ?? NULL;
             $userName = $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name;
             $tally_data[] = [
               'batch_no' =>  $batch_no,
@@ -77,8 +79,8 @@ class ApiController
               'cheque_amount' =>  0,
               'cross_using' =>  $pmnt->payment_type == 2 ? 'a/c payee' : '',
               'mode_of_pay' =>  $pmnt->payment_type,
-              'inst_no' =>  NULL,
-              'inst_date' =>  NULL,
+              'inst_no' =>  $inst_no,
+              'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
               'remarks' => $pmnt->comment ?? '',
               'narration' => $pmnt->comment ?? '',
@@ -142,6 +144,12 @@ class ApiController
             if ($txn->trans_type == 32 && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
             }
+            $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL
+            $inst_date = $txn->invoiceDisbursed->disbursal->funded_date ?? NULL
+            if (!empty($txn->payment_id)) {
+              $inst_no = $txn->refundReq->tran_no ?? NULL;
+              $inst_date = $txn->refundReq->actual_refund_date ?? NULL;
+            }
             $common_array = [
                   'batch_no' =>  $batch_no,
                   'transactions_id' =>  $txn->trans_id,
@@ -164,8 +172,8 @@ class ApiController
                   'cheque_amount' =>  $cheque_amount,
                   'cross_using' =>  '',
                   'mode_of_pay' =>  1,
-                  'inst_no' =>  $txn->invoiceDisbursed->disbursal->tran_id ?? NULL,
-                  'inst_date' =>  $txn->invoiceDisbursed->disbursal->funded_date ?? NULL,
+                  'inst_no' =>  $inst_no,
+                  'inst_date' =>  $inst_date,
                   'favoring_name' =>  $userName,
                   'remarks' => '',
                   'narration' => '',
