@@ -63,6 +63,22 @@ class AppDocProduct extends BaseModel
     public function app_doc(){
         return $this->belongsTo('App\Inv\Repositories\Models\AppDocument', 'app_doc_id');
     }
+    
+    /**
+     * Get Application Product Documents
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getAppProductDocs($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    } 
 }
   
 

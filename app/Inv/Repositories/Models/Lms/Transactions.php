@@ -650,6 +650,14 @@ class Transactions extends BaseModel {
         return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where($where)->get();
     }
 
+    public function getParentTxn() {
+        return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where('trans_id', $this->parent_trans_id)->first();
+    }
+
+    public function userRelation() {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceRelation', 'user_id', 'user_id')->where('is_active', 1);
+    }
+
     public static function getUserInvoiceTxns($userId, $invoiceType, $trans_ids, $is_force = false){
        $sql = self::with('transType')->whereNull('payment_id')->where(['user_id' => $userId, 'entry_type' => 0]);
        if (!empty($trans_ids)) {

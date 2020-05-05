@@ -40,6 +40,7 @@
                             <thead>
                                 <tr role="row">
                                     <th>Charge Name</th>
+                                    <th>SAC Code</th>
                                     <th>Charge Type</th>
                                     <th>Charge Calculation</th>
                                     <th>Charge Amt/Per</th>

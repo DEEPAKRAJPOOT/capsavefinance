@@ -111,4 +111,20 @@ class AppBizFinDetail extends BaseModel
         $cam = DB::insert('insert into rta_app_biz_bank_detail (app_id, debt_on, debt_position_comments , created_by) values ($attributes["appId"], $attributes["debt_on"], $attributes["debt_position_comments"], $userId )');
         return $cam ? true : false;
     }
+    
+    /**
+     * Get Application Business Finance Detail
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getAppBizFinDetail($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }     
 }

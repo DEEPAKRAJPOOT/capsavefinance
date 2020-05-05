@@ -4338,4 +4338,10 @@ if ($err) {
         $data = $dataProvider->getCustAndCapsLoc($this->request, $cusCapLoc);
         return $data;
     }
+    
+    public function getRenewalAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getAllRenewalApps();
+        $applications = $dataProvider->getRenewalAppList($this->request, $appList);
+        return $applications;
+    }
 }

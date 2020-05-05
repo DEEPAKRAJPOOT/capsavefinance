@@ -700,6 +700,7 @@ class UserEventsListener extends BaseEvent
         
     }
     
+
     public function onAddActivityLog($arrActivity)
     {
         $arrActivity = unserialize($arrActivity);
@@ -709,6 +710,53 @@ class UserEventsListener extends BaseEvent
         $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0 ;
         $activity_desc = $arrActivity['activity_desc'];
         return self::addActivityLog($activity_type_id, $activity_desc, $arrActivity);        
+    }
+        
+    public function onRenewApplication($emailData)
+    {
+        $user = unserialize($emailData);
+        $this->func_name = __FUNCTION__;
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("APPLICATION_RENEWAL_MAIL");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%receiver_user_name', '%lead_id' ,'%app_id','%entity_name'],
+                [$user['receiver_user_name'],$user['lead_id'],$user['app_id'],$user['entity_name']],
+                $email_content->message
+            );
+            $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
+
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+                function ($message) use ($user, $mail_subject, $mail_body) {
+                
+                
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->subject($mail_subject);
+                
+                if( env('SEND_MAIL_ACTIVE') == 1){
+                    $email = explode(',', env('SEND_MAIL'));
+                    $message->to($email);
+                    $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                    $message->cc(explode(',', env('SEND_MAIL_CC')));                    
+                }else{
+                    //$message->to($user["receiver_email"], $user["receiver_user_name"]);
+                    //$message->to($user["sales_manager_email"], $user["sales_manager_name"]);
+                    $email = [$user["receiver_email"],$user["sales_manager_email"]];
+                    $message->to($email);
+                }
+        
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['receiver_user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ]; 
+                FinanceModel::logEmail($mailContent);
+                
+            });
+        }
     }
 
     /**
@@ -815,6 +863,12 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'ADD_ACTIVITY_LOG', 
             'App\Inv\Repositories\Events\UserEventsListener@onAddActivityLog'
-        );         
+        );
+        
+        $events->listen(
+            'APPLICATION_RENEWAL_MAIL', 
+            'App\Inv\Repositories\Events\UserEventsListener@onRenewApplication'
+        );        
+
     }
 }

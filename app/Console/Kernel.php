@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
       //  \App\Console\Commands\PaypalScoutRefund::class,
         //:ScoutRefund
         \App\Console\Commands\InterestAccrual::class,
+        \App\Console\Commands\RenewApplications::class,
     ];
 
     /**
