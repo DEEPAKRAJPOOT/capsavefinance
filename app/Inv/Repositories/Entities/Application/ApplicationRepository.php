@@ -58,6 +58,7 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
 use App\Inv\Repositories\Models\BizPanGst;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
 /**
  * Application repository class
@@ -1810,6 +1811,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        
    }  
    
+    public function saveAppOfferAdhocLimit($arr, $limit_id=null){
+        return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
+    }
     
 }
 

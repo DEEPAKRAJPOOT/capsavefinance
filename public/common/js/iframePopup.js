@@ -112,6 +112,8 @@ var iframe_ids = [
         'previewUserInvoiceFrame',
         'viewDetailFrame',
         'editPaymentFrm',
+        'addAdhocLimit',
+        'approveAdhocLimit',
     ];
 
 iframe_ids.forEach(function(id) {

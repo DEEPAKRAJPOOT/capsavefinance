@@ -545,6 +545,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@showLimitOffer'
                 ]);
 
+                Route::get('approve-adhoc-limit', [
+                    'as' => 'approve_adhoc_limit',
+                    'uses' => 'Backend\CamController@showLimitOffer'
+                ]);
+
                 Route::post('update-limit-offer', [
                     'as' => 'update_limit_offer',
                     'uses' => 'Backend\CamController@updateLimitOffer'
