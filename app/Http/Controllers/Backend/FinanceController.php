@@ -117,7 +117,7 @@ class FinanceController extends Controller {
            foreach ($result as $key => $value) {
                 $new[] = $fetchedArr = (array)$value;
                 $tally_entry_id = $fetchedArr['tally_entry_id'];
-                $unique_voucher_no = sprintf('%04D', $tally_entry_id);
+                $unique_voucher_no = sprintf('%04d', $tally_entry_id);
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                 $entry_type = strtolower($fetchedArr['entry_type']);
