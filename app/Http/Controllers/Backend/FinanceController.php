@@ -178,7 +178,7 @@ class FinanceController extends Controller {
                             "inst_date" => '',
                             "favoring_name" => '',
                             "remarks" => '',
-                            "narration" => 'Being '. $fetchedArr['trans_type'] .' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
+                            "narration" => 'Being '. $fetchedArr['trans_type'] .' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no'] : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
                     $bank_row = [
                             "voucher_no" => $unique_voucher_no,
@@ -199,7 +199,7 @@ class FinanceController extends Controller {
                             "inst_date" => $fetchedArr['inst_date'],
                             "favoring_name" => $fetchedArr['favoring_name'],
                             "remarks" => '',
-                            "narration" => 'Being '.$fetchedArr['trans_type'].' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
+                            "narration" => 'Being '.$fetchedArr['trans_type'].' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no']  : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
                     if ($fetchedArr['voucher_type'] == 'Payment') {
                         $interestRow = [];
@@ -229,7 +229,7 @@ class FinanceController extends Controller {
                                 "inst_date" => '',
                                 "favoring_name" => '',
                                 "remarks" => '',
-                                "narration" => "Being Interest Booked " .(!empty($fetchedArr['ref_no']) ? "Invoice No " . $fetchedArr['ref_no'] : "Batch no " . $fetchedArr['batch_no']),
+                                "narration" => "Being Interest Booked " .(!empty($fetchedArr['ref_no']) ? "Invoice No " . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no'] : "Batch no " . $fetchedArr['batch_no']),
                             ]; 
                             $bank_row['amount'] = $fetchedArr['cheque_amount']; 
                         }
@@ -665,7 +665,7 @@ class FinanceController extends Controller {
               'borders' => array(
                 'allborders' => array(
                   'style' => PHPExcel_Style_Border::BORDER_THIN,
-                  'color' => array('argb' => 'FFFF0000'),
+                  // 'color' => array('argb' => 'FFFF0000'),
                 ),
               ),
             );
