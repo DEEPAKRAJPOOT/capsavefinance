@@ -114,6 +114,9 @@ class ApiController
               $invoice_no = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
               $invoice_date = $txn->invoiceDisbursed->invoice->invoice_date ?? NULL;
             }
+            if ($txn->trans_type == 16 && $txn->entry_type == 1) {
+              continue;
+            }
             if (!empty($txn->parent_trans_id)) {
                 $parentRecord  = $txn->getParentTxn();
                 $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
@@ -140,8 +143,11 @@ class ApiController
                    continue;
                 }
             } 
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF')]) && $txn->entry_type == 1) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF'),  config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
                $tally_voucher_type_id = 3;
+            } 
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
+               continue;
             }
             if ($txn->trans_type == 32 && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
