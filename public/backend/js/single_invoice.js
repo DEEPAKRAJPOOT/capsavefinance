@@ -351,6 +351,7 @@
    
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.getTenor',function(){
+       $(".isloader").show(); 
       var program_id =  $("#program_id").val(); 
       var anchor_id =  $("#anchor_id").val(); 
       var supplier_id  = $(this).val();
@@ -374,6 +375,7 @@
                 
                 },
                 success: function (data) {
+                      $(".isloader").hide(); 
                       if(data.is_adhoc!=0)
                       {
                            $("#adhoc_msg").show();
@@ -392,6 +394,7 @@
   
     //////////////////// onchange anchor  id get data /////////////////
   $(document).on('click','.get_adhoc',function(){
+        $(".isloader").show(); 
         $("#msgProLimit").hide();
         var is_adhok  = $(this).is(":checked");
         var program_id =  $("#program_id").val(); 
@@ -408,6 +411,7 @@
                 
                 },
                 success: function (data) {
+                        $(".isloader").hide(); 
                         var tenor   =  data.tenor;
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#tenor_old_invoice").val(tenor_old_invoice);

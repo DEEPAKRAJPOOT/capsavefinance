@@ -184,13 +184,12 @@ class InvoiceController extends Controller {
             $result = $this->invRepo->save($arr);
 
         if ($result) {
-             if($is_adhoc==0)
+             if($is_adhoc==1 && $statusId==8) 
             {
-              InvoiceTrait::getManualInvoiceStatus($result);
+             InvoiceTrait::saveAdhocApproveStatus($result); 
             }
             else {
-               InvoiceTrait::updateAdhocApproveStatus($result);
-           
+               InvoiceTrait::getManualInvoiceStatus($result);
             }
             Session::flash('message', 'Invoice successfully saved');
             return back();

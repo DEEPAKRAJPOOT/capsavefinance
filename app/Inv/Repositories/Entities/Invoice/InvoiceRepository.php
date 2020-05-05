@@ -21,6 +21,7 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
@@ -1149,7 +1150,7 @@ use CommonRepositoryTraits;
        
         try
         {
-             return AppLimit::checkUserAdhoc($attributes);  
+             return AppOfferAdhocLimit::checkUserAdhoc($attributes);  
         } catch (Exception $ex) {
              return $ex;
         }

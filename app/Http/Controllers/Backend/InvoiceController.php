@@ -459,7 +459,7 @@ class InvoiceController extends Controller {
         if ($result) {
             if($is_adhoc==1 && $statusId==8) 
             {
-              InvoiceTrait::updateAdhocApproveStatus($result);
+              InvoiceTrait::saveAdhocApproveStatus($result);
             }
             else 
             {

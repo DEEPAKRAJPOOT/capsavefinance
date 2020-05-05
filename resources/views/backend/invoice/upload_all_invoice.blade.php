@@ -84,7 +84,7 @@
                                             <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label> <span id="pro_limit" class="error"></span>
                                             <span id="adhoc_msg" style="display:none">
                                                 <input name="limit_type" type="checkbox" id="limit_type" class="get_adhoc" value="1">
-                                            Adhoc
+                                                <b> Adhoc </b>
                                             </span>
                                             <select readonly="readonly" class="form-control getTenor" id="supplier_id" name="supplier_id">
                                              

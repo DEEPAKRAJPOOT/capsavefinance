@@ -114,7 +114,7 @@ class AppLimit extends BaseModel {
     {
         $mytime = Carbon::now();
         $dateTime  =  $mytime->toDateTimeString();
-        return self::where(['user_id' => $attr['user_id'],'status' => 1,'limit_type' => 1])->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`') ->sum('tot_limit_amt');
+        return self::where(['user_id' => $attr['user_id'],'status' => 1,'limit_type' => 1])->where('parent_app_limit_id','<>', null)->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`') ->sum('tot_limit_amt');
        
     }
 }

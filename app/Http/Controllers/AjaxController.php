@@ -3580,6 +3580,7 @@ if ($err) {
         $res['app_prgm_limit_id']  = $result[1];
         $res['user_id']  = $supplier_id[0];
         $res['app_id']  = $supplier_id[1];
+        $res['prgm_offer_id']  = $supplier_id[2];
         $res['anchor_id']  = $request['anchor_id'];
         $res['program_id']  = $res['prgm_id'];
         $getTenor   =  $this->invRepo->getTenor($res);
@@ -3599,6 +3600,7 @@ if ($err) {
         $res['app_prgm_limit_id']  = $result[1];
         $res['user_id']  = $supplier_id[0];
         $res['app_id']  = $supplier_id[1];
+        $res['prgm_offer_id']  = $supplier_id[2];
         $res['anchor_id']  = $request['anchor_id'];
         $res['program_id']  = $res['prgm_id'];
         $getTenor   =  $this->invRepo->getTenor($res);
