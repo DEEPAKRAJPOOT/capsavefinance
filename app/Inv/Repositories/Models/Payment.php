@@ -125,7 +125,7 @@ class Payment extends BaseModel {
     }
 
     public static function getTallyTxns(array $where = array()) {
-        return self::with('user', 'lmsUser', 'transType')->where(['is_settled' => 1, 'generated_by' => 0, 'is_refundable' => 1])->where($where)->get();
+        return self::with('user', 'lmsUser', 'transType')->where(['is_settled' => 1, 'generated_by' => 0, 'is_refundable' => 1, 'trans_type' => 17, 'action_type' => 1])->where($where)->get();
     }
 
     /**
@@ -133,10 +133,14 @@ class Payment extends BaseModel {
      * 
      * @return type mixed
      */
-    public static function getPayments(array $where = [])
-    {
+    public static function getPayments(array $where = []) {
         $res = self::where($where)->get();
         return $res->isEmpty() ? [] :  $res;
+    }
+
+
+    public function userRelation() {
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceRelation', 'user_id', 'user_id')->where('is_active', 1);
     }
 
     /**

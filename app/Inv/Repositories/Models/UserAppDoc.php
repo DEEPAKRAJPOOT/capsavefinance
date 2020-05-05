@@ -48,6 +48,22 @@ class UserAppDoc extends BaseModel
                  ->first();   
          return  ($outQry) ? $outQry->toArray() : false;   
      }
+     
+    /**
+     * Get User Application Doc Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getUserAppDocData($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }     
 }
   
 

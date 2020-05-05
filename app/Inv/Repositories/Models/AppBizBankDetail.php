@@ -2,12 +2,12 @@
 
 namespace App\Inv\Repositories\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class CamReviewSummRiskCmnt extends BaseModel
+class AppBizBankDetail extends BaseModel
 {
     use Notifiable;
     /**
@@ -15,14 +15,14 @@ class CamReviewSummRiskCmnt extends BaseModel
      *
      * @var string
      */
-    protected $table = 'cam_reviewer_risk_cmnt';
+    protected $table = 'app_biz_bank_detail';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'risk_cmnt_id';
+    protected $primaryKey = 'bank_detail_id';
 
      /**
      * Maintain created_at and updated_at automatically
@@ -51,24 +51,24 @@ class CamReviewSummRiskCmnt extends BaseModel
      * @var array
      */
     protected $fillable = [
-                        'cam_reviewer_summary_id',
-                        'cond',
-                        'timeline',
-                        'deal_type', 
-                        'is_active',            
-                        'created_by',
-                        'created_at',
-                        'updated_at',
-                        'updated_by'
+        'app_id',
+        'debt_on', 
+        'debt_position_comments',
+        'fund_date',
+        'nonfund_date',
+        'created_by',
+        'created_at',
+        'updated_at',
+        'updated_by'
     ];
-    
+
     /**
-     * Get Cam Reviewer Risk Data
+     * Get Application Business Bank Detail
      * 
      * @param array $whereCond
      * @return mixed
      */
-    public static function getCamReviewerRiskData($whereCond=[])
+    public static function getAppBizBankDetail($whereCond=[])
     {
         $query = self::select('*');
         if (count($whereCond) > 0) {
@@ -76,5 +76,5 @@ class CamReviewSummRiskCmnt extends BaseModel
         }
         $result = $query->get();
         return $result;
-    }
+    }     
 }

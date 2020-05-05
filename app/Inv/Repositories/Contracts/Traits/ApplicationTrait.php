@@ -302,4 +302,310 @@ trait ApplicationTrait
         $data['anchorData'] = $anchorArr;
         return $data;
     }
+    
+    protected function copyApplication($userId, $appId, $bizId, $appType=null)
+    {
+        \DB::beginTransaction();
+
+        try {   
+            
+            $excludeKeys = ['created_at', 'created_by','updated_at', 'updated_by'];
+            
+            //Get and save Business Data
+            $bizData = $this->appRepo->getApplicationById($bizId);                        
+            $bizData = $bizData ? $this->arrayExcept($bizData->toArray(), array_merge($excludeKeys, ['biz_id'])) : [];           
+            $newBizData = $this->appRepo->createBusiness($bizData);
+            $newBizId = $newBizData->biz_id;
+            
+            //Get and save Biz Address
+            /*
+            $bizAddressesData  = $this->appRepo->getBizAddresses($newBizId);
+            foreach($bizAddressesData as $bizAddressData) {
+                $bizAddressArrData = $bizAddressData ? $this->arrayExcept($bizAddressData->toArray(), array_merge($excludeKeys, ['biz_addr_id'])) : [];
+                $bizAddressArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveAddress($bizAddressArrData);            
+            }
+            */
+            
+            $this->appRepo->updateAppDetails($appId, ['renewal_status' => 2]); //Ready for Renewal  
+                      
+            //Get and save Application data
+            $appData  = $this->appRepo->getAppDataByAppId($appId);
+            $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id'])) : [];                
+            $appData['biz_id'] = $newBizId;
+            $appData['parent_app_id'] = $appId;
+            $appData['status'] = 0;
+            $appData['renewal_status'] = 0;
+            $appData['app_type'] = $appType;
+            $newAppData = $this->appRepo->createApplication($appData);
+            $newAppId = $newAppData->app_id;
+            
+            $newBizOwnersArr=[];
+            //Get and save Biz Owner with Address Data
+            $ownersData  = $this->appRepo->getOwnerByBizId($bizId);
+            foreach($ownersData as $ownerData) {
+                $bizOwnerId = $ownerData->biz_owner_id;
+                $ownerArrData = $ownerData ? $this->arrayExcept($ownerData->toArray(), array_merge($excludeKeys, ['biz_owner_id'])) : [];
+
+                $ownerArrData['biz_id'] = $newBizId;  
+                $newOwnerData = $this->appRepo->createBizOwner($ownerArrData);
+                $newBizOwnerId = $newOwnerData->biz_owner_id;
+                
+                $newBizOwnersArr[$bizOwnerId] = $newBizOwnerId;
+                                                              
+            }
+
+            //Get Biz Owner Address
+            $whereCond=[];
+            $whereCond['biz_id'] = $bizId;  
+            $ownAddressesData  = $this->appRepo->getBizAddresses($whereCond);
+            foreach($ownAddressesData as $ownAddressData) {
+                $ownAddressArrData = $ownAddressData ? $this->arrayExcept($ownAddressData->toArray(), array_merge($excludeKeys, ['biz_addr_id'])) : [];
+                $ownAddressArrData['biz_id'] = $newBizId;
+                $ownAddressArrData['rcu_status'] = 0;
+                $ownAddressArrData['biz_owner_id'] = isset($newBizOwnersArr[$ownAddressArrData['biz_owner_id']]) ? $newBizOwnersArr[$ownAddressArrData['biz_owner_id']] : null;
+                $this->appRepo->saveAddress($ownAddressArrData);
+            } 
+
+            //Get Biz API Data
+             $whereCond=[];
+             $whereCond['biz_id'] = $bizId;
+             //$whereCond['biz_owner_id'] = $bizOwnerId;
+             $bizApiData  = $this->appRepo->getBizApiData($whereCond);
+             foreach($bizApiData as $apiData) {
+                 $bizApiArrData = $apiData ? $this->arrayExcept($apiData->toArray(), array_merge($excludeKeys, ['biz_api_id'])) : [];
+                 $bizApiArrData['biz_id'] = $newBizId;
+                 $bizApiArrData['biz_owner_id'] = isset($newBizOwnersArr[$bizApiArrData['biz_owner_id']]) ? $newBizOwnersArr[$bizApiArrData['biz_owner_id']] : null;
+                 $this->appRepo->saveBizApiData($bizApiArrData);
+             } 
+
+             //Get and save Pan GST Data
+             $whereCond=[];
+             $whereCond['biz_id'] = $bizId;
+             //$whereCond['biz_owner_id'] = $bizOwnerId;
+             $bizPanGstData  = $this->appRepo->getBizPanGstData($whereCond);
+             foreach($bizPanGstData as $gstData) {
+                 $bizPanGstArrData = $gstData ? $this->arrayExcept($gstData->toArray(), array_merge($excludeKeys, ['biz_pan_gst_id'])) : [];
+                 $bizPanGstArrData['biz_id'] = $newBizId;
+                 $bizPanGstArrData['biz_owner_id'] = isset($newBizOwnersArr[$bizPanGstArrData['biz_owner_id']]) ? $newBizOwnersArr[$bizPanGstArrData['biz_owner_id']] : null;;
+                 $this->appRepo->saveBizPanGstData($bizPanGstArrData);
+             }
+
+            //Get and save GST Log Data
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $bizGstLogsData = $this->appRepo->getBizGstLogData($whereCond);
+            foreach($bizGstLogsData as $gstLog) {
+                $bizGstLogArrData = $gstLog ? $this->arrayExcept($apiData->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                $bizGstLogArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveBizGstLogData($bizGstLogArrData);
+            }
+            
+            //Get and save Perfios Data
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $bizPerfiosData = $this->appRepo->getBizPerfiosData($whereCond);
+            foreach($bizPerfiosData as $perfiosData) {
+                $bizPerfiosArrData = $perfiosData ? $this->arrayExcept($perfiosData->toArray(), array_merge($excludeKeys, ['biz_perfios_id'])) : [];
+                $bizPerfiosArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveBizPerfiosData($bizPerfiosArrData);
+            }            
+            
+                     
+            //Get and save application product data            
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appProductData = $this->appRepo->getAppProductData($whereCond);
+            foreach($appProductData as $appProdData) {
+                $appProductArrData = $appProdData ? $this->arrayExcept($appProdData->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                $appProductArrData['app_id'] = $newAppId;                
+                $this->appRepo->saveAppProductData($appProductArrData);
+            }            
+                    
+            //Get and save application documents           
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appDocsData = $this->appRepo->getAppDocuments($whereCond);
+            foreach($appDocsData as $appDoc) {
+                $appDocId = $appDoc->app_doc_id;
+                $appDocsArrData = $appDoc ? $this->arrayExcept($appDoc->toArray(), array_merge($excludeKeys, ['app_doc_id'])) : [];
+                
+                $appDocsArrData['app_id'] = $newAppId;                
+                $appDocResult = $this->appRepo->saveAppDocuments($appDocsArrData);
+                $newAppDocId = $appDocResult ? $appDocResult->app_doc_id : null;
+                
+                //Get and save application product document
+                $whereCond=[];
+                $whereCond['app_doc_id'] = $appDocId;
+                $appDocFilesData = $this->appRepo->getAppProductDocs($whereCond);
+                foreach($appDocFilesData as $appDocFile) {
+                    $appDocFilesArrData = $appDocFile ? $this->arrayExcept($appDocFile->toArray(), array_merge($excludeKeys, ['app_doc_product_id'])) : [];
+                    $appDocFilesArrData['app_doc_id'] = $newAppDocId; 
+                    $this->appRepo->saveAppProductDocs($appDocFilesArrData);
+                }  
+            }      
+            
+            //Get and save application document files         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appDocFilesData = $this->appRepo->getAppDocFiles($whereCond);
+            foreach($appDocFilesData as $appDocFile) {
+                $appDocFilesArrData = $appDocFile ? $this->arrayExcept($appDocFile->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
+                $appDocFilesArrData['app_id'] = $newAppId; 
+                $appDocFilesArrData['biz_owner_id'] = isset($newBizOwnersArr[$appDocFilesArrData['biz_owner_id']]) ? $newBizOwnersArr[$appDocFilesArrData['biz_owner_id']] : null;
+                $this->appRepo->saveAppDocFiles($appDocFilesArrData);
+            }  
+            
+            //rta_user_app_doc
+            //Get and save application document files         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appUserDocData = $this->appRepo->getUserAppDocData($whereCond);
+            foreach($appUserDocData as $appUserDoc) {
+                $appUserDocArrData = $appUserDoc ? $this->arrayExcept($appUserDoc->toArray(), array_merge($excludeKeys, ['app_doc_file_id'])) : [];
+                $appUserDocArrData['app_id'] = $newAppId;
+                $this->appRepo->saveUserAppDocData($appUserDocArrData);
+            }
+            
+            //rta_app_biz_bank_detail
+            //Get and save application business bank detail       
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appBizBankData = $this->appRepo->getAppBizBankDetail($whereCond);
+            foreach($appBizBankData as $appBizBank) {
+                $appBizBankArrData = $appBizBank ? $this->arrayExcept($appBizBank->toArray(), array_merge($excludeKeys, ['bank_detail_id'])) : [];
+                $appBizBankArrData['app_id'] = $newAppId; 
+                $this->appRepo->saveAppBizBankDetail($appBizBankArrData);
+            }                
+            
+            
+            //app_biz_fin_detail
+            //Get and save application business finance detail         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $appBizFinData = $this->appRepo->getAppBizFinDetail($whereCond);
+            foreach($appBizFinData as $appBizFin) {
+                $appBizFinArrData = $appBizFin ? $this->arrayExcept($appBizFin->toArray(), array_merge($excludeKeys, ['fin_detail_id'])) : [];
+                $appBizFinArrData['app_id'] = $newAppId; 
+                $appBizFinArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveAppBizFinDetail($appBizFinArrData);
+            }                   
+            
+            //Get and save cam report data         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $camReportData = $this->appRepo->getCamReportData($whereCond);
+            foreach($camReportData as $camReport) {
+                $camReportArrData = $camReport ? $this->arrayExcept($camReport->toArray(), array_merge($excludeKeys, ['cam_report_id'])) : [];
+                $camReportArrData['app_id'] = $newAppId; 
+                $camReportArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveAppBizFinDetail($camReportArrData);
+            }    
+            
+            //rta_cam_hygiene
+            //Get and save cam hygiene data         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $camHygieneData = $this->appRepo->getCamHygieneData($whereCond);
+            foreach($camHygieneData as $camHygiene) {
+                $camHygieneArrData = $camHygiene ? $this->arrayExcept($camHygiene->toArray(), array_merge($excludeKeys, ['cam_report_id'])) : [];
+                $camHygieneArrData['app_id'] = $newAppId; 
+                $camHygieneArrData['biz_id'] = $newBizId;
+                $this->appRepo->saveCamHygieneData($camHygieneArrData);
+            }             
+            
+            //rta_cam_reviewer_summary
+            //Get and save cam reviewer summary data         
+            $whereCond=[];
+            $whereCond['app_id'] = $appId;
+            $camReviewerData = $this->appRepo->getCamReviewerSummaryData($whereCond);
+            foreach($camReviewerData as $camReviewer) {
+                $camReviewerSummaryId = $camReviewer->cam_reviewer_summary_id;
+                $camReviewerArrData = $camReviewer ? $this->arrayExcept($camReviewer->toArray(), array_merge($excludeKeys, ['cam_reviewer_summary_id'])) : [];
+                $camReviewerArrData['app_id'] = $newAppId; 
+                $camReviewerArrData['biz_id'] = $newBizId;
+                $newCamReviewer = $this->appRepo->saveCamReviewerSummaryData($camReviewerArrData);
+                $newCamReviewerSummaryId = $newCamReviewer->cam_reviewer_summary_id;
+                        
+                //rta_cam_reviewer_risk_cmnt
+                //Get and save cam reviewer risk cmnt data         
+                $whereCond=[];
+                $whereCond['cam_reviewer_summary_id'] = $camReviewerSummaryId;
+                $camReviewerRiskData = $this->appRepo->getCamReviewerRiskData($whereCond);
+                foreach($camReviewerRiskData as $camReviewerRisk) {
+                    $camReviewerRiskArrData = $camReviewerRisk ? $this->arrayExcept($camReviewerRisk->toArray(), array_merge($excludeKeys, ['risk_cmnt_id'])) : [];
+                    $camReviewerRiskArrData['cam_reviewer_summary_id'] = $newCamReviewerSummaryId;                     
+                    $this->appRepo->saveCamReviewerRiskData($camReviewerRiskArrData);
+                }   
+                
+                //rta_cam_reviewer_prepost_cond
+                //Get and save cam reviewer prepost cond data         
+                $whereCond=[];
+                $whereCond['cam_reviewer_summary_id'] = $camReviewerSummaryId;
+                $camReviewerPrePostData = $this->appRepo->getCamReviewerPrePostData($whereCond);
+                foreach($camReviewerPrePostData as $camReviewerPrePost) {
+                    $camReviewerPrePostArrData = $camReviewerPrePost ? $this->arrayExcept($camReviewerPrePost->toArray(), array_merge($excludeKeys, ['prepost_cond_id'])) : [];
+                    $camReviewerPrePostArrData['cam_reviewer_summary_id'] = $newCamReviewerSummaryId;                     
+                    $this->appRepo->saveCamReviewerPrePostData($camReviewerPrePostArrData);
+                }                  
+            }  
+            
+            $wfStageArr = [1, 2, 5, 10];
+            foreach($wfStageArr as $wfStageId) {
+                $wfData=[];
+                $wfData['biz_app_id'] = $newAppId;
+                $wfData['user_id'] = $userId;
+                $wfData['wf_stage_id'] = $wfStageId;
+                $stats = $wfStageId == 10 ? 0 : 1;
+                $wfData['app_wf_status'] = $stats;
+                $wfData['is_complete'] = $stats;
+                $this->appRepo->saveWfDetail($wfData);
+            }
+            
+            
+            $userData = $this->userRepo->getfullUserDetail($userId);
+            if ($userData && !empty($userData->anchor_id)) {
+                $toUserId = $this->userRepo->getLeadSalesManager($userId);
+            } else {
+                $toUserId = $this->userRepo->getAssignedSalesManager($userId);
+            }
+            
+            
+            //$roles = $this->appRepo->getBackStageUsers($appId, [4]);  //Assigned Sales Manager
+            //$toUserId = isset($roles[0]) ? $roles[0]->user_id : null;
+                                        
+            if ($toUserId) {
+               \Helpers::assignAppToUser($toUserId, $newAppId);
+            }            
+            
+            
+            //\DB::rollback(); dd($ownerData);
+
+            \DB::commit();
+            
+            $result = [];
+            $result['new_app_id'] = $newAppId;
+            $result['new_biz_id'] = $newBizId;
+            
+            return $result;
+            // all good
+        } catch (\Exception $e) {
+            \DB::rollback();
+            // something went wrong
+            dd($e->getFile(), $e->getLine(), $e->getMessage());
+        }
+    }
+    
+    protected function arrayExcept($array, $keys)
+    {
+
+        foreach($keys as $key){
+            if (isset($array[$key])) {
+              unset($array[$key]);
+            }
+        }
+
+        return $array;
+
+    }    
 }

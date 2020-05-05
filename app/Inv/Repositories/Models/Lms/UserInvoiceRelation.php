@@ -110,5 +110,8 @@ class UserInvoiceRelation extends BaseModel {
        return $this->belongsTo('App\Inv\Repositories\Models\Master\Company', 'company_id', 'comp_addr_id');
    }
 
+   public function companyBankDetails() {
+       return $this->belongsTo('App\Inv\Repositories\Models\UserBankAccount', 'company_id', 'comp_addr_id');
+   }
 
 }
