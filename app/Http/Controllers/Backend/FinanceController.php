@@ -208,7 +208,7 @@ class FinanceController extends Controller {
                         $bank_row['dr_/_cr'] = 'Credit';
                         $bank_row['voucher_date'] = '';
                         $bank_row['reference_no'] = '';
-                        $bank_row['amount'] = '';
+                        $bank_row['reference_amount'] = '';
                         if (!empty($fetchedArr['cheque_amount']) && ($fetchedArr['amount']-$fetchedArr['cheque_amount']) > 0) {
                             $interestRow = [
                                 "voucher_no" => $unique_voucher_no,
@@ -243,7 +243,7 @@ class FinanceController extends Controller {
                         $company_row['dr_/_cr'] = 'Credit';
                         $company_row['voucher_date'] = '';
                         $company_row['reference_no'] = '';
-                        $company_row['amount'] = '';
+                        $company_row['reference_amount'] = '';
                         $records['PAYMENT'][] = $company_row;
                     }
                 }
