@@ -87,7 +87,7 @@ class Application extends BaseModel
      */
     public function appLimit()
     {
-        return $this->hasOne('App\Inv\Repositories\Models\AppLimit', 'app_id');
+        return $this->hasOne('App\Inv\Repositories\Models\AppLimit', 'app_id')->where(['status' =>1]);
     }
 
      /**
