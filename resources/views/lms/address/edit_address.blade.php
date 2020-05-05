@@ -11,7 +11,16 @@
 
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="address_type">GST Number <small>{{isset($userAddress_data->gst)? '(address based on GST: '.$userAddress_data->gst->pan_gst_hash.')': ''}}</small></label><br />
+                @php
+                if($userAddress_data->gst !=null)
+                    $msg = '(address based on 1GST: '.$userAddress_data->gst->pan_gst_hash.')';
+                elseif(array_key_exists($userAddress_data->biz_id, $app_gsts) && $userAddress_data->address_type == 0)
+                    $msg = '(address based on 2GST: '.$app_gsts[$userAddress_data->biz_id].')';
+                else
+                    $msg = '';
+                @endphp
+
+                <label for="address_type">GST Number <small>{{$msg}}</small></label><br />
                 <select class="form-control" name="gst_no" id="gst_no" onchange="fillAddress(this.value)">
                     <option disabled value="" data-id="" selected>Select GST</option>
                     @foreach($gsts as $gst)
@@ -53,7 +62,9 @@
                 <select class="form-control" name="is_active" id="is_active">
                     <option disabled value="" selected>Select</option>
                     <option {{$userAddress_data->is_active == 1 ? 'selected' : ''}} value="1">Active</option>
+                    @if($userAddress_data->address_type)
                     <option {{$userAddress_data->is_active == 0 ? 'selected' : ''}} value="0">In-Active</option>
+                    @endif
                 </select>
             </div>
             @if($is_show_default && $userAddress_data->rcu_status)
