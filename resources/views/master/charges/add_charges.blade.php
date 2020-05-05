@@ -192,7 +192,7 @@
                 'sac_code': {
                     required: true,
                     digits: true,
-                    maxlength: 10,
+                    maxlength: 4,
                 },
                 'chrg_applicable_id': {
                     required: true,
@@ -250,6 +250,8 @@
     function sac_validation() {
         var val = document.getElementById('sac_code').value;
         if(isNaN(val)) {
+            document.getElementById('sac_code').value = ""
+        } else if(val.length > 4) {
             document.getElementById('sac_code').value = ""
         }
     }
