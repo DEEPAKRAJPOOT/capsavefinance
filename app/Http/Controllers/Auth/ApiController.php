@@ -146,8 +146,8 @@ class ApiController
             if ($txn->trans_type == 32 && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
             }
-            $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL
-            $inst_date = $txn->invoiceDisbursed->disbursal->funded_date ?? NULL
+            $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL;
+            $inst_date = $txn->invoiceDisbursed->disbursal->funded_date ?? NULL;
             if (!empty($txn->payment_id)) {
               $inst_no = $txn->refundReq->tran_no ?? NULL;
               $inst_date = $txn->refundReq->actual_refund_date ?? NULL;
