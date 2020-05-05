@@ -25,6 +25,7 @@ try {
             },
            columns: [
                     {data: 'chrg_name'},
+                    {data: 'sac_code'},
                     {data: 'chrg_type'},
                     {data: 'chrg_calculation_type'},
                     {data: 'chrg_calculation_amt'},
