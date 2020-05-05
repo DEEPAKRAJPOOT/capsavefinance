@@ -92,14 +92,9 @@ class ApiController
             if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0 || $txn->trans_type == 17) {
                 continue;
             }
-            $accountDetails = $txn->userRelation->companyBankDetails ?? NULL;
-            if (empty($accountDetails) && !empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
-                 $response['message'] =  'No Relation Found between customer('. $txn->user_id .') and Company with Bank';
-                 return $response;
-            }
             $userName = $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name;
             $trans_type_name = $txn->getTransNameAttribute();
-            $txn_trans_type_id = $txn->transType->tally_trans_type;
+            $tally_voucher_type_id = $txn->transType->tally_trans_type;
             $cheque_amount = 0;
             if ($txn->trans_type == 16 && $txn->entry_type == 0) {
               $disburse_amt = $txn->invoiceDisbursed->disburse_amt;
@@ -109,7 +104,6 @@ class ApiController
                   $cheque_amount = 0;
               }
             }
-
             $invoice_no = $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
             $invoice_date = $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL;
             if ($txn->trans_type == 16 && $txn->entry_type == 0) {
@@ -124,31 +118,36 @@ class ApiController
                   $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
                   $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
                 }
-                if ($txn->trans_type == $parentRecord->trans_type && $txn_trans_type_id == 3) {
+                if ($txn->trans_type == $parentRecord->trans_type && $tally_voucher_type_id == 3) {
                     continue;
                 }
             }
-            if ($txn->trans_type == 16 && empty($invoice_no)) {
-              continue;
+            $accountDetails = $txn->userRelation->companyBankDetails ?? NULL;
+            if (empty($accountDetails) && !empty($invoice_no)) {
+                 $response['message'] =  'No Relation Found between customer('. $txn->user_id .') and Company with Bank';
+                 return $response;
             }
-            if ($txn_trans_type_id == 3) {
-                if ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) {
+            if ($txn->trans_type == 16 && empty($invoice_no)) {
+                continue;
+            }
+            if ($tally_voucher_type_id == 3) {
+                if (($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
                    $ignored_txns[] = $txn->trans_id;
                    continue;
                 }
             } 
-            if ($txn->trans_type == 32 && $txn->entry_type == 1) {
-               $txn_trans_type_id = 3;
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF')]) && $txn->entry_type == 1) {
+               $tally_voucher_type_id = 3;
             }
             if ($txn->trans_type == 32 && $txn->entry_type == 0) {
-               $txn_trans_type_id = 1;
+               $tally_voucher_type_id = 1;
             }
             $common_array = [
                   'batch_no' =>  $batch_no,
                   'transactions_id' =>  $txn->trans_id,
                   'is_debit_credit' =>  $txn->entry_type,
                   'trans_type' =>  $trans_type_name,
-                  'tally_trans_type_id' =>  $txn_trans_type_id,
+                  'tally_trans_type_id' =>  $tally_voucher_type_id,
                   'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
                   'tally_voucher_code' =>  $txn->transType->voucher->voucher_no,
                   'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
