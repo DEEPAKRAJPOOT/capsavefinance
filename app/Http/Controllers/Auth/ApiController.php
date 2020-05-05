@@ -49,6 +49,7 @@ class ApiController
         $parent_settled = [];
         if (!$paymentData->isEmpty()) {
           foreach ($paymentData as $key => $pmnt) {
+            $i++;
             $accountDetails = $pmnt->userRelation->companyBankDetails ?? '';
             if (empty($accountDetails)) {
                  $response['message'] =  'No Relation Found between customer('. $pmnt->user_id .') and Company with Bank';
@@ -91,6 +92,7 @@ class ApiController
 
 
         foreach ($txnsData as $key => $txn) {
+            $i++;
             if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0 || $txn->trans_type == 17) {
                 continue;
             }
@@ -178,7 +180,6 @@ class ApiController
                   'remarks' => '',
                   'narration' => '',
             ];
-            $i++;
             if (!empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
               $gstData['base_amount'] = $txn->userinvoicetrans->base_amount;
               if ($txn->userinvoicetrans->sgst_amount != 0) {
