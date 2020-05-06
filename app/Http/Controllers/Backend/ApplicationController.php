@@ -893,7 +893,7 @@ class ApplicationController extends Controller
                                       $whereCond=[];
                                       $whereCond['user_id'] = $user_id;
                                       $lmsData = $this->appRepo->getLmsUsers($whereCond);
-                                      if (isset($lmsData[0])) {
+                                      if (isset($lmsData[0]) && !empty($lmsData[0]->virtual_acc_id)) {
                                         $virtualId =  $lmsData[0]->virtual_acc_id;
                                       } else {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
