@@ -146,13 +146,14 @@ trait LmsTrait
         * disburseType = 1 for online and 2 for manually
         */
         $disbursalData = [];
+        $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
         $interest= 0;
         $margin= 0;
 
         $tenor = $this->calculateTenorDays($invoice);
         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+        $tInterest = $this->calInterest($fundedAmount, $interestRate/100, $tenor);
 
         if($invoice['program_offer']['payment_frequency'] == 1) {
             $interest = $tInterest;
