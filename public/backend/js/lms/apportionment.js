@@ -138,17 +138,12 @@ class Apportionment {
         var unapplied_amt = payment_amt-settled_amt;
         if(unapplied_amt < 0 ){
             alert("Sum of your total entries is grater than Re-payment amount");
-            return false;
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
     }
 
     onPaymentChange(transId){
-        var returnval = this.calculateUnAppliedAmt();
-        if (returnval == false) { 
-            $("input[name='payment["+transId+"]']").val('');
-            $("input[name='check["+transId+"]']").prop('checked', false);
-        }
+        this.calculateUnAppliedAmt()
     }
 
     onCheckChange(transId){
@@ -161,11 +156,7 @@ class Apportionment {
         } else { 
             $("input[name='payment["+transId+"]']").attr('readonly',true);
         } */
-        var returnval = this.calculateUnAppliedAmt();
-        if (returnval == false) { 
-            $("input[name='payment["+transId+"]']").val('');
-            $("input[name='check["+transId+"]']").prop('checked', false);
-        }
+        this.calculateUnAppliedAmt()
     }
     
     validateMarkSettled(el){
