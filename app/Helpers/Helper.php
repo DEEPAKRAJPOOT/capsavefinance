@@ -1521,7 +1521,7 @@ class Helper extends PaypalHelper
          public   function getAdhoc($attr)
         {
              
-            return  AppOfferAdhocLimit::where(['prgm_offer_id' =>$attr['prgm_offer_id']])->sum('limit_amt');
+            return  AppOfferAdhocLimit::where(['prgm_offer_id' =>$attr['prgm_offer_id']])->get();
         } 
          
         
