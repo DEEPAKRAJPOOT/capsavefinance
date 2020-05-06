@@ -599,6 +599,7 @@ class InvoiceController extends Controller {
         foreach ($supplierIds as $userid) {
             $disburseAmount = 0;
             foreach ($allinvoices as $invoice) {
+                // dd($invoice);
                 if($invoice['supplier_id'] = $userid) {
                     
                     $interest= 0;
@@ -643,7 +644,7 @@ class InvoiceController extends Controller {
 
             } 
         }
-        // $result = $this->export($exportData, $batchId);
+        $result = $this->export($exportData, $batchId);
         $file['file_path'] = $result['file_path'] ?? '';
         if ($file) {
             $createBatchFileData = $this->createBatchFileData($file);
