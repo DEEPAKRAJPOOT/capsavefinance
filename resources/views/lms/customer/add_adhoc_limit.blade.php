@@ -41,9 +41,11 @@
     
    $(document).ready(function(){
         var start_date = "{{ $data->start_date }}";
-        $('#start_date').datetimepicker('setStartDate',  start_date);
         var end_date = "{{ $data->end_date }}";
-        $('#end_date').datetimepicker('setStartDate',  end_date);
+        $('#start_date').datetimepicker('setStartDate',  start_date);
+        $('#start_date').datetimepicker('setEndDate',  end_date);
+        $('#end_date').datetimepicker('setStartDate',  start_date);
+        $('#end_date').datetimepicker('setEndDate',  end_date);
 
         $('#adhocForm').validate({ // initialize the plugin
             
