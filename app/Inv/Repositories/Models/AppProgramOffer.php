@@ -426,6 +426,10 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
     }
     
+    public function adhoc_limit(){
+        return $this->hasOne('App\Inv\Repositories\Models\AppOfferAdhocLimit','prgm_offer_id','prgm_offer_id');
+    }
+    
     public static function getBulkProgramOfferByPrgmId($attr)
     {
         $result = self::select('app_prgm_offer.*','app.user_id','users.f_name','users.l_name','biz.biz_entity_name','lms_users.customer_id')
@@ -504,6 +508,11 @@ class AppProgramOffer extends BaseModel {
                 }
                 $result = $query->get();
         return !$result->isEmpty() ? $result : [];
+    }
+
+    public static function getAppPrgmOfferById($prgm_offer_id = null)
+    {
+        return  self::with(['programLimit.appLimit'])->where(['prgm_offer_id'=>$prgm_offer_id])->orderBy('created_at','DESC')->first();
     }
     
     public function chargeName(){

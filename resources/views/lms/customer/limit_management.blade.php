@@ -4,7 +4,7 @@
 
   
 <div class="content-wrapper">
- <div class="row"> 
+ <div class="row">
      <div class=" col-lg-12 m-auto">
       <div class="card">
         @foreach($userAppLimit as $uLimit) 
@@ -79,21 +79,38 @@
                  <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
                </div>
                </div>
-           
+           	
+	   		<div class="row">
+	   			<div class="col-md-4" id="buttonDiv">
+					@can('add_adhoc_limit')
+				  	@if($val->program->is_adhoc_facility == 1)
+				  	<a data-toggle="modal" data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" >Add Adhoc Limit</a>
+				  	@endif
+				  	@endcan
+				  	@can('approve_adhoc_limit')
+				  	@if(isset($val->adhoc_limit->status) && $val->adhoc_limit->status == 0)
+				  	<a data-toggle="modal" data-target="#approveAdhocLimit" data-url ="{{ route('approve_adhoc_limit', ['user_id' => request()->get('user_id'), 'app_offer_adhoc_limit_id' => $val->adhoc_limit->app_offer_adhoc_limit_id ]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Approve Adhoc Limit</a>
+				  	@endif
+				  	@endcan
+				</div>
+	   		</div>
            
              @endforeach 
         </div>
       
 	@endforeach
-         </div>
-       
-          @endforeach 
-      </div>
+		 </div>
+	   
+		  @endforeach 
+	  </div>
   </div>
 </div>
 
  </div>
-    
+
+{!!Helpers::makeIframePopup('addAdhocLimit','Add Adhoc Limit', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('approveAdhocLimit','Confrim Approve Adhoc Limit', 'modal-xs')!!}
+	
 @endsection
 
 @section('additional_css')

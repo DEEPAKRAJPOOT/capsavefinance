@@ -31,14 +31,14 @@ class AppOfferAdhocLimit extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = true;
+    public $userstamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -59,12 +59,22 @@ class AppOfferAdhocLimit extends BaseModel {
         'updated_by',
     ];
 
-    
+    public static function saveAppOfferAdhocLimit($data, $id){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_null($id)) {
+            return self::where('app_offer_adhoc_limit_id', $id)->update($data);
+        } else {
+            return self::create($data);
+        }
+    }
+
     public static function checkUserAdhoc($attr)
     {
         $mytime = Carbon::now();
         $dateTime  =  $mytime->toDateTimeString();
         return self::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`') ->sum('limit_amt');
-       
     }
 }

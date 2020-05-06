@@ -2264,7 +2264,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {   
         return BizPanGst::getAppGSTsByUserId($user_id);
     }
-
+     public function saveAppOfferAdhocLimit($arr, $limit_id=null){
+        return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
+    }
 }
 
 
