@@ -151,7 +151,11 @@ class ApiController
                $tally_voucher_type_id = 3;
             }
             
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND')]) && $txn->entry_type == 0) {
+               $tally_voucher_type_id = 3;
+            }
+            
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
             } 
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
