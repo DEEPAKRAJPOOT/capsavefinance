@@ -588,7 +588,7 @@
 							</div>
 						</div>
 					</div>
-					@if($business_info->app->status != 2)
+					@if(request()->get('view_only'))
 					<div class="d-flex btn-section" style="/*display: none !important;*/">
 						<div class="ml-auto text-right">
 							<input type="submit" value="Save and Continue" class="btn btn-success btn-sm">
