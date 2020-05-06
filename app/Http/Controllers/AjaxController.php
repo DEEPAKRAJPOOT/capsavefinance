@@ -3662,7 +3662,7 @@ if ($err) {
                    $invoice_id = NULL;  
                    if($attr->status==0)
                    {
-                       $userLimit = InvoiceTrait::ProgramLimit($attr);
+                        $userLimit = InvoiceTrait::ProgramLimit($attr);
                         $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
                         $attr['comm_txt'] = $updateInvoice['comm_txt'];
                         $attr['status_id'] = $updateInvoice['status_id'];
