@@ -161,7 +161,11 @@ class Apportionment {
         } else { 
             $("input[name='payment["+transId+"]']").attr('readonly',true);
         } */
-        this.calculateUnAppliedAmt()
+        var returnval = this.calculateUnAppliedAmt();
+        if (returnval == false) { 
+            $("input[name='payment["+transId+"]']").val('');
+            $("input[name='check["+transId+"]']").prop('checked', false);
+        }
     }
     
     validateMarkSettled(el){
