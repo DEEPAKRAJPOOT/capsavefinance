@@ -105,6 +105,7 @@ $role = (isset($role)) ? $role :     11;
 @section('jscript')
 <script src="{{ asset('backend/js/ajax-js/invoice_list_disbursment_que.js') }}"></script>
 <script src="{{ asset('backend/js/invoice-disburse.js') }}"></script>
+<script src="{{ asset('backend/js/manage_invoice.js') }}"></script>
 <style>
     .itemBackground 
     { 
