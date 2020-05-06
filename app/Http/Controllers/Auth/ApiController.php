@@ -138,6 +138,9 @@ class ApiController
                 $ignored_txns[$txn->trans_id] = 'Disbursal without Invoice no';
                 continue;
             }
+            if (!empty($txn->payment_id) && $txn->entry_type == 1) {
+                $tally_voucher_type_id = 2;
+            }
 
             if ($tally_voucher_type_id == 3) {
                 if (($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
@@ -145,15 +148,10 @@ class ApiController
                    continue;
                 }
             }
-
-            if ((!empty($txn->payment_id) || in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')])) && $txn->entry_type == 1) {
-                $tally_voucher_type_id = 2;
-            }
-
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF'),  config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
                $tally_voucher_type_id = 3;
             } 
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND')]) && $txn->entry_type == 0) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
             }
             $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL;
@@ -227,7 +225,7 @@ class ApiController
             }
           $selectedData[] = $txn->trans_id;
         }
-        dd($ignored_txns, $tally_data);
+        // dd($ignored_txns);
         try {
           if (empty($tally_data)) {
              $response['message'] =  'No Records are selected to Post in tally.';
