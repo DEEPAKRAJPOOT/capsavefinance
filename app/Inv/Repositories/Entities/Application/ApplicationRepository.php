@@ -1156,7 +1156,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	 */
 	public function getCustomerPrgmAnchors($user_id) 
 	{
-
+        $curDate = \Carbon\Carbon::now()->format('Y-m-d');   
+        
         return AppProgramOffer::whereHas('programLimit.appLimit.app.user', function ($query) use ($user_id) {
                     $query->where(function ($q) use ($user_id) {
                         $q->where('user_id', $user_id);
@@ -1165,8 +1166,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->with('anchor')
                 ->with('program')
                 ->whereHas('programLimit.appLimit.app.acceptedOffer')
-                ->whereHas('programLimit', function ($query) {
+                ->whereHas('programLimit', function ($query) use($curDate) {
                         $query->where('product_id', 1);
+                        $query->where('status', 1);
+                        $query->where('start_date', '<=', $curDate);
+                        $query->where('end_date', '>=', $curDate);
                 })
                 ->where('is_active', 1)
                 ->get();
