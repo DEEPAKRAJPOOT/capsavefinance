@@ -122,7 +122,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 {!!Helpers::makeIframePopup('addAdhocLimit','Add Adhoc Limit', 'modal-lg')!!}
