@@ -119,4 +119,5 @@
    <p align="center" style="font-size: 9px;font-family: Book Antiqua;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</p>
    <span style="font-size: 9px;font-family: Book Antiqua;"><strong>FOR {{$company_data['name']}}</strong></span>
    <p lang="en-US">&nbsp;</p>
-   <p lang="en-US"><span style="font-family: Book Antiqua;"><span style="font-size: small;"><strong>Authorized Signatory</strong></span></span></p>
+   <p style="font-size: 9px;font-family: Book Antiqua;"><strong>Authorized Signatory</strong></span></p>
+   <p lang="en-US">&nbsp;</p>
