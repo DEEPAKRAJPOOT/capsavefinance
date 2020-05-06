@@ -15,8 +15,7 @@ foreach ($apps as $app) {
 	foreach ($app->invoices as $inv) {
 		$invoice = $inv->toArray();
 		$margin = $invoice['program_offer']['margin'];
-		$interestRate = $invoice['program_offer']['interest_rate']/100;
-
+        $interestRate = ($invoice['is_adhoc'] == 1) ? $invoice['program_offer']['adhoc_interest_rate'] : $invoice['program_offer']['interest_rate'];
 
 		$now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); 
         $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
@@ -28,7 +27,7 @@ foreach ($apps as $app) {
 		$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 		$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 		if($invoice['program_offer']['payment_frequency'] == 1) {
-			$interest = $fundedAmount * $tenor * ($interestRate / 360) ;                
+			$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
         }
 		$finalDisburseAmt += round($fundedAmount - $interest, 2);
 	}
@@ -197,8 +196,7 @@ foreach ($apps as $app) {
 										foreach ($app->invoices as $inv) {
 											$invoice = $inv->toArray();
 											$margin = $invoice['program_offer']['margin'];
-											$interestRate = $invoice['program_offer']['interest_rate']/100;
-
+        									$interestRate = ($invoice['is_adhoc'] == 1) ? $invoice['program_offer']['adhoc_interest_rate'] : $invoice['program_offer']['interest_rate'];
 
 											$now = strtotime((isset($invoice['invoice_due_date'])) ? $invoice['invoice_due_date'] : ''); 
 									        $your_date = strtotime((isset($invoice['invoice_date'])) ? $invoice['invoice_date'] : '');
@@ -210,7 +208,7 @@ foreach ($apps as $app) {
 											$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 											if($invoice['program_offer']['payment_frequency'] == 1) {
-    											$interest = $fundedAmount * $tenor * ($interestRate / 360) ;                
+    											$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
 						                    }
 											$disburseAmount += round($fundedAmount - $interest, 2);
 											$totalMargin += round($tMargin, 2);
