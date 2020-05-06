@@ -59,6 +59,7 @@ class LmsUser extends Authenticatable
         'user_id',
         'customer_id',
         'app_id',
+        'virtual_acc_id',
         'created_at',
         'created_by'
     ];
