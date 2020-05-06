@@ -9,6 +9,7 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\BizApi;
+use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Otp;
 use App\Inv\Repositories\Contracts\UserInterface;
 use App\Inv\Repositories\Models\User as UserModel;
@@ -1451,7 +1452,9 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function lmsGetCustomers()
     {
-        $result = LmsUser::with('user')->orderBy('lms_user_id','DESC');
+
+        $getAppId  = Application::where(['status' => 2])->pluck('app_id');
+        $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
         return $result ?: false;
     }
 

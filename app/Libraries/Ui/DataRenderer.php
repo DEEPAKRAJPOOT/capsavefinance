@@ -187,15 +187,25 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         $app_id = $app->app_id;
+                        $parent_app_id = $app->parent_app_id;
+                        $ret = '';
                         if(Helpers::checkPermission('company_details')){
                            if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
-                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
-                        }else{
-                            return "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                           $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                                                     
+                        } else {
+                            $ret = "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                        }
+                        
+                        if (!empty($parent_app_id)) {
+                            $aData = Application::getAppData((int)$parent_app_id);
+                            $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                         } 
+                           
+                        return $ret;
                     }
                 )
                 ->addColumn(
@@ -313,31 +323,43 @@ class DataRenderer implements DataProviderInterface
                     function ($app) use ($request) {
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
+                        if ($view_only && in_array($app->status, [0,1,2]) ) {
+                           //if(Helpers::checkPermission('add_app_note')){
+                                $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
+                            //}                            
+                        }
                         if ($view_only && $app->status == 1) {
                           //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
-                           if(Helpers::checkPermission('add_app_note')){
-                                $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
-                            }
+
                             if(Helpers::checkPermission('send_case_confirmBox')){
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
                                 $roleData = Helpers::getUserRole();     
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
                                 if ($currentStage && $currentStage->order_no <= 16 ) {                                                                                                           
-                                    $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                    $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
                                     if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
                                         if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
                                             $act = $act . $moveToBackStageUrl;
                                         }
                                     } else {
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';    
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
 
                                         if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                             $act = $act . $moveToBackStageUrl;
                                         }
                                     }
                                 }
-                            }
-                            
+                            }                                                        
+                        }
+                        if ($app->renewal_status == 1) {
+                            $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
+                        }
+                        $where=[];
+                        $where['user_id'] = $app->user_id;
+                        $where['status'] = [0,1];
+                        $appData = Application::getApplicationsData($where);
+                        if ($app->status == 2 && !isset($appData[0])) { //Limit Enhancement
+                            $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
                         }
                         return $act;
                                       
@@ -358,6 +380,23 @@ class DataRenderer implements DataProviderInterface
                             $query->where('app.is_assigned', $is_assigned);
                         });
                     }
+                    if ($request->get('status') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $status = $request->get('status');
+                            if ($status == 3) {
+                                $query->where('app.app_type', 2);
+                            } else {
+                                
+                                //if ($status == 4) {
+                                    //$query->whereNotNull('app.parent_app_id');
+                                //    $query->where('app.status', $status);
+                                //} else {
+                                    //$query->where('app.status', $status);                                
+                                //}
+                                $query->where('app.renewal_status', $status);
+                            }
+                        });
+                    }                    
                     
                 })
                 ->make(true);
@@ -421,8 +460,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(($app->status == 1)? "Completed":"Incomplete").'</label>';
+                    $app_status = config('common.app_status');                    
+                    return '<label class="badge '.(($app->status == 1 || $app->status == 2)? "badge-primary":"badge-warning").'">'.(($app->status == 1 || $app->status == 2)? $app_status[$app->status] : $app_status[$app->status] ).'</label>';
 
                 })
                 /*->addColumn(
@@ -756,7 +795,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                  ->addColumn(
@@ -965,7 +1005,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                 ->addColumn(
@@ -1059,9 +1100,10 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        $custo_name = '';
+                       $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1170,7 +1212,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1249,7 +1292,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1364,7 +1408,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1455,7 +1500,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                  ->addColumn(
@@ -1532,7 +1578,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1643,7 +1690,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -2594,6 +2642,11 @@ class DataRenderer implements DataProviderInterface
                     'chrg_name',
                     function ($charges) {
                     return $charges->chrg_name;
+                })
+                ->addColumn(
+                    'sac_code',
+                    function ($charges) {
+                    return $charges->sac_code;
                 })
                 ->addColumn(
                     'chrg_type',
@@ -5333,6 +5386,179 @@ class DataRenderer implements DataProviderInterface
                         $query->where(function ($query) use ($request) {
                            $invoice_no = trim($request->get('invoice_no'));
                            $query->where('invoice_no', 'like', "%$invoice_no%");
+                        });
+                    }
+                    
+                })
+            ->make(true);
+    }
+    
+    /*      
+     * Get application list
+     */
+    public function getRenewalAppList(Request $request, $app)
+    {
+        return DataTables::of($app)
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->addColumn(
+                    'app_id',
+                    function ($app) {
+                        $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
+                        $app_id = $app->app_id;
+                        /*
+                        if(Helpers::checkPermission('company_details')){
+                           if($user_role == config('common.user_role.APPROVER'))
+                                $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           else
+                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                        }else{
+                            return "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                        }
+                        */
+                        $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);                        
+                        return "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                })
+                ->addColumn(
+                    'name',
+                    function ($app) {                        
+                        if($app->user_type && $app->user_type==1){
+                            $anchorUserType='<small class="aprveAppListBtn">( Supplier )</small>'; 
+                        }else if($app->user_type && $app->user_type==2){
+                            $anchorUserType='<small class="aprveAppListBtn">( Buyer )</small>';
+                        }else{
+                            $anchorUserType='';
+                        }
+                        return $app->name ? $app->name .'<br>'. $anchorUserType : $anchorUserType;
+                })
+                ->addColumn(
+                    'contact',
+                    function ($app) {
+                        $contact = '';
+                        $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
+                        $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
+                        return $contact;
+                    }
+                )               
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($app) {
+                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+                    /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                    
+                    if($app->anchor_id){
+                       $userInfo = User::getUserByAnchorId($app->anchor_id);
+                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                    } else {
+                       $achorName='';  
+                    }                    
+                    return $achorName;
+                    
+                })            
+                ->addColumn(
+                    'assignee',
+                    function ($app) {  
+                        $data = '';                  
+                    //if ($app->to_id){
+                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
+                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                    //} else {
+                    //    $assignName=''; 
+                    //} 
+                    //return $assignName;
+                    $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
+                    if($userInfo){
+                        $data .= $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                    }
+                   // $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
+                    $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Approver List">View Approver List</a>';
+                    return $data;
+                })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        $data = '';
+                        if ($app->from_role && !empty($app->from_role)) {
+                            $data .= $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                        } else {
+                            $data .= $app->assigned_by ? $app->assigned_by : '';
+                        }
+                       // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
+                        return $data;
+                        //$fromData = AppAssignment::getOrgFromUser($app->app_id);
+                        //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
+                })                
+                ->addColumn(
+                    'shared_detail',
+                    function ($app) {
+                    return $app->sharing_comment ? $app->sharing_comment : '';
+
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                    //$app_status = config('inv_common.app_status');                    
+                    return $app->status == 1 ? 'Completed' : 'Incomplete';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($app) use ($request) {
+                        $act = '';
+                        $view_only = Helpers::isAccessViewOnly($app->app_id);
+                        if ($view_only && $app->renewal_status == 1) {
+                            
+                            /*
+                            if (Helpers::checkPermission('add_app_note')){
+                                $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-file-image-o" aria-hidden="true"></i></a>';
+                            }
+                            if(Helpers::checkPermission('send_case_confirmBox')){
+                                $currentStage = Helpers::getCurrentWfStage($app->app_id);
+                                $roleData = Helpers::getUserRole();     
+                                $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
+                                if ($currentStage && $currentStage->order_no <= 16 ) {                                                                                                           
+                                    $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                                    if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
+                                        if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
+                                            $act = $act . $moveToBackStageUrl;
+                                        }
+                                    } else {
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';    
+
+                                        if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
+                                            $act = $act . $moveToBackStageUrl;
+                                        }
+                                    }
+                                }
+                            }
+                            */
+                            $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-window-restore" aria-hidden="true"></i></a> ';
+                            
+                        }
+                        return $act;
+                                      
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_assign') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_assign');
+                            $query->where('app.is_assigned', $is_assigned);
                         });
                     }
                     

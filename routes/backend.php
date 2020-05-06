@@ -585,6 +585,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\CamController@saveBankDetail'
                 ]);
             }); //end of cam   
+                        
+            Route::get('copy-app-confirmBox', [
+                'as' => 'copy_app_confirmbox',
+                'uses' => 'Backend\RenewalController@copyAppConfirmbox'
+            ]);
+            
+            Route::post('renew-application', [
+                'as' => 'renew_application',
+                'uses' => 'Backend\RenewalController@renewApplication'
+            ]);
+
+            Route::get('renewal-application-list', [
+                'as' => 'renewal_application_list',
+                'uses' => 'Backend\RenewalController@renewalAppList'
+            ]); 
+            
+            Route::get('check-renewal-application', [
+                'as' => 'check_renewal_application',
+                'uses' => 'Backend\RenewalController@checkRenewalApps'
+            ]);            
+            
         });//end of application
 
         Route::group(['prefix' => 'lead'], function () {
@@ -1402,7 +1423,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('export_txns', [
                 'as' => 'export_txns',
                 'uses' => 'Backend\FinanceController@exportTransactions'
-            ]);
+            ]);                        
         });
 
         Route::post('ckeditor/image_upload', 'CKEditorController@upload')->name('upload_ckeditor_image');

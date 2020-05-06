@@ -58,7 +58,18 @@ use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\CamReviewSummPrePost;
 use App\Inv\Repositories\Models\OfferCharge;
 use App\Inv\Repositories\Models\BizPanGst;
-use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\BizApi;
+use App\Inv\Repositories\Models\BizGstLog;
+use App\Inv\Repositories\Models\BizPerfios;
+use App\Inv\Repositories\Models\AppProduct;
+use App\Inv\Repositories\Models\AppDocProduct;
+use App\Inv\Repositories\Models\AppBizFinDetail;
+use App\Inv\Repositories\Models\AppBizBankDetail;
+use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
+use App\Inv\Repositories\Models\UserAppDoc;
+use App\Inv\Repositories\Models\CamHygiene;
+use App\Inv\Repositories\Models\WfAppStage;
 
 /**
  * Application repository class
@@ -316,14 +327,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	{
             
 		return Application::with('business')
-				->with('appLimit')
-				->with('acceptedOffer')
-                                ->with('prgmLimit')
-                                ->with('disbursal')
-                                ->with('transactions') 
-				->whereHas('acceptedOffer')
-				->where(['user_id' => $user_id, 'status' => 2])
-				->get();
+				  ->with('prgmLimit')
+                                  ->where(['user_id' => $user_id, 'status' => 2])
+                                  ->get();
 	}    
 
 	/**
@@ -1374,9 +1380,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::getUpdatedApp($user_id);
     }  
 
+
     public function addressGetCustomers($user_id, $biz_id, $address_type=null)
     {
         return BusinessAddress::addressGetCustomer($user_id, $biz_id, $address_type);
+
     }
 
     public function getAppDataByOrder($where , $orderBy = 'DESC')
@@ -1752,19 +1760,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
     }
     
-    /**
-     * Get Applications Data
-     * 
-     * @param array $where
-     * @return mixed
-     * @throws InvalidDataTypeExceptions
-     */
-    public function getApplicationsData($where=[])
-    {
-        return Application::getApplicationsData($where);
-    } 
-    
-     /** get the user limit  **/
+
+   /** get the user limit  **/
+
    public function getUserLimit($user_id)
    {
        try
@@ -1777,6 +1775,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
    }
    
    /** get the user program  limit  **/
+
    public function getUserProgramLimit($user_id)
    {
        try
@@ -1810,10 +1809,461 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        }
        
    }  
-   
-    public function saveAppOfferAdhocLimit($arr, $limit_id=null){
-        return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
+
+    /**
+     * Get Renewal applications
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getRenewalApp()
+    {
+        return Application::getRenewalApp();
     }
     
+    public function createBusiness($bizData)
+    {
+        return Business::create($bizData);
+    }
+    
+    public function createApplication($appData)
+    {
+        return Application::create($appData);
+    }
+        
+    public function getOwnerByBizId($bizId)
+    {
+        return BizOwner::getOwnerByBizId($bizId);
+    }
+    
+    public function createBizOwner($bizOwnerData)
+    {
+        return BizOwner::create($bizOwnerData);
+    }
+    
+    /**
+     * Get All Addresses
+     * 
+     * @param array $whereCond
+     * @return type
+     */
+    public function getBizAddresses($whereCond=[])
+    {
+        return BusinessAddress::getBizAddresses($whereCond);
+    }
+    
+    /**
+     * Get All Addresses By Biz Id
+     * 
+     * @param int $bizId
+     * @return type
+     */
+    public function getBizApiData($whereCond=[])
+    {
+        return BizApi::getBizApiData($whereCond);
+    }
+
+    /**
+     * Save Biz Api Data
+     * 
+     * @param array $bizApiData
+     * @return mixed
+     */
+    public function saveBizApiData($bizApiData)
+    {
+        return BizApi::saveBizApiData($bizApiData);
+    }    
+    
+    /**
+     * Get Biz Gst Log Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizGstLogData($whereCond=[])
+    {        
+        return BizGstLog::getBizGstLogData($whereCond);
+    }   
+    
+    /**
+     * Save Biz Gst Log Data
+     * 
+     * @param array $bizGstLogData
+     * @return mixed
+     */
+    public function saveBizGstLogData($bizGstLogData)
+    {
+        return BizGstLog::create($bizGstLogData);
+    }    
+  
+    /**
+     * Get Biz Pan Gst Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizPanGstData($whereCond=[])
+    {
+        return BizPanGst::getBizPanGstData($whereCond);
+    }   
+    
+    /**
+     * Save Biz Pan Gst Data
+     * 
+     * @param array $bizPanGstData
+     * @return mixed
+     */
+    public function saveBizPanGstData($bizPanGstData)
+    {
+        return BizPanGst::saveBizPanGstData($bizPanGstData);
+    } 
+    
+    /**
+     * Get Biz Perfios Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizPerfiosData($whereCond=[])
+    {
+        return BizPerfios::getBizPerfiosData($whereCond);
+    }   
+    
+    /**
+     * Save Biz Perfios Data
+     * 
+     * @param array $bizPerfiosData
+     * @return mixed
+     */
+    public function saveBizPerfiosData($bizPerfiosData)
+    {
+        return BizPerfios::saveBizPerfiosData($bizPerfiosData);
+    }
+    
+    /**
+     * Get Application Product Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppProductData($whereCond=[])
+    {
+        return AppProduct::getAppProductData($whereCond);
+    }   
+    
+    /**
+     * Save Application Product Data
+     * 
+     * @param array $appProductData
+     * @return mixed
+     */
+    public function saveAppProductData($appProductData)
+    {
+        return AppProduct::saveAppProductData($appProductData);
+    }
+
+    /**
+     * Get Application Documents
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppDocuments($whereCond=[])
+    {
+        return AppDocument::getAppDocuments($whereCond);
+    } 
+    
+    /**
+     * Save Application Documents
+     * 
+     * @param array $appDocsData
+     * @return mixed
+     */
+    public function saveAppDocuments($appDocsData)
+    {
+        return AppDocument::create($appDocsData);
+    }     
+
+    /**
+     * Get Application Document Files
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppDocFiles($whereCond=[])
+    {
+        return AppDocumentFile::getAppDocFiles($whereCond);
+    } 
+    
+    /**
+     * Save Application Document Files
+     * 
+     * @param array $appDocFiles
+     * @return mixed
+     */
+    public function saveAppDocFiles($appDocFiles)
+    {
+        return AppDocumentFile::create($appDocFiles);
+    }
+    
+    /**
+     * Get Application Product Documents
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppProductDocs($whereCond=[])
+    { 
+        return AppDocProduct::getAppProductDocs($whereCond);
+    }  
+    
+    /**
+     * Save Application Product Documents
+     * 
+     * @param array $appProductDocs
+     * @return mixed
+     */
+    public function saveAppProductDocs($appProductDocs)
+    { 
+        return AppDocProduct::create($appProductDocs);
+    }
+    
+    /**
+     * Get Application Business Finance Detail
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppBizFinDetail($whereCond=[])
+    {
+        return AppBizFinDetail::getAppBizFinDetail($whereCond);
+    }    
+    
+    /**
+     * Save Application Business Finance Detail
+     * 
+     * @param array $appBizFinData
+     * @return mixed
+     */
+    public function saveAppBizFinDetail($appBizFinData)
+    {
+        return AppBizFinDetail::create($appBizFinData);
+    } 
+                
+    /**
+     * Get Application Business Bank Detail
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getAppBizBankDetail($whereCond=[])
+    {
+        return AppBizBankDetail::getAppBizBankDetail($whereCond);
+    }    
+    
+    /**
+     * Save Application Business Bank Detail
+     * 
+     * @param array $appBizBankData
+     * @return mixed
+     */
+    public function saveAppBizBankDetail($appBizBankData)
+    {
+        return AppBizBankDetail::create($appBizBankData);
+    } 
+
+    /**
+     * Get Cam Report Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReportData($whereCond=[])
+    {
+        return Cam::getCamReportData($whereCond);
+    }   
+    
+    /**
+     * Save Cam Report Data
+     * 
+     * @param array $camReportData
+     * @return mixed
+     */
+    public function saveCamReportData($camReportData)
+    {
+        return Cam::create($camReportData);
+    } 
+    
+    /**
+     * Get Cam Hygiene Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamHygieneData($whereCond=[])
+    {
+        return CamHygiene::getCamHygieneData($whereCond);
+    }   
+    
+    /**
+     * Save Cam Hygiene Data
+     * 
+     * @param array $camHygieneData
+     * @return mixed
+     */
+    public function saveCamHygieneData($camHygieneData)
+    {
+        return CamHygiene::create($camHygieneData);
+    }    
+    
+    /**
+     * Get Cam Reviewer Summary Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReviewerSummaryData($whereCond=[])
+    {
+        return CamReviewerSummary::getCamReviewerSummaryData($whereCond);
+    }  
+    
+    /**
+     * Save Cam Reviewer Summary Data
+     * 
+     * @param array $camReviewerSummary
+     * @return mixed
+     */
+    public function saveCamReviewerSummaryData($camReviewerSummary)
+    {
+        return CamReviewerSummary::create($camReviewerSummary);
+    }   
+    
+    /**
+     * Get Cam Reviewer Risk Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReviewerRiskData($whereCond=[])
+    {
+        return CamReviewSummRiskCmnt::getCamReviewerRiskData($whereCond);
+    } 
+    
+    /**
+     * Save Cam Reviewer Risk Data
+     * 
+     * @param array $camReviewerRiskData
+     * @return mixed
+     */
+    public function saveCamReviewerRiskData($camReviewerRiskData)
+    {
+        return CamReviewSummRiskCmnt::create($camReviewerRiskData);
+    } 
+    
+    /**
+     * Get Cam Reviewer Pre Post Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getCamReviewerPrePostData($whereCond=[])
+    {
+        return CamReviewSummPrePost::getCamReviewerPrePostData($whereCond);
+    }  
+    
+    /**
+     * Save Cam Reviewer Pre Post Data
+     * 
+     * @param array $camReviewerPrePostData
+     * @return mixed
+     */
+    public function saveCamReviewerPrePostData($camReviewerPrePostData)
+    {
+        return CamReviewSummPrePost::create($camReviewerPrePostData);
+    }
+    
+    /**
+     * Get User Application Doc Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getUserAppDocData($whereCond=[])
+    {
+        return UserAppDoc::getUserAppDocData($whereCond);
+    }  
+    
+    /**
+     * Save User Application Doc Data
+     * 
+     * @param array $userAppDocData
+     * @return mixed
+     */
+    public function saveUserAppDocData($userAppDocData)
+    {
+        return UserAppDoc::create($userAppDocData);
+    }  
+    
+    /**
+     * Save application workflow stage
+     * 
+     * @param array $arrData
+     * @return mixed
+     * @throws BlankDataExceptions
+     */
+    public function saveWfDetail($arrData)
+    {
+        return WfAppStage::saveWfDetail($arrData);
+    }
+
+
+    /**
+     * Get Applications Data
+     * 
+     * @param array $where
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getApplicationsData($where=[])
+    {
+        return Application::getApplicationsData($where);
+    }   
+    
+    /**
+     * Get all renewal applications for data table
+     * 
+     * @return mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     */
+    public function getAllRenewalApps()
+    {
+        return Application::getAllRenewalApps();
+    }   
+    
+    public function updateAppLimit($data, $whereCond=[])
+    {
+        return AppLimit::updateAppLimit($data, $whereCond);
+    }
+
+    public function updatePrgmLimit($data, $whereCond=[])
+    {
+        return AppProgramLimit::updatePrgmLimit($data, $whereCond);
+    }      
+
+
+    /**
+    * Get GSTs by user id which are associated to application 
+    */
+    public function getAppGSTsByUserId($user_id)
+    {   
+        return BizPanGst::getAppGSTsByUserId($user_id);
+    }
+     public function saveAppOfferAdhocLimit($arr, $limit_id=null){
+        return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
+    }
 }
+
+
 

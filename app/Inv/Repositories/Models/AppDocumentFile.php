@@ -269,6 +269,22 @@ class AppDocumentFile extends BaseModel
                 ->get();   
         return  ($outQry->count() > 0) ? $outQry->toArray() : false;   
     }
+    
+    /**
+     * Get Application Document Files
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getAppDocFiles($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }    
 }
   
 

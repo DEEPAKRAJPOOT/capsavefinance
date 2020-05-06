@@ -144,7 +144,7 @@ class BusinessAddress extends BaseModel
             ->groupBy('user_id', 'Address', 'City', 'State', 'Pincode')
             ->orderBy('biz_addr_id', 'DESC');
             if($address_type != null){
-                $result->where('biz_addr.address_type', $address_type);
+                $result->whereIn('biz_addr.address_type', $address_type);
             }
         return $result;
     }
@@ -185,5 +185,21 @@ class BusinessAddress extends BaseModel
 
     public function gst(){
         return $this->hasOne('App\Inv\Repositories\Models\BizPanGst','biz_addr_id','biz_addr_id');
+    }
+    
+    /**
+     * Get All Addresses
+     * 
+     * @param array $whereCond
+     * @return type
+     */
+    public static function getBizAddresses($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result ? $result : [];
     }
 }

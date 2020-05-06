@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
+use Carbon\Carbon;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
@@ -53,7 +54,7 @@ class AppLimit extends BaseModel {
         'status',
         'start_date',
         'end_date',
-        'limit_type',
+        'actual_end_date',
         'created_at',
         'created_by',
         'updated_at',        
@@ -83,6 +84,22 @@ class AppLimit extends BaseModel {
        return  self::where(['user_id'=>$user_id,'status' => 1])->first();
     }
     
+
+ 
+    public static function updateAppLimit($data, $whereCond=[]){
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }        
+        
+        if (count($whereCond) > 0) {
+            return self::where($whereCond)->update($data);
+        }
+    }    
+
     public static function getUserProgramLimit($user_id)
     {
        return  self::where(['user_id'=>$user_id,'status' => 1])->first();
@@ -124,4 +141,13 @@ class AppLimit extends BaseModel {
         return  AppLimit::where(['user_id'=>$user_id, 'limit_type' => 1])
                 ->first();
     }
+    
+    public static function checkUserAdhoc($attr)
+    {
+        $mytime = Carbon::now();
+        $dateTime  =  $mytime->toDateTimeString();
+        return self::where(['user_id' => $attr['user_id'],'status' => 1,'limit_type' => 1])->where('parent_app_limit_id','<>', null)->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`') ->sum('tot_limit_amt');
+       
+    }
+
 }

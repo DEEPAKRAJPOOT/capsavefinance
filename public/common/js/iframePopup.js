@@ -114,6 +114,8 @@ var iframe_ids = [
         'editPaymentFrm',
         'addAdhocLimit',
         'approveAdhocLimit',
+        'confirmCopyApp',
+        'confirmEnhanceLimit',
     ];
 
 iframe_ids.forEach(function(id) {

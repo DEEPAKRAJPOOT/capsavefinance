@@ -112,11 +112,12 @@
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <label for="txtCreditPeriod">Limit <span class="error_message_label">*</span> </label>
-                                                                    <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                    <div class="relative">
+                                                                    <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('anchor_sub_limit',
                                                                     isset($subProgramData->anchor_sub_limit) ? number_format($subProgramData->anchor_sub_limit) : null,
                                                                     ['class'=>'form-control number_format '])   !!}
-
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -126,19 +127,22 @@
                                                             <div class="row">
                                                                 <div class="col-md-6">
                                                                     <label for="txtCreditPeriod">Min Loan Size<span class="error_message_label">*</span> </label>
-                                                                    <a href="javascript:void(0);" class="verify-owner-no">
+                                                                    <div class="relative">
+                                                                    <a href="javascript:void(0);" class="remaining">
                                                                         <i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('min_loan_size',
                                                                     isset($subProgramData->min_loan_size) ?  number_format($subProgramData->min_loan_size) : null,
                                                                     ['class'=>'form-control number_format ','placeholder'=>'Min'])   !!}
-
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <label for="txtCreditPeriod">Max Loan Size<span class="error_message_label">*</span> </label>
-                                                                    <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                    <div class="relative">
+                                                                    <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('max_loan_size',
                                                                     isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : null,
                                                                     ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max'])   !!}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>

@@ -650,6 +650,15 @@ class Transactions extends BaseModel {
         return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where($where)->get();
     }
 
+    
+    public function refundReq(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReq','payment_id','payment_id');
+    }
+
+    public function getParentTxn() {
+        return self::with('payment', 'user', 'invoiceDisbursed', 'lmsUser', 'transType', 'userinvoicetrans')->where('trans_id', $this->parent_trans_id)->first();
+    }
+
     public function userRelation() {
        return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceRelation', 'user_id', 'user_id')->where('is_active', 1);
     }

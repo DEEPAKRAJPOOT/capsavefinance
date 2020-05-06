@@ -112,6 +112,10 @@
         var getOldDays  = findDaysWithDate(cDate,second);
         var tenor  = $('#tenor').val();
         var tenor_old_invoice  = $('#tenor_old_invoice').val();
+        var invoice_approve_amount = $("#invoice_approve_amount").val();
+        var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+        var pro_limit_hide  = $('#pro_limit_hide').val();
+         var is_adhok  = $("#limit_type").is(":checked");
      if ($('form#signupForm').validate().form()) {  
        $("#anchor_id" ).rules( "add", {
         required: true,
@@ -181,11 +185,21 @@
           /// e.preventDefault();
           $("#exception").val(28);
         }
+         else if(is_adhok==true)
+        {
+         if(parseInt(invoice_approve_amount > pro_limit_hide))
+        {
+           $("#msgProLimit").show(); 
+           $("#msgProLimit").html('Invoice amount limit exceed'); 
+           e.preventDefault();
+        }
          
-        } else {
-        /// alert();
+        } 
+       }
+        else {
+       
         }  
-     });         
+     });       
   });  
   
   ////////////// get due date depend on tenor date ///////////
@@ -323,7 +337,7 @@
                   
                 }
         }); }); 
- //////////////////// onchange anchor  id get data /////////////////
+//////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.getTenor',function(){
       var program_id =  $("#program_id").val(); 
       var anchor_id =  $("#anchor_id").val(); 
@@ -331,7 +345,11 @@
        $("#invoice_date, #invoice_due_date, #invoice_approve_amount").val(''); 
       if(supplier_id=='')
       {
-          return false; 
+            $("#limit_type").prop("checked", false);
+            $("#pro_limit").html('');
+            $("#pro_remain_limit").html('');
+            $("#adhoc_msg").hide();
+             return false; 
       }
      var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
@@ -344,16 +362,61 @@
                 
                 },
                 success: function (data) {
-                       var tenor   =  data.tenor;
+                      if(data.is_adhoc!=0)
+                      {
+                           $("#adhoc_msg").show();
+                      }
+                        var tenor   =  data.tenor;
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#tenor_old_invoice").val(tenor_old_invoice);
                         $("#tenor").val(tenor);
-                        $("#pro_limit").html('Program Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
-                        $("#pro_remain_limit").html('Remaining Program Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
                         $("#pro_limit_hide").val(data.remain_limit);  
                       
                 }
         }); }); 
+  
+  
+    //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('click','.get_adhoc',function(){
+        $("#msgProLimit").hide();
+        var is_adhok  = $(this).is(":checked");
+        var program_id =  $("#program_id").val(); 
+        var anchor_id =  $("#anchor_id").val(); 
+        var supplier_id  = $("#supplier_id").val();
+        var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'is_adhoc':is_adhok,'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_adhoc,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                
+                },
+                success: function (data) {
+                        var tenor   =  data.tenor;
+                        var tenor_old_invoice  = data.tenor_old_invoice;
+                        $("#tenor_old_invoice").val(tenor_old_invoice);
+                        $("#tenor").val(tenor);
+                       if(data.is_adhoc==1)
+                       {
+                        $("#pro_limit").html('Adhoc. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_remain_limit").html('Remaining Adhoc. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit_hide").val(data.remain_limit); 
+                    }
+                    else
+                    {
+                        $("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
+                        $("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
+                        $("#pro_limit_hide").val(data.remain_limit); 
+                     
+                    }
+                      
+                }
+        }); }); 
+    
   $(document).on('change','#supplier_id',function(){
     var selValue = $(this).val();
     var selValueArr = selValue.split(",");

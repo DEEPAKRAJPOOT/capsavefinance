@@ -3570,7 +3570,7 @@ if ($err) {
       
 
     public function getTenor(Request $request)
-     {
+    {
        
         $result  =  explode(",",$request['program_id']);
         $supplier_id  =  explode(",",$request['supplier_id']);
@@ -3578,14 +3578,49 @@ if ($err) {
         $res['app_prgm_limit_id']  = $result[1];
         $res['user_id']  = $supplier_id[0];
         $res['app_id']  = $supplier_id[1];
+        $res['prgm_offer_id']  = $supplier_id[2];
         $res['anchor_id']  = $request['anchor_id'];
         $res['program_id']  = $res['prgm_id'];
-        $getTenor   = $this->invRepo->getTenor($res);
+        $getTenor   =  $this->invRepo->getTenor($res);
+        $limit =   InvoiceTrait::ProgramLimit($res);
+        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
+        $remainAmount = $limit-$sum;
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc]);
+    }
+    
+    public function getAdhoc(Request $request)
+    {
+      
+        $result  =  explode(",",$request['program_id']);
+        $supplier_id  =  explode(",",$request['supplier_id']);
+        $res['prgm_id']  = $result[0];
+        $res['app_prgm_limit_id']  = $result[1];
+        $res['user_id']  = $supplier_id[0];
+        $res['app_id']  = $supplier_id[1];
+        $res['prgm_offer_id']  = $supplier_id[2];
+        $res['anchor_id']  = $request['anchor_id'];
+        $res['program_id']  = $res['prgm_id'];
+        $getTenor   =  $this->invRepo->getTenor($res);
+    
+       if($request->is_adhoc=='true') 
+       { 
+        $limit   =  $this->invRepo->checkUserAdhoc($res);
+        $sum     = InvoiceTrait::adhocLimit($res);
+        $remainAmount = $limit-$sum;
+        $is_adhoc = 1;
+       }
+       else
+       {
         $limit =   InvoiceTrait::ProgramLimit($res);
         $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         $remainAmount = $limit-$sum;
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount]);
-     }
+        $is_adhoc = 0;
+       }
+        return response()->json(['status' => 1,'is_adhoc' => $is_adhoc,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount]);
+    }
+    
+    
     /**
      * change program status
      * 
@@ -3848,7 +3883,7 @@ if ($err) {
         $user_id =   (int) $this->request->get('user_id');
         $latestApp = $this->application->getUpdatedApp($user_id);
         $bizId = $latestApp->biz_id ? $latestApp->biz_id : null;
-        $customersList = $this->application->addressGetCustomers($user_id, $bizId, 6);
+        $customersList = $this->application->addressGetCustomers($user_id, $bizId, [0,6]);
         $users = $dataProvider->addressGetCustomers($this->request, $customersList);
         return $users;
     }
@@ -4337,5 +4372,11 @@ if ($err) {
         $cusCapLoc = $this->UserInvRepo->getCustAndCapsLoc($user_id);
         $data = $dataProvider->getCustAndCapsLoc($this->request, $cusCapLoc);
         return $data;
+    }
+    
+    public function getRenewalAppList(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getAllRenewalApps();
+        $applications = $dataProvider->getRenewalAppList($this->request, $appList);
+        return $applications;
     }
 }

@@ -69,7 +69,9 @@ class BaseRateController extends Controller {
                 if (!empty($baseRateData)) {
                     $baseRateId = $baseRateData['id'];
                     $baseRateData['is_default'] = 0;
-//                    dd($regComData);
+                    $startdate = Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d');
+                    $enddate = (new Carbon($startdate))->subDay();
+                    $baseRateData['end_date'] = ($baseRateData['end_date'] != null) ? $baseRateData['end_date'] : $enddate;
                     $this->masterRepo->updateBaseRate($baseRateData, $baseRateId);
                 }
             }
