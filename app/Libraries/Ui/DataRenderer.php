@@ -795,7 +795,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                  ->addColumn(
@@ -1004,7 +1005,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                 ->addColumn(
@@ -1098,9 +1100,10 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
-                        $custo_name = '';
+                       $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1209,7 +1212,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1288,7 +1292,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1403,7 +1408,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1494,7 +1500,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                  ->addColumn(
@@ -1571,7 +1578,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1682,7 +1690,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) { 
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(

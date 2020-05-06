@@ -78,6 +78,7 @@ class BizInvoice extends BaseModel
         'is_bulk_upload',
         'status_update_time',
         'remark',
+        'is_adhoc',
         'limit_exceed',
         'created_by',
         'created_at',

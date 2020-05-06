@@ -20,6 +20,8 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
@@ -1030,7 +1032,9 @@ use CommonRepositoryTraits;
              return $ex;
         }
       
-    }   
+    } 
+    
+   
     public function getAllBankInvoice($from_date, $to_date)
     {
         $this->result = DisbursalBatch::getAllBatches($from_date, $to_date);
@@ -1141,6 +1145,16 @@ use CommonRepositoryTraits;
         return $this->result;
     }   
     
-   
+     public function checkUserAdhoc($attributes)
+    {
+       
+        try
+        {
+             return AppOfferAdhocLimit::checkUserAdhoc($attributes);  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+      
+    }  
     
 }
