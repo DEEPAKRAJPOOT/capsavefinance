@@ -418,7 +418,7 @@ class ManualApportionmentHelper{
                 throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
             }
 
-            if (is_null($invDisbDetail->payDueDate)) {
+            if (is_null($invDisbDetail->payment_due_date)) {
                 throw new InvalidArgumentException('Payment Date is missing for invoice Disbursed Id: ' . $invDisbId);
             }
             
