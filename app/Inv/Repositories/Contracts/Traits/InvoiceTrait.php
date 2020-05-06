@@ -767,6 +767,7 @@ trait InvoiceTrait
         $attribute['prgm_id']  = $attr['program_id'];
         $attribute['user_id']  = $attr['supplier_id'];
         $attribute['anchor_id']  = $attr['anchor_id'];
+        $attribute['app_id']  = $attr['app_id'];
         $sum  = self::invoiceApproveLimit($attribute);
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
