@@ -21,7 +21,7 @@
                  @if($uLimit->status==1) 
                   <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                  @else
-                  <button type="button" class="badge badge-warning btn-sm float-right">Deactive </button>
+                  <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                  @endif
                  </div>
                </div>
@@ -44,7 +44,7 @@
                   @if($limit->status==1) 
                   <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                  @else
-                  <button type="button" class="badge badge-warning btn-sm float-right">Deactive </button>
+                  <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                  @endif
                  </div>
                </div>
@@ -52,10 +52,8 @@
           
             @foreach($limit->offer as $val) 
             @php 
-        
             $inv_limit =  $obj->invoiceAnchorLimitApprove($val);
-          
-            @endphp  
+           @endphp  
            <div class="row" style="margin-top:20px;">
              <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                  <label>Anchor </label>
@@ -79,6 +77,8 @@
                  <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
                </div>
                </div>
+           
+           
              @endforeach 
         </div>
       
