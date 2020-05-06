@@ -52,7 +52,9 @@
           
             @foreach($limit->offer as $val) 
             @php 
+          
             $inv_limit =  $obj->invoiceAnchorLimitApprove($val);
+            $getAdhoc   = $obj->getAdhoc($val);
            @endphp  
            <div class="row" style="margin-top:20px;">
              <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">

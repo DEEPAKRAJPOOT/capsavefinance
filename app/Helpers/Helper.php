@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\UserBankAccount;
 use App\Inv\Repositories\Models\CamReviewerSummary;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\BizInvoice;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
@@ -1516,4 +1517,12 @@ class Helper extends PaypalHelper
              
             return  AppProgramLimit::where(['status'=> 1,'app_limit_id' =>$limit_id])->sum('limit_amt');
         } 
+        
+         public   function getAdhoc($attr)
+        {
+             
+            return  AppOfferAdhocLimit::where(['prgm_offer_id' =>$attr['prgm_offer_id']])->sum('limit_amt');
+        } 
+         
+        
 }
