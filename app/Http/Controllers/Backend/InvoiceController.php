@@ -599,16 +599,16 @@ class InvoiceController extends Controller {
         foreach ($supplierIds as $userid) {
             $disburseAmount = 0;
             foreach ($allinvoices as $invoice) {
-                // dd($invoice);
                 if($invoice['supplier_id'] = $userid) {
                     
                     $interest= 0;
+                    $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
                     $margin= 0;
 
                     $tenor = $this->calculateTenorDays($invoice);
                     $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                     $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                    $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                    $tInterest = $this->calInterest($fundedAmount, $interestRate/100, $tenor);
 
                     if($invoice['program_offer']['payment_frequency'] == 1) {
                         $interest = $tInterest;
@@ -680,12 +680,13 @@ class InvoiceController extends Controller {
                     $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                     $this->invRepo->saveInvoiceStatusLog($invoice['invoice_id'], 10);
                     $interest= 0;
+                    $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
                     $margin= 0;
 
                     $tenor = $this->calculateTenorDays($invoice);
                     $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                     $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                    $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                    $tInterest = $this->calInterest($fundedAmount, $interestRate/100, $tenor);
 
                     if($invoice['program_offer']['payment_frequency'] == 1) {
                         $interest = $tInterest;
