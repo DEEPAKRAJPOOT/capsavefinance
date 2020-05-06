@@ -80,6 +80,7 @@
                                 <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
                             </div>
                         </div>
+                        @if($limit->status==1)  
                         <div class="row">
                             <div class="col-md-4" id="buttonDiv">
                                 @can('add_adhoc_limit')
@@ -94,7 +95,7 @@
                                 @endcan
                             </div>
                         </div>
-
+                       @endif
                         @foreach($getAdhoc as $adc) 
                         <div class="row" style="margin-top:20px;"> 
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
