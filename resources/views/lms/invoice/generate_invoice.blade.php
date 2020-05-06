@@ -83,42 +83,40 @@
    <table style="width: 100%" align="center" border="1" cellspacing="0" cellpadding="1">
       <tbody>
          <tr>
-            <td style="border: 1px solid #ddd;padding: 5px;" style="width: 30%">
+            <td style="border: 1px solid #ddd;padding: 2px;" style="width: 30%">
                <span style="font-size: 9px;font-family: Book Antiqua;"><strong>PAN: </strong></span>
             </td>
-            <td style="border: 1px solid #ddd;padding: 5px;" style="width: 70%">
+            <td style="border: 1px solid #ddd;padding: 2px;" style="width: 70%">
                <span style="font-size: 9px;font-family: Book Antiqua;">{{$company_data['pan_no']}}</span>
             </td>
          </tr>
          <tr>
-            <td style="border: 1px solid #ddd;padding: 5px;">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>State:</strong></span>
+            <td style="border: 1px solid #ddd;padding: 2px;">
+               <span style="font-size: 9px;font-family: Book Antiqua;"><strong>State:</strong></span>
             </td>
-            <td style="border: 1px solid #ddd;padding: 5px;">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$origin_of_recipient['place_of_supply']}}</span>
-            </td>
-         </tr>
-         <tr>
-            <td style="border: 1px solid #ddd;padding: 5px;">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>Address:</strong></span>
-            </td>
-            <td style="border: 1px solid #ddd;padding: 5px;">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$company_data['address']}}</span>
+            <td style="border: 1px solid #ddd;padding: 2px;">
+               <span style="font-size: 9px;font-family: Book Antiqua;">{{$origin_of_recipient['place_of_supply']}}</span>
             </td>
          </tr>
          <tr>
-            <td style="border: 1px solid #ddd;padding: 5px;">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;"><strong>GSTIN:</strong></span>
+            <td style="border: 1px solid #ddd;padding: 2px;">
+               <span style="font-size: 9px;font-family: Book Antiqua;"><strong>Address:</strong></span>
             </td>
-            <td style="border: 1px solid #ddd;padding: 5px;">
-               <span style="font-size: small;font-family: 'Book Antiqua', serif;">{{$company_data['gst_no']}}</span>
+            <td style="border: 1px solid #ddd;padding: 2px;">
+               <span style="font-size: 9px;font-family: Book Antiqua;">{{$company_data['address']}}</span>
+            </td>
+         </tr>
+         <tr>
+            <td style="border: 1px solid #ddd;padding: 2px;">
+               <span style="font-size: 9px;font-family: Book Antiqua;"><strong>GSTIN:</strong></span>
+            </td>
+            <td style="border: 1px solid #ddd;padding: 2px;">
+               <span style="font-size: 9px;font-family: Book Antiqua;">{{$company_data['gst_no']}}</span>
             </td>
          </tr>
       </tbody>
    </table>
-   <p align="center"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</span></span></p>
-   <span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>FOR {{$company_data['name']}}</strong></span></span>
+   <p align="center" style="font-size: 9px;font-family: Book Antiqua;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</p>
+   <span style="font-size: 9px;font-family: Book Antiqua;"><strong>FOR {{$company_data['name']}}</strong></span>
    <p lang="en-US">&nbsp;</p>
-   <p lang="en-US">&nbsp;</p>
-   <p lang="en-US"><span style="font-family: 'Book Antiqua', serif;"><span style="font-size: small;"><strong>Authorized Signatory</strong></span></span></p>
-   <p>&nbsp;</p>
+   <p lang="en-US"><span style="font-family: Book Antiqua;"><span style="font-size: small;"><strong>Authorized Signatory</strong></span></span></p>
