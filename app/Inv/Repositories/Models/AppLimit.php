@@ -107,14 +107,8 @@ class AppLimit extends BaseModel {
     
     public static  function getUserApproveLimit($user_id)
     {
-        return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor'])->where(['user_id'=>$user_id])->get();
+        return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor'])->where(['user_id'=>$user_id])->orderBy('status','Asc')->get();
     }
     
-    public static function checkUserAdhoc($attr)
-    {
-        $mytime = Carbon::now();
-        $dateTime  =  $mytime->toDateTimeString();
-        return self::where(['user_id' => $attr['user_id'],'status' => 1,'limit_type' => 1])->where('parent_app_limit_id','<>', null)->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`') ->sum('tot_limit_amt');
-       
-    }
+   
 }

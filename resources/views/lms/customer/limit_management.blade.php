@@ -55,6 +55,7 @@
           
             $inv_limit =  $obj->invoiceAnchorLimitApprove($val);
             $getAdhoc   = $obj->getAdhoc($val);
+          
            @endphp  
            <div class="row" style="margin-top:20px;">
              <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
@@ -79,7 +80,20 @@
                  <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
                </div>
                </div>
-           
+            @foreach($getAdhoc as $adc) 
+            <div class="row" style="margin-top:20px;"> 
+             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                 <label>Adhoc Limit </label>
+                   @if($adc->status==1) 
+                  <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                 @else
+                  <button type="button" class="badge badge-warning btn-sm float-right">Expire </button>
+                 @endif
+                 <div class="label-bottom">{{$adc->limit_amt}}</div>
+               </div>
+            
+               </div>
+             @endforeach 
            
              @endforeach 
         </div>
