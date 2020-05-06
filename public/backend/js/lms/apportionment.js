@@ -138,23 +138,34 @@ class Apportionment {
         var unapplied_amt = payment_amt-settled_amt;
         if(unapplied_amt < 0 ){
             alert("Sum of your total entries is grater than Re-payment amount");
+            return false;
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
     }
 
     onPaymentChange(transId){
-        this.calculateUnAppliedAmt()
+        var returnval = this.calculateUnAppliedAmt();
+        if (returnval == false) { 
+            $("input[name='payment["+transId+"]']").val('');
+            $("input[name='check["+transId+"]']").prop('checked', false);
+        }
     }
 
     onCheckChange(transId){
-        $("input[name='payment["+transId+"]']").val('');
-        
+         if ($("input[name='check["+transId+"]']").is(":checked") == false) { 
+            $("input[name='payment["+transId+"]']").val('');
+        }
+        /*$("input[name='payment["+transId+"]']").val('');
         if ($("input[name='check["+transId+"]']").is(":checked")) { 
             $("input[name='payment["+transId+"]']").removeAttr('readonly');
         } else { 
             $("input[name='payment["+transId+"]']").attr('readonly',true);
-        } 
-        this.calculateUnAppliedAmt()
+        } */
+        var returnval = this.calculateUnAppliedAmt();
+        if (returnval == false) { 
+            $("input[name='payment["+transId+"]']").val('');
+            $("input[name='check["+transId+"]']").prop('checked', false);
+        }
     }
     
     validateMarkSettled(el){

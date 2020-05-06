@@ -70,6 +70,7 @@ use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\WfAppStage;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
 /**
  * Application repository class
@@ -327,14 +328,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	{
             
 		return Application::with('business')
-				->with('appLimit')
-				->with('acceptedOffer')
-                                ->with('prgmLimit')
-                                ->with('disbursal')
-                                ->with('transactions') 
-				->whereHas('acceptedOffer')
-				->where(['user_id' => $user_id, 'status' => 2])
-				->get();
+				  ->with('prgmLimit')
+                                  ->where(['user_id' => $user_id, 'status' => 2])
+                                  ->get();
 	}    
 
 	/**
@@ -1389,9 +1385,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Application::getUpdatedApp($user_id);
     }  
 
+
     public function addressGetCustomers($user_id, $biz_id, $address_type=null)
     {
         return BusinessAddress::addressGetCustomer($user_id, $biz_id, $address_type);
+
     }
 
     public function getAppDataByOrder($where , $orderBy = 'DESC')
@@ -1767,7 +1765,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
     }
     
-     /** get the user limit  **/
+
+   /** get the user limit  **/
+
    public function getUserLimit($user_id)
    {
        try
@@ -1780,11 +1780,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
    }
    
    /** get the user program  limit  **/
-   public function getUserProgramLimit($attr)
+
+   public function getUserProgramLimit($user_id)
    {
        try
        {
-           return AppProgramLimit::getUserProgramLimit($attr);
+           return AppLimit::getUserApproveLimit($user_id);
        } catch (Exception $ex) {
              return $ex;
        }
@@ -1813,7 +1814,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
        }
        
    }  
-   
+
     /**
      * Get Renewal applications
      * 
@@ -2269,5 +2270,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return LmsUser::getLmsUsers($whereCond);
     }    
+
+     public function saveAppOfferAdhocLimit($arr, $limit_id=null){
+        return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
+    }
+
 }
+
+
 
