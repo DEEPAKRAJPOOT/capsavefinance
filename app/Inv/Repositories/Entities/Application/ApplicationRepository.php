@@ -70,6 +70,7 @@ use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\WfAppStage;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
 /**
  * Application repository class
