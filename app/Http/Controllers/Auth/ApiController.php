@@ -147,16 +147,20 @@ class ApiController
                    continue;
                 }
             }
+
+            $txn_entry_type = $txn->entry_type;
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF')]) && $txn->entry_type == 1) {
                $tally_voucher_type_id = 3;
             }
             
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND')]) && $txn->entry_type == 0) {
-               $tally_voucher_type_id = 3;
+               $tally_voucher_type_id = 1;
             }
             
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
-               $tally_voucher_type_id = 1;
+               $tally_voucher_type_id = 3;
+               $txn_entry_type = 1;
+               $trans_type_name = 'Margin to be refunded';
             } 
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
                $tally_voucher_type_id = 2;
@@ -170,7 +174,7 @@ class ApiController
             $common_array = [
                   'batch_no' =>  $batch_no,
                   'transactions_id' =>  $txn->trans_id,
-                  'is_debit_credit' =>  $txn->entry_type,
+                  'is_debit_credit' =>  $txn_entry_type,
                   'trans_type' =>  $trans_type_name,
                   'tally_trans_type_id' =>  $tally_voucher_type_id,
                   'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
