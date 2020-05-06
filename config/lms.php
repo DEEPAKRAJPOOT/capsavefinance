@@ -12,6 +12,7 @@ return [
         
        'REVERSE' => '2',
        'TDS'=>'7',
+       'CANCEL'=>'8',
        'INTEREST'=>'9',
        'MARGIN'=>'10',
        'PAYMENT_DISBURSED' =>'16',
