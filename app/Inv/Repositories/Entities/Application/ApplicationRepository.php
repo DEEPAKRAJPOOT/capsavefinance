@@ -70,6 +70,7 @@ use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\WfAppStage;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
 /**
  * Application repository class
@@ -1327,7 +1328,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */    
     public function getAppApproversDetails($app_id)
     {
-        return AppApprover::getAppApproversDetails($app_id);
+        return AppApprover::getAppApproversDetails((int) $app_id);
     }
     /**
      * Get Constitution 
@@ -2263,6 +2264,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAppGSTsByUserId($user_id)
     {   
         return BizPanGst::getAppGSTsByUserId($user_id);
+    }
+
+    public function getLmsUsers($whereCond=[])
+    {
+        return LmsUser::getLmsUsers($whereCond);
+    }    
+
+     public function saveAppOfferAdhocLimit($arr, $limit_id=null){
+        return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
     }
 
 }

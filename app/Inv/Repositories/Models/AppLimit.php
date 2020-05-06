@@ -46,10 +46,12 @@ class AppLimit extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'parent_app_limit_id',
         'user_id',
         'app_id',
         'biz_id',
         'tot_limit_amt',
+        'status',
         'start_date',
         'end_date',
         'actual_end_date',
@@ -124,15 +126,17 @@ class AppLimit extends BaseModel {
     
     public static  function getUserApproveLimit($user_id)
     {
-        return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor'])->where(['user_id'=>$user_id])->get();
+
+        return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor','programLimit.offer.adhoc_limit'])->where(['user_id'=>$user_id])->orderBy('created_at','DESC')->get();
     }
-    
-    public static function checkUserAdhoc($attr)
+
+    public static  function appLimitByUserId($user_id)
     {
-        $mytime = Carbon::now();
-        $dateTime  =  $mytime->toDateTimeString();
-        return self::where(['user_id' => $attr['user_id'],'status' => 1,'limit_type' => 1])->where('parent_app_limit_id','<>', null)->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`') ->sum('tot_limit_amt');
-       
+        return  AppLimit::where(['user_id'=>$user_id])
+                ->where('status', 1)
+                ->first();
     }
+
+   
 
 }

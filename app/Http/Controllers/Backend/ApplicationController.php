@@ -889,10 +889,17 @@ class ApplicationController extends Controller
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
               	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
               	if($prcsAmt && isset($prcsAmt->offer)) {
-				  if($createCustomer != null) {                                      
+				  if($createCustomer != null) {   
+                                      $whereCond=[];
+                                      $whereCond['user_id'] = $user_id;
+                                      $lmsData = $this->appRepo->getLmsUsers($whereCond);
+                                      if (isset($lmsData[0])) {
+                                        $virtualId =  $lmsData[0]->virtual_acc_id;
+                                      } else {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
-					$virtualId = 'CAPVA'.$capId;
-					$createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
+					$virtualId = 'CAPVA'.$capId;					
+                                      }
+                                      $createCustomerId = $this->appRepo->createVirtualId($createCustomer, $virtualId);
 					//$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
 					$userStateId = $this->appRepo->getUserAddress($app_id);
 					$companyStateId = $this->appRepo->companyAdress();

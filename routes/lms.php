@@ -41,7 +41,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'add_bank_account',
                 'uses' => 'Lms\BankAccountController@addBankAccount'
             ]);
-              Route::get('/limit_management', [
+
+            Route::get('/limit_management', [
                 'as' => 'limit_management',
                 'uses' => 'Lms\CustomerController@limitManagement'
             ]);
@@ -61,6 +62,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\BankAccountController@downloadUploadFile'
             ]);
 
+            Route::get('/add-adhoc-limit', [
+                'as' => 'add_adhoc_limit',
+                'uses' => 'Lms\CustomerController@addAdhocLimit'
+            ]);
+              
+            Route::post('/save-adhoc-limit', [
+                'as' => 'save_adhoc_limit',
+                'uses' => 'Lms\CustomerController@saveAdhocLimit'
+            ]);
+
+            Route::get('approve-adhoc-limit', [
+                'as' => 'approve_adhoc_limit',
+                'uses' => 'Lms\CustomerController@openApproveAdhocLimit'
+            ]);
+
+            Route::post('save-approve-adhoc-limit', [
+                'as' => 'save_approve_adhoc_limit',
+                'uses' => 'Lms\CustomerController@approveAdhocLimit'
+            ]);
             // User Invoice
             Route::get('/view-user-invoice', [
                 'as' => 'view_user_invoice',
