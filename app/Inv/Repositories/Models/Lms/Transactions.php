@@ -48,6 +48,7 @@ class Transactions extends BaseModel {
         'link_trans_id',
         'parent_trans_id',
         'invoice_disbursed_id',
+        'trans_running_id',
         'user_id',
         'trans_date',
         'trans_type',
@@ -113,6 +114,10 @@ class Transactions extends BaseModel {
         return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
     }
 
+    public function transRunning(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransactionsRunning','trans_running_id','trans_running_id');
+    }
+
     public function getsettledAmtAttribute(){
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
@@ -160,13 +165,13 @@ class Transactions extends BaseModel {
     public function getTransNameAttribute(){
         $name = ' '; 
        
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND')])){
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL')])){
             if($this->parent_trans_id){
                 $parentTrans = self::find($this->parent_trans_id);
                 $name .= $parentTrans->transType->trans_name.' ';
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE')]))
+                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')]))
                         $name .= $linkTrans->transType->trans_name.' ';
                 }
             }
@@ -314,8 +319,7 @@ class Transactions extends BaseModel {
 
     public static function getUnsettledInvoices($data = [])
     {
-
-        $query = self::whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+        $query = self::whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.INTEREST')])
         ->whereNull('payment_id')  
         ->whereNull('link_trans_id')  
         ->whereNull('parent_trans_id');
@@ -332,10 +336,18 @@ class Transactions extends BaseModel {
             $query->where('user_id','=',$data['user_id']);
         }
 
-        return $query->get()->filter(function($item) {
-            return $item->outstanding > 0;
-        });
+        $transactions = $query->get();
 
+        $unsettledInvoices = [];
+        foreach ($transactions as $key => $value) {
+            if(isset($unsettledInvoices[$value->invoice_disbursed_id]) && $value->outstanding > 0){
+                $unsettledInvoices[$value->invoice_disbursed_id] += $value->outstanding;
+            }elseif($value->outstanding > 0){
+                $unsettledInvoices[$value->invoice_disbursed_id] = $value->outstanding;
+            }
+        }
+
+        return $unsettledInvoices;
     }
 
     public static function getUnsettledInvoiceTransactions($data = [])

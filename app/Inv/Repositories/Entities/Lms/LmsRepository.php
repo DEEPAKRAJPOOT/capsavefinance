@@ -43,10 +43,11 @@ use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
 use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\TransactionComments;
+use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
-use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
 /**
@@ -133,6 +134,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function saveTransaction($transactions,$whereCondition=[])
 	{
 		return Transactions::saveTransaction($transactions,$whereCondition);
+	}	
+
+	/**
+	 * Save Running Transactions
+	 * 
+	 * @param array $transactions
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function saveTransactionRunning($transactions,$whereCondition=[])
+	{
+		return TransactionsRunning::saveTransactionRunning($transactions,$whereCondition);
 	}	
 
 	/**
@@ -1079,6 +1092,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return EodProcess::updateEodProcess($data, $whereCond);
     }
 
+	public static function getRunningTrans($userId){
+		return TransactionsRunning::getRunningTrans($userId);
+	}
+	
 	public static function getUnsettledTrans($userId){
 		return Transactions::getUnsettledTrans($userId);
 	}

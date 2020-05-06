@@ -87,10 +87,11 @@ class Payment extends BaseModel {
     public function transaction(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
     }
+    
     public function creator(){
         return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id');
     }
-    
+
     public function getBusinessName() {
         return $this->belongsTo(Business::class, 'biz_id');
     }

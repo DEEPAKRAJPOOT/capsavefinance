@@ -30,6 +30,12 @@
     </li>
     @endcan
     
+    @can('apport_running_view')
+    <li>
+        <a class=" {{ ($active=='runningTrans')? 'active': null }} " href="{{route('apport_running_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Running Tran.</a>
+    </li>
+    @endcan
+
     @can('apport_unsettled_view')
     <li>
         <a class=" {{ ($active=='unsettledTrans')? 'active': null }} " href="{{route('apport_unsettled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Unsettled Tran.</a>

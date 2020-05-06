@@ -203,11 +203,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@processInvoiceSettlement' 
             ]);
                      
-            Route::get('view-interest-accrual', [
-                'as' => 'view_interest_accrual',
-                'uses' => 'Lms\DisbursalController@viewInterestAccrual'
-            ]);
-            
             // Business address
             Route::get('/address', [
                 'as' => 'addr_get_customer_list',
@@ -380,7 +375,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
 
 
-            
+            Route::get('/apportionment/running/view',[
+                'as' => 'apport_running_view',
+                'uses' => 'Lms\ApportionmentController@viewRunningTrans'
+            ]);
 
             Route::get('/apportionment/unsettled/view',[
                 'as' => 'apport_unsettled_view',
@@ -395,6 +393,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/apportionment/refund/view',[
                 'as' => 'apport_refund_view',
                 'uses' => 'Lms\ApportionmentController@viewRefundTrans'
+            ]);
+
+            Route::post('/apportionment/running/list',[
+                'as' => 'apport_running_list',
+                'uses' => 'Lms\ApportionmentController@listrunningTrans'
             ]);
 
             Route::post('/apportionment/unsettled/list',[
@@ -420,22 +423,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/apportionment/mark/settle/save',[
                 'as' => 'apport_mark_settle_save',
                 'uses' => 'Lms\ApportionmentController@markSettleSave'
-            ]);
-            
-            Route::get('view-eod-process',[
-                'as' => 'eod_process',
-                'uses' => 'Lms\EodProcessController@viewEodProcess'
-            ]);    
-            
-            Route::post('save-eod-process',[
-                'as' => 'save_process',
-                'uses' => 'Lms\EodProcessController@saveEodProcess'
-            ]); 
-
-            Route::get('do-process',[
-                'as' => 'do_process',
-                'uses' => 'Lms\EodProcessController@process'
-            ]);             
+            ]);        
             
             Route::post('/apportionment/settled/save',[
                 'as' => 'apport_settled_save',
@@ -461,6 +449,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'apport_reversal_save',
                 'uses' => 'Lms\ApportionmentController@saveReversalDetail'
             ]);
+
+            Route::post('/apportionment/running/save',[
+                'as' => 'apport_running_save',
+                'uses' => 'Lms\ApportionmentController@saveRunningDetail'
+            ]);
+
+            Route::get('view-eod-process',[
+                'as' => 'eod_process',
+                'uses' => 'Lms\EodProcessController@viewEodProcess'
+            ]);    
+            
+            Route::post('save-eod-process',[
+                'as' => 'save_process',
+                'uses' => 'Lms\EodProcessController@saveEodProcess'
+            ]); 
+
+            Route::get('do-process',[
+                'as' => 'do_process',
+                'uses' => 'Lms\EodProcessController@process'
+            ]);
+
         });   
     });    
     //end of application

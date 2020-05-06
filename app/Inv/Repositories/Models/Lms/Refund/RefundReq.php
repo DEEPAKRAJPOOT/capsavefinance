@@ -43,7 +43,7 @@ class RefundReq extends BaseModel {
      *
      * @var array
      */
-    protected $fillable = [
+    protected $fillable = [ 
         'ref_code',  
         'payment_id',  
         'refund_req_batch_id',
