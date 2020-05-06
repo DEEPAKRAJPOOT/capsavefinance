@@ -420,6 +420,7 @@ trait InvoiceTrait
             $attr['user_id']   =   $inv_details['supplier_id'];
             $attr['anchor_id'] =   $inv_details['anchor_id'];
             $attr['prgm_id']   =   $inv_details['program_id'];
+            $attr['app_id']   =    $inv_details['app_id'];
             $invoice_id =   $inv_details['invoice_id'];
             $cid = $inv_details['supplier_id'];
             $sum =  self::invoiceApproveLimit($attr);
