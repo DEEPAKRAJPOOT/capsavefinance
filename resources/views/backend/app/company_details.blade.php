@@ -48,8 +48,10 @@
 									<span class="text-success" id="pan-msg" style="">
 										<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 									</span>
+                                                                    <div class="relative">
 									<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
 									<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" readonly>
+                                                                    </div>
 									@error('biz_pan_number')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -178,8 +180,11 @@
 							<div class="col-md-4">
 								<div class="form-group password-input INR">
 									<label for="txtPassword">Business Turnover
-									</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+									</label>
+                                                                        <div class="relative">
+                                                                        <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
 									<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+                                                                        </div>
 									@error('biz_turnover')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -225,8 +230,10 @@
 											<label for="txtCreditPeriod">Supply Chain Loan Amount
 												<span class="mandatory">*</span>
 											</label>
-											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                                    <div class="relative">
+											<a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
 											<input type="text" name="product_id[1][loan_amount]" value="@if(array_key_exists(1, $product_ids)){{ old('product_id.1.loan_amount', number_format($product_ids['1']['loan_amount'])) }}@else{{ old('product_id.1.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Supply Chain Loan Amount" maxlength="19" >
+                                                                                    </div>
 											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 											<div id="product_type_1_loan"></div>
 											@error('product_id.1.loan_amount')
@@ -252,8 +259,10 @@
 											<label for="txtCreditPeriod">Term Loan Amount
 												<span class="mandatory">*</span>
 											</label>
-											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                                    <div class="relative">
+											<a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
 											<input type="text" name="product_id[2][loan_amount]" value="@if(array_key_exists(2, $product_ids)){{ old('product_id.2.loan_amount', number_format($product_ids[2]['loan_amount'])) }}@else{{ old('product_id.2.loan_amount','')}}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Term Loan Amount" maxlength="19" >
+                                                                                    </div>
 											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 											<div id="product_type_2_loan"></div>
 											@error('product_id.2.loan_amount')
@@ -279,8 +288,10 @@
 											<label for="txtCreditPeriod">Leasing Loan Amount
 												<span class="mandatory">*</span>
 											</label>
-											<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                                    <div class="relative">
+											<a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
 											<input type="text" name="product_id[3][loan_amount]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.loan_amount', number_format($product_ids[3]['loan_amount']))}}@else{{ old('product_id.3.loan_amount', '') }}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19" >
+                                                                                    </div>
 											<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
 											<div id="product_type_3_loan"></div>
 											@error('product_id.3.loan_amount')

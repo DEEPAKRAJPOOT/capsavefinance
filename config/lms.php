@@ -145,5 +145,14 @@ return [
     'DECIMAL_TYPE' => [
         'PERCENTAGE' => '2',
         'AMOUNT'=>'5'
+    ],
+    'STATUS' => [
+        'PENDING' => '0',
+        'APPROVED' => '1',
+    ],  
+    'LIMIT_TYPE' => [
+        'NORMAL' => '0',
+        'ADHOC' => '1',
+        'TEMPORARY' => '2',
     ],    
 ];

@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
+use Carbon\Carbon;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppProgramOffer;
@@ -45,10 +46,12 @@ class AppLimit extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'parent_app_limit_id',
         'user_id',
         'app_id',
         'biz_id',
         'tot_limit_amt',
+        'status',
         'start_date',
         'end_date',
         'actual_end_date',
@@ -81,6 +84,7 @@ class AppLimit extends BaseModel {
        return  self::where(['user_id'=>$user_id,'status' => 1])->first();
     }
     
+
  
     public static function updateAppLimit($data, $whereCond=[]){
         if (!is_array($data)) {
@@ -95,4 +99,44 @@ class AppLimit extends BaseModel {
             return self::where($whereCond)->update($data);
         }
     }    
+
+    public static function getUserProgramLimit($user_id)
+    {
+       return  self::where(['user_id'=>$user_id,'status' => 1])->first();
+    }
+     public function anchor(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Anchor','anchor_id','anchor_id');
+    }
+
+    public function program(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+    }
+
+    public function offer(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
+    }     
+      public function product(){
+        return $this->hasOne('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
+    }  
+    
+     public function programLimit(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit','app_limit_id','app_limit_id');
+    }
+   
+    
+    public static  function getUserApproveLimit($user_id)
+    {
+
+        return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor','programLimit.offer.adhoc_limit'])->where(['user_id'=>$user_id])->orderBy('created_at','DESC')->get();
+    }
+
+    public static  function appLimitByUserId($user_id)
+    {
+        return  AppLimit::where(['user_id'=>$user_id])
+                ->where('status', 1)
+                ->first();
+    }
+
+   
+
 }

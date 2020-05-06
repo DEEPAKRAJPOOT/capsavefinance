@@ -44,11 +44,13 @@
         @if(isset($data->chrg_calculation_type))
         <div class="form-group col-md-2 amtpercent">
             <label for="chrg_calculation_amt"><span id="sdt" class="sdt">{{isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></label>
+            <div class="relative">
             <a href="javascript:void(0);" class="verify-owner-no"><i class="fa-change fa {{isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}"
             aria-hidden="true"></i></a>
             {!! Form::text('chrg_calculation_amt['.$len.']', 
                 isset($data->chrg_calculation_amt)  ?  number_format($data->chrg_calculation_amt,2) : null, 
                 ['id'=>'chrg_calculation_amt', 'class'=>'form-control chrg_calculation_amt '.(isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'formatNum': 'amtpercnt') : 'formatNum').' clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
+            </div>
         </div>
          @endif
         <div class="form-group approved_limit_div col-md-2 {{isset($data->chrg_calculation_type) &&  $data->chrg_calculation_type != 2 ? 'hide' : '' }}" id="approved_limit_div">

@@ -822,6 +822,10 @@ Route::group(
       Route::POST('get_tenor', [
         'as' => 'get_tenor',
         'uses' => 'AjaxController@getTenor'
+    ]); 
+      Route::POST('get_adhoc', [
+        'as' => 'get_adhoc',
+        'uses' => 'AjaxController@getAdhoc'
     ]);  
      Route::POST('front_lms_program_list', [
         'as' => 'front_lms_program_list',
@@ -1054,14 +1058,4 @@ Route::group(
         ]
     );
 
-    Route::post('get_cust_and_cap_loca',[
-        'as' => 'get_cust_and_cap_loca',
-        'uses' => 'AjaxController@getCustAndCapsLoc'
-        ]
-    );
-    
-    Route::post('ajax-renewal-app-list', [
-        'as' => 'ajax_renewal_app_list',
-        'uses' => 'AjaxController@getRenewalAppList'
-    ]);     
 });

@@ -7,6 +7,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\Application;
 use Illuminate\Database\Eloquent\Builder;
 use App\Inv\Repositories\Models\OfferPrimarySecurity;
 use App\Inv\Repositories\Models\OfferCollateralSecurity;
@@ -134,7 +135,8 @@ class AppProgramOffer extends BaseModel {
     }
      public static function getTenor($res)
     {
-       $lms_user_id =    LmsUser::where('user_id',$res['user_id'])->pluck('user_id');
+       $getAppUser  =    Application::where(['user_id' => $res['user_id'],'status' =>2])->pluck('user_id');  
+       $lms_user_id =    LmsUser::whereIn('user_id',$getAppUser)->pluck('user_id');
        $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->first();
        return self::whereHas('productHas')->where(['app_id' => $app_id['app_id'],'anchor_id' => $res['anchor_id'],'prgm_id'=> $res['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->first();
             
@@ -424,6 +426,10 @@ class AppProgramOffer extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
     }
     
+    public function adhoc_limit(){
+        return $this->hasOne('App\Inv\Repositories\Models\AppOfferAdhocLimit','prgm_offer_id','prgm_offer_id');
+    }
+    
     public static function getBulkProgramOfferByPrgmId($attr)
     {
         $result = self::select('app_prgm_offer.*','app.user_id','users.f_name','users.l_name','biz.biz_entity_name','lms_users.customer_id')
@@ -461,6 +467,7 @@ class AppProgramOffer extends BaseModel {
                 ->where('app_prgm_offer.prgm_id', $prgmId)
                 ->where('app_prgm_offer.is_approve', 1)
                 ->where('app_prgm_offer.status', 1)
+                ->where('app.status', 2)        
                 ->groupBy('app.user_id')        
                 ->get();
         
@@ -482,6 +489,7 @@ class AppProgramOffer extends BaseModel {
                 ->where('users.user_id', $user_id)
                 ->where('app_prgm_offer.is_approve', 1)
                 ->where('app_prgm_offer.status', 1)
+                ->where('app.status', 2)            
                 ->groupBy('app.user_id')        
                 ->get();
         
@@ -500,6 +508,11 @@ class AppProgramOffer extends BaseModel {
                 }
                 $result = $query->get();
         return !$result->isEmpty() ? $result : [];
+    }
+
+    public static function getAppPrgmOfferById($prgm_offer_id = null)
+    {
+        return  self::with(['programLimit.appLimit'])->where(['prgm_offer_id'=>$prgm_offer_id])->orderBy('created_at','DESC')->first();
     }
     
     public function chargeName(){

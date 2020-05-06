@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\Lms\RefundTransactions;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
@@ -251,11 +252,20 @@ trait InvoiceTrait
      {   
             $attr[]="";
             $lms_user_id =    LmsUser::where('customer_id',$attr['cusomer_id'])->pluck('user_id');
-            $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->first();
+            $app_user_id   =  Application::whereIn('user_id',$lms_user_id)->where('status',2)->pluck('app_id');
+            $app_id =    AppLimit::whereIn('app_id',$app_user_id)->where('status',1)->first();
             $res =  AppProgramOffer::whereHas('productHas')->where(['app_id' => $app_id['app_id'],'anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->first();
             if ($res) {
-              
-                  $limit =  AppProgramOffer::whereHas('productHas')->where('app_id',$app_id['app_id'])->where(['anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+                $is_enhance  =    Application::whereIn('user_id',$lms_user_id)->where(['status' =>2,'app_type' => 2])->count();  
+                if($is_enhance==1)
+                {
+                  $limit =  AppProgramOffer::whereHas('productHas')->where(['anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+                }
+                else
+                {
+                    $limit =  AppProgramOffer::whereHas('productHas')->where('app_id',$app_id['app_id'])->where(['anchor_id' => $attr['anchor_id'],'prgm_id'=> $attr['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+                  
+                }
                   $attr['status_id'] = 7;
                   $attr['status'] = 1;
                   $attr['user_id'] = $app_id['user_id'];
@@ -364,7 +374,8 @@ trait InvoiceTrait
  
    public static function ProgramLimit($getDetails)
    {
-        return   AppProgramOffer::whereHas('productHas')->where('app_id',$getDetails['app_id'])->where(['anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
+
+        return   AppProgramOffer::whereHas('productHas')->where(['app_id' => $getDetails['app_id'],'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
         
    }
      /* check the user app limit  */
@@ -381,7 +392,15 @@ trait InvoiceTrait
 
      public static  function invoiceApproveLimit($attr)
    {
-        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+        $is_enhance  =    Application::where(['user_id' => $attr['user_id'],'status' =>2,'app_type' => 2])->count();  
+       if($is_enhance==1)
+       {
+         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+       }
+       else
+       {
+        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_approve_amount');
+       }
    }
 
   
@@ -401,6 +420,7 @@ trait InvoiceTrait
             $attr['user_id']   =   $inv_details['supplier_id'];
             $attr['anchor_id'] =   $inv_details['anchor_id'];
             $attr['prgm_id']   =   $inv_details['program_id'];
+            $attr['app_id']   =    $inv_details['app_id'];
             $invoice_id =   $inv_details['invoice_id'];
             $cid = $inv_details['supplier_id'];
             $sum =  self::invoiceApproveLimit($attr);
@@ -488,6 +508,131 @@ trait InvoiceTrait
         return $msg;
     }
     
+     /* Update single invoice status id according user limit */
+    /* Use bulk and invoice table */
+    /* Created by gajendra chahan  */
+      public static  function saveAdhocApproveStatus($attr)
+   {
+            $limitData[]="";
+            $mytime = Carbon::now();
+            $cDate   =  $mytime->toDateTimeString();
+            $uid = Auth::user()->user_id;
+            $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id']); /* get App limit by user_id*/
+            $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
+            $sum  =  self::adhocLimit($attr);
+            $limit  = self::checkUserAdhoc($attr);
+            $finalsum = $sum-$attr['invoice_approve_amount'];
+            if($limit  >= $finalsum)
+           {
+               $remain_amount = $limit-$finalsum;
+              if($remain_amount >=$attr['invoice_approve_amount'])
+               { 
+                
+                  $limit_exceed='Auto Approve';
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 1;
+               }
+               else 
+               {
+                 
+                  $limit_exceed='Auto Approve, Limit exceed';
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 2;
+               }
+              }
+           else 
+              {
+                  $limit_exceed='Auto Approve, Limit exceed';
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 2;
+              }
+            if($dueDateGreaterCurrentdate)
+            {
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 4;
+           } 
+           if($isOverDue->is_overdue==1)
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' => 'Overdue','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 3;
+
+            }   
+            else 
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$attr['status_id']); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$attr['status_id'],'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 1;
+            }
+           
+           
+    } 
+   /* Update single invoice status id according user limit */
+    /* Use bulk and invoice table */
+    /* Created by gajendra chahan  */
+      public static  function updateAdhocApproveStatus($attr)
+   {
+            $limitData[]="";
+            $mytime = Carbon::now();
+            $cDate   =  $mytime->toDateTimeString();
+            $uid = Auth::user()->user_id;
+            $dueDateGreaterCurrentdate =  self::limitExpire($attr['supplier_id']); /* get App limit by user_id*/
+            $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
+            $sum  =  self::adhocLimit($attr);
+            $limit  = self::checkUserAdhoc($attr);
+            if($limit  >= $sum)
+           {
+               $remain_amount = $limit-$sum;
+              if($remain_amount >=$attr['invoice_approve_amount'])
+               { 
+                
+                  $limit_exceed='Auto Approve';
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 1;
+               }
+               else 
+               {
+                 
+                  $limit_exceed='Auto Approve, Limit exceed';
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 2;
+               }
+              }
+           else 
+              {
+                  $limit_exceed='Auto Approve, Limit exceed';
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 2;
+              }
+            if($dueDateGreaterCurrentdate)
+            {
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 4;
+           } 
+           if($isOverDue->is_overdue==1)
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' => 'Overdue','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 3;
+
+            }   
+            else 
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$attr['status_id']); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$attr['status_id'],'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 1;
+            }
+           
+           
+    } 
     /* Update single invoice status id according user limit */
     /* Use bulk and invoice table */
     /* Created by gajendra chahan  */
@@ -498,6 +643,11 @@ trait InvoiceTrait
             $cDate   =  $mytime->toDateTimeString();
             $uid = Auth::user()->user_id;
             $inv_details =  self::getInvoiceDetail($attr);
+            if($inv_details['is_adhoc']==1)
+            {
+                $inv_details['user_id']   =   $inv_details['supplier_id'];
+                return self::updateAdhocApproveStatus($inv_details);
+            }
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']);
             $attr['user_id']   =   $inv_details['supplier_id'];
             $attr['anchor_id'] =   $inv_details['anchor_id'];
@@ -682,5 +832,18 @@ trait InvoiceTrait
   {
     return  UserDetail::where('user_id',$user_id)->first();
   }
+   /* Check adhoc limit */
+   /* Created by gajendra chahan  */
+  public static function adhocLimit($attr)
+  {
+     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_approve_amount');
+  }
    
+   public static function checkUserAdhoc($attr)
+    {
+        $mytime = Carbon::now();
+        $dateTime  =  $mytime->toDateTimeString();
+        return AppOfferAdhocLimit::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`')->sum('limit_amt');
+
+    }
 }

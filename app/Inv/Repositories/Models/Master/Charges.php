@@ -51,6 +51,7 @@ class Charges extends BaseModel
      */
     protected $fillable = [
         'chrg_name',
+        'sac_code',
         'chrg_desc',
         'credit_desc',
         'debit_desc',
@@ -115,6 +116,7 @@ class Charges extends BaseModel
         $created_at = \carbon\Carbon::now();
         $uid = Auth::user()->user_id;
         $arr  =  [   "chrg_name" => $attributes['chrg_name'],
+                     "sac_code" => $attributes['sac_code'],
                      "chrg_desc" => $attributes['chrg_desc'],
                      "credit_desc" => $attributes['credit_desc'],
                      "debit_desc" => $attributes['debit_desc'],

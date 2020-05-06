@@ -116,6 +116,8 @@ class FinanceController extends Controller {
         if (!empty($result)) {
            foreach ($result as $key => $value) {
                 $new[] = $fetchedArr = (array)$value;
+                $tally_entry_id = $fetchedArr['tally_entry_id'];
+                $unique_voucher_no = sprintf('%04d', $tally_entry_id);
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                 $entry_type = strtolower($fetchedArr['entry_type']);
@@ -127,7 +129,7 @@ class FinanceController extends Controller {
                     // echo "------------$j_is_first_or_old------------<br>";
                     $j = [
                         "batch_no" => $fetchedArr['batch_no'],
-                        "voucher_no" => $fetchedArr['voucher_code'],
+                        "voucher_no" => $unique_voucher_no,
                         "trans_type" => $fetchedArr['trans_type'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" => $voucherDate,
@@ -158,7 +160,7 @@ class FinanceController extends Controller {
                 }else{
                      $fetchedArr['cheque_amount'] = ($fetchedArr['cheque_amount'] != 0 ? $fetchedArr['cheque_amount'] : '');
                      $company_row = [
-                            "voucher_no" => $fetchedArr['voucher_code'],
+                            "voucher_no" => $unique_voucher_no,
                             "voucher_type" => $fetchedArr['voucher_type'],
                             "voucher_date" => $voucherDate,
                             "ledger_name" => $fetchedArr['ledger_name'],
@@ -176,10 +178,10 @@ class FinanceController extends Controller {
                             "inst_date" => '',
                             "favoring_name" => '',
                             "remarks" => '',
-                            "narration" => 'Being '. $fetchedArr['trans_type'] .' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
+                            "narration" => 'Being '. $fetchedArr['trans_type'] .' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no'] : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
                     $bank_row = [
-                            "voucher_no" => $fetchedArr['voucher_code'],
+                            "voucher_no" => $unique_voucher_no,
                             "voucher_type" => $fetchedArr['voucher_type'],
                             "voucher_date" => $voucherDate,
                             "ledger_name" => $fetchedArr['bank_name'],
@@ -197,19 +199,19 @@ class FinanceController extends Controller {
                             "inst_date" => $fetchedArr['inst_date'],
                             "favoring_name" => $fetchedArr['favoring_name'],
                             "remarks" => '',
-                            "narration" => 'Being '.$fetchedArr['trans_type'].' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] : 'Batch no ' . $fetchedArr['batch_no']),
+                            "narration" => 'Being '.$fetchedArr['trans_type'].' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no']  : 'Batch no ' . $fetchedArr['batch_no']),
                         ];
-                    if ($fetchedArr['voucher_type'] == 'Bank Payment') {
+                    if ($fetchedArr['voucher_type'] == 'Payment') {
                         $interestRow = [];
                         $company_row['dr_/_cr'] = 'Debit';
                         $records['PAYMENT'][] = $company_row;
                         $bank_row['dr_/_cr'] = 'Credit';
                         $bank_row['voucher_date'] = '';
                         $bank_row['reference_no'] = '';
-                        $bank_row['amount'] = '';
+                        $bank_row['reference_amount'] = '';
                         if (!empty($fetchedArr['cheque_amount']) && ($fetchedArr['amount']-$fetchedArr['cheque_amount']) > 0) {
                             $interestRow = [
-                                "voucher_no" => $fetchedArr['voucher_code'],
+                                "voucher_no" => $unique_voucher_no,
                                 "voucher_type" => $fetchedArr['voucher_type'],
                                 "voucher_date" => '',
                                 "ledger_name" => 'Interest',
@@ -227,7 +229,7 @@ class FinanceController extends Controller {
                                 "inst_date" => '',
                                 "favoring_name" => '',
                                 "remarks" => '',
-                                "narration" => "Being Interest Booked " .(!empty($fetchedArr['ref_no']) ? "Invoice No " . $fetchedArr['ref_no'] : "Batch no " . $fetchedArr['batch_no']),
+                                "narration" => "Being Interest Booked " .(!empty($fetchedArr['ref_no']) ? "Invoice No " . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no'] : "Batch no " . $fetchedArr['batch_no']),
                             ]; 
                             $bank_row['amount'] = $fetchedArr['cheque_amount']; 
                         }
@@ -241,7 +243,7 @@ class FinanceController extends Controller {
                         $company_row['dr_/_cr'] = 'Credit';
                         $company_row['voucher_date'] = '';
                         $company_row['reference_no'] = '';
-                        $company_row['amount'] = '';
+                        $company_row['reference_amount'] = '';
                         $records['PAYMENT'][] = $company_row;
                     }
                 }
@@ -663,7 +665,7 @@ class FinanceController extends Controller {
               'borders' => array(
                 'allborders' => array(
                   'style' => PHPExcel_Style_Border::BORDER_THIN,
-                  'color' => array('argb' => 'FFFF0000'),
+                  // 'color' => array('argb' => 'FFFF0000'),
                 ),
               ),
             );

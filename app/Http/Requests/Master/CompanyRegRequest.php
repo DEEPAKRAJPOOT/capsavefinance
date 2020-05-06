@@ -29,6 +29,8 @@ class CompanyRegRequest extends Request
         return $rules = [
             'cmp_name' => 'required',
             'cmp_add' => 'required',
+            'cmp_email' => 'required|email',
+            'cmp_mobile' => 'required|numeric',
             'gst_no' => 'required|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
             'pan_no'  => 'required|regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/',
             'cin_no' => 'required|regex:/^[U,L]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[P,C,L,T,N,G,O,S]{3}[0-9]{6}$/',
@@ -47,6 +49,8 @@ class CompanyRegRequest extends Request
         return $messages = [
             'cmp_name.required' => trans('master_messages.required'),
             'cmp_add.required' => trans('master_messages.required'),
+            'cmp_email.required' => trans('master_messages.required'),
+            'cmp_mobile.required' => trans('master_messages.required'),
             'gst_no.required' => trans('master_messages.required'),
             'gst_no.regex' => trans('master_messages.gstno'),
             'pan_no.required' => trans('master_messages.required'),

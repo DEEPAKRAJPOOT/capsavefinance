@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\Lms\Batch;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Lms\Refund;
@@ -47,6 +48,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
 /**
  * Lms Repository class
@@ -1135,5 +1137,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static  function getInvoiceDisbursed($disbursalIds)
 	{
 		return InvoiceDisbursed::getInvoiceDisbursed($disbursalIds);
+	}
+	public static  function appLimitByUserId($userId)
+	{
+		return AppLimit::appLimitByUserId($userId);
+	}
+	public static  function appPrgmOfferById($id)
+	{
+		return AppProgramOffer::getAppPrgmOfferById($id);
+	}
+	public static  function getUserAdhocLimitById($id)
+	{
+		return AppOfferAdhocLimit::find($id);
 	}
 }
