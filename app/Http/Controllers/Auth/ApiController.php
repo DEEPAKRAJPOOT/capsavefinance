@@ -227,7 +227,7 @@ class ApiController
             }
           $selectedData[] = $txn->trans_id;
         }
-        dd($ignored_txns);
+        dd($ignored_txns, $tally_data);
         try {
           if (empty($tally_data)) {
              $response['message'] =  'No Records are selected to Post in tally.';
