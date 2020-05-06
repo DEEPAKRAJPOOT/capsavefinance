@@ -1332,7 +1332,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */    
     public function getAppApproversDetails($app_id)
     {
-        return AppApprover::getAppApproversDetails($app_id);
+        return AppApprover::getAppApproversDetails((int) $app_id);
     }
     /**
      * Get Constitution 
@@ -2265,5 +2265,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizPanGst::getAppGSTsByUserId($user_id);
     }
 
+    public function getLmsUsers($whereCond=[])
+    {
+        return LmsUser::getLmsUsers($whereCond);
+    }    
 }
 

@@ -150,4 +150,14 @@ class LmsUser extends Authenticatable
     {
         return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'user_id', 'user_id');
     }
+    
+    public static function getLmsUsers($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);
+        }
+        $result = $query->get();
+        return $result;
+    }
 }
