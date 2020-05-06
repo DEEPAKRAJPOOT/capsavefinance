@@ -36,7 +36,7 @@ class ApiController
     }
     $where = ['is_posted_in_tally' => '0']; //, 'is_invoice_generated' => '1'
     $txnsData = Transactions::getTallyTxns($where);
-    $paymentData = Payment::getTallyTxns($where);
+    $paymentData = [];//Payment::getTallyTxns($where);
     $batch_no = _getRand(15);
     $totalRecords = 0;
     $insertedData = array();
@@ -47,7 +47,7 @@ class ApiController
         $i = 0;
         $ignored_txns = [];
         $parent_settled = [];
-        if (!$paymentData->isEmpty()) {
+        if (!empty($paymentData) && !$paymentData->isEmpty()) {
           foreach ($paymentData as $key => $pmnt) {
             $i++;
             $accountDetails = $pmnt->userRelation->companyBankDetails ?? '';
@@ -94,6 +94,7 @@ class ApiController
         foreach ($txnsData as $key => $txn) {
             $i++;
             if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0 || $txn->trans_type == 17) {
+                $ignored_txns[$txn->trans_id] = 'Tally Trans Type is empty or zero';
                 continue;
             }
             $userName = $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name;
@@ -114,18 +115,17 @@ class ApiController
               $invoice_no = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
               $invoice_date = $txn->invoiceDisbursed->invoice->invoice_date ?? NULL;
             }
-            if ($txn->trans_type == 16 && $txn->entry_type == 1) {
-              continue;
-            }
+
             if (!empty($txn->parent_trans_id)) {
                 $parentRecord  = $txn->getParentTxn();
                 $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
                 $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
-                if ($parentRecord->trans_type == 16 && $parentRecord->entry_type == 0) {
+                if ($parentRecord->trans_type == 16) {
                   $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
                   $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
                 }
                 if ($txn->trans_type == $parentRecord->trans_type && $tally_voucher_type_id == 3) {
+                    $ignored_txns[$txn->trans_id] = 'Child and Parent are same type for journal';
                     continue;
                 }
             }
@@ -135,21 +135,24 @@ class ApiController
                  return $response;
             }
             if ($txn->trans_type == 16 && empty($invoice_no)) {
+                $ignored_txns[$txn->trans_id] = 'Disbursal without Invoice no';
                 continue;
             }
             if ($tally_voucher_type_id == 3) {
                 if (($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
-                   $ignored_txns[] = $txn->trans_id;
+                   $ignored_txns[$txn->trans_id] = 'Outstanding > 0 || Invoice not generated';
                    continue;
                 }
+            }
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
+               $ignored_txns[$txn->trans_id] = 'Margin with debit entry';
+               continue;
             } 
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF'),  config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
+               $ignored_txns[$txn->trans_id] = "dontknow what happened " . $txn->trans_type;
                $tally_voucher_type_id = 3;
             } 
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
-               continue;
-            }
-            if ($txn->trans_type == 32 && $txn->entry_type == 0) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND')]) && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
             }
             $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL;
@@ -223,6 +226,7 @@ class ApiController
             }
           $selectedData[] = $txn->trans_id;
         }
+        // dd($ignored_txns);
         try {
           if (empty($tally_data)) {
              $response['message'] =  'No Records are selected to Post in tally.';
