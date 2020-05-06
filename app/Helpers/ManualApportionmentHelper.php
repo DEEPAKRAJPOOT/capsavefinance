@@ -4,6 +4,7 @@ namespace App\Helpers;
 use DB;
 use Carbon\Carbon;
 use Dompdf\Helpers;
+use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Models\Lms\Disbursal;
@@ -413,6 +414,14 @@ class ManualApportionmentHelper{
             
             $loopStratDate = $startDate ?? $intAccrualStartDate;
              
+            if (is_null($invDisbDetail->int_accrual_start_dt)) {
+                throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
+            }
+
+            if (is_null($invDisbDetail->payDueDate)) {
+                throw new InvalidArgumentException('Payment Date is missing for invoice Disbursed Id: ' . $invDisbId);
+            }
+            
             while(strtotime($curdate) > strtotime($loopStratDate)){
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq);
                 if($balancePrincipal > 0){
