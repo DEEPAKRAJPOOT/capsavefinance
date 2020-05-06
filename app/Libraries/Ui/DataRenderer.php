@@ -16,6 +16,7 @@ use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\AppProgramLimit;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -3161,24 +3162,38 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->editColumn(
                     'limit',
-                    function ($customer) {
+                    function ($customer) {                        
                         $this->totalLimit = 0;
+                        /*
                         if(isset($customer->user->app->prgmLimits)) {
                             foreach ($customer->user->app->prgmLimits as $value) {
                                 $this->totalLimit += $value->limit_amt;
                             }
                         }
+                        */
+                    
+                        $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);
+                        
+                        $this->totalLimit = isset($appPrgmLimit[0]) ? $appPrgmLimit[0]->product_limit : 0;
                     return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
                 })
                 ->editColumn(
                     'consume_limit',
-                    function ($customer) {
+                    function ($customer) {                        
                         $this->totalCunsumeLimit = 0;
+                        /*
                         if(isset($customer->user->app->acceptedOffers)) {
                             foreach ($customer->user->app->acceptedOffers as $value) {
                                 $this->totalCunsumeLimit += $value->prgm_limit_amt;
                             }
                         }
+                         * 
+                         */
+                        $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);                        
+                        foreach ($appPrgmLimit as $value) {
+                            $this->totalCunsumeLimit += $value->utilize_limit;
+                        }
+                                                
                     return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
                 })
                 ->editColumn(

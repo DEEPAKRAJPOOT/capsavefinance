@@ -321,6 +321,23 @@ class AppProgramLimit extends BaseModel {
         if (count($whereCond) > 0) {
             return self::where($whereCond)->update($data);
         }
-    }    
+    } 
+    
+    public static function getProductLimit($appId, $productId) 
+    {
+        $curDate = \Carbon\Carbon::now()->format('Y-m-d'); 
+        $result = self::select('app_prgm_limit.limit_amt as product_limit', 'app_prgm_offer.prgm_limit_amt as utilize_limit')   
+                ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
+                ->where('app_prgm_limit.app_id',$appId)
+                ->where('app_prgm_limit.product_id', $productId)
+                ->where('app_prgm_offer.is_active', 1)
+                ->where('app_prgm_offer.status', 1)
+                ->where('app_prgm_limit.status', 1)
+                ->where('app_prgm_limit.start_date', '<=', $curDate)
+                ->where('app_prgm_limit.end_date', '>=', $curDate)                        
+                ->get();
+        
+        return $result;
+    }
 
 }
