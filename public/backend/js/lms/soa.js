@@ -60,7 +60,7 @@ try {
             var user_id = $.trim($("#user_id").val());
             var biz_id = $.trim($("#biz_id").val());
             
-            showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
+//            showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
             oTable.draw();
         });
 
@@ -99,8 +99,8 @@ try {
                                 </tr>
                             </tbody>
                         </table>`; 
-                        console.log(html);
-                $("#client_details").html(html);
+//                        console.log(html);
+//                $("#client_details").html(html);
             }
         });
     }

@@ -167,7 +167,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/soa/list', [
                 'as' => 'lms_get_transaction',
                 'uses' => 'Lms\SoaController@list'
-            ]);            
+            ]);     
+            
+            Route::get('/soa/generate-soa-pdf', [
+                    'as' => 'generate_soa_pdf',
+                    'uses' => 'Lms\SoaController@generateSoaReport'
+            ]);
+            
             Route::get('/charges/manage_charge', [
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'

@@ -88,7 +88,11 @@
                     isset($user['customer_id'])?$user['customer_id']:null, 
                     [ 'id'=>'customer_id' ])
                 !!}
-                
+                <div class="col-md-3" float-right>
+                    <a target="_blank" href="{{route('generate_soa_pdf', ['user_id' => $user['user_id'], 'biz_id' => $user['biz_id'], 'customer_id' => $user['customer_id'],'from_date' => '05/05/2020', 'to_date' => '10/05/2020'])}}">
+                        <button type="button" class="btn btn-primary float-right btn-sm ml-3" > Download SOA Record</button>
+                    </a>
+                </div>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
