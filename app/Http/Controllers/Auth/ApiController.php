@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Event;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Payment;
@@ -37,7 +38,7 @@ class ApiController
     }
     $where = ['is_posted_in_tally' => '0']; //, 'is_invoice_generated' => '1'
     $txnsData = Transactions::getTallyTxns($where);
-    $paymentData = [];
+    $paymentData = new Collection;
     if ($paymentRequired) {
       $paymentData = Payment::getTallyTxns($where);
     }
