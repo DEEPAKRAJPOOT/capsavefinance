@@ -64,7 +64,7 @@
                  }
                  else if(data==4)
                  {
-                      $("#moveCase").html('(Exception Cases) User limit has been expire');
+                      $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
                      $(th).parent('td').parent('tr').remove(); 
                  }
                  else
@@ -567,7 +567,7 @@ function uploadFile(app_id,id)
                     }
                     else if(data==4)
                     {
-                         $("#moveCase").html('(Exception Cases) User limit has been expire');
+                         $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
                         $(th).parent('td').parent('tr').remove(); 
                     }
                     else

@@ -458,7 +458,7 @@ trait InvoiceTrait
                if($dueDateGreaterCurrentdate)
                 {
                           $status=28; 
-                          $limit_exceed='User limit has been expire.'; 
+                          $limit_exceed='Customer limit has been expired.'; 
                 }
                  InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status); 
                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
@@ -475,7 +475,7 @@ trait InvoiceTrait
                 if($dueDateGreaterCurrentdate)
                 {
                     $status_id=28; 
-                    $limit_exceed='User limit has been expire.'; 
+                    $limit_exceed='Customer limit has been expired.'; 
                 }
                   InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id); 
                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
@@ -552,7 +552,7 @@ trait InvoiceTrait
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Customer limit has been expired.','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 4;
            } 
            if($isOverDue->is_overdue==1)
@@ -614,7 +614,7 @@ trait InvoiceTrait
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Customer limit has been expired.','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 4;
            } 
            if($isOverDue->is_overdue==1)
@@ -660,7 +660,7 @@ trait InvoiceTrait
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Customer limit has been expired','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 4;
            } 
            if($isOverDue->is_overdue==1)
@@ -736,7 +736,7 @@ trait InvoiceTrait
                if($dueDateGreaterCurrentdate)
                 {
                           $status=28; 
-                          $limit_exceed='User limit has been expire.'; 
+                          $limit_exceed='Customer limit has been expired.'; 
                 }
                  
            }
@@ -750,7 +750,7 @@ trait InvoiceTrait
                 if($dueDateGreaterCurrentdate)
                  {
                     $status=28; 
-                    $limit_exceed='User limit has been expire.'; 
+                    $limit_exceed='Customer limit has been expired.'; 
                  }
              }
        
