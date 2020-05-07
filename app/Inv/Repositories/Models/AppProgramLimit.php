@@ -323,21 +323,39 @@ class AppProgramLimit extends BaseModel {
         }
     } 
     
-    public static function getProductLimit($appId, $productId) 
+    public static function getProductLimit($appId, $productId, $checkApprLimit=true) 
     {
         $curDate = \Carbon\Carbon::now()->format('Y-m-d'); 
-        $result = self::select('app_prgm_limit.limit_amt as product_limit', 'app_prgm_offer.prgm_limit_amt as utilize_limit')   
-                ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
+        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_limit.limit_amt as product_limit')                   
                 ->where('app_prgm_limit.app_id',$appId)
-                ->where('app_prgm_limit.product_id', $productId)
-                ->where('app_prgm_offer.is_active', 1)
-                ->where('app_prgm_offer.status', 1)
-                ->where('app_prgm_limit.status', 1)
-                ->where('app_prgm_limit.start_date', '<=', $curDate)
-                ->where('app_prgm_limit.end_date', '>=', $curDate)                        
-                ->get();
+                ->where('app_prgm_limit.product_id', $productId);
+        if ($checkApprLimit == true) {
+                $query->where('app_prgm_limit.status', 1);
+                $query->where('app_prgm_limit.start_date', '<=', $curDate);
+                $query->where('app_prgm_limit.end_date', '>=', $curDate);
+        }                        
+        $result = $query->get();
         
         return $result;
     }
+    
+    public static function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
+    {
+        $curDate = \Carbon\Carbon::now()->format('Y-m-d'); 
+        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt as utilize_limit')   
+                ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
+                ->where('app_prgm_limit.app_id',$appId)
+                ->where('app_prgm_limit.product_id', $productId)        
+                ->where('app_prgm_offer.is_active', 1);
+        if ($checkApprLimit == true) {
+                $query->where('app_prgm_offer.status', 1);
+                $query->where('app_prgm_limit.status', 1);
+                $query->where('app_prgm_limit.start_date', '<=', $curDate);
+                $query->where('app_prgm_limit.end_date', '>=', $curDate);
+        }
+        $result = $query->get();
+        
+        return $result;
+    }    
 
 }

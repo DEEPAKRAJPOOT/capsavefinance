@@ -115,26 +115,46 @@
                                 <a data-toggle="modal" data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" >Add Adhoc Limit</a>
                                 @endif
                                 @endcan
-                                @can('approve_adhoc_limit')
-                                @if(isset($val->adhoc_limit->status) && $val->adhoc_limit->status == 0)
-                                <a data-toggle="modal" data-target="#approveAdhocLimit" data-url ="{{ route('approve_adhoc_limit', ['user_id' => request()->get('user_id'), 'app_offer_adhoc_limit_id' => $val->adhoc_limit->app_offer_adhoc_limit_id ]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Approve Adhoc Limit</a>
-                                @endif
-                                @endcan
+                                
                             </div>
                         </div>
                        @endif
                         @foreach($getAdhoc as $adc) 
                         <div class="row" style="margin-top:20px;"> 
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                <label>Adhoc Limit </label>
-                                @if($adc->status==1) 
+                                <label>Available Limit </label>
+                                <div class="label-bottom">{{number_format($adc->limit_amt) }}</div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                                <label>Adhoc Interest Rate </label>
+                                <div class="label-bottom">{{ $adc->prgm_offer->adhoc_interest_rate }} %</div>
+                            </div>
+                            
+                            <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                                <label>Start Date </label>
+                                <div class="label-bottom">{{ date('d-m-Y',strtotime($adc->start_date)) }}</div>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                                <label>End Date</label>
+                                <div class="label-bottom">{{ date('d-m-Y',strtotime($adc->end_date)) }}</div>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                                @if($adc->status==0) 
+                                <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
+                                @elseif($adc->status==1) 
                                 <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                 @else
-                                <button type="button" class="badge badge-warning btn-sm float-right">Expire </button>
+                                <button type="button" class="badge badge-danger btn-sm float-right">Reject </button>
                                 @endif
-                                <div class="label-bottom">{{$adc->limit_amt}}</div>
-                            </div>
 
+                                @can('approve_adhoc_limit')
+                                    @if(isset($adc->status) && $adc->status == 0)
+                                    <a data-toggle="modal" data-target="#approveAdhocLimit" data-url ="{{ route('approve_adhoc_limit', ['user_id' => request()->get('user_id'), 'app_offer_adhoc_limit_id' => $adc->app_offer_adhoc_limit_id ]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Approve</a>
+                                    @endif
+                                @endcan
+                                
+                            </div>
+                           
                         </div>
                         @endforeach 
 

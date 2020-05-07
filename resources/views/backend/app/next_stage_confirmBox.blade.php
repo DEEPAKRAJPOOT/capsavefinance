@@ -43,7 +43,15 @@
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_approval_users_found')
                    <label class='error'>No members found in approval authority team.</label><br>                   
-                   @endif                   
+                   @endif 
+                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'validate_limit_enhance_amt')
+                   <label class='error'>{{ trans('backend_messages.validate_limit_enhance_amt') }}</label><br>                   
+                   @endif 
+                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'validate_reduce_limit_amt')
+                   <label class='error'>{{ trans('backend_messages.validate_reduce_limit_amt') }}</label><br>                   
+                   @endif                     
                    
                    @if ($assign_case)
                         <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>

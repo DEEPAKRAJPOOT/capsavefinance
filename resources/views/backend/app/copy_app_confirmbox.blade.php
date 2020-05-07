@@ -31,6 +31,8 @@
                   @else
                     @if ($appType == 2)
                       Are you sure to copy application for limit enhancement?<br>
+                    @elseif ($appType == 3)
+                      Are you sure to copy application for reduce limit?<br>                                 
                     @else
                       Are you sure to copy/renew the application?<br>
                     @endif  
@@ -86,8 +88,16 @@ var messages = {
     redirect_url : "{{ route('copy_app_confirmbox', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]) }}"
  };
      $(document).ready(function(){        
-        var app_type = $("input[name=app_type]").val(); 
-        var targetModel = app_type == '1' ? 'confirmCopyApp' : 'confirmEnhanceLimit';        
+        var targetModel = ''; 
+        var app_type = $("input[name=app_type]").val();
+        if (app_type == '1') {
+            targetModel = 'confirmCopyApp';    
+        } else if(app_type == '2') {
+            targetModel = 'confirmEnhanceLimit';
+        } else if(app_type == '3') {
+            targetModel = 'confirmReduceLimit';
+        }
+        
         var parent =  window.parent;  
         
         if (messages.error_code) {

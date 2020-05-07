@@ -361,6 +361,7 @@ class DataRenderer implements DataProviderInterface
                         $appData = Application::getApplicationsData($where);
                         if ($app->status == 2 && !isset($appData[0])) { //Limit Enhancement
                             $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
+                            $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
                         }
                         return $act;
                                       
@@ -3173,8 +3174,9 @@ class DataRenderer implements DataProviderInterface
                         */
                     
                         $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);
-                        
-                        $this->totalLimit = isset($appPrgmLimit[0]) ? $appPrgmLimit[0]->product_limit : 0;
+                        foreach ($appPrgmLimit as $value) {
+                            $this->totalLimit += $value->product_limit;
+                        }
                     return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
                 })
                 ->editColumn(
@@ -3189,7 +3191,7 @@ class DataRenderer implements DataProviderInterface
                         }
                          * 
                          */
-                        $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);                        
+                        $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
                         foreach ($appPrgmLimit as $value) {
                             $this->totalCunsumeLimit += $value->utilize_limit;
                         }

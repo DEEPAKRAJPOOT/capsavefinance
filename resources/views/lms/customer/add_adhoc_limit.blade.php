@@ -23,6 +23,12 @@
         <div class="row bank_divs">
             <div class="col-6">
                 <div class="form-group">
+                    <label for="drawingpowervariableamount">Adhoc Interest Rate <span class="error_message_label">*</span></label>
+                    <input type="text" class="form-control number_format" name="adhoc_interest_rate" id="adhoc_interest_rate" value="{{ $offer->adhoc_interest_rate }}" maxlength="15" placeholder="Adhoc Interest Rate" required=""  readonly="readonly">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
                     <label for="drawingpowervariableamount">Adhoc Limit <span class="error_message_label">*</span></label>
                     <input type="text" class="form-control number_format" name="adhoc_limit" id="adhoc_limit" value="" maxlength="15" placeholder="Enter Adhoc Limit" required="">
                 </div>

@@ -71,6 +71,10 @@ class AppOfferAdhocLimit extends BaseModel {
         }
     }
 
+    public function prgm_offer(){
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer','prgm_offer_id','prgm_offer_id');
+    }
+
     public static function checkUserAdhoc($attr)
     {
         $mytime = Carbon::now();
