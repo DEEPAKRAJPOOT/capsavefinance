@@ -123,11 +123,14 @@ public function limitManagement(Request $request) {
  */
 public function addAdhocLimit(Request $request) {
 	$userId = $request->get('user_id');
+	$prgmOfferId = $request->get('prgm_offer_id');
 	$data = $this->lmsRepo->appLimitByUserId($userId);
-	// dd($data);
+	$offer = $this->lmsRepo->appPrgmOfferById($prgmOfferId);
+
 	return view('lms.customer.add_adhoc_limit')
 		->with([
-			'data' => $data
+			'data' => $data,
+			'offer' => $offer
 		]);
 }
 
@@ -154,13 +157,14 @@ public function saveAdhocLimit(Request $request) {
 		$startDate = $request->start_date; 
 		$endDate = $request->end_date; 
 		$adhocLimit = str_replace(',', '', $request->adhoc_limit);
-		
+		$dateEnd = date("d-m-Y", strtotime(str_replace('/','-',$startDate)));
+		// dd($dateEnd);
 		$data = $this->lmsRepo->appPrgmOfferById($prgmOfferId);
 		$userId = $data->programLimit->appLimit->user_id; 
 
 		$validator = Validator::make($request->all(), [
 		   'start_date' => 'required',
-		   'end_date' => 'required|after:start_date',
+		   'end_date' => 'required|after:'.$dateEnd,
 		]);
 		
 		if ($validator->fails()) {
