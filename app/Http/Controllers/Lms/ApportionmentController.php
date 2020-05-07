@@ -964,38 +964,46 @@ class ApportionmentController extends Controller
     
     public  function  getUserLimitDetais($user_id) 
    {
-            try {
-                $totalLimit = 0;
-                $totalCunsumeLimit = 0;
-                $consumeLimit = 0;
-                $transactions = 0;
-                $userInfo = $this->userRepo->getCustomerDetail($user_id);
-                $application = $this->appRepo->getCustomerApplications($user_id);
-                $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
-
-                foreach ($application as $key => $app) {
-                    if (isset($app->prgmLimits)) {
-                        foreach ($app->prgmLimits as $value) {
-                            $totalLimit += $value->limit_amt;
-                        }
-                    }
-                    if (isset($app->acceptedOffers)) {
-                        foreach ($app->acceptedOffers as $value) {
-                            $totalCunsumeLimit += $value->prgm_limit_amt;
-                        }
+        try {
+            $totalLimit = 0;
+            $totalCunsumeLimit = 0;
+            $consumeLimit = 0;
+            $transactions = 0;
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            $application = $this->appRepo->getCustomerApplications($user_id);
+            $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+            $maxDPD = $this->lmsRepo->getMaxDpdTransaction($user_id);
+            
+            $DPD = [
+                'dpd'=>$maxDPD->dpd,
+                'invoice_no'=>$maxDPD->invoiceno,
+                //'trans_date'=>$maxDPD->
+            ];
+            foreach ($application as $key => $app) {
+                if (isset($app->prgmLimits)) {
+                    foreach ($app->prgmLimits as $value) {
+                        $totalLimit += $value->limit_amt;
                     }
                 }
-                $userInfo->total_limit = number_format($totalLimit);
-                $userInfo->consume_limit = number_format($totalCunsumeLimit);
-                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-                
-                $data['userInfo'] = $userInfo;
-                $data['application'] = $application;
-                $data['anchors'] = $anchors;
-                return $data;
-            } catch (Exception $ex) {
-                dd($ex);
+                if (isset($app->acceptedOffers)) {
+                    foreach ($app->acceptedOffers as $value) {
+                        $totalCunsumeLimit += $value->prgm_limit_amt;
+                    }
+                }
             }
+            $userInfo->total_limit = number_format($totalLimit);
+            $userInfo->consume_limit = number_format($totalCunsumeLimit);
+            $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+            
+            $data['userInfo'] = $userInfo;
+            $data['application'] = $application;
+            $data['anchors'] = $anchors;
+            return $data;
+        } catch (Exception $ex) {
+            dd($ex);
+        }
     }
+
+    
    
 }

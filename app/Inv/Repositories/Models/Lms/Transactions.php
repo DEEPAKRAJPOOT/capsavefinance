@@ -118,6 +118,18 @@ class Transactions extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransactionsRunning','trans_running_id','trans_running_id');
     }
 
+    public function getInvoiceNoAttribute(){
+        $data = '';
+        if($this->userInvTrans){
+            return $this->userInvTrans->getUserInvoice->invoice_no;
+        }elseif($this->userInvParentTrans){
+            return $this->userInvParentTrans->getUserInvoice->invoice_no;
+        }elseif($this->invoice_disbursed_id && $this->invoiceDisbursed->invoice_id){
+            return $this->invoiceDisbursed->invoice->invoice_no;
+        }
+        return $data;
+    }
+
     public function getsettledAmtAttribute(){
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
@@ -134,6 +146,12 @@ class Transactions extends BaseModel {
 
     public function getOutstandingAttribute(){
         return round(($this->amount - $this->getsettledAmtAttribute()),2);
+    }
+
+    public function getDpdAttribute(){
+        $to = \Carbon\Carbon::now()->setTimezone(config('common.timezone'));
+        $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', $this->trans_date);
+        return $to->diffInDays($from);
     }
 
     public function getWaiveOffAmount(){
@@ -475,6 +493,20 @@ class Transactions extends BaseModel {
         return self::whereNull('payment_id')
             ->where($whereCond)
             ->get();
+    }
+
+    public static function getMaxDpdTransaction($userId){
+        $transactions =  self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('user_id','=',$userId)
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' )")
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+        $maxDPD = $transactions->max('dpd');
+        return $transactions->where('dpd','=',$maxDPD)->first();
     }
 
     /*** save repayment transaction details for invoice  **/

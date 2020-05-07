@@ -1150,4 +1150,88 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return AppOfferAdhocLimit::find($id);
 	}
+
+	public static function getInvoiceSettleStatus($invoiceId, $statusOnly = false){
+		
+		if (empty($invoiceId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+		if (!is_int($invoiceId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+		}
+
+		$response = [
+			'invoice_id'=>null,
+			'is_settled' => false,
+			'case'=>null,
+			'payment'=>0,
+			'receipt'=>0,
+			'principal'=>[],
+			'interest'=>[],
+			'margin'=>[],
+			'overdue'=>[]
+		];
+
+		$invDisbursed = InvoiceDisbursed::where('invoice_id','=',$invoiceId)->first();
+		
+		if($invDisbursed){
+			$response['invoice_id'] = $invDisbursed->invoice_id;
+			$response['payment'] = $invDisbursed->invoice->invoice_approve_amount;
+			$response['case'] = $invDisbursed->invoice->program_offer->payment_frequency;
+
+			$transactions = Transactions::whereNull('parent_trans_id')
+			->whereNull('payment_id')
+			->where('invoice_disbursed_id','=',$invDisbursed->invoice_disbursed_id)
+			->get();
+			foreach ($transactions as $trans) {
+				switch ($trans->trans_type) {
+					case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
+						$response['principal'][] = [
+							'trans_id' => $trans->trans_id,
+							'amount'=> $trans->amount,
+							'outstanding'=>$trans->outstanding,
+							'trans_date'=>$trans->trans_date
+						];
+						break;
+					case config('lms.TRANS_TYPE.INTEREST'):
+						$response['interest'][] = [
+							'trans_id' => $trans->trans_id,
+							'amount'=> $trans->amount,
+							'outstanding'=>$trans->outstanding,
+							'trans_date'=>$trans->trans_date
+						];
+						break;
+					case config('lms.TRANS_TYPE.MARGIN'):
+						$response['margin'][] = [
+							'trans_id' => $trans->trans_id,
+							'amount'=> $trans->amount,
+							'outstanding'=>$trans->outstanding,
+							'trans_date'=>$trans->trans_date
+						];
+						break;
+					case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
+						$response['overdue'][] = [
+							'trans_id' => $trans->trans_id,
+							'amount'=> $trans->amount,
+							'outstanding'=>$trans->outstanding,
+							'trans_date'=>$trans->trans_date
+						];
+						break;
+				}
+				$response['receipt'] += $trans->amount - $trans->outstanding;
+			}
+			if($response['payment'] <= $response['receipt']){
+				$response['is_settled'] = true;
+			}
+		}
+		if($statusOnly){
+			return $response['is_settled'];
+		}else{	
+			return $response;
+		}
+	}
+
+	public static function getMaxDpdTransaction($userId){
+		return Transactions::getMaxDpdTransaction($userId);
+	}
 }
