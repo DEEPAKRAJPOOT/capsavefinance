@@ -1,6 +1,6 @@
    <h2 style="font-size: 15px;font-family: Calibri;margin: 0;" align="center"><strong>{{$registeredCompany->cmp_name}}</strong></h2>
    <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center"><strong>Registered office: {{$registeredCompany->cmp_add}}</strong></h2>
-   <h2 align="center" style="font-size: 8.5px;font-family: Calibri;">
+   <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center">
       <span><strong>Ph:</strong></span>
       <span> {{$registeredCompany->cmp_mobile}}; </span>
       <span><strong>CIN No:</strong></span>

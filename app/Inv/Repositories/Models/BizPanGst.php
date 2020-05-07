@@ -43,12 +43,14 @@ class BizPanGst extends BaseModel
     ];
 
     public static function getGSTsByUserId($user_id){
-        return BizPanGst::where(['user_id'=> $user_id, 'type'=> 2, 'status'=> 1])->where('parent_pan_gst_id', '<>', 0)->get();
+        return BizPanGst::where(['user_id'=> $user_id, 'type'=> 2, 'status'=> 1])->where('parent_pan_gst_id', '<>', 0)->groupBy(['is_gst_hide', 'pan_gst_hash'])->get(['is_gst_hide', 'pan_gst_hash']);
     }
 
-    public static function updateGstHideAddress($data, $biz_pan_gst_id){
-        BizPanGst::where('biz_addr_id', $data['biz_addr_id'])->update(['is_gst_hide'=>0, 'biz_addr_id'=>0]);
-        return BizPanGst::where('biz_pan_gst_id', $biz_pan_gst_id)->update($data);
+    public static function updateGstHideAddress($data, $biz_addr_id){
+        BizPanGst::where(['user_id'=> $data['user_id'],'biz_addr_id'=> $biz_addr_id])->update(['is_gst_hide'=>0, 'biz_addr_id'=>0]);
+
+        return BizPanGst::where(['user_id'=> $data['user_id'], 'pan_gst_hash'=>$data['pan_gst_hash'], 'type'=>2])->where('parent_pan_gst_id','<>',0)->update(['is_gst_hide'=>1, 'biz_addr_id'=>$biz_addr_id]);
+        //return BizPanGst::where('biz_pan_gst_id', $biz_pan_gst_id)->update($data);
     }
 
     //GST's which are associated with application
