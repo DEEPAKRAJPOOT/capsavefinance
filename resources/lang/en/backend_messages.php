@@ -34,5 +34,6 @@ return [
     'disburseMarked' => 'Successfully disburse marked .',
     'downloadExcel' => 'Successfully download.',
     'lms_eod_process_msg' => 'System is stopped, you can\'t do any transactions.',
+    'validate_limit_enhance_amt' => 'Enhancement Limit can\'t be less than previous utilized limit.'
 ];
 

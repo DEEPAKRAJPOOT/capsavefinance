@@ -3173,8 +3173,9 @@ class DataRenderer implements DataProviderInterface
                         */
                     
                         $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);
-                        
-                        $this->totalLimit = isset($appPrgmLimit[0]) ? $appPrgmLimit[0]->product_limit : 0;
+                        foreach ($appPrgmLimit as $value) {
+                            $this->totalLimit += $value->product_limit;
+                        }
                     return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
                 })
                 ->editColumn(
@@ -3189,7 +3190,7 @@ class DataRenderer implements DataProviderInterface
                         }
                          * 
                          */
-                        $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);                        
+                        $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
                         foreach ($appPrgmLimit as $value) {
                             $this->totalCunsumeLimit += $value->utilize_limit;
                         }
