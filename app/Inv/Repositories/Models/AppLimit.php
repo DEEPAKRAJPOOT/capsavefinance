@@ -127,7 +127,7 @@ class AppLimit extends BaseModel {
     public static  function getUserApproveLimit($user_id)
     {
 
-        return  AppLimit::with(['programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor','programLimit.offer.adhoc_limit'])->where(['user_id'=>$user_id])->orderBy('created_at','DESC')->get();
+        return  AppLimit::with(['app','programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor','programLimit.offer.adhoc_limit'])->where(['user_id'=>$user_id])->orderBy('created_at','DESC')->get();
     }
 
     public static  function appLimitByUserId($user_id)

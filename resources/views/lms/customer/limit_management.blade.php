@@ -11,6 +11,7 @@
                 @php 
                 $obj =  new \App\Helpers\Helper;
                 $credit_limit =  $obj->ProgramProductLimit($uLimit->app_limit_id);
+              
                 @endphp          
                 <div class="card-body limit-management"> 
                     <div class="limit-title"> 
@@ -18,13 +19,24 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <label>Total Credit Assessed </label>
                                 <div class="label-bottom">{{ number_format($uLimit->tot_limit_amt) }}
+                                  @if($uLimit->app->app_type==2) 
                                     @if($uLimit->status==1 && $uLimit->actual_end_date==Null) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($uLimit->status==1 && $uLimit->actual_end_date!=Null) 
+                                   <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                    @else
+                                   <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                    @endif
+                                  @else
+                                     @if($uLimit->status==0) 
+                                    <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
+                                    @elseif($uLimit->status==1) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @else
                                     <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                                     @endif
+                                @endif 
+                                    
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
@@ -43,6 +55,7 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <label>Proposed product limit </label>
                                 <div class="label-bottom">{{number_format($limit->limit_amt)}}
+                                 @if($uLimit->app->app_type==2)     
                                     @if($limit->status==1 && $limit->actual_end_date==Null) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($limit->status==1 && $limit->actual_end_date!=Null) 
@@ -50,6 +63,16 @@
                                     @else
                                     <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                                     @endif
+                                  @else
+                                     @if($limit->status==0) 
+                                    <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
+                                    @elseif($limit->status==1) 
+                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                    @else
+                                    <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                    @endif
+                                @endif 
+                                    
                                 </div>
                             </div>
                         </div>
