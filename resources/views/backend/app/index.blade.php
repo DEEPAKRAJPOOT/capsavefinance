@@ -123,6 +123,7 @@
 {!!Helpers::makeIframePopup('viewSharedDetails','View Shared Details', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('confirmCopyApp','Copy/Renew Application', 'modal-md')!!}
 {!!Helpers::makeIframePopup('confirmEnhanceLimit','Limit Enhancement', 'modal-md')!!}
+{!!Helpers::makeIframePopup('confirmReduceLimit','Reduce Limit', 'modal-md')!!}
 @endsection
 @section('additional_css')
 <style>

@@ -1545,9 +1545,10 @@ class CamController extends Controller
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
 
-            //Validate Enchancement Limit            
-            if (\Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt)) {
-                Session::flash('error', trans('backend_messages.validate_limit_enhance_amt'));
+            //Validate Enchancement Limit  
+            $result = \Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt);
+            if ($result['status']) {
+                Session::flash('error', $result['message']);
                 return redirect()->back()->withInput();
             }
 
@@ -1763,9 +1764,10 @@ class CamController extends Controller
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
 
-        //Validate Enchancement Limit                        
-        if (\Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt, ['app_prgm_limit_id' => $aplid])) {
-            Session::flash('error', trans('backend_messages.validate_limit_enhance_amt'));
+        //Validate Enchancement Limit           
+        $result = \Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt, ['app_prgm_limit_id' => $aplid]);
+        if ($result['status']) {
+            Session::flash('error', $result['message']);
             return redirect()->back()->withInput();
         }
         

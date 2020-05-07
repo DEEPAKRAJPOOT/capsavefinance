@@ -47,6 +47,10 @@
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_limit_enhance_amt')
                    <label class='error'>{{ trans('backend_messages.validate_limit_enhance_amt') }}</label><br>                   
+                   @endif 
+                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'validate_reduce_limit_amt')
+                   <label class='error'>{{ trans('backend_messages.validate_reduce_limit_amt') }}</label><br>                   
                    @endif                     
                    
                    @if ($assign_case)
