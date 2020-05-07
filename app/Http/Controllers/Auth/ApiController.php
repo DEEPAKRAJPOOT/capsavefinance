@@ -97,7 +97,6 @@ class ApiController
 
 
         foreach ($txnsData as $key => $txn) {
-            $i++;
             if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0 || $txn->trans_type == 17) {
                 $ignored_txns[$txn->trans_id] = 'Tally Trans Type is empty or zero';
                 continue;
@@ -200,6 +199,7 @@ class ApiController
                $secondEntry = $common_array;
                $secondEntry['tally_trans_type_id'] = 2;
                $tally_data[] = $secondEntry;
+               $i++;
             }
             if (!empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
               $gstData['base_amount'] = $txn->userinvoicetrans->base_amount;
@@ -232,9 +232,11 @@ class ApiController
                 $common_array['amount'] =  $gst_trans_amount;
                 $common_array['ref_amount'] =  $gst_trans_amount;
                 $tally_data[] = $common_array;
+                $i++;
               }
             }else{
               $tally_data[] = $common_array;
+              $i++;
             }
           $selectedData[] = $txn->trans_id;
         }
@@ -265,11 +267,11 @@ class ApiController
             $response['status'] = 'success';
             $batchData = [
               'batch_no' => $batch_no,
-              'record_cnt' => $totalRecords,
+              'record_cnt' => $i,
               'created_at' => date('Y-m-d H:i:s'),
             ];
             $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
-            $response['message'] =  ($totalRecords > 1 ? $totalRecords .' Records inserted successfully' : '1 Record inserted.');
+            $response['message'] =  ($i > 1 ? $i .' Records inserted successfully' : '1 Record inserted.');
           }
         }else{
           $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in tally.';
