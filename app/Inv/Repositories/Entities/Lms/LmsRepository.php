@@ -49,6 +49,8 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use BlankDataExceptions;
+use InvalidDataTypeExceptions;
 
 /**
  * Lms Repository class
@@ -1151,7 +1153,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return AppOfferAdhocLimit::find($id);
 	}
 
-	public static function getInvoiceSettleStatus($invoiceId, $statusOnly = false){
+	public static function getInvoiceSettleStatus(int $invoiceId, $statusOnly = false){
 		
 		if (empty($invoiceId)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
@@ -1231,7 +1233,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		}
 	}
 
-	public static function getMaxDpdTransaction($userId){
-		return Transactions::getMaxDpdTransaction($userId);
+	public static function getMaxDpdTransaction($userId, $transType){
+		return Transactions::getMaxDpdTransaction($userId, $transType);
 	}
 }

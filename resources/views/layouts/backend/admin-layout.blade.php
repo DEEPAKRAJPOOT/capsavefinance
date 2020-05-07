@@ -110,6 +110,7 @@
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
     <script src="{{url('backend/assets/js/jquery.validate.js')}}"></script>
     <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
+    <script src="{{url('backend/assets/plugins/datatables/Buttons/dataTables.buttons.min.js')}}"></script>
     <script src="{{url('backend/assets/plugins/ckeditor/ckeditor.js')}}"></script>
     <script src="https://cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
     <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>

@@ -470,6 +470,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\EodProcessController@process'
             ]);
 
+            Route::get('soa/pdf/download',[
+                'as' => 'soa_pdf_download',
+                'uses'=> 'Lms\SoaController@soaPdfDownload'
+            ]);
+
+            Route::get('soa/excel/download',[
+                'as' => 'soa_excel_download',
+                'uses'=> 'Lms\SoaController@soaExcelDownload'
+            ]);
+
         });   
     });    
     //end of application

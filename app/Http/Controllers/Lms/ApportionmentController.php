@@ -17,6 +17,7 @@ use App\Inv\Repositories\Models\Payment;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ManualApportionmentHelper;
 use App\Contracts\Ui\DataProviderInterface;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Http\Requests\Lms\ApportionmentRequest;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
@@ -754,6 +755,7 @@ class ApportionmentController extends Controller
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
                 }
+                $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
@@ -972,13 +974,6 @@ class ApportionmentController extends Controller
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
             $application = $this->appRepo->getCustomerApplications($user_id);
             $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
-            $maxDPD = $this->lmsRepo->getMaxDpdTransaction($user_id);
-            
-            $DPD = [
-                'dpd'=>$maxDPD->dpd,
-                'invoice_no'=>$maxDPD->invoiceno,
-                //'trans_date'=>$maxDPD->
-            ];
             foreach ($application as $key => $app) {
                 if (isset($app->prgmLimits)) {
                     foreach ($app->prgmLimits as $value) {
@@ -1004,6 +999,16 @@ class ApportionmentController extends Controller
         }
     }
 
-    
+    public function updateInvoiceRepaymentFlag(array $invDisbId){
+        $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
+        foreach($invDisbs as $invd){
+            $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id, true);
+            if($flag){
+                $inv = BizInvoice::find($invd->invoice_id);
+                $inv->is_repayment = 1;
+                $inv->save();
+            }
+        }
+    }
    
 }

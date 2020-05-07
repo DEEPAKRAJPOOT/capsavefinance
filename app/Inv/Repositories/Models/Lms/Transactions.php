@@ -495,18 +495,18 @@ class Transactions extends BaseModel {
             ->get();
     }
 
-    public static function getMaxDpdTransaction($userId){
+    public static function getMaxDpdTransaction($userId, $transType){
         $transactions =  self::whereNull('parent_trans_id')
         ->whereNull('payment_id')
         ->where('user_id','=',$userId)
-        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->where('trans_type','=',$transType)        
         ->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' )")
         ->get()
         ->filter(function($item) {
             return $item->outstanding > 0;
         });
         $maxDPD = $transactions->max('dpd');
-        return $transactions->where('dpd','=',$maxDPD)->first();
+        return $transactions->where('dpd','=',$maxDPD);
     }
 
     /*** save repayment transaction details for invoice  **/

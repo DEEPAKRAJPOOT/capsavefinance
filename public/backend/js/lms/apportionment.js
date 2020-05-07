@@ -204,7 +204,7 @@ class Apportionment {
 
         if(status){
             if(totalSettledAmt > paymentAmt){
-                message =  "Sum of your total entries is grater than Re-payment amount";
+                message =  "Sum of your total entries is greater than Re-payment amount";
                 status = false;
             }
         }
