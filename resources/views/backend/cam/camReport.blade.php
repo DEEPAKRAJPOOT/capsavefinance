@@ -371,7 +371,7 @@
             </div>
         </div>
         <div class="data mt-4">
-            <h2 class="sub-title bg">Surrogate Criteria (3 out of 5 parameters)</h2>
+            <h2 class="sub-title bg">Surrogate Criteria</h2>
             <div class="pl-4 pr-4 pb-4 pt-2">
                 <table class="table table-bordered overview-table" id="myTable3">
                     <thead>
@@ -647,11 +647,11 @@
                         <tr>
                             <td>{{$val['bank_name']}}</td>
                             <td>{{$val['fund_facility']}}</td>
-                            <td>₹{{number_format($val['fund_amt'])}}</td>
-                            <td>₹{{number_format($val['fund_os_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['fund_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['fund_os_amt'])}}</td>
                             <td>{{$val['nonfund_facility']}}</td>
-                            <td>₹{{number_format($val['nonfund_amt'])}}</td>
-                            <td>₹{{number_format($val['nonfund_os_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['nonfund_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['nonfund_os_amt'])}}</td>
                             <td>{{$val['relationship_len']}}</td>
                         </tr>
                         @endforeach
@@ -680,8 +680,8 @@
                         <tr>
                             <td>{{$val['bank_name_tlbl']}}</td>
                             <td>{{$val['loan_name']}}</td>
-                            <td>₹{{number_format($val['facility_amt'])}}</td>
-                            <td>₹{{number_format($val['facility_os_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['facility_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['facility_os_amt'])}}</td>
                             <td>{{$val['relationship_len_tlbl']}}</td>
                         </tr>
                         @endforeach
