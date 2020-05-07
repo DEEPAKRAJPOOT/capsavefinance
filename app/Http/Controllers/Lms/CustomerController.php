@@ -123,11 +123,14 @@ public function limitManagement(Request $request) {
  */
 public function addAdhocLimit(Request $request) {
 	$userId = $request->get('user_id');
+	$prgmOfferId = $request->get('prgm_offer_id');
 	$data = $this->lmsRepo->appLimitByUserId($userId);
-	// dd($data);
+	$offer = $this->lmsRepo->appPrgmOfferById($prgmOfferId);
+
 	return view('lms.customer.add_adhoc_limit')
 		->with([
-			'data' => $data
+			'data' => $data,
+			'offer' => $offer
 		]);
 }
 
@@ -154,13 +157,13 @@ public function saveAdhocLimit(Request $request) {
 		$startDate = $request->start_date; 
 		$endDate = $request->end_date; 
 		$adhocLimit = str_replace(',', '', $request->adhoc_limit);
-		
+
 		$data = $this->lmsRepo->appPrgmOfferById($prgmOfferId);
 		$userId = $data->programLimit->appLimit->user_id; 
 
 		$validator = Validator::make($request->all(), [
-		   'start_date' => 'required',
-		   'end_date' => 'required|after:start_date',
+		   'start_date' => 'required|date_format:"d/m/Y"',
+		   'end_date' => 'required|date_format:"d/m/Y"|after:'.$startDate,
 		]);
 		
 		if ($validator->fails()) {
@@ -206,12 +209,13 @@ public function approveAdhocLimit(Request $request) {
 		$arrFileData = $request->all();
 		$userId = (int)$request->user_id; 
 		$app_offer_adhoc_limit_id = $request->app_offer_adhoc_limit_id; 
+		$status = $request->status; 
 
 		if($userId) {
 			$data = $this->lmsRepo->getUserAdhocLimitById($app_offer_adhoc_limit_id); 
 			if($data) {
 				$limitData = array(
-					'status' => config('lms')['STATUS']['APPROVED'],
+					'status' => $status,
 					'updated_by' => \Auth::user()->user_id,
                   	'updated_at' => \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
 				);

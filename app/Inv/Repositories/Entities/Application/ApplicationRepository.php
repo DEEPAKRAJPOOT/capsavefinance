@@ -1760,9 +1760,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     /**
     * update is_default to 0 in biz_addr where address_type is 6 by user id
     */
-    public function updateGstHideAddress($data, $biz_pan_gst_id=null)
+    public function updateGstHideAddress($data, $biz_addr_id)
     {   
-        return BizPanGst::updateGstHideAddress($data, $biz_pan_gst_id);
+        return BizPanGst::updateGstHideAddress($data, $biz_addr_id);
     }
     
 
@@ -2275,6 +2275,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
     }
 
+    public function getProductLimit($appId, $productId, $checkApprLimit=true) 
+    {
+        return AppProgramLimit::getProductLimit($appId, $productId, $checkApprLimit);
+    }
+    
+    public function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
+    {
+        return AppProgramLimit::getUtilizeLimit($appId, $productId, $checkApprLimit);
+    }    
 }
 
 

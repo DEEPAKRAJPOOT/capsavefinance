@@ -146,7 +146,7 @@ class ApiController
                 $ignored_txns[$txn->trans_id] = 'Margin debit entry.';
                 continue;
             }
-            if ($tally_voucher_type_id == 3 && ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
+            if ($tally_voucher_type_id == 3 && is_null($txn->parent_trans_id) && ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
                $ignored_txns[$txn->trans_id] = 'Outstanding > 0 || Invoice not generated';
                continue;
             }

@@ -1529,7 +1529,7 @@ class CamController extends Controller
         try {
             $appId = (int)$request->get('app_id');
             $bizId = $request->get('biz_id');
-
+                        
             $checkProgram = $this->appRepo->checkduplicateProgram([
               'app_id'=>$appId,
               'product_id'=>$request->product_id
@@ -1545,6 +1545,14 @@ class CamController extends Controller
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
 
+            //Validate Enchancement Limit  
+            $result = \Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt);
+            if ($result['status']) {
+                Session::flash('error', $result['message']);
+                return redirect()->back()->withInput();
+            }
+
+            
             $totalLimit = $this->appRepo->getAppLimit($appId);
 
             if($totalLimit){
@@ -1684,7 +1692,7 @@ class CamController extends Controller
           $request['security_deposit_type'] = null;
           $request['security_deposit_of'] = null;
         }
-
+        
         $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
 
         if($checkApprovalStatus->count()){
@@ -1756,6 +1764,13 @@ class CamController extends Controller
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
 
+        //Validate Enchancement Limit           
+        $result = \Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt, ['app_prgm_limit_id' => $aplid]);
+        if ($result['status']) {
+            Session::flash('error', $result['message']);
+            return redirect()->back()->withInput();
+        }
+        
         $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
 
         if($limitData){

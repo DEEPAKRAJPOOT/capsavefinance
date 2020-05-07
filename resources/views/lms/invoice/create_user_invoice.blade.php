@@ -2,6 +2,11 @@
 @section('content')
 @include('layouts.backend.partials.admin_customer_links',['active'=>'userInvoice'])
 <div class="content-wrapper">
+   <style type="text/css">
+      #table td {
+          text-align: center !important;
+      }
+   </style>
    <section class="content-header">
       <div class="header-icon">
          <i class="fa  fa-list"></i>
@@ -118,52 +123,52 @@
                               <table border="0" cellspacing="0" cellpadding="0" id="table">
                                   <thead>
                                        <tr>
-                                        <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong><input type="checkbox" id="checkall"></strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong><input type="checkbox" id="checkall"></strong></span>
                                         </td>
-                                        <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Sr No</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Sr No</strong></span>
                                         </td>
-                                        <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Description</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Description</strong></span>
                                         </td>
-                                        <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>SAC</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>SAC</strong></span>
                                         </td>
-                                        <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Base Amount (Rs)</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Base Amount (Rs)</strong></span>
                                         </td>
-                                        <td colspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>SGST/UTGST</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" colspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>SGST/UTGST</strong></span>
                                         </td>
-                                        <td colspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>CGST</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" colspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>CGST</strong></span>
                                         </td>
-                                        <td colspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>IGST</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" colspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>IGST</strong></span>
                                         </td>
-                                        <td rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Total Rental</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Total Rental</strong></span>
                                         </td>
                                      </tr>
                                      <tr>
-                                        <td bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Rate (%)</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Rate (%)</strong></span>
                                         </td>
-                                        <td bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Amount (Rs)</strong></span>
                                         </td>
-                                        <td bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Rate (%)</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Rate (%)</strong></span>
                                         </td>
-                                        <td bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Amount (Rs)</strong></span>
                                         </td>
-                                        <td bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Rate (%)</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Rate (%)</strong></span>
                                         </td>
-                                        <td bgcolor="#f2f2f2">
-                                           <span style="font-size: small;"><strong>Amount (Rs)</strong></span>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Amount (Rs)</strong></span>
                                         </td>
                                      </tr>
                                   </thead>
