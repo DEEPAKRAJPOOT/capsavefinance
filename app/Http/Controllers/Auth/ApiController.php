@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Event;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Payment;
@@ -26,6 +27,7 @@ class ApiController
 	}
 
   public function tally_entry(){
+    $paymentRequired  = false;
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed to execute the script.',
@@ -36,7 +38,10 @@ class ApiController
     }
     $where = ['is_posted_in_tally' => '0']; //, 'is_invoice_generated' => '1'
     $txnsData = Transactions::getTallyTxns($where);
-    $paymentData = [];//Payment::getTallyTxns($where);
+    $paymentData = new Collection;
+    if ($paymentRequired) {
+      $paymentData = Payment::getTallyTxns($where);
+    }
     $batch_no = _getRand(15);
     $totalRecords = 0;
     $insertedData = array();
@@ -138,25 +143,25 @@ class ApiController
                 $ignored_txns[$txn->trans_id] = 'Disbursal without Invoice no';
                 continue;
             }
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
+                $ignored_txns[$txn->trans_id] = 'Margin debit entry.';
+                continue;
+            }
+            if ($tally_voucher_type_id == 3 && ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
+               $ignored_txns[$txn->trans_id] = 'Outstanding > 0 || Invoice not generated';
+               continue;
+            }
+            $txn_entry_type = $txn->entry_type;
             if (!empty($txn->payment_id) && $txn->entry_type == 1) {
                 $tally_voucher_type_id = 2;
             }
-            if ($tally_voucher_type_id == 3) {
-                if (($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
-                   $ignored_txns[$txn->trans_id] = 'Outstanding > 0 || Invoice not generated';
-                   continue;
-                }
-            }
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF')]) && $txn->entry_type == 1) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
                $tally_voucher_type_id = 3;
             }
-            
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND')]) && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
-            } 
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
-               $tally_voucher_type_id = 2;
             }
+
             $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL;
             $inst_date = $txn->invoiceDisbursed->disbursal->funded_date ?? NULL;
             if (!empty($txn->payment_id)) {
@@ -166,7 +171,7 @@ class ApiController
             $common_array = [
                   'batch_no' =>  $batch_no,
                   'transactions_id' =>  $txn->trans_id,
-                  'is_debit_credit' =>  $txn->entry_type,
+                  'is_debit_credit' =>  $txn_entry_type,
                   'trans_type' =>  $trans_type_name,
                   'tally_trans_type_id' =>  $tally_voucher_type_id,
                   'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
@@ -191,6 +196,11 @@ class ApiController
                   'remarks' => '',
                   'narration' => '',
             ];
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
+               $secondEntry = $common_array;
+               $secondEntry['tally_trans_type_id'] = 2;
+               $tally_data[] = $secondEntry;
+            }
             if (!empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
               $gstData['base_amount'] = $txn->userinvoicetrans->base_amount;
               if ($txn->userinvoicetrans->sgst_amount != 0) {
