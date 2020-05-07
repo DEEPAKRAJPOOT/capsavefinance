@@ -803,7 +803,13 @@ class ApplicationController extends Controller
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
-					}
+					} else {
+                                            //Validate Enchancement Limit
+                                            if (\Helpers::checkLimitAmount($app_id, 1) ) {                                                
+                                                Session::flash('error_code', 'validate_limit_enhance_amt');
+                                                return redirect()->back()->withInput();
+                                            }                                            
+                                        }
 				} else if ($currStage->stage_code == 'approver') {
 					$whereCondition = ['app_id' => $app_id];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
