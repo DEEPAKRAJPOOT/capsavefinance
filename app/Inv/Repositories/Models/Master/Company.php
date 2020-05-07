@@ -183,7 +183,7 @@ class Company extends BaseModel {
 
     // get registered address
     public static function getCompanyRegAddr() {
-       $addr = self::where(['is_active' => 1, 'is_reg' => 1])
+       $addr = self::select('comp_addr_id','company_id','cmp_name','cmp_add','cmp_email','cmp_mobile','pincode','gst_no','pan_no','cin_no','state','city')->where(['is_active' => 1, 'is_reg' => 1])
                 ->get();
         return $addr ? : false;
     }
