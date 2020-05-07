@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Event;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Payment;
@@ -26,6 +27,7 @@ class ApiController
 	}
 
   public function tally_entry(){
+    $paymentRequired  = false;
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed to execute the script.',
@@ -36,7 +38,10 @@ class ApiController
     }
     $where = ['is_posted_in_tally' => '0']; //, 'is_invoice_generated' => '1'
     $txnsData = Transactions::getTallyTxns($where);
-    $paymentData = [];//Payment::getTallyTxns($where);
+    $paymentData = new Collection;
+    if ($paymentRequired) {
+      $paymentData = Payment::getTallyTxns($where);
+    }
     $batch_no = _getRand(15);
     $totalRecords = 0;
     $insertedData = array();
@@ -92,7 +97,6 @@ class ApiController
 
 
         foreach ($txnsData as $key => $txn) {
-            $i++;
             if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0 || $txn->trans_type == 17) {
                 $ignored_txns[$txn->trans_id] = 'Tally Trans Type is empty or zero';
                 continue;
@@ -138,33 +142,25 @@ class ApiController
                 $ignored_txns[$txn->trans_id] = 'Disbursal without Invoice no';
                 continue;
             }
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
+                $ignored_txns[$txn->trans_id] = 'Margin debit entry.';
+                continue;
+            }
+            if ($tally_voucher_type_id == 3 && ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
+               $ignored_txns[$txn->trans_id] = 'Outstanding > 0 || Invoice not generated';
+               continue;
+            }
+            $txn_entry_type = $txn->entry_type;
             if (!empty($txn->payment_id) && $txn->entry_type == 1) {
                 $tally_voucher_type_id = 2;
             }
-            if ($tally_voucher_type_id == 3) {
-                if (($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
-                   $ignored_txns[$txn->trans_id] = 'Outstanding > 0 || Invoice not generated';
-                   continue;
-                }
-            }
-
-            $txn_entry_type = $txn->entry_type;
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF')]) && $txn->entry_type == 1) {
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
                $tally_voucher_type_id = 3;
             }
-            
             if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND')]) && $txn->entry_type == 0) {
                $tally_voucher_type_id = 1;
             }
-            
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
-               $tally_voucher_type_id = 3;
-               $txn_entry_type = 1;
-               $trans_type_name = 'Margin to be refunded';
-            } 
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
-               $tally_voucher_type_id = 2;
-            }
+
             $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL;
             $inst_date = $txn->invoiceDisbursed->disbursal->funded_date ?? NULL;
             if (!empty($txn->payment_id)) {
@@ -199,6 +195,12 @@ class ApiController
                   'remarks' => '',
                   'narration' => '',
             ];
+            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
+               $secondEntry = $common_array;
+               $secondEntry['tally_trans_type_id'] = 2;
+               $tally_data[] = $secondEntry;
+               $i++;
+            }
             if (!empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
               $gstData['base_amount'] = $txn->userinvoicetrans->base_amount;
               if ($txn->userinvoicetrans->sgst_amount != 0) {
@@ -230,9 +232,11 @@ class ApiController
                 $common_array['amount'] =  $gst_trans_amount;
                 $common_array['ref_amount'] =  $gst_trans_amount;
                 $tally_data[] = $common_array;
+                $i++;
               }
             }else{
               $tally_data[] = $common_array;
+              $i++;
             }
           $selectedData[] = $txn->trans_id;
         }
@@ -263,11 +267,11 @@ class ApiController
             $response['status'] = 'success';
             $batchData = [
               'batch_no' => $batch_no,
-              'record_cnt' => $totalRecords,
+              'record_cnt' => $i,
               'created_at' => date('Y-m-d H:i:s'),
             ];
             $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
-            $response['message'] =  ($totalRecords > 1 ? $totalRecords .' Records inserted successfully' : '1 Record inserted.');
+            $response['message'] =  ($i > 1 ? $i .' Records inserted successfully' : '1 Record inserted.');
           }
         }else{
           $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in tally.';

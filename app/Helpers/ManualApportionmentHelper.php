@@ -131,8 +131,8 @@ class ManualApportionmentHelper{
                     'amount' => $trans->outstanding,
                     'entry_type' => 1,
                     'soa_flag' => 1,
-                    'trans_type' => config('lms.TRANS_TYPE.CANCEL'),
-                    'created_at' =>$intAccrualDate
+                    'trans_type' => config('lms.TRANS_TYPE.CANCEL')
+                    //'created_at' =>$intAccrualDate
                 ];
             }
         }
@@ -166,7 +166,7 @@ class ManualApportionmentHelper{
                 'entry_type' => $trans->entry_type,
                 'soa_flag' => 1,
                 'trans_type' => $trans->trans_type,
-                'created_at' =>$intAccrualDate
+                //'created_at' =>$intAccrualDate
             ];
         
         }
@@ -418,7 +418,7 @@ class ManualApportionmentHelper{
                 throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
             }
 
-            if (is_null($invDisbDetail->payDueDate)) {
+            if (is_null($invDisbDetail->payment_due_date)) {
                 throw new InvalidArgumentException('Payment Date is missing for invoice Disbursed Id: ' . $invDisbId);
             }
             
