@@ -36,7 +36,7 @@
                     </div>
             @endif
             <div class="row" id="client_details"></div>   
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col-md-3">
                     {!!
                     Form::text('from_date',
