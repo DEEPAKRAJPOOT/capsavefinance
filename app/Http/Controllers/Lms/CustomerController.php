@@ -210,12 +210,13 @@ public function approveAdhocLimit(Request $request) {
 		$arrFileData = $request->all();
 		$userId = (int)$request->user_id; 
 		$app_offer_adhoc_limit_id = $request->app_offer_adhoc_limit_id; 
+		$status = $request->status; 
 
 		if($userId) {
 			$data = $this->lmsRepo->getUserAdhocLimitById($app_offer_adhoc_limit_id); 
 			if($data) {
 				$limitData = array(
-					'status' => config('lms')['STATUS']['APPROVED'],
+					'status' => $status,
 					'updated_by' => \Auth::user()->user_id,
                   	'updated_at' => \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
 				);
