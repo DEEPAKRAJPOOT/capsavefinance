@@ -1547,7 +1547,7 @@ class CamController extends Controller
 
             //Validate Enchancement Limit            
             if (\Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt)) {
-                Session::flash('message', trans('backend_messages.validate_limit_enhance_amt'));
+                Session::flash('error', trans('backend_messages.validate_limit_enhance_amt'));
                 return redirect()->back()->withInput();
             }
 
@@ -1765,7 +1765,7 @@ class CamController extends Controller
 
         //Validate Enchancement Limit                        
         if (\Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt, ['app_prgm_limit_id' => $aplid])) {
-            Session::flash('message', trans('backend_messages.validate_limit_enhance_amt'));
+            Session::flash('error', trans('backend_messages.validate_limit_enhance_amt'));
             return redirect()->back()->withInput();
         }
         
