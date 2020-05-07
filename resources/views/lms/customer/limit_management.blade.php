@@ -104,7 +104,7 @@
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <label>Adhoc Interest Rate </label>
-                                <div class="label-bottom">{{number_format($adc->limit_amt) }}</div>
+                                <div class="label-bottom">{{ $adc->prgm_offer->adhoc_interest_rate }} %</div>
                             </div>
                             
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
