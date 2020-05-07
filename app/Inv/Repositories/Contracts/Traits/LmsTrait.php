@@ -169,7 +169,7 @@ trait LmsTrait
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
         $disbursalData['payment_due_date'] = null;
         $disbursalData['tenor_days'] =  $tenor ?? null;
-        $disbursalData['interest_rate'] = $invoice['program_offer']['interest_rate'] ?? null;
+        $disbursalData['interest_rate'] = $interestRate ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
