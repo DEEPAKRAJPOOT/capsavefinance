@@ -4,6 +4,7 @@ namespace App\Helpers;
 use DB;
 use Carbon\Carbon;
 use Dompdf\Helpers;
+use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Models\Lms\Disbursal;
@@ -130,8 +131,8 @@ class ManualApportionmentHelper{
                     'amount' => $trans->outstanding,
                     'entry_type' => 1,
                     'soa_flag' => 1,
-                    'trans_type' => config('lms.TRANS_TYPE.CANCEL'),
-                    'created_at' =>$intAccrualDate
+                    'trans_type' => config('lms.TRANS_TYPE.CANCEL')
+                    //'created_at' =>$intAccrualDate
                 ];
             }
         }
@@ -165,7 +166,7 @@ class ManualApportionmentHelper{
                 'entry_type' => $trans->entry_type,
                 'soa_flag' => 1,
                 'trans_type' => $trans->trans_type,
-                'created_at' =>$intAccrualDate
+                //'created_at' =>$intAccrualDate
             ];
         
         }
@@ -413,6 +414,14 @@ class ManualApportionmentHelper{
             
             $loopStratDate = $startDate ?? $intAccrualStartDate;
              
+            if (is_null($invDisbDetail->int_accrual_start_dt)) {
+                throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
+            }
+
+            if (is_null($invDisbDetail->payment_due_date)) {
+                throw new InvalidArgumentException('Payment Date is missing for invoice Disbursed Id: ' . $invDisbId);
+            }
+            
             while(strtotime($curdate) > strtotime($loopStratDate)){
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq);
                 if($balancePrincipal > 0){

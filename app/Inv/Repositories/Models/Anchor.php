@@ -118,14 +118,15 @@ public static function saveAnchor($arrAnchor = [])
                     ->where('u_doc.is_active', 1);
                 });
         $result->leftjoin('file as f','f.file_id','=','u_doc.file_id')
-                ->where('u.user_type', 2);
-    
+                ->where('u.user_type', 2)
+        ->where('anchor.is_active', 1);
+     
         if ($orderBy == 'anchor_id') {
             $result->orderBy('anchor.anchor_id', 'DESC');
         } else {
             $result->orderBy('anchor.comp_name');
         }
-            
+           
         $result = $result->get();
         return ($result ? $result : false);
     }
