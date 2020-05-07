@@ -21,19 +21,19 @@
                                 <div class="label-bottom">{{ number_format($uLimit->tot_limit_amt) }}
                                   @if($uLimit->app->app_type==2) 
                                     @if($uLimit->status==1 && $uLimit->actual_end_date==Null) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
+                                   aa <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($uLimit->status==1 && $uLimit->actual_end_date!=Null) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                   bb <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @else
-                                    <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                    cc<button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                                     @endif
                                   @else
                                      @if($uLimit->status==0) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
+                                    a<button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($uLimit->status==1) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                    b<button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @else
-                                    <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                   c <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                                     @endif
                                 @endif 
                                     
