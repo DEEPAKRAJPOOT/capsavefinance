@@ -6,8 +6,10 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
-            searching: false,
+            dom: 'lBrtip',
             bSort: false,
+            responsive: true,
+            searching: false,
             ajax: {
                 "url": messages.lms_get_soa_list, // json datasource
                 "method": 'POST',
@@ -51,6 +53,21 @@ try {
                 {data: 'credit'},
                 {data: 'balance'}
             ],
+            buttons: [
+                
+                {
+                    text: 'PDF',
+                    action: function ( e, dt, node, config ) {
+                        download('pdf');
+                    }
+                },
+                {
+                    text: 'Excel',
+                    action: function ( e, dt, node, config ) {
+                        download('excel');
+                    }
+                }
+            ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
 
@@ -65,6 +82,35 @@ try {
         });
 
     });
+
+    function download(action){
+        url = '';
+        from_date = $('input[name="from_date"]').val().trim();
+        to_date = $('input[name="to_date"]').val().trim();
+        customer_id = $('input[name=customer_id]').val().trim();
+        if(action.trim() == 'pdf'){
+            url = messages.pdf_soa_url+'?JHGsdfaHSasdSJ';
+        }
+
+        if(action.trim() == 'excel'){
+            url = messages.excel_soa_url+'?JHGsdfaHSasdSJ';
+        }
+
+        if(from_date){
+            url += '&from_date='+from_date;
+        }
+
+        if(to_date){
+            url += '&to_date='+to_date;
+        }
+
+        if(customer_id){
+            url += '&customer_id='+customer_id;
+        }
+
+
+        window.open(url, '_blank');
+    }
 
     function showClientDetails(data){
         $.ajax({

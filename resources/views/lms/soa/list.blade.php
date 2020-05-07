@@ -5,6 +5,10 @@
     .table td {
         border: inherit !important; 
     }
+    div.dt-buttons {
+        position: relative;
+        float: right;
+    }
 </style>
 @endsection
 @section('content')
@@ -32,8 +36,8 @@
         <div class="card-body">    
             @if(request()->get('sanctionPageView'))
              <div class="table-responsive ps ps--theme_default w-100">
-                      @include('lms.customer.limit_details')
-                    </div>
+                    @include('lms.customer.limit_details')
+                </div>
             @endif
             <div class="row" id="client_details"></div>   
             <div class="row">
@@ -141,6 +145,8 @@
     var messages = {
         lms_get_soa_list: "{{ URL::route('lms_get_soa_list') }}",
         get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
+        pdf_soa_url:"{{ URL::route('soa_pdf_download') }}",
+        excel_soa_url:"{{ URL::route('soa_excel_download') }}",
         get_customer: "{{ route('get_customer') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",

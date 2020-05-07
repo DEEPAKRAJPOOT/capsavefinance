@@ -46,9 +46,11 @@ class SoaController extends Controller
 	{	
 		$userData = [];
 		if($request->has('user_id')){
-                     $result = $this->getUserLimitDetais($request->user_id);
-                     $user = $this->userRepo->lmsGetCustomer($request->user_id);
-			if($user && $user->app_id){
+            $result = $this->getUserLimitDetais($request->user_id);
+            $user = $this->userRepo->lmsGetCustomer($request->user_id);
+            $maxInterestDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.INTEREST'));
+            $maxPrincipalDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+            if($user && $user->app_id){
 				$userData['user_id'] = $user->user_id;
 				$userData['customer_id'] = $user->customer_id;
 				$appDetail = $this->appRepo->getAppDataByAppId($user->app_id);
@@ -59,9 +61,14 @@ class SoaController extends Controller
 			}
 		}
 		
-		return view('lms.soa.list')->with('user',$userData)->with(['userInfo' =>  $result['userInfo'],
-                            'application' => $result['application'],
-                            'anchors' =>  $result['anchors']]); 
+        return view('lms.soa.list')
+        ->with('user',$userData)
+        ->with('maxDPD',1)
+        ->with('maxPrincipalDPD',$maxPrincipalDPD)
+        ->with('maxInterestDPD',$maxInterestDPD)
+        ->with(['userInfo' =>  $result['userInfo'],
+                'application' => $result['application'],
+                'anchors' =>  $result['anchors']]); 
 			              
 	}
         
@@ -101,6 +108,18 @@ class SoaController extends Controller
             } catch (Exception $ex) {
                 dd($ex);
             }
+    }
+    
+    public function soaPdfDownload(Request $request){
+        return response('Under Development!', 200)
+        ->header('Content-Type', 'text/plain');
+        //dd($request);
+    }
+
+    public function soaExcelDownload(Request $request){
+        return response('Under Development!', 200)
+        ->header('Content-Type', 'text/plain');
+        //dd($request);
     }
 
 }
