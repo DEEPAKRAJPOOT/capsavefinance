@@ -157,14 +157,13 @@ public function saveAdhocLimit(Request $request) {
 		$startDate = $request->start_date; 
 		$endDate = $request->end_date; 
 		$adhocLimit = str_replace(',', '', $request->adhoc_limit);
-		$dateEnd = date("d-m-Y", strtotime(str_replace('/','-',$startDate)));
-		// dd($dateEnd);
+
 		$data = $this->lmsRepo->appPrgmOfferById($prgmOfferId);
 		$userId = $data->programLimit->appLimit->user_id; 
 
 		$validator = Validator::make($request->all(), [
-		   'start_date' => 'required',
-		   'end_date' => 'required|after:'.$dateEnd,
+		   'start_date' => 'required|date_format:"d/m/Y"',
+		   'end_date' => 'required|date_format:"d/m/Y"|after:'.$startDate,
 		]);
 		
 		if ($validator->fails()) {
