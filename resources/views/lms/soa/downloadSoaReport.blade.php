@@ -93,7 +93,7 @@
         <main>
             <div  align="center">
                 <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
-                <p>Account Statement</p>
+                <p>Statement Of Account</p>
                 <br>
             </div>
             <table class="table  table-td-right">
