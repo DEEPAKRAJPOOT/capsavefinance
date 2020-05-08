@@ -100,7 +100,7 @@ class Apportionment {
 
     setTransactionAmt(){
         var oldData = this.data.old_data;
-        var paymentAmt = this.data.payment_amt;
+        var paymentAmt = parseFloat(this.data.payment_amt);
         if($.isEmptyObject(oldData.payment) && $.isEmptyObject(oldData.check)) {
             $(".pay").each(function (index, element) {
                 if(paymentAmt>0){
@@ -137,7 +137,7 @@ class Apportionment {
     }
 
     calculateUnAppliedAmt(){
-        var payment_amt = this.data.payment_amt;
+        var payment_amt = parseFloat(this.data.payment_amt);
         var settled_amt = 0;
         $(".pay").each(function (index, element) {
             var payamt = parseFloat($(this).val());
@@ -157,15 +157,12 @@ class Apportionment {
     }
 
     onCheckChange(transId){
-         if ($("input[name='check["+transId+"]']").is(":checked") == false) { 
-            $("input[name='payment["+transId+"]']").val('');
-        }
-        /*$("input[name='payment["+transId+"]']").val('');
+        $("input[name='payment["+transId+"]']").val('');
         if ($("input[name='check["+transId+"]']").is(":checked")) { 
             $("input[name='payment["+transId+"]']").removeAttr('readonly');
         } else { 
             $("input[name='payment["+transId+"]']").attr('readonly',true);
-        } */
+        }
         this.calculateUnAppliedAmt()
     }
     
@@ -173,7 +170,7 @@ class Apportionment {
         var check = $('.check');
         var status = true;
         var message = '';
-        var paymentAmt = this.data.payment_amt;
+        var paymentAmt = parseFloat(this.data.payment_amt);
         var totalSettledAmt = 0;
         if(check.filter(':checked').length == 0){
             message = "Please Select at least one ";
@@ -204,7 +201,7 @@ class Apportionment {
 
         if(status){
             if(totalSettledAmt > paymentAmt){
-                message =  "Sum of your total entries is grater than Re-payment amount";
+                message =  "Sum of your total entries is Greater than Re-payment amount";
                 status = false;
             }
         }
@@ -221,7 +218,7 @@ class Apportionment {
         var check = $('.check');
         var status = true;
         var message = '';
-        var paymentAmt = this.data.payment_amt;
+        var paymentAmt = parseFloat(this.data.payment_amt);
         var selectAmt = 0;
         if(check.filter(':checked').length == 0){
             message = "Please Select at least one ";

@@ -126,7 +126,7 @@ class AddressController extends Controller
 
             // update biz_pan_gst_api_id in biz_pan_gst table
             if($request->has('gst_no')){
-                $this->appRepo->updateGstHideAddress(['is_gst_hide'=>1,'biz_addr_id'=>$bizAddressId,'biz_pan_gst_api_id'=>$arrAddressData['biz_pan_gst_api_id']], $arrAddressData['biz_pan_gst_id']);
+                $this->appRepo->updateGstHideAddress(['is_gst_hide'=>1,'biz_pan_gst_api_id'=>$arrAddressData['biz_pan_gst_api_id'], 'user_id'=>$user_id, 'pan_gst_hash'=>$request->get('gst_no')], $bizAddressId);
             }else{
                 //$arrAddressData['is_default'] = 0;
             }

@@ -1521,10 +1521,58 @@ class Helper extends PaypalHelper
          public   function getAdhoc($attr)
         {
              
-            return  AppOfferAdhocLimit::where(['prgm_offer_id' =>$attr['prgm_offer_id']])->get();
+            return  AppOfferAdhocLimit::with('prgm_offer')->where(['prgm_offer_id' =>$attr['prgm_offer_id']])->orderBy('created_at', 'DESC')->get();
         } 
+         
+     public static function checkLimitAmount($appId, $productId, $inputLimitAmt=0, $excludeId=[])
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         
-    /**
+        //Validate Enchancement Limit                        
+        $appData = $appRepo->getAppData($appId);
+        $result = [
+            'status' => false,
+            'app_type' => $appData ? $appData->app_type : 0,
+            'message' => '',
+        ];
+        if ($productId == 1 && $appData && in_array($appData->app_type, [2,3]) ) {
+            $parentAppId = $appData->parent_app_id;
+
+            $pTotalCunsumeLimit = 0;
+            $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
+            foreach ($pAppPrgmLimit as $value) {
+                $pTotalCunsumeLimit += $value->utilize_limit;
+            }
+
+            $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
+            $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
+            foreach ($appPrgmLimit as $value) {
+                if (count($excludeId) > 0) {
+                    if (isset($excludeId['app_prgm_limit_id']) && !empty($excludeId['app_prgm_limit_id']) && $excludeId['app_prgm_limit_id'] != $value->app_prgm_limit_id) {                                            
+                        $totalCunsumeLimit += $value->utilize_limit;
+                    } else if (isset($excludeId['prgm_offer_id']) && !empty($excludeId['prgm_offer_id']) && $excludeId['prgm_offer_id'] != $value->prgm_offer_id) {
+                        $totalCunsumeLimit += $value->utilize_limit;
+                    } else {
+                        $totalCunsumeLimit += $value->utilize_limit;
+                    }
+                } else {
+                    $totalCunsumeLimit += $value->utilize_limit;
+                }
+            }
+            
+            if ($appData->app_type == 2) {
+                $result['status'] = $totalCunsumeLimit <= $pTotalCunsumeLimit;    
+                $result['message'] = trans('backend_messages.validate_limit_enhance_amt'); 
+            } else if ($appData->app_type == 3) {
+                $result['status'] = $totalCunsumeLimit < $pTotalCunsumeLimit;    
+                $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
+            }
+        }
+        
+        return $result;
+     }
+     
+     /**
      * Get 'yes' or NO
      *
      * @return string
@@ -1546,6 +1594,5 @@ class Helper extends PaypalHelper
                return '';
            }
         }
-    }   
-        
+    } 
 }

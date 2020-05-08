@@ -1058,4 +1058,11 @@ Route::group(
         ]
     );
 
+    Route::post('get_cust_and_cap_loca',[
+        'as' => 'get_cust_and_cap_loca',
+        'uses' => 'AjaxController@getCustAndCapsLoc'
+        ]
+    );
+
+
 });

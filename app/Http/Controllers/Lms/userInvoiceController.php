@@ -281,7 +281,6 @@ class userInvoiceController extends Controller
         if ($registeredCompany->count() != 1) {
            return response()->json(['status' => 0,'message' => "Multiple Company Registered addresses found.."]); 
         }
-
         $requestedData = $request->all();
         $decryptedData = _decrypt($requestedData['encData']);
         if (empty($decryptedData)) {
@@ -296,7 +295,6 @@ class userInvoiceController extends Controller
            return response()->json(['status' => 0,'message' => $companyDetail['message']]); 
         }
         $company_data = $companyDetail['data'];
-
         $billingDetail = $this->_getBillingDetail($biz_addr_id);
         if ($billingDetail['status'] != 'success') {
            return response()->json(['status' => 0,'message' => $billingDetail['message']]); 
@@ -319,6 +317,7 @@ class userInvoiceController extends Controller
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
         $intrest_charges = $inv_data[0];
         $total_sum_of_rental = $inv_data[1];
+        $registeredCompany = $registeredCompany->toArray();
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billing_data,
@@ -356,6 +355,7 @@ class userInvoiceController extends Controller
             if ($registeredCompany->count() != 1) {
                return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Multiple Company Registered addresses found..'); 
             }
+            $registeredCompany = $registeredCompany->toArray();
             $registeredCompany = $registeredCompany[0];
             $requestedData = $request->all();
             $decryptedData = _decrypt($requestedData['encData']);
@@ -410,8 +410,8 @@ class userInvoiceController extends Controller
                 'tot_no_of_trans' => count($requestedData['trans_id']),
                 'tot_paid_amt' => $total_sum_of_rental ?? 0,
                 'comp_addr_id' => $company_data['comp_id'],
-                'registered_comp_id' => $registeredCompany->comp_addr_id,
-                'comp_addr_register' => $registeredCompany->cmp_add . ' ' . $registeredCompany->city,
+                'registered_comp_id' => $registeredCompany['comp_addr_id'],
+                'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $company_data['bank_id'],
                 'is_active' => 1,
                 'created_at' => $requestedData['created_at'],
@@ -459,6 +459,7 @@ class userInvoiceController extends Controller
         $invoice_date = $invData->invoice_date;
         $company_id = $invData->comp_addr_id;
         $registered_comp_id = $invData->registered_comp_id;
+
         $bank_account_id = $invData->bank_id;
         $totalTxnsInInvoice = $invData->userInvoiceTxns->toArray();
         $trans_ids = [];
@@ -533,7 +534,7 @@ class userInvoiceController extends Controller
             $total_sum_of_rental += $total_rental; 
             $intrest_charges[$key]['total_rental'] =  $total_rental; 
         }
-        $registeredCompany = $this->UserInvRepo->getCompanyDetail($registered_comp_id);
+        $registeredCompany = json_decode($invData->comp_addr_register, true);
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billingDetails,

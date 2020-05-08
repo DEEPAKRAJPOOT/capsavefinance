@@ -390,7 +390,7 @@ trait InvoiceTrait
        return self::twoDateDiff($CFrom,$app_id['end_date']);
    }
 
-     public static  function invoiceApproveLimit($attr)
+     public static  function    invoiceApproveLimit($attr)
    {
         $is_enhance  =    Application::where(['user_id' => $attr['user_id'],'status' =>2,'app_type' => 2])->count();  
        if($is_enhance==1)
@@ -458,7 +458,7 @@ trait InvoiceTrait
                if($dueDateGreaterCurrentdate)
                 {
                           $status=28; 
-                          $limit_exceed='User limit has been expire.'; 
+                          $limit_exceed='Customer limit has been expired.'; 
                 }
                  InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status); 
                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
@@ -475,7 +475,7 @@ trait InvoiceTrait
                 if($dueDateGreaterCurrentdate)
                 {
                     $status_id=28; 
-                    $limit_exceed='User limit has been expire.'; 
+                    $limit_exceed='Customer limit has been expired.'; 
                 }
                   InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id); 
                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
@@ -552,7 +552,7 @@ trait InvoiceTrait
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Customer limit has been expired.','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 4;
            } 
            if($isOverDue->is_overdue==1)
@@ -574,7 +574,7 @@ trait InvoiceTrait
    /* Update single invoice status id according user limit */
     /* Use bulk and invoice table */
     /* Created by gajendra chahan  */
-      public static  function updateAdhocApproveStatus($attr)
+      public static  function   updateAdhocApproveStatus($attr)
    {
             $limitData[]="";
             $mytime = Carbon::now();
@@ -614,7 +614,7 @@ trait InvoiceTrait
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Customer limit has been expired.','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 4;
            } 
            if($isOverDue->is_overdue==1)
@@ -645,13 +645,14 @@ trait InvoiceTrait
             $inv_details =  self::getInvoiceDetail($attr);
             if($inv_details['is_adhoc']==1)
             {
-                $inv_details['user_id']   =   $inv_details['supplier_id'];
+                $inv_details['app_id']   =   $inv_details['app_id'];
                 return self::updateAdhocApproveStatus($inv_details);
             }
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']);
             $attr['user_id']   =   $inv_details['supplier_id'];
             $attr['anchor_id'] =   $inv_details['anchor_id'];
             $attr['prgm_id']   =   $inv_details['program_id'];
+            $attr['app_id']   =     $inv_details['app_id'];
             $sum =  self::invoiceApproveLimit($attr);
             $limit   =  self::ProgramLimit($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
@@ -659,7 +660,7 @@ trait InvoiceTrait
             if($dueDateGreaterCurrentdate)
             {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'User limit has been expire','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Customer limit has been expired','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 4;
            } 
            if($isOverDue->is_overdue==1)
@@ -735,7 +736,7 @@ trait InvoiceTrait
                if($dueDateGreaterCurrentdate)
                 {
                           $status=28; 
-                          $limit_exceed='User limit has been expire.'; 
+                          $limit_exceed='Customer limit has been expired.'; 
                 }
                  
            }
@@ -749,7 +750,7 @@ trait InvoiceTrait
                 if($dueDateGreaterCurrentdate)
                  {
                     $status=28; 
-                    $limit_exceed='User limit has been expire.'; 
+                    $limit_exceed='Customer limit has been expired.'; 
                  }
              }
        

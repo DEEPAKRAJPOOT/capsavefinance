@@ -1,11 +1,11 @@
-   <h2 style="font-size: 15px;font-family: Calibri;margin: 0;" align="center"><strong>{{$registeredCompany->cmp_name}}</strong></h2>
-   <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center"><strong>Registered office: {{$registeredCompany->cmp_add}}</strong></h2>
-   <h2 align="center" style="font-size: 8.5px;font-family: Calibri;">
+   <h2 style="font-size: 15px;font-family: Calibri;margin: 0;" align="center"><strong>{{$registeredCompany['cmp_name']}}</strong></h2>
+   <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center"><strong>Registered office: {{$registeredCompany['cmp_add']}}</strong></h2>
+   <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center">
       <span><strong>Ph:</strong></span>
-      <span> {{$registeredCompany->cmp_mobile}}; </span>
+      <span> {{$registeredCompany['cmp_mobile']}}; </span>
       <span><strong>CIN No:</strong></span>
-      <span>{{$registeredCompany->cin_no}};</span>
-      <span><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$registeredCompany->cscsfsfs}}">{{$registeredCompany->cmp_email}}</a></span>
+      <span>{{$registeredCompany['cin_no']}};</span>
+      <span><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$registeredCompany['cmp_email']}}">{{$registeredCompany['cmp_email']}}</a></span>
    </h2>
    <hr />
    <h2  style="font-size: 10px;text-align: center; margin: 5px 0 5px;"><strong><u>GST TAX INVOICE</u></strong></h2>
@@ -74,11 +74,11 @@
       </tr>
       @include('lms.invoice.generate_invoice_txns')
    </table>
-   <p style="font-family:Calibri;font-size: 9px; margin: 4px;"><strong>Payment Instructions:</strong></p>
+   <p style="font-family:Calibri;font-size: 9px; margin: 4px 0px;"><strong>Payment Instructions:</strong></p>
    <p style="font-family:Calibri;font-size: 9px;margin: 0px;">Please send your cheque/DD payable at per in Mumbai for <strong>Rs {{sprintf('%.2F', $total_sum_of_rental) }} </strong> to </p>
    <p style="font-family:Calibri;font-size: 9px;margin: 0px;"><strong>{{$company_data['name']}}</strong></p>
    <p style="font-family:Calibri;font-size: 9px;margin: 0px;"><strong>{{$company_data['address']}}</strong></p>
-   <p style="font-family:Calibri;font-size: 9px;margin: 0px;"><strong>Beneficiary: {{$company_data['name']}}; {{$company_data['bank_name']}}, ESCROW A/C NO: {{$company_data['acc_no']}}; Branch Name: {{$company_data['branch_name']}}; IFSC Code: {{$company_data['ifsc_code']}}</strong></p>
+   <p style="font-family:Calibri;font-size: 9px;margin: 0px 0px 8px 0px;"><strong>Beneficiary: {{$company_data['name']}}; {{$company_data['bank_name']}}, ESCROW A/C NO: {{$company_data['acc_no']}}; Branch Name: {{$company_data['branch_name']}}; IFSC Code: {{$company_data['ifsc_code']}}</strong></p>
 
    <table style="width: 100%" align="center" border="1" cellspacing="0" cellpadding="1">
       <tbody>
