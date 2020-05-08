@@ -497,13 +497,13 @@
                          @if(count($data) > 0)
                             @php $n = 0 @endphp
                             @foreach($data as $k => $val)
-                            @php $mt_amountam = 0; $totalPurMaterial = isset($val['total_pur_material']) ? $val['total_pur_material'] : '' @endphp 
+                            @php $mt_amountam = 0; $dep_per = ''; $totalPurMaterial = isset($val['total_pur_material']) ? $val['total_pur_material'] : '' @endphp 
                             @foreach($months_r as $key => $month)
                                 @php
                                 $mt_amountam += !empty($data[$k]['mt_amount'][$key]) ? $data[$k]['mt_amount'][$key] : 0;
                                 @endphp
                               @endforeach
-                              @if (!empty($mt_amountam) && ($mt_amountam > 0))
+                              @if (!empty($mt_amountam) && ($mt_amountam > 0) && !empty($totalPurMaterial) && ($totalPurMaterial > 0))
                                @php $dep_per = number_format(($mt_amountam / $totalPurMaterial), 2); @endphp
                               @endif
                               <tr>
