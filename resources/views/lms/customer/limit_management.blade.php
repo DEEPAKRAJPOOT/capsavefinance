@@ -25,7 +25,7 @@
                                     @elseif($uLimit->status==1 && $uLimit->actual_end_date!=Null) 
                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @else
-                                   <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                   <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                     @endif
                                   @else
                                      @if($uLimit->status==0) 
@@ -61,7 +61,7 @@
                                     @elseif($limit->status==1 && $limit->actual_end_date!=Null) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @else
-                                    <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                    <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                     @endif
                                   @else
                                      @if($limit->status==0) 
