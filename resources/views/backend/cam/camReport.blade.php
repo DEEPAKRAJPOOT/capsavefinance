@@ -297,10 +297,13 @@
          </table>
    </div>
 
-<!--fffffffffff-->
         @if (isset($anchorRelationData))
         <div class="data">
-            <h2 class="sub-title bg">Anchor Criteria</h2>
+            <table class="table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Anchor Criteria</td>
+                </tr>
+            </table>
             <div class="pl-4 pr-4 pb-4 pt-2">
 
                 <table class="table table-bordered overview-table" id="myTable3">
@@ -341,7 +344,7 @@
                         </tr>
                         <tr>
                             <td>Repayment track record with Anchor </td>
-                            <td>Delay of twice a year </td>
+                            <td>{{isset($anchorRelationData['repayment_track_record']) ? $anchorRelationData['repayment_track_record'] : ''}}</td>
                             <td>{{isset($anchorRelationData['repayment_track_record_actual']) ? $anchorRelationData['repayment_track_record_actual'] : ''}}</td>
                             <td>{{isset($anchorRelationData['repayment_track_record_remark']) ? $anchorRelationData['repayment_track_record_remark'] : ''}}</td>
                         </tr>
@@ -354,7 +357,11 @@
         @endif
         @if (isset($anchorRelationData['sec_third_gen_trader']) || isset($anchorRelationData['alt_buss_of_trader']) || isset($anchorRelationData['self_owned_prop']) || isset($anchorRelationData['trade_ref_check_actual']) || isset($anchorRelationData['adv_tax_payment']))
         <div class="data mt-4">
-            <h2 class="sub-title bg">Surrogate Criteria</h2>
+            <table class="table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Surrogate Criteria</td>
+                </tr>
+            </table>
             <div class="pl-4 pr-4 pb-4 pt-2">
                 <table class="table table-bordered overview-table" id="myTable3">
                     <thead>
@@ -445,7 +452,11 @@
         @endif
         @if (isset($anchorRelationData) && (isset($data) && count($data) > 0))
         <div class="data mt-4">
-            <h2 class="sub-title bg">Relationship With Anchor Company</h2>
+            <table class="table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Relationship With Anchor Company</td>
+                </tr>
+            </table>
             <div class="pl-4 pr-4 pb-4 pt-2">
 
                 <table class="table table-bordered overview-table" id="myTable3">
@@ -541,7 +552,11 @@
         @endif
         @if(isset($data) && (count($data) > 0))
         <div class="data mt-4">
-            <h2 class="sub-title bg">Month on Month Lifting with Anchor Company</h2>
+            <table class="table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Month on Month Lifting with Anchor Company</td>
+                </tr>
+            </table>
             <div class="pl-4 pr-4 pb-4 pt-2">
                 
               <table class="table table-bordered overview-table" id="myTable">
@@ -615,7 +630,11 @@
         @endif
         @if(isset($dataWcf) && count($dataWcf)>0)
         <div class="data mt-4">
-            <h2 class="sub-title bg">Working Capital Facility</h2>
+            <table class="table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Working Capital Facility</td>
+                </tr>
+            </table>
               <div class="pl-4 pr-4 pb-4 pt-2">
 
                 <table class="table table-bordered overview-table" id="myTable3">
@@ -653,7 +672,11 @@
         @endif
         @if(isset($dataTlbl) && count($dataTlbl)>0)
         <div class="data mt-4">
-            <h2 class="sub-title bg">Term Loans & Business Loans</h2>
+            <table class="table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Term Loans & Business Loans</td>
+                </tr>
+            </table>
               <div class="pl-4 pr-4 pb-4 pt-2">
                 <table class="table table-bordered overview-table" id="myTable3">
                     <thead>
@@ -684,7 +707,11 @@
         @endif
     @if(isset($dataBankAna) && count($dataBankAna)>0)
     <div class="data mt-4">
-        <h2 class="sub-title bg">Banking Analysis</h2>
+        <table class="table" cellpadding="0" cellspacing="0">
+            <tr>
+                <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Banking Analysis</td>
+            </tr>
+        </table>
         <div class="pl-4 pr-4 pb-4 pt-2">
 	<table class="table table-bordered overview-table" id="myTable3">
             <thead>
