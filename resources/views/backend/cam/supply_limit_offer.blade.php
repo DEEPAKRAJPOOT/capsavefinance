@@ -916,7 +916,7 @@
     var program_id = {{$offerData->prgm_id ?? 0}};
     var limit_balance = {{$limitBalance}};
     $(document).ready(function(){
-        fillPrograms(anchor_id, anchorPrgms)
+        fillPrograms(anchor_id, anchorPrgms, program_id);
     })
 
     $('#anchor_id').on('change',function(){
@@ -925,10 +925,10 @@
         let anchor_id = $('#anchor_id').val();
         setLimit('input[name=prgm_limit_amt]', '');
         setLimit('input[name=interest_rate]', '');
-        fillPrograms(anchor_id, anchorPrgms);                
+        fillPrograms(anchor_id, anchorPrgms, program_id);                
     });
 
-    function fillPrograms(anchor_id, programs){
+    function fillPrograms(anchor_id, programs, program_id){
         let html = '<option value="" data-sub_limit="0" data-min_rate="0" data-max_rate="0" data-min_limit="0" data-max_limit="0" data-base_rate="0" data-bank_id="0">Select Program</option>';
         $.each(programs, function(i,program){
             if(program.prgm_name != null && program.anchor_id == anchor_id){
@@ -937,7 +937,9 @@
                 let bank_id = (program.base_rate != null)? program.base_rate.bank_id: 0;
                 let min_rate = parseFloat(program.min_interest_rate) + parseFloat(base_rate);
                 let max_rate = parseFloat(program.max_interest_rate) + parseFloat(base_rate);
-                html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-base_rate="'+base_rate+'" data-bank_id="'+bank_id+'" data-min_rate="'+min_rate.toFixed(2)+'"  data-max_rate="'+max_rate.toFixed(2)+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
+                if(program.prgm_id == program_id || program.status == 1){
+                    html += '<option value="'+program.prgm_id+'" data-sub_limit="'+program.anchor_sub_limit+'" data-base_rate="'+base_rate+'" data-bank_id="'+bank_id+'" data-min_rate="'+min_rate.toFixed(2)+'"  data-max_rate="'+max_rate.toFixed(2)+'" data-min_limit="'+program.min_loan_size+'" data-max_limit="'+program.max_loan_size+'" '+((program.prgm_id == program_id)? "selected": "")+'>'+program.prgm_name+'</option>';
+                }
             }
         });
         $('#program_id').html(html);
