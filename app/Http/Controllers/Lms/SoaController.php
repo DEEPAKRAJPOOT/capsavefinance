@@ -5,6 +5,7 @@ use Auth;
 use Session;
 use Helpers;
 use PDF as DPDF;
+use PHPExcel;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -145,6 +146,33 @@ class SoaController extends Controller
         }
         return $data;
     }
+    
+    public function prepareDataForRendering($expecteddata){
+        
+        $preparedData = [];
+        
+        foreach($expecteddata as $key => $expData){
+            foreach ($expData as $k => $data) {
+                # code...
+                $preparedData[$key][$k]['payment_id'] = $data->payment_id;
+                $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
+                $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
+                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->parenttransdate));
+                $preparedData[$key][$k]['trans_type'] = trim($data->transname);
+                $preparedData[$key][$k]['batch_no'] = $data->batchNo;
+                $preparedData[$key][$k]['invoice_no'] = $data->invoiceno;
+                $preparedData[$key][$k]['narration'] = $data->narration;
+                $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')]) ? '' : 'INR');
+                $preparedData[$key][$k]['debit'] = $this->getDebit($data);
+                $preparedData[$key][$k]['credit'] = $this->getCredit($data);
+                $preparedData[$key][$k]['balance'] = $this->getBalance($data);
+            }
+        }
+        
+        return $preparedData;
+        
+    }
 
     public function soaPdfDownload(Request $request){
         try{
@@ -167,27 +195,8 @@ class SoaController extends Controller
                     });
                 }
 
-                $expecteddata = $transactionList->get()->chunk(25);
-                
-                foreach($expecteddata as $key => $expData){
-                    foreach ($expData as $k => $data) {
-                        # code...
-                        $soaRecord[$key][$k]['payment_id'] = $data->payment_id;
-                        $soaRecord[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
-                        $soaRecord[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                        $soaRecord[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
-                        $soaRecord[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->parenttransdate));
-                        $soaRecord[$key][$k]['trans_type'] = trim($data->transname);
-                        $soaRecord[$key][$k]['batch_no'] = $data->batchNo;
-                        $soaRecord[$key][$k]['invoice_no'] = $data->invoiceno;
-                        $soaRecord[$key][$k]['narration'] = $data->narration;
-                        $soaRecord[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')]) ? '' : 'INR');
-                        $soaRecord[$key][$k]['debit'] = $this->getDebit($data);
-                        $soaRecord[$key][$k]['credit'] = $this->getCredit($data);
-                        $soaRecord[$key][$k]['balance'] = $this->getBalance($data);
-                    }
-                }
-              
+                $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
+                            
             }
             // // dd($soaRecord);
             // return view('lms.soa.downloadSoaReport')
@@ -204,9 +213,101 @@ class SoaController extends Controller
     }
 
     public function soaExcelDownload(Request $request){
-        return response('Under Development!', 200)
-        ->header('Content-Type', 'text/plain');
-        //dd($request);
+//        return response('Under Development!', 200)
+//        ->header('Content-Type', 'text/plain');
+//        dd($request->all());
+        if($request->has('user_id')){
+            $data = $this->getUserLimitDetais($request->user_id);
+            $transactionList = $this->lmsRepo->getSoaList();
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $transactionList->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+
+            if($request->get('customer_id')!= ''){
+                $transactionList->where(function ($query) use ($request) {
+                    $customer_id = trim($request->get('customer_id'));
+                    $query->where('customer_id', '=', "$customer_id");
+                });
+            }
+                
+        }
+//        dd($transactionList->get());
+        $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(25));
+        dd($exceldata);
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("Bank Disburse Excel")
+                ->setSubject("Bank Disburse Excel")
+                ->setDescription("Bank Disburse Excel")
+                ->setKeywords("Bank Disburse Excel")
+                ->setCategory("Bank Disburse Excel");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Customer ID')
+                ->setCellValue('B1', 'Tran Date')
+                ->setCellValue('C1', 'Value Date')
+                ->setCellValue('D1', 'Tran Type')
+                ->setCellValue('E1', 'Batch No')
+                ->setCellValue('F1', 'Invoice No')
+                ->setCellValue('G1', 'Narration')
+                ->setCellValue('H1', 'Currency')
+                ->setCellValue('I1', 'Debit')
+                ->setCellValue('J1', 'Credit')
+                ->setCellValue('K1', 'Balance');
+                
+        $rows = 2;
+
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['customer_id'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['trans_date'] ?? '')
+                ->setCellValue('C' . $rows, $rowData['value_date'] ?? '')
+                ->setCellValue('D' . $rows, $rowData['trans_type'] ?? '')
+                ->setCellValue('E' . $rows, $rowData['batch_no'] ?? '')
+                ->setCellValue('F' . $rows, $rowData['invoice_no'] ?? '')
+                ->setCellValue('G' . $rows, $rowData['narration'] ?? '')
+                ->setCellValue('H' . $rows, $rowData['currency'] ?? '')
+                ->setCellValue('I' . $rows, $rowData['debit'] ?? '')
+                ->setCellValue('J' . $rows, $rowData['credit'] ?? '')
+                ->setCellValue('K' . $rows, $rowData['balance'] ?? '');
+                
+            $rows++;
+        }
+        
+//        dd($sheet);
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=download_Excel.xlsx');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        // header('Cache-Control: max-age=1');
+
+        // // If you're serving to IE over SSL, then the following may be needed
+        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        // header ('Pragma: public'); // HTTP/1.0
+        
+        if (!Storage::exists('/public/docs/bank_excel')) {
+            Storage::makeDirectory('/public/docs/bank_excel');
+        }
+        $storage_path = storage_path('app/public/docs/bank_excel');
+        $filePath = $storage_path.'/'.$filename.'.xlsx';
+
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save($filePath);
+
+        return [ 'status' => 1,
+                'file_path' => $filePath
+                ];
+        
+        return view('lms.soa.downloadSoaExcel');
     }
 
 }

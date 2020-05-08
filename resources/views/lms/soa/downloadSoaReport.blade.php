@@ -129,7 +129,7 @@
                             <span style="font-size: small;"><strong>Customer ID</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Tran Date</strong></span>
+                            <span style="font-size: small;"><strong>Trans Date</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Value Date</strong></span>

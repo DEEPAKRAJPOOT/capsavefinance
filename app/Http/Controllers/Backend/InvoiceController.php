@@ -929,7 +929,7 @@ class InvoiceController extends Controller {
                 ->setCellValue('X1', 'Beneficiary ID')
                 ->setCellValue('Y1', 'Remote Printing')
                 ->setCellValue('Z1', 'Print Branch Location')
-                ->setCellValue('AA1', 'Nature Of Payment');;
+                ->setCellValue('AA1', 'Nature Of Payment');
         $rows = 2;
 
         foreach($data as $rowData){
