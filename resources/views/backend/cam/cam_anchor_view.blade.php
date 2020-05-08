@@ -85,7 +85,7 @@
                             <tr>
                                 <td>Contact Person in Group Co.</td>
                                 <td>
-                                    <input type="text" id="contact_person" name="contact_person" class="form-control" value="{{isset($anchorRelationData['contact_person']) ? $anchorRelationData['contact_person'] : ''}}" minlength="10" maxlength="50" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input type="text" id="contact_person" name="contact_person" class="form-control" value="{{isset($anchorRelationData['contact_person']) ? $anchorRelationData['contact_person'] : ''}}" maxlength="50" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('contact_person', '<span class="error">:message</span>') !!}
                                 </td>
                                 <td> Contact No.</td>
@@ -413,6 +413,9 @@
             'year[]': {
                required: true 
             },
+            'total_pur_material[]': {
+                required: true
+            },
             'mt_type[]': {
                 required: true
             },
@@ -444,11 +447,17 @@
             },
             cat_relevance_by_anchor: {
                 required: true
+            },
+            repayment_track_record: {
+                required: true
             }
         },
         messages: {
             'year[]': {
                required: 'Please enter year.' 
+            },
+            'total_pur_material[]': {
+                required: 'Please enter Total Purchases of traded material.'
             },
             'mt_type[]': {
                 required: 'Please slecet MT type.'
@@ -481,6 +490,9 @@
             },
             cat_relevance_by_anchor: {
                 required: 'Please enter Categorization/ Relevance by Anchor.'
+            },
+            repayment_track_record: {
+                required: 'Please enter Repayment track record with Anchor.'
             }
         }
     });

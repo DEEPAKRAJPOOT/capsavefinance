@@ -189,9 +189,9 @@
                     @endif
                     <td><b>{{$offerCharge->chargeName->chrg_name}} (
                             @if ($offerCharge->chrg_type == 2)
-                                <img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="12px" width="10px">
-                            @else
                                 %
+                            @else
+                                <img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="12px" width="10px">
                             @endif
                             ): </b></td>
                     <td>{{$offerCharge->chrg_value}}</td>
