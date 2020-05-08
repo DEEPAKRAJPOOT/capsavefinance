@@ -619,7 +619,7 @@ trait LmsTrait
                     $updateData = [
                         'refund_trans_id'=> $trans_data->trans_id
                     ];
-                    RefundReqTrans::saveRefundReqTransData($updateData,$trans->refund_trans_id);
+                    RefundReqTrans::saveRefundReqTransData($updateData,$trans->refund_req_trans_id);
                 }
             }
         }
