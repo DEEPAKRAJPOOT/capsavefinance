@@ -196,7 +196,7 @@ class SoaController extends Controller
 
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $result['userInfo'], 'soaRecord' => $soaRecord],[],'UTF-8');
+                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $result['userInfo'], 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date')],[],'UTF-8');
             return $pdf->download('SoaReport.pdf');          
           } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
