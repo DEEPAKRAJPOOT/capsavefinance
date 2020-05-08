@@ -1571,4 +1571,15 @@ class Helper extends PaypalHelper
         
         return $result;
      }
+
+     /**
+      * Get Server Protocol
+      * 
+      * @return string
+      */
+     public static function getServerProtocol()
+     {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";         
+        return $protocol;
+     }
 }
