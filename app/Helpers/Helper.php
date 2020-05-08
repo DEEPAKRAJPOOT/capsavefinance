@@ -1577,7 +1577,7 @@ class Helper extends PaypalHelper
      * 
      * @return timestamp
      */
-    public static function getEodStartDate()
+    public static function getSysStartDate()
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $sys_start_date = $lmsRepo->getSysStartDate();
