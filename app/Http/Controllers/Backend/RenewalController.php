@@ -97,6 +97,8 @@ class RenewalController extends Controller {
             */
             
             $result = $this->copyApplication($userId, $appId, $bizId, $appType);
+            $newAppId = $result['new_app_id'];
+            $newBizId = $result['new_biz_id'];   
             
             $arrActivity = [];
             if ($appType == 1) {
@@ -113,7 +115,7 @@ class RenewalController extends Controller {
             //Session::flash('message', 'Application is copied successfully');
             Session::flash('is_accept', 1);
             //echo '<script>$(document).ready(function(){ parent.jQuery("#confirmCopyApp").modal("hide"); });</script>';
-            return redirect()->route('company_details', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]);
+            return redirect()->route('company_details', ['user_id' => $userId,'app_id' => $newAppId, 'biz_id' => $newBizId]);
             //return redirect()->back();
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

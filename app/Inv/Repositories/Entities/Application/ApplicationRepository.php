@@ -2275,6 +2275,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
     }
 
+    public function getProductLimit($appId, $productId, $checkApprLimit=true) 
+    {
+        return AppProgramLimit::getProductLimit($appId, $productId, $checkApprLimit);
+    }
+    
+    public function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
+    {
+        return AppProgramLimit::getUtilizeLimit($appId, $productId, $checkApprLimit);
+    }    
 }
 
 

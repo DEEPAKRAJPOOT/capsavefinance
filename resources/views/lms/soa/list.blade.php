@@ -5,6 +5,10 @@
     .table td {
         border: inherit !important; 
     }
+    div.dt-buttons {
+        position: relative;
+        float: right;
+    }
 </style>
 @endsection
 @section('content')
@@ -32,8 +36,8 @@
         <div class="card-body">    
             @if(request()->get('sanctionPageView'))
              <div class="table-responsive ps ps--theme_default w-100">
-                      @include('lms.customer.limit_details')
-                    </div>
+                    @include('lms.customer.limit_details')
+                </div>
             @endif
             <div class="row" id="client_details"></div>   
             <div class="row mt-4">
@@ -88,11 +92,6 @@
                     isset($user['customer_id'])?$user['customer_id']:null, 
                     [ 'id'=>'customer_id' ])
                 !!}
-                <div class="col-md-3" float-right>
-                    <a target="_blank" href="{{route('generate_soa_pdf', ['user_id' => $user['user_id'], 'biz_id' => $user['biz_id'], 'customer_id' => $user['customer_id'],'from_date' => '05/05/2020', 'to_date' => '10/05/2020'])}}">
-                        <button type="button" class="btn btn-primary float-right btn-sm ml-3" > Download SOA Record</button>
-                    </a>
-                </div>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -145,6 +144,8 @@
     var messages = {
         lms_get_soa_list: "{{ URL::route('lms_get_soa_list') }}",
         get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
+        pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id']]) }}",
+        excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id']]) }}",
         get_customer: "{{ route('get_customer') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",

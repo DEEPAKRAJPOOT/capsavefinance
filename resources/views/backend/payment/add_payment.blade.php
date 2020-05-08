@@ -8,7 +8,7 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Add Repayment & Waived Off</h3>
+            <h3>Add Repayment & Waived Off TDS</h3>
             <!-- <small>Application List</small> -->
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>

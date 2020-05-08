@@ -116,6 +116,7 @@ var iframe_ids = [
         'approveAdhocLimit',
         'confirmCopyApp',
         'confirmEnhanceLimit',
+        'confirmReduceLimit',
     ];
 
 iframe_ids.forEach(function(id) {

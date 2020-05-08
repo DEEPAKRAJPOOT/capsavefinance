@@ -169,11 +169,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\SoaController@list'
             ]);     
             
-            Route::get('/soa/generate-soa-pdf', [
-                    'as' => 'generate_soa_pdf',
-                    'uses' => 'Lms\SoaController@generateSoaReport'
-            ]);
-            
             Route::get('/charges/manage_charge', [
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'
@@ -474,6 +469,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('do-process',[
                 'as' => 'do_process',
                 'uses' => 'Lms\EodProcessController@process'
+            ]);
+
+            Route::get('soa/pdf/download',[
+                'as' => 'soa_pdf_download',
+                'uses'=> 'Lms\SoaController@soaPdfDownload'
+            ]);
+
+            Route::get('soa/excel/download',[
+                'as' => 'soa_excel_download',
+                'uses'=> 'Lms\SoaController@soaExcelDownload'
             ]);
 
         });   

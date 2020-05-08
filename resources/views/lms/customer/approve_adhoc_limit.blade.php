@@ -1,31 +1,28 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-<form id="documentForm" style="width: 100%" method="POST" action="{{ Route('save_approve_adhoc_limit') }}" enctype="multipart/form-data" target="_top">
-    <!-- Modal body -->
-    @csrf
-    <input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
-    <input type="hidden" name="app_offer_adhoc_limit_id" value="{{ request()->get('app_offer_adhoc_limit_id') }}">
+<div class="modal-body text-left">
+    <span>Are you sure you want to approve the Adhoc limit? </span>
+    <div class="row">
+        <div class="col-6">
+            <form method="POST" action="{{ Route('save_approve_adhoc_limit') }}" enctype="multipart/form-data" target="_top">
+                @csrf
+                <input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
+                <input type="hidden" name="app_offer_adhoc_limit_id" value="{{ request()->get('app_offer_adhoc_limit_id') }}">
+                <input type="hidden" name="status" value="2">
+                <button type="submit" class="btn btn-danger float-left btn-sm" >Reject</button>  
+            </form>
+        </div> 
+        <div class="col-6">
+            <form method="POST" action="{{ Route('save_approve_adhoc_limit') }}" enctype="multipart/form-data" target="_top">
+                @csrf
+                <input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
+                <input type="hidden" name="app_offer_adhoc_limit_id" value="{{ request()->get('app_offer_adhoc_limit_id') }}">
+                <input type="hidden" name="status" value="1">
 
-    <div class="modal-body text-left">
-        
-        <button type="submit" class="btn btn-success float-right btn-sm" id="savedocument" >Approve</button>  
+                <button type="submit" class="btn btn-success float-right btn-sm" >Approve</button>  
+            </form>
+        </div> 
     </div>
-</form>
+</div>
  
-@endsection
-
-@section('jscript')
-<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-<script src="{{ url('frontend/js/document.js') }}"></script>
-<script>
-    
-   $(document).ready(function(){
-        var docId = parent.$('#uploadDocId').val();
-        $('#myModal').modal('show');
-        $('input[name=docId]').val(docId);
-        $('input[name=doc_id]').val(docId);
-        
-    });
-</script>
 @endsection

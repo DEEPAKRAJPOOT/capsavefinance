@@ -74,7 +74,9 @@
             .pagenum:before {
                 content: counter(page);
             }
+            div.breakNow { page-break-inside:avoid; page-break-after:always; }
         </style>
+
     </head>
     <body>
         <!-- Define header and footer blocks before your content -->
@@ -113,86 +115,94 @@
                     </tr>
                 </tbody>
             </table>
-            <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
-                <tr>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Customer ID</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Tran Date</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Value Date</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Tran Type</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Batch No</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Invoice No</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Narration</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Currency</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Debit</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Credit</strong></span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                        <span style="font-size: small;"><strong>Balance</strong></span>
-                    </td>
-                </tr>
-                @foreach($soaRecord as $record)
-                
-                <tr style="backgroung: {{($record['payment_id'] && 1) ? '#ffcc0078' : ($record['trans_type'] == 'Repayment' ? '#f3c714' : null)}};">
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['customer_id']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['trans_date']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['value_date']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['trans_type']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['batch_no']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['invoice_no']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['narration']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['currency']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['debit']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['credit']}}</span>
-                    </td>
-                    <td style="border: 1px solid #ddd;padding: 5px;">
-                        <span style="font-size: small;">{{$record['balance']}}</span>
-                    </td>
-                </tr>
-                @endforeach
-            </table>
+            @foreach($soaRecord as $soak => $soaRec)
+            <div class="breakNow">
+                <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
+                    <tr>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Customer ID</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Tran Date</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Value Date</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Tran Type</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Batch No</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Invoice No</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Narration</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Currency</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Debit</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Credit</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Balance</strong></span>
+                        </td>
+                    </tr>
+                    @foreach($soaRec as $key => $record)
+                    @php
+                        $color = '';
+                        if(strtolower($record['trans_type']) === 'repayment'){
+                            $color = "#f3c714";
+                        }elseif($record['payment_id']){
+                            $color = "#ffcc0078";
+                        }
+                    @endphp
+                    <tr style="background: {{$color}};">
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['customer_id']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['trans_date']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['value_date']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['trans_type']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['batch_no']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['invoice_no']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['narration']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['currency']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['debit']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['credit']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['balance']}}</span>
+                        </td>
+                    </tr>
+                    @endforeach
+                </table>
+            </div>
+            @endforeach
         </main>
-        <footer>
-            <hr>
-            <span align="right" class="pagenum" style="float: right;"><b> |</b> CFPL</span>
-        </footer>
+
     </body>
 </html>
 
