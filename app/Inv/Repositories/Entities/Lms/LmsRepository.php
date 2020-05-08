@@ -1245,5 +1245,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getSysStartDate()
     {
         return EodProcess::getSysStartDate();
-    }        
+    } 
+    
+    /**
+     * Get Disbursal transactions
+     * 
+     * @param string $transStartDate
+     * @param string $transEndDate
+     * 
+     * @return mixed
+     */
+    public function checkDisbursalTrans($transStartDate, $transEndDate)
+    {
+        return Transactions::checkDisbursalTrans($transStartDate, $transEndDate);
+    }    
 }

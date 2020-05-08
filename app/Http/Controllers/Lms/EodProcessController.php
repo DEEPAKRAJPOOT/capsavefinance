@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\InvoiceInterface;
 
 class EodProcessController extends Controller {
 
@@ -16,9 +17,10 @@ class EodProcessController extends Controller {
 
     protected $lmsRepo;
 
-    public function __construct(InvLmsRepoInterface $lmsRepo) 
+    public function __construct(InvLmsRepoInterface $lmsRepo, InvoiceInterface $invRepo) 
     {
         $this->lmsRepo = $lmsRepo;
+        $this->invRepo = $invRepo;
         $this->middleware('checkBackendLeadAccess');
     }
 
@@ -54,7 +56,7 @@ class EodProcessController extends Controller {
     }
     
     public function viewEodProcess()
-    {
+    {                
         $today = \Carbon\Carbon::now();
         $sys_curr_date = $today->format('Y-m-d H:i:s');
         $sys_start_date_eq = $today->format('Y-m-d');
@@ -170,6 +172,47 @@ class EodProcessController extends Controller {
         //$data['created_by'] = $current_user_id;
         $data['updated_by'] = $current_user_id;
         $this->lmsRepo->saveEodProcess($data, $eod_process_id);        
+    }
+    
+    protected function checkDisbursal($transStartDate=null, $transEndDate=null)
+    {        
+        $whereCond=[];        
+        $whereCond['is_active'] = 1;
+        $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
+        
+        if (is_null($transStartDate)) {
+            $transStartDate = $eodProcess->sys_start_date;
+        }
+        
+        if (is_null($transEndDate)) {
+            $transEndDate = $eodProcess->sys_end_date;
+        }
+                        
+        $transactions = $this->lmsRepo->checkDisbursalTrans($transStartDate, $transEndDate);
+        $invoices=[];   
+        $totalTransAmt = 0;
+        foreach($transactions as $transaction) {
+
+            //Monthly Case
+            //$payFreq == '2'
+
+            //Rear End Case
+            //$payFreq == '3'
+                  
+            //dd('$invData', $invData);
+                        
+            if (in_array($transaction->trans_type, [config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')] )
+                || ($transaction->trans_type == config('lms.TRANS_TYPE.INTEREST') && !in_array($transaction->payment_frequency, [2,3]))
+               ) {
+                $totalTransAmt += $transaction->amount;
+            }
+            
+            $invoices[] = $transaction->invoice_id;
+        }
+        
+        $totInvApprAmt = $this->invRepo->getTotalInvApprAmt($invoices);
+            
+        dd($totInvApprAmt, $totalTransAmt);
     }
 
 }
