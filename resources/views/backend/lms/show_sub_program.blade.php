@@ -27,6 +27,7 @@
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
                             @can('add_program')
+                            @if($programStatus)
                             <a href="{{route('add_sub_program',['anchor_id'=>$anchor_id ,'program_id'=>$program_id])}}" >
                                 <button class="btn  btn-success btn-sm" type="button">
                                     <span class="btn-label">
@@ -34,8 +35,8 @@
                                     </span>
                                     {{ trans('backend.mange_program.add_sub_program') }}
                                 </button>
-
                             </a>
+                            @endif
                             @endcan
                         </div>
                     </div>
