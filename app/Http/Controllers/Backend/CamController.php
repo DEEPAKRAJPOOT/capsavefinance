@@ -1865,14 +1865,17 @@ class CamController extends Controller
             $app_id = $request->get('app_id');
             $liftingData = $this->appRepo->getLiftingDetail($app_id);
             $anchorRelationData = $this->appRepo->getAnchorRelationDetails($app_id);
+//            dd('$anchorRelationData--', $anchorRelationData);
             $data = [];
             if (!empty($liftingData)) {
                 foreach ($liftingData as $key => $value) {
                     $year = $value['year'];
+                    $totalPurMaterial = $value['total_pur_material'];
                     $data[$year]['mt_value'][] = $value['mt_value'];
                     $data[$year]['mt_type'] = $value['mt_type'];
                     $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
                     $data[$year]['year'] = $year;
+                    $data[$year]['total_pur_material'] = $totalPurMaterial;
                     $data[$year]['mt_amount'][] = $value['amount'];
                 }
             }
@@ -1901,21 +1904,46 @@ class CamController extends Controller
             $userId = Auth::user()->user_id;
             $relationShipArr = [];
             $liftingArr = [];
+            $relationShipArr['biz_id']                          = $allData['biz_id'];
+            $relationShipArr['app_id']                          = $allData['app_id'];
+            $relationShipArr['year_of_association']             = $allData['year_of_association'];
+            $relationShipArr['year_of_assoc_actual']            = $allData['year_of_assoc_actual'];
+            $relationShipArr['year_of_assoc_remark']            = $allData['year_of_assoc_remark'];
+            $relationShipArr['payment_terms']                   = $allData['payment_terms'];
+            $relationShipArr['grp_rating']                      = $allData['grp_rating'];
+            $relationShipArr['contact_person']                  = $allData['contact_person'];
+            $relationShipArr['contact_number']                  = $allData['contact_number'];
+            $relationShipArr['dependence_on_anchor']            = $allData['dependence_on_anchor'];
+            $relationShipArr['dependence_on_anchor_actual']     = $allData['dependence_on_anchor_actual'];
+            $relationShipArr['dependence_on_anchor_remark']     = $allData['dependence_on_anchor_remark'];
+            $relationShipArr['qoq_ot_from_anchor']              = $allData['qoq_ot_from_anchor'];
+            $relationShipArr['qoq_ot_from_anchor_actual']       = $allData['qoq_ot_from_anchor_actual'];
+            $relationShipArr['qoq_ot_from_anchor_remark']       = $allData['qoq_ot_from_anchor_remark'];
+            $relationShipArr['cat_relevance_by_anchor']         = $allData['cat_relevance_by_anchor'];
+            $relationShipArr['cat_relevance_by_anchor_actual']  = $allData['cat_relevance_by_anchor_actual'];
+            $relationShipArr['cat_relevance_by_anchor_remark']  = $allData['cat_relevance_by_anchor_remark'];
+            $relationShipArr['repayment_track_record']          = $allData['repayment_track_record'];
+            $relationShipArr['repayment_track_record_actual']   = $allData['repayment_track_record_actual'];
+            $relationShipArr['repayment_track_record_remark']   = $allData['repayment_track_record_remark'];
+            $relationShipArr['sec_third_gen_trader']            = $allData['sec_third_gen_trader'];
+            $relationShipArr['gen_trader_actual']               = $allData['gen_trader_actual'];
+            $relationShipArr['gen_trader_remark']               = $allData['gen_trader_remark'];
+            $relationShipArr['alt_buss_of_trader']              = $allData['alt_buss_of_trader'];
+            $relationShipArr['alt_buss_of_trader_actual']       = $allData['alt_buss_of_trader_actual'];
+            $relationShipArr['alt_buss_of_trader_remark']       = $allData['alt_buss_of_trader_remark'];
+            $relationShipArr['self_owned_prop']                 = $allData['self_owned_prop'];
+            $relationShipArr['self_owned_prop_actual']          = $allData['self_owned_prop_actual'];
+            $relationShipArr['self_owned_prop_remark']          = $allData['self_owned_prop_remark'];
+            $relationShipArr['trade_ref_check_actual']          = $allData['trade_ref_check_actual'];
+            $relationShipArr['trade_ref_check_remark']          = $allData['trade_ref_check_remark'];
+            $relationShipArr['adv_tax_payment']                 = $allData['adv_tax_payment'];
+            $relationShipArr['adv_tax_payment_actual']          = $allData['adv_tax_payment_actual'];
+            $relationShipArr['adv_tax_payment_remark']          = $allData['adv_tax_payment_remark'];
             
-            $relationShipArr['biz_id']                  = $allData['biz_id'];
-            $relationShipArr['app_id']                  = $allData['app_id'];
-            $relationShipArr['year_of_association']     = $allData['year_of_association'];
-            $relationShipArr['payment_terms']           = $allData['payment_terms'];
-            $relationShipArr['grp_rating']              = $allData['grp_rating'];
-            $relationShipArr['contact_person']          = $allData['contact_person'];
-            $relationShipArr['contact_number']          = $allData['contact_number'];
-            $relationShipArr['dependence_on_anchor']    = $allData['dependence_on_anchor'];
-            $relationShipArr['qoq_ot_from_anchor']      = $allData['qoq_ot_from_anchor'];
-            $relationShipArr['cat_relevance_by_anchor'] = $allData['cat_relevance_by_anchor'];
-            $relationShipArr['security_deposit']        = str_replace(',', '', $allData['security_deposit']);
-            $relationShipArr['note_on_lifting']         = $allData['note_on_lifting'];
-            $relationShipArr['reference_from_anchor']   = $allData['reference_from_anchor'];
-            $relationShipArr['anchor_risk_comments']    = $allData['anchor_risk_comments'];
+            $relationShipArr['security_deposit']                = str_replace(',', '', $allData['security_deposit']);
+            $relationShipArr['note_on_lifting']                 = $allData['note_on_lifting'];
+            $relationShipArr['reference_from_anchor']           = $allData['reference_from_anchor'];
+            $relationShipArr['anchor_risk_comments']            = $allData['anchor_risk_comments'];
             $anchorRelationData = $this->appRepo->getAnchorRelationDetails($allData['app_id']);
             if (!empty($anchorRelationData)) {
                 $relationShipArr['updated_by'] = $userId;
@@ -1932,8 +1960,9 @@ class CamController extends Controller
             $months = $allData['month'];
             $mtType = $allData['mt_type'];
             $years = $allData['year'];
+            $totalPurMaterial = $allData['total_pur_material'];
             $countMonths = count($months);
-            #dd($months, $mtType, $years,$countMonths);
+            #dd($months, $mtType, $years,$countMonths, $total_pur_material);
 
            $liftingData = $this->appRepo->getLiftingDetail($allData['app_id']);
             for($i = 0; $i < $countMonths; $i++){
@@ -1943,6 +1972,7 @@ class CamController extends Controller
                    }
                    $liftingArr['app_id'] = $allData['app_id'];
                    $liftingArr['year'] = $years[$i];
+                   $liftingArr['total_pur_material'] = $totalPurMaterial[$i];
                    $liftingArr['month'] = $key+1;
                    $liftingArr['mt_type'] = $mtType[$i] ?? 0;
                    $liftingArr['mt_value'] = $value ?? 0;

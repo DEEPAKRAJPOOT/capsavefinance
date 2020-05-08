@@ -298,6 +298,7 @@
    </div>
 
 <!--fffffffffff-->
+        @if (isset($anchorRelationData))
         <div class="data">
             <h2 class="sub-title bg">Anchor Criteria</h2>
             <div class="pl-4 pr-4 pb-4 pt-2">
@@ -317,52 +318,32 @@
                         <tr>
                             <td> Vintage with Anchor</td>
                             <td>{{isset($anchorRelationData['year_of_association']) ? $anchorRelationData['year_of_association'] . ' Years' : ''}}</td>
-                            <td>
-                                <input type="text" class="form-control">
-                            </td>
-                            <td>
-                                <textarea rows="1" class="form-control"></textarea>
-                            </td>
+                            <td>{{isset($anchorRelationData['year_of_assoc_actual']) ? $anchorRelationData['year_of_assoc_actual'] : ''}}</td>
+                            <td>{{isset($anchorRelationData['year_of_assoc_remark']) ? $anchorRelationData['year_of_assoc_remark'] : ''}}</td>
                         </tr>
                         <tr>
                             <td>Dependence on Anchor </td>
                             <td>{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] : ''}} </td>
-                            <td>
-                                <input type="text" class="form-control">
-                            </td>
-                            <td>
-                                <textarea rows="1" class="form-control"></textarea>
-                            </td>
+                            <td>{{isset($anchorRelationData['dependence_on_anchor_actual']) ? $anchorRelationData['dependence_on_anchor_actual'] : ''}}</td>
+                            <td>{{isset($anchorRelationData['dependence_on_anchor_remark']) ? $anchorRelationData['dependence_on_anchor_remark'] : ''}}</td>
                         </tr>
                         <tr>
                             <td>Quarter on Quarter off take from Anchor </td>
                             <td>{{isset($anchorRelationData['qoq_ot_from_anchor']) ? $anchorRelationData['qoq_ot_from_anchor'] : ''}} </td>
-                            <td>
-                                <input type="text" class="form-control">
-                            </td>
-                            <td>
-                                <textarea rows="1" class="form-control"></textarea>
-                            </td>
+                            <td>{{isset($anchorRelationData['qoq_ot_from_anchor_actual']) ? $anchorRelationData['qoq_ot_from_anchor_actual'] : ''}}</td>
+                            <td>{{isset($anchorRelationData['qoq_ot_from_anchor_remark']) ? $anchorRelationData['qoq_ot_from_anchor_remark'] : ''}}</td>
                         </tr>
                         <tr>
                             <td>Categorization/ Relevance by Anchor </td>
                             <td>{{isset($anchorRelationData['cat_relevance_by_anchor']) ? $anchorRelationData['cat_relevance_by_anchor'] : ''}}</td>
-                            <td>
-                                <input type="text" class="form-control">
-                            </td>
-                            <td>
-                                <textarea rows="1" class="form-control"></textarea>
-                            </td>
+                            <td>{{isset($anchorRelationData['cat_relevance_by_anchor_actual']) ? $anchorRelationData['cat_relevance_by_anchor_actual'] : ''}}</td>
+                            <td>{{isset($anchorRelationData['cat_relevance_by_anchor_remark']) ? $anchorRelationData['cat_relevance_by_anchor_remark'] : ''}}</td>
                         </tr>
                         <tr>
                             <td>Repayment track record with Anchor </td>
                             <td>Delay of twice a year </td>
-                            <td>
-                                <input type="text" class="form-control">
-                            </td>
-                            <td>
-                                <textarea rows="1" class="form-control"></textarea>
-                            </td>
+                            <td>{{isset($anchorRelationData['repayment_track_record_actual']) ? $anchorRelationData['repayment_track_record_actual'] : ''}}</td>
+                            <td>{{isset($anchorRelationData['repayment_track_record_remark']) ? $anchorRelationData['repayment_track_record_remark'] : ''}}</td>
                         </tr>
 
                     </tbody>
@@ -370,8 +351,10 @@
                 <div class="clearfix"></div>
             </div>
         </div>
+        @endif
+        @if (isset($anchorRelationData['sec_third_gen_trader']) || isset($anchorRelationData['alt_buss_of_trader']) || isset($anchorRelationData['self_owned_prop']) || isset($anchorRelationData['trade_ref_check_actual']) || isset($anchorRelationData['adv_tax_payment']))
         <div class="data mt-4">
-            <h2 class="sub-title bg">Surrogate Criteria (3 out of 5 parameters)</h2>
+            <h2 class="sub-title bg">Surrogate Criteria</h2>
             <div class="pl-4 pr-4 pb-4 pt-2">
                 <table class="table table-bordered overview-table" id="myTable3">
                     <thead>
@@ -385,74 +368,73 @@
                     <tbody>
 
                         <tr>
-                            <td>Second/Third Generation Trader</td>
+                            <td width="25%">Second/Third Generation Trader</td>
                             <td>
                                 <label class="checkbox-inline mr-3">
-                                    <input type="radio" name="radio"> Yes
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="radio" name="radio"> No
+                                    {{isset($anchorRelationData['sec_third_gen_trader']) ? Helpers::getYesFlag($anchorRelationData['sec_third_gen_trader']) : ''}}
                                 </label>
                             </td>
                             <td>
-                                <input type="text" class="form-control">
+                                {{isset($anchorRelationData['gen_trader_actual']) ? $anchorRelationData['gen_trader_actual'] : ''}}
                             </td>
                             <td>
-                                <textarea rows="1" class="form-control"></textarea>
+                                {{isset($anchorRelationData['gen_trader_remark']) ? $anchorRelationData['gen_trader_remark'] : ''}}
                             </td>
                         </tr>
                         <tr>
                             <td>Alternate business of trader </td>
                             <td>
                                 <label class="checkbox-inline mr-3">
-                                    <input type="radio" name="radio"> Yes
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="radio" name="radio"> No
+                                    {{isset($anchorRelationData['alt_buss_of_trader']) ? Helpers::getYesFlag($anchorRelationData['alt_buss_of_trader']) : ''}}
                                 </label>
                             </td>
                             <td>
-                                <input type="text" class="form-control">
+                                {{isset($anchorRelationData['alt_buss_of_trader_actual']) ? $anchorRelationData['alt_buss_of_trader_actual'] : ''}}
                             </td>
                             <td>
-                                <textarea rows="1" class="form-control"></textarea>
+                                {{isset($anchorRelationData['alt_buss_of_trader_remark']) ? $anchorRelationData['alt_buss_of_trader_remark'] : ''}}
                             </td>
                         </tr>
                         <tr>
                             <td>Self occupied/self owned property </td>
-                            <td>Yes </td>
                             <td>
-                                <input type="text" class="form-control">
+                                <label class="checkbox-inline mr-3">
+                                {{isset($anchorRelationData['self_owned_prop']) ? Helpers::getYesFlag($anchorRelationData['self_owned_prop']) : ''}}
+                                </label>
                             </td>
                             <td>
-                                <textarea rows="1" class="form-control"></textarea>
+                                {{isset($anchorRelationData['self_owned_prop_actual']) ? $anchorRelationData['self_owned_prop_actual'] : ''}}
+                            </td>
+                            <td>
+                                {{isset($anchorRelationData['self_owned_prop_remark']) ? $anchorRelationData['self_owned_prop_remark'] : ''}}
                             </td>
                         </tr>
                         <tr>
                             <td>Trade reference check</td>
-                            <td>Positive </td>
                             <td>
-                                <input type="text" class="form-control">
+                                <label class="checkbox-inline mr-3">
+                                Positive
+                                </label>
+                                </td>
+                            <td>
+                                {{isset($anchorRelationData['trade_ref_check_actual']) ? $anchorRelationData['trade_ref_check_actual'] : ''}}
                             </td>
                             <td>
-                                <textarea rows="1" class="form-control"></textarea>
+                                {{isset($anchorRelationData['trade_ref_check_remark']) ? $anchorRelationData['trade_ref_check_remark'] : ''}}
                             </td>
                         </tr>
                         <tr>
                             <td>Advance/sales tax payment </td>
                             <td>
                                 <label class="checkbox-inline mr-3">
-                                    <input type="radio" name="radio"> Yes
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="radio" name="radio"> No
+                                {{isset($anchorRelationData['adv_tax_payment']) ? Helpers::getYesFlag($anchorRelationData['adv_tax_payment']) : ''}}
                                 </label>
                             </td>
                             <td>
-                                <input type="text" class="form-control">
+                                {{isset($anchorRelationData['adv_tax_payment_actual']) ? $anchorRelationData['adv_tax_payment_actual'] : ''}}
                             </td>
                             <td>
-                                <textarea rows="1" class="form-control"></textarea>
+                                {{isset($anchorRelationData['adv_tax_payment_remark']) ? $anchorRelationData['adv_tax_payment_remark'] : ''}}
                             </td>
                         </tr>
                     </tbody>
@@ -460,6 +442,8 @@
                 <div class="clearfix"></div>
             </div>
         </div>
+        @endif
+        @if (isset($anchorRelationData) && (isset($data) && count($data) > 0))
         <div class="data mt-4">
             <h2 class="sub-title bg">Relationship With Anchor Company</h2>
             <div class="pl-4 pr-4 pb-4 pt-2">
@@ -501,7 +485,7 @@
                         @endif
 
                         <tr>
-                           <td rowspan="4">Dependence  on the Group</td>
+                          <td rowspan="4">Dependence  on the Group</td>
                           <td width="24%" rowspan="2"><p>&nbsp;</p></td>
                           <td width="24%" rowspan="2">Total Purchases of traded material(Rs. Mn)</td>
                           <td rowspan="2">Purchases From Group (Rs. Mn)</td>
@@ -513,17 +497,20 @@
                          @if(count($data) > 0)
                             @php $n = 0 @endphp
                             @foreach($data as $k => $val)
-                            @php $mt_amountam = 0; @endphp 
+                            @php $mt_amountam = 0; $dep_per = ''; $totalPurMaterial = isset($val['total_pur_material']) ? $val['total_pur_material'] : '' @endphp 
                             @foreach($months_r as $key => $month)
                                 @php
                                 $mt_amountam += !empty($data[$k]['mt_amount'][$key]) ? $data[$k]['mt_amount'][$key] : 0;
                                 @endphp
                               @endforeach
+                              @if (!empty($mt_amountam) && ($mt_amountam > 0) && !empty($totalPurMaterial) && ($totalPurMaterial > 0))
+                               @php $dep_per = number_format(($mt_amountam / $totalPurMaterial), 2); @endphp
+                              @endif
                               <tr>
                                 <td>{{$k}}</td>
-                                <td>&nbsp;</td>
+                                <td>{{$totalPurMaterial}}</td>
                                 <td>{{$mt_amountam}}</td>
-                                <td>&nbsp;</td>
+                                <td>{{$dep_per}}</td>
                            </tr>
                             @php $n++; @endphp
                             @endforeach
@@ -550,7 +537,9 @@
 
                 <div class="clearfix"></div>
           </div>
-        </div>     
+        </div>
+        @endif
+        @if(isset($data) && (count($data) > 0))
         <div class="data mt-4">
             <h2 class="sub-title bg">Month on Month Lifting with Anchor Company</h2>
             <div class="pl-4 pr-4 pb-4 pt-2">
@@ -623,6 +612,7 @@
               <div class="clearfix"></div>
           </div>
         </div>
+        @endif
         @if(isset($dataWcf) && count($dataWcf)>0)
         <div class="data mt-4">
             <h2 class="sub-title bg">Working Capital Facility</h2>
@@ -647,11 +637,11 @@
                         <tr>
                             <td>{{$val['bank_name']}}</td>
                             <td>{{$val['fund_facility']}}</td>
-                            <td>₹{{number_format($val['fund_amt'])}}</td>
-                            <td>₹{{number_format($val['fund_os_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['fund_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['fund_os_amt'])}}</td>
                             <td>{{$val['nonfund_facility']}}</td>
-                            <td>₹{{number_format($val['nonfund_amt'])}}</td>
-                            <td>₹{{number_format($val['nonfund_os_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['nonfund_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['nonfund_os_amt'])}}</td>
                             <td>{{$val['relationship_len']}}</td>
                         </tr>
                         @endforeach
@@ -680,8 +670,8 @@
                         <tr>
                             <td>{{$val['bank_name_tlbl']}}</td>
                             <td>{{$val['loan_name']}}</td>
-                            <td>₹{{number_format($val['facility_amt'])}}</td>
-                            <td>₹{{number_format($val['facility_os_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['facility_amt'])}}</td>
+                            <td><img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="10px" width="8px">{{number_format($val['facility_os_amt'])}}</td>
                             <td>{{$val['relationship_len_tlbl']}}</td>
                         </tr>
                         @endforeach

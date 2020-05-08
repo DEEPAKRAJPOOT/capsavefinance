@@ -16,25 +16,69 @@
 
                         <tbody>
                             <tr>
-                                <td width="30%">Years of Association with Group</td>
+                                <td width="25%"></td>
+                                <td width="25%"></td>
+                                <td width="25%">Actual</td>
+                                <td width="25%">Remarks</td>
+                            </tr>
+                            <tr>
+                                <td>Years of Association with Group</td>
                                 <td>
                                     <input type="text" id="year_of_association" name="year_of_association" class="form-control" value="{{isset($anchorRelationData['year_of_association']) ? $anchorRelationData['year_of_association'] : ''}}" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" maxlength="3">
                                     {!! $errors->first('year_of_association', '<span class="error">:message</span>') !!}
                                 </td>
-                                <td>Payment Terms with the Group</td>
-                                <td>
-                                        <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="{{isset($anchorRelationData['payment_terms']) ? $anchorRelationData['payment_terms'] : ''}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
-                                    {!! $errors->first('payment_terms', '<span class="error">:message</span>') !!}
-                                </td>
+                                <td><input name="year_of_assoc_actual" type="text" value="{{isset($anchorRelationData['year_of_assoc_actual']) ? $anchorRelationData['year_of_assoc_actual'] : ''}}" class="form-control"></td>
+                                <td><input name="year_of_assoc_remark" type="text" value="{{isset($anchorRelationData['year_of_assoc_remark']) ? $anchorRelationData['year_of_assoc_remark'] : ''}}" class="form-control"></td>
                             </tr>
                             <tr>
-                                <td>Rating / Reference by the Group</td>
+                                <td>Dependence On Anchor</td>
                                 <td>
+                                    <input type="text" id="dependence_on_anchor" name="dependence_on_anchor" class="form-control" value="{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] : ''}}" maxlength="100">
+                                    {!! $errors->first('dependence_on_anchor', '<span class="error">:message</span>') !!}
+                                </td>
+                                <td><input name="dependence_on_anchor_actual" type="text" value="{{isset($anchorRelationData['dependence_on_anchor_actual']) ? $anchorRelationData['dependence_on_anchor_actual'] : ''}}" class="form-control"></td>
+                                <td><input name="dependence_on_anchor_remark" type="text" value="{{isset($anchorRelationData['dependence_on_anchor_remark']) ? $anchorRelationData['dependence_on_anchor_remark'] : ''}}" class="form-control"></td>
+                            </tr>
+                            <tr>
+                                <td>Quarter on Quarter off-take from Anchor</td>
+                                <td>
+                                    <input type="text" id="qoq_ot_from_anchor" name="qoq_ot_from_anchor" class="form-control" value="{{isset($anchorRelationData['qoq_ot_from_anchor']) ? $anchorRelationData['qoq_ot_from_anchor'] : ''}}" maxlength="100">
+                                    {!! $errors->first('qoq_ot_from_anchor', '<span class="error">:message</span>') !!}
+                                </td>
+                                <td><input name="qoq_ot_from_anchor_actual" type="text" value="{{isset($anchorRelationData['qoq_ot_from_anchor_actual']) ? $anchorRelationData['qoq_ot_from_anchor_actual'] : ''}}" class="form-control"></td>
+                                <td><input name="qoq_ot_from_anchor_remark" type="text" value="{{isset($anchorRelationData['qoq_ot_from_anchor_remark']) ? $anchorRelationData['qoq_ot_from_anchor_remark'] : ''}}" class="form-control"></td>
+                            </tr>
+                            <tr>
+                                <td>Categorization/ Relevance by Anchor</td>
+                                <td>
+                                    <input type="text" id="cat_relevance_by_anchor" name="cat_relevance_by_anchor" class="form-control" value="{{isset($anchorRelationData['cat_relevance_by_anchor']) ? $anchorRelationData['cat_relevance_by_anchor'] : ''}}" maxlength="100">
+                                    {!! $errors->first('cat_relevance_by_anchor', '<span class="error">:message</span>') !!}
+                                </td>
+                                <td><input name="cat_relevance_by_anchor_actual" type="text" value="{{isset($anchorRelationData['cat_relevance_by_anchor_actual']) ? $anchorRelationData['cat_relevance_by_anchor_actual'] : ''}}" class="form-control"></td>
+                                <td><input name="cat_relevance_by_anchor_remark" type="text" value="{{isset($anchorRelationData['cat_relevance_by_anchor_remark']) ? $anchorRelationData['cat_relevance_by_anchor_remark'] : ''}}" class="form-control"></td>
+                            </tr>
+                            <tr>
+                                <td>Repayment track record with Anchor</td>
+                                <td>
+                                    <input type="text" id="repayment_track_record" name="repayment_track_record" class="form-control" value="{{isset($anchorRelationData['repayment_track_record']) ? $anchorRelationData['repayment_track_record'] : ''}}" maxlength="100">
+                                    {!! $errors->first('repayment_track_record', '<span class="error">:message</span>') !!}
+                                </td>
+                                <td><input name="repayment_track_record_actual" type="text" value="{{isset($anchorRelationData['repayment_track_record_actual']) ? $anchorRelationData['repayment_track_record_actual'] : ''}}" class="form-control"></td>
+                                <td><input name="repayment_track_record_remark" type="text" value="{{isset($anchorRelationData['repayment_track_record_remark']) ? $anchorRelationData['repayment_track_record_remark'] : ''}}" class="form-control"></td>
+                            </tr>
+                            <tr><td></td></tr>
+                        </tbody>
+                    </table>
+                    <table class="table overview-table">
+                        <tbody>
+                            <tr>
+                                <td width="25%">Rating / Reference by the Group</td>
+                                <td width="25%">
                                     <input type="text" id="grp_rating" name="grp_rating" class="form-control" value="{{isset($anchorRelationData['grp_rating']) ? $anchorRelationData['grp_rating'] : ''}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z.\+]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('grp_rating', '<span class="error">:message</span>') !!}
                                 </td>
-                                <td>Security Deposit with Anchor Company</td>
-                                <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" id="security_deposit" name="security_deposit" class="number_format form-control" value="{{isset($anchorRelationData['security_deposit']) ? number_format($anchorRelationData['security_deposit']) : ''}}" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+                                <td width="25%">Security Deposit with Anchor Company</td>
+                                <td width="25%"><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" id="security_deposit" name="security_deposit" class="number_format form-control" value="{{isset($anchorRelationData['security_deposit']) ? number_format($anchorRelationData['security_deposit']) : ''}}" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('security_deposit', '<span class="error">:message</span>') !!}
                                 </td>
                             </tr>
@@ -49,25 +93,111 @@
                                     <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{isset($anchorRelationData['contact_number']) ? $anchorRelationData['contact_number'] : ''}}" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
                                     {!! $errors->first('contact_number', '<span class="error">:message</span>') !!}
                                 </td>
-                                
                             </tr>
                             <tr>
-                                <td>Dependence On Anchor</td>
+                                <td>Payment Terms with the Group</td>
                                 <td>
-                                    <input type="text" id="dependence_on_anchor" name="dependence_on_anchor" class="form-control" value="{{isset($anchorRelationData['dependence_on_anchor']) ? $anchorRelationData['dependence_on_anchor'] : ''}}" maxlength="100">
-                                    {!! $errors->first('dependence_on_anchor', '<span class="error">:message</span>') !!}
+                                        <input type="text" id="payment_terms" name="payment_terms" class="form-control" value="{{isset($anchorRelationData['payment_terms']) ? $anchorRelationData['payment_terms'] : ''}}" maxlength="3" oninput="this.value = this.value.replace(/[^0-9A-Za-z]/g, '').replace(/(\..*)\./g, '$1');">
+                                    {!! $errors->first('payment_terms', '<span class="error">:message</span>') !!}
                                 </td>
-                                <td>Quarter on Quarter off-take from Anchor</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="data mt-4">
+                <h2 class="sub-title bg">Surrogate Criteria</h2>
+                <div class="pl-4 pr-4 pb-4 pt-2">
+                    <table class="table table-bordered overview-table" id="myTable3">
+                        <thead>
+                            <tr bgcolor="#ccc">
+                                <th>Parameter</th>
+                                <th>Criteria</th>
+                                <th>Actual </th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td>Second/Third Generation Trader</td>
                                 <td>
-                                    <input type="text" id="qoq_ot_from_anchor" name="qoq_ot_from_anchor" class="form-control" value="{{isset($anchorRelationData['qoq_ot_from_anchor']) ? $anchorRelationData['qoq_ot_from_anchor'] : ''}}" maxlength="100">
-                                    {!! $errors->first('qoq_ot_from_anchor', '<span class="error">:message</span>') !!}
+                                    <label class="checkbox-inline mr-3">
+                                        <input type="radio" name="sec_third_gen_trader" value="1" {{isset($anchorRelationData['sec_third_gen_trader']) && $anchorRelationData['sec_third_gen_trader'] == '1' ? 'checked' : ''}}> Yes
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="radio" name="sec_third_gen_trader" value="0" {{isset($anchorRelationData['sec_third_gen_trader']) && $anchorRelationData['sec_third_gen_trader'] == '0' ? 'checked' : ''}}> No
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="text" name="gen_trader_actual" value="{{isset($anchorRelationData['gen_trader_actual']) ? $anchorRelationData['gen_trader_actual'] : ''}}" class="form-control">
+                                </td>
+                                <td>
+                                    <textarea rows="1" name="gen_trader_remark" class="form-control">{{isset($anchorRelationData['gen_trader_remark']) ? $anchorRelationData['gen_trader_remark'] : ''}}</textarea>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Categorization/ Relevance by Anchor</td>
+                                <td>Alternate business of trader </td>
                                 <td>
-                                    <input type="text" id="cat_relevance_by_anchor" name="cat_relevance_by_anchor" class="form-control" value="{{isset($anchorRelationData['cat_relevance_by_anchor']) ? $anchorRelationData['cat_relevance_by_anchor'] : ''}}" maxlength="100">
-                                    {!! $errors->first('cat_relevance_by_anchor', '<span class="error">:message</span>') !!}
+                                    <label class="checkbox-inline mr-3">
+                                        <input type="radio" name="alt_buss_of_trader" value="1" {{isset($anchorRelationData['alt_buss_of_trader']) && $anchorRelationData['alt_buss_of_trader'] == '1' ? 'checked' : ''}}> Yes
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="radio" name="alt_buss_of_trader" value="0" {{isset($anchorRelationData['alt_buss_of_trader']) && $anchorRelationData['alt_buss_of_trader'] == '0' ? 'checked' : ''}}> No
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="text" name="alt_buss_of_trader_actual" value="{{isset($anchorRelationData['alt_buss_of_trader_actual']) ? $anchorRelationData['alt_buss_of_trader_actual'] : ''}}" class="form-control">
+                                </td>
+                                <td>
+                                    <textarea rows="1" name="alt_buss_of_trader_remark" class="form-control">{{isset($anchorRelationData['alt_buss_of_trader_remark']) ? $anchorRelationData['alt_buss_of_trader_remark'] : ''}}</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Self occupied/self owned property </td>
+                                <td>
+                                    <label class="checkbox-inline mr-3">
+                                        <input type="radio" name="self_owned_prop" value="1" {{isset($anchorRelationData['self_owned_prop']) && $anchorRelationData['self_owned_prop'] == '1' ? 'checked' : ''}}> Yes
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="radio" name="self_owned_prop" value="0" {{isset($anchorRelationData['self_owned_prop']) && $anchorRelationData['self_owned_prop'] == '0' ? 'checked' : ''}}> No
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="text" name="self_owned_prop_actual" value="{{isset($anchorRelationData['self_owned_prop_actual']) ? $anchorRelationData['self_owned_prop_actual'] : ''}}" class="form-control">
+                                </td>
+                                <td>
+                                    <textarea rows="1" name="self_owned_prop_remark" class="form-control">{{isset($anchorRelationData['self_owned_prop_remark']) ? $anchorRelationData['self_owned_prop_remark'] : ''}}</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Trade reference check</td>
+                                <td>Positive </td>
+                                <td>
+                                    <input type="text" name="trade_ref_check_actual" value="{{isset($anchorRelationData['trade_ref_check_actual']) ? $anchorRelationData['trade_ref_check_actual'] : ''}}" class="form-control">
+                                </td>
+                                <td>
+                                    <textarea rows="1" name="trade_ref_check_remark" class="form-control">{{isset($anchorRelationData['trade_ref_check_remark']) ? $anchorRelationData['trade_ref_check_remark'] : ''}}</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Advance/sales tax payment </td>
+                                <td>
+                                    <label class="checkbox-inline mr-3">
+                                        <input type="radio" name="adv_tax_payment" value="1" {{isset($anchorRelationData['adv_tax_payment']) && $anchorRelationData['adv_tax_payment'] == '1' ? 'checked' : ''}}> Yes
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="radio" name="adv_tax_payment" value="0" {{isset($anchorRelationData['adv_tax_payment']) && $anchorRelationData['adv_tax_payment'] == '0' ? 'checked' : ''}}> No
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="text" name="adv_tax_payment_actual" value="{{isset($anchorRelationData['adv_tax_payment_actual']) ? $anchorRelationData['adv_tax_payment_actual'] : ''}}" class="form-control">
+                                </td>
+                                <td>
+                                    <textarea rows="1" name="adv_tax_payment_remark" class="form-control">{{isset($anchorRelationData['adv_tax_payment_remark']) ? $anchorRelationData['adv_tax_payment_remark'] : ''}}</textarea>
                                 </td>
                             </tr>
                         </tbody>
@@ -106,6 +236,30 @@
                                 <td colspan="2"><b>
                                     <input id="year_{{$k}}" type="text" name="year[]" value="{{old('year.'.$k)}}" class="form-control" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"></b>
                                     {!! $errors->first('year.'.$k, '<span class="error">:message</span>') !!}
+                                </td>
+                            @endfor
+                        @endif
+                        
+                        </tr>
+                        <tr >
+                       
+                        <td><b>Total Purchases of traded material (Rs. Mn)</b></td>
+                        @if(count($data) > 0)
+                            @php $m = 0 @endphp
+                            @foreach($data as $key => $val)
+                                <td colspan="2"><b>
+                                    <input id="total_pur_material_{{$key}}" type="text" name="total_pur_material[]" value="{{isset($val['total_pur_material']) ? $val['total_pur_material'] : ''}}" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+                                    {!! $errors->first('total_pur_material.'.$m, '<span class="error">:message</span>') !!}
+                                </b></td>
+                                @php
+                                $m++;
+                                @endphp
+                            @endforeach
+                        @else
+                            @for($n=0;$n<2;$n++)
+                                <td colspan="2"><b>
+                                    <input id="total_pur_material_{{$n}}" type="text" name="total_pur_material[]" value="" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"></b>
+                                    {!! $errors->first('total_pur_material.'.$n, '<span class="error">:message</span>') !!}
                                 </td>
                             @endfor
                         @endif
