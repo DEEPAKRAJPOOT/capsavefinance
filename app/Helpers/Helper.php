@@ -1571,4 +1571,10 @@ class Helper extends PaypalHelper
         
         return $result;
      }
+     
+    public static function getEodStartDate()
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        return  AppProgramLimit::where(['status'=> 1,'app_limit_id' =>$limit_id])->sum('limit_amt');
+    }     
 }
