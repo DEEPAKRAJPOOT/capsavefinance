@@ -29,9 +29,9 @@
         @if( isset($maxDPD) && $maxDPD>0)
         <tr>
             <td class="text-left" width="30%"><b>Max Principal DPD</b></td>
-            <td>@if(count($maxPrincipalDPD)>0){{$maxPrincipalDPD->dpd}} @if($maxPrincipalDPD->dpd>1) Days @else Day @endif @else 0 Day @endif</td>
+            <td>@if($maxPrincipalDPD){{$maxPrincipalDPD->dpd}} @if($maxPrincipalDPD->dpd>1) Days @else Day @endif @else 0 Day @endif</td>
             <td class="text-left" width="30%"><b>Max Interest DPD</b></td>
-            <td>@if(count($maxInterestDPD)>0){{$maxInterestDPD->dpd}} @if($maxInterestDPD->dpd>1) Days @else Day @endif @else 0 Day @endif </td>
+            <td>@if($maxInterestDPD){{$maxInterestDPD->dpd}} @if($maxInterestDPD->dpd>1) Days @else Day @endif @else 0 Day @endif </td>
         </tr>
         @endif
     </tbody>

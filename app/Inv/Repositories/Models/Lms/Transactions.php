@@ -506,7 +506,7 @@ class Transactions extends BaseModel {
             return $item->outstanding > 0;
         });
         $maxDPD = $transactions->max('dpd');
-        return $transactions->where('dpd','=',$maxDPD);
+        return $transactions->where('dpd','=',$maxDPD)->first();
     }
 
     /*** save repayment transaction details for invoice  **/
