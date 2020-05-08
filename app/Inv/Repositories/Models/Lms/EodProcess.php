@@ -151,6 +151,17 @@ class EodProcess extends BaseModel
         }  
                 
         return self::where($whereCond)->update($data);            
-    }    
+    } 
+    
+    /**
+     * Get System Start Date
+     * 
+     * @return timestamp
+     */
+    public static function getSysStartDate()
+    {
+        $result = self::select('sys_start_date')->where('is_active', 1)->first();
+        return $result ? $result->sys_start_date : null;
+    }
 }
 

@@ -1571,10 +1571,19 @@ class Helper extends PaypalHelper
         
         return $result;
      }
-     
+    
+    /**
+     * Get System Start Date
+     * 
+     * @return timestamp
+     */
     public static function getEodStartDate()
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
-        return  AppProgramLimit::where(['status'=> 1,'app_limit_id' =>$limit_id])->sum('limit_amt');
+        $sys_start_date = $lmsRepo->getSysStartDate();
+        if (is_null($sys_start_date)) {
+            $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
+        }
+        return $sys_start_date;
     }     
 }
