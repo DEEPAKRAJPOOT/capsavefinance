@@ -86,6 +86,10 @@
             @endphp
             <span align="right" style="float: left;"><b>{{ $date->isoFormat('MMMM D, Y')}}</b></span>
         </header>
+        <footer>
+            <hr>
+            <span class="pagenum"></span><b> |</b> CFPL
+        </footer>
         <main>
             <div  align="center">
                 <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
@@ -202,7 +206,6 @@
             </div>
             @endforeach
         </main>
-
     </body>
 </html>
 
