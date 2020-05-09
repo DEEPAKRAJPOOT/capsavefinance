@@ -480,12 +480,10 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
-        //$this->intAccrual(3,'2020-05-01');
-        $this->intAccrual(4,'2020-05-01');
-        // $curdate = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
-        // $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
-        // foreach ($invoiceList as $invId => $trans) {
-        //     $this->intAccrual($invId);
-        // }
+        $curdate = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+        $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
+        foreach ($invoiceList as $invId => $trans) {
+            $this->intAccrual($invId);
+        }
     }
 }
