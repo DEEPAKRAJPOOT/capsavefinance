@@ -5621,7 +5621,7 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
-                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
