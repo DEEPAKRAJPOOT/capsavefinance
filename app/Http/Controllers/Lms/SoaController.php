@@ -175,8 +175,8 @@ class SoaController extends Controller
                         $soaRecord[$key][$k]['payment_id'] = $data->payment_id;
                         $soaRecord[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
                         $soaRecord[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                        $soaRecord[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
-                        $soaRecord[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->parenttransdate));
+                        $soaRecord[$key][$k]['trans_date'] = \Helpers::convertDateTimeFormat($data->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y') ;
+                        $soaRecord[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->trans_date));
                         $soaRecord[$key][$k]['trans_type'] = trim($data->transname);
                         $soaRecord[$key][$k]['batch_no'] = $data->batchNo;
                         $soaRecord[$key][$k]['invoice_no'] = $data->invoiceno;
@@ -196,7 +196,12 @@ class SoaController extends Controller
 
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $result['userInfo'], 'soaRecord' => $soaRecord],[],'UTF-8');
+                    ->loadView('lms.soa.downloadSoaReport', [
+                        'userInfo' => $result['userInfo'], 
+                        'soaRecord' => $soaRecord,
+                        'from_date' => $request->get('from_date'),
+                        'to_date' => $request->get('to_date')
+                    ],[],'UTF-8');
             return $pdf->download('SoaReport.pdf');          
           } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
