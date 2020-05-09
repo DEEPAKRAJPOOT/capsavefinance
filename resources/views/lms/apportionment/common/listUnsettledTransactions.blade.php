@@ -7,7 +7,7 @@
                         <table id="unsettledTransactions" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">                                                   
-                                    <th>Value Date</th>       
+                                    <th>Trans Date</th>       
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>

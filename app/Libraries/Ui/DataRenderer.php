@@ -3960,13 +3960,13 @@ class DataRenderer implements DataProviderInterface
             ->addColumn(
                 'value_date',
                 function ($trans) {
-                    return date('d-m-Y',strtotime($trans->parenttransdate));
+                    return date('d-m-Y',strtotime($trans->trans_date));
                 }
             )
             ->editColumn(
                 'trans_date',
                 function ($trans) {
-                    return date('d-m-Y',strtotime($trans->trans_date));
+                    return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
                 }
             )
             ->editColumn(
