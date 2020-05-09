@@ -475,7 +475,8 @@ class ApportionmentController extends Controller
                 'paymentmode'=> $payment->paymentmode,
                 'transactionno'=> $payment->transactionno,
                 'payment_amt' => $payment->amount,
-                'is_settled' => $payment->is_settled
+                'is_settled' => $payment->is_settled,
+                'created_at' => $payment->created_at,
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -586,6 +587,7 @@ class ApportionmentController extends Controller
                 $transactionList[] = [
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
+                    'value_date' => $trans->parenttransdate,
                     'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
                     'trans_type' => $trans->trans_type,
                     'trans_name' =>  $trans->transName,
@@ -708,11 +710,6 @@ class ApportionmentController extends Controller
                     $payment = Payment::find($paymentId);
                     $payment->is_settled = 1;
                     $payment->save();
-                    foreach ($invoiceList as $invDisb) {
-                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                        $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
-                    }
-                    $request->session()->forget('apportionment');
                 }
 
                 $transactionList = [];
@@ -755,7 +752,12 @@ class ApportionmentController extends Controller
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
                 }
+                foreach ($invoiceList as $invDisb) {
+                    $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                    $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
+                $request->session()->forget('apportionment');
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {

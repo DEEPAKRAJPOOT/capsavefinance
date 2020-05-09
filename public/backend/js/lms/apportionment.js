@@ -13,7 +13,7 @@ class Apportionment {
                 {data: 'trans_type'},
                 {data: 'total_repay_amt'},                    
                 {data: 'outstanding_amt'},
-                {data: 'payment_date'},
+                // {data: 'payment_date'},
                 {data: 'pay'},
                 {data: 'select'}
             ];
