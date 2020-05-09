@@ -6,6 +6,8 @@ use Session;
 use Helpers;
 use PDF as DPDF;
 use PHPExcel;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -213,8 +215,6 @@ class SoaController extends Controller
     }
 
     public function soaExcelDownload(Request $request){
-//        return response('Under Development!', 200)
-//        ->header('Content-Type', 'text/plain');
 //        dd($request->all());
         if($request->has('user_id')){
             $data = $this->getUserLimitDetais($request->user_id);
@@ -237,7 +237,7 @@ class SoaController extends Controller
         }
 //        dd($transactionList->get());
         $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(25));
-        dd($exceldata);
+//        dd($exceldata);
         $sheet =  new PHPExcel();
         $sheet->getProperties()
                 ->setCreator("Capsave")
@@ -260,54 +260,50 @@ class SoaController extends Controller
                 ->setCellValue('I1', 'Debit')
                 ->setCellValue('J1', 'Credit')
                 ->setCellValue('K1', 'Balance');
-                
+        
+        for($i=65; $i<=75; $i++){
+            $sheet->getActiveSheet()->getStyle(chr($i).'1')->getFill()->applyFromArray(array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'startcolor' => array(
+//                    'rgb' => "F28A8C",
+                    'rgb' => "FF0000"
+                )
+            ));
+        }
+               
         $rows = 2;
 
-        foreach($exceldata as $rowData){
-            $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A' . $rows, $rowData['customer_id'] ?? 'XYZ')
-                ->setCellValue('B' . $rows, $rowData['trans_date'] ?? '')
-                ->setCellValue('C' . $rows, $rowData['value_date'] ?? '')
-                ->setCellValue('D' . $rows, $rowData['trans_type'] ?? '')
-                ->setCellValue('E' . $rows, $rowData['batch_no'] ?? '')
-                ->setCellValue('F' . $rows, $rowData['invoice_no'] ?? '')
-                ->setCellValue('G' . $rows, $rowData['narration'] ?? '')
-                ->setCellValue('H' . $rows, $rowData['currency'] ?? '')
-                ->setCellValue('I' . $rows, $rowData['debit'] ?? '')
-                ->setCellValue('J' . $rows, $rowData['credit'] ?? '')
-                ->setCellValue('K' . $rows, $rowData['balance'] ?? '');
+        foreach($exceldata as $data){
+            foreach ($data as $rowData){
+                $sheet->setActiveSheetIndex(0)
+                    ->setCellValue('A' . $rows, $rowData['customer_id'] ?? '')
+                    ->setCellValue('B' . $rows, $rowData['trans_date'] ?? '')
+                    ->setCellValue('C' . $rows, $rowData['value_date'] ?? '')
+                    ->setCellValue('D' . $rows, $rowData['trans_type'] ?? '')
+                    ->setCellValue('E' . $rows, $rowData['batch_no'] ?? '')
+                    ->setCellValue('F' . $rows, $rowData['invoice_no'] ?? '')
+                    ->setCellValue('G' . $rows, $rowData['narration'] ?? '')
+                    ->setCellValue('H' . $rows, $rowData['currency'] ?? '')
+                    ->setCellValue('I' . $rows, $rowData['debit'] ?? '')
+                    ->setCellValue('J' . $rows, $rowData['credit'] ?? '')
+                    ->setCellValue('K' . $rows, $rowData['balance'] ?? '');
                 
-            $rows++;
+                $rows++;
+            }
         }
         
 //        dd($sheet);
+//        
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=download_Excel.xlsx');
+        header('Content-Disposition: attachment;filename="download_Excel.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
-        // header('Cache-Control: max-age=1');
-
-        // // If you're serving to IE over SSL, then the following may be needed
-        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        // header ('Pragma: public'); // HTTP/1.0
+        header('Cache-Control: max-age=1');
         
-        if (!Storage::exists('/public/docs/bank_excel')) {
-            Storage::makeDirectory('/public/docs/bank_excel');
-        }
-        $storage_path = storage_path('app/public/docs/bank_excel');
-        $filePath = $storage_path.'/'.$filename.'.xlsx';
-
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save($filePath);
-
-        return [ 'status' => 1,
-                'file_path' => $filePath
-                ];
+        $objWriter->save('php://output');
         
-        return view('lms.soa.downloadSoaExcel');
     }
 
 }
