@@ -460,7 +460,6 @@ class ManualApportionmentHelper{
                     InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('interest_date','>=',$loopStratDate)
                     ->delete();
-                    break;
                 }
                 
                 if(strtotime($loopStratDate) <= strtotime($odStartDate))
@@ -481,10 +480,12 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
-        $curdate = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
-        $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
-        foreach ($invoiceList as $invId => $trans) {
-            $this->intAccrual($invId);
-        }
+        //$this->intAccrual(3,'2020-05-01');
+        $this->intAccrual(4,'2020-05-01');
+        // $curdate = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+        // $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
+        // foreach ($invoiceList as $invId => $trans) {
+        //     $this->intAccrual($invId);
+        // }
     }
 }
