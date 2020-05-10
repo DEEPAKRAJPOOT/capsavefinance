@@ -300,7 +300,7 @@ class Transactions extends BaseModel {
             $transactions['created_at'] = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
         }
         if (!isset($transactions['created_by'])) {
-            $transactions['created_by'] = \Auth::user()->user_id;
+            $transactions['created_by'] = \Auth::user()->user_id??null;
         }        
         
         if (!empty($whereCondition)) {

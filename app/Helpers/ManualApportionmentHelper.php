@@ -375,7 +375,7 @@ class ManualApportionmentHelper{
             $intAccrualData['interest_rate'] = null;
             $intAccrualData['overdue_interest_rate'] = $odIntRate;
             $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone')   )->format('Y-m-d h:i:s');
-            $intAccrualData['created_by'] = Auth::user()->user_id;
+            $intAccrualData['created_by'] = Auth::user()->user_id??null;
 
             if($interest_accrual_id){
                 $recalwhereCond = [];
@@ -446,7 +446,7 @@ class ManualApportionmentHelper{
                     $intAccrualData['interest_rate'] = ($intType==1)?$intRate:null;
                     $intAccrualData['overdue_interest_rate'] = ($intType==2)?$odIntRate:null;
                     $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
-                    $intAccrualData['created_by'] = Auth::user()->user_id;
+                    $intAccrualData['created_by'] = Auth::user()->user_id??null;
                     
                     if($interest_accrual_id){
                         $recalwhereCond = [];
