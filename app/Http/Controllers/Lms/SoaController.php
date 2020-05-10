@@ -8,6 +8,7 @@ use PDF as DPDF;
 use PHPExcel;
 use PHPExcel_IOFactory;
 use PHPExcel_Style_Fill;
+use PHPExcel_Cell_DataType;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -199,11 +200,7 @@ class SoaController extends Controller
 
                 $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
                             
-            }
-            // // dd($soaRecord);
-            // return view('lms.soa.downloadSoaReport')
-            // ->with('userInfo',$result['userInfo'])
-            // ->with('soaRecord',$soaRecord); 
+            } 
 
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
@@ -249,20 +246,44 @@ class SoaController extends Controller
                 ->setCategory("Bank Disburse Excel");
     
         $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A1', 'Customer ID')
-                ->setCellValue('B1', 'Tran Date')
-                ->setCellValue('C1', 'Value Date')
-                ->setCellValue('D1', 'Tran Type')
-                ->setCellValue('E1', 'Batch No')
-                ->setCellValue('F1', 'Invoice No')
-                ->setCellValue('G1', 'Narration')
-                ->setCellValue('H1', 'Currency')
-                ->setCellValue('I1', 'Debit')
-                ->setCellValue('J1', 'Credit')
-                ->setCellValue('K1', 'Balance');
+                ->setCellValue('D2', 'CAPSAVE FINANCE PRIVATE LIMITED')
+                ->setCellValue('E3', 'Statement Of Account')
+                ->setCellValue('A5', 'Business Name')
+                ->setCellValue('C5', $data['userInfo']->biz->biz_entity_name)
+                ->setCellValue('G5', 'Full Name')
+                ->setCellValue('I5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
+                ->setCellValue('A6', 'Email')
+                ->setCellValue('C6', $data['userInfo']->email)
+                ->setCellValue('G6', 'Mobile')
+                ->setCellValueExplicit('I6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+        
+        $rows = 8;
+        
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A7', 'From Date')
+                ->setCellValue('C7', $request->get('from_date'))
+                ->setCellValue('G7', 'To Date')
+                ->setCellValue('I7', $request->get('to_date'));
+            
+            $rows++;
+        }
+                
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A'.$rows, 'Customer ID')
+                ->setCellValue('B'.$rows, 'Tran Date')
+                ->setCellValue('C'.$rows, 'Value Date')
+                ->setCellValue('D'.$rows, 'Tran Type')
+                ->setCellValue('E'.$rows, 'Batch No')
+                ->setCellValue('F'.$rows, 'Invoice No')
+                ->setCellValue('G'.$rows, 'Narration')
+                ->setCellValue('H'.$rows, 'Currency')
+                ->setCellValue('I'.$rows, 'Debit')
+                ->setCellValue('J'.$rows, 'Credit')
+                ->setCellValue('K'.$rows, 'Balance');
         
         for($i=65; $i<=75; $i++){
-            $sheet->getActiveSheet()->getStyle(chr($i).'1')->getFill()->applyFromArray(array(
+            $sheet->getActiveSheet()->getStyle(chr($i).$rows)->getFill()->applyFromArray(array(
                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
                 'startcolor' => array(
 //                    'rgb' => "F28A8C",
@@ -271,22 +292,38 @@ class SoaController extends Controller
             ));
         }
                
-        $rows = 2;
+        $rows++;
 
         foreach($exceldata as $data){
             foreach ($data as $rowData){
                 $sheet->setActiveSheetIndex(0)
-                    ->setCellValue('A' . $rows, $rowData['customer_id'] ?? '')
-                    ->setCellValue('B' . $rows, $rowData['trans_date'] ?? '')
-                    ->setCellValue('C' . $rows, $rowData['value_date'] ?? '')
-                    ->setCellValue('D' . $rows, $rowData['trans_type'] ?? '')
-                    ->setCellValue('E' . $rows, $rowData['batch_no'] ?? '')
-                    ->setCellValue('F' . $rows, $rowData['invoice_no'] ?? '')
-                    ->setCellValue('G' . $rows, $rowData['narration'] ?? '')
-                    ->setCellValue('H' . $rows, $rowData['currency'] ?? '')
-                    ->setCellValue('I' . $rows, $rowData['debit'] ?? '')
-                    ->setCellValue('J' . $rows, $rowData['credit'] ?? '')
-                    ->setCellValue('K' . $rows, $rowData['balance'] ?? '');
+                    ->setCellValue('A' . $rows, $rowData['customer_id'] ?: '')
+                    ->setCellValue('B' . $rows, $rowData['trans_date'] ?: '')
+                    ->setCellValue('C' . $rows, $rowData['value_date'] ?: '')
+                    ->setCellValue('D' . $rows, $rowData['trans_type'] ?: '')
+                    ->setCellValue('E' . $rows, $rowData['batch_no'] ?: '')
+                    ->setCellValue('F' . $rows, $rowData['invoice_no'] ?: '')
+                    ->setCellValue('G' . $rows, $rowData['narration'] ?: '')
+                    ->setCellValue('H' . $rows, $rowData['currency'] ?: '')
+                    ->setCellValue('I' . $rows, $rowData['debit'] ?: '')
+                    ->setCellValue('J' . $rows, $rowData['credit'] ?: '')
+                    ->setCellValue('K' . $rows, $rowData['balance'] ?: '');
+                
+                $color = 'FFFFFF';
+                if(strtolower($rowData['trans_type']) === 'repayment'){
+                    $color = "F3C714";
+                }elseif($rowData['payment_id']){
+                    $color = "FED8B1";
+                }
+                
+                for($i=65; $i<=75; $i++){
+                    $sheet->getActiveSheet()->getStyle(chr($i).$rows)->getFill()->applyFromArray(array(
+                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                        'startcolor' => array(
+                            'rgb' => $color
+                        )
+                    ));
+                }
                 
                 $rows++;
             }
