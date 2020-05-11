@@ -5,6 +5,11 @@ use Auth;
 use Session;
 use Helpers;
 use PDF as DPDF;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use PHPExcel_Cell_DataType;
+use PHPExcel_Style_Alignment;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -76,39 +81,39 @@ class SoaController extends Controller
          /* use function for the manage sention tabs */ 
     
     public  function  getUserLimitDetais($user_id) 
-   {
-            try {
-                $totalLimit = 0;
-                $totalCunsumeLimit = 0;
-                $consumeLimit = 0;
-                $transactions = 0;
-                $userInfo = $this->userRepo->getCustomerDetail($user_id);
-                $application = $this->appRepo->getCustomerApplications($user_id);
-                $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+    {
+        try {
+            $totalLimit = 0;
+            $totalCunsumeLimit = 0;
+            $consumeLimit = 0;
+            $transactions = 0;
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            $application = $this->appRepo->getCustomerApplications($user_id);
+            $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 
-                foreach ($application as $key => $app) {
-                    if (isset($app->prgmLimits)) {
-                        foreach ($app->prgmLimits as $value) {
-                            $totalLimit += $value->limit_amt;
-                        }
-                    }
-                    if (isset($app->acceptedOffers)) {
-                        foreach ($app->acceptedOffers as $value) {
-                            $totalCunsumeLimit += $value->prgm_limit_amt;
-                        }
+            foreach ($application as $key => $app) {
+                if (isset($app->prgmLimits)) {
+                    foreach ($app->prgmLimits as $value) {
+                        $totalLimit += $value->limit_amt;
                     }
                 }
-                $userInfo->total_limit = number_format($totalLimit);
-                $userInfo->consume_limit = number_format($totalCunsumeLimit);
-                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-                
-                $data['userInfo'] = $userInfo;
-                $data['application'] = $application;
-                $data['anchors'] = $anchors;
-                return $data;
-            } catch (Exception $ex) {
-                dd($ex);
+                if (isset($app->acceptedOffers)) {
+                    foreach ($app->acceptedOffers as $value) {
+                        $totalCunsumeLimit += $value->prgm_limit_amt;
+                    }
+                }
             }
+            $userInfo->total_limit = number_format($totalLimit);
+            $userInfo->consume_limit = number_format($totalCunsumeLimit);
+            $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+            
+            $data['userInfo'] = $userInfo;
+            $data['application'] = $application;
+            $data['anchors'] = $anchors;
+            return $data;
+        } catch (Exception $ex) {
+            dd($ex);
+        }
     }
     
     public function getDebit($trans){
@@ -145,6 +150,28 @@ class SoaController extends Controller
         }
         return $data;
     }
+    
+    public function prepareDataForRendering($expecteddata){
+        $preparedData = [];
+        foreach($expecteddata as $key => $expData){
+            foreach ($expData as $k => $data) {
+                $preparedData[$key][$k]['payment_id'] = $data->payment_id;
+                $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
+                $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
+                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->parenttransdate));
+                $preparedData[$key][$k]['trans_type'] = trim($data->transname);
+                $preparedData[$key][$k]['batch_no'] = $data->batchNo;
+                $preparedData[$key][$k]['invoice_no'] = $data->invoiceno;
+                $preparedData[$key][$k]['narration'] = $data->narration;
+                $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')]) ? '' : 'INR');
+                $preparedData[$key][$k]['debit'] = $this->getDebit($data);
+                $preparedData[$key][$k]['credit'] = $this->getCredit($data);
+                $preparedData[$key][$k]['balance'] = $this->getBalance($data);
+            }
+        }
+        return $preparedData;
+    }
 
     public function soaPdfDownload(Request $request){
         try{
@@ -166,52 +193,147 @@ class SoaController extends Controller
                         $query->where('customer_id', '=', "$customer_id");
                     });
                 }
-
-                $expecteddata = $transactionList->get()->chunk(25);
-                
-                foreach($expecteddata as $key => $expData){
-                    foreach ($expData as $k => $data) {
-                        # code...
-                        $soaRecord[$key][$k]['payment_id'] = $data->payment_id;
-                        $soaRecord[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
-                        $soaRecord[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                        $soaRecord[$key][$k]['trans_date'] = \Helpers::convertDateTimeFormat($data->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y') ;
-                        $soaRecord[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->trans_date));
-                        $soaRecord[$key][$k]['trans_type'] = trim($data->transname);
-                        $soaRecord[$key][$k]['batch_no'] = $data->batchNo;
-                        $soaRecord[$key][$k]['invoice_no'] = $data->invoiceno;
-                        $soaRecord[$key][$k]['narration'] = $data->narration;
-                        $soaRecord[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')]) ? '' : 'INR');
-                        $soaRecord[$key][$k]['debit'] = $this->getDebit($data);
-                        $soaRecord[$key][$k]['credit'] = $this->getCredit($data);
-                        $soaRecord[$key][$k]['balance'] = $this->getBalance($data);
-                    }
-                }
-              
-            }
-            // // dd($soaRecord);
-            // return view('lms.soa.downloadSoaReport')
-            // ->with('userInfo',$result['userInfo'])
-            // ->with('soaRecord',$soaRecord); 
+                $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
+            } 
 
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                    ->loadView('lms.soa.downloadSoaReport', [
-                        'userInfo' => $result['userInfo'], 
-                        'soaRecord' => $soaRecord,
-                        'from_date' => $request->get('from_date'),
-                        'to_date' => $request->get('to_date')
-                    ],[],'UTF-8');
+                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $result['userInfo'], 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date')],[],'UTF-8');
             return $pdf->download('SoaReport.pdf');          
-          } catch (Exception $ex) {
+        }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
 
     public function soaExcelDownload(Request $request){
-        return response('Under Development!', 200)
-        ->header('Content-Type', 'text/plain');
-        //dd($request);
+        if($request->has('user_id')){
+            $data = $this->getUserLimitDetais($request->user_id);
+            $transactionList = $this->lmsRepo->getSoaList();
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $transactionList->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+
+            if($request->get('customer_id')!= ''){
+                $transactionList->where(function ($query) use ($request) {
+                    $customer_id = trim($request->get('customer_id'));
+                    $query->where('customer_id', '=', "$customer_id");
+                });
+            }
+        }
+        $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(25));
+        $sheet =  new PHPExcel();
+        $sheet->getActiveSheet()->mergeCells('A2:K2');
+        $sheet->getActiveSheet()->mergeCells('A3:K3');
+        $sheet->getActiveSheet()
+        ->getStyle('A2:K3')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A2', 'CAPSAVE FINANCE PRIVATE LIMITED')
+                ->setCellValue('A3', 'Statement Of Account')
+                ->setCellValue('A5', 'Business Name')
+                ->setCellValue('A6', 'Email')
+                ->setCellValue('C5', $data['userInfo']->biz->biz_entity_name)
+                ->setCellValue('C6', $data['userInfo']->email)
+                ->setCellValue('H5', 'Full Name')
+                ->setCellValue('H6', 'Mobile')
+                ->setCellValue('J5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
+                ->setCellValueExplicit('J6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+                
+        
+        $sheet->getActiveSheet()->getStyle('A1:I7')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle("D2")
+            ->applyFromArray(['font' => ['bold'  => true, 'size' => 15]]);
+                
+        $rows = 8;
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A7', 'From Date')
+                ->setCellValue('C7', $request->get('from_date'))
+                ->setCellValue('H7', 'To Date')
+                ->setCellValue('J7', $request->get('to_date'));
+            $rows++;
+        }
+                
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A'.$rows, 'Customer ID')
+                ->setCellValue('B'.$rows, 'Tran Date')
+                ->setCellValue('C'.$rows, 'Value Date')
+                ->setCellValue('D'.$rows, 'Tran Type')
+                ->setCellValue('E'.$rows, 'Batch No')
+                ->setCellValue('F'.$rows, 'Invoice No')
+                ->setCellValue('G'.$rows, 'Narration')
+                ->setCellValue('H'.$rows, 'Currency')
+                ->setCellValue('I'.$rows, 'Debit')
+                ->setCellValue('J'.$rows, 'Credit')
+                ->setCellValue('K'.$rows, 'Balance');
+        
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->getFill()->applyFromArray(array(
+            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+            'startcolor' => [ 'rgb' => "CAD7D3" ],
+            'font' => [ 'bold'  => true ]
+        ));
+              
+        $sheet->getActiveSheet()
+        ->getStyle('I:K')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getActiveSheet()
+        ->getStyle('B:C')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+
+        $rows++;
+
+        foreach($exceldata as $data){
+            foreach ($data as $rowData){
+                $sheet->setActiveSheetIndex(0)
+                    ->setCellValue('A' . $rows, $rowData['customer_id'] ?: '')
+                    ->setCellValue('B' . $rows, $rowData['trans_date'] ?: '')
+                    ->setCellValue('C' . $rows, $rowData['value_date'] ?: '')
+                    ->setCellValue('D' . $rows, $rowData['trans_type'] ?: '')
+                    ->setCellValue('E' . $rows, $rowData['batch_no'] ?: '')
+                    ->setCellValue('F' . $rows, $rowData['invoice_no'] ?: '')
+                    ->setCellValue('G' . $rows, $rowData['narration'] ?: '')
+                    ->setCellValue('H' . $rows, $rowData['currency'] ?: '')
+                    ->setCellValue('I' . $rows, $rowData['debit'] ?: '')
+                    ->setCellValue('J' . $rows, $rowData['credit'] ?: '')
+                    ->setCellValue('K' . $rows, $rowData['balance'] ?: '');
+                
+                $color = 'FFFFFF';
+                if(strtolower($rowData['trans_type']) === 'repayment'){
+                    $color = "F3C714";
+                }elseif($rowData['payment_id']){
+                    $color = "FFE787";
+                }
+                
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->getFill()->applyFromArray(array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'startcolor' => array( 'rgb' => $color )
+                ));
+                $rows++;
+            }
+        }
+        foreach(range('A','K') as $columnID) {
+            $sheet->getActiveSheet()->getColumnDimension($columnID)
+                ->setAutoSize(true);
+        }
+       
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Soa_Excel.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
+        
     }
 
 }
