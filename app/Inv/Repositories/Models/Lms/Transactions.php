@@ -150,7 +150,7 @@ class Transactions extends BaseModel {
 
     public function getDpdAttribute(){
         $to = \Carbon\Carbon::now()->setTimezone(config('common.timezone'));
-        $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', $this->trans_date);
+        $from = \Carbon\Carbon::createFromFormat('Y-m-d', $this->invoiceDisbursed->payment_due_date);
         return $to->diffInDays($from);
     }
 
