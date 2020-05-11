@@ -512,7 +512,7 @@ class Transactions extends BaseModel {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])->whereNotNull('parent_trans_id')->where('entry_type', '=', '1');
             })
             ->orWhere(function ($q) {
-                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN')])->where('entry_type', '=', '1');
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS')])->where('entry_type', '=', '1');
             });
         })->where($where)->orderBy('trans_date', 'ASC')->get(); 
     }

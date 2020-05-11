@@ -127,7 +127,7 @@ class ApiController
      if ($jrnls->trans_type == config('lms.TRANS_TYPE.REVERSE')) {
        $JournalRow['transactions_id'] = NULL;
        $JournalRow['is_debit_credit'] = 'Credit';
-       $JournalRow['ref_no'] = $JournalRow['ref_no'] . '(Need to change)';
+       $JournalRow['ref_no'] = $JournalRow['ref_no'] . '(Req Change)';
        $journalPayments[] = $JournalRow;
      }
     }
