@@ -126,22 +126,24 @@ class ApiController
         $journalPayments[] = $JournalRow;
       }
      if ($jrnls->trans_type == config('lms.TRANS_TYPE.REVERSE')) {
-       $reversalData = $jrnls->getReversalParent->getSettledTxns;
-       foreach ($reversalData as  $rvrsl) {
-         $this->selectedTxnData[] = $rvrsl->trans_id;
-         $this->selectedPaymentData[] = $rvrsl->payment_id;
-         $parentRecord  = $rvrsl->getParentTxn();
-         $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-         $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
-         if (empty($invoice_no)) {
-            $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
-            $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+       $reversalData = $jrnls->getReversalParent->getSettledTxns ?? [];
+       if (!empty($reversalData)) {
+          foreach ($reversalData as  $rvrsl) {
+             $this->selectedTxnData[] = $rvrsl->trans_id;
+             $this->selectedPaymentData[] = $rvrsl->payment_id;
+             $parentRecord  = $rvrsl->getParentTxn();
+             $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+             $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+             if (empty($invoice_no)) {
+                $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+                $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+              }
+             $JournalRow['transactions_id'] = $rvrsl->trans_id;
+             $JournalRow['is_debit_credit'] = 'Credit';
+             $JournalRow['ref_no'] = $invoice_no;
+             $JournalRow['narration'] = 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no;
+             $journalPayments[] = $JournalRow;
           }
-         $JournalRow['transactions_id'] = $rvrsl->trans_id;
-         $JournalRow['is_debit_credit'] = 'Credit';
-         $JournalRow['ref_no'] = $invoice_no;
-         $JournalRow['narration'] = 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no;
-         $journalPayments[] = $JournalRow;
        }
      }
     }
