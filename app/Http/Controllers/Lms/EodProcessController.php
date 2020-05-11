@@ -31,25 +31,25 @@ class EodProcessController extends Controller {
      */
     public function process()
     {
-        try {
-            $message = 'System is not started yet.';
-            $today = \Carbon\Carbon::now();
-            $sys_curr_date = $today->format('Y-m-d H:i:s');
-            $sys_start_date_eq = $today->format('Y-m-d');
-        
-            $whereCond=[];
-            //$whereCond['status'] = 0;
-            //$whereCond['sys_start_date_eq'] = $sys_start_date_eq;
-            $whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq;
-            $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
-            $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';
-            if(!$eod_process_id) return $message;
+        try {    
             
-            $this->startEodProcess($eod_process_id);
-            $message = 'Eod Process is started successfully';
+            $whereCond=[];        
+            $whereCond['is_active'] = 1;
+            $whereCond['status']    = config('lms.EOD_PROCESS_STATUS.STOPPED');
+            $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
+
+            if ($eodProcess) {
+                $transStartDate = $eodProcess->sys_start_date;                        
+                $transEndDate = $eodProcess->sys_end_date;
+                
+                dd($this->checkDisbursal($transStartDate, $transEndDate));
+                $message = "Eod Process checks are done.";
+            } else {
+                $message = "Unable to process the checks, as system is not stopped yet.";
+            }
             
             return $message;
-                                    
+            
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -174,32 +174,22 @@ class EodProcessController extends Controller {
         $this->lmsRepo->saveEodProcess($data, $eod_process_id);        
     }
     
-    protected function checkDisbursal($transStartDate=null, $transEndDate=null)
+    protected function checkDisbursal($transStartDate, $transEndDate)
     {        
-        $whereCond=[];        
-        $whereCond['is_active'] = 1;
-        $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
-        
-        if (is_null($transStartDate)) {
-            $transStartDate = $eodProcess->sys_start_date;
-        }
-        
-        if (is_null($transEndDate)) {
-            $transEndDate = $eodProcess->sys_end_date;
-        }
                         
         $transactions = $this->lmsRepo->checkDisbursalTrans($transStartDate, $transEndDate);
         $invoices=[];   
         $totalTransAmt = 0;
         foreach($transactions as $transaction) {
 
+            //Upfront
+            //$payFreq == '1'
+                        
             //Monthly Case
             //$payFreq == '2'
 
             //Rear End Case
             //$payFreq == '3'
-                  
-            //dd('$invData', $invData);
                         
             if (in_array($transaction->trans_type, [config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')] )
                 || ($transaction->trans_type == config('lms.TRANS_TYPE.INTEREST') && !in_array($transaction->payment_frequency, [2,3]))
@@ -211,8 +201,14 @@ class EodProcessController extends Controller {
         }
         
         $totInvApprAmt = $this->invRepo->getTotalInvApprAmt($invoices);
-            
-        dd($totInvApprAmt, $totalTransAmt);
+                    
+        $result = $totInvApprAmt == $totalTransAmt;
+        
+        if ($result) {                  
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
+            //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS')); 
+        }
+        return $result;
     }
 
 }

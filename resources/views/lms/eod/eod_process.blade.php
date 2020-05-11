@@ -308,7 +308,7 @@ function updateEodStatus() {
 }
 //display_c();
 $(document).ready(function(){    
-    updateEodStatus();    
+    //updateEodStatus();    
 })
 </script>
 @endsection
