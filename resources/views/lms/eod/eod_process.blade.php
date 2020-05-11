@@ -63,7 +63,8 @@
                                 </div>
                             </div>
                             <input type="hidden" value="1" id="sys_start_flag" name="flag">
-                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">                            
+                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">     
+                            <input type="hidden" value="{{ $sys_curr_date }}" name="sys_curr_date">
                         </form>
                         
                         <form id="frm-sys-start" method="post" action="{{ route('save_process') }}" enctype= multipart/form-data>
@@ -128,7 +129,8 @@
                                 </div>
                             </div>
                             <input type="hidden" value="2" name="flag">
-                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">                            
+                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">
+                            <input type="hidden" value="{{ $sys_curr_date }}" name="sys_curr_date">
                         </form>   
                         <div class="row">
                             <div class="col-4">

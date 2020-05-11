@@ -163,5 +163,16 @@ class EodProcess extends BaseModel
         $result = self::select('sys_start_date')->where('is_active', 1)->first();
         return $result ? $result->sys_start_date : null;
     }
+    
+    /**
+     * Get Latest Eod Process
+     * 
+     * @return mixed
+     */
+    public static function getLatestEodProcess()
+    {
+        $result = self::select('*')->orderBy('eod_process_id', 'DESC')->first();
+        return $result ? $result : null;
+    }    
 }
 

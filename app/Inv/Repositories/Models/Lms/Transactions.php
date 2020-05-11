@@ -737,7 +737,7 @@ class Transactions extends BaseModel {
      */
     public static function checkDisbursalTrans($transStartDate, $transEndDate)
     {
-        $query = self::select('transactions.*', 'invoice_disbursed.invoice_id', 'app_prgm_offer.payment_frequency')
+        $query = self::select('transactions.*', 'invoice_disbursed.disbursal_id', 'invoice_disbursed.invoice_id', 'app_prgm_offer.payment_frequency')
                 ->join('invoice_disbursed', 'invoice_disbursed.invoice_disbursed_id', '=', 'transactions.invoice_disbursed_id')
                 ->join('invoice', 'invoice_disbursed.invoice_id', '=', 'invoice.invoice_id')
                 ->join('app_prgm_offer', 'app_prgm_offer.prgm_offer_id', '=', 'invoice.prgm_offer_id')

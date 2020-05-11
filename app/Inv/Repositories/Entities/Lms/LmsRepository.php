@@ -1258,5 +1258,26 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function checkDisbursalTrans($transStartDate, $transEndDate)
     {
         return Transactions::checkDisbursalTrans($transStartDate, $transEndDate);
+    }
+
+    /**
+     * Get Total Disbursed Amount
+     * 
+     * @param array $disbursalIds
+     * @return mixed
+     */
+    public function getTotalDisbursedAmt($disbursalIds)
+    {
+        return Disbursal::getTotalDisbursedAmt($disbursalIds);
+    }
+    
+    /**
+     * Get Latest Eod Process
+     * 
+     * @return mixed
+     */
+    public function getLatestEodProcess()
+    {
+        return EodProcess::getLatestEodProcess();
     }    
 }

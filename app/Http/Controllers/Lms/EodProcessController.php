@@ -49,19 +49,13 @@ class EodProcessController extends Controller {
             }
             
         
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));
-        
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
-        sleep($waitTime);
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'));
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));        
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
+            //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'));
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'));
         
             return $message;
             
@@ -74,8 +68,17 @@ class EodProcessController extends Controller {
     {                
         $today = \Carbon\Carbon::now();
         $sys_curr_date = $today->format('Y-m-d H:i:s');
-        $sys_start_date_eq = $today->format('Y-m-d');
-
+        
+        $latestEod = $this->lmsRepo->getLatestEodProcess();
+        if ($latestEod) {
+            $start = new \Carbon\Carbon($latestEod->sys_start_date);
+            $start = $start->addDays(1);
+            $sys_curr_date = $start->format('Y-m-d H:i:s');
+            $sys_start_date_eq = $start->toDateString();
+        } else {
+            $sys_start_date_eq = $today->format('Y-m-d');
+        }
+        
         $current_date = \Helpers::convertDateTimeFormat($sys_curr_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
         $whereCond=[];
         //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.RUNNING'), config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
@@ -118,7 +121,8 @@ class EodProcessController extends Controller {
                 ->with('eod_process_id', $eod_process_id)
                 ->with('total_hours', $total_hours)
                 ->with('enable_sys_start', $enable_sys_start)
-                ->with('enable_process_start', $enable_process_start);
+                ->with('enable_process_start', $enable_process_start)
+                ->with('sys_curr_date', $sys_curr_date);
                 
                 
     }
@@ -127,10 +131,11 @@ class EodProcessController extends Controller {
     {
         $flag = $request->get('flag');
         $eod_process_id = $request->get('eod_process_id');
-        
+        $sys_curr_date  = $request->get('sys_curr_date');
         try {
                         
-            $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+            //$current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+            $current_datetime = $sys_curr_date;
             $current_user_id = \Auth::user() ? \Auth::user()->user_id : 1;
             
             if ($flag == 1) {                                              
@@ -155,7 +160,8 @@ class EodProcessController extends Controller {
             }
             
             if ($flag == 2) {
-                $this->startEodProcess($eod_process_id);
+                $addlData['sys_curr_date'] = $sys_curr_date;
+                $this->startEodProcess($eod_process_id, $addlData);
                 $message = 'Eod Process is started successfully';
             }
                         
@@ -167,9 +173,10 @@ class EodProcessController extends Controller {
         }
     }
     
-    protected function startEodProcess($eod_process_id)
+    protected function startEodProcess($eod_process_id, $addlData)
     {
-        $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+        //$current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+        $current_datetime = date('Y-m-d', strtotime($addlData['sys_curr_date'])) . " " . date('H:i:s');
         $current_user_id = \Auth::user() ? \Auth::user()->user_id : 1;
 
         $whereCond=[];        
@@ -193,8 +200,11 @@ class EodProcessController extends Controller {
     {        
                         
         $transactions = $this->lmsRepo->checkDisbursalTrans($transStartDate, $transEndDate);
-        $invoices=[];   
+        $invoices = [];
+        $users = [];
         $totalTransAmt = 0;
+        $disbursedTransAmt = 0;
+        $disbursalIds=[];
         foreach($transactions as $transaction) {
 
             //Upfront
@@ -205,23 +215,30 @@ class EodProcessController extends Controller {
 
             //Rear End Case
             //$payFreq == '3'
-                        
-            if (in_array($transaction->trans_type, [config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')] )
-                || ($transaction->trans_type == config('lms.TRANS_TYPE.INTEREST') && !in_array($transaction->payment_frequency, [2,3]))
+             //|| ($transaction->trans_type == config('lms.TRANS_TYPE.INTEREST') && !in_array($transaction->payment_frequency, [2,3])           
+            if (in_array($transaction->trans_type, [config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')] )                
                ) {
                 $totalTransAmt += $transaction->amount;
             }
             
+            if (in_array($transaction->trans_type, [config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]))
+            {
+                $disbursedTransAmt += $transaction->amount;
+            }
+            
             $invoices[] = $transaction->invoice_id;
+            $disbursalIds[] = $transaction->disbursal_id;
         }
         
         $totInvApprAmt = $this->invRepo->getTotalInvApprAmt($invoices);
-                    
-        $result = $totInvApprAmt == $totalTransAmt;
+        $disbursedAmt = $this->lmsRepo->getTotalDisbursedAmt($disbursalIds);
+        
+        dd($disbursalIds, $disbursedAmt, $disbursedTransAmt);
+        
+        $result = $disbursedTransAmt == $disbursedAmt && $totInvApprAmt == $totalTransAmt;
         
         if ($result) {                  
-            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
-            //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS')); 
+            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));           
         }
         return $result;
     }
