@@ -158,8 +158,8 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['payment_id'] = $data->payment_id;
                 $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
-                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->parenttransdate));
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->created_at));
+                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->trans_date));
                 $preparedData[$key][$k]['trans_type'] = trim($data->transname);
                 $preparedData[$key][$k]['batch_no'] = $data->batchNo;
                 $preparedData[$key][$k]['invoice_no'] = $data->invoiceno;
