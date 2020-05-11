@@ -126,32 +126,79 @@ class ApiController
         $journalPayments[] = $JournalRow;
       }
      if ($jrnls->trans_type == config('lms.TRANS_TYPE.REVERSE')) {
-       $reversalData = $jrnls->getReversalParent->getSettledTxns ?? [];
-       if (!empty($reversalData)) {
-          foreach ($reversalData as  $rvrsl) {
-             $this->selectedTxnData[] = $rvrsl->trans_id;
-             $this->selectedPaymentData[] = $rvrsl->payment_id;
-             $parentRecord  = $rvrsl->getParentTxn();
-             $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-             $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
-             if (empty($invoice_no)) {
-                $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
-                $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
-              }
-             $JournalRow['transactions_id'] = $rvrsl->trans_id;
-             $JournalRow['is_debit_credit'] = 'Credit';
-             $JournalRow['ref_no'] = $invoice_no;
-             $JournalRow['narration'] = 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no;
-             $journalPayments[] = $JournalRow;
-          }
-       }
+        $reversalPayment = $this->createReversalData($jrnls, $batch_no);
+        $journalPayments = array_merge($journalPayments, $reversalPayment);
      }
     }
     return $journalPayments;
   }
 
-  private function createReversalData($reversalData, $batch_no) {
-    # code...
+  private function createReversalData($rvrslRow, $batch_no) {
+    $reversalPayment = [];
+    $settledTransactoionsFromReversal = $rvrslRow->getReversalParent->getSettledTxns ?? [];
+    if (!empty($settledTransactoionsFromReversal)) {
+      foreach ($settledTransactoionsFromReversal as  $rvrsl) {
+        $accountDetails = $rvrsl->userRelation->companyBankDetails ?? NULL;
+        if (empty($accountDetails)) {
+          continue;
+        }
+        $bizName = $rvrsl->user->biz_name;
+        $trans_type_name = $rvrsl->getTransNameAttribute();
+        $invoice_no = $rvrsl->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+        $invoice_date = $rvrsl->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+        if (empty($invoice_no)) {
+            $invoice_no = $rvrsl->invoiceDisbursed->invoice->invoice_no ?? NULL;
+            $invoice_date = $rvrsl->invoiceDisbursed->invoice->invoice_date ?? NULL;
+        }
+        $inst_no = $rvrsl->refundReq->tran_no ?? NULL;
+        $inst_date = $rvrsl->refundReq->actual_refund_date ?? NULL;
+        if (!empty($rvrsl->parent_trans_id)) {
+          $parentRecord  = $rvrsl->getParentTxn();
+          if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+              if (empty($invoice_no)) {
+                $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+                $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+              }
+          }
+          if (empty($inst_no)) {
+                $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
+                $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
+          }
+        }
+        $this->selectedTxnData[] = $rvrsl->trans_id;
+        $this->selectedPaymentData[] = $rvrsl->payment_id;
+        $reversalRow = [
+            'batch_no' =>  $batch_no,
+            'transactions_id' =>  $rvrsl->trans_id,
+            'voucher_no' => $this->voucherNo,
+            'voucher_type' => 'Journal',
+            'voucher_date' => $rvrsl->trans_date,
+            'is_debit_credit' => $rvrsl->entry_type == 1 ? 'Credit' : 'Debit',
+            'trans_type' =>  $trans_type_name,
+            'invoice_no' =>   $invoice_no,
+            'invoice_date' =>  $invoice_date,
+            'ledger_name' =>  $bizName,
+            'amount' =>  $rvrsl->amount,
+            'ref_no' =>  $invoice_no,
+            'ref_amount' =>  $rvrsl->amount,
+            'acc_no' =>  $accountDetails->acc_no ?? '',
+            'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+            'bank_name' =>  $accountDetails->bank->bank_name ?? '',
+            'cheque_amount' =>  '',
+            'cross_using' => '',
+            'mode_of_pay' => '',
+            'inst_no' =>  NULL,
+            'inst_date' =>  NULL,
+            'favoring_name' =>  NULL,
+            'remarks' => NULL,
+            'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+       ];
+       $reversalPayment[] = $reversalRow;
+      }
+    }
+    return $reversalPayment;
   }
 
   private function createRefundData($refundData, $batch_no) {
