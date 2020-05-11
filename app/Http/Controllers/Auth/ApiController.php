@@ -36,7 +36,7 @@ class ApiController
         continue;
       }
       $this->voucherNo = $this->voucherNo + 1;
-      $userName = $jrnls->user->f_name. ' ' . $jrnls->user->m_name .' '. $jrnls->user->l_name;
+      $userName = $jrnls->user->biz_name;
       $trans_type_name = $jrnls->getTransNameAttribute();
       $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
       $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->created_at ?? NULL;
@@ -126,13 +126,30 @@ class ApiController
         $journalPayments[] = $JournalRow;
       }
      if ($jrnls->trans_type == config('lms.TRANS_TYPE.REVERSE')) {
-       $JournalRow['transactions_id'] = NULL;
-       $JournalRow['is_debit_credit'] = 'Credit';
-       $JournalRow['ref_no'] = $JournalRow['ref_no'] . '(Req Change)';
-       $journalPayments[] = $JournalRow;
+       $reversalData = $jrnls->getReversalParent->getSettledTxns;
+       foreach ($reversalData as  $rvrsl) {
+         $this->selectedTxnData[] = $rvrsl->trans_id;
+         $this->selectedPaymentData[] = $rvrsl->payment_id;
+         $parentRecord  = $rvrsl->getParentTxn();
+         $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+         $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+         if (empty($invoice_no)) {
+            $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+          }
+         $JournalRow['transactions_id'] = $rvrsl->trans_id;
+         $JournalRow['is_debit_credit'] = 'Credit';
+         $JournalRow['ref_no'] = $invoice_no;
+         $JournalRow['narration'] = 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no;
+         $journalPayments[] = $JournalRow;
+       }
      }
     }
     return $journalPayments;
+  }
+
+  private function createReversalData($reversalData, $batch_no) {
+    # code...
   }
 
   private function createRefundData($refundData, $batch_no) {
@@ -143,7 +160,7 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
-      $userName = $rfnd->user->f_name. ' ' . $rfnd->user->m_name .' '. $rfnd->user->l_name;
+      $userName = $rfnd->user->biz_name;
       $trans_type_name = $rfnd->getTransNameAttribute();
       $invoice_no = $rfnd->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
       $invoice_date = $rfnd->userinvoicetrans->getUserInvoice->created_at ?? NULL;
@@ -231,7 +248,7 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
-      $userName = $dsbrsl->user->f_name. ' ' . $dsbrsl->user->m_name .' '. $dsbrsl->user->l_name;
+      $userName = $dsbrsl->user->biz_name;
       $invoice_no = $dsbrsl->invoiceDisbursed->invoice->invoice_no ?? NULL;
       $invoice_date = $dsbrsl->invoiceDisbursed->invoice->invoice_date ?? NULL;
       $disburse_amt = $dsbrsl->invoiceDisbursed->disburse_amt;
@@ -330,7 +347,7 @@ class ApiController
     foreach($receiptData as $rcpt){
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
-     $userName = $rcpt->user->f_name. ' ' . $rcpt->user->m_name .' '. $rcpt->user->l_name;
+     $userName = $rcpt->user->biz_name;
      $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
      if (empty($accountDetails)) {
         continue;

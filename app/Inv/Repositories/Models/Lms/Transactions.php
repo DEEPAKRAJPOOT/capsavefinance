@@ -500,6 +500,10 @@ class Transactions extends BaseModel {
         return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
+    public function getReversalParent() {
+        return $this->belongsTo('App\Inv\Repositories\Models\Payment', 'trans_id', 'parent_trans_id');
+    }
+
     public static function getJournalTxnTally(array $where = []){
         return self::with('transType')->where(function ($query) {
             $query->whereHas('transType', function($q) { 
