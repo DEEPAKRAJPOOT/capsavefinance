@@ -169,10 +169,15 @@ class EodProcess extends BaseModel
      * 
      * @return mixed
      */
-    public static function getLatestEodProcess()
+    public static function getLatestEodProcess($whereCond=[])
     {
-        $result = self::select('*')->orderBy('eod_process_id', 'DESC')->first();
+        $query = self::select('*');
+        if (count($whereCond)) {
+            $query->where($whereCond);
+        }
+        $query->orderBy('eod_process_id', 'DESC');
+        $result = $query->first();
         return $result ? $result : null;
-    }    
+    }
 }
 

@@ -1425,7 +1425,8 @@ class Helper extends PaypalHelper
         $whereCond=[];
         $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
         //$whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
-        $whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        //$whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        $whereCond['is_active'] = 1;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {            
             return true;
@@ -1450,10 +1451,12 @@ class Helper extends PaypalHelper
         $whereCond=[];
         //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
         //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
-        $whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
+        //$whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
+        $whereCond['is_active'] = 1;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {
             $eod_process_id = $eodProcess->eod_process_id;
+            $sys_start_date = $eodProcess->sys_start_date;
             $lmsRepo->saveEodProcessLog($data, $eod_process_id);
             
             $eod_status = '';
@@ -1480,7 +1483,8 @@ class Helper extends PaypalHelper
             if ($eod_status) {
                 $eodData = [];
                 $eodData['status'] = $eod_status;
-                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
+                //$eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
+                $eodData['eod_process_end'] = date('Y-m-d', strtotime($sys_start_date)) . " " . date('H:i:s');
                 $lmsRepo->saveEodProcess($eodData, $eod_process_id);
             }
            
