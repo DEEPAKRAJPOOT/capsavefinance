@@ -1236,4 +1236,48 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getMaxDpdTransaction($userId, $transType){
 		return Transactions::getMaxDpdTransaction($userId, $transType);
 	}
+        
+    /**
+     * Get System Start Date
+     * 
+     * @return timestamp
+     */
+    public function getSysStartDate()
+    {
+        return EodProcess::getSysStartDate();
+    } 
+    
+    /**
+     * Get Disbursal transactions
+     * 
+     * @param string $transStartDate
+     * @param string $transEndDate
+     * 
+     * @return mixed
+     */
+    public function checkDisbursalTrans($transStartDate, $transEndDate)
+    {
+        return Transactions::checkDisbursalTrans($transStartDate, $transEndDate);
+    }
+
+    /**
+     * Get Total Disbursed Amount
+     * 
+     * @param array $disbursalIds
+     * @return mixed
+     */
+    public function getTotalDisbursedAmt($disbursalIds)
+    {
+        return Disbursal::getTotalDisbursedAmt($disbursalIds);
+    }
+    
+    /**
+     * Get Latest Eod Process
+     * 
+     * @return mixed
+     */
+    public function getLatestEodProcess($whereCond=[])
+    {
+        return EodProcess::getLatestEodProcess($whereCond);
+    }    
 }
