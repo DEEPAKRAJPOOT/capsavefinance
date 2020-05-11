@@ -155,11 +155,7 @@ class Transactions extends BaseModel {
             $from = date('Y-m-d',strtotime($this->invoiceDisbursed->payment_due_date));
         }
         elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            if($this->invoiceDisbursed->invoice->program_offer->payment_frequency <> 1){
-                $from = date('Y-m-d',strtotime($this->trans_date));
-            }else{
-                $from = date('Y-m-d',strtotime($this->invoiceDisbursed->payment_due_date));
-            }
+            $from = date('Y-m-d',strtotime($this->trans_date));
         }
 
         return $to->diffInDays($from);
