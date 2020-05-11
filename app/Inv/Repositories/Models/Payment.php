@@ -66,6 +66,7 @@ class Payment extends BaseModel {
         'is_settled',
         'is_manual',
         'is_refundable',
+        'generated_by',
         'created_at',
         'created_by',
         'updated_at',
@@ -192,6 +193,16 @@ class Payment extends BaseModel {
                 break;
         }
         return $attr;
+    }
+
+    public static function getPaymentReceipt(array $where = []) {
+        return self::with('userRelation')->where(['is_settled' => 1, 'generated_by' => 0, 'is_refundable' => 1, 'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'), 'action_type' => 1])
+        ->where($where)
+        ->get();
+    }
+
+    public function getSettledTxns() {
+       return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id')->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT'), config('lms.TRANS_TYPE.REFUND')]);
     }
     
     /*** get all transaction  **/

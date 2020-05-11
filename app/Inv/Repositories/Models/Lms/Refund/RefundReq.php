@@ -67,6 +67,17 @@ class RefundReq extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
     } 
 
+    public static function getPaymentRefund(array $where = []) {
+        return self::select('lms_refund_req.*', 'transactions.user_id')
+            ->join('lms_refund_req_trans', 'lms_refund_req.refund_req_id', '=', 'lms_refund_req_trans.refund_req_id')
+            ->join('transactions', 'lms_refund_req_trans.refund_trans_id', '=', 'transactions.trans_id')
+            ->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])
+            ->where('entry_type', '=', 0)
+            ->where($where)
+            ->groupBy('lms_refund_req.refund_req_id')
+            ->get();
+    }
+
     public function batch(){
         return $this->belongsTo(RefundReqBatch::class,'refund_req_batch_id','refund_req_batch_id');
     }

@@ -152,11 +152,14 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
-//            dd($anchor_id,$program_id);
+
+            $programData = $this->appRepo->getProgram($program_id);
+            $programStatus = ($programData)? $programData->status : 0;
+            // dd($programStatus);
             \Session::put('list_program_id', $program_id);
 
             $is_prg_list = $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
-            return view('backend.lms.show_sub_program', compact('anchor_id', 'program_id', 'redirectUrl'));
+            return view('backend.lms.show_sub_program', compact('anchor_id', 'program_id', 'redirectUrl', 'programStatus'));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }

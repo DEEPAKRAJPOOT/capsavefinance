@@ -3958,13 +3958,13 @@ class DataRenderer implements DataProviderInterface
             ->addColumn(
                 'value_date',
                 function ($trans) {
-                    return date('d-m-Y',strtotime($trans->parenttransdate));
+                    return date('d-m-Y',strtotime($trans->trans_date));
                 }
             )
             ->editColumn(
                 'trans_date',
                 function ($trans) {
-                    return date('d-m-Y',strtotime($trans->trans_date));
+                    return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
                 }
             )
             ->editColumn(
@@ -4609,7 +4609,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'amount_type',
                         function ($dataRecords) {
-                        return $dataRecords->entry_type == '1' ? 'Credit' : 'Debit';
+                        return $dataRecords->entry_type;
                     }) 
                     ->editColumn(
                         'reference_no',
@@ -4629,7 +4629,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'voucher_code',
                         function ($dataRecords) {
-                        return $dataRecords->voucher_code;
+                        return sprintf('%04d', $dataRecords->voucher_no);
                     })      
                     ->editColumn(
                         'mode_of_pay',
@@ -5619,7 +5619,7 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay'])
             ->addColumn('disb_date', function($trans){
-                return Carbon::parse($trans->trans_date)->format('d-m-Y');
+                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
             ->addColumn('invoice_no', function($trans){
                 if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){

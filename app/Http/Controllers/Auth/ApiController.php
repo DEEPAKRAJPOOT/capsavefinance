@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Inv\Repositories\Models\FinanceModel;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
 use App\Libraries\Bsa_lib;
 use App\Libraries\Perfios_lib;
 use Storage;
@@ -17,16 +18,468 @@ use Storage;
  */
 class ApiController
 {
-
 	//protected $secret_key = "Rentalpha__vkzARY";
   protected $secret_key = "0702f2c9c1414b70efc1e69f2ff31af0";
   protected $download_xlsx = true;
-	
+  protected $voucherNo = 0;
+  protected $selectedTxnData = [];
+  protected $selectedPaymentData = [];
 	function __construct(){
 		
 	}
 
-  public function tally_entry(){
+  private function createJournalData($journalData, $batch_no) {
+    $journalPayments = [];
+    foreach ($journalData as $jrnls) {
+      $accountDetails = $jrnls->userRelation->companyBankDetails ?? NULL;
+      if (empty($accountDetails)) {
+        continue;
+      }
+      $this->voucherNo = $this->voucherNo + 1;
+      $userName = $jrnls->user->f_name. ' ' . $jrnls->user->m_name .' '. $jrnls->user->l_name;
+      $trans_type_name = $jrnls->getTransNameAttribute();
+      $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+      $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+      if (empty($invoice_no)) {
+          $invoice_no = $jrnls->invoiceDisbursed->invoice->invoice_no ?? NULL;
+          $invoice_date = $jrnls->invoiceDisbursed->invoice->invoice_date ?? NULL;
+      }
+      $inst_no = $jrnls->refundReq->tran_no ?? NULL;
+      $inst_date = $jrnls->refundReq->actual_refund_date ?? NULL;
+      if (!empty($jrnls->parent_trans_id)) {
+        $parentRecord  = $jrnls->getParentTxn();
+        if (empty($invoice_no)) {
+            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            }
+        }
+        if (empty($inst_no)) {
+              $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
+              $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
+        }
+      }
+      $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
+      $this->selectedTxnData[] = $jrnls->trans_id;
+      $JournalRow = [
+          'batch_no' =>  $batch_no,
+          'transactions_id' =>  $jrnls->trans_id,
+          'voucher_no' => $this->voucherNo,
+          'voucher_type' => 'Journal',
+          'voucher_date' => $jrnls->trans_date,
+          'is_debit_credit' =>  $entry_type,
+          'trans_type' =>  $trans_type_name,
+          'invoice_no' =>   $invoice_no,
+          'invoice_date' =>  $invoice_date,
+          'ledger_name' =>  $userName,
+          'amount' =>  $jrnls->amount,
+          'ref_no' =>  $invoice_no,
+          'ref_amount' =>  $jrnls->amount,
+          'acc_no' =>  '',
+          'ifsc_code' =>  '',
+          'bank_name' =>  '',
+          'cheque_amount' =>  '',
+          'cross_using' => '',
+          'mode_of_pay' => '',
+          'inst_no' =>  '',
+          'inst_date' =>  '',
+          'favoring_name' =>  '',
+          'remarks' => '',
+          'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+     ];
+     $gstData = [];
+     if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
+        $gstData['base_amount'] = $jrnls->userinvoicetrans->base_amount;
+        if ($jrnls->userinvoicetrans->sgst_amount != 0) {
+            $gstData['sgst'] = $jrnls->userinvoicetrans->sgst_amount;
+        } 
+        if ($jrnls->userinvoicetrans->cgst_amount != 0) {
+            $gstData['cgst'] = $jrnls->userinvoicetrans->cgst_amount;
+        } 
+        if ($jrnls->userinvoicetrans->igst_amount != 0) {
+            $gstData['igst'] = $jrnls->userinvoicetrans->igst_amount;
+        }
+        foreach ($gstData as $gst_key => $gst_val) {
+           $gst_trans_amount = $gst_val;
+          switch ($gst_key) {
+            case 'base_amount':
+              $gst_trans_type = $trans_type_name;
+              break;
+            case 'sgst':
+              $gst_trans_type = 'SGST + CGST';
+              break;
+            case 'cgst':
+              $gst_trans_type = 'SGST + CGST';
+              break;
+            case 'igst':
+              $gst_trans_type = 'IGST';
+              break;
+          }
+          $JournalRow['trans_type'] =  $gst_trans_type;
+          $JournalRow['amount'] =  $gst_trans_amount;
+          $JournalRow['ref_amount'] =  $gst_trans_amount;
+          $journalPayments[] = $JournalRow;
+        }
+      }else{
+        $journalPayments[] = $JournalRow;
+      }
+     if ($jrnls->trans_type == config('lms.TRANS_TYPE.REVERSE')) {
+       $JournalRow['transactions_id'] = NULL;
+       $JournalRow['is_debit_credit'] = 'Credit';
+       $JournalRow['ref_no'] = $JournalRow['ref_no'] . '(Req Change)';
+       $journalPayments[] = $JournalRow;
+     }
+    }
+    return $journalPayments;
+  }
+
+  private function createRefundData($refundData, $batch_no) {
+    $refundPayment = [];
+    foreach($refundData as $rfnd){
+      $this->voucherNo = $this->voucherNo + 1;
+      $accountDetails = $rfnd->userRelation->companyBankDetails ?? NULL;
+      if (empty($accountDetails)) {
+        continue;
+      }
+      $userName = $rfnd->user->f_name. ' ' . $rfnd->user->m_name .' '. $rfnd->user->l_name;
+      $trans_type_name = $rfnd->getTransNameAttribute();
+      $invoice_no = $rfnd->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+      $invoice_date = $rfnd->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+      $inst_no = $rfnd->refundReq->tran_no ?? NULL;
+      $inst_date = $rfnd->refundReq->actual_refund_date ?? NULL;
+      if (!empty($rfnd->parent_trans_id)) {
+        $parentRecord  = $rfnd->getParentTxn();
+        if (empty($invoice_no)) {
+            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            }
+        }
+        if (empty($inst_no)) {
+              $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
+              $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
+        }
+      }
+      $this->selectedTxnData[] = $rfnd->trans_id;
+      $CustomerRow = [
+          'batch_no' =>  $batch_no,
+          'transactions_id' =>  $rfnd->trans_id,
+          'voucher_no' => $this->voucherNo,
+          'voucher_type' => 'Payment',
+          'voucher_date' => $rfnd->trans_date,
+          'is_debit_credit' =>  'Debit',
+          'trans_type' =>  $trans_type_name,
+          'invoice_no' =>   $invoice_no,
+          'invoice_date' =>  $invoice_date,
+          'ledger_name' =>  $userName,
+          'amount' =>  $rfnd->amount,
+          'ref_no' =>  $invoice_no,
+          'ref_amount' =>  $rfnd->amount,
+          'acc_no' =>  '',
+          'ifsc_code' =>  '',
+          'bank_name' =>  '',
+          'cheque_amount' =>  '',
+          'cross_using' => '',
+          'mode_of_pay' => '',
+          'inst_no' =>  '',
+          'inst_date' =>  '',
+          'favoring_name' =>  '',
+          'remarks' => '',
+          'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+     ];
+     $refundPayment[] = $CustomerRow;
+     $BankRow = [
+          'batch_no' =>  $batch_no,
+          'transactions_id' =>  NULL,
+          'voucher_no' => $this->voucherNo,
+          'voucher_type' => 'Payment',
+          'voucher_date' => NULL,
+          'is_debit_credit' =>  'Credit',
+          'trans_type' =>  '',
+          'invoice_no' =>   '',
+          'invoice_date' =>  NULL,
+          'ledger_name' =>  $accountDetails->bank->bank_name,
+          'amount' =>  $rfnd->amount,
+          'ref_no' =>  $invoice_no,
+          'ref_amount' =>  $rfnd->amount,
+          'acc_no' =>  $accountDetails->acc_no ?? '',
+          'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+          'bank_name' =>  $accountDetails->bank->bank_name ?? '',
+          'cheque_amount' =>  '',
+          'cross_using' => '',
+          'mode_of_pay' => 'e-Fund-Transfer',
+          'inst_no' =>  $inst_no,
+          'inst_date' =>  $inst_date,
+          'favoring_name' =>  $userName,
+          'remarks' => '',
+          'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+     ];
+     $refundPayment[] = $BankRow;
+    }
+    return $refundPayment;
+  }  
+
+  private function createDisbursalData($disbursalData, $batch_no) {
+    $disbursalPayment = [];
+    foreach($disbursalData as $dsbrsl){
+      $this->voucherNo = $this->voucherNo + 1;
+      $accountDetails = $dsbrsl->userRelation->companyBankDetails ?? NULL;
+      if (empty($accountDetails)) {
+        continue;
+      }
+      $userName = $dsbrsl->user->f_name. ' ' . $dsbrsl->user->m_name .' '. $dsbrsl->user->l_name;
+      $invoice_no = $dsbrsl->invoiceDisbursed->invoice->invoice_no ?? NULL;
+      $invoice_date = $dsbrsl->invoiceDisbursed->invoice->invoice_date ?? NULL;
+      $disburse_amt = $dsbrsl->invoiceDisbursed->disburse_amt;
+      $total_interest = $dsbrsl->invoiceDisbursed->total_interest;
+      $cheque_amount = round($disburse_amt - $total_interest, 2);
+      $this->selectedTxnData[] = $dsbrsl->trans_id;
+      $CustomerRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  $dsbrsl->trans_id,
+              'voucher_no' => $this->voucherNo,
+              'voucher_type' => 'Payment',
+              'voucher_date' => $dsbrsl->trans_date,
+              'is_debit_credit' =>  'Debit',
+              'trans_type' =>  $dsbrsl->getTransNameAttribute(),
+              'invoice_no' =>   $invoice_no,
+              'invoice_date' =>  $invoice_date,
+              'ledger_name' =>  $userName,
+              'amount' =>  $disburse_amt,
+              'ref_no' =>  $invoice_no,
+              'ref_amount' =>  $disburse_amt,
+              'acc_no' =>  '',
+              'ifsc_code' =>  '',
+              'bank_name' =>  '',
+              'cheque_amount' =>  '',
+              'cross_using' => '',
+              'mode_of_pay' => '',
+              'inst_no' =>  '',
+              'inst_date' =>  NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
+              'narration' => 'Being  Payment Disbursed towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+     ];
+     $disbursalPayment[] = $CustomerRow;
+     $BankRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  NULL,
+              'voucher_no' => $this->voucherNo,
+              'voucher_type' => 'Payment',
+              'voucher_date' => NULL,
+              'is_debit_credit' =>  'Credit',
+              'trans_type' =>  $dsbrsl->getTransNameAttribute(),
+              'invoice_no' =>   $invoice_no,
+              'invoice_date' =>  $invoice_date,
+              'ledger_name' =>  $accountDetails->bank->bank_name,
+              'amount' =>  $cheque_amount,
+              'ref_no' =>  $invoice_no,
+              'ref_amount' =>  $cheque_amount,
+              'acc_no' =>  $accountDetails->acc_no ?? '',
+              'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+              'bank_name' =>  $accountDetails->bank->bank_name ?? '',
+              'cheque_amount' =>  $cheque_amount,
+              'cross_using' => '',
+              'mode_of_pay' => 'e-Fund-Transfer',
+              'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
+              'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
+              'favoring_name' =>  $userName,
+              'remarks' => '',
+              'narration' => 'Being  Payment Disbursed towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+     ];
+     $disbursalPayment[] = $BankRow;
+     if (!empty($total_interest) && $total_interest > 0) {
+       $InterestRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  NULL,
+              'voucher_no' => $this->voucherNo,
+              'voucher_type' => 'Payment',
+              'voucher_date' => NULL,
+              'is_debit_credit' =>  'Credit',
+              'trans_type' =>  'Interest',
+              'invoice_no' =>   $invoice_no,
+              'invoice_date' =>  $invoice_date,
+              'ledger_name' =>  'Interest',
+              'amount' =>  $total_interest,
+              'ref_no' =>  $invoice_no,
+              'ref_amount' =>  $total_interest,
+              'acc_no' =>  '',
+              'ifsc_code' =>  '',
+              'bank_name' =>  '',
+              'cheque_amount' =>  '',
+              'cross_using' => '',
+              'mode_of_pay' => '',
+              'inst_no' =>  '',
+              'inst_date' =>  NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
+              'narration' => 'Being Interest Booked towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+     ];
+     $disbursalPayment[] = $InterestRow;
+     }
+    }
+    return $disbursalPayment;
+  }
+
+  private function createReceiptData($receiptData, $batch_no) {
+    $receiptPayment = [];
+    foreach($receiptData as $rcpt){
+     $this->voucherNo = $this->voucherNo + 1;
+     $settledTransactoions =  $rcpt->getSettledTxns;
+     $userName = $rcpt->user->f_name. ' ' . $rcpt->user->m_name .' '. $rcpt->user->l_name;
+     $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
+     if (empty($accountDetails)) {
+        continue;
+     }
+     $this->selectedPaymentData[] = $rcpt->payment_id;
+     $BankRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  NULL,
+              'voucher_no' => $this->voucherNo,
+              'voucher_type' => 'Receipt',
+              'voucher_date' => $rcpt->date_of_payment,
+              'is_debit_credit' =>  'Debit',
+              'trans_type' =>  'Re-Payment',
+              'invoice_no' =>   '',
+              'invoice_date' =>  NULL,
+              'ledger_name' =>  $accountDetails->bank->bank_name,
+              'amount' =>  $rcpt->amount,
+              'ref_no' =>  '',
+              'ref_amount' =>  $rcpt->amount,
+              'acc_no' =>  $accountDetails->acc_no ?? '',
+              'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
+              'bank_name' =>  $accountDetails->bank->bank_name ?? '',
+              'cheque_amount' =>  '',
+              'cross_using' => '',
+              'mode_of_pay' => 'e-Fund-Transfer',
+              'inst_no' =>  '',
+              'inst_date' =>  '',
+              'favoring_name' =>  $userName,
+              'remarks' => '',
+              'narration' => 'Being Repayment towards Batch no '. $batch_no,
+     ];
+     $receiptPayment[] = $BankRow;
+     if (!empty($settledTransactoions)) {
+       foreach ($settledTransactoions as $stldTxn) {
+          $trans_type_name = $stldTxn->getTransNameAttribute();
+          $invoice_no = $stldTxn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+          $invoice_date = $stldTxn->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+          if (empty($invoice_no) && !empty($stldTxn->parent_trans_id)) {
+            $parentRecord  = $stldTxn->getParentTxn();
+            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            }
+          }
+          $this->selectedTxnData[] = $stldTxn->trans_id;
+          $settledRow = [
+              'batch_no' =>  $batch_no,
+              'transactions_id' =>  $stldTxn->trans_id,
+              'voucher_no' => $this->voucherNo,
+              'voucher_type' => 'Receipt',
+              'voucher_date' => $stldTxn->trans_date,
+              'is_debit_credit' =>  'Credit',
+              'trans_type' =>  $trans_type_name,
+              'invoice_no' =>   $invoice_no,
+              'invoice_date' =>  $invoice_date,
+              'ledger_name' =>  $userName,
+              'amount' =>  $stldTxn->amount,
+              'ref_no' =>  $invoice_no,
+              'ref_amount' =>  $stldTxn->amount,
+              'acc_no' =>  '',
+              'ifsc_code' =>  '',
+              'bank_name' =>  '',
+              'cheque_amount' =>  '',
+              'cross_using' => '',
+              'mode_of_pay' => '',
+              'inst_no' =>  '',
+              'inst_date' =>  '',
+              'favoring_name' =>  '',
+              'remarks' => '',
+              'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          ];
+          $receiptPayment[] = $settledRow;
+       }
+     }
+    }
+    return $receiptPayment;
+  }
+
+  public function tally_entry() {
+    $response = array(
+      'status' => 'failure',
+      'message' => 'Request method not allowed to execute the script.',
+    );
+    if (strpos(php_sapi_name(), 'cli') !== false) {
+        $response['sapi'] = php_sapi_name();
+        return $this->_setResponse($response, 405);
+    }
+    $latestRecord = \DB::select('select * from rta_tally_entry order by tally_entry_id DESC limit 1');
+    $lastVoucherNo = 0;
+    if (!empty($latestRecord)) {
+      $lastVoucherNo = $latestRecord[0]->voucher_no ?? 0;
+    }
+    $this->voucherNo = $this->voucherNo + 1;
+    $batch_no = _getRand(15);
+    $where = ['is_posted_in_tally' => '0'];
+    $journalData = Transactions::getJournalTxnTally($where);
+    $disbursalData = Transactions::getDisbursalTxnTally($where);
+    $refundData = Transactions::getRefundTxnTally($where);
+    $receiptData = Payment::getPaymentReceipt($where);
+
+    $journalArray = $this->createJournalData($journalData, $batch_no);
+    $disbursalArray = $this->createDisbursalData($disbursalData, $batch_no);
+    $receiptArray = $this->createReceiptData($receiptData, $batch_no);
+    $refundArray = $this->createRefundData($refundData, $batch_no);
+    $tally_data = array_merge($disbursalArray, $journalArray , $receiptArray, $refundArray);
+    try {
+        if (empty($tally_data)) {
+           $response['message'] =  'No Records are selected to Post in tally.';
+           return $response;
+        }
+        $res = \DB::table('tally_entry')->insert($tally_data);
+    } catch (\Exception $e) {
+        $errorInfo  = $e->errorInfo;
+        $res = $errorInfo;
+    }
+    $selectedTxnData = $this->selectedTxnData;
+    $selectedPaymentData = $this->selectedPaymentData;
+    if ($res === true) {
+      $totalTxnRecords = 0;
+      if (!empty($selectedTxnData)) {
+        $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedTxnData) . ')');
+      }
+      $totalPaymentsRecords = 0;
+      if (!empty($selectedPaymentData)) {
+        $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
+      }
+      $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
+      $recordsTobeInserted = count($selectedTxnData) + count($selectedPaymentData);
+      if (empty($totalRecords)) {
+        $response['message'] =  'Some error occured. No Record can be posted in tally.';
+      }else{
+        $response['status'] = 'success';
+        $batchData = [
+          'batch_no' => $batch_no,
+          'record_cnt' => $recordsTobeInserted,
+          'created_at' => date('Y-m-d H:i:s'),
+        ];
+        $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
+        $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
+      }
+    }else{
+      $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in tally.';
+    }
+    return $response;
+  }
+
+  public function tally_entryy(){
     $paymentRequired  = false;
     $response = array(
       'status' => 'failure',
@@ -36,7 +489,7 @@ class ApiController
         $response['sapi'] = php_sapi_name();
         return $this->_setResponse($response, 405);
     }
-    $where = ['is_posted_in_tally' => '0']; //, 'is_invoice_generated' => '1'
+    $where = ['is_posted_in_tally' => '0', 'user_id' => 607]; //, 'is_invoice_generated' => '1'
     $txnsData = Transactions::getTallyTxns($where);
     $paymentData = new Collection;
     if ($paymentRequired) {

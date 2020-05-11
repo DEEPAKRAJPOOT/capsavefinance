@@ -43,12 +43,12 @@
                                         <table class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">                                                   
-                                                    <th>Trans Date</th>       
+                                                    {{-- <th>Trans Date</th> --}}
+                                                    <th>Vlaue Date</th>       
                                                     <th>Invoice No</th>       
                                                     <th>Trans Type</th>		
                                                     <th>Total Repay Amt</th>
                                                     <th>Outstanding Amt</th>
-                                                    <th>Payment Date</th>
                                                     <th>Pay</th>
                                                     <th>Validated</th>
                                                 </tr>
@@ -56,12 +56,12 @@
                                             <tbody>
                                             @foreach ($transactions as $trans)
                                                 <tr>
-                                                    <td>{{ Carbon\Carbon::parse($trans['trans_date'])->format('d-m-Y') }}</td>
+                                                    {{-- <td>{{ Carbon\Carbon::now()->format('d-m-Y') }}</td> --}}
+                                                    <td>{{ Carbon\Carbon::parse($trans['value_date'])->format('d-m-Y') }}</td>
                                                     <td>{{ $trans['invoice_no'] }}</td>
                                                     <td>{{ $trans['trans_name'] }}</td>
                                                     <td>₹ {{ number_format($trans['total_repay_amt'],2) }}</td>
                                                     <td>₹ {{ number_format($trans['outstanding_amt'],2) }}</td>
-                                                    <td>{{ Carbon\Carbon::parse($trans['payment_date'])->format('d-m-Y') }}</td>
                                                     <td>₹ {{ number_format($trans['pay'],2) }}</td>
                                                     <td>
                                                         @if($trans['is_valid'] == 1)

@@ -113,9 +113,9 @@
                     </tr>
                     <tr>
                         <td class="text-left" width="30%"><b>From Date</b></td>
-                        <td>06/05/2020</td> 
+                        <td>{{$from_date}}</td> 
                         <td class="text-left" width="30%"><b>To Date</b></td>
-                        <td>20/05/2020</td> 
+                        <td>{{$to_date}}</td> 
                     </tr>
                 </tbody>
             </table>
