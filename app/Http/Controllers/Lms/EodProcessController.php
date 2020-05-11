@@ -240,16 +240,17 @@ class EodProcessController extends Controller {
             if (in_array($transaction->trans_type, [config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]))
             {
                 $disbursedTransAmt += $transaction->amount;
+                $disbursalIds[] = $transaction->disbursal_id;
             }
             
             $invoices[] = $transaction->invoice_id;
-            $disbursalIds[] = $transaction->disbursal_id;
+            
         }
         
         $totInvApprAmt = $this->invRepo->getTotalInvApprAmt($invoices);
         $disbursedAmt = $this->lmsRepo->getTotalDisbursedAmt($disbursalIds);
         
-        dd($disbursedAmt, $disbursedTransAmt, $disbursalIds, $totInvApprAmt, $totalTransAmt);
+        //dd($disbursedAmt, $disbursedTransAmt, $disbursalIds, $totInvApprAmt, $totalTransAmt);
         
         $result = $disbursedTransAmt == $disbursedAmt && $totInvApprAmt == $totalTransAmt;
         
