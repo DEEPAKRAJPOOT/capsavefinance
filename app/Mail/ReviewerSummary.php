@@ -103,7 +103,18 @@ class ReviewerSummary extends Mailable
         $arrStaticData['securityDepositOf'] = array('1'=>'Loan Amount','2'=>'Asset Value','3'=>'Asset Base Value','4'=>'Sanction');
         $arrStaticData['rentalFrequencyType'] = array('1'=>'Advance','2'=>'Arrears');  
         $dispAppId = \Helpers::formatIdWithPrefix($appId, 'APP');
-        $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain  
+        $supplyOfferData = $appRepo->getAllOffers($appId, 1);//for supply chain 
+        $fee = [];
+        foreach($supplyOfferData as $key=>$val){
+            $offerCharges = $val->offerCharges;
+            $fee[$offerCharges[0]->charge_id]['chrg_type'] = $offerCharges[0]->chrg_type;
+            $fee[$offerCharges[0]->charge_id]['chrg_name'] = $offerCharges[0]->chargeName->chrg_name;
+            $fee[$offerCharges[0]->charge_id]['chrg_value'] = $offerCharges[0]->chrg_value;
+            $fee[$offerCharges[1]->charge_id]['chrg_type'] = $offerCharges[1]->chrg_type;
+            $fee[$offerCharges[1]->charge_id]['chrg_name'] = $offerCharges[1]->chargeName->chrg_name;
+            $fee[$offerCharges[1]->charge_id]['chrg_value'] = $offerCharges[1]->chrg_value;
+        }
+//        dd('$fee--', $fee[3]['chrg_name'], $fee[3]['chrg_value'], $fee[4]['chrg_name'], $fee[4]['chrg_value']);
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,
@@ -119,7 +130,8 @@ class ReviewerSummary extends Mailable
             'dispAppId' => $dispAppId,
             'supplyOfferData' => $supplyOfferData,
             'positiveRiskCmntArr' => $positiveRiskCmntArr,
-            'negativeRiskCmntArr' => $negativeRiskCmntArr
+            'negativeRiskCmntArr' => $negativeRiskCmntArr,
+            'fee' => $fee
         ]);        
         // $loggerData = [
         //         'email_from' => config('common.FRONTEND_FROM_EMAIL'),
