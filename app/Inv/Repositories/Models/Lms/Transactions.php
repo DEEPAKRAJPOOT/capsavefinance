@@ -496,6 +496,10 @@ class Transactions extends BaseModel {
         return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
+    public function getReversalParent() {
+        return $this->belongsTo('App\Inv\Repositories\Models\Payment', 'trans_id', 'parent_trans_id');
+    }
+
     public static function getJournalTxnTally(array $where = []){
         return self::with('transType')->where(function ($query) {
             $query->whereHas('transType', function($q) { 
@@ -757,4 +761,30 @@ class Transactions extends BaseModel {
             }
         })->get();
     }
+    
+    /**
+     * Get Disbursal transactions
+     * 
+     * @param string $transStartDate
+     * @param string $transEndDate
+     * 
+     * @return mixed
+     */
+    public static function checkDisbursalTrans($transStartDate, $transEndDate)
+    {
+        $query = self::select('transactions.*', 'invoice_disbursed.disbursal_id', 'invoice_disbursed.invoice_id', 'app_prgm_offer.payment_frequency')
+                ->join('invoice_disbursed', 'invoice_disbursed.invoice_disbursed_id', '=', 'transactions.invoice_disbursed_id')
+                ->join('invoice', 'invoice_disbursed.invoice_id', '=', 'invoice.invoice_id')
+                ->join('app_prgm_offer', 'app_prgm_offer.prgm_offer_id', '=', 'invoice.prgm_offer_id')
+                ->whereBetween('trans_date', [$transStartDate, $transEndDate])
+                ->whereIn('trans_type', [config('lms.TRANS_TYPE.PAYMENT_DISBURSED'), config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.INTEREST')])
+                ->whereNull('parent_trans_id')
+                ->whereNull('link_trans_id')
+                ->whereNull('payment_id')
+                ->where('entry_type', '0');
+                
+        $result = $query->get();
+        
+        return $result;
+    }    
 }

@@ -211,4 +211,11 @@ class Disbursal extends BaseModel {
 	// 	WHERE rta_disbursal.disbursal_batch_id IS NOT null AND rta_disbursal.disbursal_batch_id = ? AND rta_disbursal.user_id=?",[$batch_id, $disbursed_user_id]);
  //        return $result;    
  //    }
+        
+    public static function getTotalDisbursedAmt($disbursalIds)
+    {        
+        $result = self::whereIn('disbursal_id', $disbursalIds)                
+                ->sum('disburse_amount');
+        return $result;
+    }
 }
