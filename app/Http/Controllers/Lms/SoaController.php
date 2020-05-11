@@ -197,7 +197,7 @@ class SoaController extends Controller
                         $query->where('customer_id', '=', "$customer_id");
                     });
                 }
-
+                
                 $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
                             
             } 
