@@ -489,9 +489,34 @@ class Transactions extends BaseModel {
         return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
-    public static function getJournals(array $whereCond = []){
-        return self::whereNull('payment_id')
-            ->where($whereCond)
+    public static function getJournalTxnTally(array $where = []){
+        return self::with('transType')->where(function ($query) {
+            $query->whereHas('transType', function($q) { 
+                $q->where('entry_type', '=', '0')->where('is_invoice_generated', '=', '1')->where(function ($qry) {
+                   $qry->where('id', '=', config('lms.TRANS_TYPE.INTEREST'))->orWhere('chrg_master_id','!=','0');
+                });
+            })
+            ->orWhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.WAVED_OFF')])
+            ->orWhere(function ($q) {
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])->whereNotNull('parent_trans_id')->where('entry_type', '=', '1');
+            })
+            ->orWhere(function ($q) {
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN')])->where('entry_type', '=', '1');
+            });
+        })->where($where)->orderBy('trans_date', 'ASC')->get(); 
+    }
+
+    public static function getDisbursalTxnTally(array $where = []){
+        return self::whereIn('trans_type', [config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+            ->where('entry_type', '=', 0)
+            ->where($where)
+            ->get();
+    }
+
+    public static function getRefundTxnTally(array $where = []){
+        return self::whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])
+            ->where('entry_type', '=', 0)
+            ->where($where)
             ->get();
     }
 
@@ -720,7 +745,6 @@ class Transactions extends BaseModel {
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
             if($invoiceType == 'I') {
                  $query->where('id','=','9');
-                 // $query->orWhere('id','=','33');
              }  else {
                 $query->where('chrg_master_id','!=','0');
             }
