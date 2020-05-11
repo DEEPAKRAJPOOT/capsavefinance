@@ -166,7 +166,7 @@ class RenewalController extends Controller {
             //if ($diffInDays == 7) {
                 $emailData['app_id']  = \Helpers::formatIdWithPrefix($appId, 'APP');
                 $emailData['lead_id'] = \Helpers::formatIdWithPrefix($userId, 'LEADID');
-                $emailData['entity_name'] = 
+                $emailData['entity_name'] = '';
                 $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                 $emailData['receiver_email'] = $user->email;
                 $emailData['sales_manager_name'] = $salesUser ? $salesUser->f_name .' '. $user->m_name .' '. $user->l_name : '';
