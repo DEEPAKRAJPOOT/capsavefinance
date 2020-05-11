@@ -233,7 +233,7 @@ class EodProcessController extends Controller {
         $totInvApprAmt = $this->invRepo->getTotalInvApprAmt($invoices);
         $disbursedAmt = $this->lmsRepo->getTotalDisbursedAmt($disbursalIds);
         
-        dd($disbursalIds, $disbursedAmt, $disbursedTransAmt);
+        //dd($disbursalIds, $disbursedAmt, $disbursedTransAmt);
         
         $result = $disbursedTransAmt == $disbursedAmt && $totInvApprAmt == $totalTransAmt;
         
