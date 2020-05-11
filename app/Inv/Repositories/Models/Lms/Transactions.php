@@ -150,7 +150,18 @@ class Transactions extends BaseModel {
 
     public function getDpdAttribute(){
         $to = \Carbon\Carbon::now()->setTimezone(config('common.timezone'));
-        $from = \Carbon\Carbon::createFromFormat('Y-m-d', $this->invoiceDisbursed->payment_due_date);
+        
+        if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
+            $from = date('Y-m-d',strtotime($this->invoiceDisbursed->payment_due_date));
+        }
+        elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+            if($this->invoiceDisbursed->invoice->program_offer->payment_frequency <> 1){
+                $from = date('Y-m-d',strtotime($this->trans_date));
+            }else{
+                $from = date('Y-m-d',strtotime($this->invoiceDisbursed->payment_due_date));
+            }
+        }
+
         return $to->diffInDays($from);
     }
 
@@ -300,7 +311,7 @@ class Transactions extends BaseModel {
             $transactions['created_at'] = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
         }
         if (!isset($transactions['created_by'])) {
-            $transactions['created_by'] = \Auth::user()->user_id;
+            $transactions['created_by'] = \Auth::user()->user_id??null;
         }        
         
         if (!empty($whereCondition)) {
