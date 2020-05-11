@@ -404,7 +404,7 @@ class ApiController
         return $this->_setResponse($response, 405);
     }
     $batch_no = _getRand(15);
-    $where = ['is_posted_in_tally' => '0', 'user_id' => 607];
+    $where = ['is_posted_in_tally' => '0'];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
