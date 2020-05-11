@@ -45,7 +45,7 @@ class EodProcessController extends Controller {
                 $this->checkDisbursal($transStartDate, $transEndDate);
                 $message = "Eod Process checks are done.";
             } else {
-                $message = "Unable to process the checks, as system is not stopped yet.";
+                $message = "Unable to process the checks, as system is not started or stopped yet.";
             }
             
 
