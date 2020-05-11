@@ -338,6 +338,23 @@ class ApiController
      $inst_no = $rcpt->refundReq->tran_no ?? NULL;
      $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
      $this->selectedPaymentData[] = $rcpt->payment_id;
+     switch ($rcpt->payment_type) {
+       case '1':
+         $mode_of_pay = 'e-Fund-Transfer';
+         break;
+      case '2':
+         $mode_of_pay = 'Cheque';
+         break;
+      case '3':
+         $mode_of_pay = 'Nach';
+         break; 
+      case '4':
+         $mode_of_pay = 'Cash';
+         break; 
+      default:
+         $mode_of_pay = 'e-Fund-Transfer';
+         break;
+     }
      $BankRow = [
               'batch_no' =>  $batch_no,
               'transactions_id' =>  NULL,
@@ -356,8 +373,8 @@ class ApiController
               'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
               'bank_name' =>  $accountDetails->bank->bank_name ?? '',
               'cheque_amount' =>  '',
-              'cross_using' => '',
-              'mode_of_pay' => 'e-Fund-Transfer',
+              'cross_using' => $rcpt->payment_type == 2 ? 'a/c payee' : NULL,
+              'mode_of_pay' => $mode_of_pay,
               'inst_no' =>  $inst_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,

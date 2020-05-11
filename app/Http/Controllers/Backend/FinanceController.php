@@ -141,7 +141,7 @@ class FinanceController extends Controller {
                         "a_/_c_no" => $fetchedArr['acc_no'],
                         "ifsc_code" => $fetchedArr['ifsc_code'],
                         "bank_name" => $fetchedArr['bank_name'],
-                        "cheque_amount" => $fetchedArr['cheque_amount'],
+                        "cheque_amount" => ($fetchedArr['cheque_amount'] != 0 ? $fetchedArr['cheque_amount'] : ''),
                         "cross_using" => $fetchedArr['cross_using'],
                         "inst_no" => $fetchedArr['inst_no'],
                         "inst_date" => $fetchedArr['inst_date'],
