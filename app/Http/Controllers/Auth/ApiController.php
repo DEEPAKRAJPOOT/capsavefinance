@@ -40,13 +40,21 @@ class ApiController
       $trans_type_name = $jrnls->getTransNameAttribute();
       $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
       $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+      if (empty($invoice_no)) {
+          $invoice_no = $jrnls->invoiceDisbursed->invoice->invoice_no ?? NULL;
+          $invoice_date = $jrnls->invoiceDisbursed->invoice->invoice_date ?? NULL;
+      }
       $inst_no = $jrnls->refundReq->tran_no ?? NULL;
       $inst_date = $jrnls->refundReq->actual_refund_date ?? NULL;
       if (!empty($jrnls->parent_trans_id)) {
         $parentRecord  = $jrnls->getParentTxn();
         if (empty($invoice_no)) {
-            $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
-            $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            }
         }
         if (empty($inst_no)) {
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
@@ -143,8 +151,12 @@ class ApiController
       if (!empty($rfnd->parent_trans_id)) {
         $parentRecord  = $rfnd->getParentTxn();
         if (empty($invoice_no)) {
-            $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
-            $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            }
         }
         if (empty($inst_no)) {
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
@@ -246,7 +258,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  '',
-              'inst_date' =>  '',
+              'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'remarks' => '',
               'narration' => 'Being  Payment Disbursed towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
@@ -301,7 +313,7 @@ class ApiController
               'cross_using' => '',
               'mode_of_pay' => '',
               'inst_no' =>  '',
-              'inst_date' =>  '',
+              'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'remarks' => '',
               'narration' => 'Being Interest Booked towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
@@ -357,8 +369,12 @@ class ApiController
           $invoice_date = $stldTxn->userinvoicetrans->getUserInvoice->created_at ?? NULL;
           if (empty($invoice_no) && !empty($stldTxn->parent_trans_id)) {
             $parentRecord  = $stldTxn->getParentTxn();
-            $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
-            $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            if (empty($invoice_no)) {
+              $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
+              $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
+            }
           }
           $this->selectedTxnData[] = $stldTxn->trans_id;
           $settledRow = [
