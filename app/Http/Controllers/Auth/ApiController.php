@@ -83,8 +83,8 @@ class ApiController
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
-          'inst_no' =>  '',
-          'inst_date' =>  '',
+          'inst_no' =>  NULL,
+          'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
           'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
@@ -160,8 +160,8 @@ class ApiController
             }
         }
         if (empty($inst_no)) {
-              $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
-              $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
+            $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
+            $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
       }
       $this->selectedTxnData[] = $rfnd->trans_id;
@@ -185,8 +185,8 @@ class ApiController
           'cheque_amount' =>  '',
           'cross_using' => '',
           'mode_of_pay' => '',
-          'inst_no' =>  '',
-          'inst_date' =>  '',
+          'inst_no' =>  NULL,
+          'inst_date' =>  NULL,
           'favoring_name' =>  '',
           'remarks' => '',
           'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
@@ -258,7 +258,7 @@ class ApiController
               'cheque_amount' =>  '',
               'cross_using' => '',
               'mode_of_pay' => '',
-              'inst_no' =>  '',
+              'inst_no' =>  NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'remarks' => '',
@@ -313,7 +313,7 @@ class ApiController
               'cheque_amount' =>  '',
               'cross_using' => '',
               'mode_of_pay' => '',
-              'inst_no' =>  '',
+              'inst_no' =>  NULL,
               'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'remarks' => '',
@@ -335,6 +335,8 @@ class ApiController
      if (empty($accountDetails)) {
         continue;
      }
+     $inst_no = $rcpt->refundReq->tran_no ?? NULL;
+     $inst_date = $rcpt->refundReq->actual_refund_date ?? NULL;
      $this->selectedPaymentData[] = $rcpt->payment_id;
      $BankRow = [
               'batch_no' =>  $batch_no,
@@ -356,8 +358,8 @@ class ApiController
               'cheque_amount' =>  '',
               'cross_using' => '',
               'mode_of_pay' => 'e-Fund-Transfer',
-              'inst_no' =>  '',
-              'inst_date' =>  '',
+              'inst_no' =>  $inst_no,
+              'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
               'remarks' => '',
               'narration' => 'Being Repayment towards Batch no '. $batch_no,
@@ -398,8 +400,8 @@ class ApiController
               'cheque_amount' =>  '',
               'cross_using' => '',
               'mode_of_pay' => '',
-              'inst_no' =>  '',
-              'inst_date' =>  '',
+              'inst_no' =>  NULL,
+              'inst_date' =>  NULL,
               'favoring_name' =>  '',
               'remarks' => '',
               'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
