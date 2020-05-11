@@ -338,7 +338,7 @@ cursor: pointer;
             switch (action_type) {
                 case "1":
                     if(trans_type==17){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(Date.now() - 10*24*60*60*1000));
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
