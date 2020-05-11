@@ -2701,7 +2701,7 @@ if ($err) {
     }
 
     public function checkExistUser(Request $request) {
-        dd($request);
+        // dd($request);
         $email = $request->post('username');
         $anchUsersList = $this->userRepo->getUserByemail($email);
         return $anchUsersList;

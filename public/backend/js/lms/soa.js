@@ -77,7 +77,7 @@ try {
             var user_id = $.trim($("#user_id").val());
             var biz_id = $.trim($("#biz_id").val());
             
-            showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
+            //showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
             oTable.draw();
         });
 
@@ -89,11 +89,11 @@ try {
         to_date = $('input[name="to_date"]').val().trim();
         customer_id = $('input[name=customer_id]').val().trim();
         if(action.trim() == 'pdf'){
-            url = messages.pdf_soa_url+'?JHGsdfaHSasdSJ';
+            url = messages.pdf_soa_url;
         }
 
         if(action.trim() == 'excel'){
-            url = messages.excel_soa_url+'?JHGsdfaHSasdSJ';
+            url = messages.excel_soa_url;
         }
 
         if(from_date){
@@ -103,11 +103,6 @@ try {
         if(to_date){
             url += '&to_date='+to_date;
         }
-
-        if(customer_id){
-            url += '&customer_id='+customer_id;
-        }
-
 
         window.open(url, '_blank');
     }
@@ -145,8 +140,8 @@ try {
                                 </tr>
                             </tbody>
                         </table>`; 
-                        console.log(html);
-                $("#client_details").html(html);
+                        //console.log(html);
+                        //$("#client_details").html(html);
             }
         });
     }

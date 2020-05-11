@@ -460,7 +460,6 @@ class ManualApportionmentHelper{
                     InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('interest_date','>=',$loopStratDate)
                     ->delete();
-                    break;
                 }
                 
                 if(strtotime($loopStratDate) <= strtotime($odStartDate))

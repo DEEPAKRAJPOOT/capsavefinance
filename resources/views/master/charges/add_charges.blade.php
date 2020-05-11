@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="modal-body text-left">
-    <form id="chargesForm" name="chargesForm" method="POST" action="{{route('save_charges')}}" target="_top">
+    <form id="chargesForm" name="chargesForm" method="POST" action="{{route('save_charges')}}" target="_top" onkeyup = "formValidation()">
         @csrf
 
         <div class="row">
@@ -124,7 +124,7 @@
 
             <div class="form-group col-md-6 float-md-right">
                 <label for="sac_code">SAC Code</label>
-                <input type="text" class="form-control" id="sac_code" name="sac_code" placeholder="Enter SAC Code" maxlength="10" onkeyup="sac_validation()">
+                <input type="text" class="form-control" id="sac_code" name="sac_code" placeholder="Enter SAC Code" maxlength="10">
             </div>
         </div>
 
@@ -247,12 +247,17 @@
         });        
     });
 
-    function sac_validation() {
-        var val = document.getElementById('sac_code').value;
-        if(isNaN(val)) {
+    function formValidation() {
+        var sac_code = document.getElementById('sac_code').value;
+        var chrg_name = document.getElementById('chrg_name').value;
+        if(isNaN(sac_code)) {
             document.getElementById('sac_code').value = ""
-        } else if(val.length > 4) {
+        } else if(sac_code.length > 4) {
             document.getElementById('sac_code').value = ""
+        }
+
+        if(!isNaN(chrg_name)) {
+            document.getElementById('chrg_name').value = ""
         }
     }
 </script>
