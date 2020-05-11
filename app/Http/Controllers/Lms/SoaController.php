@@ -257,6 +257,13 @@ class SoaController extends Controller
                 ->setCellValue('G6', 'Mobile')
                 ->setCellValueExplicit('I6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
         
+        $sheet->getActiveSheet()->getStyle("D2")->applyFromArray(['font' => ['bold'  => true, 'size' => 15]]);
+        $sheet->getActiveSheet()->getStyle('E3')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('A5')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('G5')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('A6')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('G6')->applyFromArray(['font' => ['bold'  => true]]);
+        
         $rows = 8;
         
         if($request->get('from_date')!= '' && $request->get('to_date')!=''){
@@ -265,6 +272,9 @@ class SoaController extends Controller
                 ->setCellValue('C7', $request->get('from_date'))
                 ->setCellValue('G7', 'To Date')
                 ->setCellValue('I7', $request->get('to_date'));
+            
+            $sheet->getActiveSheet()->getStyle('A7')->applyFromArray(['font' => ['bold'  => true]]);
+            $sheet->getActiveSheet()->getStyle('G7')->applyFromArray(['font' => ['bold'  => true]]);
             
             $rows++;
         }
@@ -285,11 +295,17 @@ class SoaController extends Controller
         for($i=65; $i<=75; $i++){
             $sheet->getActiveSheet()->getStyle(chr($i).$rows)->getFill()->applyFromArray(array(
                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                'startcolor' => array(
-//                    'rgb' => "F28A8C",
-                    'rgb' => "FF0000"
-                )
+                'startcolor' => [
+                    'rgb' => "F28A8C",
+//                    'rgb' => "FF0000"
+                ]
             ));
+            
+            $sheet->getActiveSheet()->getStyle(chr($i).$rows)->applyFromArray([
+                'font' => [
+                    'bold'  => true,
+                ]
+            ]);
         }
                
         $rows++;
