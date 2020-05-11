@@ -1472,7 +1472,6 @@
   }
 
   function fillChargesBlock(program){
-    console.log(program);
     let html='';
     $.each(program.program_charges, function(i,program_charge){
 //        if(program_charge.charge_name.chrg_tiger_id == 1){
