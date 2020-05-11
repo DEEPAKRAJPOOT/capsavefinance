@@ -9,6 +9,7 @@ use PHPExcel;
 use PHPExcel_IOFactory;
 use PHPExcel_Style_Fill;
 use PHPExcel_Cell_DataType;
+use PHPExcel_Style_Alignment;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -80,39 +81,39 @@ class SoaController extends Controller
          /* use function for the manage sention tabs */ 
     
     public  function  getUserLimitDetais($user_id) 
-   {
-            try {
-                $totalLimit = 0;
-                $totalCunsumeLimit = 0;
-                $consumeLimit = 0;
-                $transactions = 0;
-                $userInfo = $this->userRepo->getCustomerDetail($user_id);
-                $application = $this->appRepo->getCustomerApplications($user_id);
-                $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
+    {
+        try {
+            $totalLimit = 0;
+            $totalCunsumeLimit = 0;
+            $consumeLimit = 0;
+            $transactions = 0;
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            $application = $this->appRepo->getCustomerApplications($user_id);
+            $anchors = $this->appRepo->getCustomerPrgmAnchors($user_id);
 
-                foreach ($application as $key => $app) {
-                    if (isset($app->prgmLimits)) {
-                        foreach ($app->prgmLimits as $value) {
-                            $totalLimit += $value->limit_amt;
-                        }
-                    }
-                    if (isset($app->acceptedOffers)) {
-                        foreach ($app->acceptedOffers as $value) {
-                            $totalCunsumeLimit += $value->prgm_limit_amt;
-                        }
+            foreach ($application as $key => $app) {
+                if (isset($app->prgmLimits)) {
+                    foreach ($app->prgmLimits as $value) {
+                        $totalLimit += $value->limit_amt;
                     }
                 }
-                $userInfo->total_limit = number_format($totalLimit);
-                $userInfo->consume_limit = number_format($totalCunsumeLimit);
-                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-                
-                $data['userInfo'] = $userInfo;
-                $data['application'] = $application;
-                $data['anchors'] = $anchors;
-                return $data;
-            } catch (Exception $ex) {
-                dd($ex);
+                if (isset($app->acceptedOffers)) {
+                    foreach ($app->acceptedOffers as $value) {
+                        $totalCunsumeLimit += $value->prgm_limit_amt;
+                    }
+                }
             }
+            $userInfo->total_limit = number_format($totalLimit);
+            $userInfo->consume_limit = number_format($totalCunsumeLimit);
+            $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+            
+            $data['userInfo'] = $userInfo;
+            $data['application'] = $application;
+            $data['anchors'] = $anchors;
+            return $data;
+        } catch (Exception $ex) {
+            dd($ex);
+        }
     }
     
     public function getDebit($trans){
@@ -151,12 +152,9 @@ class SoaController extends Controller
     }
     
     public function prepareDataForRendering($expecteddata){
-        
         $preparedData = [];
-        
         foreach($expecteddata as $key => $expData){
             foreach ($expData as $k => $data) {
-                # code...
                 $preparedData[$key][$k]['payment_id'] = $data->payment_id;
                 $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
@@ -172,9 +170,7 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['balance'] = $this->getBalance($data);
             }
         }
-        
         return $preparedData;
-        
     }
 
     public function soaPdfDownload(Request $request){
@@ -197,22 +193,19 @@ class SoaController extends Controller
                         $query->where('customer_id', '=', "$customer_id");
                     });
                 }
-                
                 $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
-                            
             } 
 
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
                     ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $result['userInfo'], 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date')],[],'UTF-8');
             return $pdf->download('SoaReport.pdf');          
-          } catch (Exception $ex) {
+        }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
 
     public function soaExcelDownload(Request $request){
-//        dd($request->all());
         if($request->has('user_id')){
             $data = $this->getUserLimitDetais($request->user_id);
             $transactionList = $this->lmsRepo->getSoaList();
@@ -230,44 +223,39 @@ class SoaController extends Controller
                     $query->where('customer_id', '=', "$customer_id");
                 });
             }
-                
         }
-//        dd($transactionList->get());
         $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(25));
-//        dd($exceldata);
         $sheet =  new PHPExcel();
-    
+        $sheet->getActiveSheet()->mergeCells('A2:K2');
+        $sheet->getActiveSheet()->mergeCells('A3:K3');
+        $sheet->getActiveSheet()
+        ->getStyle('A2:K3')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         $sheet->setActiveSheetIndex(0)
-                ->setCellValue('D2', 'CAPSAVE FINANCE PRIVATE LIMITED')
-                ->setCellValue('E3', 'Statement Of Account')
+                ->setCellValue('A2', 'CAPSAVE FINANCE PRIVATE LIMITED')
+                ->setCellValue('A3', 'Statement Of Account')
                 ->setCellValue('A5', 'Business Name')
-                ->setCellValue('C5', $data['userInfo']->biz->biz_entity_name)
-                ->setCellValue('G5', 'Full Name')
-                ->setCellValue('I5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
                 ->setCellValue('A6', 'Email')
+                ->setCellValue('C5', $data['userInfo']->biz->biz_entity_name)
                 ->setCellValue('C6', $data['userInfo']->email)
-                ->setCellValue('G6', 'Mobile')
-                ->setCellValueExplicit('I6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+                ->setCellValue('H5', 'Full Name')
+                ->setCellValue('H6', 'Mobile')
+                ->setCellValue('J5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
+                ->setCellValueExplicit('J6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+                
         
-        $sheet->getActiveSheet()->getStyle("D2")->applyFromArray(['font' => ['bold'  => true, 'size' => 15]]);
-        $sheet->getActiveSheet()->getStyle('E3')->applyFromArray(['font' => ['bold'  => true]]);
-        $sheet->getActiveSheet()->getStyle('A5')->applyFromArray(['font' => ['bold'  => true]]);
-        $sheet->getActiveSheet()->getStyle('G5')->applyFromArray(['font' => ['bold'  => true]]);
-        $sheet->getActiveSheet()->getStyle('A6')->applyFromArray(['font' => ['bold'  => true]]);
-        $sheet->getActiveSheet()->getStyle('G6')->applyFromArray(['font' => ['bold'  => true]]);
-        
+        $sheet->getActiveSheet()->getStyle('A1:I7')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle("D2")
+            ->applyFromArray(['font' => ['bold'  => true, 'size' => 15]]);
+                
         $rows = 8;
-        
         if($request->get('from_date')!= '' && $request->get('to_date')!=''){
             $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A7', 'From Date')
                 ->setCellValue('C7', $request->get('from_date'))
-                ->setCellValue('G7', 'To Date')
-                ->setCellValue('I7', $request->get('to_date'));
-            
-            $sheet->getActiveSheet()->getStyle('A7')->applyFromArray(['font' => ['bold'  => true]]);
-            $sheet->getActiveSheet()->getStyle('G7')->applyFromArray(['font' => ['bold'  => true]]);
-            
+                ->setCellValue('H7', 'To Date')
+                ->setCellValue('J7', $request->get('to_date'));
             $rows++;
         }
                 
@@ -284,22 +272,21 @@ class SoaController extends Controller
                 ->setCellValue('J'.$rows, 'Credit')
                 ->setCellValue('K'.$rows, 'Balance');
         
-        for($i=65; $i<=75; $i++){
-            $sheet->getActiveSheet()->getStyle(chr($i).$rows)->getFill()->applyFromArray(array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                'startcolor' => [
-                    'rgb' => "F28A8C",
-//                    'rgb' => "FF0000"
-                ]
-            ));
-            
-            $sheet->getActiveSheet()->getStyle(chr($i).$rows)->applyFromArray([
-                'font' => [
-                    'bold'  => true,
-                ]
-            ]);
-        }
-               
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->getFill()->applyFromArray(array(
+            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+            'startcolor' => [ 'rgb' => "CAD7D3" ],
+            'font' => [ 'bold'  => true ]
+        ));
+              
+        $sheet->getActiveSheet()
+        ->getStyle('I:K')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getActiveSheet()
+        ->getStyle('B:C')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+
         $rows++;
 
         foreach($exceldata as $data){
@@ -321,24 +308,22 @@ class SoaController extends Controller
                 if(strtolower($rowData['trans_type']) === 'repayment'){
                     $color = "F3C714";
                 }elseif($rowData['payment_id']){
-                    $color = "FED8B1";
+                    $color = "FFE787";
                 }
                 
-                for($i=65; $i<=75; $i++){
-                    $sheet->getActiveSheet()->getStyle(chr($i).$rows)->getFill()->applyFromArray(array(
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                        'startcolor' => array(
-                            'rgb' => $color
-                        )
-                    ));
-                }
-                
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->getFill()->applyFromArray(array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'startcolor' => array( 'rgb' => $color )
+                ));
                 $rows++;
             }
         }
+        foreach(range('A','K') as $columnID) {
+            $sheet->getActiveSheet()->getColumnDimension($columnID)
+                ->setAutoSize(true);
+        }
+       
         
-//        dd($sheet);
-//        
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="Soa_Excel.xlsx"');
