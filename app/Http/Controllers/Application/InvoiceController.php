@@ -58,8 +58,16 @@ class InvoiceController extends Controller {
     
     public function getAllInvoice()
     {
+        $id = Auth::user()->user_id;         
+        $getAccountClosure  = $this->invRepo->getAccountClosure();
+         $get_anchor = $this->invRepo->getLimitAllAnchor();
+        if($getAccountClosure==0)
+        {
         
-        $get_anchor = $this->invRepo->getLimitAllAnchor();
+              Session::flash('error', 'You cannot upload the invoice due to account close');
+             
+        }
+       
         return view('frontend.application.invoice.upload_all_invoice')
                    ->with(['get_anchor' => $get_anchor]);
   

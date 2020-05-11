@@ -18,10 +18,12 @@ use App\Helpers\ApportionmentHelper;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 
 trait InvoiceTrait
@@ -158,11 +160,11 @@ trait InvoiceTrait
          $inv_no_var3   = ""; 
          $inv_no_var4   = ""; 
          $inv_no_var5   = ""; 
+         $inv_no_var6   = ""; 
          $multichk['status']   = 1;
          $mytime = Carbon::now();
          $cDate   =  $mytime->toDateTimeString();
          $CFrom =  Carbon::createFromFormat('Y-m-d H:i:s', $cDate)->format('Y-m-d');
-        
          /* Current date and Invoice Date diff */
         while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
         {   
@@ -188,7 +190,7 @@ trait InvoiceTrait
            
             $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
             $chlLmsCusto =  self::getLimitProgram($dataAttr);
-          
+            $getLmsActive =  LmsUser::where(['customer_id' => $dataAttr['cusomer_id'],'is_active' => 0])->count(); 
             if( $invoice_date_validate==false)
             {
                $multichk['status'] =0; 
@@ -242,7 +244,12 @@ trait InvoiceTrait
                  }
                  
            }
-         
+           if($getLmsActive > 0)
+           {
+                      $multichk['status'] =0;
+                      $inv_no_var6.=$inv_no.',';
+                      $multichk['multiVali7'] = '*Account has been closed for Following invoice Number ('.substr($inv_no_var6,0,-1).').';          
+           }
          
             
         }
@@ -848,4 +855,63 @@ trait InvoiceTrait
         return AppOfferAdhocLimit::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`')->sum('limit_amt');
 
     }
+  public static function updateReject($attr)
+  {
+      foreach($attr as $row)
+      {
+          BizInvoice::where('invoice_id',$row->invoice_id)->update(['status_id' =>14,'remark' =>'Account closed']);
+      }
+  }
+
+  public static function getAccountClosure($attr)
+   {
+      $getBank =   BizInvoice::where(['status_id' => 10,'supplier_id' =>$attr['user_id']])->count();
+      $get_outstanding =   BizInvoice::where(['is_repayment' =>0,'status_id' => 12,'supplier_id' =>$attr['user_id']])->count();
+      $get_Payment  =  Payment::where(['user_id' => $attr['user_id'],'payment_type' =>7])->where('file_id','<>', 0)->count();
+      $getReject =   BizInvoice::whereIn('status_id',[7,8,9,11,28])->where(['supplier_id' =>$attr['user_id']])->get();
+      if($getBank > 0)
+      {
+         $data['msg']  = 'You cannot close this account as some invoices are sent to bank for disbursal.';
+         $data['status'] = 0;
+          
+      }
+      else if($get_Payment==0)
+      {
+         $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
+         $data['status'] = 0;
+       
+      }
+      else if($get_outstanding > 0)
+      {
+         $data['msg']  = 'You cannot close this account as customer account is in outstanding.';
+         $data['status'] = 0;
+       
+      }
+       else if(count($getReject) > 0 && $get_outstanding==0 && $get_Payment > 0 && $getBank==0)
+      {
+         self::updateReject($getReject);
+         self::accountLock($attr['user_id']);
+         $data['msg']  = 'Customer account has been closed.';
+         $data['status'] = 1;
+       
+      }
+      else
+      {
+        self::accountLock($attr['user_id']);
+        $data['msg']  = '';
+        $data['status'] = 1;
+      }
+      return $data;
+   }
+   
+   public static function accountLock($uid)
+   {
+        $mytime = Carbon::now();
+        $cDate   =  $mytime->toDateTimeString();
+        $create_uid = Auth::user()->user_id;
+        LmsUser::where(['user_id' => $uid])->update(['is_active' => 0]);
+        LmsUsersLog::insert(['user_id' => $uid,'status_id' => 35,'created_by' => $create_uid,'created_at' => $cDate]);
+   }
+   
+    
 }

@@ -1157,4 +1157,16 @@ use CommonRepositoryTraits;
       
     }  
     
+     public function getAccountClosure()
+    {
+       
+        try
+        {
+             return LmsUser::getAccountClosure();  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+      
+    }  
+    
 }

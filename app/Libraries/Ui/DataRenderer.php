@@ -1695,7 +1695,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= $invoice->remark ? '<span style="color:red;">'.$invoice->remark.'</span>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1743,6 +1744,8 @@ class DataRenderer implements DataProviderInterface
                         }
                          $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
+                     if($invoice->lms_user->is_active==1)
+                     {
                        if( $chkUser->id!=11)
                       { 
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
@@ -1753,6 +1756,7 @@ class DataRenderer implements DataProviderInterface
                        }
                         $action .='</select></div>';
                       }
+                     }
                         return $action;
 
                 })

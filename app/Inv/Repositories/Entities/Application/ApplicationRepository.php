@@ -72,6 +72,8 @@ use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 
+
+
 /**
  * Application repository class
  */
@@ -2283,7 +2285,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
     {
         return AppProgramLimit::getUtilizeLimit($appId, $productId, $checkApprLimit);
-    }    
+    }  
+    
+    public function getAccountActiveClosure($uid) 
+    {
+        try
+        {
+          return  LmsUser::getAccountActiveClosure($uid);  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+    }
 }
 
 
