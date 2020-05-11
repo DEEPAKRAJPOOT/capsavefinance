@@ -713,7 +713,7 @@
             </tr>
         </table>
         <div class="pl-4 pr-4 pb-4 pt-2">
-	<table class="table table-bordered overview-table" id="myTable3">
+	<table class="table table-bordered overview-table banking" id="myTable3">
             <thead>
                <tr bgcolor="#ccc">
                   <th>Name of Bank</th>
@@ -741,18 +741,18 @@
               </tr>
               @foreach($dataBankAna as $key =>$val)
               <tr>
-                  <td>{{$val['bank_name']}}</td>
-                  <td>{{$val['act_type']}}</td>
-                  <td>{{$val['uti_max']}}</td>
-                  <td>{{$val['uti_min']}}</td>
-                  <td>{{$val['uti_avg']}}</td>
-                  <td>{{number_format($val['chk_inward'])}}</td>
-                  <td>{{$val['chk_presented_per']}}</td>
-                  <td>{{number_format($val['chk_outward'])}}</td>
-                  <td>{{$val['chk_deposited_per']}}</td>
-                  <td>{{number_format($val['submission_credit'])}}</td>
-                  <td>{{number_format($val['submission_debbit'])}}</td>
-                  <td>{{$val['overdrawing_in_six_month']}}</td>
+                  <td style="padding:.1rem;">{{$val['bank_name']}}</td>
+                  <td style="padding:.1rem;">{{$val['act_type']}}</td>
+                  <td style="padding:.1rem;">{{$val['uti_max']}}</td>
+                  <td style="padding:.1rem;">{{$val['uti_min']}}</td>
+                  <td style="padding:.1rem;">{{$val['uti_avg']}}</td>
+                  <td style="padding:.1rem;">{{number_format($val['chk_inward'])}}</td>
+                  <td style="padding:.1rem;">{{$val['chk_presented_per']}}</td>
+                  <td style="padding:.1rem;">{{number_format($val['chk_outward'])}}</td>
+                  <td style="padding:.1rem;">{{$val['chk_deposited_per']}}</td>
+                  <td style="padding:.1rem;">{{number_format($val['submission_credit'])}}</td>
+                  <td style="padding:.1rem;">{{number_format($val['submission_debbit'])}}</td>
+                  <td style="padding:.1rem;">{{$val['overdrawing_in_six_month']}}</td>
               </tr>
               @endforeach
             </tbody>
