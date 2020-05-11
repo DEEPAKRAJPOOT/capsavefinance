@@ -89,6 +89,7 @@ class ApiController
           'remarks' => '',
           'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
+     $gstData = [];
      if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
         $gstData['base_amount'] = $jrnls->userinvoicetrans->base_amount;
         if ($jrnls->userinvoicetrans->sgst_amount != 0) {
@@ -419,6 +420,12 @@ class ApiController
         $response['sapi'] = php_sapi_name();
         return $this->_setResponse($response, 405);
     }
+    $latestRecord = \DB::select('select * from rta_tally_entry order by tally_entry_id DESC limit 1');
+    $lastVoucherNo = 0;
+    if (!empty($latestRecord)) {
+      $lastVoucherNo = $latestRecord[0]->voucher_no ?? 0;
+    }
+    $this->voucherNo = $this->voucherNo + 1;
     $batch_no = _getRand(15);
     $where = ['is_posted_in_tally' => '0'];
     $journalData = Transactions::getJournalTxnTally($where);
