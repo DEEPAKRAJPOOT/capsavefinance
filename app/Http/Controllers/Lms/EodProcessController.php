@@ -42,12 +42,27 @@ class EodProcessController extends Controller {
                 $transStartDate = $eodProcess->sys_start_date;                        
                 $transEndDate = $eodProcess->sys_end_date;
                 
-                dd($this->checkDisbursal($transStartDate, $transEndDate));
+                $this->checkDisbursal($transStartDate, $transEndDate);
                 $message = "Eod Process checks are done.";
             } else {
                 $message = "Unable to process the checks, as system is not stopped yet.";
             }
             
+        
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));
+        
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'));
+        
             return $message;
             
         } catch (Exception $ex) {
