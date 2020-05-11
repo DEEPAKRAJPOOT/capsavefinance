@@ -236,14 +236,6 @@ class SoaController extends Controller
         $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(25));
 //        dd($exceldata);
         $sheet =  new PHPExcel();
-        $sheet->getProperties()
-                ->setCreator("Capsave")
-                ->setLastModifiedBy("Capsave")
-                ->setTitle("Bank Disburse Excel")
-                ->setSubject("Bank Disburse Excel")
-                ->setDescription("Bank Disburse Excel")
-                ->setKeywords("Bank Disburse Excel")
-                ->setCategory("Bank Disburse Excel");
     
         $sheet->setActiveSheetIndex(0)
                 ->setCellValue('D2', 'CAPSAVE FINANCE PRIVATE LIMITED')
@@ -349,7 +341,7 @@ class SoaController extends Controller
 //        
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="download_Excel.xlsx"');
+        header('Content-Disposition: attachment;filename="Soa_Excel.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
