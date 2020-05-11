@@ -1005,11 +1005,17 @@ class ApportionmentController extends Controller
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
         foreach($invDisbs as $invd){
             $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id, true);
+            $inv = BizInvoice::find($invd->invoice_id);
             if($flag){
-                $inv = BizInvoice::find($invd->invoice_id);
                 $inv->is_repayment = 1;
-                $inv->save();
+                $inv->status_id = 13;
+            }else{
+                if($inv->is_repayment == 1)
+                $inv->is_repayment = 0;
+                if($inv->status_id == 13)
+                $inv->status_id = 12;
             }
+            $inv->save();
         }
     }
    
