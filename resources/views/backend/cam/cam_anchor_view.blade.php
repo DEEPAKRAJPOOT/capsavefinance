@@ -450,6 +450,15 @@
             },
             repayment_track_record: {
                 required: true
+            },
+            note_on_lifting: {
+                required: true
+            },
+            reference_from_anchor: {
+                required: true
+            },
+            anchor_risk_comments: {
+                required: true
             }
         },
         messages: {
@@ -493,6 +502,15 @@
             },
             repayment_track_record: {
                 required: 'Please enter Repayment track record with Anchor.'
+            },
+            note_on_lifting: {
+                required: 'Please enter note on lifting.'
+            },
+            reference_from_anchor: {
+                required: 'Please enter reference from anchor.'
+            },
+            anchor_risk_comments: {
+                required: 'Please enter anchor risk comment.'
             }
         }
     });
