@@ -35,6 +35,7 @@ class AnchorInfoRequest extends FormRequest
            'grp_rating' => "required|string",
            'contact_number' => "required|string|min:10|max:10",
            'security_deposit' => "required|string",
+           'repayment_track_record' => "required"
         ];
     }
 
