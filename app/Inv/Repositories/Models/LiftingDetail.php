@@ -58,6 +58,7 @@ class LiftingDetail extends Model {
     protected $fillable = [
         'app_id',
         'year',
+        'total_pur_material',
         'month',
         'mt_type',
         'mt_value',

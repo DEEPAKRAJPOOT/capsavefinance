@@ -1571,4 +1571,28 @@ class Helper extends PaypalHelper
         
         return $result;
      }
+     
+     /**
+     * Get 'yes' or NO
+     *
+     * @return string
+     */
+     public static function getYesFlag($value , $returnValues = [ '0'=>'No', '1'=>'Yes', '2'=>'N/A' ] )
+    {
+       if (is_null($value) || $value === '')
+        {
+            return '';
+        }
+        else
+        {
+           if( array_key_exists( $value, $returnValues ) )
+           {
+               return $returnValues[ (int) $value ];
+           }
+           else
+           {
+               return '';
+           }
+        }
+    }
 }

@@ -190,10 +190,12 @@ trait CamTrait
                 if (!empty($liftingData)) {
                     foreach ($liftingData as $key => $value) {
                         $year = $value['year'];
+                        $totalPurMaterial = $value['total_pur_material'];
                         $data[$year]['mt_value'][] = $value['mt_value'];
                         $data[$year]['mt_type'] = $value['mt_type'];
                         $data[$year]['anchor_lift_detail_id'][] = $value['anchor_lift_detail_id'];
                         $data[$year]['year'] = $year;
+                        $data[$year]['total_pur_material'] = $totalPurMaterial;
                         $data[$year]['mt_amount'][] = $value['amount'];
                     }
                 }

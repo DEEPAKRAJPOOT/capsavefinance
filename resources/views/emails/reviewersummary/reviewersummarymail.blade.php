@@ -53,7 +53,7 @@
                 <tr>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">Limit Of The Equipment</td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} </td>
-                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"> Days</td>
+                    <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"> Tenor (Days)</td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                 </tr>
                 @if($leaseOffer->facility_type_id != 3)
@@ -151,14 +151,14 @@
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Sub Limit: </b> </td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->prgm_limit_amt}}</td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Documentation Fee (%): </b></td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->document_fee}} %</td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ $fee['2']['chrg_name']}}{{ $fee['2']['chrg_type'] == 2 ? '(%)' : '(₹)'}}: </b></td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $fee['2']['chrg_value']}}</td>
                           </tr>
                           
                           <tr>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Interest Rate(%): </b></td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->interest_rate}} %</td>
-                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Days : </b></td>
+                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Tenor (Days): </b></td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->tenor}}</td>
                           </tr>
                           <tr>
@@ -176,8 +176,8 @@
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Grace Period (Days): </b></td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->grace_period}}</td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Processing Fee (%): </b></td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->processing_fee}} %</td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ $fee['1']['chrg_name']}}{{ $fee['1']['chrg_type'] == 2 ? '(%)' : '(₹)'}}: </b></td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $fee['1']['chrg_value']}}</td>
                           </tr>
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comment: </b></td>

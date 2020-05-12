@@ -27,7 +27,7 @@
                <tr role="row" class="odd">
                   <td class=""><b>Limit Of The Equipment</b></td>
                   <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} </td>
-                  <td class=""><b>Days</b></td>
+                  <td class=""><b>Tenor (Days)</b></td>
                   <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                @if($leaseOffer->facility_type_id != 3)
@@ -160,7 +160,7 @@
               <tr>
                  <td><b>Interest Rate(%): </b></td>
                  <td>{{$supplyOffer->interest_rate}} %</td>
-                 <td><b>Days : </b></td>
+                 <td><b>Tenor (Days) : </b></td>
                  <td>{{$supplyOffer->tenor}}</td>
               </tr>
               <tr>
@@ -183,18 +183,17 @@
                   <td>&nbsp;</td>
                   <td>&nbsp;</td>                    
               </tr>
-                @foreach($supplyOffer->offerCharges as $key=>$offerCharge)                 
-                @php                
-                if (\Request::route()->getName() == 'generate_cam_report') {
-                    $inrSymbol = ($offerCharge->chrg_type == 2)? ' (%)': ' (<span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>)';
-                } else {
-                    $inrSymbol = ($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)';
-                }
-                @endphp                
+                @foreach($supplyOffer->offerCharges as $key=>$offerCharge)              
                 @if($key%2 == 0)
                 <tr>                    
                     @endif
-                    <td><b>{{$offerCharge->chargeName->chrg_name}} {!! $inrSymbol !!}: </b></td>
+                    <td><b>{{$offerCharge->chargeName->chrg_name}} (
+                            @if ($offerCharge->chrg_type == 2)
+                                %
+                            @else
+                                <img src="{{url('backend/assets/images/Indian_Rupee_symbol.png')}}" height="12px" width="10px">
+                            @endif
+                            ): </b></td>
                     <td>{{$offerCharge->chrg_value}}</td>
                     @if($key%2 != 0)
                     <td></td>

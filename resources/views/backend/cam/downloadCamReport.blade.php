@@ -6,7 +6,7 @@
       <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
       <style>
          @page {
-            margin: 2cm 1.44cm 2.25cm 1.44cm;
+            margin: 0px;
          }
          /** Define the header rules **/
          header {
@@ -18,7 +18,7 @@
                bottom:0.5cm;
          }
         *{
-            font-size:13px !important;
+            font-size:10px !important;
 			   font-family: 'source-sans-pro-regular', sans-serif !important;
          }
          table{
@@ -73,6 +73,9 @@
          }
          .pagenum:before {
             content: counter(page);
+         }
+         img{
+             max-width: 100%;
          }
       </style>
    </head>
