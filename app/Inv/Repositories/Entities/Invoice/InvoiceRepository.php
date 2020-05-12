@@ -820,7 +820,7 @@ use CommonRepositoryTraits;
      * @param type $select Array
      * @return type mixed
      */
-    public function getInvoiceData($where, $select)
+    public function getInvoiceData($where, $select = ['*'])
     {
         return InvoiceModel::getInvoiceData($where, $select);
     }
@@ -1156,7 +1156,7 @@ use CommonRepositoryTraits;
         }
       
     }  
-    
+   
      public function getAccountClosure()
     {
        
@@ -1169,4 +1169,17 @@ use CommonRepositoryTraits;
       
     }  
     
+
+    /**
+     * Get Total Invoice Approval Amount
+     * 
+     * @param array $invoices
+     * @return decimal
+     * @throws InvalidDataTypeExceptions
+     */    
+    public function getTotalInvApprAmt($invoices)
+    {
+        return InvoiceModel::getTotalInvApprAmt($invoices);
+    }
+
 }

@@ -444,4 +444,23 @@ public static function saveBulkInvoice($arrInvoice)
    
     }
     
+    /**
+     * Get Total Invoice Approval Amount
+     * 
+     * @param array $invoices
+     * @return decimal
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getTotalInvApprAmt($invoices)
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($invoices)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        return self::whereIn('invoice_id', $invoices)->sum('invoice_approve_amount');
+    }
+    
 }

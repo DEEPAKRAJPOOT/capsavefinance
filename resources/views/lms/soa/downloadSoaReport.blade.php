@@ -111,12 +111,14 @@
                         <td class="text-left" width="30%"><b>Mobile</b></td>
                         <td>{{$userInfo->mobile_no}} </td> 
                     </tr>
+                    @if($fromdate && $todate)
                     <tr>
                         <td class="text-left" width="30%"><b>From Date</b></td>
-                        <td>{{$from_date}}</td> 
+                        <td>{{$fromdate}}</td> 
                         <td class="text-left" width="30%"><b>To Date</b></td>
-                        <td>{{$to_date}}</td> 
+                        <td>{{$todate}}</td> 
                     </tr>
+                    @endif
                 </tbody>
             </table>
             @foreach($soaRecord as $soak => $soaRec)
@@ -127,7 +129,7 @@
                             <span style="font-size: small;"><strong>Customer ID</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Tran Date</strong></span>
+                            <span style="font-size: small;"><strong>Trans Date</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Value Date</strong></span>

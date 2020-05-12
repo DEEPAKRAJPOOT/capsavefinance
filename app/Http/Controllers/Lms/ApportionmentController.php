@@ -313,13 +313,15 @@ class ApportionmentController extends Controller
                     'pay_from' => 1,
                     'is_settled' => 2,
             ];
+            $resp = $this->lmsRepo->saveTransaction($txnInsertData);
+            
             $paymentData = [
                 'user_id' => $paymentDetails->user_id,
                 'biz_id' => $paymentDetails->biz_id,
                 'virtual_acc' => $paymentDetails->virtual_acc,
                 'action_type' => $paymentDetails->action_type,
                 'trans_type' => $paymentDetails->trans_type,
-                'parent_trans_id' => $paymentDetails->parent_trans_id,
+                'parent_trans_id' => $resp->trans_id,
                 'amount' => $amount,
                 'date_of_payment' => $transDateTime,
                 'gst' => $paymentDetails->gst,
@@ -340,7 +342,6 @@ class ApportionmentController extends Controller
                 'generated_by' => 1,
                 'is_refundable' => 1
             ];
-            $resp = $this->lmsRepo->saveTransaction($txnInsertData);
             $paymentId = Payment::insertPayments($paymentData);
             if (!empty($resp->trans_id) && is_int($paymentId)) {
                 $commentData = [
@@ -1005,11 +1006,17 @@ class ApportionmentController extends Controller
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
         foreach($invDisbs as $invd){
             $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id, true);
+            $inv = BizInvoice::find($invd->invoice_id);
             if($flag){
-                $inv = BizInvoice::find($invd->invoice_id);
                 $inv->is_repayment = 1;
-                $inv->save();
+                $inv->status_id = 13;
+            }else{
+                if($inv->is_repayment == 1)
+                $inv->is_repayment = 0;
+                if($inv->status_id == 13)
+                $inv->status_id = 12;
             }
+            $inv->save();
         }
     }
    

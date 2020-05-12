@@ -127,7 +127,7 @@ class ManualApportionmentHelper{
                     'trans_running_id'=> null,
                     'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                     'user_id' => $trans->user_id,
-                    'trans_date' => $odStartDate,
+                    'trans_date' => $graceEndDate,
                     'amount' => $trans->outstanding,
                     'entry_type' => 1,
                     'soa_flag' => 1,
@@ -375,7 +375,7 @@ class ManualApportionmentHelper{
             $intAccrualData['interest_rate'] = null;
             $intAccrualData['overdue_interest_rate'] = $odIntRate;
             $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone')   )->format('Y-m-d h:i:s');
-            $intAccrualData['created_by'] = Auth::user()->user_id;
+            $intAccrualData['created_by'] = Auth::user()->user_id??null;
 
             if($interest_accrual_id){
                 $recalwhereCond = [];
@@ -409,7 +409,6 @@ class ManualApportionmentHelper{
             $odStartDate = $this->addDays($gEndDate,1);
             $maxAccrualDate = $invDisbDetail->interests->max('interest_date');
             
-            $currentIntRate = $intRate;
             $intType = 1;
             
             $loopStratDate = $startDate ?? $intAccrualStartDate;
@@ -422,7 +421,17 @@ class ManualApportionmentHelper{
                 throw new InvalidArgumentException('Payment Date is missing for invoice Disbursed Id: ' . $invDisbId);
             }
             
+            $oldIntRate = $offerDetails->interest_rate - $offerDetails->base_rate;
+            $bankRatesArr = $this->getBankBaseRates($offerDetails->bank_id);//if $bankRatesArr value is false then follow the old process. otherwise call the below function to get the actual interest rate based on base rate.
+
             while(strtotime($curdate) > strtotime($loopStratDate)){
+                if($bankRatesArr){
+                    $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($loopStratDate));//$str_to_time_date is the time at that point of time you want to get interest rate
+                    $currentIntRate = $intRate;
+                }else{
+                    $currentIntRate = $intRate;
+                }
+                
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq);
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) >= strtotime($odStartDate)){
@@ -446,7 +455,7 @@ class ManualApportionmentHelper{
                     $intAccrualData['interest_rate'] = ($intType==1)?$intRate:null;
                     $intAccrualData['overdue_interest_rate'] = ($intType==2)?$odIntRate:null;
                     $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
-                    $intAccrualData['created_by'] = Auth::user()->user_id;
+                    $intAccrualData['created_by'] = Auth::user()->user_id??null;
                     
                     if($interest_accrual_id){
                         $recalwhereCond = [];
@@ -485,5 +494,36 @@ class ManualApportionmentHelper{
         foreach ($invoiceList as $invId => $trans) {
             $this->intAccrual($invId);
         }
+    }
+    
+    public function getBankBaseRates($bank_id, $date=null){
+        if($bank_id){
+            $base_rates = \App\Inv\Repositories\Models\Master\BaseRate::where(['bank_id'=> $bank_id, 'is_active'=> 1])->orderBy('id', 'DESC')->get();
+            $br_array = [];
+            foreach($base_rates as $key=>$base_rate){
+                $temp = [
+                            'start_date'=>strtotime(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $base_rate['start_date'])->setTimezone(config('common.timezone'))->format('Y-m-d')),
+                            'end_date'=>($base_rate['end_date'])? strtotime(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $base_rate['end_date'])->setTimezone(config('common.timezone'))->format('Y-m-d')): '',
+                            'base_rate'=>$base_rate['base_rate']
+                        ];
+                array_push($br_array, $temp);
+            }
+            return $br_array;
+        }else{
+            return false;
+        }
+    }
+
+    public function getIntRate($oldIntRate, $bankRatesArr, $stt_date){
+        $actIntRate = 0;
+        foreach($bankRatesArr as $key=>$bankRateArr){
+            if($stt_date >= $bankRateArr['start_date']){
+                $actIntRate = $bankRateArr['base_rate'] + $oldIntRate;
+                break;
+            }else{
+                continue;
+            }
+        }
+        return $actIntRate;
     }
 }

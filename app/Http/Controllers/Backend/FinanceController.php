@@ -76,34 +76,7 @@ class FinanceController extends Controller {
             $where = ['batch_no' => $batch_no];
         }
         $result = $this->finRepo->getTallyTxns($where);
-         $records = [];
-         $header[] = [
-            "batch_no" => "Batch No",
-            "entry_type" => "Entry Type",
-            "voucher_type" => "Voucher Type",
-            "voucher_code" => "Voucher Code",
-            "voucher_date" => "Voucher Date",
-            "invoice_no" => "Invoice No",
-            "invoice_date" => "Invoice Date",
-            "ledger_name" => "Ledger Name",
-            "amount" => "Amount",
-            "ref_no" => "Reference No",
-            "ref_amount" => "Reference Amount",
-            "acc_no" => "Account No",
-            "ifsc_code" => "IFSC Code",
-            "bank_name" => "Bank Name",
-            "cheque_amount" => "Cheque Amount",
-            "cross_using" => "Cross Using",
-            "trans_date" => "Trans Date",
-            "trans_type" => "Transaction Type",
-            "inst_no" => "Inst No",
-            "inst_date" => "Inst Date",
-            "favoring_name" => "Favoring Name",
-            "remarks" => "Remarks",
-            "narration" => "Narration",
-            "is_posted" => "Is Posted",
-            ];
-
+        $records = [];
         $journal = array();
         $payment = array();
         $records['PAYMENT'] = array();
@@ -116,8 +89,6 @@ class FinanceController extends Controller {
         if (!empty($result)) {
            foreach ($result as $key => $value) {
                 $new[] = $fetchedArr = (array)$value;
-                $tally_entry_id = $fetchedArr['tally_entry_id'];
-                $unique_voucher_no = sprintf('%04d', $tally_entry_id);
                 $voucherDate = date('d-m-Y',strtotime($fetchedArr['voucher_date']));
                 $trans_date = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 
                 $entry_type = strtolower($fetchedArr['entry_type']);
@@ -126,10 +97,9 @@ class FinanceController extends Controller {
                 if (strtolower($fetchedArr['voucher_type']) == 'journal') {
                     $jj = $fetchedArr;
                     $j_is_first_or_old  = $is_first_n_old;
-                    // echo "------------$j_is_first_or_old------------<br>";
                     $j = [
                         "batch_no" => $fetchedArr['batch_no'],
-                        "voucher_no" => $unique_voucher_no,
+                        "voucher_no" => sprintf('%04d',$fetchedArr['voucher_no']),
                         "trans_type" => $fetchedArr['trans_type'],
                         "voucher_type" => $fetchedArr['voucher_type'],
                         "voucher_date" => $voucherDate,
@@ -158,94 +128,28 @@ class FinanceController extends Controller {
                     $cr_amount_sum += ($entry_type == 'debit' ? $fetchedArr['amount'] : 0);
                     $journal[] = $j; 
                 }else{
-                     $fetchedArr['cheque_amount'] = ($fetchedArr['cheque_amount'] != 0 ? $fetchedArr['cheque_amount'] : '');
-                     $company_row = [
-                            "voucher_no" => $unique_voucher_no,
-                            "voucher_type" => $fetchedArr['voucher_type'],
-                            "voucher_date" => $voucherDate,
-                            "ledger_name" => $fetchedArr['ledger_name'],
-                            "amount" => $fetchedArr['amount'],
-                            "dr_/_cr" => $fetchedArr['entry_type'],
-                            "reference_no" => $fetchedArr['ref_no'],
-                            "reference_amount" => $fetchedArr['ref_amount'],
-                            "transaction_type" => '',
-                            "a_/_c_no" => '',
-                            "ifsc_code" => '',
-                            "bank_name" => '',
-                            "cheque_amount" => '',
-                            "cross_using" => '',
-                            "inst_no" => '',
-                            "inst_date" => '',
-                            "favoring_name" => '',
-                            "remarks" => '',
-                            "narration" => 'Being '. $fetchedArr['trans_type'] .' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no'] : 'Batch no ' . $fetchedArr['batch_no']),
-                        ];
-                    $bank_row = [
-                            "voucher_no" => $unique_voucher_no,
-                            "voucher_type" => $fetchedArr['voucher_type'],
-                            "voucher_date" => $voucherDate,
-                            "ledger_name" => $fetchedArr['bank_name'],
-                            "amount" => $fetchedArr['amount'],
-                            "dr_/_cr" => $fetchedArr['entry_type'],
-                            "reference_no" => $fetchedArr['ref_no'],
-                            "reference_amount" => $fetchedArr['ref_amount'],
-                            "transaction_type" => $fetchedArr['mode_of_pay'],
-                            "a_/_c_no" => $fetchedArr['acc_no'],
-                            "ifsc_code" => $fetchedArr['ifsc_code'],
-                            "bank_name" => $fetchedArr['bank_name'],
-                            "cheque_amount" => $fetchedArr['cheque_amount'],
-                            "cross_using" => $fetchedArr['cross_using'],
-                            "inst_no" => $fetchedArr['inst_no'],
-                            "inst_date" => $fetchedArr['inst_date'],
-                            "favoring_name" => $fetchedArr['favoring_name'],
-                            "remarks" => '',
-                            "narration" => 'Being '.$fetchedArr['trans_type'].' towards '.(!empty($fetchedArr['ref_no']) ? 'Invoice No ' . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no']  : 'Batch no ' . $fetchedArr['batch_no']),
-                        ];
-                    if ($fetchedArr['voucher_type'] == 'Payment') {
-                        $interestRow = [];
-                        $company_row['dr_/_cr'] = 'Debit';
-                        $records['PAYMENT'][] = $company_row;
-                        $bank_row['dr_/_cr'] = 'Credit';
-                        $bank_row['voucher_date'] = '';
-                        $bank_row['reference_no'] = '';
-                        $bank_row['reference_amount'] = '';
-                        if (!empty($fetchedArr['cheque_amount']) && ($fetchedArr['amount']-$fetchedArr['cheque_amount']) > 0) {
-                            $interestRow = [
-                                "voucher_no" => $unique_voucher_no,
-                                "voucher_type" => $fetchedArr['voucher_type'],
-                                "voucher_date" => '',
-                                "ledger_name" => 'Interest',
-                                "amount" => ($fetchedArr['amount']-$fetchedArr['cheque_amount']),
-                                "dr_/_cr" => 'Credit',
-                                "reference_no" => $fetchedArr['ref_no'],
-                                "reference_amount" => ($fetchedArr['amount']-$fetchedArr['cheque_amount']),
-                                "transaction_type" => '',
-                                "a_/_c_no" => '',
-                                "ifsc_code" => '',
-                                "bank_name" => '',
-                                "cheque_amount" => '',
-                                "cross_using" => '',
-                                "inst_no" => '',
-                                "inst_date" => '',
-                                "favoring_name" => '',
-                                "remarks" => '',
-                                "narration" => "Being Interest Booked " .(!empty($fetchedArr['ref_no']) ? "Invoice No " . $fetchedArr['ref_no'] . ' & Batch no ' . $fetchedArr['batch_no'] : "Batch no " . $fetchedArr['batch_no']),
-                            ]; 
-                            $bank_row['amount'] = $fetchedArr['cheque_amount']; 
-                        }
-                        $records['PAYMENT'][] = $bank_row;
-                        if (!empty($interestRow)) {
-                         $records['PAYMENT'][] = $interestRow;  
-                        }
-                    }else{
-                        $bank_row['dr_/_cr'] = 'Debit';
-                        $records['PAYMENT'][] = $bank_row;
-                        $company_row['dr_/_cr'] = 'Credit';
-                        $company_row['voucher_date'] = '';
-                        $company_row['reference_no'] = '';
-                        $company_row['reference_amount'] = '';
-                        $records['PAYMENT'][] = $company_row;
-                    }
+                    $paymentRow =  [
+                        "voucher_no" => $fetchedArr['voucher_no'],
+                        "voucher_type" => $fetchedArr['voucher_type'],
+                        "voucher_date" =>  !empty($fetchedArr['voucher_date']) ? date('d-m-Y',strtotime($fetchedArr['voucher_date'])) : '',
+                        "ledger_name" => $fetchedArr['ledger_name'],
+                        "amount" => $fetchedArr['amount'],
+                        "dr_/_cr" => $fetchedArr['entry_type'],
+                        "reference_no" => $fetchedArr['ref_no'],
+                        "reference_amount" => $fetchedArr['ref_amount'],
+                        "transaction_type" => $fetchedArr['mode_of_pay'],
+                        "a_/_c_no" => $fetchedArr['acc_no'],
+                        "ifsc_code" => $fetchedArr['ifsc_code'],
+                        "bank_name" => $fetchedArr['bank_name'],
+                        "cheque_amount" => ($fetchedArr['cheque_amount'] != 0 ? $fetchedArr['cheque_amount'] : ''),
+                        "cross_using" => $fetchedArr['cross_using'],
+                        "inst_no" => $fetchedArr['inst_no'],
+                        "inst_date" => $fetchedArr['inst_date'],
+                        "favoring_name" => $fetchedArr['favoring_name'],
+                        "remarks" => $fetchedArr['remarks'],
+                        "narration" => $fetchedArr['narration'],
+                    ];
+                    $records['PAYMENT'][] = $paymentRow;
                 }
                 $transType = $fetchedArr['trans_type'];
                 $transDate = date('Y-m-d', strtotime($fetchedArr['voucher_date'])); 

@@ -1865,7 +1865,6 @@ class CamController extends Controller
             $app_id = $request->get('app_id');
             $liftingData = $this->appRepo->getLiftingDetail($app_id);
             $anchorRelationData = $this->appRepo->getAnchorRelationDetails($app_id);
-//            dd('$anchorRelationData--', $anchorRelationData);
             $data = [];
             if (!empty($liftingData)) {
                 foreach ($liftingData as $key => $value) {
@@ -1925,18 +1924,18 @@ class CamController extends Controller
             $relationShipArr['repayment_track_record']          = $allData['repayment_track_record'];
             $relationShipArr['repayment_track_record_actual']   = $allData['repayment_track_record_actual'];
             $relationShipArr['repayment_track_record_remark']   = $allData['repayment_track_record_remark'];
-            $relationShipArr['sec_third_gen_trader']            = $allData['sec_third_gen_trader'];
+            $relationShipArr['sec_third_gen_trader']            = isset($allData['sec_third_gen_trader']) ? $allData['sec_third_gen_trader'] : null;
             $relationShipArr['gen_trader_actual']               = $allData['gen_trader_actual'];
             $relationShipArr['gen_trader_remark']               = $allData['gen_trader_remark'];
-            $relationShipArr['alt_buss_of_trader']              = $allData['alt_buss_of_trader'];
+            $relationShipArr['alt_buss_of_trader']              = isset($allData['alt_buss_of_trader']) ? $allData['alt_buss_of_trader'] : null;
             $relationShipArr['alt_buss_of_trader_actual']       = $allData['alt_buss_of_trader_actual'];
             $relationShipArr['alt_buss_of_trader_remark']       = $allData['alt_buss_of_trader_remark'];
-            $relationShipArr['self_owned_prop']                 = $allData['self_owned_prop'];
+            $relationShipArr['self_owned_prop']                 = isset($allData['self_owned_prop']) ? $allData['self_owned_prop'] : null;
             $relationShipArr['self_owned_prop_actual']          = $allData['self_owned_prop_actual'];
             $relationShipArr['self_owned_prop_remark']          = $allData['self_owned_prop_remark'];
             $relationShipArr['trade_ref_check_actual']          = $allData['trade_ref_check_actual'];
             $relationShipArr['trade_ref_check_remark']          = $allData['trade_ref_check_remark'];
-            $relationShipArr['adv_tax_payment']                 = $allData['adv_tax_payment'];
+            $relationShipArr['adv_tax_payment']                 = isset($allData['adv_tax_payment']) ? $allData['adv_tax_payment'] : null;
             $relationShipArr['adv_tax_payment_actual']          = $allData['adv_tax_payment_actual'];
             $relationShipArr['adv_tax_payment_remark']          = $allData['adv_tax_payment_remark'];
             

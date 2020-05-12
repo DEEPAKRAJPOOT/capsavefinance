@@ -399,7 +399,7 @@ trait InvoiceTrait
 
      public static  function    invoiceApproveLimit($attr)
    {
-        $is_enhance  =    Application::whereIn('app_type',[2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
+        $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
        if($is_enhance==1)
        {
          return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
