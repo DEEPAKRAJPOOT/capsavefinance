@@ -496,9 +496,38 @@ class Transactions extends BaseModel {
         return collect(['amount'=> $intRefund,'parent_transaction'=>$invoice2]);
     }
 
-    public static function getJournals(array $whereCond = []){
-        return self::whereNull('payment_id')
-            ->where($whereCond)
+    public function getReversalParent() {
+        return $this->belongsTo('App\Inv\Repositories\Models\Payment', 'trans_id', 'parent_trans_id');
+    }
+
+    public static function getJournalTxnTally(array $where = []){
+        return self::with('transType')->where(function ($query) {
+            $query->whereHas('transType', function($q) { 
+                $q->where('entry_type', '=', '0')->where('is_invoice_generated', '=', '1')->where(function ($qry) {
+                   $qry->where('id', '=', config('lms.TRANS_TYPE.INTEREST'))->orWhere('chrg_master_id','!=','0');
+                });
+            })
+            ->orWhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.WAVED_OFF')])
+            ->orWhere(function ($q) {
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])->whereNotNull('parent_trans_id')->where('entry_type', '=', '1');
+            })
+            ->orWhere(function ($q) {
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS')])->where('entry_type', '=', '1');
+            });
+        })->where($where)->orderBy('trans_date', 'ASC')->get(); 
+    }
+
+    public static function getDisbursalTxnTally(array $where = []){
+        return self::whereIn('trans_type', [config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+            ->where('entry_type', '=', 0)
+            ->where($where)
+            ->get();
+    }
+
+    public static function getRefundTxnTally(array $where = []){
+        return self::whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])
+            ->where('entry_type', '=', 0)
+            ->where($where)
             ->get();
     }
 
@@ -727,10 +756,35 @@ class Transactions extends BaseModel {
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
             if($invoiceType == 'I') {
                  $query->where('id','=','9');
-                 // $query->orWhere('id','=','33');
              }  else {
                 $query->where('chrg_master_id','!=','0');
             }
         })->get();
     }
+    
+    /**
+     * Get Disbursal transactions
+     * 
+     * @param string $transStartDate
+     * @param string $transEndDate
+     * 
+     * @return mixed
+     */
+    public static function checkDisbursalTrans($transStartDate, $transEndDate)
+    {
+        $query = self::select('transactions.*', 'invoice_disbursed.disbursal_id', 'invoice_disbursed.invoice_id', 'app_prgm_offer.payment_frequency')
+                ->join('invoice_disbursed', 'invoice_disbursed.invoice_disbursed_id', '=', 'transactions.invoice_disbursed_id')
+                ->join('invoice', 'invoice_disbursed.invoice_id', '=', 'invoice.invoice_id')
+                ->join('app_prgm_offer', 'app_prgm_offer.prgm_offer_id', '=', 'invoice.prgm_offer_id')
+                ->whereBetween('trans_date', [$transStartDate, $transEndDate])
+                ->whereIn('trans_type', [config('lms.TRANS_TYPE.PAYMENT_DISBURSED'), config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.INTEREST')])
+                ->whereNull('parent_trans_id')
+                ->whereNull('link_trans_id')
+                ->whereNull('payment_id')
+                ->where('entry_type', '0');
+                
+        $result = $query->get();
+        
+        return $result;
+    }    
 }

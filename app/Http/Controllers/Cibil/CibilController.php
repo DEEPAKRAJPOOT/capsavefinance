@@ -72,11 +72,12 @@ class CibilController extends Controller
                     $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
                                                 'biz_id' =>   $arrOwnerData['biz_id'],
                                                 'biz_owner_id' => $arrOwnerData['biz_owner_id'],
-                                                'type' => 1,
+                                                'type' => 2,
                                                 'verify_doc_no' => 1,
                                                 'status' => 1,
                                                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                                                'created_by' => Auth::user()->user_id,
+                                               'created_at' => \Carbon\Carbon::now(),
                                               ]);
 
                                if($createBizApi){
@@ -199,6 +200,7 @@ class CibilController extends Controller
                                                                 'status' => 1,
                                                                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                                                                'created_by' => Auth::user()->user_id,
+                                                               'created_at' => \Carbon\Carbon::now(),
                                                               ]);
 
                                                if($createBizApi){

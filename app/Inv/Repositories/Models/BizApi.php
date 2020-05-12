@@ -35,7 +35,8 @@ class BizApi extends BaseModel
         'verify_doc_no',
         'biz_api_log_id',
         'status',
-        'created_by'
+        'created_by',
+        'created_at'
     ];
 
  public static function getPromoterCibilData($biz_owner_id)
