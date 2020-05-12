@@ -2283,6 +2283,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
     {
         return AppProgramLimit::getUtilizeLimit($appId, $productId, $checkApprLimit);
+    }
+
+    public function getAppLimitData($whereCond)
+    {
+        return AppLimit::getAppLimitData($whereCond);
     }    
 }
 

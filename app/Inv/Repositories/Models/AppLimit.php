@@ -137,6 +137,12 @@ class AppLimit extends BaseModel {
                 ->first();
     }
 
-   
+    public static function getAppLimitData($whereCond)
+    {
+        $result = self::select('*')
+                ->where($whereCond)               
+                ->get();
+        return $result ? $result : []; 
+    }   
 
 }

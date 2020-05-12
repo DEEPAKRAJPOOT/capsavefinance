@@ -880,9 +880,15 @@ class ApplicationController extends Controller
                                 $appData = $this->appRepo->getAppData($app_id);
                                 if ($appData && in_array($appData->app_type, [1,2,3]) ) {
                                     $parentAppId = $appData->parent_app_id;
+                                    $actualEndDate = $curDate;
+                                    $appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+                                    if (in_array($appData->app_type, [2,3])) {
+                                        $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+                                        $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+                                    }
                                     $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
-                                    $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $curDate], ['app_id' => $parentAppId]);
-                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $curDate], ['app_id' => $parentAppId, 'product_id' => 1]);                                    
+                                    $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);                                    
                                 }
                                 
         		if (!is_null($appLimitId)) {
