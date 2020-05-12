@@ -4609,7 +4609,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'amount_type',
                         function ($dataRecords) {
-                        return $dataRecords->entry_type == '1' ? 'Credit' : 'Debit';
+                        return $dataRecords->entry_type;
                     }) 
                     ->editColumn(
                         'reference_no',
@@ -4629,7 +4629,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'voucher_code',
                         function ($dataRecords) {
-                        return $dataRecords->voucher_code;
+                        return sprintf('%04d', $dataRecords->voucher_no);
                     })      
                     ->editColumn(
                         'mode_of_pay',
