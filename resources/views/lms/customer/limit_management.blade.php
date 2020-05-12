@@ -78,11 +78,10 @@
                         </div>
 
                         @foreach($limit->offer as $val) 
-                        @php 
-
+                        @php
+                        $val['user_id']  = $uLimit->app->user_id;
                         $inv_limit =  $obj->invoiceAnchorLimitApprove($val);
                         $getAdhoc   = $obj->getAdhoc($val);
-
                         @endphp  
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
