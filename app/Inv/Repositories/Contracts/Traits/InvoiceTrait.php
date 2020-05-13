@@ -831,7 +831,7 @@ trait InvoiceTrait
                       $datalist['status_id'] = 28;
                 }
           }
-          else
+          if($attr->status_id==28)
           {
                $datalist['comm_txt']  = '';
                $datalist['status_id'] = 28;
