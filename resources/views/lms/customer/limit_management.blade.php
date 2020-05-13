@@ -62,13 +62,13 @@
                             </div>
                                <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 
-                                @if($getAccountClosure > 0 && $uLimit->app->app_type==2)
+                                @if($getAccountClosure > 0 && $uLimit->app->status==2)
                                 <form  method="post" action="{{Route('account_closure')}}" enctype= multipart/form-data>
                                 @csrf 
                                 <input type="hidden" name="user_id" value="{{$userId}}">
                                 <input type="submit" id="submit" name="submit" value="Account Closure" class="btn-sm btn btn-success">
                                 </form>
-                                @elseif($uLimit->app->app_type==2)
+                                @elseif($uLimit->app->status==2)
                                    <button type="button" class="btn-sm badge badge-warning btn-sm float-right">Account closed </button>
                                 @endif
                             </div>
