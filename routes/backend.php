@@ -911,6 +911,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/view-shared-colender', [
                 'as' => 'view_shared_colender',
                 'uses' => 'Master\CoLenderControllers@viewSharedColender'
+            ]);
+            Route::get('/get-colender-soa', [
+                'as' => 'view_colander_soa',
+                'uses' => 'Master\CoLenderControllers@viewColenderSoa'
             ]);  
             
             

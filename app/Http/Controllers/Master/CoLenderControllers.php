@@ -10,17 +10,20 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 
 class CoLenderControllers extends Controller {
 
     protected $userRepo;
+    protected $lmsRepo;
 
-    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user, InvAppRepoInterface $app_repo)
+    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user, InvAppRepoInterface $app_repo, InvLmsRepoInterface $lms_repo)
     {
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->masterRepo = $master;
         $this->appRepo = $app_repo;
+        $this->lmsRepo = $lms_repo;
         $this->userRepo = $user;
     }
 
@@ -179,6 +182,29 @@ class CoLenderControllers extends Controller {
     public function viewSharedColender(Request $request){
         $shared_colenders = $this->appRepo->getSharedColender(['app_id'=>$request->app_id, 'app_prgm_limit_id'=>$request->app_prgm_limit_id, 'is_active'=>1]);
         return view('backend.coLenders.view_shared_colender')->with('sharedCoLenders', $shared_colenders);
+    }
+
+    public function viewColenderSoa(Request $request){
+       $userData = [];
+        if($request->has('user_id')){
+            $user = $this->userRepo->lmsGetCustomer($request->user_id);
+            $maxInterestDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.INTEREST'));
+            $maxPrincipalDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+            if($user && $user->app_id){
+                $userData['user_id'] = $user->user_id;
+                $userData['customer_id'] = $user->customer_id;
+                $appDetail = $this->appRepo->getAppDataByAppId($user->app_id);
+                if($appDetail){
+                    $userData['app_id'] = $appDetail->app_id;
+                    $userData['biz_id'] = $appDetail->biz_id;
+                }
+            }
+        }
+        return view('backend.coLenders.view_soa')
+        ->with('user',$userData)
+        ->with('maxDPD',1)
+        ->with('maxPrincipalDPD',$maxPrincipalDPD)
+        ->with('maxInterestDPD',$maxInterestDPD);
     }
 
     /**

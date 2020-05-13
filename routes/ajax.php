@@ -755,6 +755,11 @@ Route::group(
         'as' => 'lms_get_soa_list',
         'uses' => 'AjaxController@lmsGetSoaList'
     ]);
+
+    Route::post('get-colender-soa-list', [
+        'as' => 'get_colender_soa_list',
+        'uses' => 'AjaxController@getColenderSoaList'
+    ]);
     
     Route::post('get-bank-account-list', [
         'as' => 'get_bank_account_list',

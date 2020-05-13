@@ -466,7 +466,7 @@
         </li>
         @endif
 
-        
+        @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuFinance" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-money"></i>
@@ -499,7 +499,8 @@
                                                             
                 </ul>
             </div>
-        </li>   
+        </li>
+        @endif   
           
     </ul>
 </nav>

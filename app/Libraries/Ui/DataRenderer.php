@@ -4094,6 +4094,115 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+    /**
+     * get Colender soa list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    public function getColenderSoaList(Request $request, $data)
+    {
+        return DataTables::of($data)
+        ->rawColumns(['balance','narration'])
+            ->addColumn('payment_id', function($trans){
+                return $trans->payment_id;
+            })
+            ->addColumn('customer_id', function($trans){
+                $data = $trans->lmsUser->customer_id ?? '';
+                return $data;
+            })
+            ->addColumn('customer_name', function($trans){
+                $data = '';
+                if($trans->user){
+                    $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
+                }
+                return $data;
+            })
+            ->addColumn('invoice_no',function($trans){
+                return $trans->invoiceno;
+            })
+            ->addColumn('batch_no',function($trans){
+                return $trans->batchNo;
+            })
+            ->addColumn('narration',function($trans){
+                return "<b>".$trans->narration."<b>";
+            })
+            ->addColumn('virtual_acc_id', function ($trans) {
+                return $trans->virtual_acc_id;
+            })
+            ->addColumn('value_date', function ($trans) {
+                return date('d-m-Y',strtotime($trans->trans_date));
+            })
+            ->editColumn('trans_date', function ($trans) {
+                return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+            })
+            ->editColumn('trans_type', function ($trans) {
+                return $trans->transname;
+            })
+            ->editColumn('currency', function ($trans) {
+                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    return '';
+                }else{
+                    return 'INR';
+                }
+            })
+            ->addColumn('sub_amount', function($trans) {
+                if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
+                    return number_format($trans->amount,2);
+                }
+            })
+            ->editColumn('debit', function ($trans) {
+                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    return '';
+                }elseif($trans->entry_type=='0'){
+                    return number_format($trans->amount,2);
+                }else{
+                    return '(0.00)';
+                }
+            })
+            ->editColumn('credit',  function ($trans) {
+                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    return '';
+                }elseif($trans->entry_type=='1'){
+                    return '('.number_format($trans->amount,2).')';
+                }else{
+                    return '(0.00)';
+                }
+            })
+            ->editColumn(
+                'balance',
+                function ($trans) {
+
+                    $data = '';
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                        $data = '';
+                    }
+                    elseif($trans->balance<0){
+                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
+                    }else{
+                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
+                    }
+                    return $data;
+            })
+            ->filter(function ($query) use ($request) {
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('customer_id')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $customer_id = trim($request->get('customer_id'));
+                        $query->where('customer_id', '=', "$customer_id");
+                    });
+                }
+            })
+            ->make(true);
+        }
         // Equipment
         public function getEquipments(Request $request, $data)
         {
@@ -4301,13 +4410,10 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($app)
                 ->rawColumns(['app_id', 'action', 'status'])
-                ->addColumn(
-                    'app_id',
-                    function ($app) {
+                ->addColumn('app_id', function ($app) {
                         $link = route('colender_view_offer', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, 'APP')  . "</a> ";
-                    }
-                )
+                })
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
@@ -4332,7 +4438,7 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                    $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
                        $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                     }else{
                       $achorName='';  
@@ -4353,19 +4459,10 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     $status = $app->colender->co_lender_status;
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($status == 0)? "badge-primary":(($status == 1)? "badge-success": "badge-warning")).'">'.(($status == 0)? "Pending":(($status == 1)? "Accepted": "Rejected")).'</label>';
+                    $soaBtn = '<a href="'. route('view_colander_soa', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]) .'" class="badge badge-success">View SOA</a>';                    
+                    return '<label class="badge '.(($status == 0)? "badge-primary":(($status == 1)? "badge-success": "badge-warning")).'">'.(($status == 0)? "Pending":(($status == 1)? "Accepted": "Rejected")).'</label> &nbsp; ' . $soaBtn;
 
                 })
-                /*->addColumn(
-                    'action',
-                    function ($app) use ($request) {
-                        return '<div class="d-flex inline-action-btn">
-                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
-                                <a href="'.route('front_gstin', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Pull GST Detail" class="btn btn-action-btn btn-sm">Pull Gst</a>
-                            </div>';
-                    }
-                )*/
                 ->filter(function ($query) use ($request) {
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {

@@ -3901,6 +3901,18 @@ if ($err) {
    *
    * @return json transaction data
    */
+    public function getColenderSoaList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->lmsRepo->getSoaList();
+        $users = $dataProvider->getColenderSoaList($this->request, $transactionList);
+        return $users;
+    }
+
+    /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
     public function lmsGetSoaList(DataProviderInterface $dataProvider) {
 
         $transactionList = $this->lmsRepo->getSoaList();
