@@ -436,6 +436,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\ApportionmentController@getTransDetailWaiveOff'
             ]);
 
+            Route::get('/apportionment/txn/writeoff',[
+                'as' => 'apport_trans_writeoff',
+                'uses' => 'Lms\ApportionmentController@getTransDetailWriteOff'
+            ]);
+
             Route::get('/apportionment/txn/reversal',[
                 'as' => 'apport_trans_reversal',
                 'uses' => 'Lms\ApportionmentController@getTransDetailReversal'

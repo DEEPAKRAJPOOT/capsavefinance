@@ -263,6 +263,25 @@ class Apportionment {
        }
     }
 
+    onWriteOff(){
+        var data = this.data;
+        var numberOfChecked = $('input:checkbox:checked').length;
+        if (numberOfChecked == 1) {
+            var checkedName = $('input:checkbox:checked').attr('name');
+            var transtype = $('input:checkbox:checked').attr('transtype');
+            var transId = checkedName.replace(/[^0-9]/g, '');
+            var givenUrl = data.trans_writeoff_url;
+            var targetUrl = givenUrl + '&trans_id=' + transId;
+            if(data.payment_id){
+                 targetUrl += '&payment_id=' + data.payment_id;
+            }
+            $('.view_detail_transaction').attr('data-url', targetUrl);
+            $('.view_detail_transaction').trigger('click');
+        }else{
+             alert('Please select only one checkbox');
+        }
+    }
+
     onReversalAmount(){
        var data = this.data;
        var numberOfChecked = $('input:checkbox:checked').length;

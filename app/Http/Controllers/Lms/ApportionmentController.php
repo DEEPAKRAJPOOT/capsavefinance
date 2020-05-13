@@ -1019,5 +1019,25 @@ class ApportionmentController extends Controller
             $inv->save();
         }
     }
+
+    /**
+     * get Transaction Detail for writeOff
+     * @param Request $request
+     * @return array
+     */
+    public function getTransDetailWriteOff(Request $request){
+        try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            $transId = $request->get('trans_id');
+            $payment_id = $request->get('payment_id');
+            $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            return view('lms.apportionment.writeOffTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView]); 
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
    
 }
