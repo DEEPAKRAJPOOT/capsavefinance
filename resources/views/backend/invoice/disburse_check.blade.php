@@ -38,19 +38,31 @@ foreach ($apps as $app) {
 @endforeach
 
 <div class="row">
-	<div class="col-12 row">
+	<div class="col-8 row">
 
-		<div class="col-4">
+		<div class="col-6">
 			<div class="form-group">
 				<label for="marginAmount"># No of Cust.</label>
 				<input type="text" name="" class="form-control" readonly="true" value="{{ $customersDisbursalList->count() }}">
 			</div>
 		</div>
-		<div class="col-4">
+		<div class="col-6">
 			<div class="form-group">
 				<label for="nonFactoredAmount"># Amount Disburse</label>
 				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ number_format((float)$finalDisburseAmt, 2, '.', '') }}">
 			</div>
+		</div>
+	</div>
+
+	<div class="col-4 row">
+		<div class="col-9"></div>
+		<div class="col-3">
+			<form id="onlineDisburse" method="POST" action="{{ Route('disburse_online') }}">
+				@csrf
+				<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids">
+				
+				<input type="submit" id="submitOnlineDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2">
+			</form>
 		</div>
 	</div>
 </div>
@@ -75,17 +87,6 @@ foreach ($apps as $app) {
 			</div>
 		</form>
 	</div>
-	<!-- <div class="col-6 row">
-		<div class="col-6"></div>
-		<div class="col-3">
-			<form id="manualDisburse" method="POST" action="{{ Route('disburse_online') }}">
-				@csrf
-				<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-				
-				<input type="submit" id="submitManualDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2 disabled">
-			</form>
-		</div>
-	</div> -->
 
 </div>
 <div class="col-12 dataTables_wrapper mt-4">
