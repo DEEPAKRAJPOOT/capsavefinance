@@ -662,10 +662,7 @@ class Transactions extends BaseModel {
     public static function getSoaList(){
 
         return self::select('transactions.*')
-                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
-                    ->join('lms_users','users.user_id','lms_users.user_id')
                     ->where('soa_flag','=',1)
-                    //->where('amount','>',0)
                     ->orderBy('user_id', 'asc')
                     ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');
