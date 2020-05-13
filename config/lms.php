@@ -122,9 +122,12 @@ return [
         'lms_disbursal_request_list',
         'lms_disbursed_list',
         'payment_list',
+        'settled_payments',
         'unsettled_payments',
         'payment_advice',
-        'add_payment'
+        'add_payment',
+        'edit_payment',
+        'lms_refund_payment_advise',
     ],
     'EOD_PASS_STATUS' => 1,
     'EOD_FAIL_STATUS' => 2,

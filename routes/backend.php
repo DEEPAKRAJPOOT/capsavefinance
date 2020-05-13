@@ -1251,6 +1251,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_view_disburse_invoice',
                'uses' => 'Backend\InvoiceController@viewDisburseInvoice'
             ]);
+             Route::POST('account_closure', [
+                'as' => 'account_closure',
+               'uses' => 'Backend\InvoiceController@accountClosure'
+            ]);
          });
          
         Route::group(['prefix' => 'document'], function () {

@@ -2701,7 +2701,7 @@ if ($err) {
     }
 
     public function checkExistUser(Request $request) {
-        dd($request);
+        // dd($request);
         $email = $request->post('username');
         $anchUsersList = $this->userRepo->getUserByemail($email);
         return $anchUsersList;
@@ -4379,4 +4379,32 @@ if ($err) {
         $applications = $dataProvider->getRenewalAppList($this->request, $appList);
         return $applications;
     }
+    
+    public function checkEodProcess(Request $request)
+    {
+        $data = ['eod_process' => \Helpers::checkEodProcess()];
+        $response = $data + ['message' => trans('backend_messages.lms_eod_process_msg')];
+        return response()->json($response);  
+    }
+
+    public function updateEodProcessStatus(Request $request)
+    {
+        $waitTime = 3;
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
+        sleep($waitTime);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'));
+        
+        return response()->json(['status' => 1]);
+    }    
 }
