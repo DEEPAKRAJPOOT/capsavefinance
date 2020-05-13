@@ -867,7 +867,7 @@ trait InvoiceTrait
    {
       $getBank =   BizInvoice::where(['status_id' => 10,'supplier_id' =>$attr['user_id']])->count();
       $get_outstanding =   BizInvoice::where(['is_repayment' =>0,'status_id' => 12,'supplier_id' =>$attr['user_id']])->count();
-      $get_Payment  =  Payment::where(['user_id' => $attr['user_id'],'payment_type' =>7])->where('file_id','<>', 0)->count();
+      $get_Payment  =  Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->where('file_id','<>', 0)->count();
       $getReject =   BizInvoice::whereIn('status_id',[7,8,9,11,28])->where(['supplier_id' =>$attr['user_id']])->get();
       if($getBank > 0)
       {
