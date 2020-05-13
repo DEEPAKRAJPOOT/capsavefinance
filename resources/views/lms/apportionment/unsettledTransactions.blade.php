@@ -68,7 +68,7 @@
     var messages = {
         url: "{{ URL::route('apport_unsettled_list') }}",
         trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff',['sanctionPageView' => $sanctionPageView]) }}",
-        trans_writeoff_url: "{{ URL::route('apport_trans_waiveoff',['sanctionPageView' => $sanctionPageView]) }}",
+        trans_writeoff_url: "{{ URL::route('apport_trans_writeoff',['sanctionPageView' => $sanctionPageView]) }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",
         payment_amt: "{{ $payment_amt }}",

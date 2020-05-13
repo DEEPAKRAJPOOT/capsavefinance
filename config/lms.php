@@ -21,6 +21,7 @@ return [
        'REFUND'=>'32',
        'NON_FACTORED_AMT' => '35',
        'WAVED_OFF'=>'36',
+       'WRITE_OFF'=>'37',
         /*
         'PAYMENT_RECEIVED' => '1',
         'DISCOUNT_ON_PAYMENT' => '3',

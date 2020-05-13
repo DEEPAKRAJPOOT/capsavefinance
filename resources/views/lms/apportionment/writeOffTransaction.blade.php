@@ -20,7 +20,7 @@
 </style>
 @endsection
 @section('content')
-<form action="{{route('apport_waiveoff_save', ['trans_id' => $TransDetail->trans_id, 'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView])}}" target="_top" method="post">
+<form action="{{route('apport_writeoff_save', ['trans_id' => $TransDetail->trans_id, 'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView])}}" target="_top" method="post">
     @csrf
     <div class="form-inline">
         <div class="col">

@@ -4085,7 +4085,7 @@ class DataRenderer implements DataProviderInterface
                 }
 
                 if($request->get('customer_id')!= ''){
-                    $query->where(function ($query) use ($request) {
+                    $query->whereHas('lmsUser',function ($query) use ($request) {
                         $customer_id = trim($request->get('customer_id'));
                         $query->where('customer_id', '=', "$customer_id");
                     });

@@ -188,7 +188,7 @@ class SoaController extends Controller
                 }
 
                 if($request->get('customer_id')!= ''){
-                    $transactionList->where(function ($query) use ($request) {
+                    $transactionList->whereHas('lmsUser',function ($query) use ($request) {
                         $customer_id = trim($request->get('customer_id'));
                         $query->where('customer_id', '=', "$customer_id");
                     });
@@ -218,7 +218,7 @@ class SoaController extends Controller
             }
 
             if($request->get('customer_id')!= ''){
-                $transactionList->where(function ($query) use ($request) {
+                $transactionList->whereHas('lmsUser',function ($query) use ($request) {
                     $customer_id = trim($request->get('customer_id'));
                     $query->where('customer_id', '=', "$customer_id");
                 });

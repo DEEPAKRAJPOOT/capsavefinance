@@ -1039,5 +1039,64 @@ class ApportionmentController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
-   
+    
+   /**
+     * save waiveoff Detail
+     * @param Request $request
+     * @return array
+     */
+    public function saveWriteOffDetail(Request $request){
+        try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            $transId = $request->get('trans_id');
+            $paymentId = $request->get('payment_id');
+            $amount = $request->get('amount');
+            $comment = $request->get('comment');
+            $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
+            if (empty($TransDetail)) {
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Selected Transaction to be Write off is not valid']);
+            }
+            
+            $outstandingAmount = $TransDetail->getOutstandingAttribute();
+            if ($amount > $outstandingAmount)  {
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Write Off must be less than or equal to '. $outstandingAmount]);
+            }
+            if ($amount < 1)  {
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Write Off must have some values ']);
+            }
+
+            if (empty($comment))  {
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to Write off the amount.']);
+            }
+            $txnInsertData = [
+                    'payment_id' => NULL,
+                    'link_trans_id'=> $transId,
+                    'parent_trans_id' => $TransDetail->parent_trans_id??$transId,
+                    'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
+                    'user_id' => $TransDetail->user_id,
+                    'trans_date' => date('Y-m-d H:i:s'),
+                    'amount' => $amount,
+                    'entry_type' => 1,
+                    'trans_type' => config('lms.TRANS_TYPE.WRITE_OFF'),
+                    'gl_flag' => 0,
+                    'soa_flag' => 1,
+                    'pay_from' => 1,
+                    'is_settled' => 2,
+            ];
+            $resp = $this->lmsRepo->saveTransaction($txnInsertData);
+            if (!empty($resp->trans_id)) {
+                $commentData = [
+                    'trans_id' => $resp->trans_id,
+                    'comment' => $comment,
+                ];
+                $comment = $this->lmsRepo->saveTxnComment($commentData);
+                return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully Write off']);
+            }
+        } catch (Exception $ex) {
+             return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
 }

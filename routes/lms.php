@@ -451,6 +451,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\ApportionmentController@saveWaiveOffDetail'
             ]);
 
+            Route::post('/apportionment/writeoff/save',[
+                'as' => 'apport_writeoff_save',
+                'uses' => 'Lms\ApportionmentController@saveWriteOffDetail'
+            ]);
+
             Route::post('/apportionment/reversal/save',[
                 'as' => 'apport_reversal_save',
                 'uses' => 'Lms\ApportionmentController@saveReversalDetail'
