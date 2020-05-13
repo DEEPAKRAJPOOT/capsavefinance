@@ -883,7 +883,7 @@ trait InvoiceTrait
       }
       else if($get_outstanding > 0)
       {
-         $data['msg']  = 'You cannot close this account as customer account is in outstanding.';
+         $data['msg']  = 'You cannot close this account as outstanding amount is pending for this customer.';
          $data['status'] = 0;
        
       }
