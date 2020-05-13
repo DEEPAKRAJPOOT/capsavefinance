@@ -780,6 +780,7 @@ trait InvoiceTrait
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
         $uid = Auth::user()->user_id;
+       
           if($attr->status_id==8)
           {
                      if((float)$limit  >= $sum)
@@ -829,6 +830,11 @@ trait InvoiceTrait
                       $datalist['comm_txt']  = 'User Limit has been expire';
                       $datalist['status_id'] = 28;
                 }
+          }
+          else
+          {
+               $datalist['comm_txt']  = '';
+               $datalist['status_id'] = 28;
           }
              return $datalist;
         
