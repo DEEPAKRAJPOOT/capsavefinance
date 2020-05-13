@@ -60,6 +60,7 @@ class LmsUser extends Authenticatable
         'customer_id',
         'app_id',
         'is_active',
+        'lms_users_log_id',
         'virtual_acc_id',
         'created_at',
         'created_by'

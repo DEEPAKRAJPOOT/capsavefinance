@@ -909,9 +909,10 @@ trait InvoiceTrait
         $mytime = Carbon::now();
         $cDate   =  $mytime->toDateTimeString();
         $create_uid = Auth::user()->user_id;
-        LmsUser::where(['user_id' => $uid])->update(['is_active' => 0]);
-        LmsUsersLog::insert(['user_id' => $uid,'status_id' => 35,'created_by' => $create_uid,'created_at' => $cDate]);
-   }
+        $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 35,'created_by' => $create_uid,'created_at' => $cDate]);
+        LmsUser::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
+       
+     }
    
     
 }
