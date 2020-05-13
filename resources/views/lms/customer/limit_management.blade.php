@@ -15,7 +15,7 @@
                         <form  method="post" action="{{Route('account_closure')}}" enctype= multipart/form-data>
                         @csrf 
                         <input type="hidden" name="user_id" value="{{$userId}}">
-                        <input type="submit" name="submit" value="Account Closure" class="btn btn-success">
+                        <input type="submit" id="submit" name="submit" value="Account Closure" class="btn btn-success">
                         </form>
                         @else
                            <button type="button" class="badge badge-warning btn-sm float-right">Account closed </button>
@@ -212,3 +212,19 @@
 @section('additional_css')
 
 @section('jscript')
+<script>
+    $(document).on('click','#submit', function(){
+    
+       if(confirm('Are you sure you want to close this account?'))
+       {
+           return true;
+       }
+       else
+       {
+          return false; 
+          
+       }
+    })
+    
+</script>
+@endsection
