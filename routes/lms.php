@@ -487,10 +487,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\WriteOffController@index'
             ]);
 
-//            Route::get('/add_addr', [
-//                'as' => 'add_addr',
-//                'uses' => 'Lms\AddressController@addAddress'
-//            ]);
+            Route::post('/generate-write-off', [
+                'as' => 'generate_write_off',
+                'uses' => 'Lms\WriteOffController@generateWriteOff'
+            ]);
 //
 //            Route::post('/save_addr', [
 //                'as' => 'save_addr',

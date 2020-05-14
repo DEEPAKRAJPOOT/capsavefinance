@@ -14,7 +14,7 @@
     @endcan
     @can('write_off_customer_list')
     <li>
-        <a class=" {{( $active=='write') ? 'active': null }} " href="{{route('write_off_customer_list',[ 'user_id' =>  request()->get('user_id') ])}}">Write Off</a>
+        <a class=" {{( $active=='writeOff') ? 'active': null }} " href="{{route('write_off_customer_list',[ 'user_id' =>  request()->get('user_id') ])}}">Write Off</a>
     </li>
     @endcan
     @can('user_invoice_location')
