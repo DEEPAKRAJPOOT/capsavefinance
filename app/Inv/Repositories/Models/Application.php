@@ -430,9 +430,10 @@ class Application extends BaseModel
      */
     protected static function getUserApplications() 
     {  
-        $appData = self::distinct()->select('app.user_id','app.app_id','app.loan_amt', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
+        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id')
+                ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
                 ->where('app.user_id', \Auth::user()->user_id);
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');

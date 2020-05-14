@@ -399,7 +399,7 @@ class Program extends BaseModel {
         if (!is_array($anchor_ids)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
-        return Program::whereIn('anchor_id', $anchor_ids)->with(['programCharges.chargeName','baseRate'])->where('prgm_type', $uesr_type)->where('parent_prgm_id', '<>', 0)->get();
+        return Program::whereIn('anchor_id', $anchor_ids)->with(['parentProgram','programCharges.chargeName','baseRate'])->where('prgm_type', $uesr_type)->where('parent_prgm_id', '<>', 0)->get();
     }
 
     public function baseRate()
@@ -414,6 +414,11 @@ class Program extends BaseModel {
     
     public static function getProgramByProgramName($prgm_name){
         return self::where(['prgm_name' => $prgm_name])->get();
+    }
+
+    public function parentProgram()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Program', 'parent_prgm_id', 'prgm_id');
     }
 
 }

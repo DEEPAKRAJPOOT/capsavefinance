@@ -1179,5 +1179,20 @@ class InvoiceController extends Controller {
 		return $randomString;
 	}
 	
+       public static function accountClosure(Request $request)
+       {
+        
+             $res = InvoiceTrait::getAccountClosure($request);
+             if($res['status']==0)
+             {
+                Session::flash('error',$res['msg']);
+                return back();
+             }
+             else
+             {
+               Session::flash('message', 'Customer account has been successfully closed');
+               return back();
+             }
+       }
 	
 }

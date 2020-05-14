@@ -1903,7 +1903,6 @@ class CamController extends Controller
             $userId = Auth::user()->user_id;
             $relationShipArr = [];
             $liftingArr = [];
-            
             $relationShipArr['biz_id']                          = $allData['biz_id'];
             $relationShipArr['app_id']                          = $allData['app_id'];
             $relationShipArr['year_of_association']             = $allData['year_of_association'];
@@ -1962,8 +1961,7 @@ class CamController extends Controller
             $totalPurMaterial = $allData['total_pur_material'];
             $countMonths = count($months);
             #dd($months, $mtType, $years, $totalPurMaterial, $countMonths);
-
-           $liftingData = $this->appRepo->getLiftingDetail($allData['app_id']);
+            $liftingData = $this->appRepo->getLiftingDetail($allData['app_id']);
             for($i = 0; $i < $countMonths; $i++){
                foreach($months[$i]['mt_value'] as $key => $value){
                    if (!empty($liftingData)) {

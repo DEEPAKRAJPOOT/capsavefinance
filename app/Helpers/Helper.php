@@ -1425,7 +1425,8 @@ class Helper extends PaypalHelper
         $whereCond=[];
         $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
         //$whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
-        $whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        //$whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        $whereCond['is_active'] = 1;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {            
             return true;
@@ -1450,10 +1451,12 @@ class Helper extends PaypalHelper
         $whereCond=[];
         //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
         //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
-        $whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
+        //$whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
+        $whereCond['is_active'] = 1;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {
             $eod_process_id = $eodProcess->eod_process_id;
+            $sys_start_date = $eodProcess->sys_start_date;
             $lmsRepo->saveEodProcessLog($data, $eod_process_id);
             
             $eod_status = '';
@@ -1480,7 +1483,8 @@ class Helper extends PaypalHelper
             if ($eod_status) {
                 $eodData = [];
                 $eodData['status'] = $eod_status;
-                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
+                //$eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
+                $eodData['eod_process_end'] = date('Y-m-d', strtotime($sys_start_date)) . " " . date('H:i:s');
                 $lmsRepo->saveEodProcess($eodData, $eod_process_id);
             }
            
@@ -1498,15 +1502,16 @@ class Helper extends PaypalHelper
     
            public   function invoiceAnchorLimitApprove($attr)
         {
-             $is_enhance  =    Application::where(['app_id' => $attr['app_id'],'status' =>2,'app_type' => 2])->count();  
+            
+                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id'],'status' =>2])->count();  
                 if($is_enhance==1)
                 { 
-                  return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+                  return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
         
                  }
                 else
                 {
-                     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+                     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
         
                  
                 }
@@ -1571,14 +1576,14 @@ class Helper extends PaypalHelper
         
         return $result;
      }
-     
-     /**
+  /**
      * Get 'yes' or NO
      *
      * @return string
      */
+
      public static function getYesFlag($value , $returnValues = [ '0'=>'No', '1'=>'Yes', '2'=>'N/A' ] )
-    {
+  {
        if (is_null($value) || $value === '')
         {
             return '';
@@ -1594,5 +1599,31 @@ class Helper extends PaypalHelper
                return '';
            }
         }
-    }
+    } 
+    
+    /**
+     * Get System Start Date
+     * 
+     * @return timestamp
+     */
+    public static function getSysStartDate()
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $sys_start_date = $lmsRepo->getSysStartDate();
+        if (is_null($sys_start_date)) {
+            $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
+        }
+        return $sys_start_date;
+    }     
+
+     /**
+      * Get Server Protocol
+      * 
+      * @return string
+      */
+     public static function getServerProtocol()
+     {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";         
+        return $protocol;
+     }
 }

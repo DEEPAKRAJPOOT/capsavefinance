@@ -291,9 +291,10 @@ class UserEventsListener extends BaseEvent
         $user = unserialize($userData);
         $email_content = EmailTemplate::getEmailTemplate("ANCHOR_REGISTER_USER_MAIL");
         if ($email_content) {
+            $link = \Helpers::getServerProtocol() . env('BACKEND_URI');
             $mail_body = str_replace(
-                ['%name', '%email','%password'],
-                [ucwords($user['name']),$user['email'],$user['password']],
+                ['%name', '%email','%password','%link'],
+                [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
@@ -326,9 +327,10 @@ class UserEventsListener extends BaseEvent
         $user = unserialize($userData);
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_USER_REGISTER_MAIL");
         if ($email_content) {
+            $link = \Helpers::getServerProtocol() . env('BACKEND_URI');
             $mail_body = str_replace(
-                ['%name', '%email','%password'],
-                [ucwords($user['name']),$user['email'],$user['password']],
+                ['%name', '%email','%password', '%link'],
+                [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
 
@@ -399,9 +401,10 @@ class UserEventsListener extends BaseEvent
         $user = unserialize($userData);
         $email_content = EmailTemplate::getEmailTemplate("CREATE_BACKEND_USER_MAIL");
         if ($email_content) {
+            $link = \Helpers::getServerProtocol() . env('BACKEND_URI');
             $mail_body = str_replace(
-                ['%name', '%email','%password'],
-                [ucwords($user['name']),$user['email'],$user['password']],
+                ['%name', '%email','%password', '%link'],
+                [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,

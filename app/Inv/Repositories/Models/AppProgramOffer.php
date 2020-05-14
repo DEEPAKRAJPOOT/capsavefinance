@@ -467,7 +467,8 @@ class AppProgramOffer extends BaseModel {
                 ->where('app_prgm_offer.prgm_id', $prgmId)
                 ->where('app_prgm_offer.is_approve', 1)
                 ->where('app_prgm_offer.status', 1)
-                ->where('app.status', 2)        
+                ->where('app.status', 2)       
+                ->where('lms_users.is_active', 1)               
                 ->groupBy('app.user_id')        
                 ->get();
         
@@ -489,7 +490,8 @@ class AppProgramOffer extends BaseModel {
                 ->where('users.user_id', $user_id)
                 ->where('app_prgm_offer.is_approve', 1)
                 ->where('app_prgm_offer.status', 1)
-                ->where('app.status', 2)            
+                ->where('app.status', 2)  
+                ->where('lms_users.is_active', 1)           
                 ->groupBy('app.user_id')        
                 ->get();
         

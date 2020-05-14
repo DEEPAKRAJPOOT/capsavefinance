@@ -101,6 +101,11 @@ class PaymentController extends Controller {
 	public function  savePayment(Request $request)
 	{
 		try {
+                        if ($request->get('eod_process')) {
+                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                            return back();
+                        }
+            
 			$arrFileData = $request->all();
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
@@ -245,7 +250,12 @@ class PaymentController extends Controller {
 	}
 	public function updatePayment(Request $request)
 	{
-		try {
+		try {                    
+                        if ($request->get('eod_process')) {
+                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                            return back();
+                        }
+                        
 			$arrFileData = $request->all();
 			$user_id  = Auth::user()->user_id;
 			$mytime = Carbon::now();
@@ -275,6 +285,11 @@ class PaymentController extends Controller {
    /////////* save bulk payment by excel ///////////////////////
    public function  saveExcelPayment(Request $request)
    {
+                        if ($request->get('eod_process')) {
+                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                            return back();
+                        }
+                        
 			$data = array();
 			$id  = Auth::user()->user_id;
 			$mytime = Carbon::now(); 

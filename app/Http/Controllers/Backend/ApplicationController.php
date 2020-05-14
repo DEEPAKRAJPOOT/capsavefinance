@@ -870,6 +870,7 @@ class ApplicationController extends Controller
 					'user_id' => $user_id, 
 					'customer_id' => $customerId,
 					'app_id' => $app_id, 
+                                        'is_active'  => 1,
 					'created_by' => Auth::user()->user_id
 				  );
 
