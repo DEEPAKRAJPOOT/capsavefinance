@@ -71,7 +71,7 @@ use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
-
+use App\Inv\Repositories\Models\UserDetail;
 
 
 /**
@@ -2291,7 +2291,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         try
         {
-          return  LmsUser::getAccountActiveClosure($uid);  
+          return UserDetail::getAccountActiveClosure($uid);  
         } catch (Exception $ex) {
              return $ex;
         }

@@ -26,6 +26,8 @@ use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 
+
+
 trait InvoiceTrait
 {
     /**
@@ -190,7 +192,8 @@ trait InvoiceTrait
            
             $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
             $chlLmsCusto =  self::getLimitProgram($dataAttr);
-            $getLmsActive =  LmsUser::where(['customer_id' => $dataAttr['cusomer_id'],'is_active' => 0])->count(); 
+            $lmsU =  LmsUser::where(['customer_id' => $dataAttr['cusomer_id']])->first(); 
+            $getLmsActive = UserDetail::where(['user_id' => $lmsU['user_id'],'is_active' => 0])->count(); 
             if( $invoice_date_validate==false)
             {
                $multichk['status'] =0; 
@@ -916,7 +919,7 @@ trait InvoiceTrait
         $cDate   =  $mytime->toDateTimeString();
         $create_uid = Auth::user()->user_id;
         $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 35,'created_by' => $create_uid,'created_at' => $cDate]);
-        LmsUser::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
+        UserDetail::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
        
      }
    

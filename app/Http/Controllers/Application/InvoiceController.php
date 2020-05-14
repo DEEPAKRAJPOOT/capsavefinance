@@ -74,7 +74,13 @@ class InvoiceController extends Controller {
     }
   
       public function getBulkInvoice() {
-          
+         $getAccountClosure  = $this->invRepo->getAccountClosure();
+        if($getAccountClosure==0)
+        {
+        
+              Session::flash('error', 'You cannot upload the invoice due to account close');
+             
+        } 
          $getAllInvoice    =   $this->invRepo->getLimitAllAnchor();
          $get_bus = $this->invRepo->getBusinessName();  
          $getBulkInvoice = $this->invRepo->getUserAllBulkInvoice();

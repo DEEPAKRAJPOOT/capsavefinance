@@ -870,8 +870,7 @@ class ApplicationController extends Controller
 					'user_id' => $user_id, 
 					'customer_id' => $customerId,
 					'app_id' => $app_id, 
-                                        'is_active'  => 1,
-					'created_by' => Auth::user()->user_id
+                                        'created_by' => Auth::user()->user_id
 				  );
 
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
@@ -898,9 +897,10 @@ class ApplicationController extends Controller
 			  	}
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                                UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
-              	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
-              	if($prcsAmt && isset($prcsAmt->offer)) {
+                                $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+                                if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {   
                                       $whereCond=[];
                                       $whereCond['user_id'] = $user_id;

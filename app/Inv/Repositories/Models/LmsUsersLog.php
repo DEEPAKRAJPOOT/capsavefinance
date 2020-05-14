@@ -45,7 +45,6 @@ class LmsUsersLog extends BaseModel {
      */
     protected $fillable = [
                 'user_id',
-                'is_active',
                 'status_id',
                 'created_by',
                 'created_at'

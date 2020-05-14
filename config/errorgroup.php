@@ -30,5 +30,13 @@ return [
         'akash.kumar@prolitus.com',
         'sudesh.kumar@prolitus.com',
         'updesh.sharma@prolitus.com'
+    ],
+    
+    'error_crif_notification_group' => [
+       /// 'pankaj.sharma@prolitus.com',
+       /// 'gaurav.agarwal@prolitus.com',
+       /// 'varun.dudani@zuron.in',
+        'gajendra.singh@prolitus.com'
+       /// 'hirdesh@prolitus.com'
     ]
 ];
