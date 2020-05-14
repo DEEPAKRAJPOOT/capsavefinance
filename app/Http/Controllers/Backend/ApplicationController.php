@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
