@@ -42,16 +42,17 @@
             @include('lms.apportionment.common.paymentDetails')
             @endif
         @endif
-            <form action="{{ route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" method="post" onsubmit="return apport.validateMarkSettled(this)">
+            <form id="unsettlementFrom" action="" method="post" onsubmit="return apport.validateMarkSettled(this)">
              @csrf	
             <div class="row">
                 @include('lms.apportionment.common.listUnsettledTransactions')
             </div>
             <div class="row pull-right">
                 <div class="col-md-12" >
-                    @if($paymentId) <input type="submit" value="Mark Settled" class="btn btn-success btn-sm"> @endif
+                    @if($paymentId) 
+                    <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm"> @endif
+                    <input type="submit" name="action" value="Write Off" class="btn btn-success btn-sm">
                     <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
-                    <input type="button" value="Write Off" class="btn btn-success btn-sm" onclick="apport.onWriteOff()">
                 </div>
             </div>
             </form>
@@ -67,8 +68,9 @@
 <script>
     var messages = {
         url: "{{ URL::route('apport_unsettled_list') }}",
+        confirm_writeoff: "{{ URL::route('apport_mark_writeOff_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}",
+        confirm_settle: "{{ URL::route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}",
         trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff',['sanctionPageView' => $sanctionPageView]) }}",
-        trans_writeoff_url: "{{ URL::route('apport_trans_writeoff',['sanctionPageView' => $sanctionPageView]) }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",
         payment_amt: "{{ $payment_amt }}",

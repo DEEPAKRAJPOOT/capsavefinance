@@ -424,8 +424,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/apportionment/mark/settle/save',[
                 'as' => 'apport_mark_settle_save',
                 'uses' => 'Lms\ApportionmentController@markSettleSave'
-            ]);        
-            
+            ]);  
+
+            Route::post('/apportionment/mark/writeOff/confirmation',[
+                'as' => 'apport_mark_writeOff_confirmation',
+                'uses' => 'Lms\ApportionmentController@markWriteOffConfirmation'
+            ]);
+
+            Route::post('/apportionment/mark/writeOff/save',[
+                'as' => 'apport_mark_writeOff_save',
+                'uses' => 'Lms\ApportionmentController@markwriteOffSave'
+            ]); 
+
             Route::post('/apportionment/settled/save',[
                 'as' => 'apport_settled_save',
                 'uses' => 'Lms\ApportionmentController@saveSettledTrans'
@@ -436,11 +446,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\ApportionmentController@getTransDetailWaiveOff'
             ]);
 
-            Route::get('/apportionment/txn/writeoff',[
-                'as' => 'apport_trans_writeoff',
-                'uses' => 'Lms\ApportionmentController@getTransDetailWriteOff'
-            ]);
-
             Route::get('/apportionment/txn/reversal',[
                 'as' => 'apport_trans_reversal',
                 'uses' => 'Lms\ApportionmentController@getTransDetailReversal'
@@ -449,11 +454,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/apportionment/waiveoff/save',[
                 'as' => 'apport_waiveoff_save',
                 'uses' => 'Lms\ApportionmentController@saveWaiveOffDetail'
-            ]);
-
-            Route::post('/apportionment/writeoff/save',[
-                'as' => 'apport_writeoff_save',
-                'uses' => 'Lms\ApportionmentController@saveWriteOffDetail'
             ]);
 
             Route::post('/apportionment/reversal/save',[
