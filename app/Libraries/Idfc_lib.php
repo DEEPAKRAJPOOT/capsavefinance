@@ -50,15 +50,15 @@ class Idfc_lib{
 		$url = SELF::METHOD[$method];
 		$query_string = '';
 		list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
-		$file_name = md5($txn_id).'.txt';
-		$this->_saveLogFile($payload, $file_name, 'Outgoing');
+		// $file_name = md5($txn_id).'.txt';
+		// $this->_saveLogFile($payload, $file_name, 'Outgoing');
      	print_r($payload);
 		print "<pre>";
      	print_r($http_header);
 		print "</pre>";
      	$response = $this->_curl_call($url, $payload, $http_header);
      	dd($response);
-     	$this->_saveLogFile($response, $file_name, 'Incoming');
+     	// $this->_saveLogFile($response, $file_name, 'Incoming');
 
 		if (!empty($response['error_no'])) {
 			$resp['code'] 	 = "CurlError";
