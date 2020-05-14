@@ -480,6 +480,33 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'soa_excel_download',
                 'uses'=> 'Lms\SoaController@soaExcelDownload'
             ]);
+            
+             // Write Off
+            Route::get('/write-off', [
+                'as' => 'write_off_customer_list',
+                'uses' => 'Lms\WriteOffController@index'
+            ]);
+
+//            Route::get('/add_addr', [
+//                'as' => 'add_addr',
+//                'uses' => 'Lms\AddressController@addAddress'
+//            ]);
+//
+//            Route::post('/save_addr', [
+//                'as' => 'save_addr',
+//                'uses' => 'Lms\AddressController@saveAddress'
+//            ]);
+//
+//            Route::get('/edit_addr', [
+//                'as' => 'edit_addr',
+//                'uses' => 'Lms\AddressController@editAddress'
+//            ]);
+//            
+//            Route::post('/copy_app', [
+//                'as' => 'copy_app',
+//                'uses' => 'Lms\CopyController@duplicateApp'
+//            ]); 
+            // end write off
 
         });   
     });    
