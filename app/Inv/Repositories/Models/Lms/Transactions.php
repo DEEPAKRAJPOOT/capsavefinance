@@ -255,19 +255,17 @@ class Transactions extends BaseModel {
     }
 
     public static function getUnsettledTrans($userId){
-        return self::whereIn('is_settled',[0,1])
-                ->whereNull('parent_trans_id')
-                ->where('user_id','=',$userId)
-                ->orderBy('invoice_disbursed_id','ASC')
-                ->with(array('invoiceDisbursed' => function($query) {
-                    $query->orderBy('int_accrual_start_dt','ASC');
-                }))
-                ->orderBy('trans_date','ASC')
-                ->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' )")
+        return self::whereNull('parent_trans_id')
+                ->whereNull('payment_id')
+                ->where('user_id',$userId)
                 ->get()
                 ->filter(function($item) {
                     return $item->outstanding > 0;
                 });
+    }
+
+    public static function getUserOutstanding($userId){
+        $trans = self::getUnsettledTrans($userId);
     }
 
     public static function getSettledTrans($userId){
@@ -286,7 +284,10 @@ class Transactions extends BaseModel {
                 ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
-                   return $item->refundoutstanding > 0;
+                    if($item->trans_type == config('lms.TRANS_TYPE.TDS') && $item->payment->is_refundable == 0){
+                        return false;
+                    }
+                    return $item->refundoutstanding > 0;
                 });
     }
 

@@ -1009,15 +1009,15 @@ class ApportionmentController extends Controller
             $inv = BizInvoice::find($invd->invoice_id);
             if($flag){
                 $inv->is_repayment = 1;
-                $inv->status_id = 13;
+                $inv->status_id = 15;
             }else{
                 if($inv->is_repayment == 1)
                 $inv->is_repayment = 0;
-                if($inv->status_id == 13)
+                if($inv->status_id == 15)
                 $inv->status_id = 12;
             }
             $inv->save();
         }
     }
-   
+
 }

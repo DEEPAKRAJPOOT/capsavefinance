@@ -110,7 +110,7 @@ class Apportionment {
                         $(this).val(value.toFixed(2));
                         $(this).attr('readonly',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
-                        paymentAmt = paymentAmt-value;
+                        paymentAmt = paymentAmt-value.toFixed(2);
                     }else{
                         $(this).val(paymentAmt.toFixed(2));
                         $(this).attr('readonly',false);
@@ -145,9 +145,9 @@ class Apportionment {
                 settled_amt += payamt;
             }
         });
-        var unapplied_amt = payment_amt-settled_amt;
-        if(unapplied_amt < 0 ){
-            alert("Sum of your total entries is grater than Re-payment amount");
+        var unapplied_amt = payment_amt.toFixed(2)-settled_amt.toFixed(2);
+        if(unapplied_amt.toFixed(2) < 0 ){
+            alert("Sum of your total entries is Greater than Re-payment amount");
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
     }

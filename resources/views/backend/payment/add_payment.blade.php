@@ -307,7 +307,11 @@ cursor: pointer;
             $("#date_of_payment").val('');
             $("#amount").val('');
             userData['action_type'] = $(this).val();
-            
+            if(!userData['user_id']){
+                alert('Please select business name.');
+                $("#search_bus").focus();
+                return false;
+            }
             get_all_unsettled_trans_type(userData);
             $(".payment-methods").hide();
             $(".tds_certificate").hide();
