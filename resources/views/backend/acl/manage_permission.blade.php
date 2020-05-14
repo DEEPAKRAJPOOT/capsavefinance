@@ -58,7 +58,7 @@
                                     @php $match = 1 @endphp
                                     @endif
                                     @endif
-                                    <ul>
+                                    <ul id="tree">
                                         <li>
 
                                             @php $checked = ($match==1)?'checked':'' @endphp

@@ -44,7 +44,7 @@ class InvoiceController extends Controller {
         $this->userRepo = $user_repo;
         $this->application  =  $application;
         $this->middleware('auth');
-        //$this->middleware('checkBackendLeadAccess');
+        $this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodProcess');
     }
 

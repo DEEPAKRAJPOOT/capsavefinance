@@ -35,6 +35,7 @@ class ApportionmentController extends Controller
         $this->dataProvider = $dataProvider;
         $this->userRepo = $user_repo;
         $this->appRepo = $app_repo;
+        $this->middleware('checkBackendLeadAccess');
 	}
 
     /**

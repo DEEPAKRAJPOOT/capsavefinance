@@ -207,7 +207,9 @@
                   @can('backend_get_invoice')  
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('backend_get_invoice')}}">Manage Invoice</a>
-                    </li>    
+                    </li> 
+                  @endcan
+                  @can('backend_get_bank_invoice')  
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('backend_get_bank_invoice')}}">Bank Invoice</a>
                     </li>                 
