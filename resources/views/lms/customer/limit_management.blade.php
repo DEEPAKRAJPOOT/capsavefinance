@@ -137,16 +137,14 @@
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                               
-                                @if($limit->status==1)  
+                                @if($limit->status==1 && $getAccountClosure > 0)  
                        
                                 @can('add_adhoc_limit')
                                 @if($val->program->is_adhoc_facility == 1)
                                 <a data-toggle="modal" style='color:white' data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn-sm btn btn-success btn-sm ml-2" >Add Adhoc Limit</a>
                                 @endif
                                 @endcan
-                                
-                         
-                       @endif
+                               @endif
                             </div>
                         </div>
                        

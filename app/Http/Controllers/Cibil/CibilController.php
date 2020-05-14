@@ -14,7 +14,7 @@ use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Models\Business;
 use Session;
 use File;
- 
+use Mail; 
 class CibilController extends Controller
 {
     protected $appRepo;
@@ -161,6 +161,7 @@ class CibilController extends Controller
         }
         
         if(isset($acknowledgementResult['response-type']) && $acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
+            self::pullCrifApiDebugEmail($arrRequest,$responce,$acknowledgementResult['report-id']);
             sleep(25);
             $arrRequest['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrRequest['report_id'] = $acknowledgementResult['report-id'];
@@ -177,6 +178,7 @@ class CibilController extends Controller
                 }
             }
             if(isset($resultData['status'])){
+                    self::pullCrifApiDebugEmail($arrRequest,$responseData,$acknowledgementResult['report-id']);
                     $arrRequest['resFormat'] = 'HTML';
                     sleep(10);
                     $resInHTMLFormate =  $CibilApi->getCommercialCibilData($arrRequest);
@@ -189,7 +191,7 @@ class CibilController extends Controller
                         $cibilScore = '';
                     }
                     //$cibilData = json_encode($resultData);
-
+                    self::pullCrifApiDebugEmail($arrRequest,$resInHTMLFormate,$acknowledgementResult['report-id']);
                     $createApiLog = BizApiLog::create(['req_file' =>json_encode($arrRequest), 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
                             if ($createApiLog) {
                                     $createBizApi= BizApi::create(['user_id' =>$arrBizData->user_id, 
@@ -242,5 +244,21 @@ class CibilController extends Controller
        }
     }
 
-
+    public static function pullCrifApiDebugEmail($req,$res,$sub)
+    {
+        $data['request']  = $req;
+        $data['response'] =  $res;       
+        $subject = $sub;
+        Mail::raw(
+            print_r($data, true),
+            function ($message) use ($subject) {
+                $message->to(config('errorgroup.error_crif_notification_group'))
+                    ->from(
+                        config('errorgroup.error_notification_email'),
+                        config('errorgroup.error_notification_from')
+                    )
+                    ->subject($subject);
+            }
+        );
+    }
 }

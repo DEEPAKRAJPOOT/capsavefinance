@@ -16,6 +16,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\BizApiLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Master\Role;
 use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
@@ -870,8 +871,7 @@ class ApplicationController extends Controller
 					'user_id' => $user_id, 
 					'customer_id' => $customerId,
 					'app_id' => $app_id, 
-                                        'is_active'  => 1,
-					'created_by' => Auth::user()->user_id
+                                        'created_by' => Auth::user()->user_id
 				  );
 
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
@@ -904,9 +904,10 @@ class ApplicationController extends Controller
 			  	}
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
+                                UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
-              	$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
-              	if($prcsAmt && isset($prcsAmt->offer)) {
+                                $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
+                                if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {   
                                       $whereCond=[];
                                       $whereCond['user_id'] = $user_id;
