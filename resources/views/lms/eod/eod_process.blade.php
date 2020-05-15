@@ -55,7 +55,7 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label for=""><span id="current-date">{{ \Helpers::convertDateTimeFormat($sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') }}</span></label>                                                        
+                                                <label for=""><span id="current-date">{{ !empty($sys_start_date) ? \Helpers::convertDateTimeFormat($sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') : '' }}</span></label>                                                        
                                             </div>
                                         </div>                                                                                                                        
                                     </div>
@@ -120,7 +120,7 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label for="">{{ \Helpers::convertDateTimeFormat($sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') }}</label>                                                        
+                                                <label for="">{{ !empty($sys_end_date) ? \Helpers::convertDateTimeFormat($sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') : '' }}</label>                                                        
                                             </div>
                                         </div>
                                                                        
@@ -310,7 +310,7 @@ function updateEodStatus() {
 }
 //display_c();
 $(document).ready(function(){    
-    //updateEodStatus();    
+    updateEodStatus();    
 })
 </script>
 @endsection

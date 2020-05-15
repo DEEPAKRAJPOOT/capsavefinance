@@ -123,7 +123,7 @@ class EodProcessController extends Controller {
         
         $enable_sys_start = $eod_process_id && $status != 1 ? 0 : 1;
         
-        $enable_process_start = isset($eodProcess->status) && in_array($eodProcess->status,[config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')]) ? 0 : 1;
+        $enable_process_start = !$eod_process_id || isset($eodProcess->status) && in_array($eodProcess->status,[config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')])  ? 0 : 1;
         
         return view('lms.eod.eod_process')
                 ->with('current_date', $current_date)
