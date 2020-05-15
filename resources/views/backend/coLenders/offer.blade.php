@@ -277,7 +277,7 @@ tr.border_bottom td {
                         <input type="hidden" name="co_lenders_share_id" value="{{$colenderShare->co_lenders_share_id}}">
                         <div class="col-md-12">
                             <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
-                            <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept Offer</button>
+                            <!-- <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept Offer</button> -->
                         </div>
                         </div>  
                     </form>
