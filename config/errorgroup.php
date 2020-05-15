@@ -33,10 +33,10 @@ return [
     ],
     
     'error_crif_notification_group' => [
-       /// 'pankaj.sharma@prolitus.com',
-       /// 'gaurav.agarwal@prolitus.com',
-       /// 'varun.dudani@zuron.in',
+        'pankaj.sharma@prolitus.com',
+        'gaurav.agarwal@prolitus.com',
+        'varun.dudani@zuron.in',
         'gajendra.singh@prolitus.com'
-       /// 'hirdesh@prolitus.com'
+      
     ]
 ];
