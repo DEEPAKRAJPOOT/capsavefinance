@@ -65,6 +65,8 @@ class CibilController extends Controller
         }
        
         if(isset($result['content'])){
+            /* mail sent for monitoring **/
+            self::pullCrifApiDebugEmail($arrOwnerData,$responce,'Get promomter civil score');
             $result['content'] = base64_encode($result['content']);
             $cibilScore =  $result['scores'] ?? '';
             $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $result['content'],'status' => 0,'created_by' => Auth::user()->user_id]);
@@ -72,12 +74,11 @@ class CibilController extends Controller
                     $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
                                                 'biz_id' =>   $arrOwnerData['biz_id'],
                                                 'biz_owner_id' => $arrOwnerData['biz_owner_id'],
-                                                'type' => 2,
+                                                'type' => 1,
                                                 'verify_doc_no' => 1,
                                                 'status' => 1,
                                                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                                                'created_by' => Auth::user()->user_id,
-                                               'created_at' => \Carbon\Carbon::now(),
                                               ]);
 
                                if($createBizApi){
@@ -161,6 +162,7 @@ class CibilController extends Controller
         }
         
         if(isset($acknowledgementResult['response-type']) && $acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
+            self::pullCrifApiDebugEmail($arrRequest,$responce,'Get company civil score for return report_id');
             sleep(25);
             $arrRequest['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrRequest['report_id'] = $acknowledgementResult['report-id'];
@@ -177,6 +179,7 @@ class CibilController extends Controller
                 }
             }
             if(isset($resultData['status'])){
+                    self::pullCrifApiDebugEmail($arrRequest,$responseData,'Get company civil score for return xml');
                     $arrRequest['resFormat'] = 'HTML';
                     sleep(10);
                     $resInHTMLFormate =  $CibilApi->getCommercialCibilData($arrRequest);
@@ -189,6 +192,7 @@ class CibilController extends Controller
                         $cibilScore = '';
                     }
                     //$cibilData = json_encode($resultData);
+                    self::pullCrifApiDebugEmail($arrRequest,$resInHTMLFormate,'Get company civil score for return html');
                     $createApiLog = BizApiLog::create(['req_file' =>json_encode($arrRequest), 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
                             if ($createApiLog) {
                                     $createBizApi= BizApi::create(['user_id' =>$arrBizData->user_id, 
@@ -199,7 +203,6 @@ class CibilController extends Controller
                                                                 'status' => 1,
                                                                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                                                                'created_by' => Auth::user()->user_id,
-                                                               'created_at' => \Carbon\Carbon::now(),
                                                               ]);
 
                                                if($createBizApi){
@@ -241,5 +244,21 @@ class CibilController extends Controller
        }
     }
 
-   
+    public static function pullCrifApiDebugEmail($req,$res,$sub)
+    {
+        $data['request']  = $req;
+        $data['response'] =  $res;       
+        $subject = $sub;
+        Mail::raw(
+            print_r($data, true),
+            function ($message) use ($subject) {
+                $message->to(config('errorgroup.error_crif_notification_group'))
+                    ->from(
+                        config('errorgroup.error_notification_email'),
+                        config('errorgroup.error_notification_from')
+                    )
+                    ->subject($subject);
+            }
+        );
+    }
 }
