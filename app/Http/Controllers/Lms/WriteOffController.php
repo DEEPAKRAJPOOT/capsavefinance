@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 
 class WriteOffController extends Controller
 {
@@ -20,12 +21,14 @@ class WriteOffController extends Controller
     protected $docRepo;
     protected $appRepo;
     protected $userRepo;
+    protected $lmsRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, MasterInterface $master)
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, MasterInterface $master, InvLmsRepoInterface $lms_repo)
     {
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->master = $master;
+        $this->lmsRepo = $lms_repo;
         $this->middleware('checkBackendLeadAccess');
     }
 
@@ -60,19 +63,21 @@ class WriteOffController extends Controller
         $userInfo->total_limit = number_format($totalLimit);
         $userInfo->consume_limit = number_format($totalCunsumeLimit);
         $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-        return view('lms.writeoff.index')->with(['userInfo' => $userInfo]);
+        $woData = $this->lmsRepo->getWriteOff($user_id);
+        return view('lms.writeoff.index')->with(['userInfo' => $userInfo, 'woData' => $woData]);
     }
 
     public function generateWriteOff(Request $request)
     {   
         try {
             $user_id = $request->get('user_id');
-
-            $gsts = $this->appRepo->getGSTsByUserId($user_id);
-            $app_gsts = $this->appRepo->getAppGSTsByUserId($user_id);
-            // start for default button
-            $currCompData = UserInvoiceRelation::getUserCurrCompany($user_id);
-            $is_show_default = ($currCompData)? 0: 1;
+//            $woLogData = [];
+//            $this->lmsRepo->saveWriteOffReqLog($woLogData);
+            $woData = [];
+            $woData['user_id'] = $user_id;
+            $woData['created_by'] = Auth::user()->user_id;
+            $this->lmsRepo->saveWriteOffReq($woData);
+            return redirect()->route('write_off_customer_list', ['user_id' => $user_id]);
             // end for default button
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

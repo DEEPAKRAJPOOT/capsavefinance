@@ -43,9 +43,28 @@
 
 								</thead>
 								<tbody>
+                                                                    @if (count($woData) > 0)
+                                                                    @foreach($woData as $wOff)
+                                                                    <tr>
+                                                                        <td>{{$wOff->user_id}}</td>
+                                                                        <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td>
+                                                                        <td>{{$wOff->amount}}</td>
+                                                                        <td><a data-toggle="modal"  data-height="450px" 
+                                                                            data-width="100%" data-target="#apprDisapprFrame"
+                                                                            data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id])}}"  
+                                                                            data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>
+                                                                        </td>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                    @else
+                                                                    <tr>
+                                                                        <td colspan="6">No data found</td>
+                                                                    </tr>
+                                                                    @endif
 								</tbody>
 							</table>
-							<div id="write-off-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
 						</div>
 					</div>
 				</div>
@@ -54,8 +73,7 @@
 	</div>
 </div>
 
-{!!Helpers::makeIframePopup('addAddressFrame','Add Address', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editAddressFrame','Edit Address Detail', 'modal-md')!!}
+{!!Helpers::makeIframePopup('apprDisapprFrame','Approve / Disapprove', 'modal-md')!!}
 @endsection
 
 

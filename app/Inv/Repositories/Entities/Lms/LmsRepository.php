@@ -37,8 +37,10 @@ use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\WriteOffRequest;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
+use App\Inv\Repositories\Models\Lms\WriteOffStatusLog;
 use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
 use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
@@ -1279,5 +1281,39 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getLatestEodProcess($whereCond=[])
     {
         return EodProcess::getLatestEodProcess($whereCond);
-    }    
+    }  
+    
+    /**
+     * Save write off
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function saveWriteOffReq($dataArr)
+    {
+        return WriteOffRequest::saveWriteOffReq($dataArr);
+    }
+    
+    /**
+     * Get write off
+     * 
+     * @param integer $userId
+     * @return array
+     */
+    public function getWriteOff($userId)
+    {
+        return WriteOffRequest::getWriteOff((int) $userId);
+    }
+    
+    /**
+     * Save write off log
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function saveWriteOffReqLog($dataArr)
+    {
+        return WriteOffStatusLog::saveWriteOffReqLog($dataArr);
+    }
+    
 }

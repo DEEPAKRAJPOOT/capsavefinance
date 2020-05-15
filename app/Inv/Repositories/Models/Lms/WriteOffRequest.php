@@ -16,7 +16,7 @@ class WriteOffRequest extends BaseModel
      *
      * @var string
      */
-    protected $table = 'rta_lms_wo_req';
+    protected $table = 'lms_wo_req';
 
     /**
      * Custom primary key is set for the table
@@ -57,17 +57,36 @@ class WriteOffRequest extends BaseModel
     ];
 
     /**
-     * get Charge list
+     * Save write off request
      * 
-     * @param type $where array
-     * @return type mixed
-     * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions 
+     * @param array $data
+     * @return type
+     * @throws InvalidDataTypeExceptions
      */
-//    public static function getCharagesList()
-//    {
-//        $res = self::where('is_active', '1')->pluck('chrg_name', 'id');
-//        return $res ?: false;
-//    } 
+    public static function saveWriteOffReq($data) {
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }     
+        return self::insert($data);
+    }
+    
+    /**
+     * Get write off by user id
+     * 
+     * @param integer $userId
+     * @return array
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getWriteOff($userId) {
+        /**
+         * Check id is not an integer
+         */
+        if (!is_int($userId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $result = self::where('user_id', (int) $userId)->get();
+        return ($result ? $result : []);
+    }
    
 }

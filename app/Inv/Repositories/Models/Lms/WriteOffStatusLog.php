@@ -16,7 +16,7 @@ class WriteOffStatusLog extends BaseModel
      *
      * @var string
      */
-    protected $table = 'rta_lms_wo_status_log';
+    protected $table = 'lms_wo_status_log';
 
     /**
      * Custom primary key is set for the table
@@ -57,17 +57,17 @@ class WriteOffStatusLog extends BaseModel
     ];
 
     /**
-     * get Charge list
+     * Save write off request log
      * 
-     * @param type $where array
-     * @return type mixed
-     * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions 
+     * @param array $data
+     * @return type
+     * @throws InvalidDataTypeExceptions
      */
-//    public static function getCharagesList()
-//    {
-//        $res = self::where('is_active', '1')->pluck('chrg_name', 'id');
-//        return $res ?: false;
-//    } 
+    public static function saveWriteOffReqLog($data) {
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }     
+        return self::insert($data);
+    } 
    
 }

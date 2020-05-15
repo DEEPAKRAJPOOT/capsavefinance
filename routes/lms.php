@@ -487,7 +487,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\WriteOffController@index'
             ]);
 
-            Route::post('/generate-write-off', [
+            Route::get('/generate-write-off', [
                 'as' => 'generate_write_off',
                 'uses' => 'Lms\WriteOffController@generateWriteOff'
             ]);
