@@ -136,9 +136,18 @@ class CoLenderControllers extends Controller {
         }
     }
 
-    public function shareToColender(){
+    public function shareToColender(Request $request){
+        $appId = $request->get('app_id');
+        $user_id = State::getUserByAPP($appId)->user_id ?? NULL;
+        $sharedColender = $this->appRepo->getSharedColender([
+            'user_id'=>$user_id,
+            'is_active'   =>  1
+        ]);
+        if($sharedColender->count()){
+          $sharedColender = $sharedColender[0];
+        }
         $coLenders = $this->userRepo->getCoLenderData(['co_lenders.is_active'=>1, 'u.is_active'=>1]);
-        return view('backend.coLenders.share_colender')->with('coLenders', $coLenders);
+        return view('backend.coLenders.share_colender')->with('coLenders', $coLenders)->with('sharedColender', $sharedColender);
     }
 
     public function saveShareToColender(Request $request){
@@ -149,6 +158,7 @@ class CoLenderControllers extends Controller {
             $arrShareColenderData['user_id'] = State::getUserByAPP($appId)->user_id ?? NULL;
             $arrShareColenderData['start_date'] = \carbon\Carbon::now();
             $arrShareColenderData['end_date'] = NULL;
+            $arrShareColenderData['is_active'] = 1;
             $arrShareColenderData['created_at'] = \carbon\Carbon::now();
             $arrShareColenderData['created_by'] = Auth::user()->user_id;
             $data = $this->appRepo->getSharedColender([
