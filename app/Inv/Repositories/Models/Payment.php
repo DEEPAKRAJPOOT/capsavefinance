@@ -3,11 +3,12 @@
 namespace App\Inv\Repositories\Models;
 
 use DB;
+use Helpers;
+use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
-use App\Inv\Repositories\Models\Business;
-use App\Inv\Repositories\Models\User;
 
 class Payment extends BaseModel {
     /* The database table used by the model.
@@ -29,14 +30,14 @@ class Payment extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -67,6 +68,8 @@ class Payment extends BaseModel {
         'is_manual',
         'is_refundable',
         'generated_by',
+        'sys_created_at',
+        'sys_updated_at',
         'created_at',
         'created_by',
         'updated_at',
@@ -157,6 +160,8 @@ class Payment extends BaseModel {
             'message' => 'success',
         ];
         try {
+            $arr['sys_updated_at'] = Helpers::getSysStartDate();
+            $arr['sys_created_at'] = $arr['sys_updated_at'];
             $insertId = self::create($arr)->payment_id;
             $resp['code'] = $insertId;  
             $resp['message'] = 'Payment inserted successfuly';  

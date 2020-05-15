@@ -236,7 +236,7 @@ class ApportionmentController extends Controller
                     'parent_trans_id' => $TransDetail->parent_trans_id??$transId,
                     'invoice_disbursed_id' => $TransDetail->disburse->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
-                    'trans_date' => date('Y-m-d H:i:s'),
+                    'trans_date' => Helpers::getSysStartDate(),
                     'amount' => $amount,
                     'entry_type' => 1,
                     'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF'),
@@ -297,7 +297,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view',[ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Payment Detail missing for this transaction!']);
             }
 
-            $transDateTime = date('Y-m-d H:i:s');
+            $transDateTime = Helpers::getSysStartDate();
             $txnInsertData = [
                     'payment_id' => NULL,
                     'link_trans_id'=> $transId,
