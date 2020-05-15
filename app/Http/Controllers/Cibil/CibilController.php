@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\Business;
 use Session;
 use File;
 use Mail; 
+use Carbon\Carbon;
 class CibilController extends Controller
 {
     protected $appRepo;
@@ -35,7 +36,8 @@ class CibilController extends Controller
         $biz_owner_id = $request->get('biz_owner_id');
         $arrOwnerData = BizOwner::getBizOwnerDataByOwnerId($biz_owner_id);
         $arrOwnerAddr = BizOwner::with('address')->where('biz_owner_id', $biz_owner_id)->first();
-     
+        $created_at  = Carbon::now()->toDateTimeString();
+        $sub = "Get Promomter (".$arrOwnerData['first_name'].") Civil Score";
         if($arrOwnerAddr->address!=null) {
             $ex =  explode(' ',$arrOwnerAddr->address->addr_1);
             $count  = count( $ex); 
@@ -66,7 +68,7 @@ class CibilController extends Controller
        
         if(isset($result['content'])){
             /* mail sent for monitoring **/
-            self::pullCrifApiDebugEmail($arrOwnerData,$responce,'Get promomter civil score');
+            self::pullCrifApiDebugEmail($arrOwnerData,$responce,$sub);
             $result['content'] = base64_encode($result['content']);
             $cibilScore =  $result['scores'] ?? '';
             $createApiLog = BizApiLog::create(['req_file' =>$arrOwnerData, 'res_file' => $result['content'],'status' => 0,'created_by' => Auth::user()->user_id]);
@@ -74,11 +76,12 @@ class CibilController extends Controller
                     $createBizApi= BizApi::create(['user_id' =>$arrOwnerData['user_id'], 
                                                 'biz_id' =>   $arrOwnerData['biz_id'],
                                                 'biz_owner_id' => $arrOwnerData['biz_owner_id'],
-                                                'type' => 1,
+                                                'type' => 2,
                                                 'verify_doc_no' => 1,
                                                 'status' => 1,
                                                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                                                'created_by' => Auth::user()->user_id,
+                                               'created_at' => $created_at
                                               ]);
 
                                if($createBizApi){
@@ -122,8 +125,10 @@ class CibilController extends Controller
         $biz_id = $request->get('biz_id');
         //$arrBizData = Business::getCompanyDataByBizId($biz_id);
         $arrBizData = Business::getApplicationById($biz_id);
-
-
+        $created_at  = Carbon::now()->toDateTimeString();
+        $sub1 = "Get Company (".$arrBizData->biz_entity_name.") Civil Score For Return Report Id";
+        $sub2 = "Get Company (".$arrBizData->biz_entity_name.") Civil Score For Return XML";
+        $sub3 = "Get Company (".$arrBizData->biz_entity_name.") Civil Score For Return HTML";
         if(!empty($arrBizData)){
                 $arrRequest['biz_name'] = $arrBizData->biz_entity_name;
                 $arrRequest['pan_gst_hash'] = $arrBizData->pan->pan_gst_hash;
@@ -162,7 +167,7 @@ class CibilController extends Controller
         }
         
         if(isset($acknowledgementResult['response-type']) && $acknowledgementResult['response-type'] == "ACKNOWLEDGEMENT"){
-            self::pullCrifApiDebugEmail($arrRequest,$responce,'Get company civil score for return report_id');
+            self::pullCrifApiDebugEmail($arrRequest,$responce,$sub1);
             sleep(25);
             $arrRequest['inquiry_unique_ref_no'] = $acknowledgementResult['inquiry-unique-ref-no'];
             $arrRequest['report_id'] = $acknowledgementResult['report-id'];
@@ -179,7 +184,7 @@ class CibilController extends Controller
                 }
             }
             if(isset($resultData['status'])){
-                    self::pullCrifApiDebugEmail($arrRequest,$responseData,'Get company civil score for return xml');
+                    self::pullCrifApiDebugEmail($arrRequest,$responseData,$sub2);
                     $arrRequest['resFormat'] = 'HTML';
                     sleep(10);
                     $resInHTMLFormate =  $CibilApi->getCommercialCibilData($arrRequest);
@@ -192,7 +197,7 @@ class CibilController extends Controller
                         $cibilScore = '';
                     }
                     //$cibilData = json_encode($resultData);
-                    self::pullCrifApiDebugEmail($arrRequest,$resInHTMLFormate,'Get company civil score for return html');
+                    self::pullCrifApiDebugEmail($arrRequest,$resInHTMLFormate,$sub3);
                     $createApiLog = BizApiLog::create(['req_file' =>json_encode($arrRequest), 'res_file' => $cibilData,'status' => 0,'created_by' => Auth::user()->user_id]);
                             if ($createApiLog) {
                                     $createBizApi= BizApi::create(['user_id' =>$arrBizData->user_id, 
@@ -203,6 +208,7 @@ class CibilController extends Controller
                                                                 'status' => 1,
                                                                'biz_api_log_id' => $createApiLog['biz_api_log_id'],
                                                                'created_by' => Auth::user()->user_id,
+                                                               'created_at'  => $created_at
                                                               ]);
 
                                                if($createBizApi){
