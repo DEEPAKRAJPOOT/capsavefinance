@@ -1572,8 +1572,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ColenderShare::saveShareToColender($data, $co_lenders_share_id);
     }
 
-    public function getSharedColender($where){
-        return ColenderShare::getSharedColender($where);
+    public function getSharedColender($where, $notColenderId = null){
+        return ColenderShare::getSharedColender($where, $notColenderId);
+    }
+
+    public function updateColenderData($attributes, $conditions){
+        return ColenderShare::updateColenderData($attributes, $conditions);
     }
 
     public function getTotalPrgmLimitByAppId($appId){

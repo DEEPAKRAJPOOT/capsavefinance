@@ -47,7 +47,7 @@ class CoLenderControllers extends Controller {
         $states = State::getStateList()->get();
 
         $co_lender_id = (int) $request->get('co_lender_id');
-        $coLenderData = $this->userRepo->getCoLenderData(['co_lenders_user.co_lender_id' => $co_lender_id])->first();
+        $coLenderData = $this->userRepo->getCoLenderData(['co_lenders.co_lender_id' => $co_lender_id])->first();
        // dd($coLenderData);
         Session::forget('operation_status');
         return view('backend.coLenders.add_co_lender_frm')
@@ -57,22 +57,19 @@ class CoLenderControllers extends Controller {
     public function saveCoLender(Request $request)
     {
         try {
-            //$string = Helpers::randomPassword();
             $string = time();
             $request = $request->all();
             $user_info = false;
-            $co_lender_id = $request['co_lender_id'] ? $request['co_lender_id'] : null;
-            
-            $user_id = $request['user_id'] ? $request['user_id'] : null;
+            $co_lender_id = $request['co_lender_id'] ??  null;
+            $user_id = $request['user_id'] ?? null;
             if (isset($request['email'])) {
                 $user_info = $this->userRepo->getUserByEmail($request['email']);
             }
 
-
             if (!$user_info) {
                 $data = [
                     'comp_name' => $request['comp_name'],
-                    'comp_email' => isset($request['email']) ? $request['email'] : null,
+                    'comp_email' => $request['email'] ?? null,
                     'comp_phone' => $request['phone'],
                     'comp_addr' => $request['comp_addr'],
                     'comp_state' => $request['state'],
@@ -86,8 +83,6 @@ class CoLenderControllers extends Controller {
                 if ($co_lender_id > 0) {
                     unset($data['comp_email']);
                 }
-                
-      
 
                 $lastInsertID = $this->userRepo->saveColenderUsers($data, (int) $co_lender_id);
                 $lastInsertID = $co_lender_id ? $co_lender_id : $lastInsertID;
@@ -142,7 +137,7 @@ class CoLenderControllers extends Controller {
     }
 
     public function shareToColender(){
-        $coLenders = $this->userRepo->getCoLenderData(['co_lenders_user.is_active'=>1, 'u.is_active'=>1]);
+        $coLenders = $this->userRepo->getCoLenderData(['co_lenders.is_active'=>1, 'u.is_active'=>1]);
         return view('backend.coLenders.share_colender')->with('coLenders', $coLenders);
     }
 
@@ -151,25 +146,29 @@ class CoLenderControllers extends Controller {
             $arrShareColenderData = $request->all();
             $appId = $arrShareColenderData['app_id'];
             $bizId = $arrShareColenderData['biz_id'];
+            $arrShareColenderData['user_id'] = State::getUserByAPP($appId)->user_id ?? NULL;
+            $arrShareColenderData['start_date'] = \carbon\Carbon::now();
+            $arrShareColenderData['end_date'] = NULL;
             $arrShareColenderData['created_at'] = \carbon\Carbon::now();
             $arrShareColenderData['created_by'] = Auth::user()->user_id;
             $data = $this->appRepo->getSharedColender([
-                    'app_id'=>$arrShareColenderData['app_id'],
-                    'app_prgm_limit_id' =>  $arrShareColenderData['app_prgm_limit_id'],
-                    //'co_lender_id'      =>  $arrShareColenderData['co_lender_id'],
-                    'is_active'         =>  1
-                ]);
+                'app_id'=>$arrShareColenderData['app_id'],
+                'user_id'=>$arrShareColenderData['user_id'],
+                'app_prgm_limit_id' =>  $arrShareColenderData['app_prgm_limit_id'],
+                'is_active'   =>  1
+            ], $arrShareColenderData['co_lender_id']);
             if($data->count()){
-                Session::flash('message', 'You can\'t share this application offer to more than one co-lender.');
+                Session::flash('error', 'You can\'t share this application offer to more than one co-lender.');
                 return redirect()->back()->withInput($request->input());
             }else{
+                $this->appRepo->updateColenderData(['is_active' => 0, 'end_date' => \carbon\Carbon::now()], ['user_id' => $arrShareColenderData['user_id'], 'co_lender_id' => $arrShareColenderData['co_lender_id']]);
                 $status = $this->appRepo->saveShareToColender($arrShareColenderData);
                 if($status){
                     Session::flash('message', 'Offer shared successfully');
                     Session::flash('operation_status', 1); 
                     return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
                 }else{
-                    Session::flash('message', trans('backend_messages.something_went_wrong'));
+                    Session::flash('error', trans('backend_messages.something_went_wrong'));
                     Session::flash('operation_status', 1); 
                     return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
                 }

@@ -49,6 +49,7 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\ColenderShare;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
 
@@ -1235,5 +1236,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public static function getMaxDpdTransaction($userId, $transType){
 		return Transactions::getMaxDpdTransaction($userId, $transType);
+	}
+
+	public function getColenderShareWithUserId($userId) {
+		return ColenderShare::getColenderShareWithUserId((int)$userId);
+	}
+
+	public function getColenderApplications() {
+		$getAppId  = ColenderShare::where(['is_active' => 1])->pluck('app_id');
+        $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
+        return $result ?: false;
 	}
 }
