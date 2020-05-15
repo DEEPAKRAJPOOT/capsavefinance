@@ -59,9 +59,9 @@
                                     @endif
                                     @endif
                                     
-                                    
-                                    
-                                    <div class="col-md-3 @if ($ParentData['id'] >= 500) cls-lms @endif">
+                                    @if ($ParentData['display_name'] == 'Lead List') <div class="cls-perm-los"> @endif
+                                    @if ($ParentData['display_name'] == 'Invoice Management') <div class="cls-perm-lms"> @endif
+                                    <div class="col-md-3">
                                     <ul>
                                         <li>
 
@@ -77,6 +77,8 @@
                                         </li>
                                     </ul>
                                     </div>
+                                    @if ($ParentData['display_name'] == 'Manage Co-lender') </div> @endif
+                                    @if ($ParentData['display_name'] == 'Tally') </div> @endif
                                     @endforeach
                                 </div>
                                 
