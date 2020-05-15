@@ -47,7 +47,7 @@
                                 <div class="clearfix"></div>
                                 
                                 <p class="error" id="myerr" style="color:red;display:none">Check at least one CheckBox</p>
-                                <div>
+                                <div class="row">
 
                                     @foreach($getParentData as $key=> $ParentData)
                                     @php $match = 0 @endphp
@@ -58,7 +58,11 @@
                                     @php $match = 1 @endphp
                                     @endif
                                     @endif
-                                    <ul id="tree">
+                                    
+                                    
+                                    
+                                    <div class="col-md-3 @if ($ParentData['id'] >= 500) cls-lms @endif">
+                                    <ul>
                                         <li>
 
                                             @php $checked = ($match==1)?'checked':'' @endphp
@@ -72,6 +76,7 @@
                                             @endif
                                         </li>
                                     </ul>
+                                    </div>
                                     @endforeach
                                 </div>
                                 
