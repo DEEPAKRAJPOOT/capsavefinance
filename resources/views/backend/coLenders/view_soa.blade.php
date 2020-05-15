@@ -55,20 +55,6 @@
                     ])
                     !!} 
                 </div>
-                @if(!request()->get('sanctionPageView'))
-                <div class="col-md-3" id="prefetch">
-                    {!!
-                    Form::text('search_keyword',
-                    null,
-                    [
-                    'class' => 'form-control',
-                    'placeholder' => 'Search by Client ID/Name',
-                    'id'=>'search_keyword',
-                    'autocomplete'=>'off'
-                    ])
-                    !!}
-                </div>
-                @endif
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                 {!! Form::hidden('biz_id', 
                     isset($user['biz_id'])?$user['biz_id']:null, 
