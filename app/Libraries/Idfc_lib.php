@@ -52,10 +52,10 @@ class Idfc_lib{
 		list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
 		// $file_name = md5($txn_id).'.txt';
 		// $this->_saveLogFile($payload, $file_name, 'Outgoing');
-     	print_r($payload);
-		print "<pre>";
-     	print_r($http_header);
-		print "</pre>";
+  //    	print_r($payload);
+		// print "<pre>";
+  //    	print_r($http_header);
+		// print "</pre>";
      	$response = $this->_curl_call($url, $payload, $http_header);
      	dd($response);
      	// $this->_saveLogFile($response, $file_name, 'Incoming');
@@ -132,8 +132,8 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, true);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt($curl, CURLOPT_CAINFO, $certificate);
 		curl_setopt($curl, CURLOPT_CAPATH, $certificate);
 		curl_setopt($curl, CURLOPT_SSLVERSION, 3);
