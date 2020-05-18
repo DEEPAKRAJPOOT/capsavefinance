@@ -21,7 +21,6 @@ use App\Inv\Repositories\Models\AppProgramLimit;
 class DataRenderer implements DataProviderInterface
 {
     use LmsTrait;
-
     /**
      * Helper object for DataRenderer.
      *
@@ -4102,10 +4101,15 @@ class DataRenderer implements DataProviderInterface
      * @param object $data
      * @return mixed
      */
-    public function getColenderSoaList(Request $request, $data, $colenderCurrShare) {   
+    public function getColenderSoaList(Request $request, $data, $colenderCurrShare) {
+        $this->colender_balance = 0;
         return DataTables::of($data)
-        ->rawColumns(['balance','narration'])
+            ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
+                $co_lender_percent = $trans->co_lender_percent ?? 0;
+                $this->colender_share = round($co_lender_percent/100,2);
+                $this->colender_debit = 0;
+                $this->colender_credit = 0;
                 return $trans->payment_id;
             })
             ->addColumn('customer_id', function($trans){
@@ -4148,53 +4152,49 @@ class DataRenderer implements DataProviderInterface
                 }
             })
             ->addColumn('sub_amount', function($trans) {
-                $co_lender_percent = $trans->co_lender_percent ?? 0;
-                $colender_share = round($co_lender_percent/100,2);
                 if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
-                    return number_format(($trans->amount*$colender_share),2);
+                    $this->sub_amount = ($trans->amount * $this->colender_share);
+                    return number_format($this->sub_amount,2);
                 }
             })
             ->editColumn('debit', function ($trans) {
-                $co_lender_percent = $trans->co_lender_percent ?? 0;
-                $colender_share = round($co_lender_percent/100,2);
                 if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                     return '';
                 }elseif($trans->entry_type=='0'){
-                    return number_format(($trans->amount*$colender_share),2);
+                    $this->colender_debit = ($trans->amount*$this->colender_share);
+                    return number_format($this->colender_debit, 2);
                 }else{
                     return '(0.00)';
                 }
             })
             ->editColumn('credit',  function ($trans) {
-                $co_lender_percent = $trans->co_lender_percent ?? 0;
-                $colender_share = round($co_lender_percent/100,2);
                 if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                     return '';
                 }elseif($trans->entry_type=='1'){
-                    return '('.number_format(($trans->amount*$colender_share),2).')';
+                    $this->colender_credit = ($trans->amount*$this->colender_share);
+                    return '('.number_format($this->colender_credit, 2).')';
                 }else{
                     return '(0.00)';
                 }
             })
             ->editColumn('balance', function ($trans) {
                 $data = '';
-                $co_lender_percent = $trans->co_lender_percent ?? 0;
-                $colender_share = round($co_lender_percent/100,2);
+                $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
                 if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                     $data = '';
                 }
                 elseif($trans->balance<0){
-                    $data = '<span style="color:red">'.number_format(abs($trans->balance*$colender_share), 2).'</span>';
+                    $data = '<span style="color:red">'. number_format($this->colender_balance, 2) .'</span>';
                 }else{
-                    $data = '<span style="color:green">'.number_format(abs($trans->balance*$colender_share), 2).'</span>';
+                    $data = '<span style="color:green">'. number_format($this->colender_balance, 2) .'</span>';
                 }
                 return $data;
             })
             ->filter(function ($query) use ($request) {
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                     $query->where(function ($query) use ($request) {
-                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
-                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
                         $query->WhereBetween('trans_date', [$from_date, $to_date]);
                     });
                 }
