@@ -172,7 +172,13 @@
         required: "Please upload Invoice Copy",
         }
         }); 
-         if(getDays > tenor)
+        $("#remark" ).rules( "add", {
+        required: true,
+        messages: {
+        required: "Please enter remark",
+        }
+        });  
+        if(getDays > tenor)
         {
            $("#tenorMsg").show(); 
            $("#tenorMsg").html('Invoice date & invoice due date difference should not be more than '+tenor+' days'); 
