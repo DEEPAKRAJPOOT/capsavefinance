@@ -122,7 +122,7 @@ class Idfc_lib{
     }
 
     private function _curl_call($url, $postdata, $header ,$timeout= 300){
-		$certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\\cert.pem";
+		$certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem";
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);

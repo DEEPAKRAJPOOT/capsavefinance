@@ -642,9 +642,9 @@ class InvoiceController extends Controller {
 
                     $exportData[$userid]['RefNo'] = $disbursalData['invoice']['lms_user']['virtual_acc_id'];
                     $exportData[$userid]['Amount'] = $disburseAmount;
-                    $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
+                    $exportData[$userid]['Debit_Acct_No'] = '21480259346';
                     $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
-                    $exportData[$userid]['Debit_Mobile'] = '9876543210';
+                    $exportData[$userid]['Debit_Mobile'] = '1234567890';
                     $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
                     $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
                     $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
@@ -662,7 +662,7 @@ class InvoiceController extends Controller {
             if($disburseType == 1 && !empty($allrecords)) {
             
                 $http_header = [
-                    'timestamp' => date('Y-m-d H:i:s'),
+                    'timestamp' => date('Y-m-d H:i:s', strtotime(str_replace('/','-',$valueDate))),
                     'txn_id' => $transId
                     ];
 
