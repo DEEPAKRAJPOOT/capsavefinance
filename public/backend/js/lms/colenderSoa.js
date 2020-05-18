@@ -5,7 +5,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
-            dom: 'lBrtip',
+            // dom: 'lBrtip',
             bSort: false,
             responsive: true,
             searching: false,
@@ -51,7 +51,7 @@ try {
                 {data: 'credit'},
                 {data: 'balance'}
             ],
-            buttons: [
+            /*buttons: [
                 
                 {
                     text: 'PDF',
@@ -65,7 +65,7 @@ try {
                         download('excel');
                     }
                 }
-            ],
+            ],*/
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
 
