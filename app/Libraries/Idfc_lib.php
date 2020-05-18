@@ -125,6 +125,9 @@ class Idfc_lib{
 		$certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem";
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($tuCurl, CURLOPT_PORT , 443);
+		curl_setopt($tuCurl, CURLOPT_VERBOSE, 0);
+		curl_setopt($tuCurl, CURLOPT_HEADER, 0);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
 		curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
@@ -132,8 +135,8 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, true);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_CAINFO, $certificate);
 		curl_setopt($curl, CURLOPT_CAPATH, $certificate);
 		curl_setopt($curl, CURLOPT_SSLVERSION, 3);
@@ -142,6 +145,7 @@ class Idfc_lib{
 		$resp['error_no'] = curl_errno($curl);
 		$resp['result'] = $output;
 		curl_close($curl);
+		
 		return $resp;
     }
 
