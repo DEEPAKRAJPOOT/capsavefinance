@@ -3620,70 +3620,47 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($data)
                         ->rawColumns(['action', 'is_active', 'email', 'action', 'status'])
                         ->editColumn(
-                                'disburse_date',
+                                'batch_id',
                                 function ($data) {
-                            return ($data->disburse_date) ? date('d-M-Y', strtotime($data->disburse_date)) : '---';
+                            return ($data->batch_id) ? ($data->batch_id) : '';
                         })
                         ->editColumn(
-                                'invoice_no',
+                                'type',
                                 function ($data) {
-                            return $data->invoice_no;
-                        })
-                        ->editColumn(
-                                'inv_due_date',
-                                function ($data) {
-                            return ($data->inv_due_date) ? date('d-M-Y', strtotime($data->inv_due_date)) : '---';
-                        })
-                        ->editColumn(
-                                'payment_due_date',
-                                function ($data) {
-                            return ($data->payment_due_date) ? date('d-M-Y', strtotime($data->payment_due_date)) : '---';
-                        })
-                        ->editColumn(
-                                'invoice_approve_amount',
-                                function ($data) {
-                            return $data->invoice_approve_amount ? number_format($data->invoice_approve_amount) : '';
-                        })
-                        ->editColumn(
-                                'principal_amount',
-                                function ($data) {
-                            //s dd($data->principal_amount);
-                            return $data->principal_amount ? number_format($data->principal_amount) : '';
-                        })
-                        ->editColumn(
-                                'status_name',
-                                function ($data) {
-                            return $data->status_name;
+                            return ($data->type) ? ($data->type) : '';
                         })
                         ->editColumn(
                                 'disburse_amount',
                                 function ($data) {
-                            return $data->disburse_amount;
+                                    $data = $data->toArray();
+                                    $disAmt = 0;
+                                    $disAmt += array_sum(array_column($data['disbursal'], 'disburse_amount'));
+                                    return ($disAmt) ?? $disAmt;
                         })
                         ->editColumn(
-                                'total_interest',
+                                'approver',
                                 function ($data) {
-                            return $data->total_interest;
-                        })
-                        ->addColumn(
-                                'settlement_date',
-                                function ($data) {
-                            return isset($data->settlement_date) ? $data->settlement_date : '-';
-                        })
-                        ->addColumn(
-                                'settlement_amount',
-                                function ($data) {
-                            return isset($data->total_repaid_amt) ? $data->total_repaid_amt : '-';
+                            return ($data->approver) ? ($data->approver) : '';
                         })
                         ->editColumn(
-                                'accured_interest',
+                                'value_date',
                                 function ($data) {
-                            return isset($data->accured_interest) ? $data->accured_interest : '-';
+                            return ($data->value_date) ? ($data->value_date) : '';
                         })
-                        ->addColumn(
-                                'surplus_amount',
+                        ->editColumn(
+                                'created_at',
                                 function ($data) {
-                            return isset($data->surplus_amount) ? $data->surplus_amount : '-';
+                            return ($data->created_at) ? ($data->created_at) : '';
+                        })
+                        ->editColumn(
+                                'download_batch_excel',
+                                function ($data) {
+                            return '';
+                        })
+                        ->editColumn(
+                                'download_bank_resp',
+                                function ($data) {
+                            return '';
                         })
                         ->addColumn(
                                 'action',
@@ -3700,12 +3677,6 @@ class DataRenderer implements DataProviderInterface
                                 $query->where(function ($query) use ($request) {
                                     $search_keyword = trim($request->get('search_keyword'));
                                     $query->where('invoice.invoice_no', 'like', "%$search_keyword%");
-                                });
-                            }
-                            if ($request->get('is_status') != '') {
-                                $query->where(function ($query) use ($request) {
-                                    $is_status = trim($request->get('is_status'));
-                                    $query->where('disbursal.status_id', $is_status);
                                 });
                             }
                             if ($request->get('from_date') != '') {

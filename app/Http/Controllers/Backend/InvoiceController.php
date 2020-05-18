@@ -574,9 +574,10 @@ class InvoiceController extends Controller {
             }
             
             $invoiceIds = $request->get('invoice_ids');
+            $valueDate = $request->get('value_date');
             $disburseType = config('lms.DISBURSE_TYPE')['ONLINE'];
             $creatorId = Auth::user()->user_id;
-
+            
             if(empty($invoiceIds)){
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
@@ -653,7 +654,7 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Mode_of_Pay'] = 'IFT';
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'test remarks';
-                    $exportData[$userid]['Value_Date'] = date('Y-m-d');
+                    $exportData[$userid]['Value_Date'] = date("Y-m-d", strtotime(str_replace('/','-',$valueDate)));
 
 
                 } 
@@ -683,7 +684,6 @@ class InvoiceController extends Controller {
                     //save transaction here
                     // for disburse type online idfc bank i.e $disburseType == 1
                 }
-                return redirect()->route('lms_disbursal_request_list')->withErrors($result);      
             }
 
             $result = $this->export($exportData, $batchId);

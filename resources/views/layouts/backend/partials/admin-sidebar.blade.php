@@ -218,7 +218,7 @@
     @endcan
     
     @canany(['lms_disbursal_request_list','lms_disbursed_list'])
-        <!-- <li class="nav-item">
+        <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-bank" aria-hidden="true"></i>
                 <span class="menu-title">Manage Disbursal</span>
@@ -227,10 +227,10 @@
             <div class="collapse" id="layoutsSubmenu8">
                 <ul class="nav flex-column sub-menu">
                     @can('lms_disbursal_request_list')
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="{{ route('lms_disbursal_request_list') }}">Disbursal Requests</a>
 
-                    </li>
+                    </li> -->
                     @endcan
                     @can('lms_disbursed_list')
                     <li class="nav-item">
@@ -239,7 +239,7 @@
                     @endcan
                 </ul>
             </div>
-        </li> -->
+        </li>
     @endcan
       
     @canany(['lms_refund_list'])

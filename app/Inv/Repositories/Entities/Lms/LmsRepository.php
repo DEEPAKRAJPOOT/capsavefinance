@@ -1236,4 +1236,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getMaxDpdTransaction($userId, $transType){
 		return Transactions::getMaxDpdTransaction($userId, $transType);
 	}
+	
+	public static function getBatchDisbursalList(){
+		return DisbursalBatch::with('disbursal')
+				->orderBy('created_at', 'DESC');
+	}
+
 }

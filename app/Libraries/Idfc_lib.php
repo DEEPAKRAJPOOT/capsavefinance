@@ -122,6 +122,7 @@ class Idfc_lib{
     }
 
     private function _curl_call($url, $postdata, $header ,$timeout= 300){
+		$certificate = "/etc/letsencrypt/live/admin-rentalpha.zuron.in\cert.pem";
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -131,6 +132,10 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_CAINFO, $certificate);
+		curl_setopt($curl, CURLOPT_CAPATH, $certificate);
 		$output = curl_exec($curl);
 		$resp['error'] = curl_error($curl);
 		$resp['error_no'] = curl_errno($curl);
