@@ -1499,7 +1499,8 @@ class CamController extends Controller
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
-        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        //$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        $offerStatus = $this->appRepo->getAppData($appId)->status;//to check offer is sanctioned or not
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
