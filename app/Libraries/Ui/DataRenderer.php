@@ -4196,6 +4196,12 @@ class DataRenderer implements DataProviderInterface
                         $query->WhereBetween('trans_date', [$from_date, $to_date]);
                     });
                 }
+                if($request->get('user_id')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $user_id = trim($request->get('user_id'));
+                        $query->where('transactions.user_id', '=', "$user_id");
+                    });
+                }
             })
             ->make(true);
         }
