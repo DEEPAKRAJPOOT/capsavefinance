@@ -136,7 +136,7 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_CAINFO, $certificate);
 		curl_setopt($curl, CURLOPT_CAPATH, $certificate);
-		curl_setopt($ch, CURLOPT_SSLVERSION, 3);
+		curl_setopt($curl, CURLOPT_SSLVERSION, 3);
 		$output = curl_exec($curl);
 		$resp['error'] = curl_error($curl);
 		$resp['error_no'] = curl_errno($curl);
