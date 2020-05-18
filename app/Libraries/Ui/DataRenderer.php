@@ -799,7 +799,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                  ->addColumn(
@@ -815,9 +816,11 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
+                        
                 })
                 ->addColumn(            
                     'updated_at',
@@ -1009,7 +1012,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                 ->addColumn(
@@ -1025,8 +1029,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(            
@@ -1106,7 +1111,8 @@ class DataRenderer implements DataProviderInterface
                        $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1122,7 +1128,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                     ->addColumn(            
@@ -1216,7 +1224,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1232,8 +1241,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                 ->addColumn(            
@@ -1296,7 +1306,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1311,9 +1322,10 @@ class DataRenderer implements DataProviderInterface
               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                        $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                       $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                   ->addColumn(            
@@ -1412,7 +1424,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                      $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1431,8 +1444,9 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
-                })
+               })
                  ->addColumn(            
                     'updated_at',
                     function ($invoice) {                        
@@ -1504,7 +1518,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                  ->addColumn(
@@ -1520,8 +1535,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(            
@@ -1582,7 +1598,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1600,6 +1617,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
                        
@@ -1695,7 +1713,8 @@ class DataRenderer implements DataProviderInterface
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
-                        $custo_name .= $invoice->remark ? '<span style="color:red;">'.$invoice->remark.'</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a> ";
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1713,6 +1732,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                    ->addColumn(            
@@ -1741,9 +1761,9 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                       $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
-                     if($invoice->lms_user->is_active==1)
+                     if($invoice->userDetail->is_active==1)
                      {
                        if( $chkUser->id!=11)
                       { 
