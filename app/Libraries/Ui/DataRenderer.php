@@ -4102,9 +4102,7 @@ class DataRenderer implements DataProviderInterface
      * @param object $data
      * @return mixed
      */
-    public function getColenderSoaList(Request $request, $data, $colenderShare)
-    {   $co_lender_percent = $colenderShare->co_lender_percent ?? 0;
-        $this->co_lender_percent = round($co_lender_percent/100,2);
+    public function getColenderSoaList(Request $request, $data, $colenderCurrShare) {   
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
@@ -4150,13 +4148,15 @@ class DataRenderer implements DataProviderInterface
                 }
             })
             ->addColumn('sub_amount', function($trans) {
-                $colender_share = $this->co_lender_percent;
+                $co_lender_percent = $trans->co_lender_percent ?? 0;
+                $colender_share = round($co_lender_percent/100,2);
                 if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
                     return number_format(($trans->amount*$colender_share),2);
                 }
             })
             ->editColumn('debit', function ($trans) {
-                $colender_share = $this->co_lender_percent;
+                $co_lender_percent = $trans->co_lender_percent ?? 0;
+                $colender_share = round($co_lender_percent/100,2);
                 if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                     return '';
                 }elseif($trans->entry_type=='0'){
@@ -4166,7 +4166,8 @@ class DataRenderer implements DataProviderInterface
                 }
             })
             ->editColumn('credit',  function ($trans) {
-                $colender_share = $this->co_lender_percent;
+                $co_lender_percent = $trans->co_lender_percent ?? 0;
+                $colender_share = round($co_lender_percent/100,2);
                 if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                     return '';
                 }elseif($trans->entry_type=='1'){
@@ -4177,7 +4178,8 @@ class DataRenderer implements DataProviderInterface
             })
             ->editColumn('balance', function ($trans) {
                 $data = '';
-                $colender_share = $this->co_lender_percent;
+                $co_lender_percent = $trans->co_lender_percent ?? 0;
+                $colender_share = round($co_lender_percent/100,2);
                 if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                     $data = '';
                 }

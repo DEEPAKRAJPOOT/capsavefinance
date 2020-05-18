@@ -3903,7 +3903,7 @@ if ($err) {
    */
     public function getColenderSoaList(DataProviderInterface $dataProvider) {
         $soa_for_userid = $this->request->get('user_id');
-        $transactionList = $this->lmsRepo->getSoaList();
+        $transactionList = $this->lmsRepo->getColenderSoaList();
         $colenderShare = $this->lmsRepo->getColenderShareWithUserId($soa_for_userid);
         $users = $dataProvider->getColenderSoaList($this->request, $transactionList, $colenderShare);
         return $users;

@@ -670,6 +670,26 @@ class Transactions extends BaseModel {
                     ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');
     }
+
+    public static function getColenderSoaList(){
+        return self::select('transactions.*', 'co_lenders_share.capsave_percent', 'co_lenders_share.co_lender_percent','co_lenders_share.start_date', 'co_lenders_share.end_date')
+                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
+                    ->join('lms_users','users.user_id','lms_users.user_id')
+                    ->leftJoin('co_lenders_share', function ($join){
+                        $join->on('transactions.user_id', '=' ,'co_lenders_share.user_id')
+                        ->WhereBetween('trans_date', ['start_date', 'end_date'])
+                        ->orWhere(function ($join){
+                          $join->where('trans_date', '>=', 'start_date')
+                                ->whereNull('end_date')
+                                ->where('co_lenders_share.is_active', '=', 1);
+                        });
+                    })
+                    ->where('transactions.user_id','=',613)
+                    ->where('soa_flag','=',1)
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('trans_id', 'asc');
+    }
     
     /**
      * Get Repayment Amount

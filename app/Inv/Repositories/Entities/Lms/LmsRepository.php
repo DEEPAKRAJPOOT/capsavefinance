@@ -702,6 +702,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return Transactions::getSoaList();
     }
     
+    public function getColenderSoaList() {
+        return Transactions::getColenderSoaList();
+    }
+    
     public function getRepaymentAmount($userId, $transType)
     {
         return Transactions::getUserBalance($userId);
