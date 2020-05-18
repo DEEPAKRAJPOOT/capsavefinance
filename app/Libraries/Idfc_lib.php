@@ -125,9 +125,9 @@ class Idfc_lib{
 		$certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem";
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($tuCurl, CURLOPT_PORT , 443);
-		curl_setopt($tuCurl, CURLOPT_VERBOSE, 0);
-		curl_setopt($tuCurl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_PORT , 443);
+		curl_setopt($curl, CURLOPT_VERBOSE, 0);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
 		curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
