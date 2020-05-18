@@ -565,8 +565,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($app) use ($request) {
                         return '<div class="d-flex inline-action-btn">
-                            <a href="'.route('front_upload_invoice', ['anchor_id' =>$app->anchor_id, 'user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Upload Invoice" class="btn btn-action-btn btn-sm">Invoice</a>
-                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
+                              <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
                                 <a href="'.route('front_gstin', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Pull GST Detail" class="btn btn-action-btn btn-sm">Pull Gst</a>
                             </div>';
                     }
