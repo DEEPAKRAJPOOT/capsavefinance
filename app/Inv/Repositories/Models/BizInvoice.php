@@ -72,6 +72,7 @@ class BizInvoice extends BaseModel
         'pay_calculation_on',
         'invoice_amount',
         'invoice_approve_amount',
+        'invoice_margin_amount',
         'is_margin_deduct',
         'prgm_offer_id',
         'file_id',
