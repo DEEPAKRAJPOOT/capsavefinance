@@ -56,6 +56,7 @@ class Idfc_lib{
 		// print "<pre>";
   //    	print_r($http_header);
 		// print "</pre>";
+		// die("here");
      	$response = $this->_curl_call($url, $payload, $http_header);
      	dd($response);
      	// $this->_saveLogFile($response, $file_name, 'Incoming');
@@ -125,7 +126,7 @@ class Idfc_lib{
 		$certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem";
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_PORT , 443);
+		// curl_setopt($curl, CURLOPT_PORT , 443);
 		curl_setopt($curl, CURLOPT_VERBOSE, 0);
 		curl_setopt($curl, CURLOPT_HEADER, 0);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
