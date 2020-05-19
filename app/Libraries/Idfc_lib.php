@@ -136,7 +136,7 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_CAINFO, $certificate);
 		curl_setopt($curl, CURLOPT_CAPATH, $certificate);
