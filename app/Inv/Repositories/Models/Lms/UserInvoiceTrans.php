@@ -97,6 +97,20 @@ class UserInvoiceTrans extends BaseModel {
         return $result;
     }
 
+    public static function leaseRegisters($whereCondition=[]) {
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        $query = self::select('*')
+        ->join('user_invoice', 'user_invoice.user_invoice_id', 'user_invoice_trans.user_invoice_id')
+        ->join('mst_state', 'mst_state.id','user_invoice.user_invoice_rel_id');
+                
+        if (!empty($whereCondition)) {
+            $query->where($whereCondition);
+        }
+        return $query;
+    }
+
     public function getUserInvoice() {
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\UserInvoice', 'user_invoice_id', 'user_invoice_id');
     }

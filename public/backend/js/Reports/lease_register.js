@@ -1,7 +1,7 @@
 try {
     var oTable;
     jQuery(document).ready(function ($) {
-        oTable = $('#customer_report').DataTable({
+        oTable = $('#lease_register_report').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 50,
@@ -9,7 +9,7 @@ try {
             responsive: true,
             searching: false,
             ajax: {
-                "url": messages.get_all_customers, // json datasource
+                "url": messages.get_all_lease_registers, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.from_date = $('input[name="from_date"]').val();
@@ -18,29 +18,34 @@ try {
                     d._token = messages.token;
                 },
                 "error": function () {
-                    $("#customer_report").append('<tbody class="error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#customer_report_processing").css("display", "none");
+                    $("#lease_register_report").append('<tbody class="error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#lease_register_report_processing").css("display", "none");
                 }
             },
             columns: [
-                {data: 'sr_no'},
-                {data: 'customer_name', width:'80px'},
-                {data: 'email', width:'80px'},
-                {data: 'mobile'},
-                {data: 'biz_name'},
-                {data: 'registered_on'},
-                {data: 'is_active'}
+                {data: 'state'},
+                {data: 'biz_gst_no'},
+                {data: 'biz_entity_name'},
+                {data: 'customer_addr'},
+                {data: 'invoice_no'},
+                {data: 'invoice_date'},
+                {data: 'sac_code'},
+                {data: 'base_amount'},
+                {data: 'sgst_rate'},
+                {data: 'sgst_amount'},
+                {data: 'cgst_rate'},
+                {data: 'cgst_amount'},
+                {data: 'igst_rate'},
+                {data: 'igst_amount'},
+                {data: 'total_amt'},
+                {data: 'total_rate'},
+                {data: 'total_tax'},
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,2,3]}]
         });
 
         //Search
         $('#searchbtn').on('click', function (e) {
-            $("#client_details").html('');
-            var user_id = $.trim($("#user_id").val());
-            var biz_id = $.trim($("#biz_id").val());
-            
-            //showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
             oTable.draw();
         });
 

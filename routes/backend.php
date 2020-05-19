@@ -22,17 +22,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'report_summary',
                 'uses' => 'Backend\ReportController@index'
             ]);
+
             Route::get('/customer', [
                 'as' => 'report_customer',
                 'uses' => 'Backend\ReportController@customer'
             ]);
+
             Route::get('/bank', [
                 'as' => 'report_bank',
                 'uses' => 'Backend\ReportController@bank'
             ]);
+
             Route::get('/company', [
                 'as' => 'report_company',
                 'uses' => 'Backend\ReportController@company'
+            ]);
+
+            Route::get('/lease-register', [
+                'as' => 'lease_register',
+                'uses' => 'Backend\ReportController@leaseRegister'
             ]);
         });
 
