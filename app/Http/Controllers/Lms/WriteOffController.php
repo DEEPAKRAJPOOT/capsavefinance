@@ -65,9 +65,17 @@ class WriteOffController extends Controller
         $userInfo->consume_limit = number_format($totalCunsumeLimit);
         $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
         $woData = $this->lmsRepo->getWriteOff($user_id);
-        return view('lms.writeoff.index')->with(['userInfo' => $userInfo, 'woData' => $woData]);
+        $roleData = Helpers::getUserRole();
+        $userRoleId = $roleData[0]->id;
+        return view('lms.writeoff.index')->with(['userInfo' => $userInfo, 'woData' => $woData, 'role_id' => $userRoleId]);
     }
 
+    /**
+     * Generate write off
+     * 
+     * @param Request $request
+     * @return type
+     */
     public function generateWriteOff(Request $request)
     {   
         try {
@@ -104,7 +112,10 @@ class WriteOffController extends Controller
         try {
             $custId = $request->get('user_id');
             $woReqId = $request->get('wo_req_id');
-            return view('lms.writeoff.approve_disapprove')->with(['user_id' => $custId, 'wo_req_id' => $woReqId]);
+            $action_type = $request->get('action_type');
+            return view('lms.writeoff.move_to_next_stage')->with(['user_id' => $custId, 
+                                                                    'wo_req_id' => $woReqId,
+                                                                    'action_type' => $action_type]);
         } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -121,28 +132,47 @@ class WriteOffController extends Controller
         try {
             $woReqId = ($request->get('wo_req_id')) ? \Crypt::decrypt($request->get('wo_req_id')) : null;
             $custId = ($request->get('customer_id')) ? \Crypt::decrypt($request->get('customer_id')) : null;
-            $actionType = $request->get('submit');
+            $actionType = ($request->get('action_type')) ? \Crypt::decrypt($request->get('action_type')) : null;
             $cmntTxt = $request->get('comment_txt');
             $roleData = Helpers::getUserRole();
             $userRoleId = $roleData[0]->id;
             $status_id = '';
             $messges = '';
-            if (($userRoleId === 6) || ($userRoleId === 1)) {
-                if ($actionType === 'Yes') {
+            if ($userRoleId === 6) {
+                if ($actionType == 1) {
                     $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
-                    $messges = 'Case moved to Approver.';
-                } else {
-                    $status_id = config('lms')['WRITE_OFF_STATUS']['NEW'];
-                    $messges = 'Case moved back by Credit Manager.';
+                    $messges = 'Case moved to next stage.';
                 }
             }
-            if (($userRoleId === 8) || ($userRoleId === 1)) {
-                if ($actionType === 'Yes') {
+            if ($userRoleId === 8) {
+                if ($actionType == '1') {
                     $status_id = config('lms')['WRITE_OFF_STATUS']['APPROVED'];
-                    $messges = 'Case approved by Approver.';
+                    $messges = 'Case moved to next stage.';
                 } else {
                     $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
-                    $messges = 'Case moved back to Credit Manager.';
+                    $messges = 'Case moved to back stage.';
+                }
+            }
+            $woData = $this->lmsRepo->getWriteOff($custId);
+            $curStatusId = $woData['0']['status_id'];
+            if ($userRoleId === 1) {
+                if ($actionType == '1') {
+                    
+                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['NEW']) {
+                        $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
+                    }
+                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['IN_PROCESS']) {
+                        $status_id = config('lms')['WRITE_OFF_STATUS']['APPROVED'];
+                    }
+                    $messges = 'Case moved to next stage.';
+                } else {
+                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['IN_PROCESS']) {
+                        $status_id = config('lms')['WRITE_OFF_STATUS']['NEW'];
+                    }
+                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['APPROVED']) {
+                        $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
+                    }
+                    $messges = 'Case moved to back stage.';
                 }
             }
             $woLogData['wo_req_id'] = $woReqId;

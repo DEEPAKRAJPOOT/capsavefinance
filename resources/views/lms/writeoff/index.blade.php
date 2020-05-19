@@ -48,10 +48,36 @@
                                                                         <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td>
                                                                         <td>{{$wOff->amount}}</td>
                                                                         <td>{{$wOff->status_name}}</td>
-                                                                        <td><a data-toggle="modal"  data-height="250px" 
-                                                                            data-width="100%" data-target="#apprDisapprFrame"
-                                                                            data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id])}}"  
-                                                                            data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
+                                                                        <td>@if (($role_id == 6) && ($wOff->status_id == 36))
+                                                                                <a data-toggle="modal"  data-height="250px" 
+                                                                                data-width="100%" data-target="#apprDisapprFrame"
+                                                                                data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '1'])}}"  
+                                                                                data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
+                                                                            @endif
+                                                                            @if ($role_id == 1)
+                                                                                @if (($wOff->status_id == 37) || ($wOff->status_id == 36))
+                                                                                    <a data-toggle="modal"  data-height="250px" 
+                                                                                    data-width="100%" data-target="#apprDisapprFrame"
+                                                                                    data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '1'])}}"  
+                                                                                    data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
+                                                                                @endif
+                                                                                <a data-toggle="modal"  data-height="250px" 
+                                                                                data-width="100%" data-target="#apprDisapprFrame"
+                                                                                data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '2'])}}"  
+                                                                                data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Back Stage"><i class="fa fa-reply" aria-hidden="true"></i></a>
+                                                                            @endif
+                                                                            @if (($role_id == 8))
+                                                                                <a data-toggle="modal"  data-height="250px" 
+                                                                                data-width="100%" data-target="#apprDisapprFrame"
+                                                                                data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '1'])}}"  
+                                                                                data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
+                                                                                @if ($wOff->status_id == 37)
+                                                                                    <a data-toggle="modal"  data-height="250px" 
+                                                                                    data-width="100%" data-target="#apprDisapprFrame"
+                                                                                    data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '2'])}}"  
+                                                                                    data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Back Stage"><i class="fa fa-reply" aria-hidden="true"></i></a>
+                                                                                @endif
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach
@@ -70,7 +96,7 @@
 	</div>
 </div>
 
-{!!Helpers::makeIframePopup('apprDisapprFrame','Approve / Disapprove', 'modal-md')!!}
+{!!Helpers::makeIframePopup('apprDisapprFrame','Send next stage', 'modal-md')!!}
 @endsection
 
 

@@ -6,6 +6,7 @@
         @csrf
         <input type="hidden" name="wo_req_id" value="{{isset($wo_req_id) ? \Crypt::encrypt($wo_req_id)  : null}}">
         <input type="hidden" name="customer_id" value="{{isset($user_id) ? \Crypt::encrypt($user_id)  : null}}">
+        <input type="hidden" name="action_type" value="{{isset($action_type) ? \Crypt::encrypt($action_type)  : null}}">
         <div class="row">
             <div class="form-group col-12">
                 <label for="comment_txt">Comment
@@ -16,8 +17,7 @@
         </div>
         <div class="row">
             <div class="form-group col-md-12 mb-0">
-                <input type="submit" class="btn btn-success btn-sm pull-right" name="submit" id="no" value="No" />
-                <input type="submit" class="btn btn-success btn-sm pull-right" name="submit" id="yes" value="Yes" />
+                <input type="submit" class="btn btn-success btn-sm pull-right" name="submit" id="yes" value="Submit" />
             </div>
         </div>
     </form>
