@@ -3902,6 +3902,19 @@ if ($err) {
    *
    * @return json transaction data
    */
+    public function getColenderSoaList(DataProviderInterface $dataProvider) {
+        $soa_for_userid = $this->request->get('user_id');
+        $transactionList = $this->lmsRepo->getColenderSoaList();
+        $colenderShare = $this->lmsRepo->getColenderShareWithUserId($soa_for_userid);
+        $users = $dataProvider->getColenderSoaList($this->request, $transactionList, $colenderShare);
+        return $users;
+    }
+
+    /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
     public function lmsGetSoaList(DataProviderInterface $dataProvider) {
 
         $transactionList = $this->lmsRepo->getSoaList();
@@ -4057,9 +4070,11 @@ if ($err) {
     }
 
     public function getColenderAppList(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getColenderApplications();
-        $applications = $dataProvider->getColenderAppList($this->request, $appList);
-        return $applications;
+        // $appList = $this->application->getColenderApplications();
+        // $applications = $dataProvider->getColenderAppList($this->request, $appList);
+        $customerList = $this->lmsRepo->getColenderApplications();
+        $customers = $dataProvider->lmsColenderCustomers($this->request, $customerList);
+        return $customers;
     }
     public function lmsGetInvoiceByUser(Request $request ){
         $userId = $request->get('user_id');
@@ -4380,6 +4395,7 @@ if ($err) {
         $applications = $dataProvider->getRenewalAppList($this->request, $appList);
         return $applications;
     }
+
     
     public function checkEodProcess(Request $request)
     {
@@ -4397,4 +4413,12 @@ if ($err) {
          
         return response()->json(['status' => 1]);
     }    
+
+
+    public function getAllCustomers(DataProviderInterface $dataProvider) {
+        $usersList = $this->userRepo->getAllUsers();
+        $customers = $dataProvider->getAllCustomers($this->request, $usersList);
+        return $customers;  
+    }
+
 }

@@ -49,6 +49,7 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\ColenderShare;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
 
@@ -701,6 +702,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return Transactions::getSoaList();
     }
     
+    public function getColenderSoaList() {
+        return Transactions::getColenderSoaList();
+    }
+    
     public function getRepaymentAmount($userId, $transType)
     {
         return Transactions::getUserBalance($userId);
@@ -1236,6 +1241,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getMaxDpdTransaction($userId, $transType){
 		return Transactions::getMaxDpdTransaction($userId, $transType);
 	}
+
         
     /**
      * Get System Start Date
@@ -1280,4 +1286,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return EodProcess::getLatestEodProcess($whereCond);
     }    
+
+
+	public function getColenderShareWithUserId($userId) {
+		return ColenderShare::getColenderShareWithUserId((int)$userId);
+	}
+
+	public function getColenderApplications() {
+		$getAppId  = ColenderShare::where(['is_active' => 1, 'co_lender_id' => \Auth::user()->co_lender_id])->pluck('app_id');
+        $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
+        return $result ?: false;
+	}
+
 }

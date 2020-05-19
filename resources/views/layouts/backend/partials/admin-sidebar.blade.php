@@ -12,6 +12,14 @@
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
 
+      </li>    
+      <li class="nav-item">
+            <a class="nav-link"  href="{{ route('report_summary') }}">
+                <i class="fa fa-files-o"></i>
+                <span class="menu-title">Reports</span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+
       </li>             
 
 
@@ -466,7 +474,7 @@
         </li>
         @endif
 
-        
+        @if($roleData[0]->is_superadmin == 1)
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuFinance" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-money"></i>
@@ -499,7 +507,8 @@
                                                             
                 </ul>
             </div>
-        </li>   
+        </li>
+        @endif   
           
     </ul>
 </nav>
