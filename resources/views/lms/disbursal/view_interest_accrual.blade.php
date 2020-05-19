@@ -62,7 +62,7 @@
                     <tr role="row" @if($item->overdue_interest_rate) style="background-color: #f57d7d3d"@endif>
                         <td>{{  Carbon\Carbon::parse($item->interest_date)->format('d-m-Y') }}</td>
                         <td class="text-right">{{ number_format((float)$item->principal_amount, 2, '.', '') }}</td>
-                        <td class="text-right">{{ ($item->interest_rate != NULL)? $item->interest_rate.'%': $item->overdue_interest_rate.'%' }}</td>
+                        <td class="text-right">{{ ($item->interest_rate != NULL)? number_format($item->interest_rate, 2, '.', '').'%': number_format($item->overdue_interest_rate, 2, '.', '').'%' }}</td>
                         {{-- <td class="text-right">{{ $item->overdue_interest_rate }}</td> --}}
                         <td class="text-right">{{ number_format((float)$item->accrued_interest, 3, '.', '') }}</td>                    
                     </tr>   
