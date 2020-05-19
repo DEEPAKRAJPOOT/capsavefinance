@@ -81,16 +81,18 @@ class BaseRateController extends Controller {
                 $baserate_data = $this->masterRepo->findBaseRateById($baserate_id);
                 if (!empty($baserate_data)) {
                     $validatedData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
-                    $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
+                    //$validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
                     $validatedData['updated_by'] = Auth::user()->user_id;
                     $status = $this->masterRepo->updateBaseRate($validatedData, $baserate_id);
                 }
             } else {
+                $e_date = Carbon::createFromFormat('d/m/Y', $request['start_date'])->addDays(-1)->format('Y-m-d');
                 $validatedData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
-                $validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
+                //$validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
                 $validatedData['created_by'] = Auth::user()->user_id;
 //                dd($validatedData);
                 $status = $this->masterRepo->saveBaseRate($validatedData);
+                $this->masterRepo->updateBaseRateEndDate($status->id, $request['bank_id'], $e_date);
             }
             if ($status) {
                 Session::flash('message', $baserate_id ? trans('master_messages.base_rate_update_success') : trans('master_messages.base_rate_add_success'));
