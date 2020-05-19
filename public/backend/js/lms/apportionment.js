@@ -110,7 +110,7 @@ class Apportionment {
                         $(this).val(value.toFixed(2));
                         $(this).attr('readonly',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
-                        paymentAmt = paymentAmt-value;
+                        paymentAmt = paymentAmt-value.toFixed(2);
                     }else{
                         $(this).val(paymentAmt.toFixed(2));
                         $(this).attr('readonly',false);
@@ -145,9 +145,9 @@ class Apportionment {
                 settled_amt += payamt;
             }
         });
-        var unapplied_amt = payment_amt-settled_amt;
-        if(unapplied_amt < 0 ){
-            alert("Sum of your total entries is grater than Re-payment amount");
+        var unapplied_amt = payment_amt.toFixed(2)-settled_amt.toFixed(2);
+        if(unapplied_amt.toFixed(2) < 0 ){
+            alert("Sum of your total entries is Greater than Re-payment amount");
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
     }
@@ -176,36 +176,44 @@ class Apportionment {
             message = "Please Select at least one ";
             status = false;
         } 
-        if(status){
-            check.each(function (index, element) {
-                if($(this). is(":checked")){
-                    var name = $(this).attr('name');
-                    name =  name.replace('check','');
-                    var value = parseFloat($("input[name='payment"+name+"']").val());
-                    if(isNaN(value)){
-                        message = "Please enter valid value in Pay at row no - "+(index+1);
-                        status = false;
-                    }
-                    else if(value <= 0){
-                        message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
-                        status = false;
-                    }else{
-                        totalSettledAmt +=value;
-                    }
-                    if(!status){
-                        return false;
-                    }   
-                }
-            });
-        }
 
-        if(status){
-            if(totalSettledAmt > paymentAmt){
-                message =  "Sum of your total entries is Greater than Re-payment amount";
-                status = false;
+        var action = $("input[name='action']").val();
+        if(action == 'Mark Settled'){
+            $("#unsettlementFrom").attr('action',this.data.confirm_settle);
+            if(status){
+                check.each(function (index, element) {
+                    if($(this). is(":checked")){
+                        var name = $(this).attr('name');
+                        name =  name.replace('check','');
+                        var value = parseFloat($("input[name='payment"+name+"']").val());
+                        if(isNaN(value)){
+                            message = "Please enter valid value in Pay at row no - "+(index+1);
+                            status = false;
+                        }
+                        else if(value <= 0){
+                            message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
+                            status = false;
+                        }else{
+                            totalSettledAmt +=value;
+                        }
+                        if(!status){
+                            return false;
+                        }   
+                    }
+                });
             }
+    
+            if(status){
+                if(totalSettledAmt > paymentAmt){
+                    message =  "Sum of your total entries is Greater than Re-payment amount";
+                    status = false;
+                }
+            } 
         }
-            
+        else if (action == 'Write Off'){
+            $("#unsettlementFrom").attr('action',this.data.confirm_writeoff); 
+        }
+    
         if(!status){
             alert(message);
             return status;
@@ -261,6 +269,28 @@ class Apportionment {
        }else{
             alert('Please select only one checkbox');
        }
+    }
+
+    onWriteOff(){
+        var data = this.data;
+        var checkedTransIds = $('.check:checked');
+        var numberOfChecked = checkedTransIds.length;
+        var transId = [];
+        if (numberOfChecked > 0) {
+            checkedTransIds.each(function (index, element) {
+                var checkedName = $(this).attr('name');
+                transId.push(checkedName.replace(/[^0-9]/g, ''))
+            });
+            
+            var transIdString = transId.toString();
+            var givenUrl = data.trans_writeoff_url;
+            var targetUrl = givenUrl + '&trans_ids=' + transIdString;
+           
+            $('.view_detail_transaction').attr('data-url', targetUrl);
+            $('.view_detail_transaction').trigger('click');
+        }else{
+            alert('Please select at least one checkbox');
+        }
     }
 
     onReversalAmount(){

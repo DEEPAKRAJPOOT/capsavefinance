@@ -424,8 +424,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/apportionment/mark/settle/save',[
                 'as' => 'apport_mark_settle_save',
                 'uses' => 'Lms\ApportionmentController@markSettleSave'
-            ]);        
-            
+            ]);  
+
+            Route::post('/apportionment/mark/writeOff/confirmation',[
+                'as' => 'apport_mark_writeOff_confirmation',
+                'uses' => 'Lms\ApportionmentController@markWriteOffConfirmation'
+            ]);
+
+            Route::post('/apportionment/mark/writeOff/save',[
+                'as' => 'apport_mark_writeOff_save',
+                'uses' => 'Lms\ApportionmentController@markwriteOffSave'
+            ]); 
+
             Route::post('/apportionment/settled/save',[
                 'as' => 'apport_settled_save',
                 'uses' => 'Lms\ApportionmentController@saveSettledTrans'
