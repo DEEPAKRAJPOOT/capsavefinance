@@ -54,4 +54,23 @@ class ReportController extends Controller
         }
         
     }
+    
+     public function duereport(Request $request) {
+         
+        try {
+            return view('reports.duereport');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+        
+    }
+    
+     public function overduereport(Request $request) {
+        try {
+            return view('reports.overduereport');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+        
+    }
 }
