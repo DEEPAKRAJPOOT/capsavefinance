@@ -82,14 +82,10 @@ class WriteOffController extends Controller
             $user_id = $request->get('user_id');
             $woData = [];
             $woData['user_id'] = $user_id;
-            $woData['created_by'] = Auth::user()->user_id;
-            $woData['created_at'] = Carbon::now();
             $woReqId = $this->lmsRepo->saveWriteOffReq($woData);
             $woLogData = [];
             $woLogData['wo_req_id'] = $woReqId->wo_req_id;
             $woLogData['status_id'] = config('lms')['WRITE_OFF_STATUS']['NEW'];
-            $woLogData['created_by'] = Auth::user()->user_id;
-            $woLogData['created_at'] = Carbon::now();
             $woStatusLogId = $this->lmsRepo->saveWriteOffReqLog($woLogData);
             $updateData = [];
             $updateData['wo_status_log_id'] = $woStatusLogId->wo_status_log_id;
@@ -113,9 +109,9 @@ class WriteOffController extends Controller
             $custId = $request->get('user_id');
             $woReqId = $request->get('wo_req_id');
             $action_type = $request->get('action_type');
-            return view('lms.writeoff.move_to_next_stage')->with(['user_id' => $custId, 
-                                                                    'wo_req_id' => $woReqId,
-                                                                    'action_type' => $action_type]);
+            $status_id = $request->get('status_id');
+            return view('lms.writeoff.move_to_next_stage')
+            ->with(['user_id' => $custId, 'wo_req_id' => $woReqId, 'action_type' => $action_type, 'status_id'=>$status_id]);
         } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -130,62 +126,59 @@ class WriteOffController extends Controller
     public function saveWriteOffComment(Request $request)
     {   
         try {
-            $woReqId = ($request->get('wo_req_id')) ? \Crypt::decrypt($request->get('wo_req_id')) : null;
-            $custId = ($request->get('customer_id')) ? \Crypt::decrypt($request->get('customer_id')) : null;
-            $actionType = ($request->get('action_type')) ? \Crypt::decrypt($request->get('action_type')) : null;
+            $woReqId = $request->get('wo_req_id');
+            $custId = $request->get('customer_id');
+            $actionType = $request->get('action_type');
             $cmntTxt = $request->get('comment_txt');
             $roleData = Helpers::getUserRole();
             $userRoleId = $roleData[0]->id;
+            $cur_status_id = $request->get('status_id');
             $status_id = '';
             $messges = '';
-            if ($userRoleId === 6) {
-                if ($actionType == 1) {
-                    $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
-                    $messges = 'Case moved to next stage.';
+
+            if($actionType == 1){
+                switch ($cur_status_id) {
+                    case config('lms.WRITE_OFF_STATUS.NEW'):
+                        $status_id = config('lms.WRITE_OFF_STATUS.IN_PROCESS');
+                        $messges = "Case moved from 'NEW' to 'IN PROCESS'.";
+                        break;
+                    case config('lms.WRITE_OFF_STATUS.IN_PROCESS'):
+                        $status_id = config('lms.WRITE_OFF_STATUS.APPROVED');
+                        $messges = "Case moved from 'IN PROCESS' to 'APPROVED'.";
+                        break;
+                    case config('lms.WRITE_OFF_STATUS.APPROVED'):
+                        $status_id = config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED');
+                        $messges = "Case moved from 'APPROVED' to 'TRANSACTION SETTLED'.";
+                        break;
+                    case config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED'):
+                        $status_id = config('lms.WRITE_OFF_STATUS.COMPLETED');
+                        $messges = "Case moved from 'TRANSACTION SETTLED' to 'COMPLETED'.";
+                        break;
+                    default:
+                        $status_id = config('lms.WRITE_OFF_STATUS.NEW');
+                        $messges = "New case created.";
+                        break;
                 }
             }
-            if ($userRoleId === 8) {
-                if ($actionType == '1') {
-                    $status_id = config('lms')['WRITE_OFF_STATUS']['APPROVED'];
-                    $messges = 'Case moved to next stage.';
-                } else {
-                    $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
-                    $messges = 'Case moved to back stage.';
+            elseif($actionType == 2){
+                switch ($cur_status_id){
+                    case config('lms.WRITE_OFF_STATUS.IN_PROCESS'):
+                        $status_id = config('lms.WRITE_OFF_STATUS.IN_PROCESS');
+                        $messges = 'Case moved to back stage.';
+                        break;
                 }
             }
-            $woData = $this->lmsRepo->getWriteOff($custId);
-            $curStatusId = $woData['0']['status_id'];
-            if ($userRoleId === 1) {
-                if ($actionType == '1') {
-                    
-                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['NEW']) {
-                        $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
-                    }
-                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['IN_PROCESS']) {
-                        $status_id = config('lms')['WRITE_OFF_STATUS']['APPROVED'];
-                    }
-                    $messges = 'Case moved to next stage.';
-                } else {
-                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['IN_PROCESS']) {
-                        $status_id = config('lms')['WRITE_OFF_STATUS']['NEW'];
-                    }
-                    if ($curStatusId == config('lms')['WRITE_OFF_STATUS']['APPROVED']) {
-                        $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
-                    }
-                    $messges = 'Case moved to back stage.';
-                }
-            }
+
             $woLogData['wo_req_id'] = $woReqId;
             $woLogData['status_id'] = $status_id;
             $woLogData['comment_txt'] = $cmntTxt;
-            $woLogData['created_by'] = Auth::user()->user_id;
-            $woLogData['created_at'] = Carbon::now();
             $woStatusLogId = $this->lmsRepo->saveWriteOffReqLog($woLogData);
             $updateData = [];
             $updateData['wo_status_log_id'] = $woStatusLogId->wo_status_log_id;
-            $updateData['updated_by'] = Auth::user()->user_id;
-            $updateData['updated_at'] = Carbon::now();
             $this->lmsRepo->updateWriteOffReqById((int) $woReqId, $updateData);
+            if($status_id == config('lms.WRITE_OFF_STATUS.APPROVED')){
+                $this->lmsRepo->writeOff($custId);
+            }
             Session::flash('message', $messges);
             Session::flash('operation_status', 1);
             return redirect()->route('write_off_customer_list', ['user_id' => $custId]);

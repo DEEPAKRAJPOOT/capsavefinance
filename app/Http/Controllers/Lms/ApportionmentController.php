@@ -99,8 +99,8 @@ class ApportionmentController extends Controller
             ->with('oldData',$oldData)
             ->with('sanctionPageView',$sanctionPageView)
             ->with(['userInfo' =>  $result['userInfo'],
-                            'application' => $result['application'],
-                            'anchors' =>  $result['anchors']]);
+                    'application' => $result['application'],
+                    'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -446,14 +446,16 @@ class ApportionmentController extends Controller
                 }
             }
             if (!empty($default_address)) {
-            $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
-            }
+                $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
+            } 
+
             return [
                 'customer_id' => $lmsUser->customer_id,
                 'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
                 'user_id' => $userId,
                 'address' => $fullAddress ?? '',
                 'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
+                'status_id' => $user->userDetail->lmsUsersLog->status_id ?? null
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();

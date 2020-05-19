@@ -31,7 +31,7 @@ class WriteOffStatusLog extends BaseModel
      * @var boolean
      */
 
-    public $timestamps = false;
+    public $timestamps = true;
 
 
     /**
@@ -39,7 +39,7 @@ class WriteOffStatusLog extends BaseModel
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.

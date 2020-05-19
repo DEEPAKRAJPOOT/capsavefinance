@@ -51,8 +51,12 @@
                 <div class="col-md-12" >
                     @if($paymentId) 
                     <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm"> @endif
-                    <input type="submit" name="action" value="Write Off" class="btn btn-success btn-sm">
                     <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+
+                    @if($userDetails['status_id'] == 41)
+                        <input type="submit" name="action" value="Write Off" class="btn btn-success btn-sm">
+                    @endif
+
                 </div>
             </div>
             </form>

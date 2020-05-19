@@ -2,11 +2,8 @@
 @section('content')
 
 <div class="modal-body text-left">
-    <form id="woApprDissapprForm" name="woApprDissapprForm" method="POST" action="{{route('wo_save_appr_dissappr')}}" target="_top">
+    <form id="woApprDissapprForm" name="woApprDissapprForm" method="POST" action="{{route('wo_save_appr_dissappr',['wo_req_id'=>$wo_req_id,'customer_id'=>$user_id,'action_type'=>$action_type,'status_id'=>$status_id])}}" target="_top">
         @csrf
-        <input type="hidden" name="wo_req_id" value="{{isset($wo_req_id) ? \Crypt::encrypt($wo_req_id)  : null}}">
-        <input type="hidden" name="customer_id" value="{{isset($user_id) ? \Crypt::encrypt($user_id)  : null}}">
-        <input type="hidden" name="action_type" value="{{isset($action_type) ? \Crypt::encrypt($action_type)  : null}}">
         <div class="row">
             <div class="form-group col-12">
                 <label for="comment_txt">Comment
