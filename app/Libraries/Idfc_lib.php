@@ -37,6 +37,7 @@ class Idfc_lib{
 
 
 	public function api_call($method, array $params = array()){
+		 $certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem";
 		 $resp = array(
 			'status' => 'fail',
 			'message'=> 'Some error occured. Please try again',
@@ -50,6 +51,14 @@ class Idfc_lib{
 		$url = SELF::METHOD[$method];
 		$query_string = '';
 		list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
+
+		$client = new \GuzzleHttp\Client();
+		$client->setDefaultOption('verify', $certificate);
+		// $client->setDefaultOption('verify', false);
+		$response = $client->createRequest("POST", $url, ['body'=>$payload, 'headers' => $http_header]);
+		$response = $client->send($response);
+     	dd($response);
+		return $response;
 		// $file_name = md5($txn_id).'.txt';
 		// $this->_saveLogFile($payload, $file_name, 'Outgoing');
   //    	print_r($payload);
@@ -58,7 +67,6 @@ class Idfc_lib{
 		// print "</pre>";
 		// die("here");
      	$response = $this->_curl_call($url, $payload, $http_header);
-     	dd($response);
      	// $this->_saveLogFile($response, $file_name, 'Incoming');
 
 		if (!empty($response['error_no'])) {
