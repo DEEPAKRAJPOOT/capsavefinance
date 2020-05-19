@@ -56,16 +56,16 @@ class BaseRateController extends Controller {
         try {
             $filter['filter_search_keyword'] = $request->filter_search_keyword;
             $validatedData = $request->all();
-//            dd($request->all());
+            // dd($request->all());
             $status = false;
             $baserate_id = false;
             
-            if($request->get('is_default') == 1){
+            /*if($request->get('is_default') == 1){
                 $bankId = (int)$request->get('bank_id');
                 $isDefault = (int)$request->get('is_default');
                 $data = $this->masterRepo->checkIsDefaultBaseRate($bankId,$isDefault);
                 $baseRateData = $data ? $data->toArray() : '';
-//                dd($baseRateData);
+                // dd($baseRateData);
                 if (!empty($baseRateData)) {
                     $baseRateId = $baseRateData['id'];
                     $baseRateData['is_default'] = 0;
@@ -74,7 +74,7 @@ class BaseRateController extends Controller {
                     $baseRateData['end_date'] = ($baseRateData['end_date'] != null) ? $baseRateData['end_date'] : $enddate;
                     $this->masterRepo->updateBaseRate($baseRateData, $baseRateId);
                 }
-            }
+            }*/
             
             if (!empty($request->get('id'))) {
                 $baserate_id = preg_replace('#[^0-9]#', '', $request->get('id'));
@@ -90,7 +90,7 @@ class BaseRateController extends Controller {
                 $validatedData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
                 //$validatedData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
                 $validatedData['created_by'] = Auth::user()->user_id;
-//                dd($validatedData);
+                // dd($validatedData);
                 $status = $this->masterRepo->saveBaseRate($validatedData);
                 $this->masterRepo->updateBaseRateEndDate($status->id, $request['bank_id'], $e_date);
             }
