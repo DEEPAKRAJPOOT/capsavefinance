@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Lms;
 use Auth;
 use Session;
 use Helpers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Contracts\MasterInterface;
@@ -71,19 +72,95 @@ class WriteOffController extends Controller
     {   
         try {
             $user_id = $request->get('user_id');
-//            $woLogData = [];
-//            $this->lmsRepo->saveWriteOffReqLog($woLogData);
             $woData = [];
             $woData['user_id'] = $user_id;
             $woData['created_by'] = Auth::user()->user_id;
-            $this->lmsRepo->saveWriteOffReq($woData);
+            $woData['created_at'] = Carbon::now();
+            $woReqId = $this->lmsRepo->saveWriteOffReq($woData);
+            $woLogData = [];
+            $woLogData['wo_req_id'] = $woReqId->wo_req_id;
+            $woLogData['status_id'] = config('lms')['WRITE_OFF_STATUS']['NEW'];
+            $woLogData['created_by'] = Auth::user()->user_id;
+            $woLogData['created_at'] = Carbon::now();
+            $woStatusLogId = $this->lmsRepo->saveWriteOffReqLog($woLogData);
+            $updateData = [];
+            $updateData['wo_status_log_id'] = $woStatusLogId->wo_status_log_id;
+            $this->lmsRepo->updateWriteOffReqById((int) $woReqId->wo_req_id, $updateData);
             return redirect()->route('write_off_customer_list', ['user_id' => $user_id]);
-            // end for default button
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
         
     }
-
     
+    /**
+     * Open write off Pop Up
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function getWriteOffPopUP(Request $request)
+    {
+        try {
+            $custId = $request->get('user_id');
+            $woReqId = $request->get('wo_req_id');
+            return view('lms.writeoff.approve_disapprove')->with(['user_id' => $custId, 'wo_req_id' => $woReqId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+
+    /**
+     * Save write off comment
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function saveWriteOffComment(Request $request)
+    {   
+        try {
+            $woReqId = ($request->get('wo_req_id')) ? \Crypt::decrypt($request->get('wo_req_id')) : null;
+            $custId = ($request->get('customer_id')) ? \Crypt::decrypt($request->get('customer_id')) : null;
+            $actionType = $request->get('submit');
+            $cmntTxt = $request->get('comment_txt');
+            $roleData = Helpers::getUserRole();
+            $userRoleId = $roleData[0]->id;
+            $status_id = '';
+            $messges = '';
+            if (($userRoleId === 6) || ($userRoleId === 1)) {
+                if ($actionType === 'Yes') {
+                    $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
+                    $messges = 'Case moved to Approver.';
+                } else {
+                    $status_id = config('lms')['WRITE_OFF_STATUS']['NEW'];
+                    $messges = 'Case moved back by Credit Manager.';
+                }
+            }
+            if (($userRoleId === 8) || ($userRoleId === 1)) {
+                if ($actionType === 'Yes') {
+                    $status_id = config('lms')['WRITE_OFF_STATUS']['APPROVED'];
+                    $messges = 'Case approved by Approver.';
+                } else {
+                    $status_id = config('lms')['WRITE_OFF_STATUS']['IN_PROCESS'];
+                    $messges = 'Case moved back to Credit Manager.';
+                }
+            }
+            $woLogData['wo_req_id'] = $woReqId;
+            $woLogData['status_id'] = $status_id;
+            $woLogData['comment_txt'] = $cmntTxt;
+            $woLogData['created_by'] = Auth::user()->user_id;
+            $woLogData['created_at'] = Carbon::now();
+            $woStatusLogId = $this->lmsRepo->saveWriteOffReqLog($woLogData);
+            $updateData = [];
+            $updateData['wo_status_log_id'] = $woStatusLogId->wo_status_log_id;
+            $updateData['updated_by'] = Auth::user()->user_id;
+            $updateData['updated_at'] = Carbon::now();
+            $this->lmsRepo->updateWriteOffReqById((int) $woReqId, $updateData);
+            Session::flash('message', $messges);
+            Session::flash('operation_status', 1);
+            return redirect()->route('write_off_customer_list', ['user_id' => $custId]);
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

@@ -67,7 +67,8 @@ class WriteOffStatusLog extends BaseModel
         if (!is_array($data)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }     
-        return self::insert($data);
+        $arr = self::create($data);
+        return ($arr ? $arr : null);
     } 
    
 }

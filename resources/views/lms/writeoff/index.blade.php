@@ -18,25 +18,23 @@
 				<div class="card-body">
 					<div class="row">
 						<div class="col-sm-12">
-							<div class="head-sec">
-
-								<a href="{{route('generate_write_off',[ 'user_id' => $userInfo->user_id ])}}" >
-									<button class="btn  btn-success btn-sm float-right mb-3" type="button">
-
-									<i class="fa fa-plus"></i> Generate Wtite Off
-									</button>
-								</a>
-
-							</div>
+                                                    <div class="head-sec">
+                                                        @if (count($woData) < 1)
+                                                            <a href="{{route('generate_write_off',[ 'user_id' => $userInfo->user_id ])}}" >
+                                                                <button class="btn  btn-success btn-sm float-right mb-3" type="button">
+                                                                <i class="fa fa-plus"></i> Generate Wtite Off
+                                                                </button>
+                                                            </a>
+                                                        @endif
+                                                    </div>
 						</div>
 						<div class="col-sm-12">
 							<table id="WriteOffList" class="table table-striped dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="invoive-listing_info" style="width: 100%;">
 								<thead>
 									<tr role="row">
 										<th width="90px">Customer Id </th>
-										<th>Full Name</th>
+										<th>Customer Name</th>
 										<th>Amount</th>
-										<th width="105px">RCU Status</th>
 										<th width="105px">Status</th>
 										<th>Action</th>
 									</tr>
@@ -49,13 +47,12 @@
                                                                         <td>{{$wOff->user_id}}</td>
                                                                         <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td>
                                                                         <td>{{$wOff->amount}}</td>
-                                                                        <td><a data-toggle="modal"  data-height="450px" 
+                                                                        <td>{{$wOff->status_name}}</td>
+                                                                        <td><a data-toggle="modal"  data-height="250px" 
                                                                             data-width="100%" data-target="#apprDisapprFrame"
-                                                                            data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id])}}"  
-                                                                            data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Address Detail"><i class="fa fa-edit"></i></a>
+                                                                            data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id])}}"  
+                                                                            data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
                                                                         </td>
-                                                                        <td></td>
-                                                                        <td></td>
                                                                     </tr>
                                                                     @endforeach
                                                                     @else

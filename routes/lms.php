@@ -491,21 +491,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'generate_write_off',
                 'uses' => 'Lms\WriteOffController@generateWriteOff'
             ]);
-//
-//            Route::post('/save_addr', [
-//                'as' => 'save_addr',
-//                'uses' => 'Lms\AddressController@saveAddress'
-//            ]);
-//
-//            Route::get('/edit_addr', [
-//                'as' => 'edit_addr',
-//                'uses' => 'Lms\AddressController@editAddress'
-//            ]);
-//            
-//            Route::post('/copy_app', [
-//                'as' => 'copy_app',
-//                'uses' => 'Lms\CopyController@duplicateApp'
-//            ]); 
+
+            Route::get('/wo-approve-dissapprove', [
+                'as' => 'wo_approve_dissapprove',
+                'uses' => 'Lms\WriteOffController@getWriteOffPopUP'
+            ]);
+            
+            Route::post('/wo-save-appr-dissappr', [
+                'as' => 'wo_save_appr_dissappr',
+                'uses' => 'Lms\WriteOffController@saveWriteOffComment'
+            ]); 
             // end write off
 
         });   

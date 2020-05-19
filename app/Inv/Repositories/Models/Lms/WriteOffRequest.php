@@ -67,7 +67,14 @@ class WriteOffRequest extends BaseModel
         if (!is_array($data)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }     
-        return self::insert($data);
+        $arr = self::create($data);
+        return ($arr ? $arr : null);
+    }
+    
+    public static function updateWriteOffReqById($woReqId, $data)
+    {
+        $rowUpdate = self::where('wo_req_id', $woReqId)->update($data);
+        return ($rowUpdate ? $rowUpdate : false);        
     }
     
     /**
@@ -85,7 +92,11 @@ class WriteOffRequest extends BaseModel
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        $result = self::where('user_id', (int) $userId)->get();
+        $result = self::SELECT('lms_wo_req.*', 'lms_wo_status_log.status_id', 'mst_status.status_name')
+                ->leftJoin('lms_wo_status_log', 'lms_wo_status_log.wo_status_log_id', '=', 'lms_wo_req.wo_status_log_id')
+                ->leftJoin('mst_status', 'mst_status.id', '=', 'lms_wo_status_log.status_id')
+                ->where('user_id', (int) $userId)
+                ->get();
         return ($result ? $result : []);
     }
    

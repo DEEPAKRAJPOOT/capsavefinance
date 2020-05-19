@@ -157,5 +157,12 @@ return [
         'NORMAL' => '0',
         'ADHOC' => '1',
         'TEMPORARY' => '2',
-    ],    
+    ],
+    'WRITE_OFF_STATUS' => [
+        'NEW' => '36',
+        'IN_PROCESS' => '37',
+        'APPROVED' => '38',
+        'TRANSACTION_SETTLED' => '39',
+        'COMPLETED' => '40',
+    ],
 ];

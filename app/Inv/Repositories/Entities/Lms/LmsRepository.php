@@ -1316,4 +1316,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return WriteOffStatusLog::saveWriteOffReqLog($dataArr);
     }
     
+    /**
+     * Update write off
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function updateWriteOffReqById($woReqId, $dataArr)
+    {
+        return WriteOffRequest::updateWriteOffReqById((int) $woReqId, $dataArr);
+    }
+    
 }
