@@ -1068,6 +1068,11 @@ Route::group(
         'uses' => 'AjaxController@getCustAndCapsLoc'
         ]
     );
+    Route::post('get_all_customers',[
+        'as' => 'get_all_customers',
+        'uses' => 'AjaxController@getAllCustomers'
+        ]
+    );
 
 
 });

@@ -5957,4 +5957,38 @@ class DataRenderer implements DataProviderInterface
            ->make(true);
    }
 
+   public function getAllCustomers(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->rawColumns(['is_active'])
+           ->editColumn('sr_no', function ($user) {
+               return $this->sr_no++;
+           })  
+           ->editColumn('customer_name', function ($user) {
+               return $user->f_name. ' '. $user->m_name. ' '. $user->l_name;
+           })  
+           ->editColumn('email', function ($user) {
+               return $user->email;
+           })  
+           ->editColumn('mobile', function ($user) {
+               return $user->mobile_no;
+           })   
+           ->editColumn('biz_name', function ($user) {
+               return $user->biz_name;
+           })  
+           ->editColumn('registered_on',  function ($user) {
+               return $user->created_at;
+           })  
+           ->addColumn(
+               'is_active',
+               function ($data) {
+                   $id = $data->user_invoice_rel_id;
+                   $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                   $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
+                   return $status;
+           })
+           
+           ->make(true);
+   }
+
 }

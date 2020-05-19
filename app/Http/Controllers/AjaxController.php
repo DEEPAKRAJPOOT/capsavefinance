@@ -4394,4 +4394,10 @@ if ($err) {
         $applications = $dataProvider->getRenewalAppList($this->request, $appList);
         return $applications;
     }
+
+    public function getAllCustomers(DataProviderInterface $dataProvider) {
+        $usersList = $this->userRepo->getAllUsers();
+        $customers = $dataProvider->getAllCustomers($this->request, $usersList);
+        return $customers;  
+    }
 }
