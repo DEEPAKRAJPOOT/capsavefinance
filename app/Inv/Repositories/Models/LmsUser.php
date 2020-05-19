@@ -10,6 +10,8 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Master\Role as Role;
 use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Models\UserDetail;
+
 use Auth;
 
 
@@ -59,8 +61,6 @@ class LmsUser extends Authenticatable
         'user_id',
         'customer_id',
         'app_id',
-        'is_active',
-        'lms_users_log_id',
         'virtual_acc_id',
         'created_at',
         'created_by'
@@ -167,7 +167,7 @@ class LmsUser extends Authenticatable
     public static function getAccountClosure()
     {
          $id = Auth::user()->user_id;
-        return self::where(['user_id' => $id,'is_active' =>1])->count();
+        return UserDetail::where(['user_id' => $id,'is_active' =>1])->count();
     }
     
      public static function getAccountActiveClosure($uid)
