@@ -14,30 +14,22 @@
             </tr>
             <tr>
                 <td><b>Interest Rate:</b></td>
-                <td>@if($disbursal->interest_rate>0) {{$disbursal->interest_rate}}% @endif</td>
+                <td>@if($currentIntRate>0) {{number_format($currentIntRate, 2, '.', ''}}% @endif</td>
                 <td><b>Overdue Interest Rate:</b></td>
                 <td>@if($disbursal->overdue_interest_rate>0){{$disbursal->overdue_interest_rate}}% @endif</td>
             </tr>
-
-
-
             <tr>
                 <td><b>Tenor(in Days):</b></td>
                 <td>{{$disbursal->tenor_days}}</td>
                 <td><b>Margin(%):</b></td>
-                <td>@if($disbursal->margin>0){{$disbursal->margin}}% @endif</td>
+                <td>@if($disbursal->margin>0){{number_format($disbursal->margin, 2, '.', ''}}% @endif</td>
             </tr>
             <tr>
                 <td><b>Invoice Issue Date:</b></td>
-                <td>{{($disbursal->invoice)? $disbursal->invoice->invoice_date: ''}}</td>
+                <td>{{($disbursal->invoice)? Carbon\Carbon::parse($disbursal->invoice->invoice_date)->format('d-m-Y'): ''}}</td>
                 <td><b>Payment Due Date:</b></td>
-                <td>{{($disbursal->payment_due_date)? $disbursal->payment_due_date: ''}}</td>
+                <td>{{($disbursal->payment_due_date)? Carbon\Carbon::parse($disbursal->payment_due_date)->format('d-m-Y'): ''}}</td>
             </tr>
-
-
-
-
-
             <tr>
                 <td><b>Accrued Interest till date:</b></td>
                 @foreach($disbursal->accruedInterest as $item)
