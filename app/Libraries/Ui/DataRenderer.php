@@ -6005,64 +6005,64 @@ class DataRenderer implements DataProviderInterface
    public function leaseRegister(Request $request, $data) {
        $this->sr_no = 1;
        return DataTables::of($data)
-           ->editColumn('state', function ($user) {
-               return $user->name;
+           ->editColumn('state', function ($invoiceRec) {
+               return $invoiceRec->name;
            })
-           ->editColumn('gstn', function ($user) {
-               return $user->biz_gst_no;
+           ->editColumn('gstn', function ($invoiceRec) {
+               return $invoiceRec->biz_gst_no;
            })    
-           ->editColumn('customer_name', function ($user) {
-               return $user->biz_entity_name;
+           ->editColumn('customer_name', function ($invoiceRec) {
+               return $invoiceRec->biz_entity_name;
            })  
-           ->editColumn('customer_address', function ($user) {
-               return $user->gst_addr;
+           ->editColumn('customer_address', function ($invoiceRec) {
+               return $invoiceRec->gst_addr;
            })   
-           ->editColumn('customer_gstn', function ($user) {
-               return $user->biz_gst_no;
+           ->editColumn('customer_gstn', function ($invoiceRec) {
+               return $invoiceRec->biz_gst_no;
            })  
-           ->editColumn('sac_code',  function ($user) {
-               return ($user->sac_code != 0 ? $user->sac_code : '000');
+           ->editColumn('sac_code',  function ($invoiceRec) {
+               return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })   
-           ->editColumn('contract_no',  function ($user) {
-               return 'HEL/'.($user->sac_code != 0 ? $user->sac_code : '000');
+           ->editColumn('contract_no',  function ($invoiceRec) {
+               return 'HEL/'.($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })     
-           ->editColumn('invoice_no', function ($user) {
-               return $user->invoice_no;
+           ->editColumn('invoice_no', function ($invoiceRec) {
+               return $invoiceRec->invoice_no;
            })    
-           ->editColumn('invoice_date', function ($user) {
-               return $user->invoice_date;
+           ->editColumn('invoice_date', function ($invoiceRec) {
+               return date('d-m-Y', strtotime($invoiceRec->invoice_date));
            })  
-           ->editColumn('base_amount',  function ($user) {
-               return number_format($user->base_amount, 2);
+           ->editColumn('base_amount',  function ($invoiceRec) {
+               return number_format($invoiceRec->base_amount, 2);
            })    
-           ->editColumn('sgst_rate',  function ($user) {
-               return ($user->sgst_rate != 0 ? $user->sgst_rate . '%' : '-');
+           ->editColumn('sgst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->sgst_rate != 0 ? $invoiceRec->sgst_rate . '%' : '-');
            })    
-           ->editColumn('sgst_amount',  function ($user) {
-               return ($user->sgst_amount != 0 ? number_format($user->sgst_amount, 2) : '-');
+           ->editColumn('sgst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->sgst_amount != 0 ? number_format($invoiceRec->sgst_amount, 2) : '-');
            })    
-           ->editColumn('cgst_rate',  function ($user) {
-               return ($user->cgst_rate != 0 ? $user->cgst_rate . '%' : '-');
+           ->editColumn('cgst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->cgst_rate != 0 ? $invoiceRec->cgst_rate . '%' : '-');
            })    
-           ->editColumn('cgst_amount',  function ($user) {
-               return ($user->cgst_amount != 0 ? number_format($user->cgst_amount, 2) : '-');
+           ->editColumn('cgst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->cgst_amount != 0 ? number_format($invoiceRec->cgst_amount, 2) : '-');
            })    
-           ->editColumn('igst_rate',  function ($user) {
-               return ($user->igst_rate != 0 ? $user->igst_rate . '%' : '-');
+           ->editColumn('igst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->igst_rate != 0 ? $invoiceRec->igst_rate . '%' : '-');
            })      
-           ->editColumn('igst_amount',  function ($user) {
-               return ($user->igst_amount != 0 ? number_format($user->igst_amount, 2) : '-');
+           ->editColumn('igst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->igst_amount != 0 ? number_format($invoiceRec->igst_amount, 2) : '-');
            })        
-           ->editColumn('total_rate',  function ($user) {
-                $totalRate = ($user->sgst_rate + $user->igst_rate + $user->cgst_rate);
+           ->editColumn('total_rate',  function ($invoiceRec) {
+                $totalRate = ($invoiceRec->sgst_rate + $invoiceRec->igst_rate + $invoiceRec->cgst_rate);
                return ($totalRate != 0 ? $totalRate . '%' : '-');
            })          
-           ->editColumn('total_tax',  function ($user) {
-                $totalTax = ($user->sgst_amount + $user->igst_amount + $user->cgst_amount);
+           ->editColumn('total_tax',  function ($invoiceRec) {
+                $totalTax = ($invoiceRec->sgst_amount + $invoiceRec->igst_amount + $invoiceRec->cgst_amount);
                return ($totalTax != 0 ? $totalTax : '-');
            })         
-           ->editColumn('total_amt',  function ($user) {
-               return number_format($user->base_amount + $user->sgst_amount + $user->cgst_amount + $user->igst_amount, 2);
+           ->editColumn('total_amt',  function ($invoiceRec) {
+               return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
            })  
            ->filter(function ($query) use ($request) {
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
