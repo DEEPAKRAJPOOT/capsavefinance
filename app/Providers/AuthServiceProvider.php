@@ -48,7 +48,7 @@ class AuthServiceProvider extends ServiceProvider
                 });
             }
         }
-        //dd($gate->abilities());
+        
     }
     
     /**

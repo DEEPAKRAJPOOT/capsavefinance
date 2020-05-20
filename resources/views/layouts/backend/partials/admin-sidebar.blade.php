@@ -169,7 +169,7 @@
         </li>
     @endcan
 
-    @canany(['request_list'])
+    @canany(['request_list','lms_refund_new'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-address-card-o"></i>
@@ -178,7 +178,7 @@
             </a>
             <div class="collapse" id="layoutsSubmenu2">
                 <ul class="nav flex-column sub-menu">                    
-                @can('request_list')
+                @can('lms_refund_new')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lms_refund_new') }}">Manage Refund</a>
                     </li> 
