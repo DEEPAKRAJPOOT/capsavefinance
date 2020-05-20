@@ -126,7 +126,7 @@ class InvoiceDisbursed extends BaseModel {
 		}
 		
 		$query = self::select('*')
-			->with('invoice','accruedInterestNotNull');
+			->with('invoice','disbursal','accruedInterestNotNull');
 				
 		if (!empty($whereCondition)) {
 			if (isset($whereCondition['int_accrual_start_dt'])) {

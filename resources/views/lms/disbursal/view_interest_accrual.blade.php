@@ -25,8 +25,8 @@
                 <td>@if($disbursal->margin>0){{number_format($disbursal->margin, 2, '.', '')}}% @endif</td>
             </tr>
             <tr>
-                <td><b>Invoice Issue Date:</b></td>
-                <td>{{($disbursal->invoice)? Carbon\Carbon::parse($disbursal->invoice->invoice_date)->format('d-m-Y'): ''}}</td>
+                <td><b>Funded Date:</b></td>
+                <td>{{($disbursal->disbursal)? Carbon\Carbon::parse($disbursal->disbursal->funded_date)->format('d-m-Y'): ''}}</td>
                 <td><b>Payment Due Date:</b></td>
                 <td>{{($disbursal->payment_due_date)? Carbon\Carbon::parse($disbursal->payment_due_date)->format('d-m-Y'): ''}}</td>
             </tr>
