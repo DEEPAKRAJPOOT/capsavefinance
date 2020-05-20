@@ -1920,7 +1920,7 @@ class ApplicationController extends Controller
 //                    dd($status);
                 }
                 
-                Session::flash('message',trans('backend_messages.add_note'));
+                Session::flash('message',trans('backend_messages.reject_app'));
                 //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
                 return redirect()->route('application_list');
             } catch (Exception $ex) {
