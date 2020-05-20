@@ -190,7 +190,7 @@
         </li>  
     @endcan
     
-    @canany(['backend_upload_all_invoice','backend_get_invoice'])
+    @canany(['backend_upload_all_invoice','backend_get_invoice','backend_get_bank_invoice'])
          <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu7" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-file-text-o" aria-hidden="true"></i>
