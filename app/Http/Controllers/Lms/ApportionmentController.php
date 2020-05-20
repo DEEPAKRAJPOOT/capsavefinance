@@ -99,8 +99,8 @@ class ApportionmentController extends Controller
             ->with('oldData',$oldData)
             ->with('sanctionPageView',$sanctionPageView)
             ->with(['userInfo' =>  $result['userInfo'],
-                            'application' => $result['application'],
-                            'anchors' =>  $result['anchors']]);
+                    'application' => $result['application'],
+                    'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -431,6 +431,7 @@ class ApportionmentController extends Controller
     private function getUserDetails($userId){
         try {
             $lmsUser = $this->userRepo->lmsGetCustomer($userId);
+            $woData = $this->lmsRepo->getWriteOff($userId)->first();
             $user = $this->userRepo->find($userId);
             $addresses = $user->biz->address;
             if(!$addresses->isEmpty()){
@@ -446,14 +447,17 @@ class ApportionmentController extends Controller
                 }
             }
             if (!empty($default_address)) {
-            $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
-            }
+                $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
+            } 
+             
             return [
                 'customer_id' => $lmsUser->customer_id,
                 'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
                 'user_id' => $userId,
                 'address' => $fullAddress ?? '',
                 'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
+                'status_id' => $user->userDetail->lmsUsersLog->status_id ?? null,
+                'wo_status_id' =>$woData->status_id ?? null
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -1009,15 +1013,147 @@ class ApportionmentController extends Controller
             $inv = BizInvoice::find($invd->invoice_id);
             if($flag){
                 $inv->is_repayment = 1;
-                $inv->status_id = 13;
+                $inv->status_id = 15;
             }else{
                 if($inv->is_repayment == 1)
                 $inv->is_repayment = 0;
-                if($inv->status_id == 13)
+                if($inv->status_id == 15)
                 $inv->status_id = 12;
             }
             $inv->save();
         }
     }
-   
+
+    public function markWriteOffConfirmation(Request $request){
+        try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            $amtToSettle = 0;
+            $unAppliedAmt = 0;
+            $transIds = [];
+            $transactions = [];
+            $transactionList = [];
+            $amtToWriteOff = 0;
+            $userId = $request->user_id;
+           
+            $checks   = ($request->has('check'))?$request->check:[];
+
+            $userDetails = $this->getUserDetails($userId); 
+
+            foreach ($checks as $Ckey => $Cval) {
+                if($Cval === 'on'){
+                    array_push($transIds, $Ckey);
+                }
+            }
+
+            if(!empty($transIds)){
+                $transactions = Transactions::where('user_id','=',$userId)
+                ->whereIn('trans_id',$transIds)
+                ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
+                ->get();
+            }
+
+            foreach ($transactions as $trans){ 
+                $transactionList[] = [
+                    'trans_id' => $trans->trans_id,
+                    'trans_date' => $trans->trans_date,
+                    'value_date' => $trans->parenttransdate,
+                    'invoice_no' =>($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
+                    'trans_type' => $trans->trans_type,
+                    'trans_name' =>  $trans->transName,
+                    'total_repay_amt' => (float)$trans->amount,
+                    'outstanding_amt' => (float)$trans->outstanding,
+                    'is_valid' => 1
+                ];
+                $amtToWriteOff += $trans->outstanding;
+            }
+
+            $request->session()->put('writeoff', [
+                'user_id' => $userId,
+                'check' => $checks,
+            ]);
+        
+            return view('lms.apportionment.markWriteOffConfirm',[
+                'userId' => $userId,
+                'userDetails' => $userDetails,
+                'transactions' => $transactionList,
+                'sanctionPageView'=>$sanctionPageView
+            ]);
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function markWriteOffSave(Request $request){
+        try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            if($request->session()->has('writeoff')){
+                $woAmount = 0; 
+                $transIds = [];
+                $userId = $request->session()->get('writeoff.user_id');
+                $checks = $request->session()->get('writeoff.check');
+
+                $transactionList = [];
+
+                foreach ($checks as $Ckey => $Cval) {
+                    if($Cval === 'on'){
+                        array_push($transIds, $Ckey);
+                    }
+                }
+
+                $transactions = [];
+                if(!empty($transIds)){
+                    $transactions = Transactions::where('user_id','=',$userId)
+                    ->whereIn('trans_id',$transIds)
+                    ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
+                    ->get();
+                }
+
+                foreach ($transactions as $trans){  
+                    $transactionList[] = [
+                        'payment_id' => null,
+                        'link_trans_id' => $trans->trans_id,
+                        'parent_trans_id' => $trans->trans_id,
+                        'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                        'user_id' => $trans->user_id,
+                        'trans_date' => date('Y-m-d H:i:s'),
+                        'amount' => $trans->outstanding,
+                        'entry_type' => 1,
+                        'soa_flag' => 1,
+                        'trans_type' => config('lms.TRANS_TYPE.WRITE_OFF')
+                    ];
+                    $woAmount += $trans->outstanding;
+                }
+
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                }
+
+                if($userId){
+                    $woData = $this->lmsRepo->getWriteOff($userId)->first();
+                    $woLogData = [];
+                    $woLogData['wo_req_id'] = $woData->wo_req_id;
+                    $woLogData['status_id'] = config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED');
+                    $woStatusLogId = $this->lmsRepo->saveWriteOffReqLog($woLogData);
+                    $updateData = [];
+                    $updateData['wo_status_log_id'] = $woStatusLogId->wo_status_log_id;
+                    $updateData['amount'] = $woAmount+$woData->amount;
+                    $this->lmsRepo->updateWriteOffReqById((int) $woData->wo_req_id, $updateData);
+                }
+                
+                $request->session()->forget('writeoff');
+                return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked Write Off']);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back('apport_unsettled_view', ['user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
 }

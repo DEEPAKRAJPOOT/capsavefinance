@@ -5,6 +5,9 @@ namespace App\Inv\Repositories\Entities\Lms;
 use DB;
 use Session;
 use Carbon\Carbon;
+use Auth;
+use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Http\Requests\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\LmsUser;
@@ -37,8 +40,10 @@ use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\WriteOffRequest;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
+use App\Inv\Repositories\Models\Lms\WriteOffStatusLog;
 use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
 use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
@@ -56,9 +61,9 @@ use InvalidDataTypeExceptions;
  * Lms Repository class
  */
 class LmsRepository extends BaseRepositories implements LmsInterface {
-
+	
 	use CommonRepositoryTraits;
-
+	
 	/**
 	 * Class constructor
 	 *
@@ -1279,5 +1284,63 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getLatestEodProcess($whereCond=[])
     {
         return EodProcess::getLatestEodProcess($whereCond);
-    }    
+    }  
+    
+    /**
+     * Save write off
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function saveWriteOffReq($dataArr)
+    {
+        return WriteOffRequest::saveWriteOffReq($dataArr);
+    }
+    
+    /**
+     * Get write off
+     * 
+     * @param integer $userId
+     * @return array
+     */
+    public function getWriteOff($userId)
+    {
+        return WriteOffRequest::getWriteOff((int) $userId);
+    }
+    
+    /**
+     * Save write off log
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function saveWriteOffReqLog($dataArr)
+    {
+        return WriteOffStatusLog::saveWriteOffReqLog($dataArr);
+    }
+    
+    /**
+     * Update write off
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function updateWriteOffReqById($woReqId, $dataArr)
+    {
+        return WriteOffRequest::updateWriteOffReqById((int) $woReqId, $dataArr);
+	}
+	
+	/**
+	 * Mark User write Off
+	 * @param int $uid
+	 * @return type
+	 */
+	public function writeOff($uid){
+		$mytime = Carbon::now();
+        $cDate   =  $mytime->toDateTimeString();
+        $create_uid = Auth::user()->user_id;
+        $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 41,'created_by' => $create_uid,'created_at' => $cDate]);
+        UserDetail::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
+	}
+    
 }
