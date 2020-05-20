@@ -37,7 +37,7 @@ class Idfc_lib{
 
 
 	public function api_call($method, array $params = array()){
-		 $certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem";
+		 $certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\fullchain.pem";
 		 $resp = array(
 			'status' => 'fail',
 			'message'=> 'Some error occured. Please try again',
@@ -51,22 +51,26 @@ class Idfc_lib{
 		$url = SELF::METHOD[$method];
 		$query_string = '';
 		list($payload, $http_header, $txn_id) = $this->_genReq($method, $params);
-
-		$client = new \GuzzleHttp\Client();
-		$client->setDefaultOption('verify', $certificate);
-		// $client->setDefaultOption('verify', false);
-		$response = $client->createRequest("POST", $url, ['body'=>$payload, 'headers' => $http_header]);
-		$response = $client->send($response);
+     	$response = $this->_curl_call($url, $payload, $http_header);
+     	print_r($payload);
+		print "<pre>";
+     	print_r($http_header);
+		print "</pre>";
      	dd($response);
-		return $response;
+		
+
+		// $client = new \GuzzleHttp\Client(); 
+		// $client->setDefaultOption('verify', false);
+		// $requestArray = ['body'=>$payload, 'headers' => $http_header];
+		// $cert = array( 'cert' => '\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem' );
+		// $client->setDefaultOption('verify', $cert);
+		// $response = $client->request("POST", $url, $requestArray);
+		// $response = $client->send($response);
+		// return $response;
+		
 		// $file_name = md5($txn_id).'.txt';
 		// $this->_saveLogFile($payload, $file_name, 'Outgoing');
-  //    	print_r($payload);
-		// print "<pre>";
-  //    	print_r($http_header);
-		// print "</pre>";
 		// die("here");
-     	$response = $this->_curl_call($url, $payload, $http_header);
      	// $this->_saveLogFile($response, $file_name, 'Incoming');
 
 		if (!empty($response['error_no'])) {
@@ -131,30 +135,43 @@ class Idfc_lib{
     }
 
     private function _curl_call($url, $postdata, $header ,$timeout= 300){
-		$certificate = "\etc\letsencrypt\live\admin-rentalpha.zuron.in\cert.pem";
+		$keyFile = "/home/rentalpha/public_html/certs/privkey3.pem";
+	  	$caFile = "/home/rentalpha/public_html/ESBUAT.pem";
+		$fullchainFile = "/home/rentalpha/public_html/certs/fullchain3.pem";
+		$certFile = "/home/rentalpha/public_html/certs/cert3.pem";
+		  // $certPass = "xxxxxx";
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
-		// curl_setopt($curl, CURLOPT_PORT , 443);
 		curl_setopt($curl, CURLOPT_VERBOSE, 0);
-		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_HEADER, 1);
+		// curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+		curl_setopt($curl, CURLOPT_SSLCERT, $fullchainFile);
+		curl_setopt($curl, CURLOPT_SSLKEY, $keyFile);
+		// curl_setopt($curl, CURLOPT_CAPATH, $certFile);
+		curl_setopt($curl, CURLOPT_CAINFO, $certFile);
+		curl_setopt($curl, CURLOPT_SSLCERTTYPE, "PEM");
+		curl_setopt($curl, CURLOPT_POST, 1);
+		
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true); 
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2); 
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
+		
 		curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
 		curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, true);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($curl, CURLOPT_CAINFO, $certificate);
-		curl_setopt($curl, CURLOPT_CAPATH, $certificate);
-		curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+		// curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
+
+		curl_setopt($curl, CURLOPT_SSLVERSION, 1);
+		// The --cert option
+		// curl_setopt($ch, CURLOPT_SSLCERTPASSWD, $certPass);
+		curl_setopt($curl, CURLINFO_HEADER_OUT, true); // enable tracking ... // do curl request     
 		$output = curl_exec($curl);
+		$headerSent = curl_getinfo($curl, CURLINFO_HEADER_OUT ); // request headers
 		$resp['error'] = curl_error($curl);
 		$resp['error_no'] = curl_errno($curl);
 		$resp['result'] = $output;
 		curl_close($curl);
-		
 		return $resp;
     }
 
