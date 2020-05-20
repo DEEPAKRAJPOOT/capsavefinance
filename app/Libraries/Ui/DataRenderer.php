@@ -3031,7 +3031,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'created_at',
                     function ($user) {
-                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at))   : '---';
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at))   : '';
                 })
                 ->addColumn(
                     'action',
@@ -5995,5 +5995,77 @@ class DataRenderer implements DataProviderInterface
            
            ->make(true);
    }
+   
+   
+    public function getReportAllInvoice(Request $request,$invoice)
+    {  
+        
+        return DataTables::of($invoice)
+               ->rawColumns(['batch_no'])
+           
+                ->addColumn(
+                    'batch_no',
+                    function ($invoice) { 
+                        
+                        return '<b>'.$invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id.'</b>';
+                     
+                    })
+                  ->addColumn(
+                    'batch_date',
+                    function ($invoice)  {     
+                           return  date('d/m/Y',strtotime($invoice->invoice_disbursed->disbursal->disbursal_batch->created_at));
+                  })
+             
+              ->addColumn(
+                    'bills_no',
+                    function ($invoice) {  
+                      return $invoice->invoice_no;
+                   })
+                ->addColumn(
+                    'bill_date',
+                    function ($invoice) { 
+                    return  Carbon::parse($invoice->invoice_date)->format('d/m/Y');
+                        })
+                 ->addColumn(
+                    'due_date',
+                    function ($invoice) {                        
+                      return  Carbon::parse($invoice->invoice_due_date)->format('d/m/Y');
+                     
+                })  
+                ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                        return   number_format($invoice->invoice_amount);
+                       
+                      
+                })
+                ->addColumn(            
+                    'invoice_appr_amount',
+                    function ($invoice) {                        
+                          return number_format($invoice->invoice_approve_amount);  
+                         })
+                ->addColumn(
+                    'balance',
+                    function ($invoice) {
+                        if($invoice->is_repayment==1)
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                           return   number_format($invoice->invoice_approve_amount);   
+                        }
+                    })
+                   ->filter(function ($query) use ($request) {
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                       $from_date  = $request->get('from_date')>format('d/m/Y');
+                       $to_date    = $request->get('to_date')>format('d/m/Y');
+                       $query->where('invoice_dateee', '<=', $to_date);
+                       $query->where('invoice_date', '>=', $from_date);
+                         
+                    }
+                 })
+              ->make(true);
+    }  
 
 }

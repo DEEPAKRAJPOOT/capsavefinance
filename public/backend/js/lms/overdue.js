@@ -58,13 +58,13 @@ try {
                 {
                     text: 'PDF',
                     action: function ( e, dt, node, config ) {
-                      ///  download('pdf');
+                        download('pdf');
                     }
                 },
                 {
                     text: 'Excel',
                     action: function ( e, dt, node, config ) {
-                        ///download('excel');
+                        download('excel');
                     }
                 }
             ],

@@ -1181,5 +1181,10 @@ use CommonRepositoryTraits;
     {
         return InvoiceModel::getTotalInvApprAmt($invoices);
     }
-
+    public function getReportAllInvoice()
+    {
+        return InvoiceModel::getReportAllInvoice();
+    }
+    
+    
 }

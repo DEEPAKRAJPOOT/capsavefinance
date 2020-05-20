@@ -3921,6 +3921,18 @@ if ($err) {
         $users = $dataProvider->getSoaList($this->request, $transactionList);
         return $users;
     }
+    
+     /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
+    public function getInvoiceDueList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->invRepo->getReportAllInvoice();
+        $users = $dataProvider->getReportAllInvoice($this->request, $transactionList);
+        return $users;
+    }
         /**
      * Get all Equipment
      *

@@ -463,4 +463,11 @@ public static function saveBulkInvoice($arrInvoice)
         return self::whereIn('invoice_id', $invoices)->sum('invoice_approve_amount');
     }
     
+     public static function getReportAllInvoice()
+     {
+       
+           return self::where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC');
+       
+     } 
+    
 }
