@@ -39,11 +39,12 @@
                                         @if (count($woData) > 0)
                                             @foreach($woData as $wOff)
                                                 <tr>
-                                                    <td>{{$wOff->user_id}}</td>
+                                                    <td>{{$wOff->lmsUser->customer_id}}</td>
                                                     <td>{{$userInfo->f_name}} {{$userInfo->m_name}}	{{$userInfo->l_name}}</td>
-                                                    <td>{{$wOff->amount}}</td>
+                                                    <td>{{ number_format($wOff->amount,2) }}</td>
                                                     <td>{{$wOff->status_name}}</td>
                                                     <td>
+
                                                         @if(in_array($wOff->status_id, [config('lms.WRITE_OFF_STATUS.IN_PROCESS')]) && in_array($role_id, [8]))
                                                             <a data-toggle="modal"  data-height="250px" 
                                                             data-width="100%" data-target="#apprDisapprFrame"
@@ -51,11 +52,23 @@
                                                             data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Back Stage"><i class="fa fa-reply" aria-hidden="true"></i></a>
                                                         @endif
 
-                                                        @if(!in_array($wOff->status_id, [config('lms.WRITE_OFF_STATUS.COMPLETED'),config('lms.WRITE_OFF_STATUS.APPROVED'),config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED')]) && in_array($role_id, [6,1]))
+                                                        @php
+                                                            $nxtBtnFlag = false;
+                                                            if($role_id == 6 && in_array($wOff->status_id, [config('lms.WRITE_OFF_STATUS.NEW'),config('lms.WRITE_OFF_STATUS.REVERT_BACK')]))
+                                                                $nxtBtnFlag = true;
+                                                            elseif($role_id == 8 && !in_array($wOff->status_id, [config('lms.WRITE_OFF_STATUS.NEW'),config('lms.WRITE_OFF_STATUS.REVERT_BACK')]))
+                                                                $nxtBtnFlag = true;
+                                                            elseif($role_id == 1)
+                                                                $nxtBtnFlag = true;
+                                                        @endphp
+
+
+                                                        @if(!in_array($wOff->status_id, [config('lms.WRITE_OFF_STATUS.COMPLETED'),config('lms.WRITE_OFF_STATUS.APPROVED')]) && in_array($role_id, [6,8,1]) && $nxtBtnFlag)
                                                             <a data-toggle="modal"  data-height="250px" 
                                                             data-width="100%" data-target="#apprDisapprFrame"
                                                             data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '1', 'status_id'=>$wOff->status_id])}}"  
                                                             data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
+                                                        
                                                         @endif
                                                     </td>
                                                 </tr>

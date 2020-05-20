@@ -154,6 +154,10 @@ class WriteOffController extends Controller
                         $status_id = config('lms.WRITE_OFF_STATUS.COMPLETED');
                         $messges = "Case moved from 'TRANSACTION SETTLED' to 'COMPLETED'.";
                         break;
+                    case config('lms.WRITE_OFF_STATUS.REVERT_BACK'):
+                        $status_id = config('lms.WRITE_OFF_STATUS.IN_PROCESS');
+                        $messges = "Case moved from 'REVERT BACK' to 'IN PROCESS'.";
+                        break;
                     default:
                         $status_id = config('lms.WRITE_OFF_STATUS.NEW');
                         $messges = "New case created.";
@@ -163,7 +167,7 @@ class WriteOffController extends Controller
             elseif($actionType == 2){
                 switch ($cur_status_id){
                     case config('lms.WRITE_OFF_STATUS.IN_PROCESS'):
-                        $status_id = config('lms.WRITE_OFF_STATUS.IN_PROCESS');
+                        $status_id = config('lms.WRITE_OFF_STATUS.REVERT_BACK');
                         $messges = 'Case moved to back stage.';
                         break;
                 }

@@ -165,5 +165,6 @@ return [
         'APPROVED' => '38',
         'TRANSACTION_SETTLED' => '39',
         'COMPLETED' => '40',
+        'REVERT_BACK'=> '41'
     ],
 ];

@@ -431,6 +431,7 @@ class ApportionmentController extends Controller
     private function getUserDetails($userId){
         try {
             $lmsUser = $this->userRepo->lmsGetCustomer($userId);
+            $woData = $this->lmsRepo->getWriteOff($userId)->first();
             $user = $this->userRepo->find($userId);
             $addresses = $user->biz->address;
             if(!$addresses->isEmpty()){
@@ -448,14 +449,15 @@ class ApportionmentController extends Controller
             if (!empty($default_address)) {
                 $fullAddress = $default_address->addr_1 . ' ' . $default_address->addr_2 . ' ' . $default_address->city_name . ' ' . ($default_address->state->name ?? '') . ' ' . $default_address->pin_code ; 
             } 
-
+             
             return [
                 'customer_id' => $lmsUser->customer_id,
                 'customer_name' => $user->f_name.' '.$user->m_name.' '.$user->l_name,
                 'user_id' => $userId,
                 'address' => $fullAddress ?? '',
                 'biz_entity_name'=>  $user->biz->biz_entity_name ?? '',
-                'status_id' => $user->userDetail->lmsUsersLog->status_id ?? null
+                'status_id' => $user->userDetail->lmsUsersLog->status_id ?? null,
+                'wo_status_id' =>$woData->status_id ?? null
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -1092,7 +1094,7 @@ class ApportionmentController extends Controller
                 $sanctionPageView = $request->get('sanctionPageView');
             }
             if($request->session()->has('writeoff')){
-                $amtToSettle = 0; 
+                $woAmount = 0; 
                 $transIds = [];
                 $userId = $request->session()->get('writeoff.user_id');
                 $checks = $request->session()->get('writeoff.check');
@@ -1126,13 +1128,25 @@ class ApportionmentController extends Controller
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.WRITE_OFF')
                     ];
-                    $amtToSettle += $trans->outstanding;
+                    $woAmount += $trans->outstanding;
                 }
 
                 if(!empty($transactionList)){
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
+                }
+
+                if($userId){
+                    $woData = $this->lmsRepo->getWriteOff($userId)->first();
+                    $woLogData = [];
+                    $woLogData['wo_req_id'] = $woData->wo_req_id;
+                    $woLogData['status_id'] = config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED');
+                    $woStatusLogId = $this->lmsRepo->saveWriteOffReqLog($woLogData);
+                    $updateData = [];
+                    $updateData['wo_status_log_id'] = $woStatusLogId->wo_status_log_id;
+                    $updateData['amount'] = $woAmount+$woData->amount;
+                    $this->lmsRepo->updateWriteOffReqById((int) $woData->wo_req_id, $updateData);
                 }
                 
                 $request->session()->forget('writeoff');

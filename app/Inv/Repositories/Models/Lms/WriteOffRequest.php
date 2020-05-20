@@ -56,6 +56,10 @@ class WriteOffRequest extends BaseModel
         'updated_by'
     ];
 
+    public function lmsUser(){
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    } 
+
     /**
      * Save write off request
      * 
