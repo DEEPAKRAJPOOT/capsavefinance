@@ -22,7 +22,7 @@
                 <td><b>Tenor(in Days):</b></td>
                 <td>{{$disbursal->tenor_days}}</td>
                 <td><b>Margin(%):</b></td>
-                <td>@if($disbursal->margin>0){{number_format($disbursal->margin, 2, '.', ''}}% @endif</td>
+                <td>@if($disbursal->margin>0){{number_format($disbursal->margin, 2, '.', '')}}% @endif</td>
             </tr>
             <tr>
                 <td><b>Invoice Issue Date:</b></td>
