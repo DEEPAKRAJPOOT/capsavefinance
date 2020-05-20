@@ -35,7 +35,7 @@
     </div>
     <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
-    
+    <script src="{{ asset('common/js/check_permission.js') }}"></script>
     @yield('jscript')
 </body>
 </html>

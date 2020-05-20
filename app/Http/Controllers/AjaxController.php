@@ -71,6 +71,7 @@ class AjaxController extends Controller {
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
         $this->UserInvRepo = $UserInvRepo;
+        $this->middleware('checkBackendLeadAccess');
     }
 
     /**
