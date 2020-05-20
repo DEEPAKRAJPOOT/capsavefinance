@@ -151,20 +151,15 @@ class InvoiceController extends Controller {
         $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
-        // $userInfo = $this->invRepo->getCustomerDetail($user_id);
-        // $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(9);
-        // $get_bus = $this->invRepo->getBusinessNameApp(9);
+
         $id = Auth::user()->user_id;
         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
         return view('backend.invoice.disbursed_invoice')->with([
             'role' =>$chkUser->id,
-            // 'get_bus' => $get_bus, 
-            // 'anchor_list' => $getAllInvoice, 
             'flag' => $flag, 
             'user_id' => $user_id, 
             'app_id' => $app_id, 
-            // 'userInfo' => $userInfo
             ]);
     }
 
@@ -360,6 +355,7 @@ class InvoiceController extends Controller {
                         'payment_due_date' => ($value['invoice']['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : $value['invoice']['invoice_due_date'],
                         'status_id' => 12,
                         'int_accrual_start_dt' => $selectDate,
+                        'sys_updated_at' => \Helpers::getSysStartDate(),
                         'updated_by' => Auth::user()->user_id,
                         'updated_at' => $curData
                     ], $value['invoice_disbursed_id']);
@@ -549,7 +545,7 @@ class InvoiceController extends Controller {
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
         
         $customersDisbursalList = $this->lmsRepo->lmsGetInvoiceClubCustomer($supplierIds, $allrecords);
-        // dd($customersDisbursalList);
+
         return view('backend.invoice.disburse_check')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList,
@@ -700,6 +696,7 @@ class InvoiceController extends Controller {
 
                 } 
             }
+
             $result = $this->export($exportData, $batchId);
             $file['file_path'] = $result['file_path'] ?? '';
             if ($file) {
@@ -720,13 +717,14 @@ class InvoiceController extends Controller {
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
 
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] = $userid) {
+                    if($invoice['supplier_id'] == $userid) {
                         $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                         if ($invoiceDisbursedData == null) {
                             $invoice['batch_id'] = $batchId;
                             $invoice['disburse_date'] = $disburseDate;
                             $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
+                            $invoice['sys_created_at'] = \Helpers::getSysStartDate();
                             
                             $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                             $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -756,7 +754,7 @@ class InvoiceController extends Controller {
 
                     }
                 }
-                
+
                 if($createDisbursal) {
                     $updateDisbursal = $this->lmsRepo->updateDisburse([
                             'disburse_amount' => $disburseAmount
@@ -764,7 +762,6 @@ class InvoiceController extends Controller {
                 }
 
             }
-
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice');
         } catch (Exception $ex) {

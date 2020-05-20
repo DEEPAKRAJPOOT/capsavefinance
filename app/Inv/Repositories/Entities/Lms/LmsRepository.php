@@ -306,8 +306,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						$query->whereIn('supplier_id', $userIds);
 					}
 				})
+				->groupBy('user_id')
 				->get();
-		// dd($data);
 	}    
 
 	/**

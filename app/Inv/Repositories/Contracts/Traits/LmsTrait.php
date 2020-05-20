@@ -183,6 +183,7 @@ trait LmsTrait
                         
         $dataArr['created_by'] = Auth::user()->user_id;
         $dataArr['created_at'] = $curData;
+        $dataArr['sys_created_at'] = $invoice['sys_created_at'] ?? null;
         
         return $disbursalData;
     }
