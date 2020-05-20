@@ -7,9 +7,9 @@
     <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
         <tbody> 
             <tr>
-                <td><b>Principal Amount</b></td>
+                <td><b>Principal Amount:</b></td>
                 <td>{{ number_format((float)$disbursal->invoice->invoice_approve_amount, 2, '.', '') }}</td>
-                <td><b>Disburse Amount</b></td>
+                <td><b>Disburse Amount:</b></td>
                 <td>{{ $disbursal->disburse_amt}}</td>
             </tr>
             <tr>
@@ -18,21 +18,41 @@
                 <td><b>Overdue Interest Rate:</b></td>
                 <td>@if($disbursal->overdue_interest_rate>0){{$disbursal->overdue_interest_rate}}% @endif</td>
             </tr>
+
+
+
             <tr>
-                <td><b>Penal days:</b></td>
-                <td>{{$disbursal->accruedInterestNotNull->count() }}</td>
-                <td><b>Penal Amount:</b></td>
-                <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
+                <td><b>Tenor(in Days):</b></td>
+                <td>{{$disbursal->tenor_days}}</td>
+                <td><b>Margin(%):</b></td>
+                <td>@if($disbursal->margin>0){{$disbursal->margin}}% @endif</td>
             </tr>
             <tr>
-                <td><b>Accrued Interest till date</b></td>
+                <td><b>Invoice Issue Date:</b></td>
+                <td>{{($disbursal->invoice)? $disbursal->invoice->invoice_date: ''}}</td>
+                <td><b>Payment Due Date:</b></td>
+                <td>{{($disbursal->payment_due_date)? $disbursal->payment_due_date: ''}}</td>
+            </tr>
+
+
+
+
+
+            <tr>
+                <td><b>Accrued Interest till date:</b></td>
                 @foreach($disbursal->accruedInterest as $item)
                 <td>{{ Carbon\Carbon::parse($item->interest_date)->format('d-m-Y')}}</td>
                 @break
                 @endforeach
 
-                <td><p>Grace Period</p></td>
+                <td><b>Grace Period:</b></td>
                 <td>@if($disbursal->grace_period>0) {{$disbursal->grace_period}} @if($disbursal->grace_period>1) Days @else Day @endif @endif</td>
+            </tr>
+            <tr>
+                <td><b>Penal days:</b></td>
+                <td>{{$disbursal->accruedInterestNotNull->count() }}</td>
+                <td><b>Penal Amount:</b></td>
+                <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
             </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>
