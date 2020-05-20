@@ -145,7 +145,7 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_VERBOSE, 0);
 		curl_setopt($curl, CURLOPT_HEADER, 1);
 		// curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
-		curl_setopt($curl, CURLOPT_SSLCERT, $fullchainFile);
+		// curl_setopt($curl, CURLOPT_SSLCERT, $fullchainFile);
 		curl_setopt($curl, CURLOPT_SSLKEY, $keyFile);
 		// curl_setopt($curl, CURLOPT_CAPATH, $certFile);
 		curl_setopt($curl, CURLOPT_CAINFO, $certFile);
