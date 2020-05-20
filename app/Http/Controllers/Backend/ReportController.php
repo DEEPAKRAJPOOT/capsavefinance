@@ -101,6 +101,6 @@ class ReportController extends Controller
         DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
         $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
                 ->loadView('reports.downloadinvoiceoverdue', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
-        return $pdf->download('InvoiceDueReport.pdf');  
+        return $pdf->download('InvoiceOverDueReport.pdf');  
     } 
 }

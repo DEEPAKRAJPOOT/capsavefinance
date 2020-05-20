@@ -480,7 +480,9 @@ public static function saveBulkInvoice($arrInvoice)
       public static function getReportAllOverdueInvoice()
      {
        
-           return self::where(['status_id' => 12])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->orderBy('invoice_id', 'DESC');
+           return self::where(['status_id' => 12])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
+                    $query->where('is_overdue', 1);
+                })->orderBy('invoice_id', 'DESC');
        
      } 
      
@@ -529,25 +531,33 @@ public static function saveBulkInvoice($arrInvoice)
            {  
                $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
                $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-              return self::whereIn('supplier_id',$user)->WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->orderBy('invoice_id', 'DESC')->get();
+              return self::whereIn('supplier_id',$user)->WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
+                    $query->where('is_overdue', 1);
+                })->orderBy('invoice_id', 'DESC')->get();
            
            }
            else if($attr->from_date!=null && $attr->to_date!=null && count($user)==0)
            {
                $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
                $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-              return self::WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->orderBy('invoice_id', 'DESC')->get();
+              return self::WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
+                    $query->where('is_overdue', 1);
+                })->orderBy('invoice_id', 'DESC')->get();
          
            }
            else if($attr->from_date==null && $attr->to_date==null && count($user) > 0)
            {
               
-              return self::whereIn('supplier_id',$user)->where(['status_id' => 12])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->orderBy('invoice_id', 'DESC')->get();
+              return self::whereIn('supplier_id',$user)->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
+                    $query->where('is_overdue', 1);
+                })->orderBy('invoice_id', 'DESC')->get();
          
            }
         else {
            
-             return self::where(['status_id' => 12])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->orderBy('invoice_id', 'DESC')->get();
+             return self::where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
+                    $query->where('is_overdue', 1);
+                })->orderBy('invoice_id', 'DESC')->get();
 
         }
      } 
