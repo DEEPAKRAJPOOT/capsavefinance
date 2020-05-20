@@ -72,6 +72,8 @@ class BizInvoice extends BaseModel
         'pay_calculation_on',
         'invoice_amount',
         'invoice_approve_amount',
+        'invoice_margin_amount',
+        'is_margin_deduct',
         'prgm_offer_id',
         'file_id',
         'status_id',
@@ -157,12 +159,12 @@ public static function saveBulkInvoice($arrInvoice)
         {
             $res  = User::where('user_id',$id)->first();
 
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail'])->orderBy('invoice_id', 'DESC');
 
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
@@ -276,12 +278,18 @@ public static function saveBulkInvoice($arrInvoice)
      {
        return $this->belongsTo('App\Inv\Repositories\Models\User','updated_by','user_id');
      }
-       function user()
-     {
-            return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
+     
+    function user()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
     }
-      function bulkUpload()
-     {
+    
+    function userDetail()
+    {
+       return $this->belongsTo('App\Inv\Repositories\Models\UserDetail','supplier_id','user_id'); 
+    }
+    function bulkUpload()
+    {
           return $this->belongsTo('App\Inv\Repositories\Models\InvoiceBulkUpload', 'invoice_id', 'invoice_id');
      
      }
