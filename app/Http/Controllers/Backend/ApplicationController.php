@@ -1899,58 +1899,32 @@ class ApplicationController extends Controller
                         'created_by' => \Auth::user()->user_id
                 ];
 
-                $result = $this->appRepo->saveAppNote($noteData)->first();
-                dd($result);
+                $result = $this->appRepo->saveAppNote($noteData)->latest()->first()->toArray();
+//                dd($result);;
                 if($result){
                     $appStatusData = [
-//                        'note_id' = $result['note_id'],
+                        'app_id' => $app_id,
+                        'user_id' => $user_id,
+                        'note_id' => $result['note_id'],
+                        'status_id' => (int) config('common.mst_status_id')['APP_REJECTED'],
+                        'created_at' => $result['created_at']
                     ];
+//                    dd($appStatusData);
+                    $status = $this->appRepo->saveAppStatusLog($appStatusData);
+                    
+                    $arrUpdateApp=[
+			'curr_status_id'=>(int) config('common.mst_status_id')['APP_REJECTED'],
+                    ];
+			
+                    $appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
+//                    dd($status);
                 }
-//                dd($appStatusData);
+                
                 Session::flash('message',trans('backend_messages.add_note'));
                 //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
                 return redirect()->route('application_list');
             } catch (Exception $ex) {
                     return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
             }
-            try {
-                dd($request->all());
-                    $app_id = $request->get('app_id');
-                    $biz_id = $request->get('biz_id');
-                    $notes = $request->get('notes');
-                    $noteData = [
-                            'app_id' => $app_id, 
-                            'note_data' => $notes,
-                            'created_at' => \Carbon\Carbon::now(),
-                            'created_by' => \Auth::user()->user_id
-                    ];
-
-                    $this->appRepo->saveAppNote($noteData);
-                    Session::flash('message',trans('backend_messages.add_note'));
-                    //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
-                    return redirect()->route('application_list');
-            } catch (Exception $ex) {
-                    return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-            }
-            try {
-                dd($request->all());
-                    $app_id = $request->get('app_id');
-                    $biz_id = $request->get('biz_id');
-                    $notes = $request->get('notes');
-                    $noteData = [
-                            'app_id' => $app_id, 
-                            'note_data' => $notes,
-                            'created_at' => \Carbon\Carbon::now(),
-                            'created_by' => \Auth::user()->user_id
-                    ];
-
-                    $this->appRepo->saveAppNote($noteData);
-                    Session::flash('message',trans('backend_messages.add_note'));
-                    //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
-                    return redirect()->route('application_list');
-            } catch (Exception $ex) {
-                    return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-            }
 	}
-
 }

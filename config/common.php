@@ -26,7 +26,7 @@ return [
         0 => 'Incomplete',
         1 => 'Completed',
         2 => 'Sanctioned',
-        3 => 'Closed',        
+        3 => 'Closed',
     ],
     //Roles Ids
     'anchor_role' => 11,
@@ -101,6 +101,7 @@ return [
         'POST_SANCTION_DOC_UPLOADED'=>26,
         'OFFER_GENERATED'=>28,
         'DISBURSED'=>27,
+        'APP_REJECTED'=>43
     ],
     'facility_type' => [
         '1' => 'Rental Facility',
