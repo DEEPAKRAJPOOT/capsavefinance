@@ -169,7 +169,7 @@
         </li>
     @endcan
 
-    @canany(['request_list','lms_refund_new'])
+    @canany(['lms_refund_new'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-address-card-o"></i>
