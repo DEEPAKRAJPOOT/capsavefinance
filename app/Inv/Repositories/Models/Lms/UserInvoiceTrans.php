@@ -103,7 +103,7 @@ class UserInvoiceTrans extends BaseModel {
         }
         $query = self::select('*')
         ->join('user_invoice', 'user_invoice.user_invoice_id', 'user_invoice_trans.user_invoice_id')
-        ->join('mst_state', 'mst_state.id','user_invoice.user_invoice_rel_id');
+        ->join('mst_state', 'mst_state.id','user_invoice.comp_gst_state_id');
                 
         if (!empty($whereCondition)) {
             $query->where($whereCondition);
