@@ -27,7 +27,7 @@
 @endsection
 
 @section('jscript')
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="{{ asset('backend/js/Reports/chart.min.js') }}" type="text/javascript"></script>
 <script>
 var ctx = document.getElementById('barChart').getContext('2d');
 var myChart = new Chart(ctx, {
