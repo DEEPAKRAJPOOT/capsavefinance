@@ -759,7 +759,10 @@ Route::group(
         'as' => 'lms_get_due_list',
         'uses' => 'AjaxController@getInvoiceDueList'
     ]);
- 
+  Route::post('lms_get_invoice_over_due_list', [
+        'as' => 'lms_get_invoice_over_due_list',
+        'uses' => 'AjaxController@getInvoiceOverDueList'
+    ]);
     Route::post('get-colender-soa-list', [
         'as' => 'get_colender_soa_list',
         'uses' => 'AjaxController@getColenderSoaList'

@@ -3923,7 +3923,7 @@ if ($err) {
     }
     
      /**
-   * Get all transactions for soa
+   * Get all getInvoiceDueList
    *
    * @return json transaction data
    */
@@ -3931,6 +3931,18 @@ if ($err) {
 
         $transactionList = $this->invRepo->getReportAllInvoice();
         $users = $dataProvider->getReportAllInvoice($this->request, $transactionList);
+        return $users;
+    }
+    
+     /**
+   * Get all getInvoiceOverDueList
+   *
+   * @return json transaction data
+   */
+    public function getInvoiceOverDueList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->invRepo->getReportAllOverdueInvoice();
+        $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
         return $users;
     }
         /**

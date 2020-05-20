@@ -1,10 +1,20 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
-
+use Auth;
+use Session;
+use Helpers;
+use PDF as DPDF;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use PHPExcel_Cell_DataType;
+use PHPExcel_Style_Alignment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Models\LmsUser;
 class ReportController extends Controller
 {
 
@@ -13,13 +23,13 @@ class ReportController extends Controller
      *
      * @return void
      */
-    
-     
-    
-    public function __construct() {
+    protected $invRepo;
+    public function __construct(InvoiceInterface $invRepo) {
+        $this->invRepo = $invRepo;
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
     }
+   
 
     public function index(Request $request) {
         try {
@@ -73,4 +83,24 @@ class ReportController extends Controller
         }
         
     }
+    
+    public function pdfInvoiceDue(Request $request)
+    {
+        $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
+        $getInvoice  =  $this->invRepo->pdfInvoiceDue($request);
+        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
+        $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
+                ->loadView('reports.downloadinvoicedue', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
+        return $pdf->download('InvoiceDueReport.pdf');  
+    }
+    
+     public function pdfInvoiceOverDue(Request $request)
+    {
+        $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
+        $getInvoice  =  $this->invRepo->pdfInvoiceOverDue($request);
+        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
+        $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
+                ->loadView('reports.downloadinvoiceoverdue', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
+        return $pdf->download('InvoiceDueReport.pdf');  
+    } 
 }

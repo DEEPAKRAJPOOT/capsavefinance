@@ -23,6 +23,7 @@
                     null,
                     [
                     'class' => 'form-control',
+                    'required' => 'required',
                     'placeholder' => 'From Date',
                     'id'=>'from_date'
                     ])
@@ -34,6 +35,7 @@
                     null,
                     [
                     'class' => 'form-control',
+                    'required' => 'required',
                     'placeholder' => 'To Date',
                     'id'=>'to_date'
                     ])
@@ -46,6 +48,7 @@
                     null,
                     [
                     'class' => 'form-control',
+                    'required' => 'required',
                     'placeholder' => 'Search by Client ID/Name',
                     'id'=>'search_keyword',
                     'autocomplete'=>'off'
@@ -94,12 +97,19 @@
 @endsection
 
 @section('jscript')
+<style>
+    .dt-buttons
+    {
+        float:right !important;
+    }
+ </style>
 <script src="{{ asset('backend\theme\assets\plugins\typeahead\handlebars.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('backend\theme\assets\plugins\bootstrap-tagsinput\typeahead.bundle.js') }}" type="text/javascript"></script>
 <script>
  var messages = {
         get_customer: "{{ route('get_customer') }}",
         lms_get_due_list: "{{ URL::route('lms_get_due_list') }}",
+        pdf_invoice_due_url:"{{ URL::route('pdf_invoice_due_url') }}",
         token: "{{ csrf_token() }}",
     };    
 $('#from_date').datetimepicker({

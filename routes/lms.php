@@ -480,7 +480,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'soa_excel_download',
                 'uses'=> 'Lms\SoaController@soaExcelDownload'
             ]);
-
+           
         });   
     });    
     //end of application
