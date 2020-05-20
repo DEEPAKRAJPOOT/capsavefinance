@@ -6008,48 +6008,54 @@ class DataRenderer implements DataProviderInterface
            ->editColumn('state', function ($user) {
                return $user->name;
            })
-           ->editColumn('biz_gst_no', function ($user) {
+           ->editColumn('gstn', function ($user) {
                return $user->biz_gst_no;
            })    
-           ->editColumn('biz_entity_name', function ($user) {
+           ->editColumn('customer_name', function ($user) {
                return $user->biz_entity_name;
            })  
-           ->editColumn('customer_addr', function ($user) {
+           ->editColumn('customer_address', function ($user) {
                return $user->gst_addr;
            })   
+           ->editColumn('customer_gstn', function ($user) {
+               return $user->biz_gst_no;
+           })  
+           ->editColumn('sac_code',  function ($user) {
+               return ($user->sac_code != 0 ? $user->sac_code : '000');
+           })   
+           ->editColumn('contract_no',  function ($user) {
+               return 'HEL/'.($user->sac_code != 0 ? $user->sac_code : '000');
+           })     
            ->editColumn('invoice_no', function ($user) {
                return $user->invoice_no;
            })    
            ->editColumn('invoice_date', function ($user) {
                return $user->invoice_date;
            })  
-           ->editColumn('sac_code',  function ($user) {
-               return ($user->sac_code != 0 ? $user->sac_code : '000');
-           })    
            ->editColumn('base_amount',  function ($user) {
                return number_format($user->base_amount, 2);
            })    
            ->editColumn('sgst_rate',  function ($user) {
-               return ($user->sgst_rate != 0 ? $user->sgst_rate : '-');
+               return ($user->sgst_rate != 0 ? $user->sgst_rate . '%' : '-');
            })    
            ->editColumn('sgst_amount',  function ($user) {
                return ($user->sgst_amount != 0 ? number_format($user->sgst_amount, 2) : '-');
            })    
            ->editColumn('cgst_rate',  function ($user) {
-               return ($user->cgst_rate != 0 ? $user->cgst_rate : '-');
+               return ($user->cgst_rate != 0 ? $user->cgst_rate . '%' : '-');
            })    
            ->editColumn('cgst_amount',  function ($user) {
                return ($user->cgst_amount != 0 ? number_format($user->cgst_amount, 2) : '-');
            })    
            ->editColumn('igst_rate',  function ($user) {
-               return ($user->igst_rate != 0 ? $user->igst_rate : '-');
+               return ($user->igst_rate != 0 ? $user->igst_rate . '%' : '-');
            })      
            ->editColumn('igst_amount',  function ($user) {
                return ($user->igst_amount != 0 ? number_format($user->igst_amount, 2) : '-');
            })        
            ->editColumn('total_rate',  function ($user) {
                 $totalRate = ($user->sgst_rate + $user->igst_rate + $user->cgst_rate);
-               return ($totalRate != 0 ? $totalRate : '-');
+               return ($totalRate != 0 ? $totalRate . '%' : '-');
            })          
            ->editColumn('total_tax',  function ($user) {
                 $totalTax = ($user->sgst_amount + $user->igst_amount + $user->cgst_amount);
@@ -6061,15 +6067,15 @@ class DataRenderer implements DataProviderInterface
            ->filter(function ($query) use ($request) {
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                     $query->where(function ($query) use ($request) {
-                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
-                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('created_at', [$from_date, $to_date]);
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                        $query->WhereBetween('invoice_date', [$from_date, $to_date]);
                     });
                 }
-                if($request->get('search_keyword')!= ''){
+                if($request->get('user_id')!= ''){
                     $query->where(function ($query) use ($request) {
-                        $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('biz_entity_name', 'like',"%$search_keyword%");
+                        $user_id = trim($request->get('user_id'));
+                        $query->where('user_id', '=',$user_id);
                     });
                 }
               

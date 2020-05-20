@@ -14,7 +14,7 @@ try {
                 data: function (d) {
                     d.from_date = $('input[name="from_date"]').val();
                     d.to_date = $('input[name="to_date"]').val();
-                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.user_id = $('input[name=user_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {
@@ -24,12 +24,14 @@ try {
             },
             columns: [
                 {data: 'state'},
-                {data: 'biz_gst_no'},
-                {data: 'biz_entity_name'},
-                {data: 'customer_addr'},
+                {data: 'gstn'},
+                {data: 'customer_name'},
+                {data: 'customer_address', width:'200px'},
+                {data: 'customer_gstn'},
+                {data: 'sac_code'},
+                {data: 'contract_no'},
                 {data: 'invoice_no'},
                 {data: 'invoice_date'},
-                {data: 'sac_code'},
                 {data: 'base_amount'},
                 {data: 'sgst_rate'},
                 {data: 'sgst_amount'},
@@ -50,6 +52,51 @@ try {
         });
 
     });
+
+        $('#from_date').datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView: 2, });
+        $('#to_date').datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView: 2, });
+
+
+      var sample_data = new Bloodhound({
+       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+       queryTokenizer: Bloodhound.tokenizers.whitespace,
+       prefetch:messages.get_customer,
+       remote:{
+        url:messages.get_customer+'?query=%QUERY',
+        wildcard:'%QUERY'
+       }
+      });
+      
+    
+    $('#prefetch .form-control').typeahead(null, {
+        name: 'sample_data',
+        display: 'customer_id',
+        source:sample_data,
+        limit: 'Infinity',
+        templates:{
+            suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
+        },
+    }).bind('typeahead:select', function(ev, suggestion) {
+        setClientDetails(suggestion)
+    }).bind('typeahead:change', function(ev, suggestion) {
+        var customer_id = $.trim($("#customer_id").val());
+        if(customer_id != suggestion)
+        setClientDetails(suggestion)
+    }).bind('typeahead:cursorchange', function(ev, suggestion) {
+        setClientDetails(suggestion)
+    });
+    
+    function setClientDetails(data){
+        $("#biz_id").val(data.biz_id);
+        $("#user_id").val(data.user_id);
+        $("#customer_id").val(data.customer_id);
+    }
 
     function download(action){
         url = '';
