@@ -32,10 +32,12 @@
             </tr>
             <tr>
                 <td><b>Accrued Interest till date:</b></td>
+                <td>
                 @foreach($disbursal->accruedInterest as $item)
-                <td>{{ Carbon\Carbon::parse($item->interest_date)->format('d-m-Y')}}</td>
+                {{ Carbon\Carbon::parse($item->interest_date)->format('d-m-Y')}}
                 @break
                 @endforeach
+                </td>
 
                 <td><b>Grace Period:</b></td>
                 <td>@if($disbursal->grace_period>0) {{$disbursal->grace_period}} @if($disbursal->grace_period>1) Days @else Day @endif @endif</td>
@@ -85,7 +87,7 @@
                     <td class="text-right"><strong>{{ $total_accrued_interest }}</strong></td>                    
                 </tr>                  --}}
             @else
-            <tr role="row"><td colspan="3">No Data Found</td></tr>
+            <tr role="row"><td colspan="4">No Data Found</td></tr>
             @endif
         </tbody>
 </table>                    
