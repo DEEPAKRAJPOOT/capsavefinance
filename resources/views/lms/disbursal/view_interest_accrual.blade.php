@@ -14,7 +14,7 @@
             </tr>
             <tr>
                 <td><b>Interest Rate:</b></td>
-                <td>@if($currentIntRate>0) {{number_format($currentIntRate, 2, '.', ''}}% @endif</td>
+                <td>@if($currentIntRate>0) {{number_format($currentIntRate, 2, '.', '')}}% @endif</td>
                 <td><b>Overdue Interest Rate:</b></td>
                 <td>@if($disbursal->overdue_interest_rate>0){{$disbursal->overdue_interest_rate}}% @endif</td>
             </tr>
