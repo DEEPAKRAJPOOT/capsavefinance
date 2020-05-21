@@ -1,22 +1,22 @@
 try {
     var oTable;
     jQuery(document).ready(function ($) {
-        //User Listing code
         oTable = $('#lmsSoaList').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 50,
-            dom: 'lBrtip',
+            // dom: 'lBrtip',
             bSort: false,
             responsive: true,
             searching: false,
             ajax: {
-                "url": messages.lms_get_soa_list, // json datasource
+                "url": messages.get_colender_soa_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.from_date = $('input[name="from_date"]').val();
                     d.to_date = $('input[name="to_date"]').val();
                     d.search_keyword = $('input[name=search_keyword]').val();
+                    d.user_id = $('input[name=user_id]').val();
                     d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
@@ -40,7 +40,6 @@ try {
             },
             columns: [
                 {data: 'customer_id'},
-                // {data: 'customer_name'},
                 {data: 'trans_date', width:'80px'},
                 {data: 'value_date', width:'80px'},
                 {data: 'trans_type'},
@@ -48,17 +47,16 @@ try {
                 {data: 'invoice_no'},
                 {data: 'narration'},
                 {data: 'currency'},
-                // {data: 'sub_amount'},
                 {data: 'debit'},
                 {data: 'credit'},
                 {data: 'balance'}
             ],
-            buttons: [
+            /*buttons: [
                 
                 {
                     text: 'PDF',
                     action: function ( e, dt, node, config ) {
-                       download('pdf');
+                        download('pdf');
                     }
                 },
                 {
@@ -67,7 +65,7 @@ try {
                         download('excel');
                     }
                 }
-            ],
+            ],*/
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
 
@@ -91,26 +89,56 @@ try {
         if(action.trim() == 'pdf'){
             url = messages.pdf_soa_url;
         }
-
         if(action.trim() == 'excel'){
             url = messages.excel_soa_url;
         }
-
         if(from_date){
             url += '&from_date='+from_date;
         }
-
         if(to_date){
             url += '&to_date='+to_date;
         }
-       if(customer_id){
-            url += '&customer_id='+to_date;
-        }
-        alert(url);
         window.open(url, '_blank');
     }
 
-
+    function showClientDetails(data){
+        $.ajax({
+            type: "POST",
+            url: messages.get_soa_client_details,
+            data: data,
+            dataType: "json",
+            success: function (res) {
+                var html = `<table class="table " cellpadding="0" cellspacing="0" style="margin-bottom: 22px;border-top-style: none;
+                border-left-style: none;
+                border-right-style: none;
+                border-bottom-style: none;">
+                            <tbody>
+                                <tr>
+                                    <td><b>Client Name</b></td>
+                                    <td>`+res.client_name+`</td>
+                                    <td><b>Date & Time</b></td>
+                                    <td>`+res.datetime+`</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Address</b></td>
+                                    <td>`+res.address+`</td>
+                                    <td><b>Currency</b></td>
+                                    <td>`+res.currency+`</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td><b>Limit Amt</b></td>
+                                    <td>`+res.limit_amt+`</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>`; 
+                        //console.log(html);
+                        //$("#client_details").html(html);
+            }
+        });
+    }
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);

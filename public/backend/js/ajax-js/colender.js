@@ -13,7 +13,7 @@ try {
                 "method": 'POST',
                 data: function (d) {
                     d.search_keyword = $('input[name=search_keyword]').val();
-                    d.is_status = $('select[name=is_assign]').val();
+                    d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -23,16 +23,15 @@ try {
                 }
             },
             columns: [
-                {data: 'app_id'},
-                {data: 'biz_entity_name'},
-                {data: 'user_name'},
-                {data: 'user_email'},
-                {data: 'user_phone'},
-                {data: 'assoc_anchor'},
-                {data: 'applied_loan_amount'},
-                {data: 'created_at'},
+                {data: 'customer_id'},
+                {data: 'app_id'},                
+                {data: 'virtual_acc_id'},
+                {data: 'customer_name'},
+                {data: 'limit'},
+                {data: 'consume_limit'},
+                {data: 'available_limit'},
+                {data: 'anchor'},
                 {data: 'status'}
-                /*{data: 'action'}*/
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,2,3,4,6,7,8]}]
         });

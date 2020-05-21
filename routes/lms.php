@@ -490,8 +490,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'soa_excel_download',
                 'uses'=> 'Lms\SoaController@soaExcelDownload'
             ]);
-            
-             // Write Off
+       // Write Off
             Route::get('/write-off', [
                 'as' => 'write_off_customer_list',
                 'uses' => 'Lms\WriteOffController@index'

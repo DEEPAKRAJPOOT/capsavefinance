@@ -1181,5 +1181,32 @@ use CommonRepositoryTraits;
     {
         return InvoiceModel::getTotalInvApprAmt($invoices);
     }
-
+    public function getReportAllInvoice()
+    {
+        return InvoiceModel::getReportAllInvoice();
+    }
+    public function getReportAllOverdueInvoice()
+    {
+        return InvoiceModel::getReportAllOverdueInvoice();
+    }
+     public function pdfInvoiceDue($attr)
+    {
+         try
+         {
+             return InvoiceModel::pdfInvoiceDue($attr); 
+         } catch (Exception $ex) {
+               return $ex;
+         }
+       
+    } 
+      public function pdfInvoiceOverDue($attr)
+    {
+         try
+         {
+             return InvoiceModel::pdfInvoiceOverDue($attr); 
+         } catch (Exception $ex) {
+               return $ex;
+         }
+       
+    }  
 }

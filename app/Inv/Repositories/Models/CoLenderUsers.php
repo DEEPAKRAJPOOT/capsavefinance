@@ -15,7 +15,7 @@ class CoLenderUsers extends BaseModel {
      *
      * @var string
      */
-    protected $table = 'co_lenders_user';
+    protected $table = 'co_lenders';
 
     /**
      * Custom primary key is set for the table
@@ -104,8 +104,8 @@ class CoLenderUsers extends BaseModel {
      */
     public static function getColenderList()
     {
-        $res = self::select('co_lenders_user.*', 'u.f_name', 'u.biz_name', 'u.email')
-                ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id');
+        $res = self::select('co_lenders.*', 'u.f_name', 'u.biz_name', 'u.email')
+                ->join('users as u', 'co_lenders.co_lender_id', '=', 'u.co_lender_id');
         return $res ?: false;
     }
 
@@ -129,8 +129,8 @@ class CoLenderUsers extends BaseModel {
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
 
-        return self::where($where)->select('co_lenders_user.*' ,'u.f_name', 'u.biz_name', 'u.email')
-                ->join('users as u', 'co_lenders_user.co_lender_id', '=', 'u.co_lender_id')
+        return self::where($where)->select('co_lenders.*' ,'u.f_name', 'u.biz_name', 'u.email')
+                ->join('users as u', 'co_lenders.co_lender_id', '=', 'u.co_lender_id')
                 ->get();
     }
 
