@@ -424,8 +424,18 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/apportionment/mark/settle/save',[
                 'as' => 'apport_mark_settle_save',
                 'uses' => 'Lms\ApportionmentController@markSettleSave'
-            ]);        
-            
+            ]);  
+
+            Route::post('/apportionment/mark/writeOff/confirmation',[
+                'as' => 'apport_mark_writeOff_confirmation',
+                'uses' => 'Lms\ApportionmentController@markWriteOffConfirmation'
+            ]);
+
+            Route::post('/apportionment/mark/writeOff/save',[
+                'as' => 'apport_mark_writeOff_save',
+                'uses' => 'Lms\ApportionmentController@markwriteOffSave'
+            ]); 
+
             Route::post('/apportionment/settled/save',[
                 'as' => 'apport_settled_save',
                 'uses' => 'Lms\ApportionmentController@saveSettledTrans'
@@ -480,6 +490,28 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'soa_excel_download',
                 'uses'=> 'Lms\SoaController@soaExcelDownload'
             ]);
+            
+             // Write Off
+            Route::get('/write-off', [
+                'as' => 'write_off_customer_list',
+                'uses' => 'Lms\WriteOffController@index'
+            ]);
+
+            Route::get('/generate-write-off', [
+                'as' => 'generate_write_off',
+                'uses' => 'Lms\WriteOffController@generateWriteOff'
+            ]);
+
+            Route::get('/wo-approve-dissapprove', [
+                'as' => 'wo_approve_dissapprove',
+                'uses' => 'Lms\WriteOffController@getWriteOffPopUP'
+            ]);
+            
+            Route::post('/wo-save-appr-dissappr', [
+                'as' => 'wo_save_appr_dissappr',
+                'uses' => 'Lms\WriteOffController@saveWriteOffComment'
+            ]); 
+            // end write off
 
         });   
     });    

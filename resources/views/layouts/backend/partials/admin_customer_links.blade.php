@@ -12,6 +12,11 @@
         <a class=" {{( $active=='address') ? 'active': null }} " href="{{route('addr_get_customer_list',[ 'user_id' =>  request()->get('user_id') ])}}">Address </a>
     </li>
     @endcan
+    @can('write_off_customer_list')
+    <li>
+        <a class=" {{( $active=='writeOff') ? 'active': null }} " href="{{route('write_off_customer_list',[ 'user_id' =>  request()->get('user_id') ])}}">Write Off</a>
+    </li>
+    @endcan
     @can('user_invoice_location')
     <li>
         <a class=" {{($active=='userLocation') ? 'active': null }} " href="{{route('user_invoice_location', ['user_id' => request()->get('user_id')])}}">User InVoice Location</a>

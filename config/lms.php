@@ -21,6 +21,7 @@ return [
        'REFUND'=>'32',
        'NON_FACTORED_AMT' => '35',
        'WAVED_OFF'=>'36',
+       'WRITE_OFF'=>'37',
         /*
         'PAYMENT_RECEIVED' => '1',
         'DISCOUNT_ON_PAYMENT' => '3',
@@ -157,5 +158,13 @@ return [
         'NORMAL' => '0',
         'ADHOC' => '1',
         'TEMPORARY' => '2',
-    ],    
+    ],
+    'WRITE_OFF_STATUS' => [
+        'NEW' => '36',
+        'IN_PROCESS' => '37',
+        'APPROVED' => '38',
+        'TRANSACTION_SETTLED' => '39',
+        'COMPLETED' => '40',
+        'REVERT_BACK'=> '42'
+    ],
 ];

@@ -32,6 +32,10 @@ class UserDetail extends BaseModel
         'created_by'
     ];
 
+    public function lmsUsersLog()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\LmsUsersLog', 'lms_users_log_id', 'lms_users_log_id');
+    }
      /**
      * Save User Detail
      *
