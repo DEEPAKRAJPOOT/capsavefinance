@@ -6,6 +6,9 @@
         <a class=" {{ ($active=='customer')? 'active': null }} " href="{{ route('report_customer') }}">Customer</a>
     </li>
     <li>
+        <a class=" {{ ($active=='lease_register')? 'active': null }} " href="{{ route('lease_register') }}">Lease Register</a>
+    </li>
+    <!-- <li>
         <a class=" {{( $active=='bank') ? 'active': null }} "  href="{{ route('report_bank') }}">Bank</a>
     </li>
     <li>
@@ -16,5 +19,5 @@
     </li>
     <li>
         <a class=" {{( $active=='overduereport') ? 'active': null }} " href="{{route('report_overduereport')}}">Invoice Over Due Report  </a>
-    </li>
+    </li> -->
 </ul>  

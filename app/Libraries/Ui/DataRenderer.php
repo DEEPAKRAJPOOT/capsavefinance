@@ -6003,14 +6003,107 @@ class DataRenderer implements DataProviderInterface
            ->editColumn('registered_on',  function ($user) {
                return $user->created_at;
            })  
-           ->addColumn(
-               'is_active',
-               function ($data) {
-                   $id = $data->user_invoice_rel_id;
-                   $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
-                   $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
+           ->addColumn('is_active',  function ($user) {
+                   $status = ($user->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label></div></b>';
                    return $status;
            })
+           ->filter(function ($query) use ($request) {
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('created_at', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('search_keyword')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('f_name', 'like',"%$search_keyword%");
+                    });
+                }
+              
+            })
+           
+           ->make(true);
+   }
+   public function leaseRegister(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->editColumn('state', function ($invoiceRec) {
+               return $invoiceRec->name;
+           })
+           ->editColumn('gstn', function ($invoiceRec) {
+               return $invoiceRec->biz_gst_no;
+           })    
+           ->editColumn('customer_name', function ($invoiceRec) {
+               return $invoiceRec->biz_entity_name;
+           })  
+           ->editColumn('customer_address', function ($invoiceRec) {
+               return $invoiceRec->gst_addr;
+           })   
+           ->editColumn('customer_gstn', function ($invoiceRec) {
+               return $invoiceRec->biz_gst_no;
+           })  
+           ->editColumn('sac_code',  function ($invoiceRec) {
+               return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
+           })   
+           ->editColumn('contract_no',  function ($invoiceRec) {
+               return 'HEL/'.($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
+           })     
+           ->editColumn('invoice_no', function ($invoiceRec) {
+               return $invoiceRec->invoice_no;
+           })    
+           ->editColumn('invoice_date', function ($invoiceRec) {
+               return date('d-m-Y', strtotime($invoiceRec->invoice_date));
+           })  
+           ->editColumn('base_amount',  function ($invoiceRec) {
+               return number_format($invoiceRec->base_amount, 2);
+           })    
+           ->editColumn('sgst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->sgst_rate != 0 ? $invoiceRec->sgst_rate . '%' : '-');
+           })    
+           ->editColumn('sgst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->sgst_amount != 0 ? number_format($invoiceRec->sgst_amount, 2) : '-');
+           })    
+           ->editColumn('cgst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->cgst_rate != 0 ? $invoiceRec->cgst_rate . '%' : '-');
+           })    
+           ->editColumn('cgst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->cgst_amount != 0 ? number_format($invoiceRec->cgst_amount, 2) : '-');
+           })    
+           ->editColumn('igst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->igst_rate != 0 ? $invoiceRec->igst_rate . '%' : '-');
+           })      
+           ->editColumn('igst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->igst_amount != 0 ? number_format($invoiceRec->igst_amount, 2) : '-');
+           })        
+           ->editColumn('total_rate',  function ($invoiceRec) {
+                $totalRate = ($invoiceRec->sgst_rate + $invoiceRec->igst_rate + $invoiceRec->cgst_rate);
+               return ($totalRate != 0 ? $totalRate . '%' : '-');
+           })          
+           ->editColumn('total_tax',  function ($invoiceRec) {
+                $totalTax = ($invoiceRec->sgst_amount + $invoiceRec->igst_amount + $invoiceRec->cgst_amount);
+               return ($totalTax != 0 ? $totalTax : '-');
+           })         
+           ->editColumn('total_amt',  function ($invoiceRec) {
+               return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
+           })  
+           ->filter(function ($query) use ($request) {
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                        $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('user_id')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $user_id = trim($request->get('user_id'));
+                        $query->where('user_id', '=',$user_id);
+                    });
+                }
+              
+            })
            
            ->make(true);
    }

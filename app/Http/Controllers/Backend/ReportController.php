@@ -56,13 +56,20 @@ class ReportController extends Controller
         }
         
     }
+    
     public function company(Request $request) {
         try {
             return view('reports.company');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
-        
+    }    
+    public function leaseRegister(Request $request) {
+        try {
+            return view('reports.lease_register');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
     
      public function duereport(Request $request) {

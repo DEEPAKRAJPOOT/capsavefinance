@@ -66,6 +66,7 @@
                                                     <th>Mobile</th>
                                                     <th>Business Name</th>
                                                     <th>Registered On</th>
+                                                    <th>Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

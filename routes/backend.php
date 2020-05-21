@@ -22,18 +22,22 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'report_summary',
                 'uses' => 'Backend\ReportController@index'
             ]);
+
             Route::get('/customer', [
                 'as' => 'report_customer',
                 'uses' => 'Backend\ReportController@customer'
             ]);
+
             Route::get('/bank', [
                 'as' => 'report_bank',
                 'uses' => 'Backend\ReportController@bank'
             ]);
+
             Route::get('/company', [
                 'as' => 'report_company',
                 'uses' => 'Backend\ReportController@company'
             ]);
+
              Route::get('/duereport', [
                 'as' => 'report_duereport',
                 'uses' => 'Backend\ReportController@duereport'
@@ -49,6 +53,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('/pdf_invoice_over_due_url', [
                 'as' => 'pdf_invoice_over_due_url',
                 'uses' => 'Backend\ReportController@pdfInvoiceOverDue'
+            ]);
+
+            Route::get('/lease-register', [
+                'as' => 'lease_register',
+                'uses' => 'Backend\ReportController@leaseRegister'
             ]);
         });
 

@@ -37,6 +37,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\FinanceInterface;
+use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
@@ -57,7 +58,7 @@ class AjaxController extends Controller {
     protected $lms_repo;
 
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -72,6 +73,7 @@ class AjaxController extends Controller {
         $this->finRepo = $finRepo;
         $this->UserInvRepo = $UserInvRepo;
         $this->middleware('checkEodProcess');
+        $this->reportsRepo = $reportsRepo;
     }
 
     /**
@@ -4444,6 +4446,12 @@ if ($err) {
         $usersList = $this->userRepo->getAllUsers();
         $customers = $dataProvider->getAllCustomers($this->request, $usersList);
         return $customers;  
+    }
+
+    public function leaseRegister(DataProviderInterface $dataProvider) {
+        $leaseRegistersList = $this->reportsRepo->leaseRegisters();
+        $leaseRegisters = $dataProvider->leaseRegister($this->request, $leaseRegistersList);
+        return $leaseRegisters;  
     }
 
 }
