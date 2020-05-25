@@ -35,6 +35,10 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
+      $is_interest_or_charge = false;
+      if ($jrnls->transType->id == config('lms.TRANS_TYPE.INTEREST') || $jrnls->transType->chrg_master_id != 0) {
+        $is_interest_or_charge = true;
+      }
       $userName = $jrnls->user->biz_name;
       $trans_type_name = $jrnls->getTransNameAttribute();
       $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
@@ -65,6 +69,9 @@ class ApiController
             continue;
           }
         }
+      }
+      if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->getOutstandingAttribute() > 0 && $is_interest_or_charge) {
+       continue;
       }
       $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
@@ -107,7 +114,7 @@ class ApiController
             $cgst_rate = 0;
             $sgst_amt = 0;
             $sgst_rate = 0;
-            if ($jrnls->gst == 1) {
+            if ($parentRecord->gst == 1) {
                 $base_amt = $totalamount * 100/118;
                 if($userStateId == $companyStateId) {
                     $cgst_rate = 9;
