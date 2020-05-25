@@ -137,8 +137,9 @@ class Idfc_lib{
     private function _curl_call($url, $postdata, $header ,$timeout= 300){
 		$keyFile = "/home/rentalpha/public_html/certs/privkey3.pem";
 	  	$caFile = "/home/rentalpha/public_html/ESBUAT.pem";
-		$fullchainFile = "/home/rentalpha/public_html/certs/fullchain3.pem";
+		// $fullchainFile = "/home/rentalpha/public_html/certs/fullchain3.pem";
 		$certFile = "/home/rentalpha/public_html/certs/cert3.pem";
+		dd($certFile);
 		  // $certPass = "xxxxxx";
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
@@ -147,21 +148,22 @@ class Idfc_lib{
 		// curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
 		// curl_setopt($curl, CURLOPT_SSLCERT, $fullchainFile);
 		curl_setopt($curl, CURLOPT_SSLKEY, $keyFile);
-		// curl_setopt($curl, CURLOPT_CAPATH, $certFile);
-		curl_setopt($curl, CURLOPT_CAINFO, $certFile);
-		curl_setopt($curl, CURLOPT_SSLCERTTYPE, "PEM");
+		curl_setopt($curl, CURLOPT_CAPATH, $certFile);
+		// curl_setopt($curl, CURLOPT_CAINFO, $certFile);
+		// curl_setopt($curl, CURLOPT_SSLCERTTYPE, "PEM");
 		curl_setopt($curl, CURLOPT_POST, 1);
 		
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true); 
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2); 
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0); 
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($curl, CURLOPT_FAILONERROR, 1); 
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
 		
-		curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 0);
 		curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 		// curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
-
+		curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 		curl_setopt($curl, CURLOPT_SSLVERSION, 1);
 		// The --cert option
 		// curl_setopt($ch, CURLOPT_SSLCERTPASSWD, $certPass);
