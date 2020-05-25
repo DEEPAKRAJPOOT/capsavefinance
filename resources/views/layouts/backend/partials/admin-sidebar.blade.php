@@ -360,7 +360,11 @@
         </li>
         @endif
               
-        @if($roleData[0]->is_superadmin == 1)
+        @canany(['manage_doa', 'manage_program', 'get_charges_list', 
+        'get_documents_list', 'get_industries_list', 'get_vouchers_list',
+        'get_segment_list', 'get_entity_list', 'get_constitutions_list',
+        'get_gst_list', 'get_equipment_list', 'get_baserate_list',
+        ])
         <li class="nav-item">
            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false" aria-controls="collapseExample">
            <i class="fa fa-tasks" aria-hidden="true"></i>
@@ -379,19 +383,26 @@
                     <a class="nav-link" href="{{ route('manage_program') }} ">Manage Program</a>
                  </li>
                 @endcan
+                @can('get_charges_list')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_charges_list') }}">Manage Charges</a>
                  </li>
+                 @endcan
+                 @can('get_documents_list')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_documents_list') }}">Manage Document</a>
                  </li>
+                 @endcan
+                 @can('get_industries_list')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                  </li>
+                 @endcan
+                 @can('get_vouchers_list')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_vouchers_list') }}">Manage Voucher</a>
                  </li>
-                 
+                 @endcan
           <!-- 
                  <li class="nav-item">
                     <a class="nav-link" href="#">Manage State</a>
@@ -404,9 +415,11 @@
                     <a class="nav-link" href="{{ route('get_segment_list') }}">Business Segment</a>
                  </li>
                  @endcan
+                 @can('get_entity_list')
                   <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_entity_list') }}">Business Entity</a>
                  </li>
+                 @endcan
                  @can('get_constitutions_list')
                  <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_constitutions_list') }}">Business Constitution</a>
@@ -451,7 +464,7 @@
         </li>
         @endif
         
-        @if($roleData[0]->is_superadmin == 1)
+        @canany(['get_companies_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-th-large" aria-hidden="true"></i>
@@ -460,15 +473,17 @@
             </a>
             <div class="collapse" id="layoutsSubmenu">
                 <ul class="nav flex-column sub-menu">
+                    @can('get_companies_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_companies_list') }}">Manage Companies</a>
-                    </li>                                   
+                    </li>   
+                    @endcan
                 </ul>
             </div>
         </li>
         @endif
 
-        
+        @canany(['get_tally_batches','get_fin_transactions'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuFinance" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-money"></i>
@@ -477,12 +492,19 @@
             </a>
             <div class="collapse" id="layoutsSubmenuFinance">
                 <ul class="nav flex-column sub-menu">  
+                    @can('get_tally_batches')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_tally_batches') }}">Tally Batch</a>
                     </li>  
+                    @endcan
+                    
+                    @can('get_fin_transactions')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_fin_transactions') }}">Transactions</a>
-                    </li>   
+                    </li> 
+                    @endcan
+                    
+                    <!--
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('create_je_config') }}">JE Config</a>
                     </li>                 
@@ -498,10 +520,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('get_fin_account') }}">Accounts List</a>
                     </li> 
-                                                            
+                    -->                                     
                 </ul>
             </div>
         </li>   
-          
+        @endcan  
     </ul>
 </nav>
