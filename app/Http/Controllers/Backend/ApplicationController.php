@@ -1907,7 +1907,8 @@ class ApplicationController extends Controller
                         'user_id' => $user_id,
                         'note_id' => $result['note_id'],
                         'status_id' => (int) config('common.mst_status_id')['APP_REJECTED'],
-                        'created_at' => $result['created_at']
+                        'created_at' => $result['created_at'],
+                        'created_by' => \Auth::user()->user_id
                     ];
 //                    dd($appStatusData);
                     $status = $this->appRepo->saveAppStatusLog($appStatusData);
