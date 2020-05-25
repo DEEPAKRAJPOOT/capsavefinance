@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -1183,7 +1184,7 @@ use CommonRepositoryTraits;
     }
     public function getReportAllInvoice()
     {
-        return InvoiceModel::getReportAllInvoice();
+        return InvoiceDisbursed::getReportAllInvoice();
     }
     public function getReportAllOverdueInvoice()
     {

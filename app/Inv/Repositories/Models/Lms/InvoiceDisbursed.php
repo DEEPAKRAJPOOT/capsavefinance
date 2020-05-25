@@ -7,6 +7,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Carbon\Carbon;
 
 class InvoiceDisbursed extends BaseModel {
 	/* The database table used by the model.
@@ -146,4 +147,16 @@ class InvoiceDisbursed extends BaseModel {
         $result = $query->get();        
         return $result ? $result : [];
     }
+    
+     public static function getReportAllInvoice()
+     {
+          
+           $currentDate =  Carbon::now()->format('Y-m-d');
+           $res =  self::get(); 
+         
+           return self::where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC');
+           
+      }  
+     
+    
 }

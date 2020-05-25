@@ -147,9 +147,9 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         front_program_list: "{{ URL::route('front_program_list') }}",
         front_supplier_list: "{{ URL::route('front_supplier_list') }}",
-        update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
+        update_invoice_approve_tab: "{{ URL::route('update_invoice_approve_tab') }}",
         invoice_document_save: "{{ URL::route('invoice_document_save') }}",
-        update_bulk_invoice: "{{ URL::route('update_bulk_invoice') }}",
+        update_disburse_bulk_invoice: "{{ URL::route('update_disburse_bulk_invoice') }}",
         token: "{{ csrf_token() }}",
     };
 
