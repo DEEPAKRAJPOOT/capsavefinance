@@ -715,12 +715,12 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($invoice) {                        
                     
-                        $inv_status = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
+                        $act = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
 
                         if($invoice->invoice_disbursed) { 
                         $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
                         }
-                        return $inv_status.' '.$act;
+                        return $act;
                 })
                 ->filter(function ($query) use ($request) {
                     if ($request->get('invoice_no') != '') {                        
