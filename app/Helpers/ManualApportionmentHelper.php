@@ -33,11 +33,12 @@ class ManualApportionmentHelper{
         return $calDate;
     }
 
-    Private function setMonthlyInterestSoaFlag($invDisbId, $intAccrualDate, $odueDate, $soaFlag){
+    Private function setMonthlyInterestSoaFlag($invDisbId, $intAccrualDate, $invdueDate, $soaFlag){
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
+        ->whereDate('trans_date','<=',$intAccrualDate)
         ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
         ->update(['soa_flag'=>$soaFlag]);
         
@@ -45,17 +46,95 @@ class ManualApportionmentHelper{
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
-        ->where(\DB::raw('MONTH(trans_date)'),'=',date('m', strtotime($odueDate)))
+        ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
         ->update(['soa_flag'=>$soaFlag]);
     }
 
-    Private function setRearendInterestSoaFlag($invDisbId, $intAccrualDate, $odueDate, $soaFlag){
+    Private function setRearendInterestSoaFlag($invDisbId, $intAccrualDate, $invdueDate, $soaFlag){
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
-        ->where(\DB::raw('MONTH(trans_date)'),'=',date('m', strtotime($odueDate)))
+        ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
         ->update(['soa_flag'=>$soaFlag]);
+    }
+
+    private function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate){
+       // dump($invDisbId, $intAccrualDate, $payFreq, $invdueDate, $odStartDate);
+        $intAccrualDate = $this->subDays($intAccrualDt,1);
+        $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $intAccrualDate)->endOfMonth()->format('Y-m-d');
+        $invdueDate = $this->subDays($invdueDate,1);
+        $intTransactions = new collection();
+        $odTransactions = new collection();
+        $transactions = new collection();
+        $transactionList = [];
+        // Interest Posting
+        if($payFreq == 2){
+
+            if( (strtotime($endOfMonthDate) == strtotime($intAccrualDate) || strtotime($invdueDate) == strtotime($intAccrualDate)) && strtotime($intAccrualDate) <= strtotime($invdueDate)){
+
+                $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+                ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+                ->where('entry_type','=',0)
+                ->whereDate('trans_date','<=',$intAccrualDate)
+                ->where(function($query)use($invdueDate,$intAccrualDt){
+                    $query->whereMonth('trans_date','<',date('m', strtotime($intAccrualDt)));
+                    $query->OrwhereDate('trans_date','=',$invdueDate);
+                })
+                ->get();
+            }
+
+        }
+        elseif($payFreq == 3){
+            
+            if( strtotime($invdueDate) == strtotime($intAccrualDate) && strtotime($intAccrualDate) <= strtotime($invdueDate)){
+
+                $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+                ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+                ->where('entry_type','=',0)
+                ->whereDate('trans_date','<=',"$intAccrualDate")
+                ->whereDate('trans_date','=',"$invdueDate")
+                ->get();
+            }
+
+        }
+        
+        //Overdue Posting
+
+        if( strtotime($endOfMonthDate) == strtotime($intAccrualDate) && strtotime($intAccrualDate) > strtotime($odStartDate)){
+
+            $odTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+            ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+            ->where('entry_type','=',0)
+            ->whereDate('trans_date','<=',$intAccrualDate)
+            ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDt)))
+            ->get();
+        }
+
+        $transactions = $intTransactions->merge($odTransactions); 
+
+        foreach ($transactions as $key => $trans) {
+            if($trans->outstanding > 0){
+                $transactionList[] = [
+                    'payment_id' => null,
+                    'link_trans_id' => null,
+                    'parent_trans_id' => null,
+                    'trans_running_id'=> $trans->trans_running_id,
+                    'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                    'user_id' => $trans->user_id,
+                    'trans_date' => $trans->trans_date,
+                    'amount' => $trans->amount,
+                    'entry_type' => $trans->entry_type,
+                    'soa_flag' => 1,
+                    'trans_type' => $trans->trans_type,
+                ];
+            }
+        }
+        if(!empty($transactionList)){
+            foreach ($transactionList as $key => $newTrans) {
+                $this->lmsRepo->saveTransaction($newTrans);
+            }
+        }
     }
 
     Private function setOverdueSoaFlag($invDisbId, $intAccrualDate, $soaFlag){
@@ -63,6 +142,7 @@ class ManualApportionmentHelper{
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
+        ->whereDate('trans_date','<=',$intAccrualDate)
         ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
         ->update(['soa_flag'=>$soaFlag]);
     }
@@ -342,14 +422,22 @@ class ManualApportionmentHelper{
                 $this->overDuePosting($invDisbId, $userId);
                 
                 $loopStratDate = $this->addDays($loopStratDate,1);
+                
+                $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d$');
+;
+                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                /*
+                if($payFreq == 2){
+                    $this->setMonthlyInterestSoaFlag($invDisbId, $loopStratDate, $payDueDate, 1);
+                }
+                elseif($payFreq == 3 && strtotime($payDueDate) == strtotime($loopStratDate)){
+                    $this->setRearendInterestSoaFlag($invDisbId, $loopStratDate, $payDueDate, 1);
+                }
+
+                if(strtotime($endOfMonthDate) === strtotime($loopStratDate)){
+                    $this->setOverdueSoaFlag($invDisbId, $loopStratDate, 1);
+                }*/
             }
-            if($payFreq == 2){
-                $this->setMonthlyInterestSoaFlag($invDisbId, $curdate, $odStartDate, 1);
-            }
-            elseif($payFreq == 3 && strtotime($invDueDate) == strtotime($loopStratDate)){
-                $this->setRearendInterestSoaFlag($invDisbId, $curdate, $odStartDate, 1);
-            }
-            $this->setOverdueSoaFlag($invDisbId, $curdate, 1);
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
        } 

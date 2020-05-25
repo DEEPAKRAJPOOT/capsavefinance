@@ -403,22 +403,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/apportionment/mark/settle/save',[
                 'as' => 'apport_mark_settle_save',
                 'uses' => 'Lms\ApportionmentController@markSettleSave'
-            ]);
-            
-            Route::get('view-eod-process',[
-                'as' => 'eod_process',
-                'uses' => 'Lms\EodProcessController@viewEodProcess'
-            ]);    
-            
-            Route::post('save-eod-process',[
-                'as' => 'save_process',
-                'uses' => 'Lms\EodProcessController@saveEodProcess'
-            ]); 
-
-            Route::get('do-process',[
-                'as' => 'do_process',
-                'uses' => 'Lms\EodProcessController@process'
-            ]);             
+            ]);        
             
             Route::post('/apportionment/settled/save',[
                 'as' => 'apport_settled_save',
@@ -444,6 +429,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'apport_reversal_save',
                 'uses' => 'Lms\ApportionmentController@saveReversalDetail'
             ]);
+
+            Route::post('/apportionment/running/save',[
+                'as' => 'apport_running_save',
+                'uses' => 'Lms\ApportionmentController@saveRunningDetail'
+            ]);
+
+            Route::get('view-eod-process',[
+                'as' => 'eod_process',
+                'uses' => 'Lms\EodProcessController@viewEodProcess'
+            ]);    
+            
+            Route::post('save-eod-process',[
+                'as' => 'save_process',
+                'uses' => 'Lms\EodProcessController@saveEodProcess'
+            ]); 
+
+            Route::get('do-process',[
+                'as' => 'do_process',
+                'uses' => 'Lms\EodProcessController@process'
+            ]);
+
         });   
     });    
     //end of application

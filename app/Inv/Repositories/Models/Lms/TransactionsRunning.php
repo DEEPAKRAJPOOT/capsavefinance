@@ -139,7 +139,10 @@ class TransactionsRunning extends BaseModel {
         return self::where('user_id','=',$userId)
         //->where('soa_flag','=',0)
         ->orderBy('trans_date','asc')
-        ->get();
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
     }
 
 }

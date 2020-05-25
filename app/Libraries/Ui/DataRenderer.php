@@ -5576,7 +5576,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('select', function($trans){
                 $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
-                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
+                $result = "<input class='check' transtype='$type' type='checkbox' value=".$trans->outstanding." name='check[".$trans->trans_running_id."]' >";
                 return $result;
             })
         ->make(true);

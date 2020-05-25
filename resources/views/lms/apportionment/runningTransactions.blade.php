@@ -42,14 +42,14 @@
             @include('lms.apportionment.common.paymentDetails')
             @endif
         @endif
-            <form action="{{ route('apport_mark_settle_confirmation',[ 'user_id' => $userId ,  'sanctionPageView' => $sanctionPageView ]) }}" method="post" onsubmit="return apport.validateMarkSettled(this)">
+            <form action="{{ route('apport_running_save',[ 'user_id' => $userId ,  'sanctionPageView' => $sanctionPageView ]) }}" method="post" onsubmit="return apport.validateRunningPosted(this)">
              @csrf	
             <div class="row">
                 @include('lms.apportionment.common.listRunningTransactions')
             </div>
             <div class="row pull-right">
                 <div class="col-md-12" >
-                    <input type="button" value="Mark Posted" class="btn btn-success btn-sm" >
+                    <input type="submit" value="Mark Posted" class="btn btn-success btn-sm" >
                 </div>
             </div>
             </form>
@@ -66,6 +66,7 @@
     var messages = {
         url: "{{ URL::route('apport_running_list') }}",
         user_id: "{{$userId}}",
+        payment_amt :"{{ $unsettledAmt }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
     };

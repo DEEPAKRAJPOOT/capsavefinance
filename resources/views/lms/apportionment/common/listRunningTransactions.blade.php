@@ -12,7 +12,7 @@
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>
                                     <th>Outstanding Amt</th>
-                                    <th><input type="checkbox" id="checkAll" checked onchange="apport.selectAllChecks(this.id)"></th>
+                                    <th><input type="checkbox" id="checkAll" onchange="apport.selectAllChecks(this.id)"></th>
                                 </tr>
                             </thead>
                             <tbody>

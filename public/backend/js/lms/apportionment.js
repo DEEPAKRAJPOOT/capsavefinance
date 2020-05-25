@@ -173,12 +173,12 @@ class Apportionment {
         var message = '';
         var paymentAmt = this.data.payment_amt;
         var totalSettledAmt = 0;
-        if($('.check').filter(':checked').length == 0){
+        if(check.filter(':checked').length == 0){
             message = "Please Select at least one ";
             status = false;
         } 
         if(status){
-            $('.check').each(function (index, element) {
+            check.each(function (index, element) {
                 if($(this). is(":checked")){
                     var name = $(this).attr('name');
                     name =  name.replace('check','');
@@ -212,6 +212,33 @@ class Apportionment {
             return status;
         }
 
+    }
+
+    validateRunningPosted(){
+        
+        var check = $('.check');
+        var status = true;
+        var message = '';
+        var paymentAmt = this.data.payment_amt;
+        var selectAmt = 0;
+        if(check.filter(':checked').length == 0){
+            message = "Please Select at least one ";
+            status = false;
+        } 
+        check.filter(':checked').each(function (index, element) {
+            selectAmt += parseFloat($(element).val());
+        });
+
+        if(selectAmt>paymentAmt){
+            message = "Requested Amount: "+selectAmt+ " is greater than Unsettled Amount: "+paymentAmt;
+            status = false;
+        }
+        if(!confirm('Are you sure? You want to Mark Posted.'))
+        return false;
+        if(!status){
+            alert(message);
+            return status;
+        }
     }
 
     onWaveOff(){
@@ -248,7 +275,6 @@ class Apportionment {
            if(data.payment_id){
                 targetUrl += '&payment_id=' + data.payment_id;
             }
-            console.log(targetUrl);
            $('.view_detail_transaction').attr('data-url', targetUrl);
            $('.view_detail_transaction').trigger('click');
        }else{
