@@ -17,15 +17,12 @@
                           @include('lms.customer.limit_details')
                     </div>
                 </div>	
-                        <div class="tab-content">
+                        <div class="tab-content card-body">
 
                             <div id="menu1" class=" active tab-pane "><br>
                              <span id="moveCase" class="text-success"></span>
                                <div class="row">
-                                   <div class="col-md-5">
-                                       <input type="hidden" name="user_id" value="{{($user_id) ? $user_id : ''}}">
-                                   </div>
-                                   
+                                    <input type="hidden" name="user_id" value="{{($user_id) ? $user_id : ''}}">
                                     <div class="col-md-3">
                                        <input class="form-control" style="height: 37px;" placeholder="Search by Invoice Number" id="invoice_no" name="invoice_no" type="text">
                                     </div>
