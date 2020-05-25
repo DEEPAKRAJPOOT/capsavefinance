@@ -726,7 +726,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('invoice_no') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $invoice_keyword = trim($request->get('invoice_no'));
-                            $query->where('invoice_id',"$invoice_keyword");
+                            $query->where('invoice_no',"$invoice_keyword");
                         });                        
                     }
                     
