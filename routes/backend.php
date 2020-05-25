@@ -17,6 +17,50 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
         });
 
+        Route::group(['prefix' => 'reports'], function () {
+            Route::get('/', [
+                'as' => 'report_summary',
+                'uses' => 'Backend\ReportController@index'
+            ]);
+
+            Route::get('/customer', [
+                'as' => 'report_customer',
+                'uses' => 'Backend\ReportController@customer'
+            ]);
+
+            Route::get('/bank', [
+                'as' => 'report_bank',
+                'uses' => 'Backend\ReportController@bank'
+            ]);
+
+            Route::get('/company', [
+                'as' => 'report_company',
+                'uses' => 'Backend\ReportController@company'
+            ]);
+
+             Route::get('/duereport', [
+                'as' => 'report_duereport',
+                'uses' => 'Backend\ReportController@duereport'
+            ]);
+              Route::get('/overduereport', [
+                'as' => 'report_overduereport',
+                'uses' => 'Backend\ReportController@overduereport'
+            ]);
+               Route::get('/pdf_invoice_due_url', [
+                'as' => 'pdf_invoice_due_url',
+                'uses' => 'Backend\ReportController@pdfInvoiceDue'
+            ]);
+                Route::get('/pdf_invoice_over_due_url', [
+                'as' => 'pdf_invoice_over_due_url',
+                'uses' => 'Backend\ReportController@pdfInvoiceOverDue'
+            ]);
+
+            Route::get('/lease-register', [
+                'as' => 'lease_register',
+                'uses' => 'Backend\ReportController@leaseRegister'
+            ]);
+        });
+
         Route::group(['prefix' => 'application'], function () {
             Route::get('/', [
                 'as' => 'application_list',
@@ -921,6 +965,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/view-shared-colender', [
                 'as' => 'view_shared_colender',
                 'uses' => 'Master\CoLenderControllers@viewSharedColender'
+            ]);
+            Route::get('/get-colender-soa', [
+                'as' => 'view_colander_soa',
+                'uses' => 'Master\CoLenderControllers@viewColenderSoa'
             ]);  
             
             

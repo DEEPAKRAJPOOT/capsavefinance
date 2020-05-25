@@ -42,7 +42,7 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by App Id, Name',
+                    'placeholder' => 'Search by Customer Name, Eamil',
                     'id'=>'by_name'
                     ])
                     !!}
@@ -50,11 +50,12 @@
                 <div class="col-md-4">
 
                     {!!
-                    Form::select('is_assign',
-                    [''=>'Status', '0'=>'Pending','1'=> 'Accept', '2'=> 'Reject'],
-                    null,
-                    array('id' => 'is_active',
-                    'class'=>'form-control'))
+                    Form::text('customer_id',null,
+                    [
+                    'class' => 'form-control',
+                    'placeholder' => 'Search by Customer Id',
+                    'id'=>'customer_id'
+                    ])
                     !!}
                 </div>
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
@@ -67,18 +68,17 @@
                                 <div class="col-sm-12">
                                     <table id="appList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
-                                            <tr role="row">
-                                                <th>{{ trans('frontend.app_list_head.app_id') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.business_name') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.user_name') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.user_email') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.user_phone') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.anchor') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.created_date') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.status') }}</th>
-                                                <!-- <th>{{ trans('frontend.app_list_head.action') }}</th> -->
-                                            </tr>
+                                            <tr role="row">                                                   
+                                                    <th >Cust ID</th>       
+                                                    <th >App ID</th>       
+                                                    <th >Virtual ID</th>        
+                                                    <th >Customer Detail</th>
+                                                    <th >Product Limit</th>
+                                                    <th >Utilize Limit</th>
+                                                    <th >Available Limit</th>
+                                                    <th >Anchor Detail</th>
+                                                    <th >Status</th>
+                                                </tr>
                                         </thead>
                                         <tbody>
 

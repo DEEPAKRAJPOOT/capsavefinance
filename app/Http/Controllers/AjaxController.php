@@ -37,6 +37,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\FinanceInterface;
+use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
@@ -57,7 +58,7 @@ class AjaxController extends Controller {
     protected $lms_repo;
 
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -72,6 +73,7 @@ class AjaxController extends Controller {
         $this->finRepo = $finRepo;
         $this->UserInvRepo = $UserInvRepo;
         $this->middleware('checkEodProcess');
+        $this->reportsRepo = $reportsRepo;
     }
 
     /**
@@ -3903,10 +3905,47 @@ if ($err) {
    *
    * @return json transaction data
    */
+    public function getColenderSoaList(DataProviderInterface $dataProvider) {
+        $soa_for_userid = $this->request->get('user_id');
+        $transactionList = $this->lmsRepo->getColenderSoaList();
+        $colenderShare = $this->lmsRepo->getColenderShareWithUserId($soa_for_userid);
+        $users = $dataProvider->getColenderSoaList($this->request, $transactionList, $colenderShare);
+        return $users;
+    }
+
+    /**
+   * Get all transactions for soa
+   *
+   * @return json transaction data
+   */
     public function lmsGetSoaList(DataProviderInterface $dataProvider) {
 
         $transactionList = $this->lmsRepo->getSoaList();
         $users = $dataProvider->getSoaList($this->request, $transactionList);
+        return $users;
+    }
+    
+     /**
+   * Get all getInvoiceDueList
+   *
+   * @return json transaction data
+   */
+    public function getInvoiceDueList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->invRepo->getReportAllInvoice();
+        $users = $dataProvider->getReportAllInvoice($this->request, $transactionList);
+        return $users;
+    }
+    
+     /**
+   * Get all getInvoiceOverDueList
+   *
+   * @return json transaction data
+   */
+    public function getInvoiceOverDueList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->invRepo->getReportAllOverdueInvoice();
+        $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
         return $users;
     }
         /**
@@ -4058,9 +4097,11 @@ if ($err) {
     }
 
     public function getColenderAppList(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getColenderApplications();
-        $applications = $dataProvider->getColenderAppList($this->request, $appList);
-        return $applications;
+        // $appList = $this->application->getColenderApplications();
+        // $applications = $dataProvider->getColenderAppList($this->request, $appList);
+        $customerList = $this->lmsRepo->getColenderApplications();
+        $customers = $dataProvider->lmsColenderCustomers($this->request, $customerList);
+        return $customers;
     }
     public function lmsGetInvoiceByUser(Request $request ){
         $userId = $request->get('user_id');
@@ -4381,6 +4422,7 @@ if ($err) {
         $applications = $dataProvider->getRenewalAppList($this->request, $appList);
         return $applications;
     }
+
     
     public function checkEodProcess(Request $request)
     {
@@ -4398,4 +4440,18 @@ if ($err) {
          
         return response()->json(['status' => 1]);
     }    
+
+
+    public function getAllCustomers(DataProviderInterface $dataProvider) {
+        $usersList = $this->userRepo->getAllUsers();
+        $customers = $dataProvider->getAllCustomers($this->request, $usersList);
+        return $customers;  
+    }
+
+    public function leaseRegister(DataProviderInterface $dataProvider) {
+        $leaseRegistersList = $this->reportsRepo->leaseRegisters();
+        $leaseRegisters = $dataProvider->leaseRegister($this->request, $leaseRegistersList);
+        return $leaseRegisters;  
+    }
+
 }

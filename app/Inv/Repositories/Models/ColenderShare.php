@@ -43,6 +43,7 @@ class ColenderShare extends BaseModel {
      */
     protected $fillable = [
         'app_id',
+        'user_id',
         'app_prgm_limit_id',
         'co_lender_id',
         'capsave_percent',
@@ -52,6 +53,8 @@ class ColenderShare extends BaseModel {
         'co_lender_comment',
         'capsave_comment',
         'is_active',
+        'start_date',
+        'end_date',
         'created_at',
         'created_by',
         'updated_at',        
@@ -70,15 +73,33 @@ class ColenderShare extends BaseModel {
         }
     }
 
-    public static function getSharedColender($where){
+    public static function getSharedColender($where, $notColenderId = NULL){
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }else{
-            return self::where($where)->get();
+            return self::where($where)->where('co_lender_id', '!=' ,$notColenderId)->get();
         }        
     }
 
     public function colender(){
         return $this->belongsTo('App\Inv\Repositories\Models\CoLenderUsers', 'co_lender_id', 'co_lender_id');
+    }
+
+    public static function getColenderShareWithUserId($user_id){
+         if (!is_int($user_id)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        return self::where(['user_id' => $user_id, 'is_active' => 1])->first();
+    }
+
+    public static function updateColenderData($attributes, $conditions) {
+        if (!is_array($attributes) || !is_array($conditions)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        if (empty($conditions)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $res = self::where($conditions)->update($attributes);
+        return ($res ?: false);
     }   
 }
