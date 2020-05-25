@@ -195,6 +195,7 @@
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('viewInterestAccrual','Interest Accrual', 'modal-lg')!!}
 
 @endsection
 @section('jscript')
