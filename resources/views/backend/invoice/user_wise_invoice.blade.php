@@ -22,20 +22,24 @@
                             <div id="menu1" class=" active tab-pane "><br>
                              <span id="moveCase" class="text-success"></span>
                                <div class="row">
-                                   <div class="col-md-9">
-                                       
+                                   <div class="col-md-5">
                                        <input type="hidden" name="user_id" value="{{($user_id) ? $user_id : ''}}">
                                    </div>
-                                                 <div class="col-md-3">
-                                                <select class="form-control form-control-sm changeBiz searchbtn" name="status_id">
-                                                    <option value=""> Select Invoice Status</option>  
-                                                        @foreach($status as $row)
-                                                        <option value="{{{$row->id}}}">{{{$row->status_name}}} </option>
-                                                        @endforeach
-                                                </select>
-                                            </div>
+                                   
+                                    <div class="col-md-3">
+                                       <input class="form-control" style="height: 37px;" placeholder="Search by Invoice Number" id="invoice_no" name="invoice_no" type="text">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-control form-control-sm changeBiz" name="status_id">
+                                            <option value=""> Select Invoice Status</option>  
+                                            @foreach($status as $row)
+                                            <option value="{{{$row->id}}}">{{{$row->status_name}}} </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right searchbtn">Search</button>
                                            
-                                        </div>
+                                </div>
                                         <div class="row">
                                             <div class="col-12 dataTables_wrapper mt-4">
                                                 <div class="overflow">
