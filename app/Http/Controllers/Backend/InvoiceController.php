@@ -697,7 +697,7 @@ class InvoiceController extends Controller {
                 } 
             }
 
-            $result = $this->export($exportData, $batchId);
+            // $result = $this->export($exportData, $batchId);
             $file['file_path'] = $result['file_path'] ?? '';
             if ($file) {
                 $createBatchFileData = $this->createBatchFileData($file);
@@ -707,7 +707,7 @@ class InvoiceController extends Controller {
                     $disbursalBatchId = $createDisbursalBatch->disbursal_batch_id;
                 }
             }
-
+            
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
                 $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
