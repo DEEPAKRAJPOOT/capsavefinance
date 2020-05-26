@@ -42,23 +42,25 @@ class ApiController
       $userName = $jrnls->user->biz_name;
       $trans_type_name = $jrnls->getTransNameAttribute();
       $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-      $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+      $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
       if (empty($invoice_no)) {
           $invoice_no = $jrnls->invoiceDisbursed->invoice->invoice_no ?? NULL;
           $invoice_date = $jrnls->invoiceDisbursed->invoice->invoice_date ?? NULL;
       }
+      $invoice_date = !empty($invoice_date) ? $invoice_date .' 23:59:59' : NULL;
       $inst_no = $jrnls->refundReq->tran_no ?? NULL;
       $inst_date = $jrnls->refundReq->actual_refund_date ?? NULL;
       if (!empty($jrnls->parent_trans_id)) {
         $parentRecord  = $jrnls->getParentTxn();
         if (empty($invoice_no)) {
             $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
             if (empty($invoice_no)) {
               $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
               $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
             }
         }
+        $invoice_date = !empty($invoice_date) ? $invoice_date .' 23:59:59' : NULL;
         if (empty($inst_no)) {
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
