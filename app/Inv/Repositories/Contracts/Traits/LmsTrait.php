@@ -152,7 +152,7 @@ trait LmsTrait
         $oldIntRate = (float)$invoice['program_offer']['interest_rate'];
         $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
         $bankRatesArr = $this->getBankBaseRates($bankId);
-        dd($bankRatesArr);
+        // dd($bankRatesArr);
         if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
           $actIntRate = $this->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
         } else {

@@ -24,6 +24,8 @@ use PHPExcel_IOFactory;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
+use App\Helpers\ManualApportionmentHelper;
+
 class InvoiceController extends Controller {
 
     use ApplicationTrait;
