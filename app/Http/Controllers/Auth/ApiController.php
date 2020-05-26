@@ -67,7 +67,7 @@ class ApiController
         }
 
         if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
-          if ($parentRecord->is_invoice_generated == 0 || ($invoice_date > $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
+          if ($parentRecord->is_invoice_generated == 0 || ($invoice_date < $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
             continue;
           }
         }
