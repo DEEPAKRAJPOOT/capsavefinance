@@ -50,7 +50,7 @@ class ChargeController extends Controller {
                     $status = $this->masterRepo->updateCharges($arrChargesData, $charge_id);
                     if($status){
                         $lastChrgGSTData = $this->masterRepo->getLastChargesGSTById($charge_id);
-                        if(!empty($lastChrgGSTData) && $lastChrgGSTData->gst_val !== $arrChargesData['gst_percentage']){
+                        if($lastChrgGSTData->gst_val !== $arrChargesData['gst_percentage']){
                             $chrgGstData = ([
                             'chrg_id' => $charge_id,
                             'gst_val' => $arrChargesData['gst_percentage'],
