@@ -54,7 +54,31 @@ class ChargeGST extends BaseModel {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public static function saveChargeGST($attributes) {
+    public static function saveChargesGST($attributes) {
+        
+        if (empty($attributes)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        $res = self::create($attributes)->chrg_gst_id;
+        return $res ?: false;
+        
+    }
+    
+    public static function getLastChargesGSTById($id){
+        
+        if (empty($id)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        
+        $result = self::where('chrg_id',$id)
+                ->orderBy('chrg_gst_id','desc')
+                ->first();
+        
+        return $result ?: false;
         
     }
 
