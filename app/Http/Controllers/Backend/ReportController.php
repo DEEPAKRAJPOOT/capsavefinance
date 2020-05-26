@@ -88,7 +88,7 @@ class ReportController extends Controller
          $total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
          $leaseArr[] = [
             'State' => $lease->name, 
-            'GSTN' => ($inv_comp_data['gst_no'] ?? $result->biz_gst_no), 
+            'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
             'Customer Name' => $lease->biz_entity_name, 
             'Customer Address' => $lease->gst_addr, 
             'Customer GSTN' => $lease->biz_gst_no, 

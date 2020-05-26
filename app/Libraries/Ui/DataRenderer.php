@@ -6033,7 +6033,8 @@ class DataRenderer implements DataProviderInterface
                return $invoiceRec->name;
            })
            ->editColumn('gstn', function ($invoiceRec) {
-               return $invoiceRec->biz_gst_no;
+               $inv_comp_data = json_decode($invoiceRec->inv_comp_data, TRUE);
+               return ($inv_comp_data['gst_no'] ?? $invoiceRec->biz_gst_no);
            })    
            ->editColumn('customer_name', function ($invoiceRec) {
                return $invoiceRec->biz_entity_name;
@@ -6083,7 +6084,7 @@ class DataRenderer implements DataProviderInterface
            })          
            ->editColumn('total_tax',  function ($invoiceRec) {
                 $totalTax = ($invoiceRec->sgst_amount + $invoiceRec->igst_amount + $invoiceRec->cgst_amount);
-               return ($totalTax != 0 ? $totalTax : '-');
+               return ($totalTax != 0 ? number_format($totalTax, 2) : '-');
            })         
            ->editColumn('total_amt',  function ($invoiceRec) {
                return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
