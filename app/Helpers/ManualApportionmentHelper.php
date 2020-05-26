@@ -496,7 +496,7 @@ class ManualApportionmentHelper{
         }
     }
     
-    public static function getBankBaseRates($bank_id, $date=null){
+    public function getBankBaseRates($bank_id, $date=null){
         if($bank_id){
             $base_rates = \App\Inv\Repositories\Models\Master\BaseRate::where(['bank_id'=> $bank_id, 'is_active'=> 1])->orderBy('id', 'DESC')->get();
             $br_array = [];
@@ -514,7 +514,7 @@ class ManualApportionmentHelper{
         }
     }
 
-    public static function getIntRate($oldIntRate, $bankRatesArr, $stt_date){
+    public function getIntRate($oldIntRate, $bankRatesArr, $stt_date){
         $actIntRate = 0;
         foreach($bankRatesArr as $key=>$bankRateArr){
             if($stt_date >= $bankRateArr['start_date']){

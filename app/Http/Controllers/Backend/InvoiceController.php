@@ -24,7 +24,7 @@ use PHPExcel_IOFactory;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
-use App\Helpers\ManualApportionmentHelper;
+use App\Libraries\Idfc_lib;
 
 class InvoiceController extends Controller {
 
@@ -46,7 +46,7 @@ class InvoiceController extends Controller {
         $this->userRepo = $user_repo;
         $this->application  =  $application;
         $this->middleware('auth');
-        //$this->middleware('checkBackendLeadAccess');
+        $this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodProcess');
     }
 
@@ -117,6 +117,7 @@ class InvoiceController extends Controller {
         $userInfo->total_limit = number_format($totalLimit);
         $userInfo->consume_limit = number_format($totalCunsumeLimit);
         $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+        $userInfo->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id)->sum('amount'),2);
         return view('backend.invoice.user_wise_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
     } 
 
@@ -153,15 +154,20 @@ class InvoiceController extends Controller {
         $flag = $req->get('flag') ?: null;
         $user_id = $req->get('user_id') ?: null;
         $app_id = $req->get('app_id') ?: null;
-
+        // $userInfo = $this->invRepo->getCustomerDetail($user_id);
+        // $getAllInvoice = $this->invRepo->getAllInvoiceAnchor(9);
+        // $get_bus = $this->invRepo->getBusinessNameApp(9);
         $id = Auth::user()->user_id;
         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
         return view('backend.invoice.disbursed_invoice')->with([
             'role' =>$chkUser->id,
+            // 'get_bus' => $get_bus, 
+            // 'anchor_list' => $getAllInvoice, 
             'flag' => $flag, 
             'user_id' => $user_id, 
             'app_id' => $app_id, 
+            // 'userInfo' => $userInfo
             ]);
     }
 
@@ -357,7 +363,6 @@ class InvoiceController extends Controller {
                         'payment_due_date' => ($value['invoice']['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : $value['invoice']['invoice_due_date'],
                         'status_id' => 12,
                         'int_accrual_start_dt' => $selectDate,
-                        'sys_updated_at' => \Helpers::getSysStartDate(),
                         'updated_by' => Auth::user()->user_id,
                         'updated_at' => $curData
                     ], $value['invoice_disbursed_id']);
@@ -547,7 +552,7 @@ class InvoiceController extends Controller {
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
         
         $customersDisbursalList = $this->lmsRepo->lmsGetInvoiceClubCustomer($supplierIds, $allrecords);
-
+        // dd($customersDisbursalList);
         return view('backend.invoice.disburse_check')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList,
@@ -562,33 +567,196 @@ class InvoiceController extends Controller {
      */
     public function disburseOnline(Request $request)
     {
-        $invoiceIds = $request->get('invoice_ids');
-        $disburseType = config('lms.DISBURSE_TYPE')['ONLINE']; // Online by Bank Api
-        if(empty($invoiceIds)){
-            return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
-        }
-        $record = array_filter(explode(",",$invoiceIds));
-        $allrecords = array_unique($record);
-        $allrecords = array_map('intval', $allrecords);
-        $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
-        $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
-        $userIds = [];
+        try {
 
-        foreach ($supplierIds as $userid) {
-            foreach ($allinvoices as $invoice) {
-                if($invoice['supplier_id'] = $userid && !in_array($userid, $userIds)) {
-                    $userIds[] = $userid;
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            
+            $invoiceIds = $request->get('invoice_ids');
+            $valueDate = $request->get('value_date');
+            $disburseType = config('lms.DISBURSE_TYPE')['ONLINE'];
+            $creatorId = Auth::user()->user_id;
+            
+            if(empty($invoiceIds)){
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
+            }
+
+            $record = array_filter(explode(",",$invoiceIds));
+            $allrecords = array_unique($record);
+            $allrecords = array_map('intval', $allrecords);
+            $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+
+
+            foreach ($allinvoices as $inv) {
+                if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+                    return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
+                } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
+                    return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 }
             }
-        } 
 
-        $customersDisbursalList = $this->userRepo->lmsGetDisbursalCustomer($userIds);
+            $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
 
-        return view('backend.invoice.disburse_online')
-                ->with([
-                    'customersDisbursalList' => $customersDisbursalList, 
-                    'invoiceIds' => $invoiceIds 
-                ]);;              
+            $fundedAmount = 0;
+            $interest = 0;
+            $disburseAmount = 0;
+            $totalInterest = 0;
+            $totalFunded = 0;
+            $totalMargin = 0;
+            $exportData = [];
+            $invoiceDisbursedIds = [];
+            $disbursalIds = [];
+            $disbursalData = [];
+            $batchId= _getRand(12);
+            $transId = _getRand(18);
+
+            foreach ($supplierIds as $userid) {
+                $disburseAmount = 0;
+                foreach ($allinvoices as $invoice) {
+                    if($invoice['supplier_id'] = $userid) {
+                        
+                        $interest= 0;
+                        $margin= 0;
+
+                        $tenor = $this->calculateTenorDays($invoice);
+                        $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+                        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+                        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+
+                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                            $interest = $tInterest;
+                        }
+
+                        $totalInterest += $interest;
+                        $totalMargin += $margin;
+                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+                        $disburseAmount += $amount;
+
+
+                        $disbursalData['invoice'] = $invoice;
+
+                    }
+                }
+                if($disburseType == 1) {
+
+                    $exportData[$userid]['RefNo'] = $disbursalData['invoice']['lms_user']['virtual_acc_id'];
+                    $exportData[$userid]['Amount'] = $disburseAmount;
+                    $exportData[$userid]['Debit_Acct_No'] = '21480259346';
+                    $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
+                    $exportData[$userid]['Debit_Mobile'] = '1234567890';
+                    $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
+                    $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
+                    $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
+                    $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+                    $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
+                    $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
+                    $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                    $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
+                    $exportData[$userid]['Remarks'] = 'test remarks';
+                    $exportData[$userid]['Value_Date'] = date("Y-m-d");
+
+
+                } 
+            }
+            if($disburseType == 1 && !empty($allrecords)) {
+            
+                $http_header = [
+                    'timestamp' => date('Y-m-d H:i:s'),
+                    'txn_id' => $transId
+                    ];
+
+                $header = [
+                    'Maker_ID' => "CAPSAVE.M",
+                    'Checker_ID' => "CAPSAVE.C1",
+                    'Approver_ID' => "CAPSAVE.C2"
+                    ];
+
+                $params = [
+                    'http_header' => $http_header,
+                    'header' => $header,
+                    'request' => $exportData
+                    ];
+
+                $idfcObj= new Idfc_lib();
+                $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+                if ($result) {
+                    //save transaction here
+                    // for disburse type online idfc bank i.e $disburseType == 1
+                }
+            }
+
+            $result = $this->export($exportData, $batchId);
+            $file['file_path'] = $result['file_path'] ?? '';
+            if ($file) {
+                $createBatchFileData = $this->createBatchFileData($file);
+                $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+                if ($createBatchFile) {
+                    $createDisbursalBatch = $this->lmsRepo->createDisbursalBatch($createBatchFile, $batchId);
+                    $disbursalBatchId = $createDisbursalBatch->disbursal_batch_id;
+                }
+            }
+
+            foreach ($supplierIds as $userid) {
+                $disburseAmount = 0;
+                $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
+                $userData['disbursal_batch_id'] = $disbursalBatchId;
+                $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
+                $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
+                $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
+
+                foreach ($allinvoices as $invoice) {
+                    if($invoice['supplier_id'] = $userid) {
+                        $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
+
+                        if ($invoiceDisbursedData == null) {
+                            $invoice['batch_id'] = $batchId;
+                            $invoice['disburse_date'] = $disburseDate;
+                            $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
+                            
+                            $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
+                            $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
+                            $invoiceDisbursedId = $createInvoiceDisbursed->invoice_disbursed_id;
+                        }
+                        
+                        $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
+                        $this->invRepo->saveInvoiceStatusLog($invoice['invoice_id'], 10);
+                        $interest= 0;
+                        $margin= 0;
+
+                        $tenor = $this->calculateTenorDays($invoice);
+                        $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+                        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+                        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+
+                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                            $interest = $tInterest;
+                        }
+
+                        $totalInterest += $interest;
+                        $totalMargin += $margin;
+                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+                        $disburseAmount += $amount;
+
+                        
+
+                    }
+                }
+                
+                if($createDisbursal) {
+                    $updateDisbursal = $this->lmsRepo->updateDisburse([
+                            'disburse_amount' => $disburseAmount
+                        ], $createDisbursal->disbursal_id);
+                }
+
+            }
+
+            Session::flash('message',trans('backend_messages.disbursed'));
+            return redirect()->route('backend_get_disbursed_invoice');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }             
     }
 
     
@@ -698,8 +866,7 @@ class InvoiceController extends Controller {
 
                 } 
             }
-
-            // $result = $this->export($exportData, $batchId);
+            $result = $this->export($exportData, $batchId);
             $file['file_path'] = $result['file_path'] ?? '';
             if ($file) {
                 $createBatchFileData = $this->createBatchFileData($file);
@@ -709,7 +876,7 @@ class InvoiceController extends Controller {
                     $disbursalBatchId = $createDisbursalBatch->disbursal_batch_id;
                 }
             }
-            
+
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
                 $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
@@ -719,14 +886,13 @@ class InvoiceController extends Controller {
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
 
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] == $userid) {
+                    if($invoice['supplier_id'] = $userid) {
                         $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                         if ($invoiceDisbursedData == null) {
                             $invoice['batch_id'] = $batchId;
                             $invoice['disburse_date'] = $disburseDate;
                             $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
-                            $invoice['sys_created_at'] = \Helpers::getSysStartDate();
                             
                             $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                             $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -756,7 +922,7 @@ class InvoiceController extends Controller {
 
                     }
                 }
-
+                
                 if($createDisbursal) {
                     $updateDisbursal = $this->lmsRepo->updateDisburse([
                             'disburse_amount' => $disburseAmount
@@ -764,6 +930,7 @@ class InvoiceController extends Controller {
                 }
 
             }
+
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice');
         } catch (Exception $ex) {
