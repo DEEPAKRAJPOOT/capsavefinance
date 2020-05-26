@@ -154,13 +154,17 @@ trait LmsTrait
             }
             
             $accuredInterest = $this->lmsRepo->sumAccruedInterest(['disbursal_id' => $disbursalId]);
+            $overDueDetails = $this->getOverDueInterest($invoiceId);
+            $overDueDays = $overDueDetails['penal_days'];
+            $overDueInterest = $overDueDetails['penal_amount'];
             if ($int_type_config == 1) {
                 $saveDisbursalData = [];
                 $saveDisbursalData['accured_interest'] = $accuredInterest;
+                $saveDisbursalData['penalty_amount'] = $overDueInterest;
+                $saveDisbursalData['penal_days'] = $overDueDays;
                 $this->lmsRepo->saveDisbursalRequest($saveDisbursalData, ['disbursal_id' => $disbursalId]);
             }
             $returnData[$disbursalId] = $accuredInterest;
-            $overDueInterest = $this->getOverDueInterest($invoiceId);
             if ($overDueInterest) {
                 $transactions = [];
                 $transactions['user_id'] = $userId;
@@ -648,6 +652,7 @@ trait LmsTrait
         $monthlyIntCond['disbursal_id'] = $disbursalId;
         $monthlyIntCond['interest_date_gte'] = $invDueDate;   //date('Y-m-d', strtotime($invDueDate));
         $accuredInterest = $this->lmsRepo->sumAccruedInterest($monthlyIntCond);
-        return $accuredInterest;
+        $accuredInterestCount =  $this->lmsRepo->countAccruedInterest($monthlyIntCond);
+        return array('penal_amount' => $accuredInterest, 'penal_days'=>$accuredInterestCount);
     }
 }

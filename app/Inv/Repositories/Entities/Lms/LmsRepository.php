@@ -238,6 +238,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return InterestAccrual::sumAccruedInterest($whereCond);
     }    
 
+     /**
+     * Get Count of Accrued Interest
+     *      
+     * @param array $whereCond
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public function countAccruedInterest($whereCond) 
+    {        
+        return InterestAccrual::countAccruedInterest($whereCond);
+    }  
+
 
     /**
      * create Disburse Api Log

@@ -128,4 +128,22 @@ class InterestAccrual extends BaseModel {
         $result = $query->sum('accrued_interest');
         return $result;
     }
+
+    public static function countAccruedInterest($whereCond)
+    {
+        if (isset($whereCond['disbursal_id'])) {
+            $query = self::where('disbursal_id', $whereCond['disbursal_id']); 
+         } 
+         
+         if (isset($whereCond['interest_date_lte'])) {
+            $query = self::where('interest_date', '<=', $whereCond['interest_date_lte']);  
+         }
+         
+         if (isset($whereCond['interest_date_gte'])) {
+            $query = self::where('interest_date', '>=', $whereCond['interest_date_gte']);  
+         }
+         
+         $result = $query->count();
+         return $result;
+    }
 }
