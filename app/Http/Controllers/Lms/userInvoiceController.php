@@ -497,8 +497,15 @@ class userInvoiceController extends Controller
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
         ];
-        
-        $company_data = json_decode($invData->inv_comp_data, true);
+        if (empty($invData->inv_comp_data)) {
+            $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
+            if ($companyDetail['status'] != 'success') {
+                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $companyDetail['message']);
+            }
+            $company_data = $companyDetail['data'];
+        }else{
+            $company_data = json_decode($invData->inv_comp_data, true);
+        }
         $is_state_diffrent = ($userStateId != $companyStateId);
         $intrest_charges = [];
         $total_sum_of_rental = 0;
