@@ -12,35 +12,32 @@
 </style>
 @endsection
 @section('content')
-@if(request()->get('sanctionPageView'))
-    @include('layouts.backend.partials.admin_customer_links',['active'=>'custSoa'])
-@endif
+@include('layouts.backend.partials.admin_reports_links',['active'=>'consolidatedSoa'])
 <div class="content-wrapper">
-  @if(!request()->get('sanctionPageView'))
     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>SOA List for all </h3>
-            <small>SOA List for all</small>
-            <ol class="breadcrumb">
-                <li style="color:#374767;"> Home </li>
-                <li class="active">SOA List for all</li>
-            </ol>
+            <h3>Reports</h3>
+            <small>Consolidated SOA</small>
         </div>
     </section>
-    @endif
+
 
     <div class="card">
         <div class="card-body">    
-            @if(request()->get('sanctionPageView'))
-             <div class="table-responsive ps ps--theme_default w-100">
-                    @include('lms.customer.limit_details')
-                </div>
+            @if($userInfo)
+            <div class="table-responsive ps ps--theme_default w-100">
+                @include('lms.customer.limit_details')
+            </div>
             @endif
-            <div class="row" id="client_details"></div>   
+            <div class="row" id="client_details"></div> 
+            
+            <form action="{{ route('soa_consolidated_view') }}" method="post" >
+                @csrf
             <div class="row mt-4">
+            	
                 <div class="col-md-3">
                     {!!
                     Form::text('from_date',
@@ -63,7 +60,6 @@
                     ])
                     !!} 
                 </div>
-                @if(!request()->get('sanctionPageView'))
                 <div class="col-md-3" id="prefetch">
                     {!!
                     Form::text('search_keyword',
@@ -76,8 +72,7 @@
                     ])
                     !!}
                 </div>
-                @endif
-                <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+                <button id="searchbtn" type="submit" class="btn  btn-success btn-sm float-right">Search</button>
                 {!! Form::hidden('biz_id', 
                     isset($user['biz_id'])?$user['biz_id']:null, 
                     [ 'id'=>'biz_id']) 
@@ -92,6 +87,7 @@
                     isset($user['customer_id'])?$user['customer_id']:null, 
                     [ 'id'=>'customer_id' ])
                 !!}
+            </form>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -139,15 +135,19 @@
 <script src="{{ asset('backend\theme\assets\plugins\typeahead\handlebars.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('backend\theme\assets\plugins\bootstrap-tagsinput\typeahead.bundle.js') }}" type="text/javascript"></script>
 
+@php
+    $datataledraw = (isset($user['user_id']))?true:false;
+@endphp
 <script>
 
     var messages = {
-        lms_get_soa_list: "{{ URL::route('lms_get_soa_list') }}",
+        lms_get_soa_list: "{{ URL::route('lms_get_consolidated_soa_list') }}",
         get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
-        pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'customerSoa']) }}",
-        excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'customerSoa']) }}",
+        pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",
+        excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",
         get_customer: "{{ route('get_customer') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        datataledraw: "{{ $datataledraw }}",
         token: "{{ csrf_token() }}",
     };
     $('#from_date').datetimepicker({
@@ -200,7 +200,7 @@ function setClientDetails(data){
 }
 </script>
 
-<script src="{{ asset('backend/js/lms/soa.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/lms/consolidatedSoa.js') }}" type="text/javascript"></script>
 @endsection
 
 

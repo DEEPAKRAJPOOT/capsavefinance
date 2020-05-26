@@ -20,4 +20,7 @@
     <li>
         <a class=" {{( $active=='overduereport') ? 'active': null }} " href="{{route('report_overduereport')}}">Invoice Over Due Report  </a>
     </li>
+    <li>
+        <a class=" {{( $active=='consolidatedSoa') ? 'active': null }} " href="{{route('soa_consolidated_view')}}">SOA  </a>
+    </li>
 </ul>  

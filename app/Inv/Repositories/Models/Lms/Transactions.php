@@ -666,7 +666,12 @@ class Transactions extends BaseModel {
         return $modeNo;
     }
 
-
+    public static function getConsolidatedSoaList(){
+        return self::select('transactions.*')
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('trans_id', 'asc');
+    }
 
     public static function getSoaList(){
 
