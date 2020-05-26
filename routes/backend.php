@@ -22,37 +22,33 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'report_summary',
                 'uses' => 'Backend\ReportController@index'
             ]);
-
             Route::get('/customer', [
                 'as' => 'report_customer',
                 'uses' => 'Backend\ReportController@customer'
             ]);
-
+            Route::get('/lease-register', [
+                'as' => 'lease_register',
+                'uses' => 'Backend\ReportController@leaseRegister'
+            ]);
             Route::get('/download', [
                 'as' => 'download_reports',
                 'uses' => 'Backend\ReportController@downloadLeaseReport'
             ]);
-
             Route::get('/duereport', [
                 'as' => 'report_duereport',
                 'uses' => 'Backend\ReportController@duereport'
             ]);
-              Route::get('/overduereport', [
+            Route::get('/overduereport', [
                 'as' => 'report_overduereport',
                 'uses' => 'Backend\ReportController@overduereport'
             ]);
-               Route::get('/pdf_invoice_due_url', [
+            Route::get('/pdf_invoice_due_url', [
                 'as' => 'pdf_invoice_due_url',
                 'uses' => 'Backend\ReportController@pdfInvoiceDue'
             ]);
-                Route::get('/pdf_invoice_over_due_url', [
+            Route::get('/pdf_invoice_over_due_url', [
                 'as' => 'pdf_invoice_over_due_url',
                 'uses' => 'Backend\ReportController@pdfInvoiceOverDue'
-            ]);
-
-            Route::get('/lease-register', [
-                'as' => 'lease_register',
-                'uses' => 'Backend\ReportController@leaseRegister'
             ]);
         });
 
