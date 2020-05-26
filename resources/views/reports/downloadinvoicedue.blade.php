@@ -130,7 +130,7 @@
                             <span style="font-size: small;"><strong>Client Name: </strong></span>
                             &nbsp; 
                         
-                            {{(count($userInfo) > 0) ? $userInfo[0]->business->biz_entity_name: ''}}
+                            {{(count($userInfo) > 0) ? $userInfo[0]->invoice->business->biz_entity_name: ''}}
                             
                         </td>
                     </tr>
@@ -140,7 +140,7 @@
                     <tr>
                         <td colspan="8">
                             <span style="font-size: small;"><strong>Debtor Name: </strong></span>
-                            &nbsp;{{(count($userInfo) > 0) ? $userInfo[0]->anchor->comp_name: ''}}
+                            &nbsp;{{(count($userInfo) > 0) ? $userInfo[0]->invoice->anchor->comp_name: ''}}
                         </td>
                     </tr>
                    <tr>
@@ -187,46 +187,39 @@
                     @endphp
                    @foreach($userInfo as $invoice) 
                    @php
-                   $invBal += $invoice->invoice_amount;
-                   $invApprBal += $invoice->invoice_approve_amount;
+                   $invBal += $invoice->invoice->invoice_amount;
+                   $invApprBal += $invoice->invoice->invoice_approve_amount;
                    @endphp
                     <tr>
                         <td>
-                            <span style="font-size: small;">{{$invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id}}</span>
+                            <span style="font-size: small;">{{$invoice->disbursal->disbursal_batch->batch_id}}</span>
                         </td>
                          <td>
-                            <span style="font-size: small;">{{date('d/m/Y',strtotime($invoice->invoice_disbursed->disbursal->disbursal_batch->created_at))}}</span>
+                            <span style="font-size: small;">{{date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at))}}</span>
                         </td>
                         <td>
-                            <span style="font-size: small;">{{$invoice->invoice_no}}</span>
+                            <span style="font-size: small;">{{$invoice->invoice->invoice_no}}</span>
                         </td>
                          <td>
-                            <span style="font-size: small;">{{\Carbon\Carbon::parse($invoice->invoice_date)->format('d/m/Y')}}</span>
+                            <span style="font-size: small;">{{\Carbon\Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y')}}</span>
                         </td>
                         <td>
-                              <span style="font-size: small;">{{\Carbon\Carbon::parse($invoice->invoice_due_date)->format('d/m/Y')}}</span>
+                              <span style="font-size: small;">{{\Carbon\Carbon::parse($invoice->payment_due_date)->format('d/m/Y')}}</span>
                        
                         </td>
                         <td>
-                            <span style="font-size: small;">{{number_format($invoice->invoice_amount)}}</span>
+                            <span style="font-size: small;">{{number_format($invoice->invoice->invoice_amount)}}</span>
                         </td>
                          <td>
-                            <span style="font-size: small;">{{number_format($invoice->invoice_approve_amount)}}</span>
+                            <span style="font-size: small;">{{number_format($invoice->invoice->invoice_approve_amount)}}</span>
                         </td>
                         <td>
                             <span style="font-size: small;">
                        @php
-                       if($invoice->is_repayment==1)
-                        {
-                            echo  0;
-                            $getBal =   0;
-                        }
-                        else
-                        {
-                            echo  number_format($invoice->invoice_approve_amount); 
-                            $getBal =  $invoice->invoice_approve_amount;   
-                        }
-                        
+                       
+                            echo  number_format($invoice->invoice->invoice_approve_amount); 
+                            $getBal =  $invoice->invoice->invoice_approve_amount;   
+                       
                         $subBal += $getBal;
                       @endphp
                             </span>

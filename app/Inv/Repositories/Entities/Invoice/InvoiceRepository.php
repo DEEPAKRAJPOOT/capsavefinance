@@ -1188,13 +1188,18 @@ use CommonRepositoryTraits;
     }
     public function getReportAllOverdueInvoice()
     {
-        return InvoiceModel::getReportAllOverdueInvoice();
+        return InvoiceDisbursed::getReportAllOverdueInvoice();
     }
+    
+   public function getInvoiceRealisationList()
+    {
+        return InvoiceDisbursed::getInvoiceRealisationList();
+    } 
      public function pdfInvoiceDue($attr)
     {
          try
          {
-             return InvoiceModel::pdfInvoiceDue($attr); 
+             return InvoiceDisbursed::pdfInvoiceDue($attr); 
          } catch (Exception $ex) {
                return $ex;
          }
@@ -1204,10 +1209,21 @@ use CommonRepositoryTraits;
     {
          try
          {
-             return InvoiceModel::pdfInvoiceOverDue($attr); 
+             return InvoiceDisbursed::pdfInvoiceOverDue($attr); 
+         } catch (Exception $ex) {
+               return $ex;
+         }
+       
+    } 
+      public function pdfInvoiceRealisation($attr)
+    {
+         try
+         {
+             return InvoiceDisbursed::pdfInvoiceRealisation($attr); 
          } catch (Exception $ex) {
                return $ex;
          }
        
     }  
+    
 }

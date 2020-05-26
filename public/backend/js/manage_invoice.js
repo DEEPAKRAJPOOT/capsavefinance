@@ -8,8 +8,8 @@
    })
  $(document).ready(function () {
        
-         document.getElementById('invoice_approve_amount').addEventListener('input', event =>
-         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+       ///  document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+      ///   event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
          $("#program_bulk_id").append("<option value=''>No data found</option>");
          $("#program_bulk_id").append("<option value=''>No data found</option>");
     });

@@ -83,7 +83,14 @@ class ReportController extends Controller
         }
         
     }
-    
+     public function realisationreport(Request $request) {
+        try {
+            return view('reports.realisationreport  ');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+        
+    } 
     public function pdfInvoiceDue(Request $request)
     {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
@@ -103,4 +110,14 @@ class ReportController extends Controller
                 ->loadView('reports.downloadinvoiceoverdue', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
         return $pdf->download('InvoiceOverDueReport.pdf');  
     } 
+    
+   public function pdfInvoiceRealisation(Request $request)
+   {
+        $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
+        $getInvoice  =  $this->invRepo->pdfInvoiceRealisation($request);
+        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
+        $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
+                ->loadView('reports.downloadrealisation', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
+        return $pdf->download('InvoiceRealisation.pdf');    
+   }
 }
