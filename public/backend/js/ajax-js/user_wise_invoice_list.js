@@ -12,6 +12,7 @@ try {
                 "url": messages.user_wise_invoice_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
+                    d.invoice_no = $('input[name=invoice_no]').val();
                     d.status_id = $('select[name=status_id]').val();
                     d.user_id = $('input[name=user_id]').val();
                     d._token = messages.token;
@@ -35,7 +36,7 @@ try {
         });
 
         //Search
-        $('.searchbtn').on('change', function (e) {
+        $('.searchbtn').on('click', function (e) {
             oTable.draw();
         });                   
     });
