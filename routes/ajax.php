@@ -447,7 +447,14 @@ Route::group(
         'as' => 'invoice_document_save',
         'uses' => 'AjaxController@saveInvoiceDoc'
         ]
-    );  
+    ); 
+      Route::post(
+        'update_invoice_approve_single_tab',
+        [
+        'as' => 'update_invoice_approve_single_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );   
       Route::post(
         'update_invoice_approve',
         [

@@ -92,7 +92,7 @@
             var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
             th = this;
             jQuery.ajax({
-                url: messages.update_invoice_approve,
+                url: messages.update_invoice_approve_single_tab,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
