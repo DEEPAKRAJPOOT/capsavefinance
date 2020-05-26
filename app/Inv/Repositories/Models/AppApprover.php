@@ -52,7 +52,8 @@ class AppApprover extends BaseModel
     protected $fillable = [
         'app_id',
         'approver_user_id',
-        'status',  
+        'status',
+        'comment_txt',
         'is_active',
         'created_by',
         'created_at',
@@ -87,7 +88,7 @@ class AppApprover extends BaseModel
         $apprUsers = self::where('app_id', '=', $data['app_id'])
             ->where('approver_user_id', '=', $data['approver_user_id'])
             ->where('is_active', '=', 1)
-            ->update(['status' => $data['status']]);
+            ->update(['status' => $data['status'], 'comment_txt' => $data['comment_txt']]);
         return ($apprUsers ? $apprUsers : []);
     }    
     

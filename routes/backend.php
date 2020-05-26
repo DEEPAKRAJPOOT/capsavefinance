@@ -628,6 +628,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'save_bank_detail',
                     'uses' => 'Backend\CamController@saveBankDetail'
                 ]);
+                Route::get('/reject-offer-form', [
+                    'as' => 'reject_offer_form',
+                    'uses' => 'Backend\CamController@rejectOfferForm'
+                ]);
+                Route::post('reject-offer', [
+                    'as' => 'reject_offer',
+                    'uses' => 'Backend\CamController@rejectOffer'
+                ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [

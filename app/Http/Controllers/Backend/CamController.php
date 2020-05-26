@@ -1602,7 +1602,8 @@ class CamController extends Controller
         $appApprData = [
             'app_id' => $appId,
             'approver_user_id' => \Auth::user()->user_id,
-            'status' => 1
+            'status' => 1,
+            'comment_txt' => ''
           ];
         $this->appRepo->saveAppApprovers($appApprData);
 
@@ -1610,6 +1611,54 @@ class CamController extends Controller
         $this->appRepo->changeOfferApprove((int)$appId);
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
+    }
+    
+    /**
+     * Open Reject offer Pop Up
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function rejectOfferForm(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.reject_offer')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+
+    /**
+     * Save write off comment
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function rejectOffer(Request $request)
+    {   
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $cmntText = $request->get('comment_txt');
+            $appApprData = [
+                'app_id' => $appId,
+                'approver_user_id' => \Auth::user()->user_id,
+                'status' => 2,
+                'comment_txt' => $cmntText
+              ];
+            $this->appRepo->saveAppApprovers($appApprData);
+
+ 
+            Session::flash('message', trans('backend_messages.offer_rejected'));
+            Session::flash('operation_status', 1);
+            return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+            //return redirect()->back();
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 
     /*function for showing offer data*/
