@@ -71,6 +71,54 @@ class ReportController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
+
+    public function downloadLeaseReport(Request $request) {
+       $whereRaw = '';
+       if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
+            $from_date = $request->get('from_date');
+            $to_date = $request->get('to_date');
+            $cond[] = " invoice_date between '$from_date' AND '$to_date' ";
+       }
+       if(!empty($request->get('user_id'))){
+            $user_id = $request->get('user_id');
+            $cond[] = " user_id='$user_id' ";
+       }
+       if (!empty($cond)) {
+           $whereRaw = implode(' AND ', $cond);
+       }
+       $leaseRegistersList = $this->reportsRepo->leaseRegisters([], $whereRaw);
+       $leaseRecords = $leaseRegistersList->get();
+       $leaseArr = [];
+       foreach ($leaseRecords as $lease) {
+         $inv_comp_data = json_decode($lease->inv_comp_data, TRUE);
+         $sac_code = ($lease->sac_code != 0 ? $lease->sac_code : '000');   
+         $contract_no = 'HEL/'.($lease->sac_code != 0 ? $lease->sac_code : '000');  
+         $total_rate =  ($lease->sgst_rate + $lease->cgst_rate + $lease->igst_rate);
+         $total_tax =  ($lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
+         $total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
+         $leaseArr[] = [
+            'State' => $lease->name, 
+            'GSTN' => ($inv_comp_data['gst_no'] ?? $result->biz_gst_no), 
+            'Customer Name' => $lease->biz_entity_name, 
+            'Customer Address' => $lease->gst_addr, 
+            'Customer GSTN' => $lease->biz_gst_no, 
+            'SAC Code' => $sac_code, 
+            'Contract No' => $contract_no, 
+            'Invoice No' => $lease->invoice_no, 
+            'Invoice Date' => $lease->invoice_date, 
+            'Base Amount' => number_format($lease->base_amount, 2), 
+            'SGST Rate' => ($lease->sgst_rate != 0 ? $lease->sgst_rate .'%' : '-'), 
+            'SGST Amount' => ($lease->sgst_amount != 0 ? number_format($lease->sgst_amount, 2) : '-'), 
+            'CGST Rate' => ($lease->cgst_rate != 0 ? $lease->cgst_rate .'%' : '-'), 
+            'CGST AMOUNT' => ($lease->cgst_amount != 0 ? number_format($lease->cgst_amount, 2) : '-'), 
+            'IGST Rate' => ($lease->igst_rate != 0 ? $lease->igst_rate .'%' : '-'), 
+            'IGST Amount' => ($lease->igst_amount != 0 ? number_format($lease->igst_amount, 2) : '-'), 
+            'Total Amount' => number_format($total_amount, 2), 
+            'Total Rate' => ($total_rate != 0 ? $total_rate.'%' : '-'), 
+            'Total Tax' => ($total_tax != 0 ? number_format($total_tax, 2) : '-'), 
+         ];
+       }
+    }
     
      public function duereport(Request $request) {
          

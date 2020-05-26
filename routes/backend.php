@@ -28,17 +28,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ReportController@customer'
             ]);
 
-            Route::get('/bank', [
-                'as' => 'report_bank',
-                'uses' => 'Backend\ReportController@bank'
+            Route::get('/download', [
+                'as' => 'download_reports',
+                'uses' => 'Backend\ReportController@downloadLeaseReport'
             ]);
 
-            Route::get('/company', [
-                'as' => 'report_company',
-                'uses' => 'Backend\ReportController@company'
-            ]);
-
-             Route::get('/duereport', [
+            Route::get('/duereport', [
                 'as' => 'report_duereport',
                 'uses' => 'Backend\ReportController@duereport'
             ]);
