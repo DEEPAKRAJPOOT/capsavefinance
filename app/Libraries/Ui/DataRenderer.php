@@ -6278,19 +6278,18 @@ class DataRenderer implements DataProviderInterface
     {  
         
         return DataTables::of($invoice)
-               ->rawColumns(['debtor_name','od','business'])
+               ->rawColumns(['debtor_name','od','business','relisation_date'])
            
                 ->addColumn(
                     'debtor_name',
                     function ($invoice) { 
-                        
-                        return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
+                     return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
                      
                     })
                   ->addColumn(
                     'debtor_acc_no',
                     function ($invoice)  {     
-                           return  'xxxxxxxxxxxxxxxxxx';
+                           return  $invoice->Invoice->anchor->anchorAccount->acc_no;
                   })
              
               ->addColumn(
@@ -6311,10 +6310,18 @@ class DataRenderer implements DataProviderInterface
                 })  
                 ->addColumn(            
                     'relisation_date',
-                    function ($invoice) {                        
-                        return   date('Y-m-d', strtotime($invoice->payment_due_date. ' + '.$invoice->grace_period.' days')); 
+                    function ($invoice) {  
+                      $payment  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->date_of_payment)
+                           {
+                             $payment.= Carbon::parse($row->payment->date_of_payment)->format('d/m/Y')."</br>";
+                           }
+                           
+                      }
+                    return substr($payment,0,-1);
                        
-                      
                 })
                 ->addColumn(            
                     'relisation_amount',
@@ -6325,7 +6332,24 @@ class DataRenderer implements DataProviderInterface
                     'cheque',
                     function ($invoice) {
                        
-                           return   'xxxxxxxx';   
+                      $chk  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->utr_no)
+                           {
+                             $chk.= $row->payment->utr_no.",";
+                           }
+                            if( $row->payment->unr_no)
+                           {
+                             $chk.= $row->payment->unr_no.",";
+                           }
+                            if( $row->payment->cheque_no)
+                           {
+                             $chk.= $row->payment->cheque_no.",";
+                           }
+                      }
+                    return substr($chk,0,-1);
+                     
                        
                     })
                    ->addColumn(

@@ -176,7 +176,7 @@
                             <span style="font-size: small;">{{$invoice->invoice->anchor->comp_name}}</span>
                         </td>
                          <td>
-                            <span style="font-size: small;">xxxxxxxxxxxxxxxxxx</span>
+                            <span style="font-size: small;">{{$invoice->Invoice->anchor->anchorAccount->acc_no}}</span>
                         </td>
                         <td>
                             <span style="font-size: small;">{{\Carbon\Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y')}}</span>
@@ -192,7 +192,20 @@
                        
                         </td>
                         <td>
-                            <span style="font-size: small;">{{date('Y-m-d', strtotime($invoice->payment_due_date. ' + '.$invoice->grace_period.' days'))}}</span>
+                            <span style="font-size: small;">
+                        @php        
+                                $payment  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->date_of_payment)
+                           {
+                             $payment.= \Carbon\Carbon::parse($row->payment->date_of_payment)->format('d/m/Y').",";
+                           }
+                           
+                      }
+                    echo  substr($payment,0,-1); 
+                      @endphp          
+                            </span>
                         </td>
                          <td>
                             <span style="font-size: small;">{{number_format($invoice->invoice->invoice_approve_amount)}}</span>
@@ -201,7 +214,27 @@
                             <span style="font-size: small;">{{$invoice->InterestAccrual->count()}}</span>
                         </td>
                         <td>
-                            <span style="font-size: small;">xxxxxxxx</span>
+                            <span style="font-size: small;">
+                        @php
+                        $chk  = '';                   
+                       foreach($invoice->transaction as $row)
+                       {
+                           if( $row->payment->utr_no)
+                           {
+                             $chk.= $row->payment->utr_no.",";
+                           }
+                            if( $row->payment->unr_no)
+                           {
+                             $chk.= $row->payment->unr_no.",";
+                           }
+                            if( $row->payment->cheque_no)
+                           {
+                             $chk.= $row->payment->cheque_no.",";
+                           }
+                      }
+                     echo substr($chk,0,-1);
+                    @endphp        
+                            </span>
                         </td>
                            <td>
                             <span style="font-size: small;">{{$invoice->invoice->business->biz_entity_name}}</span>
