@@ -82,6 +82,17 @@
         </div>
         <div class="row">
             <div class="form-group col-md-6">
+                <label for="charge_prefix">Charge Prefix </label>
+                <input type="text" class="form-control" id="charge_prefix" name="charge_prefix" placeholder="Enter Charge Prefix" maxlength="3" value="{{ isset($comData['charge_prefix']) ? $comData['charge_prefix'] : old('charge_prefix') }}" onkeyup="return checkChargeValidation();">
+
+            </div>
+            <div class="form-group col-md-6">
+                <label for="interest_prefix">Interest Prefix</label>
+                <input type="text" class="form-control" id="interest_prefix" name="interest_prefix" placeholder="Enter Interest Prefix" maxlength="3" value="{{ isset($comData['interest_prefix']) ? $comData['interest_prefix'] : old('interest_prefix')}}" onkeyup="return checkInterestValidation();">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
                 <label for="is_reg">Is registered office<span class="mandatory">*</span></label>
                 <select class="form-control" name="is_reg" id="is_reg">
                     <option value="" selected>Select</option>
@@ -231,7 +242,7 @@
                 'cmp_add': {
                     required: true,
                     alphanumericdot: true,
-                    unique_add: true
+                    unique_add: false
                 },
                 'cmp_email': {
                     required: true,
@@ -261,6 +272,12 @@
                     required: true
                 },
                 'city': {
+                    required: true
+                },
+                'charge_prefix': {
+                    required: true
+                },
+                'interest_prefix': {
                     required: true
                 },
                 'is_reg': {
@@ -296,9 +313,35 @@
                 },
                 'city': {
                     required: "Please enter City"
+                },
+                'charge_prefix': {
+                    required: "Please enter Charge Prefix"
+                },
+                'interest_prefix': {
+                    required: "Please enter Interest Prefix"
                 }
             }
         });
     });
+
+    var alphaNum = /^[a-zA-Z0-9]+$/;
+    function checkChargeValidation() {
+        let charge_prefix = document.getElementById('charge_prefix').value;
+
+        if(!charge_prefix.match(alphaNum)) {
+               document.getElementById('charge_prefix').value = "";
+        } else if (charge_prefix.length >= 4) {
+            document.getElementById('charge_prefix').value = "";
+        };
+    }
+    function checkInterestValidation() {
+        let interest_prefix = document.getElementById('interest_prefix').value;
+
+        if(!interest_prefix.match(alphaNum)) {
+               document.getElementById('interest_prefix').value = "";
+        } else if (interest_prefix.length >= 4) {
+            document.getElementById('interest_prefix').value = "";
+        };
+    }
 </script>
 @endsection
