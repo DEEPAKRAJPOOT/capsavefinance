@@ -1631,7 +1631,7 @@ class CamController extends Controller
     }
 
     /**
-     * Save write off comment
+     * Save Reject offer comment
      * 
      * @param Request $request
      * @return type

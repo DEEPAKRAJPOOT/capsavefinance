@@ -41,7 +41,7 @@ try {
 </script>
 @endif
 <script>
-    $("#woApprDissapprForm").validate({
+    $("#rejectOfferForm").validate({
             rules: {
                 comment_txt: {
                     required: true
