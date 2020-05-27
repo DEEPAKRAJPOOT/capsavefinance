@@ -6278,7 +6278,7 @@ class DataRenderer implements DataProviderInterface
     {  
         
         return DataTables::of($invoice)
-               ->rawColumns(['debtor_name','od','business'])
+               ->rawColumns(['debtor_name','od','business','relisation_date'])
            
                 ->addColumn(
                     'debtor_name',
@@ -6310,10 +6310,18 @@ class DataRenderer implements DataProviderInterface
                 })  
                 ->addColumn(            
                     'relisation_date',
-                    function ($invoice) {                        
-                        return   date('Y-m-d', strtotime($invoice->payment_due_date. ' + '.$invoice->grace_period.' days')); 
+                    function ($invoice) {  
+                      $payment  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->date_of_payment)
+                           {
+                             $payment.= Carbon::parse($row->payment->date_of_payment)->format('d/m/Y')."</br>";
+                           }
+                           
+                      }
+                    return substr($payment,0,-1);
                        
-                      
                 })
                 ->addColumn(            
                     'relisation_amount',

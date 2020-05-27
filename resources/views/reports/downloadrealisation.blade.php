@@ -192,7 +192,20 @@
                        
                         </td>
                         <td>
-                            <span style="font-size: small;">{{date('Y-m-d', strtotime($invoice->payment_due_date. ' + '.$invoice->grace_period.' days'))}}</span>
+                            <span style="font-size: small;">
+                        @php        
+                                $payment  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->date_of_payment)
+                           {
+                             $payment.= \Carbon\Carbon::parse($row->payment->date_of_payment)->format('d/m/Y').",";
+                           }
+                           
+                      }
+                    echo  substr($payment,0,-1); 
+                      @endphp          
+                            </span>
                         </td>
                          <td>
                             <span style="font-size: small;">{{number_format($invoice->invoice->invoice_approve_amount)}}</span>
