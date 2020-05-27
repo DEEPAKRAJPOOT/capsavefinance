@@ -139,6 +139,8 @@ class userInvoiceController extends Controller
             'address' => $companyDetail->cmp_add,
             'state' => $companyDetail->getStateDetail,
             'city' => $companyDetail->city,
+            'charge_prefix' => $companyDetail->charge_prefix,
+            'interest_prefix' => $companyDetail->interest_prefix,
             'phone' => $companyDetail->cmp_mobile,
             'email' => $companyDetail->cmp_email,
             'pan_no' => $companyDetail->pan_no,
