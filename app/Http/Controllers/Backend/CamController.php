@@ -1602,8 +1602,7 @@ class CamController extends Controller
         $appApprData = [
             'app_id' => $appId,
             'approver_user_id' => \Auth::user()->user_id,
-            'status' => 1,
-            'comment_txt' => ''
+            'status' => 1
           ];
         $this->appRepo->saveAppApprovers($appApprData);
 
@@ -1646,11 +1645,17 @@ class CamController extends Controller
             $appApprData = [
                 'app_id' => $appId,
                 'approver_user_id' => \Auth::user()->user_id,
-                'status' => 2,
-                'comment_txt' => $cmntText
+                'status' => 2
               ];
             $this->appRepo->saveAppApprovers($appApprData);
-
+            $addl_data = [];
+            $addl_data['sharing_comment'] = $cmntText;
+            $selRoleId = 7;
+            $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
+            $selUserId = $roles[0]->user_id;
+            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+            $currStage = Helpers::getCurrentWfStage($appId);
+            Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
  
             Session::flash('message', trans('backend_messages.offer_rejected'));
             Session::flash('operation_status', 1);

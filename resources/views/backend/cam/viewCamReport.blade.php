@@ -17,23 +17,23 @@
     <div class="card mt-3">
       <div class="card-body pt-3 pb-3">
         <p class="pull-left"><b>CAM Report For {{isset($arrBizData->biz_entity_name) ? $arrBizData->biz_entity_name : ''}}</b></p>
-          @if(($currStageCode != 'approver') && ($approveStatus && $approveStatus->status == 0))
+          @if(($currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
           <div class="float-right">
             <form method="POST" action="{{route('approve_offer')}}">
             @csrf
             <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
-            <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
+            <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-0 ml-3" type="submit" value="Approve Limit">
             </form>
           </div>
           @elseif(($approveStatus && $approveStatus->status == 1))
             <p class="float-right ml-3 mb-0"><b style="color: green; font-size: 17px;">Limit Approved</b></p>
           @endif
-          @if(($currStageCode != 'approver') && ($approveStatus && $approveStatus->status == 0))
+          @if(($currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
           <div class="float-right">
             <a data-toggle="modal"  data-height="250px" 
             data-width="100%" data-target="#rejectOfferFrame"
             data-url="{{route('reject_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}"  
-            data-placement="top" class="float-right mt-3 ml-3"><button type="button" class="btn btn-success btn-sm">Reject Limit</button></a>
+            data-placement="top" class="float-right mt-0 ml-3"><button type="button" class="btn btn-success btn-sm">Reject Limit</button></a>
           </div>
           @elseif(($approveStatus && $approveStatus->status == 2))
             <p class="float-right ml-3 mb-0"><b style="color: green; font-size: 17px;">Limit Rejected</b></p>
