@@ -6291,54 +6291,54 @@ class DataRenderer implements DataProviderInterface
     {  
         
         return DataTables::of($invoice)
-               ->rawColumns(['batch_no','od'])
+               ->rawColumns(['debtor_name','od','business'])
            
                 ->addColumn(
-                    'batch_no',
+                    'debtor_name',
                     function ($invoice) { 
                         
-                        return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
+                        return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
                      
                     })
                   ->addColumn(
-                    'batch_date',
+                    'debtor_acc_no',
                     function ($invoice)  {     
-                           return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
+                           return  'xxxxxxxxxxxxxxxxxx';
                   })
              
               ->addColumn(
-                    'bills_no',
+                    'invoice_date',
                     function ($invoice) {  
-                      return $invoice->invoice->invoice_no;
+                        return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                    })
                 ->addColumn(
-                    'bill_date',
+                    'invoice_due_amount_date',
                     function ($invoice) { 
-                    return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
+                    return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
                         })
                  ->addColumn(
-                    'due_date',
+                    'grace_period',
                     function ($invoice) {                        
-                      return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
+                      return  $invoice->grace_period;
                      
                 })  
                 ->addColumn(            
-                    'invoice_amount',
+                    'relisation_date',
                     function ($invoice) {                        
-                        return   number_format($invoice->invoice->invoice_amount);
+                        return   date('Y-m-d', strtotime($invoice->payment_due_date. ' + '.$invoice->grace_period.' days')); 
                        
                       
                 })
                 ->addColumn(            
-                    'invoice_appr_amount',
+                    'relisation_amount',
                     function ($invoice) {                        
                           return number_format($invoice->invoice->invoice_approve_amount);  
                          })
                 ->addColumn(
-                    'balance',
+                    'cheque',
                     function ($invoice) {
                        
-                           return   number_format($invoice->invoice->invoice_approve_amount);   
+                           return   'xxxxxxxx';   
                        
                     })
                    ->addColumn(
@@ -6346,6 +6346,13 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
                        
                            return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                       
+                    }) 
+                    ->addColumn(
+                    'business',
+                    function ($invoice) {
+                       
+                           return '<b>'.$invoice->invoice->business->biz_entity_name.'</b>';
                        
                     }) 
                    ->filter(function ($query) use ($request) {

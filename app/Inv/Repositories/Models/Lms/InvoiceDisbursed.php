@@ -259,25 +259,25 @@ class InvoiceDisbursed extends BaseModel {
            {  
                $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
                $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-               return self::where('customer_id',$attr->customer_id)->where('payment_due_date', '<', $currentDate)->WhereBetween('payment_due_date', [$from_date, $to_date])->where(['status_id' => 12])->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+               return self::where('customer_id',$attr->customer_id)->where('payment_due_date', '>=', $currentDate)->WhereBetween('payment_due_date', [$from_date, $to_date])->where(['status_id' => 12])->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
            
            }
            else if($attr->from_date!=null && $attr->to_date!=null && count($user)==0)
            {
                $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
                $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-               return self::WhereBetween('payment_due_date', [$from_date, $to_date])->where('payment_due_date', '<', $currentDate)->where(['status_id' => 12])->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+               return self::WhereBetween('payment_due_date', [$from_date, $to_date])->where('payment_due_date', '>=', $currentDate)->where(['status_id' => 12])->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
          
            }
            else if($attr->from_date==null && $attr->to_date==null && count($user) > 0)
            {
               
-              return self::where('customer_id',$attr->customer_id)->where(['status_id' => 12])->where('payment_due_date', '<', $currentDate)->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+              return self::where('customer_id',$attr->customer_id)->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
          
            }
         else {
            
-             return self::where(['status_id' => 12])->where('payment_due_date', '<', $currentDate)->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+             return self::where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
 
         }
      }  
