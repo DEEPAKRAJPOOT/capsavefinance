@@ -3290,10 +3290,9 @@ if ($err) {
       }
       
         
-           public function  getChrgAmount(Request $request)
+      public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
-          
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
@@ -3949,6 +3948,12 @@ if ($err) {
         $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
         return $users;
     }
+    
+   public function getInvoiceRealisationList(DataProviderInterface $dataProvider) {
+        $transactionList = $this->invRepo->getInvoiceRealisationList();
+        $users = $dataProvider->getInvoiceRealisationList($this->request, $transactionList);
+        return $users;
+    }  
         /**
      * Get all Equipment
      *

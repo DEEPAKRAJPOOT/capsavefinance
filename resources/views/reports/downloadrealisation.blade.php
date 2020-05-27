@@ -107,13 +107,13 @@
                     </tr>
                     <tr>
                         <td>
-                            <span style="font-size: small;"><strong>Invoice Over Due From</strong></span>
+                            <span style="font-size: small;"><strong>Invoice Realisation From</strong></span>
                             &nbsp;
                             
                             {{($fromdate)? $fromdate : '0000-00-00' }} &nbsp; To &nbsp; {{($todate)? $todate : '0000-00-00'}}
                         </td>
                          <td>
-                            <span style="font-size: small;"><strong>Invoice Over Due Report</strong></span>
+                            <span style="font-size: small;"><strong>Invoice Realisation Report</strong></span>
                            </td>
                            <td>
                             <span style="font-size: small;"><strong></strong></span>
@@ -178,9 +178,7 @@
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Balance</strong></span>
                         </td>
-                       <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Days OD</strong></span>
-                        </td>
+                      
                     </tr>
                     @php
                     $invBal = 0;
@@ -226,9 +224,6 @@
                       @endphp
                             </span>
                         </td>
-                          <td>
-                            <span style="font-size: small;">{{$invoice->InterestAccrual->count()}}</span>
-                        </td>
                     </tr>
                     @endforeach
                        <tr>
@@ -243,9 +238,6 @@
                         </td>
                           <td>
                             <span style="font-size: small;"><strong>{{number_format($subBal)}}</strong></span>
-                        </td>
-                         <td>
-                            <span style="font-size: small;"></span>
                         </td>
                     </tr>
                 </table>

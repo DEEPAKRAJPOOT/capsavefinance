@@ -42,7 +42,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'report_overduereport',
                 'uses' => 'Backend\ReportController@overduereport'
             ]);
-            Route::get('/pdf_invoice_due_url', [
+
+               Route::get('/realisationreport', [
+                'as' => 'report_realisationreport',
+                'uses' => 'Backend\ReportController@realisationreport'
+            ]);
+               Route::get('/pdf_invoice_due_url', [
+
                 'as' => 'pdf_invoice_due_url',
                 'uses' => 'Backend\ReportController@pdfInvoiceDue'
             ]);
@@ -50,6 +56,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'pdf_invoice_over_due_url',
                 'uses' => 'Backend\ReportController@pdfInvoiceOverDue'
             ]);
+                
+             Route::get('/pdf_invoice_realisation_url', [
+                'as' => 'pdf_invoice_realisation_url',
+                'uses' => 'Backend\ReportController@pdfInvoiceRealisation'
+            ]);
+             
         });
 
         Route::group(['prefix' => 'application'], function () {

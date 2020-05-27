@@ -206,7 +206,7 @@
                 }
         }); 
     }); 
-        
+            
     $(document).on('change','#program_id_old',function(){
        var postData =  ({'app_id':$("#app_id").val(),'prog_id':$("#program_id").val(),'_token':messages.token});
        jQuery.ajax({

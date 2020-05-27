@@ -518,6 +518,7 @@ class InvoiceController extends Controller {
             }
             else 
             {
+           
                InvoiceTrait::getManualInvoiceStatus($result);
             }
             Session::flash('message', 'Invoice successfully saved');

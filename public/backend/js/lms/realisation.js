@@ -11,7 +11,7 @@ try {
             responsive: true,
             searching: false,
             ajax: {
-                "url": messages.lms_get_invoice_over_due_list, // json datasource
+                "url": messages.lms_get_invoice_realisation_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.from_date = $('input[name="from_date"]').val();
@@ -63,7 +63,7 @@ try {
         customer_id = $('input[name=search_keyword]').val().trim();
         if(action.trim() == 'pdf'){
           
-            url = messages.pdf_invoice_over_due_url;
+            url = messages.pdf_invoice_realisation_url;
         }
 
 

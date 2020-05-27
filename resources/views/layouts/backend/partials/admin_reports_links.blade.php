@@ -14,4 +14,7 @@
     <li>
         <a class=" {{( $active=='overduereport') ? 'active': null }} " href="{{route('report_overduereport')}}">Invoice Over Due Report  </a>
     </li>
+     <li>
+        <a class=" {{( $active=='realisationreport') ? 'active': null }} " href="{{route('report_realisationreport')}}"> Realisation Report </a>
+    </li>
 </ul>  

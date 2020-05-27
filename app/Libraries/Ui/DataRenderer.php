@@ -1061,7 +1061,7 @@ class DataRenderer implements DataProviderInterface
                       if($chkUser->id!=11) 
                      {
                       $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
-                      $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
+                      $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv2"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
                      }
                      return  $action;
                 })
@@ -1172,7 +1172,7 @@ class DataRenderer implements DataProviderInterface
                          $action = "";
                     if($customer!=3 && $chkUser->id!=11)
                       { 
-                          $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option>';
+                          $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv3"><option value="0">Change Status</option><option value="7">Pending</option>';
                           if(in_array($customer, $expl)) 
                           {
                             $action .='<option value="8">Approve</option>';
@@ -1368,7 +1368,7 @@ class DataRenderer implements DataProviderInterface
                       if($customer!=3 && $chkUser->id!=11)
                       { 
                         
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv4"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
@@ -1661,7 +1661,7 @@ class DataRenderer implements DataProviderInterface
                        $action = "";
                       if($customer!=3 && $chkUser->id!=11)
                       {  
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv6"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
@@ -1775,7 +1775,7 @@ class DataRenderer implements DataProviderInterface
                      {
                        if( $chkUser->id!=11)
                       { 
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
                        $action .= '<option value="7">Pending</option>';
                        if(in_array($customer, $expl)) 
                        {
@@ -6130,65 +6130,60 @@ class DataRenderer implements DataProviderInterface
                     'batch_no',
                     function ($invoice) { 
                         
-                        return '<b>'.$invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id.'</b>';
+                        return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
                      
                     })
                   ->addColumn(
                     'batch_date',
                     function ($invoice)  {     
-                           return  date('d/m/Y',strtotime($invoice->invoice_disbursed->disbursal->disbursal_batch->created_at));
+                           return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
                   })
              
               ->addColumn(
                     'bills_no',
                     function ($invoice) {  
-                      return $invoice->invoice_no;
+                      return $invoice->invoice->invoice_no;
                    })
                 ->addColumn(
                     'bill_date',
                     function ($invoice) { 
-                    return  Carbon::parse($invoice->invoice_date)->format('d/m/Y');
+                    return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                         })
                  ->addColumn(
                     'due_date',
                     function ($invoice) {                        
-                      return  Carbon::parse($invoice->invoice_due_date)->format('d/m/Y');
+                      return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
                      
                 })  
                 ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                        return   number_format($invoice->invoice_amount);
+                        return   number_format($invoice->invoice->invoice_amount);
                        
                       
                 })
                 ->addColumn(            
                     'invoice_appr_amount',
                     function ($invoice) {                        
-                          return number_format($invoice->invoice_approve_amount);  
+                          return number_format($invoice->invoice->invoice_approve_amount);  
                          })
                 ->addColumn(
                     'balance',
                     function ($invoice) {
-                        if($invoice->is_repayment==1)
-                        {
-                            return 0;
-                        }
-                        else
-                        {
-                           return   number_format($invoice->invoice_approve_amount);   
-                        }
+                       
+                           return   number_format($invoice->invoice->invoice_approve_amount);   
+                       
                     })
                    ->filter(function ($query) use ($request) {
                     if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                        $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
                      if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('lms_user', function($query1) use ($search_keyword) {
+                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
                                 $query1->where('customer_id', 'like',"%$search_keyword%");
                              });
 
@@ -6203,71 +6198,73 @@ class DataRenderer implements DataProviderInterface
     {  
         
         return DataTables::of($invoice)
-               ->rawColumns(['batch_no'])
+               ->rawColumns(['batch_no','od'])
            
                 ->addColumn(
                     'batch_no',
                     function ($invoice) { 
                         
-                        return '<b>'.$invoice->invoice_disbursed->disbursal->disbursal_batch->batch_id.'</b>';
+                        return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
                      
                     })
                   ->addColumn(
                     'batch_date',
                     function ($invoice)  {     
-                           return  date('d/m/Y',strtotime($invoice->invoice_disbursed->disbursal->disbursal_batch->created_at));
+                           return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
                   })
              
               ->addColumn(
                     'bills_no',
                     function ($invoice) {  
-                      return $invoice->invoice_no;
+                      return $invoice->invoice->invoice_no;
                    })
                 ->addColumn(
                     'bill_date',
                     function ($invoice) { 
-                    return  Carbon::parse($invoice->invoice_date)->format('d/m/Y');
+                    return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                         })
                  ->addColumn(
                     'due_date',
                     function ($invoice) {                        
-                      return  Carbon::parse($invoice->invoice_due_date)->format('d/m/Y');
+                      return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
                      
                 })  
                 ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                        return   number_format($invoice->invoice_amount);
+                        return   number_format($invoice->invoice->invoice_amount);
                        
                       
                 })
                 ->addColumn(            
                     'invoice_appr_amount',
                     function ($invoice) {                        
-                          return number_format($invoice->invoice_approve_amount);  
+                          return number_format($invoice->invoice->invoice_approve_amount);  
                          })
                 ->addColumn(
                     'balance',
                     function ($invoice) {
-                        if($invoice->is_repayment==1)
-                        {
-                            return 0;
-                        }
-                        else
-                        {
-                           return   number_format($invoice->invoice_approve_amount);   
-                        }
+                       
+                           return   number_format($invoice->invoice->invoice_approve_amount);   
+                       
                     })
+                   ->addColumn(
+                    'od',
+                    function ($invoice) {
+                       
+                           return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                       
+                    }) 
                    ->filter(function ($query) use ($request) {
                     if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                        $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
                      if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('lms_user', function($query1) use ($search_keyword) {
+                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
                                 $query1->where('customer_id', 'like',"%$search_keyword%");
                              });
 
@@ -6277,5 +6274,84 @@ class DataRenderer implements DataProviderInterface
                  })
               ->make(true);
     }  
-    
+     public function getInvoiceRealisationList(Request $request,$invoice)
+    {  
+        
+        return DataTables::of($invoice)
+               ->rawColumns(['batch_no','od'])
+           
+                ->addColumn(
+                    'batch_no',
+                    function ($invoice) { 
+                        
+                        return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
+                     
+                    })
+                  ->addColumn(
+                    'batch_date',
+                    function ($invoice)  {     
+                           return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
+                  })
+             
+              ->addColumn(
+                    'bills_no',
+                    function ($invoice) {  
+                      return $invoice->invoice->invoice_no;
+                   })
+                ->addColumn(
+                    'bill_date',
+                    function ($invoice) { 
+                    return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
+                        })
+                 ->addColumn(
+                    'due_date',
+                    function ($invoice) {                        
+                      return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
+                     
+                })  
+                ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                        return   number_format($invoice->invoice->invoice_amount);
+                       
+                      
+                })
+                ->addColumn(            
+                    'invoice_appr_amount',
+                    function ($invoice) {                        
+                          return number_format($invoice->invoice->invoice_approve_amount);  
+                         })
+                ->addColumn(
+                    'balance',
+                    function ($invoice) {
+                       
+                           return   number_format($invoice->invoice->invoice_approve_amount);   
+                       
+                    })
+                   ->addColumn(
+                    'od',
+                    function ($invoice) {
+                       
+                           return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                       
+                    }) 
+                   ->filter(function ($query) use ($request) {
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
+                    }
+                     if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
+                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                             });
+
+                            
+                        });                        
+                    }
+                 })
+              ->make(true);
+    }   
 }
