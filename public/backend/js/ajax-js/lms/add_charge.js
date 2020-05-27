@@ -174,6 +174,7 @@
                              $("#chrg_calculation_type2").attr('checked',true);
                              $("#chrg_calculation_type1").attr('disabled','disabled');
                              var limit_amount_new  =  $("#limit_amount_new").val();
+                             var limit_amount_new =   limit_amount_new.replace(",", ""); 
                              var afterPercent = parseInt(limit_amount_new*res.amount/100);
                              $("#charge_amount_new").val(afterPercent);
                          } 
