@@ -178,7 +178,7 @@
                          <td>
                             <span style="font-size: small;">
                                 @php
-                                if($invoice->Invoice->anchor->anchorAccount->acc_no) 
+                                if(isset($invoice->Invoice->anchor->anchorAccount)) 
                                 {
                                    echo $invoice->Invoice->anchor->anchorAccount->acc_no;
                                  }
