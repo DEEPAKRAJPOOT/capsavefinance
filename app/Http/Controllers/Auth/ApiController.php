@@ -35,32 +35,47 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
-      $this->voucherNo = $this->voucherNo + 1;
+      $is_interest_or_charge = false;
+      if ($jrnls->transType->id == config('lms.TRANS_TYPE.INTEREST') || $jrnls->transType->chrg_master_id != 0) {
+        $is_interest_or_charge = true;
+      }
       $userName = $jrnls->user->biz_name;
       $trans_type_name = $jrnls->getTransNameAttribute();
       $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-      $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+      $invoice_date = $jrnls->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
       if (empty($invoice_no)) {
           $invoice_no = $jrnls->invoiceDisbursed->invoice->invoice_no ?? NULL;
           $invoice_date = $jrnls->invoiceDisbursed->invoice->invoice_date ?? NULL;
       }
+      $invoice_date = !empty($invoice_date) ? $invoice_date .' 23:59:59' : NULL;
       $inst_no = $jrnls->refundReq->tran_no ?? NULL;
       $inst_date = $jrnls->refundReq->actual_refund_date ?? NULL;
       if (!empty($jrnls->parent_trans_id)) {
         $parentRecord  = $jrnls->getParentTxn();
         if (empty($invoice_no)) {
             $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
+            $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->invoice_date ?? NULL;
             if (empty($invoice_no)) {
               $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
               $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
             }
         }
+        $invoice_date = !empty($invoice_date) ? $invoice_date .' 23:59:59' : NULL;
         if (empty($inst_no)) {
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
+
+        if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
+          if ($parentRecord->is_invoice_generated == 0 || ($invoice_date < $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
+            continue;
+          }
+        }
       }
+      if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->getOutstandingAttribute() > 0 && $is_interest_or_charge) {
+       continue;
+      }
+      $this->voucherNo = $this->voucherNo + 1;
       $entry_type = $jrnls->entry_type == 1 ? 'Credit' : 'Debit';
       $this->selectedTxnData[] = $jrnls->trans_id;
       $JournalRow = [
@@ -90,7 +105,61 @@ class ApiController
           'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $gstData = [];
-     if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
+     if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
+            $totalamount = $jrnls->amount;
+            $userStateId = $parentRecord->userinvoicetrans->getUserInvoice->user_gst_state_id ?? NULL;
+            $companyStateId = $parentRecord->userinvoicetrans->getUserInvoice->comp_gst_state_id ?? NULL;
+            $base_amt = $totalamount;
+            $igst_amt = 0;
+            $igst_rate = 0;
+            $cgst_amt = 0;
+            $cgst_rate = 0;
+            $sgst_amt = 0;
+            $sgst_rate = 0;
+            if ($parentRecord->gst == 1) {
+                $base_amt = $totalamount * 100/118;
+                if($userStateId == $companyStateId) {
+                    $cgst_rate = 9;
+                    $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
+                    $sgst_rate = 9;
+                    $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
+                } else {
+                   $igst_rate = 18;
+                    $igst_amt = round((($base_amt * $igst_rate)/100),2); 
+                }
+            }
+          $gstData['base_amount'] = $base_amt;
+          if ($sgst_amt != 0) {
+              $gstData['sgst'] = $sgst_amt;
+          } 
+          if ($cgst_amt != 0) {
+              $gstData['cgst'] = $cgst_amt;
+          } 
+          if ($igst_amt != 0) {
+              $gstData['igst'] = $igst_amt;
+          }
+          foreach ($gstData as $gst_key => $gst_val) {
+           $gst_trans_amount = $gst_val;
+          switch ($gst_key) {
+            case 'base_amount':
+              $gst_trans_type = $trans_type_name;
+              break;
+            case 'sgst':
+              $gst_trans_type = 'SGST + CGST';
+              break;
+            case 'cgst':
+              $gst_trans_type = 'SGST + CGST';
+              break;
+            case 'igst':
+              $gst_trans_type = 'IGST';
+              break;
+          }
+          $JournalRow['trans_type'] =  $gst_trans_type;
+          $JournalRow['amount'] =  $gst_trans_amount;
+          $JournalRow['ref_amount'] =  $gst_trans_amount;
+          $journalPayments[] = $JournalRow;
+        }
+    }else if (!empty($jrnls->userinvoicetrans->getUserInvoice->invoice_no)) {
         $gstData['base_amount'] = $jrnls->userinvoicetrans->base_amount;
         if ($jrnls->userinvoicetrans->sgst_amount != 0) {
             $gstData['sgst'] = $jrnls->userinvoicetrans->sgst_amount;

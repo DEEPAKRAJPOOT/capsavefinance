@@ -8,8 +8,8 @@
    })
  $(document).ready(function () {
        
-         document.getElementById('invoice_approve_amount').addEventListener('input', event =>
-         event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+       ///  document.getElementById('invoice_approve_amount').addEventListener('input', event =>
+      ///   event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
          $("#program_bulk_id").append("<option value=''>No data found</option>");
          $("#program_bulk_id").append("<option value=''>No data found</option>");
     });
@@ -92,7 +92,7 @@
             var postData = ({'invoice_id': invoice_id, 'status': 9, '_token': messages.token});
             th = this;
             jQuery.ajax({
-                url: messages.update_invoice_approve,
+                url: messages.update_invoice_approve_single_tab,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
@@ -447,7 +447,7 @@ function uploadFile(app_id,id)
             var status = $(this).attr('data-status');
             var postData = ({'invoice_id': arr, 'status': status, '_token': messages.token});
             jQuery.ajax({
-                url: messages.update_bulk_invoice,
+                url: messages.update_disburse_bulk_invoice,
                 method: 'post',
                 dataType: 'json',
                 data: postData,
@@ -543,6 +543,395 @@ function uploadFile(app_id,id)
             var $tr = $(this).closest('tr');
             jQuery.ajax({
                 url: messages.update_invoice_approve,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                   $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    else if(data==2)
+                    {
+                         alert('Limit Exceed');
+                    }
+                    else if(data==3)
+                    {
+                        $("#moveCase").html('(Exception Cases) Overdue');
+                        $(th).parent('td').parent('tr').remove();  
+                    }
+                    else if(data==4)
+                    {
+                         $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
+                        $(th).parent('td').parent('tr').remove(); 
+                    }
+                    else
+                    {
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $tr.remove();
+                    }
+                    
+
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+    
+    
+       ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('change', '.approveInv2', function () {
+       
+        var status = $(this).val();
+        $("#moveCase").html('');
+        if (status == 0)
+        {
+            return false;
+        }
+        else if (status == 7)
+        {
+            var st = "Pending";
+        }
+        else if (status == 8)
+        {
+            var st = "Approve";
+        }
+        else if (status == 9)
+        {
+            var st = "Disbursement Queue";
+        }
+       else if (status == 14)
+        {
+            var st = "Reject";
+        }
+        if (confirm('Are you sure? You want to ' + st + ' it.'))
+        {
+             $(".isloader").show(); 
+            var invoice_id = $(this).attr('data-id');
+             var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            var $tr = $(this).closest('tr');
+            jQuery.ajax({
+                url: messages.update_invoice_approve_tab,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                   $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    else if(data==2)
+                    {
+                         alert('Limit Exceed');
+                    }
+                    else if(data==3)
+                    {
+                        $("#moveCase").html('(Exception Cases) Overdue');
+                        $(th).parent('td').parent('tr').remove();  
+                    }
+                    else if(data==4)
+                    {
+                         $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
+                        $(th).parent('td').parent('tr').remove(); 
+                    }
+                    else
+                    {
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $tr.remove();
+                    }
+                    
+
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+    
+    
+       ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('change', '.approveInv3', function () {
+       
+        var status = $(this).val();
+        $("#moveCase").html('');
+        if (status == 0)
+        {
+            return false;
+        }
+        else if (status == 7)
+        {
+            var st = "Pending";
+        }
+        else if (status == 8)
+        {
+            var st = "Approve";
+        }
+        else if (status == 9)
+        {
+            var st = "Disbursement Queue";
+        }
+       else if (status == 14)
+        {
+            var st = "Reject";
+        }
+        if (confirm('Are you sure? You want to ' + st + ' it.'))
+        {
+             $(".isloader").show(); 
+            var invoice_id = $(this).attr('data-id');
+             var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            var $tr = $(this).closest('tr');
+            jQuery.ajax({
+                url: messages.update_invoice_disb_que_tab,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                   $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    else if(data==2)
+                    {
+                         alert('Limit Exceed');
+                    }
+                    else if(data==3)
+                    {
+                        $("#moveCase").html('(Exception Cases) Overdue');
+                        $(th).parent('td').parent('tr').remove();  
+                    }
+                    else if(data==4)
+                    {
+                         $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
+                        $(th).parent('td').parent('tr').remove(); 
+                    }
+                    else
+                    {
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $tr.remove();
+                    }
+                    
+
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+    
+    
+       ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('change', '.approveInv4', function () {
+       
+        var status = $(this).val();
+        $("#moveCase").html('');
+        if (status == 0)
+        {
+            return false;
+        }
+        else if (status == 7)
+        {
+            var st = "Pending";
+        }
+        else if (status == 8)
+        {
+            var st = "Approve";
+        }
+        else if (status == 9)
+        {
+            var st = "Disbursement Queue";
+        }
+       else if (status == 14)
+        {
+            var st = "Reject";
+        }
+        if (confirm('Are you sure? You want to ' + st + ' it.'))
+        {
+             $(".isloader").show(); 
+            var invoice_id = $(this).attr('data-id');
+             var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            var $tr = $(this).closest('tr');
+            jQuery.ajax({
+                url: messages.update_invoice_failed_disb_tab,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                   $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    else if(data==2)
+                    {
+                         alert('Limit Exceed');
+                    }
+                    else if(data==3)
+                    {
+                        $("#moveCase").html('(Exception Cases) Overdue');
+                        $(th).parent('td').parent('tr').remove();  
+                    }
+                    else if(data==4)
+                    {
+                         $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
+                        $(th).parent('td').parent('tr').remove(); 
+                    }
+                    else
+                    {
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $tr.remove();
+                    }
+                    
+
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+    
+    
+       ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('change', '.approveInv5', function () {
+       
+        var status = $(this).val();
+        $("#moveCase").html('');
+        if (status == 0)
+        {
+            return false;
+        }
+        else if (status == 7)
+        {
+            var st = "Pending";
+        }
+        else if (status == 8)
+        {
+            var st = "Approve";
+        }
+        else if (status == 9)
+        {
+            var st = "Disbursement Queue";
+        }
+       else if (status == 14)
+        {
+            var st = "Reject";
+        }
+        if (confirm('Are you sure? You want to ' + st + ' it.'))
+        {
+             $(".isloader").show(); 
+            var invoice_id = $(this).attr('data-id');
+             var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            var $tr = $(this).closest('tr');
+            jQuery.ajax({
+                url: messages.update_invoice_reject_tab,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                   $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }
+                    else if(data==2)
+                    {
+                         alert('Limit Exceed');
+                    }
+                    else if(data==3)
+                    {
+                        $("#moveCase").html('(Exception Cases) Overdue');
+                        $(th).parent('td').parent('tr').remove();  
+                    }
+                    else if(data==4)
+                    {
+                         $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
+                        $(th).parent('td').parent('tr').remove(); 
+                    }
+                    else
+                    {
+                        $("#moveCase").html('Invoice successfully sent to  '+st+' ');
+                        $tr.remove();
+                    }
+                    
+
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+    
+         ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('change', '.approveInv6', function () {
+       
+        var status = $(this).val();
+        $("#moveCase").html('');
+        if (status == 0)
+        {
+            return false;
+        }
+        else if (status == 7)
+        {
+            var st = "Pending";
+        }
+        else if (status == 8)
+        {
+            var st = "Approve";
+        }
+        else if (status == 9)
+        {
+            var st = "Disbursement Queue";
+        }
+       else if (status == 14)
+        {
+            var st = "Reject";
+        }
+        if (confirm('Are you sure? You want to ' + st + ' it.'))
+        {
+             $(".isloader").show(); 
+            var invoice_id = $(this).attr('data-id');
+             var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': status, '_token': messages.token});
+            var $tr = $(this).closest('tr');
+            jQuery.ajax({
+                url: messages.update_invoice_exception_tab,
                 method: 'post',
                 dataType: 'json',
                 data: postData,

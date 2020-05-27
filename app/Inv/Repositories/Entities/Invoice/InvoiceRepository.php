@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -1183,17 +1184,22 @@ use CommonRepositoryTraits;
     }
     public function getReportAllInvoice()
     {
-        return InvoiceModel::getReportAllInvoice();
+        return InvoiceDisbursed::getReportAllInvoice();
     }
     public function getReportAllOverdueInvoice()
     {
-        return InvoiceModel::getReportAllOverdueInvoice();
+        return InvoiceDisbursed::getReportAllOverdueInvoice();
     }
+    
+   public function getInvoiceRealisationList()
+    {
+        return InvoiceDisbursed::getInvoiceRealisationList();
+    } 
      public function pdfInvoiceDue($attr)
     {
          try
          {
-             return InvoiceModel::pdfInvoiceDue($attr); 
+             return InvoiceDisbursed::pdfInvoiceDue($attr); 
          } catch (Exception $ex) {
                return $ex;
          }
@@ -1203,10 +1209,21 @@ use CommonRepositoryTraits;
     {
          try
          {
-             return InvoiceModel::pdfInvoiceOverDue($attr); 
+             return InvoiceDisbursed::pdfInvoiceOverDue($attr); 
+         } catch (Exception $ex) {
+               return $ex;
+         }
+       
+    } 
+      public function pdfInvoiceRealisation($attr)
+    {
+         try
+         {
+             return InvoiceDisbursed::pdfInvoiceRealisation($attr); 
          } catch (Exception $ex) {
                return $ex;
          }
        
     }  
+    
 }

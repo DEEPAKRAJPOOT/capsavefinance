@@ -22,6 +22,12 @@ try {
                     $("#lease_register_report_processing").css("display", "none");
                 }
             },
+            "drawCallback": function( settings ) {
+                excelUrl = settings.json.excelUrl;
+                $('#dwnldEXCEL').attr('href', excelUrl)
+                pdfUrl = settings.json.pdfUrl;
+                $('#dwnldPDF').attr('href', pdfUrl)
+            },
             columns: [
                 {data: 'state'},
                 {data: 'gstn'},

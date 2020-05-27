@@ -42,6 +42,7 @@ use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
+use Illuminate\Http\JsonResponse;
 
 class AjaxController extends Controller {
 
@@ -3289,10 +3290,9 @@ if ($err) {
       }
       
         
-           public function  getChrgAmount(Request $request)
+      public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
-          
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
@@ -3948,6 +3948,12 @@ if ($err) {
         $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
         return $users;
     }
+    
+   public function getInvoiceRealisationList(DataProviderInterface $dataProvider) {
+        $transactionList = $this->invRepo->getInvoiceRealisationList();
+        $users = $dataProvider->getInvoiceRealisationList($this->request, $transactionList);
+        return $users;
+    }  
         /**
      * Get all Equipment
      *
@@ -4449,9 +4455,23 @@ if ($err) {
     }
 
     public function leaseRegister(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'type' => 'excel',
+        ];
         $leaseRegistersList = $this->reportsRepo->leaseRegisters();
         $leaseRegisters = $dataProvider->leaseRegister($this->request, $leaseRegistersList);
-        return $leaseRegisters;  
+        $leaseRegisters     = $leaseRegisters->getData(true);
+        $leaseRegisters['excelUrl'] = route('download_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
+        return new JsonResponse($leaseRegisters);
     }
 
 }

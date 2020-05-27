@@ -16,6 +16,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 class BizInvoice extends BaseModel
 {
@@ -116,8 +117,14 @@ public static function saveBulkInvoice($arrInvoice)
         $updated_at  = Carbon::now()->toDateTimeString();
         $id = Auth::user()->user_id;
         InvoiceStatusLog::saveInvoiceStatusLog($invoiceId,$status);
-        return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        $marginStatus =  [7,11,14,28];
+        if(in_array($status,$marginStatus))
+        {
+            self::where(['invoice_id' => $invoiceId])->update(['is_margin_deduct' => 0]);
+        }
        
+          return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
     } 
     
     public static function updateInvoiceAmount($attributes)
@@ -471,95 +478,14 @@ public static function saveBulkInvoice($arrInvoice)
         return self::whereIn('invoice_id', $invoices)->sum('invoice_approve_amount');
     }
     
-     public static function getReportAllInvoice()
-     {
-       
-           return self::where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC');
-       
-     } 
-      public static function getReportAllOverdueInvoice()
-     {
-       
-           return self::where(['status_id' => 12])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
-                    $query->where('is_overdue', 1);
-                })->orderBy('invoice_id', 'DESC');
-       
-     } 
-     
+   
       function detail()
      {
           return $this->belongsTo('App\Inv\Repositories\Models\UserDetail', 'supplier_id','user_id')->where('is_overdue',1); 
      
      }
      
-       public static function pdfInvoiceDue($attr)
-     {
-       
-           $user = LmsUser::where('customer_id',$attr->customer_id)->pluck('user_id');
-            if($attr->from_date!=null && $attr->to_date!=null && count($user) > 0) 
-           {  
-               $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
-               $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-              return self::whereIn('supplier_id',$user)->WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC')->get();
-           
-           }
-           else if($attr->from_date!=null && $attr->to_date!=null && count($user)==0)
-           {
-               $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
-               $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-              return self::WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC')->get();
-         
-           }
-           else if($attr->from_date==null && $attr->to_date==null && count($user) > 0)
-           {
-              
-              return self::whereIn('supplier_id',$user)->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC')->get();
-         
-           }
-        else {
-           
-             return self::where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user'])->orderBy('invoice_id', 'DESC')->get();
-
-        }
-     } 
+   
      
-        public static function pdfInvoiceOverDue($attr)
-     {
-       
-           $user = LmsUser::where('customer_id',$attr->customer_id)->pluck('user_id');
-            if($attr->from_date!=null && $attr->to_date!=null && count($user) > 0) 
-           {  
-               $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
-               $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-              return self::whereIn('supplier_id',$user)->WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
-                    $query->where('is_overdue', 1);
-                })->orderBy('invoice_id', 'DESC')->get();
-           
-           }
-           else if($attr->from_date!=null && $attr->to_date!=null && count($user)==0)
-           {
-               $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
-               $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-              return self::WhereBetween('invoice_date', [$from_date, $to_date])->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
-                    $query->where('is_overdue', 1);
-                })->orderBy('invoice_id', 'DESC')->get();
-         
-           }
-           else if($attr->from_date==null && $attr->to_date==null && count($user) > 0)
-           {
-              
-              return self::whereIn('supplier_id',$user)->where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
-                    $query->where('is_overdue', 1);
-                })->orderBy('invoice_id', 'DESC')->get();
-         
-           }
-        else {
-           
-             return self::where(['status_id' => 12,'is_repayment' => 0])->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','detail'])->whereHas('detail', function($query) {
-                    $query->where('is_overdue', 1);
-                })->orderBy('invoice_id', 'DESC')->get();
-
-        }
-     } 
     
 }
