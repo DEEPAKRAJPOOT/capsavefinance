@@ -327,12 +327,12 @@ class DataRenderer implements DataProviderInterface
                     function ($app) use ($request) {
                         $act = '';
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
-                        if ($view_only && in_array($app->status, [0,1,2]) ) {
+                        if ($view_only && in_array($app->status, [0,1,2]) && $app->curr_status_id === null) {
                            //if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
                             //}                            
                         }
-                        if ($view_only && $app->status == 1) {
+                        if ($view_only && $app->status == 1 && $app->curr_status_id === null) {
                           //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
 
                             if(Helpers::checkPermission('send_case_confirmBox')){
@@ -355,22 +355,25 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }                                                        
                         }
-                        if ($app->renewal_status == 1) {
+                        if ($app->renewal_status == 1 && $app->curr_status_id === null) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
                         $where=[];
                         $where['user_id'] = $app->user_id;
                         $where['status'] = [0,1];
                         $appData = Application::getApplicationsData($where);
-                        if ($app->status == 2 && !isset($appData[0])) { //Limit Enhancement
+                        if ($app->status == 2 && !isset($appData[0]) && $app->curr_status_id === null) { //Limit Enhancement
                             $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
                             $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
                         }
                         //Route for Application Rejection
                         if ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED']) {
-                           //if(Helpers::checkPermission('add_app_note')){
+                           //if(Helpers ::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Reject Application" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'user_id' => $app->user_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
                             //}                            
+                        }
+                        if($app->curr_status_id !== null && $app->curr_status_id === 43){
+                            $act = $act. $app->reason;
                         }
                         return $act;
                                       
