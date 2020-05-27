@@ -160,9 +160,15 @@
                              $("#chrg_calculation_type2").attr('disabled','disabled');
                             if(res.is_gst_applicable==1)
                            { 
+<<<<<<< HEAD
                              var limitAmount  =  $("#amount").val();  
                              var limitAmount  =  limitAmount.replace(",", ""); 
                              var fixedamount  =  parseInt(limitAmount*18/100);
+=======
+                             var limitAmount =  $("#amount").val();  
+                             var limitAmount =   limitAmount.replace(",", ""); 
+                             var fixedamount = parseInt(limitAmount*18/100);
+>>>>>>> r_gajendra
                              var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
                              $("#charge_amount_gst_new").val(finalTotalAmount);
                            }
