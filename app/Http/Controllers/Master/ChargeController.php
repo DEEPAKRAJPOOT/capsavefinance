@@ -36,7 +36,6 @@ class ChargeController extends Controller {
        
         try {
             $arrChargesData = $request->all();
-//            dd($arrChargesData);
             $arrChargesData['created_at'] = \carbon\Carbon::now();
             $arrChargesData['created_by'] = Auth::user()->user_id;
             $status = false;

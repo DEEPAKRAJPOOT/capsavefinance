@@ -98,7 +98,7 @@
             </div>
             <div class="form-group col-md-3" id="gst_div">
                 <label for="chrg_type"></label>
-                <input type="hidden" class="form-control" readonly="readonly" name="gst_percentage" value="{{Config::get('payment.gst')}}" placeholder="GST Percentage" style="height:35px; margin-bottom: -0px">
+                <input type="hidden" class="form-control" readonly="readonly" name="gst_percentage" value="{{$charge_data->gst_percentage}}" placeholder="GST Percentage" style="height:35px; margin-bottom: -0px">
             </div>
         </div>
         <div class="row">
