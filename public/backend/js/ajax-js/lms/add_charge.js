@@ -108,7 +108,105 @@
     
     
     
-    
+  //////////////////// onchange anchor  id get data /////////////////
+  $(document).on('change','#chrg_name',function(){
+      $(".chargeTypeGstCal, #charge_amount_gst_new").css("display","inline");
+      $("#chrg_applicable_id").empty();
+      $("#chrg_calculation_type1").attr('disabled',false);
+      $("#chrg_calculation_type2").attr('disabled',false);
+      var chrg_name =  $(this).val(); 
+      if($("#program_id").val()=='') 
+      {    
+            
+             $(this).val('');
+             $("#msgprogram").html('Please select program');
+             return false;
+      }
+      if(chrg_name=='')
+      {
+             $("#chrg_calculation_type1").attr('checked',false);
+             $("#chrg_calculation_type2").attr('checked',false);
+             $("#amount").empty();
+              return false;
+      }
+      var postData =  ({'app_id':$("#app_id").val(),'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
+       jQuery.ajax({
+        url: messages.get_chrg_amount,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                alert(errorThrown);
+                },
+                success: function (res) {
+                      if(res.status==1)
+                      {
+                          $("#limit_amount_new").val(parseInt(res.limit));  
+                          var  applicable  = res.applicable;  
+                          $("#chrg_applicable_id").html(applicable);
+                          $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
+                          $("#chrg_applicable_id option").attr('disabled','disabled');
+                          ////**** calculation here for according charge applicable ******/
+                          $("#amount").val(res.amount);
+                          $("#id").val(res.id);
+                          $("#charge_type").val(res.type);
+                        if(res.type==1)
+                         {
+                           
+                             $("#chrg_calculation_type2").attr('checked',false);
+                             $("#approved_limit_div, .chargeTypeCal").hide();
+                             $("#chrg_calculation_type1").attr('checked',true);
+                             $("#chrg_calculation_type2").attr('disabled','disabled');
+                            if(res.is_gst_applicable==1)
+                           { 
+                             var limitAmount =  $("#amount").val();  
+                             var fixedamount = parseInt(limitAmount*18/100);
+                             var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
+                             $("#charge_amount_gst_new").val(finalTotalAmount);
+                           }
+                             
+                         }  
+                         else if(res.type==2)
+                         {
+                             $("#chrg_calculation_type1").attr('checked',false);
+                             $("#approved_limit_div, .chargeTypeCal").show(); 
+                             $("#chrg_calculation_type2").attr('checked',true);
+                             $("#chrg_calculation_type1").attr('disabled','disabled');
+                             var limit_amount_new  =  $("#limit_amount_new").val();
+                             var afterPercent = parseInt(limit_amount_new*res.amount/100);
+                             $("#charge_amount_new").val(afterPercent);
+                         } 
+                          if(res.is_gst_applicable==1)
+                         {
+                            $("#is_gst_applicable2").attr('disabled','disabled'); 
+                             $("#is_gst_applicable1").prop('checked',true);
+                            $("#is_gst_applicable2").prop('checked',false);
+                            $(".chargeTypeGstCal").css({"display":"inline"});
+                            if(res.type==2)
+                            {
+                            var afterPercentGst = parseInt(afterPercent*18/100);
+                            finalTotalAmount  = parseInt(afterPercentGst+afterPercent);
+                            $("#charge_amount_gst_new").val(finalTotalAmount);
+                            }
+                         }  
+                         else if(res.is_gst_applicable==2)
+                         {
+                             $(".chargeTypeGstCal").css({"display":"none"});
+                             $("#is_gst_applicable2").prop('checked',true);
+                             $("#is_gst_applicable1").prop('checked',false);
+                              $("#is_gst_applicable1").attr('disabled','disabled');
+                            } 
+                         
+                      }
+                      else
+                      {
+                         $("#chrg_name").val('');
+                         alert('Something went wrong, Please try again');
+                      }
+                }
+        }); 
+    }); 
+            
     $(document).on('change','#program_id_old',function(){
        var postData =  ({'app_id':$("#app_id").val(),'prog_id':$("#program_id").val(),'_token':messages.token});
        jQuery.ajax({
