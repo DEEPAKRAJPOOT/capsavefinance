@@ -6289,7 +6289,7 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'debtor_acc_no',
                     function ($invoice)  {     
-                           return  $invoice->Invoice->anchor->anchorAccount->acc_no;
+                           return  ($invoice->Invoice->anchor->anchorAccount) ? $invoice->Invoice->anchor->anchorAccount->acc_no : '' ;
                   })
              
               ->addColumn(
