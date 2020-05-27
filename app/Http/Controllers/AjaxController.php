@@ -3287,10 +3287,9 @@ if ($err) {
       }
       
         
-           public function  getChrgAmount(Request $request)
+      public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
-          
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
