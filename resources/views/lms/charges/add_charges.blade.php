@@ -122,7 +122,9 @@
 
 </div>
 @endsection
+
 @section('jscript')
+<script src="{{ asset('backend/js/ajax-js/lms/add_charge.js') }}"></script>
 <script type="text/javascript">
 
     var messages = {
@@ -134,5 +136,5 @@
 
 
 </script>
-<script src="{{ asset('backend/js/ajax-js/lms/add_charge.js') }}"></script>
+
 @endsection
