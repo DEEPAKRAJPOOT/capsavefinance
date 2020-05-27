@@ -447,7 +447,14 @@ Route::group(
         'as' => 'invoice_document_save',
         'uses' => 'AjaxController@saveInvoiceDoc'
         ]
-    );  
+    ); 
+      Route::post(
+        'update_invoice_approve_single_tab',
+        [
+        'as' => 'update_invoice_approve_single_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );   
       Route::post(
         'update_invoice_approve',
         [
@@ -455,7 +462,43 @@ Route::group(
         'uses' => 'AjaxController@updateInvoiceApprove'
         ]
     );   
+       Route::post(
+        'update_invoice_approve_tab',
+        [
+        'as' => 'update_invoice_approve_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    ); 
+       
+     Route::post(
+        'update_invoice_disb_que_tab',
+        [
+        'as' => 'update_invoice_disb_que_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );   
+      Route::post(
+        'update_invoice_failed_disb_tab',
+        [
+        'as' => 'update_invoice_failed_disb_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );    
+      Route::post(
+        'update_invoice_reject_tab',
+        [
+        'as' => 'update_invoice_reject_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );     
       
+     Route::post(
+        'update_invoice_exception_tab',
+        [
+        'as' => 'update_invoice_exception_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );       
     Route::post(
         'get-role-list',
         [
@@ -763,6 +806,10 @@ Route::group(
         'as' => 'lms_get_invoice_over_due_list',
         'uses' => 'AjaxController@getInvoiceOverDueList'
     ]);
+   Route::post('lms_get_invoice_realisation_list', [
+        'as' => 'lms_get_invoice_realisation_list',
+        'uses' => 'AjaxController@getInvoiceRealisationList'
+    ]);
     Route::post('get-colender-soa-list', [
         'as' => 'get_colender_soa_list',
         'uses' => 'AjaxController@getColenderSoaList'
@@ -777,7 +824,10 @@ Route::group(
         'as' => 'update_bulk_invoice',
         'uses' => 'AjaxController@updateBulkInvoice'
     ]);
-    
+     Route::post('update_disburse_bulk_invoice', [
+        'as' => 'update_disburse_bulk_invoice',
+        'uses' => 'AjaxController@updateBulkInvoice'
+    ]); 
     Route::post('set-default-account', [
         'as' => 'set_default_account',
         'uses' => 'AjaxController@setDefaultAccount'

@@ -440,51 +440,51 @@ trait InvoiceTrait
             $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
           if($inv_details['status_id']==8)  
          {     
-                    $finalsum = $sum-$inv_details['invoice_approve_amount'];
-                    if($limit  >= $finalsum)
-                    {
-                        $remain_amount = $limit-$sum;
-                       if($remain_amount >=$inv_details['invoice_approve_amount'])
-                        { 
-                           $status=8; 
-                           $limit_exceed='Auto Approve';
-                           return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['invoice_margin_amount' => $getMargin,'is_margin_deduct' =>1,'remark' =>$limit_exceed,'status_id' =>$status]);
+               $finalsum = $sum-$inv_details['invoice_approve_amount'];
                
-                        }
-                        else 
-                        {
-                           $status=28; 
-                           $limit_exceed='Auto Approve, Limit exceed';
-                           return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
-                
-                        }
-                       }
-                    else 
-                       {
-                       
-                           $status=28; 
-                           $limit_exceed='Auto Approve, Limit exceed';
-                           return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
-                
-                       }
-                 
                 if($isOverDue->is_overdue==1)
                 {
                    $status=28; 
                    $limit_exceed='Auto Approve, Overdue';
-                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
                 
                 }   
-               if($dueDateGreaterCurrentdate)
+               else if($dueDateGreaterCurrentdate)
                 {
                           $status=28; 
                           $limit_exceed='Customer limit has been expired.';
-                          return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+                          return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
                 
                 }
-                
+                    
+               else if($limit  >= $finalsum)
+                {
+                    $remain_amount = $limit-$sum;
+                   if($remain_amount >=$inv_details['invoice_approve_amount'])
+                    { 
+                       $status=8; 
+                       $limit_exceed='Auto Approve';
+                       return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['invoice_margin_amount' => $getMargin,'is_margin_deduct' =>1,'remark' =>$limit_exceed,'status_id' =>$status]);
+
+                    }
+                    else 
+                    {
+                       $status=28; 
+                       $limit_exceed='Auto Approve, Limit exceed';
+                       return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+
+                    }
+                   }
+            else 
+               {
+
+                   $status=28; 
+                   $limit_exceed='Auto Approve, Limit exceed';
+                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+
+               }
            }
-           if($inv_details['status_id']==7)  
+            if($inv_details['status_id']==7)  
            { 
                 $status_id=7; 
                 $limit_exceed='';  
@@ -499,12 +499,12 @@ trait InvoiceTrait
                     $limit_exceed='Customer limit has been expired.'; 
                 }
                   InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id); 
-                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
+                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
             }
              if($inv_details['status_id']==28)
            {
                   InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$inv_details['status_id']); 
-                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['status_id' =>$inv_details['status_id']]);
+                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['status_id' =>$inv_details['status_id']]);
           
            }
   

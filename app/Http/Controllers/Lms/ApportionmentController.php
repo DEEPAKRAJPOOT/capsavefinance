@@ -170,7 +170,12 @@ class ApportionmentController extends Controller
             $transId = $request->get('trans_id');
             $payment_id = $request->get('payment_id');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
-            return view('lms.apportionment.waiveOffTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView]); 
+            if($TransDetail->transType->chrg_master_id){
+                $gst = $TransDetail->transType->charge->gst_percentage;
+            }else{
+                $gst = 0;
+            }
+            return view('lms.apportionment.waiveOffTransaction', ['TransDetail' => $TransDetail,'payment_id' => $payment_id, 'sanctionPageView'=>$sanctionPageView, 'gst'=>$gst]); 
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 

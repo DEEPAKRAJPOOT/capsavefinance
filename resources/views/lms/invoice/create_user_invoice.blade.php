@@ -218,6 +218,7 @@
            setDate : new Date(),
            format: 'dd/mm/yyyy',
            autoclose: true,
+           startDate:  new Date(),
            minView : 2,
        });
    });
