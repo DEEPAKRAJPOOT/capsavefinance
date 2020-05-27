@@ -197,11 +197,11 @@
                          <td>
                             <span style="font-size: small;">{{number_format($invoice->invoice->invoice_approve_amount)}}</span>
                         </td>
-                        <td>
-                            <span style="font-size: small;">xxxxxxxx</span>
-                        </td>
                          <td>
                             <span style="font-size: small;">{{$invoice->InterestAccrual->count()}}</span>
+                        </td>
+                        <td>
+                            <span style="font-size: small;">xxxxxxxx</span>
                         </td>
                            <td>
                             <span style="font-size: small;">{{$invoice->invoice->business->biz_entity_name}}</span>
