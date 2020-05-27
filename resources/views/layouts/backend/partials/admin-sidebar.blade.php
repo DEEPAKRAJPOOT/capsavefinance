@@ -462,7 +462,7 @@
               </ul>
            </div>
         </li>
-        @endif
+        @endcan
         
         @canany(['get_companies_list'])
         <li class="nav-item">
@@ -481,7 +481,7 @@
                 </ul>
             </div>
         </li>
-        @endif
+        @endcan
 
         @canany(['get_tally_batches','get_fin_transactions'])
         <li class="nav-item">
