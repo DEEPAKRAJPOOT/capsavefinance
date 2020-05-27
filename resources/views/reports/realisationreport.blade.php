@@ -76,7 +76,7 @@
                                                      <th>Realisation on Date.</th>
                                                      <th>Realisation  Amount.</th>
                                                      <th>OD/OP Days  </th>
-                                                     <th>Check</th>
+                                                     <th>Cheque</th>
                                                       <th>Business</th>
                                                    </tr>
 	                                        </thead>

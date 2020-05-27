@@ -26,15 +26,16 @@ try {
                 }
             },
             columns: [
-                {data: 'batch_no'},
-                {data: 'batch_date'},
-                {data: 'bills_no'},
-                {data: 'bill_date'},
-                {data: 'due_date'},
-                {data: 'invoice_amount'},
-                {data: 'invoice_appr_amount'},
+                {data: 'debtor_name'},
+                {data: 'debtor_acc_no'},
+                {data: 'invoice_date'},
+                {data: 'invoice_due_amount_date'},
+                {data: 'grace_period'},
+                {data: 'relisation_date'},
+                {data: 'relisation_amount'},
                 {data: 'od'},
-                {data: 'balance'}
+                {data: 'cheque'},
+                {data: 'business'}
             ],
             buttons: [
                 
