@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-@include('layouts.backend.partials.admin_reports_links',['active'=>'overduereport'])
+@include('layouts.backend.partials.admin_reports_links',['active'=>'realisationreport'])
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Reports</h3>
-            <small> Invoice Due Report</small>
+            <small> Invoice Realisation Report</small>
         </div>
     </section>
     <div class="card">
@@ -68,15 +68,16 @@
 	                              		<table id="lmsSoaList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
                                                      <tr role="row">
-                                                    <th>Batch No</th>
-                                                    <th>Batch Date</th>
-                                                    <th>Bills  No.</th>
-                                                     <th>Bill  Date.</th>
-                                                     <th>Due  Date.</th>
-                                                     <th>Bill  Amount.</th>
-                                                     <th>Approve  Amount.</th>
-                                                     <th> Days OD </th>
-                                                     <th>Balance</th>
+                                                    <th>Debtor Name</th>
+                                                    <th>Debtor Invoice Acc. No.</th>
+                                                    <th>Invoice Date</th>
+                                                     <th>Invoice Due Amount Date.</th>
+                                                     <th>Grace Period</th>
+                                                     <th>Realisation on Date.</th>
+                                                     <th>Realisation  Amount.</th>
+                                                     <th>OD/OP Days  </th>
+                                                     <th>Cheque</th>
+                                                      <th>Business</th>
                                                    </tr>
 	                                        </thead>
 	                                        <tbody>
@@ -109,8 +110,8 @@
 <script>
  var messages = {
         get_customer: "{{ route('get_customer') }}",
-        lms_get_invoice_over_due_list: "{{ URL::route('lms_get_invoice_over_due_list') }}",
-        pdf_invoice_over_due_url:"{{ URL::route('pdf_invoice_over_due_url') }}",
+        lms_get_invoice_realisation_list: "{{ URL::route('lms_get_invoice_realisation_list') }}",
+        pdf_invoice_realisation_url:"{{ URL::route('pdf_invoice_realisation_url') }}",
         token: "{{ csrf_token() }}",
     };    
 $('#from_date').datetimepicker({
@@ -160,5 +161,5 @@ function setClientDetails(data){
     $("#customer_id").val(data.customer_id);
 }
 </script>
-<script src="{{ asset('backend/js/lms/overdue.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/lms/realisation.js') }}" type="text/javascript"></script>
 @endsection

@@ -41,8 +41,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 	protected function update(array $attributes, $id) {        
 	}
 
-	public function leaseRegisters($whereCondition=[]) {
-		return UserInvoiceTrans::leaseRegisters($whereCondition);
+	public function leaseRegisters($whereCondition=[], $whereRawCondition = NULL) {
+		return UserInvoiceTrans::leaseRegisters($whereCondition, $whereRawCondition);
 	}
 
 }

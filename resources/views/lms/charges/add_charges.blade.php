@@ -117,13 +117,14 @@
                 <input type="hidden"   id="chrg_applicable_hidden_id" name="chrg_applicable_hidden_id" >
                 <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit"/>
             </div>
-            <script src="../../../../public/backend/js/ajax-js/lms/add_charge.js" type="text/javascript"></script>
         </div>
     </form>
 
 </div>
 @endsection
+
 @section('jscript')
+<script src="{{ asset('backend/js/ajax-js/lms/add_charge.js') }}"></script>
 <script type="text/javascript">
 
     var messages = {
@@ -135,5 +136,5 @@
 
 
 </script>
-<script src="{{ asset('backend/js/ajax-js/lms/add_charge.js') }}"></script>
+
 @endsection

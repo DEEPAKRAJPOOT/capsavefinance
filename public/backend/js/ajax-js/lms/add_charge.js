@@ -110,6 +110,7 @@
     
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','#chrg_name',function(){
+    
       $(".chargeTypeGstCal, #charge_amount_gst_new").css("display","inline");
       $("#chrg_applicable_id").empty();
       $("#chrg_calculation_type1").attr('disabled',false);
@@ -117,7 +118,6 @@
       var chrg_name =  $(this).val(); 
       if($("#program_id").val()=='') 
       {    
-            
              $(this).val('');
              $("#msgprogram").html('Please select program');
              return false;
@@ -139,6 +139,7 @@
                 alert(errorThrown);
                 },
                 success: function (res) {
+                     
                       if(res.status==1)
                       {
                           $("#limit_amount_new").val(parseInt(res.limit));  
@@ -152,15 +153,16 @@
                           $("#charge_type").val(res.type);
                         if(res.type==1)
                          {
-                           
+                             
                              $("#chrg_calculation_type2").attr('checked',false);
                              $("#approved_limit_div, .chargeTypeCal").hide();
                              $("#chrg_calculation_type1").attr('checked',true);
                              $("#chrg_calculation_type2").attr('disabled','disabled');
                             if(res.is_gst_applicable==1)
                            { 
-                             var limitAmount =  $("#amount").val();  
-                             var fixedamount = parseInt(limitAmount*18/100);
+                             var limitAmount  =  $("#amount").val();  
+                             var limitAmount  =  limitAmount.replace(",", ""); 
+                             var fixedamount  =  parseInt(limitAmount*18/100);
                              var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
                              $("#charge_amount_gst_new").val(finalTotalAmount);
                            }
@@ -206,7 +208,7 @@
                 }
         }); 
     }); 
-        
+            
     $(document).on('change','#program_id_old',function(){
        var postData =  ({'app_id':$("#app_id").val(),'prog_id':$("#program_id").val(),'_token':messages.token});
        jQuery.ajax({

@@ -110,7 +110,7 @@
         get_biz_anchor: "{{ URL::route('get_biz_anchor') }}",
         front_program_list: "{{ URL::route('front_program_list') }}",
         front_supplier_list: "{{ URL::route('front_supplier_list') }}",
-        update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
+        update_invoice_exception_tab: "{{ URL::route('update_invoice_exception_tab') }}",
         invoice_document_save: "{{ URL::route('invoice_document_save') }}",
         update_bulk_invoice: "{{ URL::route('update_bulk_invoice') }}",
         token: "{{ csrf_token() }}",

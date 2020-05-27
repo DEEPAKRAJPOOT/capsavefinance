@@ -11,7 +11,7 @@ try {
             responsive: true,
             searching: false,
             ajax: {
-                "url": messages.lms_get_invoice_over_due_list, // json datasource
+                "url": messages.lms_get_invoice_realisation_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.from_date = $('input[name="from_date"]').val();
@@ -26,15 +26,16 @@ try {
                 }
             },
             columns: [
-                {data: 'batch_no'},
-                {data: 'batch_date'},
-                {data: 'bills_no'},
-                {data: 'bill_date'},
-                {data: 'due_date'},
-                {data: 'invoice_amount'},
-                {data: 'invoice_appr_amount'},
+                {data: 'debtor_name'},
+                {data: 'debtor_acc_no'},
+                {data: 'invoice_date'},
+                {data: 'invoice_due_amount_date'},
+                {data: 'grace_period'},
+                {data: 'relisation_date'},
+                {data: 'relisation_amount'},
                 {data: 'od'},
-                {data: 'balance'}
+                {data: 'cheque'},
+                {data: 'business'}
             ],
             buttons: [
                 
@@ -63,7 +64,7 @@ try {
         customer_id = $('input[name=search_keyword]').val().trim();
         if(action.trim() == 'pdf'){
           
-            url = messages.pdf_invoice_over_due_url;
+            url = messages.pdf_invoice_realisation_url;
         }
 
 
