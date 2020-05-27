@@ -6284,7 +6284,6 @@ class DataRenderer implements DataProviderInterface
                     'debtor_name',
                     function ($invoice) { 
                      return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
-                     
                     })
                   ->addColumn(
                     'debtor_acc_no',

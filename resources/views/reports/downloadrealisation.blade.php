@@ -176,7 +176,7 @@
                             <span style="font-size: small;">{{$invoice->invoice->anchor->comp_name}}</span>
                         </td>
                          <td>
-                            <span style="font-size: small;">{{$invoice->Invoice->anchor->anchorAccount->acc_no}}</span>
+                            <span style="font-size: small;">{{($invoice->Invoice->anchor->anchorAccount) ? $invoice->Invoice->anchor->anchorAccount->acc_no : ''}}</span>
                         </td>
                         <td>
                             <span style="font-size: small;">{{\Carbon\Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y')}}</span>
