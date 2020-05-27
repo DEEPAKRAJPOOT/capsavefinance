@@ -242,7 +242,7 @@
                 'cmp_add': {
                     required: true,
                     alphanumericdot: true,
-                    unique_add: false
+                    unique_add: true
                 },
                 'cmp_email': {
                     required: true,
