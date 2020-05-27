@@ -6283,14 +6283,13 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'debtor_name',
                     function ($invoice) { 
-                        
-                        return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
+                     return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
                      
                     })
                   ->addColumn(
                     'debtor_acc_no',
                     function ($invoice)  {     
-                           return  'xxxxxxxxxxxxxxxxxx';
+                           return  $invoice->Invoice->anchor->anchorAccount->acc_no;
                   })
              
               ->addColumn(
@@ -6325,7 +6324,24 @@ class DataRenderer implements DataProviderInterface
                     'cheque',
                     function ($invoice) {
                        
-                           return   'xxxxxxxx';   
+                      $chk  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->utr_no)
+                           {
+                             $chk.= $row->payment->utr_no.",";
+                           }
+                            if( $row->payment->unr_no)
+                           {
+                             $chk.= $row->payment->unr_no.",";
+                           }
+                            if( $row->payment->cheque_no)
+                           {
+                             $chk.= $row->payment->cheque_no.",";
+                           }
+                      }
+                    return substr($chk,0,-1);
+                     
                        
                     })
                    ->addColumn(
