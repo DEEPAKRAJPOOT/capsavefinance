@@ -134,7 +134,7 @@ class Transactions extends BaseModel {
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND')])
+        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])
         ->sum('amount');
 
         $cr = self::where('parent_trans_id','=',$this->trans_id)
@@ -168,7 +168,7 @@ class Transactions extends BaseModel {
     public function getRefundableAmtAttribute(){
         return self::where('link_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
-        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND')]) 
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')]) 
         ->sum('amount');
     }
 
@@ -190,7 +190,7 @@ class Transactions extends BaseModel {
     public function getTransNameAttribute(){
         $name = ' '; 
        
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL')])){
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')])){
             if($this->parent_trans_id){
                 $parentTrans = self::find($this->parent_trans_id);
                 if($parentTrans->entry_type == 0){
@@ -200,7 +200,7 @@ class Transactions extends BaseModel {
                 }
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')]))
+                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
                     if($linkTrans->entry_type == 0){
                         $name .= ' '.$linkTrans->transType->debit_desc;
                     }elseif($linkTrans->entry_type == 1){
