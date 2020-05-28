@@ -1376,5 +1376,4 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   
 	}     
 	 
-
 }
