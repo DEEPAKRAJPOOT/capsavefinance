@@ -149,7 +149,8 @@
                           $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
                           $("#chrg_applicable_id option").attr('disabled','disabled');
                           ////**** calculation here for according charge applicable ******/
-                          $("#amount").val(res.amount);
+                          var ram = res.amount.replace(",", ""); 
+                          $("#amount").val(ram);
                           $("#id").val(res.id);
                           $("#charge_type").val(res.type);
                         if(res.type==1)
@@ -230,8 +231,8 @@
         
     $(document).ready(function () {
        $("#chrg_name").html('<option value="">No data found</option>'); 
-       document.getElementById('amount').addEventListener('input', event =>
-        event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
+      //// document.getElementById('amount').addEventListener('input', event =>
+       ///// event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US'));
        /////////////// validation the time of final submit/////////////// 
       $(document).on('click','#add_charge',function(e){
         var amount = $("#amount").val()
