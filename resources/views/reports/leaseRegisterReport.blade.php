@@ -37,7 +37,7 @@
                 padding:5px 10px;
             }
             td,th{
-                font-size: 8.5px !important;
+                font-size: 10px !important;
             }
             .pagenum:before {
                 content: counter(page);
