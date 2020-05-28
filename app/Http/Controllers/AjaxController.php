@@ -3296,7 +3296,8 @@ if ($err) {
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
-              $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
+               $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
+               $gst_percentage                 = $getamount->charge->gst_percentage;
                $app = "";
                $sel ="";
                 $res =   [  1 => "Limit Amount",
@@ -3321,7 +3322,7 @@ if ($err) {
                  {
                    
                      $limitAmount  =  $this->lmsRepo->getLimitAmount($request);
-                     $limitAmount  = $limitAmount[0];
+                    /// $limitAmount  = $limitAmount[0];
                    
                  }
                  else if($getamount->chrg_applicable_id==2)
@@ -3346,7 +3347,8 @@ if ($err) {
                  'id' => $getamount->id,
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
-                 'is_gst_applicable' => $getamount->is_gst_applicable,
+                 'is_gst_applicable' => $getamount->charge->is_gst_applicable,
+                 'gst_percentage'  =>  $gst_percentage,
                  'applicable' =>$app]); 
           }
           else

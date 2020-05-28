@@ -142,6 +142,7 @@
                      
                       if(res.status==1)
                       {
+                          var gst_percentage =   res.gst_percentage;
                           $("#limit_amount_new").val(parseInt(res.limit));  
                           var  applicable  = res.applicable;  
                           $("#chrg_applicable_id").html(applicable);
@@ -162,7 +163,7 @@
                            { 
                              var limitAmount  =  $("#amount").val();  
                              var limitAmount  =  limitAmount.replace(",", ""); 
-                             var fixedamount  =  parseInt(limitAmount*18/100);
+                             var fixedamount  =  parseInt(limitAmount*parseInt(gst_percentage)/100);
                              var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
                              $("#charge_amount_gst_new").val(finalTotalAmount);
                            }
@@ -187,7 +188,7 @@
                             $(".chargeTypeGstCal").css({"display":"inline"});
                             if(res.type==2)
                             {
-                            var afterPercentGst = parseInt(afterPercent*18/100);
+                            var afterPercentGst = parseInt(afterPercent*parseInt(gst_percentage)/100);
                             finalTotalAmount  = parseInt(afterPercentGst+afterPercent);
                             $("#charge_amount_gst_new").val(finalTotalAmount);
                             }
