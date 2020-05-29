@@ -136,7 +136,11 @@
                             <div class="mb-3">
                                 <div class="total-supply">
                                     <div class="text-primary">
-                                        <!-- <i class="fa fa-credit-card highlight-icon"> </i> -->
+                                        <select name="repay_year" id="repay_year">
+                                            <option value="<?= date('Y')-2?>"><?= date('Y')-2?></option>
+                                            <option value="<?= date('Y')-1?>"><?= date('Y')-1?></option>
+                                            <option value="<?= date('Y')?>" selected><?= date('Y')?></option>
+                                        </select>
                                     </div>
                                     <canvas class="suppliers-box highlight-text text-center" id="repayment_trend"></canvas>
                                 </div>
@@ -154,61 +158,66 @@
 @section('jscript')
 <script src="{{ asset('backend/js/Reports/chart.min.js') }}" type="text/javascript"></script>
 <script>
-$(document).ready(function(){
-    var pieData = {
-        datasets: [{
-            data: [12, 19, 3, 17, 28, 24, 7],
-            backgroundColor: ["#2ecc71","#3498db","#95a5a6","#9b59b6","#f1c40f","#e74c3c","#34495e"],
-            label: 'Dataset 1'
-        }],
-        labels: ['Red','Orange','Yellow','Green','Blue']
-    };
+var pieChart, mixedChart;    
+var pieData = {
+    datasets: [{
+        data: [12, 19, 3, 17, 28, 24],
+        backgroundColor: ["#2ecc71","#3498db","#95a5a6","#9b59b6","#f1c40f","#e74c3c"],
+        label: 'Dataset 1'
+    }],
+    labels: ['0-15','16-30','31-45','46-60','61-75', '75-90']
+};
 
-    var piectx = document.getElementById("payment_due").getContext('2d');
-    var pieChart = new Chart(piectx, {
+function createPieChart(data, ele){
+    var piectx = document.getElementById(ele).getContext('2d');
+    if(typeof pieChart == 'object'){
+        pieChart.destroy();
+    }
+    pieChart = new Chart(piectx, {
         type: 'pie',
-        data: pieData,
+        data: data,
         options: {
             responsive: true,
             title: {
                 display: true,
-                text: 'Pie Chart'
+                text: 'Payment Due'
             }
         }
     });
-});
+}
 
-
-
-
-$(document).ready(function(){
-    var mixData = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-            type: 'line',
-            label: 'Dataset 1',
-            borderColor: '#3498db',
-            borderWidth: 2,
-            fill: false,
-            data: [12, 19, 13, 17, 28, 24, 7]
-        }, {
-            type: 'bar',
-            label: 'Dataset 2',
-            backgroundColor: '#e74c3c',
-            data: [12, 19, 3, 17, 28, 24, 7],
-            borderColor: 'white',
-            borderWidth: 2
-        }]
-    };
-    var mixctx = document.getElementById("repayment_trend").getContext('2d');
-    var mixedChart = new Chart(mixctx, {
+var mixData = {
+    labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+    datasets: [{
+        type: 'line',
+        label: 'Sum of Numbers',
+        borderColor: '#2ecc71',
+        borderWidth: 2,
+        fill: false,
+        data: [12, 19, 13, 17, 28, 24, 7, 19, 13, 17, 28, 24]
+    }, {
         type: 'bar',
-        data: mixData,
+        label: 'Sum of Invoice Value',
+        backgroundColor: '#3498db',
+        data: [12, 19, 3, 17, 28, 24, 7, 3, 17, 28, 24, 7],
+        borderColor: 'white',
+        borderWidth: 2
+    }]
+};
+
+function createMixedChart(data, ele){
+    var mixctx = document.getElementById(ele).getContext('2d');
+    if(typeof mixedChart == 'object'){
+        mixedChart.destroy();
+    }
+    mixedChart = new Chart(mixctx, {
+        type: 'bar',
+        data: data,
         options: {
             responsive: true,
             title: {
                 display: true,
-                text: 'Combo Bar Line Chart'
+                text: 'Repayment Trend'
             },
             tooltips: {
                 mode: 'index',
@@ -216,6 +225,37 @@ $(document).ready(function(){
             }
         }
     });
-})
+}
+
+$(document).ready(function(){
+    createPieChart(pieData, 'payment_due');
+    createMixedChart(mixData, 'repayment_trend');
+});
+
+
+$(document).ready(function(){
+    $('#repay_year').on('change', function(){
+        let year = $(this).val();
+        let mixData2 = {
+            labels: ['Mar', 'Apr', 'May', 'Jan', 'Feb'],
+            datasets: [{
+                type: 'line',
+                label: 'Sum of Numbers',
+                borderColor: '#2ecc71',
+                borderWidth: 2,
+                fill: false,
+                data: [12, 19, 13, 17, 28]
+            }, {
+                type: 'bar',
+                label: 'Sum of Invoice Value',
+                backgroundColor: '#3498db',
+                data: [12, 19, 3, 17, 28, 24, 7],
+                borderColor: 'white',
+                borderWidth: 2
+            }]
+        };
+        createMixedChart(mixData2, 'repayment_trend');
+    })
+});
 </script>
 @endsection
