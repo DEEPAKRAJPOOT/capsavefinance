@@ -373,7 +373,7 @@ class userInvoiceController extends Controller
             $registeredCompany = $registeredCompany->toArray();
             $registeredCompany = $registeredCompany[0];
             if (empty($registeredCompany['bank_account_id'])) {
-              return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No bank detail found for the Registered Company.'); 
+              return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No bank detail found for the Registered Company.'); 
             }
             $requestedData = $request->all();
             $decryptedData = _decrypt($requestedData['encData']);
@@ -397,9 +397,9 @@ class userInvoiceController extends Controller
             $companyStateId = $company_data['state_id'];
             $userStateId = $billing_data['state_id'];
 
-            $txnsData = $this->UserInvRepo->getUserInvoiceTxns($user_id, $invoice_type, $trans_ids, true);
+            $txnsData = $this->UserInvRepo->getUserInvoiceTxns($url_user_id, $invoice_type, $trans_ids, true);
             if(empty($txnsData) ||  $txnsData->isEmpty()){
-                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No remaining txns found for the invoice.');
+                return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No remaining txns found for the invoice.');
             }
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
