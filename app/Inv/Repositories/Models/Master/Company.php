@@ -55,6 +55,8 @@ class Company extends BaseModel {
         'is_active',
         'state',
         'city',
+        'charge_prefix',
+        'interest_prefix',
         'is_reg',
         'created_at',
         'updated_at',
