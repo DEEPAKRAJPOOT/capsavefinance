@@ -1270,7 +1270,7 @@ class ApportionmentController extends Controller
                     $transactionList[] = [
                         'payment_id' => NULL,
                         'link_trans_id' => $trans->trans_id,
-                        'parent_trans_id' => $trans->parent_trans_id,
+                        'parent_trans_id' => $trans->parent_trans_id ?? $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
                         'trans_date' => date('Y-m-d H:i:s'),

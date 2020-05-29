@@ -192,7 +192,7 @@ class Transactions extends BaseModel {
         if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT')) 
         return $this->payment->paymentname;
 
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')])){
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])){
             if($this->parent_trans_id){
                 $parentTrans = self::find($this->parent_trans_id);
                 if($parentTrans->entry_type == 0){
