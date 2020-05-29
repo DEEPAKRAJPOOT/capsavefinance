@@ -292,6 +292,11 @@ class userInvoiceController extends Controller
         if ($registeredCompany->count() != 1) {
            return response()->json(['status' => 0,'message' => "Multiple Company Registered addresses found.."]); 
         }
+        $registeredCompany = $registeredCompany->toArray();
+        $registeredCompany = $registeredCompany[0];
+        if (empty($registeredCompany['bank_account_id'])) {
+          return response()->json(['status' => 0,'message' => "No bank detail found for the Registered Company."]);  
+        }
         $requestedData = $request->all();
         $decryptedData = _decrypt($requestedData['encData']);
         if (empty($decryptedData)) {
@@ -328,14 +333,13 @@ class userInvoiceController extends Controller
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
         $intrest_charges = $inv_data[0];
         $total_sum_of_rental = $inv_data[1];
-        $registeredCompany = $registeredCompany->toArray();
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billing_data,
             'origin_of_recipient' => $origin_of_recipient, 
             'intrest_charges' => $intrest_charges,
             'total_sum_of_rental' => $total_sum_of_rental,
-            'registeredCompany' => $registeredCompany[0],
+            'registeredCompany' => $registeredCompany,
         ];
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
@@ -368,25 +372,26 @@ class userInvoiceController extends Controller
             }
             $registeredCompany = $registeredCompany->toArray();
             $registeredCompany = $registeredCompany[0];
+            if (empty($registeredCompany['bank_account_id'])) {
+              return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No bank detail found for the Registered Company.'); 
+            }
             $requestedData = $request->all();
             $decryptedData = _decrypt($requestedData['encData']);
             if (empty($decryptedData)) {
-                return response()->json(['status' => 0,'message' => 'Data modified, Please try again.']); 
+                return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Data modified, Please try again.');
             }
             list($user_id, $company_id, $biz_addr_id, $user_invoice_rel_id) = explode('|', $decryptedData);
             if ($url_user_id != $user_id) {
-               return response()->json(['status' => 0,'message' => 'Data can not be modified.']); 
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Data can not be modified.');
             }
-
             $companyDetail = $this->_getCompanyDetail($company_id);
             if ($companyDetail['status'] != 'success') {
-               return response()->json(['status' => 0,'message' => $companyDetail['message']]); 
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $companyDetail['message']);
             }
             $company_data = $companyDetail['data'];
-
             $billingDetail = $this->_getBillingDetail($biz_addr_id);
             if ($billingDetail['status'] != 'success') {
-               return response()->json(['status' => 0,'message' => $billingDetail['message']]); 
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', $billingDetail['message']);
             }
             $billing_data = $billingDetail['data'];
             $companyStateId = $company_data['state_id'];
@@ -550,6 +555,18 @@ class userInvoiceController extends Controller
             $intrest_charges[$key]['total_rental'] =  $total_rental; 
         }
         $registeredCompany = json_decode($invData->comp_addr_register, true);
+        if (empty($registeredCompany['bank_account_id'])) {
+            /*$registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+            if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Company Registered address not found..'); 
+            }
+            if ($registeredCompany->count() != 1) {
+               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Multiple Company Registered addresses found..'); 
+            }
+            $registeredCompany = $registeredCompany->toArray();
+            $registeredCompany = $registeredCompany[0];*/
+          return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No bank detail found for the Registered Company.'); 
+        }
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billingDetails,
