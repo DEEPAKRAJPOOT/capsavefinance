@@ -558,10 +558,10 @@ class userInvoiceController extends Controller
         if (empty($registeredCompany['bank_account_id'])) {
             /*$registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
             if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Company Registered address not found..'); 
+               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Company Registered address not found..'); 
             }
             if ($registeredCompany->count() != 1) {
-               return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'Multiple Company Registered addresses found..'); 
+               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Multiple Company Registered addresses found..'); 
             }
             $registeredCompany = $registeredCompany->toArray();
             $registeredCompany = $registeredCompany[0];*/
