@@ -1842,8 +1842,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
-                        $tdsType = ($trans->action_type == 3) ? '/TDS' : '';   
-                        return $trans->transType->trans_name . $tdsType;
+                        return $trans->paymentname;
                 })
                  ->addColumn(
                     'comment',
@@ -1893,9 +1892,7 @@ class DataRenderer implements DataProviderInterface
                         });                        
                     }
                })
-              
               ->make(true);
-         
      }
      
      /* Get Invoice list for backend
@@ -4049,6 +4046,12 @@ class DataRenderer implements DataProviderInterface
                     }
                 }
             )
+            ->addColumn(
+                'backgroundColor',
+                function($trans){
+                    return $trans->soabackgroundcolor;
+                }
+            )
             ->editColumn(
                 'balance',
                 function ($trans) {
@@ -4211,6 +4214,12 @@ class DataRenderer implements DataProviderInterface
                     return '(0.00)';
                 }
             })
+            ->addColumn(
+                'backgroundColor',
+                function($trans){
+                    return $trans->soabackgroundcolor;
+                }
+            )
             ->editColumn('balance', function ($trans) {
                 $data = '';
                 $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
@@ -4911,7 +4920,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'business_name',
                         function ($dataRecords) {
-                        return $dataRecords->getBusinessName->biz_entity_name;
+                        return $dataRecords->getUserName->biz_name;
                     })
                     ->editColumn(
                         'virtual_account',

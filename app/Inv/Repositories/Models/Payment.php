@@ -112,13 +112,6 @@ class Payment extends BaseModel {
     public function refundReq(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReq','payment_id','payment_id');
     }
-    public function getTransNameAttribute(){
-        $result = $this->transType->trans_name;
-        if($this->action_type == 3){
-            $result .= " /TDS";
-        }
-        return $result;
-    }
      
     public function getPaymentNameAttribute(){
         $tdsType = ($this->action_type == 3) ? '/TDS' : '';   

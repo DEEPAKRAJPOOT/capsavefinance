@@ -325,7 +325,7 @@ class ApportionmentController extends Controller
                 'biz_id' => $paymentDetails->biz_id,
                 'virtual_acc' => $paymentDetails->virtual_acc,
                 'action_type' => $paymentDetails->action_type,
-                'trans_type' => $paymentDetails->trans_type,
+                'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
                 'parent_trans_id' => $resp->trans_id,
                 'amount' => $amount,
                 'date_of_payment' => $transDateTime,
@@ -1265,20 +1265,25 @@ class ApportionmentController extends Controller
                     ->get();
                 }
 
+                $payments = [];
                 foreach ($transactions as $trans){  
                     $transactionList[] = [
-                        'payment_id' => NULL,
+                        'payment_id' => $trans->payment_id,
                         'link_trans_id' => $trans->trans_id,
-                        'parent_trans_id' => $trans->trans_id,
+                        'parent_trans_id' => $trans->parent_trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
                         'trans_date' => date('Y-m-d H:i:s'),
                         'amount' => $refunds[$trans->trans_id],
-                        'entry_type' => 1,
+                        'entry_type' => 0,
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT')
                     ];
-                    $amtToSettle += $payments[$trans->trans_id];
+                    if(!isset($payments[$trans->trans_date]['amount'])){
+                        $payments[$trans->trans_date]['amount'] = 0;
+                    }
+                    $payments[$trans->trans_date]['amount'] += $refunds[$trans->trans_id];
+                    
                 }
 
                 if(!empty($transactionList)){
@@ -1287,12 +1292,44 @@ class ApportionmentController extends Controller
                     }
                 }
                 
+                foreach ($payments as $transDate => $payment) {
+                    $paymentData = [
+                        'user_id' => $transactions[0]->user_id,
+                        'virtual_acc' => $transactions[0]->payment->virtual_acc,
+                        'action_type' => 5,
+                        'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
+                        'amount' => $payment['amount'],
+                        'date_of_payment' => $transDate,
+                        'is_manual' => '1',
+                        'generated_by' => 1,
+                        'is_refundable' => 1
+                    ];
+                    $paymentId = Payment::insertPayments($paymentData);
+                }
 
                 $request->session()->forget('apportionment');
-                return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
+                return redirect()->route('apport_refund_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully Mark Adjusted']);
             }
         } catch (Exception $ex) {
-            return redirect()->back('unsettled_payments', [ 'payment_id' => $paymentId, 'user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->back('unsettled_payments', ['user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
+    }
+
+
+    function createPayment(){
+        
+        $paymentData = [
+            'user_id' => $paymentDetails->user_id,
+            'virtual_acc' => $paymentDetails->virtual_acc,
+            'action_type' => 5,
+            'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
+            'amount' => $amount,
+            'date_of_payment' => $transDateTime,
+            'description' => $paymentDetails->description,
+            'is_manual' => '1',
+            'generated_by' => 1,
+            'is_refundable' => 1
+        ];
+        $paymentId = Payment::insertPayments($paymentData);
     }
 }
