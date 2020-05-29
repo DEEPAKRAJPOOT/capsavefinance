@@ -1268,7 +1268,7 @@ class ApportionmentController extends Controller
                 $payments = [];
                 foreach ($transactions as $trans){  
                     $transactionList[] = [
-                        'payment_id' => $trans->payment_id,
+                        'payment_id' => NULL,
                         'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->parent_trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
@@ -1313,23 +1313,5 @@ class ApportionmentController extends Controller
         } catch (Exception $ex) {
             return redirect()->back('unsettled_payments', ['user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
-    }
-
-
-    function createPayment(){
-        
-        $paymentData = [
-            'user_id' => $paymentDetails->user_id,
-            'virtual_acc' => $paymentDetails->virtual_acc,
-            'action_type' => 5,
-            'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
-            'amount' => $amount,
-            'date_of_payment' => $transDateTime,
-            'description' => $paymentDetails->description,
-            'is_manual' => '1',
-            'generated_by' => 1,
-            'is_refundable' => 1
-        ];
-        $paymentId = Payment::insertPayments($paymentData);
     }
 }
