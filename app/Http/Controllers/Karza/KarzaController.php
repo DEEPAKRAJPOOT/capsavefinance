@@ -417,7 +417,7 @@ class KarzaController extends Controller
           $res = json_decode($result,1);
           if($res['status-code'] == 101){
             $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
-                'file_name' => $requestArr['companyName'].' Entity name to CIN '.$res['result'][0]['cin'],
+                'file_name' => $requestArr['companyName'].' Entity name to CIN '.$res['result']['result'][0]['cin'],
                 'status' => 1,
                 'created_at' => \Carbon\Carbon::now(),
                 'created_by' => Auth::user()->user_id,
