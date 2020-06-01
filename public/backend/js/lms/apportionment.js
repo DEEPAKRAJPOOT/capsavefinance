@@ -97,7 +97,13 @@ class Apportionment {
                 if(id == 'unsettledTransactions'){
                     parentRef.setTransactionAmt();
                 }
-            }
+                var rows = this.fnGetData();
+                if ( rows.length === 0 ) {
+                    $('.action-btn').hide();
+                }else{
+                    $('.action-btn').show();
+                }
+            },
         });
     }
 

@@ -14,7 +14,7 @@
                                     <th>Outstanding Amt</th>
                                     {{-- @if($paymentId)<th>Payment Date</th>@endif --}}
                                     @if($paymentId)<th>Pay</th>@endif
-                                    <th><input type="checkbox" id="checkAll" checked onchange="apport.selectAllChecks(this.id)"></th>
+                                    <th><input type="checkbox" id="checkAll" onchange="apport.selectAllChecks(this.id)"></th>
                                 </tr>
                             </thead>
                             <tbody>

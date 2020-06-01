@@ -111,7 +111,7 @@ class Transactions extends BaseModel {
     }
 
     public function refundReqTrans(){
-        return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
     }
 
     public function transRunning(){
@@ -307,6 +307,9 @@ class Transactions extends BaseModel {
                 ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
+                    if($item->refundReqTrans){
+                        return false;
+                    }
                     if($item->trans_type == config('lms.TRANS_TYPE.TDS') && $item->payment->is_refundable == 0){
                         return false;
                     }

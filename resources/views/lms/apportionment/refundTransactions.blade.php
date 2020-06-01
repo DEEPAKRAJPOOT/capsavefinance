@@ -42,7 +42,7 @@
             <div class="row">
                 @include('lms.apportionment.common.listRefundTransactions')
             </div>
-            <div class="row pull-right">
+            <div class="row pull-right action-btn">
                 <div class="col-md-12" >
                     <input type="submit" name="action" value="Adjustment" class="btn btn-success btn-sm"> 
                     {{-- <input type="submit" name="action" value="Refund" class="btn btn-success btn-sm"> --}}

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Helpers\ManualApportionmentHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Http\Requests\lms\AdjustmentRequest;
 use App\Http\Requests\Lms\ApportionmentRequest;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
@@ -1165,7 +1166,7 @@ class ApportionmentController extends Controller
     /**
      * Refund Transaction marked Adjusted
      */
-    public function markAdjustmentConfirmation(Request $request){
+    public function markAdjustmentConfirmation(AdjustmentRequest $request){
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
