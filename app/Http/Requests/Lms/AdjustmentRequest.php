@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\lms;
+namespace App\Http\Requests\Lms;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
