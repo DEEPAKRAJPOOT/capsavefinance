@@ -871,7 +871,7 @@ class DataRenderer implements DataProviderInterface
                       if(in_array($customer, $expl)) 
                       {  
                         
-                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm pendingApproveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                       
                       }
                       return $action;
