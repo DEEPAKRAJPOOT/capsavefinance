@@ -822,7 +822,7 @@ class InvoiceController extends Controller {
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] = $userid) {
+                    if($invoice['supplier_id'] == $userid) {
                         
                         $interest= 0;
                         $margin= 0;
@@ -886,7 +886,7 @@ class InvoiceController extends Controller {
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
 
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] = $userid) {
+                    if($invoice['supplier_id'] == $userid) {
                         $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                         if ($invoiceDisbursedData == null) {
