@@ -18,6 +18,7 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
+use App\Helpers\ManualApportionmentHelper;
 
 trait LmsTrait
 {
@@ -146,14 +147,27 @@ trait LmsTrait
         * disburseType = 1 for online and 2 for manually
         */
         $disbursalData = [];
+        $disburseDate = $invoice['disburse_date'];
+        $str_to_time_date = strtotime($disburseDate);
+        $bankId = $invoice['program_offer']['bank_id'];
+        $oldIntRate = (float)$invoice['program_offer']['interest_rate'];
         $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+        $bankRatesArr = $Obj->getBankBaseRates($bankId);
+
+        if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+          $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+        } else {
+          $actIntRate = $interestRate;
+        }
+
         $interest= 0;
         $margin= 0;
 
         $tenor = $this->calculateTenorDays($invoice);
         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-        $tInterest = $this->calInterest($fundedAmount, $interestRate/100, $tenor);
+        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
         if($invoice['program_offer']['payment_frequency'] == 1) {
             $interest = $tInterest;
@@ -169,7 +183,7 @@ trait LmsTrait
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
         $disbursalData['payment_due_date'] = null;
         $disbursalData['tenor_days'] =  $tenor ?? null;
-        $disbursalData['interest_rate'] = $interestRate ?? null;
+        $disbursalData['interest_rate'] = $actIntRate ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
@@ -183,6 +197,7 @@ trait LmsTrait
                         
         $dataArr['created_by'] = Auth::user()->user_id;
         $dataArr['created_at'] = $curData;
+        $dataArr['sys_created_at'] = $invoice['sys_created_at'] ?? null;
         
         return $disbursalData;
     }
