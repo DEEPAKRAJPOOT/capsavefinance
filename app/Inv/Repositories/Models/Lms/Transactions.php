@@ -55,6 +55,8 @@ class Transactions extends BaseModel {
         'amount',
         'entry_type',
         'gst',
+        'gst_per',
+        'chrg_gst_id',
         'tds_per',
         'gl_flag',
         'soa_flag',
