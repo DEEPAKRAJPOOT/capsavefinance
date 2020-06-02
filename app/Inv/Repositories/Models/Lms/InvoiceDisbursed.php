@@ -49,6 +49,8 @@ class InvoiceDisbursed extends BaseModel {
 		'overdue_interest_rate',
 		'is_adhoc',
 		'status_id',
+		'sys_created_at',
+		'sys_updated_at',
 		'created_at',
 		'created_by',
 		'updated_at',
