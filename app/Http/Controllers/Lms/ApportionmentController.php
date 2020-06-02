@@ -772,7 +772,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
-            return redirect()->back('unsettled_payments', [ 'payment_id' => $paymentId, 'user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
@@ -1159,7 +1159,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked Write Off']);
             }
         } catch (Exception $ex) {
-            return redirect()->back('apport_unsettled_view', ['user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
@@ -1312,7 +1312,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_refund_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully Mark Adjusted']);
             }
         } catch (Exception $ex) {
-            return redirect()->back('unsettled_payments', ['user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 }
