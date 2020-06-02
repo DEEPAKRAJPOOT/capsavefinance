@@ -18,14 +18,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         });
 
         Route::group(['prefix' => 'reports'], function () {
-            Route::get('/', [
-                'as' => 'report_summary',
-                'uses' => 'Backend\ReportController@index'
-            ]);
-            Route::get('/customer', [
-                'as' => 'report_customer',
-                'uses' => 'Backend\ReportController@customer'
-            ]);
             Route::get('/lease-register', [
                 'as' => 'lease_register',
                 'uses' => 'Backend\ReportController@leaseRegister'

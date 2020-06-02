@@ -59,10 +59,6 @@
             <span class="pagenum"></span><b> |</b> CFPL
         </footer>
         <main>
-            <div  align="center" style="margin-top:40px;">
-                <p style="font-size:13px !important;"><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
-                <br>
-            </div>
             <div class="breakNow">
                 <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                        <tr>
