@@ -284,8 +284,18 @@ return [
         '3' => 'None',
         '1' => 'Limit Assignment',
         '2' => 'First Invoice Disbursement',
+        '4' => 'Limit Enhancement',
+        '5' => 'Limit Renewal',
+        '6' => 'Limit Closure'
     ],
-     'inv_approval' => [
+    // Mapping for app_type to chrg_trigger_id (rta_app => rta_mst_chrg)
+    'app_type' => [
+        0 => 1,
+        1 => 5,
+        2 => 4,
+        3 => 1
+    ],
+    'inv_approval' => [
         '0' => 1,
         '1' => 9,
         '2' => 10
