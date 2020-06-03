@@ -731,4 +731,14 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
       return ChargeGST::getLastChargesGSTById($chargeId);
     }
+    
+    /**
+     * Get Last DoA Level Id
+     * 
+     * @return mixed
+     */
+    public function getLastDoaLevelId()
+    {
+        return DoaLevel::getLastDoaLevelId();
+    }    
 }
