@@ -5913,7 +5913,15 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('select', function($trans){
                 $result = '';
-                if($trans->payment){
+                $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
+                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at);
+                $days = $to->diffInDays($from);
+                $flag = true;
+                if($trans->invoice_disbursed_id ){
+                    if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
+                    $flag = false;
+                }
+                if($trans->payment && $days == 1 && $flag){
                     $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
                 }
                 return $result;

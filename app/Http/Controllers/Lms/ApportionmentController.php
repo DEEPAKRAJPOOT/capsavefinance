@@ -328,7 +328,7 @@ class ApportionmentController extends Controller
                 'trans_type' => $paymentDetails->trans_type,
                 'parent_trans_id' => $resp->trans_id,
                 'amount' => $amount,
-                'date_of_payment' => $transDateTime,
+                'date_of_payment' => $paymentDetails->date_of_payment,
                 'gst' => $paymentDetails->gst,
                 'sgst_amt' => $paymentDetails->sgst_amt,
                 'cgst_amt' => $paymentDetails->cgst_amt,
