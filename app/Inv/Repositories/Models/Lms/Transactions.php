@@ -65,6 +65,7 @@ class Transactions extends BaseModel {
         'pay_from',
         'is_settled',
         'is_posted_in_tally',
+        'is_invoice_generated',
         'sys_created_at',
         'sys_updated_at',
         'created_at',
