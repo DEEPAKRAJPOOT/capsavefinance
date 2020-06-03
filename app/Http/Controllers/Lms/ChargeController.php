@@ -17,6 +17,7 @@ use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use Illuminate\Support\Facades\Crypt;
 class ChargeController extends Controller
 {
 	use ApplicationTrait;
@@ -175,9 +176,54 @@ class ChargeController extends Controller
                  }
                 
                     $id  = Auth::user()->user_id;
+                    $mytime = Carbon::now();
+                    $paymentId = null;
+                    if(in_array($request->chrg_name,[config('lms.CHARGE_TYPE.CHEQUE_BOUNCE'),config('lms.CHARGE_TYPE.NACH_BOUNCE')])){
+                        if(!$request->has('payment')){
+                            Session::flash('message', 'Payment Detail missing, Please try again');
+                            return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
+                        }else{
+                            $payments = [];
+                            $paymentId =  Crypt::decryptString($request->payment); 
+                            $paymentDetail = $this->lmsRepo->getPaymentDetail($paymentId,$request->user_id);
+                        
+                            if($paymentDetail){
+                                $payments[] = [
+                                    "payment_id"=>$paymentId,
+                                    "user_id" => $request->user_id,
+                                    "amount" => 0,
+                                    "soa_flag" => 1,
+                                    "gst" => 1,
+                                    'entry_type' => 0,
+                                    "trans_date" => $paymentDetail->date_of_payment,
+                                    "trans_type" => config('lms.TRANS_TYPE.REPAYMENT'),
+                                    'created_by' => $id,
+                                    'created_at' => $mytime
+                                ];
+                                
+                                $payments[] = [
+                                    "payment_id"=>$paymentId,
+                                    "user_id" => $request->user_id,
+                                    "amount" => 0,
+                                    "soa_flag" => 1,
+                                    "gst" => 1,
+                                    'entry_type' => 1,
+                                    "trans_date" =>  $paymentDetail->date_of_payment,
+                                    "trans_type" => config('lms.TRANS_TYPE.FAILED'),
+                                    'created_by' => $id,
+                                    'created_at' => $mytime
+                                ];
+                                foreach ($payments as $payment) {
+                                    $this->lmsRepo->saveCharge($payment);
+                                }
+                            }
+                            $paymentDetail->is_settled = 1;
+                            $paymentDetail->save();
+                        }
+                    }
                     $getMstLog =  $this->lmsRepo->getChrgLog($request->chrg_name);
-                    $mytime = Carbon::now(); 
                     $arr  = [ "user_id" =>  $request->user_id,
+                                  "payment_id"=>$paymentId,
                                   "amount" =>   $totalSumAmount,
                                   "soa_flag" =>1,
                                   "gst"   => 1,
