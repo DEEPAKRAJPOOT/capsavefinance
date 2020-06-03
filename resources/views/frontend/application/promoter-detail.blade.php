@@ -723,7 +723,7 @@
         var adVal = $("#aadhardown" + i).attr('href');
          var elVal = $("#electricitydown" + i).attr('href');
           var teVal = $("#telephonedown" + i).attr('href');
-        if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")
+         if (dlVal ==undefined && vtVal ==undefined && adVal ==undefined && elVal == undefined && teVal == undefined)
         {
         alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
         $("#verifydl" + i).focus();
