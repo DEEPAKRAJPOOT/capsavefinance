@@ -92,7 +92,7 @@
         </footer>
         <main>
             <div  align="center" style="margin-top:40px;">
-                <p><b><b>ZURON FIN-TECH PRIVATE LIMITED</b></b></p>
+                <p><b><b>CAPSAVE FINANCE PRIVATE LIMITED</b></b></p>
                 <br>
             </div>
         
@@ -102,7 +102,7 @@
                    <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                     <tr>
                         <td colspan="8">
-                            <span style="font-size: small;"><strong><b>ZURON FIN-TECH PRIVATE LIMITED</b> </strong></span>
+                            <span style="font-size: small;"><strong><b>CAPSAVE FINANCE PRIVATE LIMITED</b> </strong></span>
                         </td>
                     </tr>
                     <tr>
