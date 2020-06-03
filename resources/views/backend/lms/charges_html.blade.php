@@ -48,7 +48,7 @@
             <a href="javascript:void(0);" class="verify-owner-no"><i class="fa-change fa {{isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}"
             aria-hidden="true"></i></a>
             {!! Form::text('chrg_calculation_amt['.$len.']', 
-                isset($data->chrg_calculation_amt)  ?  number_format($data->chrg_calculation_amt,2) : null, 
+                isset($data->chrg_calculation_amt)  ? $data->chrg_calculation_amt : null, 
                 ['id'=>'chrg_calculation_amt', 'class'=>'form-control chrg_calculation_amt '.(isset($data->chrg_calculation_type)? (($data->chrg_calculation_type == 1)? 'formatNum': 'amtpercnt') : 'formatNum').' clsRequired','placeholder'=>" " ,'required'=>'required']) !!}
             </div>
         </div>

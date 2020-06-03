@@ -27,7 +27,7 @@
                <tr role="row" class="odd">
                   <td class=""><b>Limit Of The Equipment</b></td>
                   <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} </td>
-                  <td class=""><b>Tenor (Days)</b></td>
+                  <td class=""><b>Tenor (Months)</b></td>
                   <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                @if($leaseOffer->facility_type_id != 3)
