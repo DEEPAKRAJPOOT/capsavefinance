@@ -6,6 +6,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
+            deferLoading: 0,
             dom: 'lBrtip',
             bSort: false,
             responsive: true,
@@ -58,13 +59,23 @@ try {
                 {
                     text: 'PDF',
                     action: function ( e, dt, node, config ) {
-                       download('pdf');
+                        if(messages.datataledraw==1){
+                            download('pdf');
+                        }else{
+                            alert('Please select customer');
+                            $("#search_keyword").focus();
+                        }
                     }
                 },
                 {
                     text: 'Excel',
                     action: function ( e, dt, node, config ) {
-                        download('excel');
+                        if(messages.datataledraw==1){
+                            download('excel');
+                        }else{
+                            alert('Please select customer');
+                            $("#search_keyword").focus();
+                        }
                     }
                 }
             ],
@@ -72,22 +83,16 @@ try {
         });
 
         //Search
-        $('#searchbtn').on('click', function (e) {
-            $("#client_details").html('');
-            var user_id = $.trim($("#user_id").val());
-            var biz_id = $.trim($("#biz_id").val());
-            
-            //showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
+        if(messages.datataledraw==1){
             oTable.draw();
-        });
-
+        }
     });
 
     function download(action){
         url = '';
+
         from_date = $('input[name="from_date"]').val().trim();
         to_date = $('input[name="to_date"]').val().trim();
-        customer_id = $('input[name=customer_id]').val().trim();
         if(action.trim() == 'pdf'){
             url = messages.pdf_soa_url;
         }

@@ -164,11 +164,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@disbursedList'
             ]);
 
-            Route::get('/soa/list', [
-                'as' => 'lms_get_transaction',
-                'uses' => 'Lms\SoaController@list'
+            Route::get('/soa/customer', [
+                'as' => 'soa_customer_view',
+                'uses' => 'Lms\SoaController@soa_customer_view'
             ]);     
             
+            Route::match(array('GET', 'POST'),'/soa/consolidated', [
+                'as' => 'soa_consolidated_view',
+                'uses' => 'Lms\SoaController@soa_consolidated_view'
+            ]);
+
             Route::get('/charges/manage_charge', [
                 'as' => 'manage_charge',
                 'uses' => 'Lms\ChargeController@manageCharge'

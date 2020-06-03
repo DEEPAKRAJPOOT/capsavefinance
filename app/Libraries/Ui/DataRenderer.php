@@ -3961,6 +3961,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getSoaList(Request $request, $data)
     {
+        $this->soa_balance = 0;
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
@@ -4037,6 +4038,7 @@ class DataRenderer implements DataProviderInterface
                         return '';
                     }
                     elseif($trans->entry_type=='0'){
+                        $this->soa_balance += $trans->amount;
                         return number_format($trans->amount,2);
                     }else{
                         return '0.00';
@@ -4050,6 +4052,7 @@ class DataRenderer implements DataProviderInterface
                         return '';
                     }
                     elseif($trans->entry_type=='1'){
+                        $this->soa_balance -= $trans->amount;
                         return '('.number_format($trans->amount,2).')';
                     }else{
                         return '(0.00)';
@@ -4064,56 +4067,14 @@ class DataRenderer implements DataProviderInterface
                     if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                         $data = '';
                     }
-                    elseif($trans->balance<0){
-                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
+                    elseif($this->soa_balance<0){
+                        $data = '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }else{
-                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
+                        $data = '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }
                     return $data;
                 }
             )
-            /*->editColumn(
-                'debit',
-                function ($trans) {
-                    if(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){  
-                        if($trans->entry_type=='0'){
-                            return number_format($trans->amount,2);
-                        }else{
-                            return '0.00';
-                        }
-                    }
-                }
-            )
-            ->editColumn(
-                'credit',
-                function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                        return '';
-                    }
-                    elseif(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){
-                        if($trans->entry_type=='1'){
-                            return '('.number_format($trans->amount,2).')';
-                        }else{
-                            return '(0.00)';
-                        }
-                    }
-                }
-            )
-            ->editColumn(
-                'balance',
-                function ($trans) {
-                    $data = '';
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                        return '';
-                    }
-                    elseif($trans->balance<0){
-                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
-                    }else{
-                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
-                    }
-                    return $data;
-                }
-            )*/
             ->filter(function ($query) use ($request) {
 
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
@@ -4145,144 +4106,145 @@ class DataRenderer implements DataProviderInterface
     public function getColenderSoaList(Request $request, $data, $colenderCurrShare) {
         $this->colender_balance = 0;
         return DataTables::of($data)
-            ->rawColumns(['balance','narration'])
-            ->addColumn('payment_id', function($trans){
-                $co_lender_percent = $trans->co_lender_percent ?? 0;
-                $this->colender_share = round($co_lender_percent/100,2);
-                $this->colender_debit = 0;
-                $this->colender_credit = 0;
-                return $trans->payment_id;
-            })
-            ->addColumn('customer_id', function($trans){
-                $data = $trans->lmsUser->customer_id ?? '';
-                return $data;
-            })
-            ->addColumn('customer_name', function($trans){
+        ->rawColumns(['balance','narration'])
+        ->addColumn('payment_id', function($trans){
+            $co_lender_percent = $trans->co_lender_percent ?? 0;
+            $this->colender_share = round($co_lender_percent/100,2);
+            $this->colender_debit = 0;
+            $this->colender_credit = 0;
+            return $trans->payment_id;
+        })
+        ->addColumn('customer_id', function($trans){
+            $data = $trans->lmsUser->customer_id ?? '';
+            return $data;
+        })
+        ->addColumn('customer_name', function($trans){
+            $data = '';
+            if($trans->user){
+                $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
+            }
+            return $data;
+        })
+        ->addColumn('invoice_no',function($trans){
+            return $trans->invoiceno;
+        })
+        ->addColumn('batch_no',function($trans){
+            return $trans->batchNo;
+        })
+        ->addColumn('narration',function($trans){
+            return "<b>".$trans->narration."<b>";
+        })
+        ->addColumn('virtual_acc_id', function ($trans) {
+            return $trans->virtual_acc_id;
+        })
+        ->addColumn('value_date', function ($trans) {
+            return date('d-m-Y',strtotime($trans->trans_date));
+        })
+        ->editColumn('trans_date', function ($trans) {
+            return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+        })
+        ->editColumn('trans_type', function ($trans) {
+            return $trans->transname;
+        })
+        ->editColumn('currency', function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }else{
+                return 'INR';
+            }
+        })
+        ->addColumn('sub_amount', function($trans) {
+            if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
+                $this->sub_amount = ($trans->amount * $this->colender_share);
+                return number_format($this->sub_amount,2);
+            }
+        })
+        ->editColumn('debit', function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }elseif($trans->entry_type=='0'){
+                $this->colender_debit = ($trans->amount*$this->colender_share);
+                return number_format($this->colender_debit, 2);
+            }else{
+                return '(0.00)';
+            }
+        })
+        ->editColumn('credit',  function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }elseif($trans->entry_type=='1'){
+                $this->colender_credit = ($trans->amount*$this->colender_share);
+                return '('.number_format($this->colender_credit, 2).')';
+            }else{
+                return '(0.00)';
+            }
+        })
+        ->editColumn('balance', function ($trans) {
+            $data = '';
+            $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                 $data = '';
-                if($trans->user){
-                    $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
-                }
-                return $data;
-            })
-            ->addColumn('invoice_no',function($trans){
-                return $trans->invoiceno;
-            })
-            ->addColumn('batch_no',function($trans){
-                return $trans->batchNo;
-            })
-            ->addColumn('narration',function($trans){
-                return "<b>".$trans->narration."<b>";
-            })
-            ->addColumn('virtual_acc_id', function ($trans) {
-                return $trans->virtual_acc_id;
-            })
-            ->addColumn('value_date', function ($trans) {
-                return date('d-m-Y',strtotime($trans->trans_date));
-            })
-            ->editColumn('trans_date', function ($trans) {
-                return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
-            })
-            ->editColumn('trans_type', function ($trans) {
-                return $trans->transname;
-            })
-            ->editColumn('currency', function ($trans) {
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    return '';
-                }else{
-                    return 'INR';
-                }
-            })
-            ->addColumn('sub_amount', function($trans) {
-                if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
-                    $this->sub_amount = ($trans->amount * $this->colender_share);
-                    return number_format($this->sub_amount,2);
-                }
-            })
-            ->editColumn('debit', function ($trans) {
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    return '';
-                }elseif($trans->entry_type=='0'){
-                    $this->colender_debit = ($trans->amount*$this->colender_share);
-                    return number_format($this->colender_debit, 2);
-                }else{
-                    return '(0.00)';
-                }
-            })
-            ->editColumn('credit',  function ($trans) {
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    return '';
-                }elseif($trans->entry_type=='1'){
-                    $this->colender_credit = ($trans->amount*$this->colender_share);
-                    return '('.number_format($this->colender_credit, 2).')';
-                }else{
-                    return '(0.00)';
-                }
-            })
-            ->editColumn('balance', function ($trans) {
-                $data = '';
-                $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    $data = '';
-                }
-                elseif($trans->balance<0){
-                    $data = '<span style="color:red">'. number_format($this->colender_balance, 2) .'</span>';
-                }else{
-                    $data = '<span style="color:green">'. number_format($this->colender_balance, 2) .'</span>';
-                }
-                return $data;
-            })
-            ->filter(function ($query) use ($request) {
-                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                    $query->where(function ($query) use ($request) {
-                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
-                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
-                    });
-                }
-                if($request->get('user_id')!= ''){
-                    $query->where(function ($query) use ($request) {
-                        $user_id = trim($request->get('user_id'));
-                        $query->where('transactions.user_id', '=', "$user_id");
-                    });
-                }
-            })
-            ->make(true);
-        }
-        // Equipment
-        public function getEquipments(Request $request, $data)
-        {
-            return DataTables::of($data)
-                    ->rawColumns(['is_active', 'action'])
-                    
-                    ->addColumn(
-                        'id',
-                        function ($data) {
-                            return $data->id;
-                    })
-                    ->addColumn(
-                        'created_at',
-                        function ($data) {
-                        return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
-                    })
-                    ->addColumn(
-                        'is_active',
-                        function ($data) {
-                        $act = $data->is_active;
-                        $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEquipmentFrame" title="Edit Equipment Detail" data-url ="'.route('edit_equipment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
-                        $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
-                        return $status;
-                        }
-                    )
-                    ->filter(function ($query) use ($request) {
-                        if ($request->get('search_keyword') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $search_keyword = trim($request->get('search_keyword'));
-                                $query->where('equipment_name', 'like',"%$search_keyword%");
-                            });
-                        }
-                    })
-                    ->make(true);
-        }
+            }
+            elseif($this->colender_balance<0){
+                $data = '<span style="color:red">'. number_format($this->colender_balance, 2) .'</span>';
+            }else{
+                $data = '<span style="color:green">'. number_format($this->colender_balance, 2) .'</span>';
+            }
+            return $data;
+        })
+        ->filter(function ($query) use ($request) {
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+            if($request->get('user_id')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $user_id = trim($request->get('user_id'));
+                    $query->where('transactions.user_id', '=', "$user_id");
+                });
+            }
+        })
+        ->make(true);
+    }
+    
+    // Equipment
+    public function getEquipments(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEquipmentFrame" title="Edit Equipment Detail" data-url ="'.route('edit_equipment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('equipment_name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
 
     /**
      * 

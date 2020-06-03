@@ -67,9 +67,9 @@
 
     @endcan
         
-    @can('lms_get_transaction')
+    @can('soa_customer_view')
     <li>
-        <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('lms_get_transaction', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">SOA</a>
+        <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('soa_customer_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">SOA</a>
     </li>
     @endcan 
     

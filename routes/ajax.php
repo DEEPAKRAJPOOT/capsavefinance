@@ -805,6 +805,12 @@ Route::group(
         'as' => 'lms_get_soa_list',
         'uses' => 'AjaxController@lmsGetSoaList'
     ]);
+
+    Route::post('lms-get-consolidated-soa-list', [
+        'as' => 'lms_get_consolidated_soa_list',
+        'uses' => 'AjaxController@lmsGetConsolidatedSoaList'
+    ]);
+    
  Route::post('lms_get_due_list', [
         'as' => 'lms_get_due_list',
         'uses' => 'AjaxController@getInvoiceDueList'

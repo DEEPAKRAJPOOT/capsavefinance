@@ -48,7 +48,7 @@ class SoaController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function list(Request $request)
+	public function soa_customer_view(Request $request)
 	{	
 		$userData = [];
 		if($request->has('user_id')){
@@ -75,9 +75,41 @@ class SoaController extends Controller
         ->with(['userInfo' =>  $result['userInfo'],
                 'application' => $result['application'],
                 'anchors' =>  $result['anchors']]); 
-			              
-	}
+                 
+    }
         
+    public function soa_consolidated_view(Request $request){
+        $userData = [
+            'user_id'=>null,
+            'customer_id'=>null,
+            'app_id'=>null,
+            'biz_id'=>null
+        ];
+        $maxPrincipalDPD = null;
+        $maxInterestDPD = null;
+        $result = null;
+		if($request->has('user_id')){
+            $result = $this->getUserLimitDetais($request->user_id);
+            $user = $this->userRepo->lmsGetCustomer($request->user_id);
+            $maxInterestDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.INTEREST'));
+            $maxPrincipalDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+            if($user && $user->app_id){
+				$userData['user_id'] = $user->user_id;
+				$userData['customer_id'] = $user->customer_id;
+				$appDetail = $this->appRepo->getAppDataByAppId($user->app_id);
+				if($appDetail){
+					$userData['app_id'] = $appDetail->app_id;
+					$userData['biz_id'] = $appDetail->biz_id;
+			    }
+			}
+		}
+        return view('lms.soa.consolidated_soa')
+        ->with('user',$userData)
+        ->with('maxDPD',1)
+        ->with('maxPrincipalDPD',$maxPrincipalDPD)
+        ->with('maxInterestDPD',$maxInterestDPD)
+        ->with(['userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]); 
+    }
          /* use function for the manage sention tabs */ 
     
     public  function  getUserLimitDetais($user_id) 
@@ -176,9 +208,21 @@ class SoaController extends Controller
     public function soaPdfDownload(Request $request){
         try{
             $soaRecord = [];
+            $userInfo = null; 
             if($request->has('user_id')){
-                $result = $this->getUserLimitDetais($request->user_id);
-                $transactionList = $this->lmsRepo->getSoaList();
+                if($request->user_id){
+                    $result = $this->getUserLimitDetais($request->user_id);
+                    $userInfo = $result['userInfo'];
+                }
+
+                if($request->has('soaType')){
+                    if($request->soaType == 'consolidatedSoa'){
+                        $transactionList = $this->lmsRepo->getConsolidatedSoaList();
+                    }
+                    elseif($request->soaType == 'customerSoa'){
+                        $transactionList = $this->lmsRepo->getSoaList();
+                    }
+                }
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
@@ -187,18 +231,17 @@ class SoaController extends Controller
                     });
                 }
 
-                if($request->get('customer_id')!= ''){
-                    $transactionList->whereHas('lmsUser',function ($query) use ($request) {
-                        $customer_id = trim($request->get('customer_id'));
-                        $query->where('customer_id', '=', "$customer_id");
-                    });
-                }
+                $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+                    $customer_id = trim($request->get('customer_id'));
+                    $query->where('customer_id', '=', "$customer_id");
+                });
+
                 $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
             } 
 
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $result['userInfo'], 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date')],[],'UTF-8');
+                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $userInfo, 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date')],[],'UTF-8');
             return $pdf->download('SoaReport.pdf');          
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -207,8 +250,17 @@ class SoaController extends Controller
 
     public function soaExcelDownload(Request $request){
         if($request->has('user_id')){
-            $data = $this->getUserLimitDetais($request->user_id);
-            $transactionList = $this->lmsRepo->getSoaList();
+            if($request->user_id){
+                $data = $this->getUserLimitDetais($request->user_id);
+            }
+            if($request->has('soaType')){
+                if($request->soaType == 'consolidatedSoa'){
+                    $transactionList = $this->lmsRepo->getConsolidatedSoaList();
+                }
+                elseif($request->soaType == 'customerSoa'){
+                    $transactionList = $this->lmsRepo->getSoaList();
+                }
+            }
             if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                 $transactionList->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
@@ -217,12 +269,11 @@ class SoaController extends Controller
                 });
             }
 
-            if($request->get('customer_id')!= ''){
-                $transactionList->whereHas('lmsUser',function ($query) use ($request) {
-                    $customer_id = trim($request->get('customer_id'));
-                    $query->where('customer_id', '=', "$customer_id");
-                });
-            }
+            $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+                $customer_id = trim($request->get('customer_id'));
+                $query->where('customer_id', '=', "$customer_id");
+            });
+        
         }
         $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(25));
         $sheet =  new PHPExcel();
@@ -233,16 +284,20 @@ class SoaController extends Controller
         ->getAlignment()
         ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         $sheet->setActiveSheetIndex(0)
-                ->setCellValue('A2', 'CAPSAVE FINANCE PRIVATE LIMITED')
-                ->setCellValue('A3', 'Statement Of Account')
-                ->setCellValue('A5', 'Business Name')
-                ->setCellValue('A6', 'Email')
-                ->setCellValue('C5', $data['userInfo']->biz->biz_entity_name)
-                ->setCellValue('C6', $data['userInfo']->email)
-                ->setCellValue('H5', 'Full Name')
-                ->setCellValue('H6', 'Mobile')
-                ->setCellValue('J5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
-                ->setCellValueExplicit('J6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValue('A2', 'CAPSAVE FINANCE PRIVATE LIMITED')
+            ->setCellValue('A3', 'Statement Of Account');
+
+        if(!empty($data)){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A5', 'Business Name')
+            ->setCellValue('A6', 'Email')
+            ->setCellValue('C5', $data['userInfo']->biz->biz_entity_name)
+            ->setCellValue('C6', $data['userInfo']->email)
+            ->setCellValue('H5', 'Full Name')
+            ->setCellValue('H6', 'Mobile')
+            ->setCellValue('J5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
+            ->setCellValueExplicit('J6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+        }
                 
         
         $sheet->getActiveSheet()->getStyle('A1:I7')->applyFromArray(['font' => ['bold'  => true]]);
