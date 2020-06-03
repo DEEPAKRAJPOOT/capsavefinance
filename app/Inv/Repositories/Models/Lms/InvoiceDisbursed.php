@@ -154,7 +154,15 @@ class InvoiceDisbursed extends BaseModel {
      {
        return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id')->where('overdue_interest_rate','<>', null);
      }
-     
+     function transaction()
+     {
+       return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','invoice_disbursed_id','invoice_disbursed_id')->where(['trans_type' =>16,'entry_type' =>1]);
+     }
+      function isRepayment()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id')->where(['is_repayment' =>1]);  
+    
+    }
      public static function getReportAllInvoice()
      {
            $getPay = [];
@@ -185,7 +193,7 @@ class InvoiceDisbursed extends BaseModel {
        public static function getInvoiceRealisationList()
      {
            $currentDate =  Carbon::now()->format('Y-m-d');
-           return self::where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['InterestAccrual','invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC');
+           return self::whereHas('isRepayment')->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC');
             
       }  
      
@@ -259,25 +267,25 @@ class InvoiceDisbursed extends BaseModel {
            {  
                $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
                $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-               return self::where('customer_id',$attr->customer_id)->where('payment_due_date', '>=', $currentDate)->WhereBetween('payment_due_date', [$from_date, $to_date])->where(['status_id' => 12])->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+               return self::whereHas('isRepayment')->where('customer_id',$attr->customer_id)->where('payment_due_date', '>=', $currentDate)->WhereBetween('payment_due_date', [$from_date, $to_date])->where(['status_id' => 12])->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
            
            }
            else if($attr->from_date!=null && $attr->to_date!=null && count($user)==0)
            {
                $from_date = Carbon::createFromFormat('d/m/Y', $attr->from_date)->format('Y-m-d');
                $to_date = Carbon::createFromFormat('d/m/Y', $attr->to_date)->format('Y-m-d'); 
-               return self::WhereBetween('payment_due_date', [$from_date, $to_date])->where('payment_due_date', '>=', $currentDate)->where(['status_id' => 12])->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+               return self::whereHas('isRepayment')->WhereBetween('payment_due_date', [$from_date, $to_date])->where('payment_due_date', '>=', $currentDate)->where(['status_id' => 12])->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
          
            }
            else if($attr->from_date==null && $attr->to_date==null && count($user) > 0)
            {
               
-              return self::where('customer_id',$attr->customer_id)->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+              return self::whereHas('isRepayment')->where('customer_id',$attr->customer_id)->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
          
            }
         else {
            
-             return self::where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
+             return self::whereHas('isRepayment')->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
 
         }
      }  

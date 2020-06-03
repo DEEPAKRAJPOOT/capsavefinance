@@ -47,6 +47,19 @@ class ChargeController extends Controller {
                 if (!empty($charge_data))
                 {
                     $status = $this->masterRepo->updateCharges($arrChargesData, $charge_id);
+                    if($status){
+                        $lastChrgGSTData = $this->masterRepo->getLastChargesGSTById($charge_id);
+                        if($lastChrgGSTData->gst_val !== $arrChargesData['gst_percentage']){
+                            $chrgGstData = ([
+                            'chrg_id' => $charge_id,
+                            'gst_val' => $arrChargesData['gst_percentage'],
+                            'created_at' => $arrChargesData['created_at'],
+                            'created_by' => $arrChargesData['created_by']
+                            ]);
+                            $this->masterRepo->saveChargesGST($chrgGstData);
+                        }
+                        
+                    }
                      $transUpdateData  =    (['trans_name' =>$request->chrg_name,
                                 'credit_desc' => $request->credit_desc,
                                 'debit_desc'  => $request->debit_desc,
@@ -70,6 +83,15 @@ class ChargeController extends Controller {
                 $status = $this->masterRepo->saveCharges($arrChargesData);
                 if($status)
                 {
+                    $chrgGstData = ([
+                        'chrg_id' => $status,
+                        'gst_val' => $arrChargesData['gst_percentage'],
+                        'created_at' => $arrChargesData['created_at'],
+                        'created_by' => $arrChargesData['created_by']
+                        ]);
+                    
+                    $charge_gst_id = $this->masterRepo->saveChargesGST($chrgGstData);
+                    
                     $transData  =    (['trans_name' =>$request->chrg_name,
                                      'credit_desc' => $request->credit_desc,
                                      'debit_desc'  => $request->debit_desc,

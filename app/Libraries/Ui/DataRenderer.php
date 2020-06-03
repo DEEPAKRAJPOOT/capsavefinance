@@ -1,6 +1,7 @@
 <?php
 namespace App\Libraries\Ui;
 use DataTables;
+use Config;
 use Helpers;
 use DB;
 use Session;
@@ -755,9 +756,11 @@ class DataRenderer implements DataProviderInterface
                     'anchor_id',
                     function ($invoice) { 
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -783,15 +786,9 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
-                           if($request->front)
-                           {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
-                           }
-                        else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
-                        }
+                         return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                  
+                       
              })
              
               ->addColumn(
@@ -849,10 +846,12 @@ class DataRenderer implements DataProviderInterface
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
                          }   
-                       $id = Auth::user()->user_id;
+                        $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -872,7 +871,7 @@ class DataRenderer implements DataProviderInterface
                       if(in_array($customer, $expl)) 
                       {  
                         
-                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm pendingApproveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                       
                       }
                       return $action;
@@ -1154,9 +1153,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                       if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1349,9 +1350,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1643,9 +1646,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                         $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1755,9 +1760,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                         $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -6278,19 +6285,17 @@ class DataRenderer implements DataProviderInterface
     {  
         
         return DataTables::of($invoice)
-               ->rawColumns(['debtor_name','od','business'])
+               ->rawColumns(['debtor_name','od','business','relisation_date'])
            
                 ->addColumn(
                     'debtor_name',
                     function ($invoice) { 
-                        
-                        return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
-                     
+                     return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
                     })
                   ->addColumn(
                     'debtor_acc_no',
                     function ($invoice)  {     
-                           return  'xxxxxxxxxxxxxxxxxx';
+                           return  ($invoice->Invoice->anchor->anchorAccount) ? $invoice->Invoice->anchor->anchorAccount->acc_no : '' ;
                   })
              
               ->addColumn(
@@ -6311,10 +6316,18 @@ class DataRenderer implements DataProviderInterface
                 })  
                 ->addColumn(            
                     'relisation_date',
-                    function ($invoice) {                        
-                        return   date('Y-m-d', strtotime($invoice->payment_due_date. ' + '.$invoice->grace_period.' days')); 
+                    function ($invoice) {  
+                      $payment  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->date_of_payment)
+                           {
+                             $payment.= Carbon::parse($row->payment->date_of_payment)->format('d/m/Y')."</br>";
+                           }
+                           
+                      }
+                    return substr($payment,0,-1);
                        
-                      
                 })
                 ->addColumn(            
                     'relisation_amount',
@@ -6325,7 +6338,24 @@ class DataRenderer implements DataProviderInterface
                     'cheque',
                     function ($invoice) {
                        
-                           return   'xxxxxxxx';   
+                      $chk  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->utr_no)
+                           {
+                             $chk.= $row->payment->utr_no.",";
+                           }
+                            if( $row->payment->unr_no)
+                           {
+                             $chk.= $row->payment->unr_no.",";
+                           }
+                            if( $row->payment->cheque_no)
+                           {
+                             $chk.= $row->payment->cheque_no.",";
+                           }
+                      }
+                    return substr($chk,0,-1);
+                     
                        
                     })
                    ->addColumn(
