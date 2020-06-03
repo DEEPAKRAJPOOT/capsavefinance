@@ -2,6 +2,7 @@
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
+use Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Factory\Models\BaseModel;
@@ -29,14 +30,14 @@ class Transactions extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -64,8 +65,12 @@ class Transactions extends BaseModel {
         'pay_from',
         'is_settled',
         'is_posted_in_tally',
+        'sys_created_at',
+        'sys_updated_at',
         'created_at',
-        'created_by'
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
 
     public function payment(){
@@ -151,13 +156,12 @@ class Transactions extends BaseModel {
     }
 
     public function getDpdAttribute(){
-        $to = \Carbon\Carbon::now()->setTimezone(config('common.timezone'));
-        
+        $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
         if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-            $from = date('Y-m-d',strtotime($this->invoiceDisbursed->payment_due_date));
+            $from = Carbon::createFromFormat('Y-m-d', $this->invoiceDisbursed->payment_due_date);
         }
         elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            $from = date('Y-m-d',strtotime($this->trans_date));
+            $from = Carbon::createFromFormat('Y-m-d H:i:s', $this->trans_date);
         }
 
         return $to->diffInDays($from);
@@ -314,19 +318,12 @@ class Transactions extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        if (!isset($transactions['created_at'])) {
-            $transactions['created_at'] = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
-        }
-        if (!isset($transactions['created_by'])) {
-            $transactions['created_by'] = \Auth::user()->user_id??null;
-        }        
-        
+        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($transactions);
-        } else if (!isset($transactions[0])) {
+        }else{
+            $transactions['sys_created_at'] = Helpers::getSysStartDate();
             return self::create($transactions);
-        } else {            
-            return self::insert($transactions);
         }
     }
 
