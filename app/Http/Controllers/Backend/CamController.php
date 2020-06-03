@@ -1499,7 +1499,8 @@ class CamController extends Controller
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
-        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        //$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        $offerStatus = $this->appRepo->getAppData($appId)->status;//to check offer is sanctioned or not
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
@@ -1632,7 +1633,9 @@ class CamController extends Controller
 
 
       if ($limitData->product_id == 1) {
-        $user = $this->appRepo->getAppData($appId)->user;
+        $appData = $this->appRepo->getAppData($appId);
+        $appType = $appData->app_type;
+        $user = $appData->user;
         $user_type = $user->is_buyer;
         $anchors = $user->anchors;
         $anchorArr=[];
@@ -1641,6 +1644,7 @@ class CamController extends Controller
         }
         $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
+        $appType = '';
         $anchors = [];
         $anchorPrgms = [];
       }
@@ -1661,7 +1665,7 @@ class CamController extends Controller
       }
 
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType]);
     }
 
     /*function for updating offer data*/

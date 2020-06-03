@@ -362,7 +362,15 @@ class KarzaController extends Controller
         $requestArr   = $request->all();
         try{
           $result =  $KarzaApi->checkBizPanToGst($requestArr);
-          $res = json_decode($result);
+          $res = json_decode($result,1);
+          if($res['statusCode'] == 101){
+            $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
+                'file_name' => $requestArr['pan'].' PAN to GST for Business',
+                'status' => 1,
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by' => Auth::user()->user_id,
+              ]);
+          }
           //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
           return response()->json(['response' =>$res]);
         }catch (Exception $e){
@@ -383,7 +391,7 @@ class KarzaController extends Controller
           $res = json_decode($result,1);
           if($res['statusCode'] == 101){
             $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
-                'file_name' =>   $res['result']['pradr']['adr'],
+                'file_name' => $res['result']['pradr']['adr'],
                 'status' => 1,
                 'created_at' => \Carbon\Carbon::now(),
                 'created_by' => Auth::user()->user_id,
@@ -407,6 +415,14 @@ class KarzaController extends Controller
         try{
           $result =  $KarzaApi->checkBizEntityToCin($requestArr);
           $res = json_decode($result,1);
+          if($res['status-code'] == 101){
+            $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
+                'file_name' => $requestArr['companyName'].' Entity name to CIN '.$res['result']['result'][0]['cin'],
+                'status' => 1,
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by' => Auth::user()->user_id,
+              ]);
+          }
           //$res =   json_encode(array('requestId' => $requestPassport['fileNo'],'dob' => $requestPassport['dob']));
           return response()->json(['response' =>$res]);
         }catch (Exception $e){

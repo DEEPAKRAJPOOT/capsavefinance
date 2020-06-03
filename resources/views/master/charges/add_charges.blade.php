@@ -119,6 +119,9 @@
                     <option value="3">None</option>
                     <option value="1">Limit Assignment</option>
                     <option value="2">First Invoice Disbursement</option>
+                    <option value="4">Limit Enhancement</option>
+                    <option value="5">Limit Renewal</option>
+                    <option value="6">Limit Closure</option>
                 </select>
             </div>
 

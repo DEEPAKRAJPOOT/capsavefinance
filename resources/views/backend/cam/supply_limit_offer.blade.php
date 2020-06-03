@@ -888,7 +888,8 @@
 <script>
     var bizOwners = {!! json_encode($bizOwners) !!};
     var anchors = {!! json_encode($anchors) !!};
-    
+    var appType = {{ config('common.app_type')[$appType] }};
+
     function anchorDropdown(anchors){
         let $html='<option value="">Select Debtor</option>';
         $.each(anchors,function(i,anchor){
@@ -1472,7 +1473,6 @@
   }
 
   function fillChargesBlock(program){
-    console.log(program);
     let html='';
     $.each(program.program_charges, function(i,program_charge){
 //        if(program_charge.charge_name.chrg_tiger_id == 1){
@@ -1485,8 +1485,7 @@
 //            //value="'+program_charge.chrg_calculation_amt+'"
 //        }
 
-
-        if(program_charge.charge_name.chrg_tiger_id == 1){
+        if(program_charge.charge_name.chrg_tiger_id == appType){
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
                     '<label for="txtPassword"><b>'+program_charge.charge_name.chrg_name+((program_charge.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</b></label>'+

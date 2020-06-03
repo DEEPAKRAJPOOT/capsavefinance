@@ -32,13 +32,6 @@
             </div>
 
             <div class="form-group col-md-6">
-                <label for="end_date">End Date</label>
-                <input type="text" name="end_date" id="end_date" readonly="readonly" class="form-control" value="{{$baserate_data->end_date}}">
-                {!! $errors->first('end_date', '<span class="error">:message</span>') !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-md-6">
                 <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option value="" selected>Select</option>
@@ -46,6 +39,12 @@
                     <option {{$baserate_data->is_active == 0 ? 'selected' : ''}} value="0">In-Active</option>
                 </select>
             </div>
+
+            <!-- <div class="form-group col-md-6">
+                <label for="end_date">End Date</label>
+                <input type="text" name="end_date" id="end_date" readonly="readonly" class="form-control" value="{{$baserate_data->end_date}}">
+                {!! $errors->first('end_date', '<span class="error">:message</span>') !!}
+            </div> -->
         </div>
         <div class="row">
             <div class="form-group col-md-12 text-right">

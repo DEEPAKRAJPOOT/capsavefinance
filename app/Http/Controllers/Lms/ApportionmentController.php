@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Helpers\ManualApportionmentHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Http\Requests\Lms\AdjustmentRequest;
 use App\Http\Requests\Lms\ApportionmentRequest;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
@@ -325,7 +326,7 @@ class ApportionmentController extends Controller
                 'biz_id' => $paymentDetails->biz_id,
                 'virtual_acc' => $paymentDetails->virtual_acc,
                 'action_type' => $paymentDetails->action_type,
-                'trans_type' => $paymentDetails->trans_type,
+                'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
                 'parent_trans_id' => $resp->trans_id,
                 'amount' => $amount,
                 'date_of_payment' => $paymentDetails->date_of_payment,
@@ -771,7 +772,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
-            return redirect()->back('unsettled_payments', [ 'payment_id' => $paymentId, 'user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
@@ -1158,7 +1159,160 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked Write Off']);
             }
         } catch (Exception $ex) {
-            return redirect()->back('apport_unsettled_view', ['user_id' =>$userId])->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    /**
+     * Refund Transaction marked Adjusted
+     */
+    public function markAdjustmentConfirmation(AdjustmentRequest $request){
+        try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            $amtToSettle = 0;
+            $unAppliedAmt = 0;
+            $transIds = [];
+            $transactions = [];
+            $transactionList = [];
+            
+            $userId = $request->user_id;
+            $refunds = ($request->refund)?$request->refund:[];
+            $checks   = ($request->has('check'))?$request->check:[];
+
+            $userDetails = $this->getUserDetails($userId); 
+           
+            
+            foreach ($checks as $Ckey => $Cval) {
+                if($Cval === 'on' && $refunds[$Ckey] > 0){
+                    array_push($transIds, $Ckey);
+                }
+            }
+
+            if(!empty($transIds)){
+                $transactions = Transactions::where('user_id','=',$userId)
+                ->whereIn('trans_id',$transIds)
+                ->orderBy("trans_date", 'asc')
+                ->get();
+            }
+
+            foreach ($transactions as $trans){
+                $invoiceList[$trans->invoice_disbursed_id] = [
+                    'invoice_disbursed_id'=>$trans->invoice_disbursed_id
+                ];     
+                $transactionList[] = [
+                    'trans_id' => $trans->trans_id,
+                    'trans_date' => $trans->trans_date,
+                    'value_date' => $trans->parenttransdate,
+                    'invoice_no' => ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id)?$trans->invoiceDisbursed->invoice->invoice_no:'',
+                    'trans_type' => $trans->trans_type,
+                    'trans_name' =>  $trans->transName,
+                    'total_repay_amt' => (float)$trans->amount,
+                    'outstanding_amt' => (float)$trans->refundoutstanding,
+                    'refund' => ($refunds[$trans->trans_id])?(float)$refunds[$trans->trans_id]:null,
+                    'is_valid' => ((float)$refunds[$trans->trans_id] <= (float)$trans->refundoutstanding)?1:0
+                ];
+                $amtToSettle += $refunds[$trans->trans_id];
+            }
+
+            $request->session()->put('adjustment', [
+                'user_id' => $userId,
+                'refund' => $refunds,
+                'check' => $checks,
+            ]);
+        
+            return view('lms.apportionment.markAdjustmentConfirm',[
+                'userId' => $userId,
+                'userDetails' => $userDetails,
+                'transactions' => $transactionList,
+                'sanctionPageView'=>$sanctionPageView,
+                'adjustableAmt'=>$amtToSettle
+            ]);
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function markAdjustmentSave(Request $request){
+        try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            if($request->session()->has('adjustment')){
+                $amtToSettle = 0; 
+                $transIds = [];
+                $userId = $request->session()->get('adjustment.user_id');
+                $refunds = $request->session()->get('adjustment.refund');
+                $checks = $request->session()->get('adjustment.check');
+ 
+                $invoiceList = [];
+                $transactionList = [];
+
+                foreach ($checks as $Ckey => $Cval) {
+                    if($Cval === 'on' && $refunds[$Ckey] > 0){
+                        array_push($transIds, $Ckey);
+                    }
+                }
+
+                $transactions = [];
+                if(!empty($transIds)){
+                    $transactions = Transactions::where('user_id','=',$userId)
+                    ->whereIn('trans_id',$transIds)
+                    ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
+                    ->get();
+                }
+
+                $payments = [];
+                foreach ($transactions as $trans){  
+                    $transactionList[] = [
+                        'payment_id' => NULL,
+                        'link_trans_id' => $trans->trans_id,
+                        'parent_trans_id' => $trans->parent_trans_id ?? $trans->trans_id,
+                        'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                        'user_id' => $trans->user_id,
+                        'trans_date' => date('Y-m-d H:i:s'),
+                        'amount' => $refunds[$trans->trans_id],
+                        'entry_type' => 0,
+                        'soa_flag' => 1,
+                        'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT')
+                    ];
+                    if(!isset($payments[$trans->trans_date]['amount'])){
+                        $payments[$trans->trans_date]['amount'] = 0;
+                    }
+                    $payments[$trans->trans_date]['amount'] += $refunds[$trans->trans_id];
+                    
+                }
+
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                }
+                
+                foreach ($payments as $transDate => $payment) {
+                    $paymentData = [
+                        'user_id' => $transactions[0]->user_id,
+                        'virtual_acc' => $transactions[0]->payment->virtual_acc,
+                        'action_type' => 5,
+                        'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
+                        'amount' => $payment['amount'],
+                        'date_of_payment' => $transDate,
+                        'is_manual' => '1',
+                        'generated_by' => 1,
+                        'is_refundable' => 1
+                    ];
+                    $paymentId = Payment::insertPayments($paymentData);
+                }
+
+                $request->session()->forget('apportionment');
+                return redirect()->route('apport_refund_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully Mark Adjusted']);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 }

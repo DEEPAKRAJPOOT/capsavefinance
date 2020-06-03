@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
-class ApportionmentRequest extends FormRequest
+class AdjustmentRequest extends FormRequest
 {
 
   public function __construct(InvLmsRepoInterface $lms_repo, InvUserRepoInterface $user_repo){
@@ -31,45 +31,29 @@ class ApportionmentRequest extends FormRequest
      public function rules(){
         return [
            'user_id' => 'required|numeric|min:1',
-           'payment_id' => 'required|numeric|min:1',
         ];
     }
 
     public function withValidator($validator){
         $formData = $validator->getData();
-
         $validator->after(function ($validator) use ($formData) {
-            $totalselectedAmount = 0;
-            $totalRePayAmount = 0;
-
             $lmsUser = $this->userRepo->lmsGetCustomer($formData['user_id']);
-            $payment = $this->lmsRepo->getPaymentDetail($formData['payment_id'], $formData['user_id']);
             if(!$lmsUser){
                 $validator->errors()->add("check.required", trans('error_messages.apport_invalid_user_id'));
             }
-            if(!$payment){
-                $validator->errors()->add("check.required", trans('error_messages.apport_invalid_repayment_id'));
-            }else{
-                $totalRePayAmount = $payment->amount;
-            }
-
             if (empty($formData['check']) || !is_array($formData['check'])) {
-              $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
+              $validator->errors()->add("check.required", 'Atleast a field is require to Adustment');
             }
             foreach ($formData['check'] as $key => $value) {
-                $selectedPayment = $formData['payment'][$key] ?? 0;
+                $selectedPayment = $formData['refund'][$key] ?? 0;
                 $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
                 $outstandingAmount = $transDetail->getOutstandingAttribute();
                 if (empty($selectedPayment)) {
-                    $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
+                    $validator->errors()->add("refund.{$key}", 'Field is required against selected transaction');
                 }
                 if ($outstandingAmount < $selectedPayment) {
-                    $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
+                    $validator->errors()->add("refund.{$key}", 'Filed must be less than and equal to the outsanding amount');
                 }
-                $totalselectedAmount += $selectedPayment;
-            }
-            if ($totalselectedAmount > $totalRePayAmount) {
-                    $validator->errors()->add("totalRepayAmount", 'Sum of pay must be less than: '. $totalRePayAmount);
             }
         });
     }

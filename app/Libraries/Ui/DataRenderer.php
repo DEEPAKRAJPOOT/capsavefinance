@@ -1849,8 +1849,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
-                        $tdsType = ($trans->action_type == 3) ? '/TDS' : '';   
-                        return $trans->transType->trans_name . $tdsType;
+                        return $trans->paymentname;
                 })
                  ->addColumn(
                     'comment',
@@ -1900,9 +1899,7 @@ class DataRenderer implements DataProviderInterface
                         });                        
                     }
                })
-              
               ->make(true);
-         
      }
      
      /* Get Invoice list for backend
@@ -4059,6 +4056,12 @@ class DataRenderer implements DataProviderInterface
                     }
                 }
             )
+            ->addColumn(
+                'backgroundColor',
+                function($trans){
+                    return $trans->soabackgroundcolor;
+                }
+            )
             ->editColumn(
                 'balance',
                 function ($trans) {
@@ -4179,6 +4182,12 @@ class DataRenderer implements DataProviderInterface
                 return '(0.00)';
             }
         })
+        ->addColumn(
+            'backgroundColor',
+            function($trans){
+                return $trans->soabackgroundcolor;
+            }
+        )
         ->editColumn('balance', function ($trans) {
             $data = '';
             $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
@@ -4880,7 +4889,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'business_name',
                         function ($dataRecords) {
-                        return $dataRecords->getBusinessName->biz_entity_name;
+                        return $dataRecords->getUserName->biz_name;
                     })
                     ->editColumn(
                         'virtual_account',
@@ -5830,7 +5839,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment){
                 $result = '';
                 if($payment){
-                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
+                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
                 }
                 return $result;
             })
@@ -5898,7 +5907,7 @@ class DataRenderer implements DataProviderInterface
     public function getRefundTrans(Request $request, $trans)
     {
         return DataTables::of($trans)
-            ->rawColumns(['select', 'pay'])
+            ->rawColumns(['select', 'refund'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
@@ -5915,6 +5924,15 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('outstanding_amt', function($trans){
                 return "₹ ".number_format($trans->refundoutstanding,2);
+            })
+            ->addColumn('refund', function($trans){
+                $result = "<input class='refund' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
+                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onRefundCheckChange(".$trans->trans_id.")'>";
+                return $result;
             })
             ->make(true);
     }

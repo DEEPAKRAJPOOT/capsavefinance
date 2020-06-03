@@ -119,7 +119,7 @@ class Transactions extends BaseModel {
     }
 
     public function refundReqTrans(){
-        return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
     }
 
     public function transRunning(){
@@ -142,7 +142,7 @@ class Transactions extends BaseModel {
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND')])
+        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])
         ->sum('amount');
 
         $cr = self::where('parent_trans_id','=',$this->trans_id)
@@ -175,7 +175,7 @@ class Transactions extends BaseModel {
     public function getRefundableAmtAttribute(){
         return self::where('link_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
-        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND')]) 
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')]) 
         ->sum('amount');
     }
 
@@ -196,8 +196,10 @@ class Transactions extends BaseModel {
 
     public function getTransNameAttribute(){
         $name = ' '; 
-       
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL')])){
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT')) 
+        return $this->payment->paymentname;
+
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])){
             if($this->parent_trans_id){
                 $parentTrans = self::find($this->parent_trans_id);
                 if($parentTrans->entry_type == 0){
@@ -207,7 +209,7 @@ class Transactions extends BaseModel {
                 }
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')]))
+                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
                     if($linkTrans->entry_type == 0){
                         $name .= ' '.$linkTrans->transType->debit_desc;
                     }elseif($linkTrans->entry_type == 1){
@@ -222,7 +224,7 @@ class Transactions extends BaseModel {
         }elseif($this->entry_type == 1){
             $name .= ' '.$this->transType->credit_desc;
         }
-        return $name;
+        return trim($name);
     }
 
     public function getBatchNoAttribute(){
@@ -239,12 +241,14 @@ class Transactions extends BaseModel {
 
     public function getNarrationAttribute(){
         $data = '';
-        if(in_array($this->trans_type,[ config('lms.TRANS_TYPE.REPAYMENT')])){
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($this->BatchNo)
             $data .= $this->BatchNo.' ';
-            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
-            $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' '; 
+            if($this->payment->transactionno)
+            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.'<br> ';
+            $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' ';
         }
-        return $data;
+        return trim($data);
     }
 
     public static function get_balance($trans_code,$user_id){
@@ -262,6 +266,17 @@ class Transactions extends BaseModel {
             ->sum('amount');
 
         return $dr - $cr;
+    }
+
+    public function getSoaBackgroundColorAttribute(){
+        $color = '';
+        if($this->payment_id){
+            if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+            $color = '#f3c714';
+            else
+            $color = '#ffcc0078';
+        }
+        return $color;
     }
     
     public  function getBalanceAttribute()
@@ -299,6 +314,9 @@ class Transactions extends BaseModel {
                 ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
+                    if($item->refundReqTrans){
+                        return false;
+                    }
                     if($item->trans_type == config('lms.TRANS_TYPE.TDS') && $item->payment->is_refundable == 0){
                         return false;
                     }
@@ -608,30 +626,6 @@ class Transactions extends BaseModel {
 
     public static function updateIsInvoiceGenerated($transIds, $data) {
         return self::whereIn('trans_id', $transIds)->update($data);
-    }
-
-    public function getOppTransNameAttribute(){
-        if($this->transType->chrg_master_id!='0'){
-            if($this->is_waveoff == 1){
-                return $this->transType->charge->chrg_name.' Waved Off';
-            }if($this->is_tds == 1){
-                return $this->transType->charge->chrg_name.' TDS';
-            }elseif($this->entry_type == 0){
-                return $this->transType->charge->credit_desc;
-            }elseif($this->entry_type == 1){
-                return $this->transType->charge->debit_desc;
-            }
-        }else{
-            if($this->is_waveoff == 1){
-                return $this->transType->trans_name.' Waved Off';
-            }if($this->is_tds == 1){
-                return $this->transType->trans_name.' TDS';
-            }elseif($this->entry_type == 0){
-                return $this->transType->credit_desc;
-            }elseif($this->entry_type == 1){
-                return $this->transType->debit_desc;
-            }
-        }
     }
 
     public function getModeOfPaymentNameAttribute(){
