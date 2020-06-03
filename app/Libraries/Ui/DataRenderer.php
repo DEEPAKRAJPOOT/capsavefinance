@@ -3988,7 +3988,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_date',
                 function ($trans) {
-                    return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+                    return \Helpers::convertDateTimeFormat($trans->sys_created_at ?? $trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
                 }
             )
             ->editColumn(
@@ -4124,7 +4124,7 @@ class DataRenderer implements DataProviderInterface
             return date('d-m-Y',strtotime($trans->trans_date));
         })
         ->editColumn('trans_date', function ($trans) {
-            return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+            return \Helpers::convertDateTimeFormat($trans->sys_created_at ?? $trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
         })
         ->editColumn('trans_type', function ($trans) {
             return $trans->transname;
