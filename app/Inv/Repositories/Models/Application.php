@@ -817,5 +817,12 @@ class Application extends BaseModel
                        
         return ($appData ? $appData : []);        
     }
+    
+     public static function getSentionUserDetails($uid)
+     {
+       
+         return self::where(['user_id' =>$uid,'status' => 2])->first();
+         
+     }
 
 }

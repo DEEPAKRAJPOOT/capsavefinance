@@ -208,4 +208,16 @@ class DoaLevel extends BaseModel {
         return $res ?: false;
     }
 
+    /**
+     * Get DoA Data
+     * 
+     * @return mixed
+     */
+    public static function getLastDoaLevelId()
+    {
+        $res = self::select('*')               
+                ->orderBy('doa_level_id', 'DESC')
+                ->first();
+        return $res ?: false;
+    }    
 }

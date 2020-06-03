@@ -2,12 +2,13 @@
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
+use Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
-use App\Inv\Repositories\Models\Lms\Transactions;
 
 class TransactionsRunning extends BaseModel {
     /* The database table used by the model.
@@ -30,14 +31,14 @@ class TransactionsRunning extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -51,9 +52,12 @@ class TransactionsRunning extends BaseModel {
         'trans_type',
         'amount',
         'entry_type',
-        //'is_posted',
+        'sys_created_at',
+        'sys_updated_at',
         'created_at',
-        'created_by'
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
 
     public function transaction(){
@@ -142,20 +146,13 @@ class TransactionsRunning extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        if (!isset($transactions['created_at'])) {
-            $transactions['created_at'] = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
-        }
-        if (!isset($transactions['created_by'])) {
-            $transactions['created_by'] = \Auth::user()->user_id??null;
-        }        
-        
+        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($transactions);
-        } else if (!isset($transactions[0])) {
+        } else {
+            $transactions['sys_created_at'] = Helpers::getSysStartDate();
             return self::create($transactions);
-        } else {            
-            return self::insert($transactions);
-        }
+        } 
     }
 
     public static function getRunningTrans($userId){

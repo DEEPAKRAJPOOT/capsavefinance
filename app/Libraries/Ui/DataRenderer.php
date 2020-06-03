@@ -1,6 +1,7 @@
 <?php
 namespace App\Libraries\Ui;
 use DataTables;
+use Config;
 use Helpers;
 use DB;
 use Session;
@@ -768,9 +769,11 @@ class DataRenderer implements DataProviderInterface
                     'anchor_id',
                     function ($invoice) { 
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -796,15 +799,9 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
-                           if($request->front)
-                           {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
-                           }
-                        else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
-                        }
+                         return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                  
+                       
              })
              
               ->addColumn(
@@ -862,10 +859,12 @@ class DataRenderer implements DataProviderInterface
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
                          }   
-                       $id = Auth::user()->user_id;
+                        $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -885,7 +884,7 @@ class DataRenderer implements DataProviderInterface
                       if(in_array($customer, $expl)) 
                       {  
                         
-                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm pendingApproveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                       
                       }
                       return $action;
@@ -1167,9 +1166,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                       if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1362,9 +1363,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1656,9 +1659,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                         $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1768,9 +1773,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                         $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1855,8 +1862,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
-                        $tdsType = ($trans->action_type == 3) ? '/TDS' : '';   
-                        return $trans->transType->trans_name . $tdsType;
+                        return $trans->paymentname;
                 })
                  ->addColumn(
                     'comment',
@@ -1906,9 +1912,7 @@ class DataRenderer implements DataProviderInterface
                         });                        
                     }
                })
-              
               ->make(true);
-         
      }
      
      /* Get Invoice list for backend
@@ -3967,6 +3971,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getSoaList(Request $request, $data)
     {
+        $this->soa_balance = 0;
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
@@ -4010,7 +4015,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_date',
                 function ($trans) {
-                    return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+                    return \Helpers::convertDateTimeFormat($trans->sys_created_at ?? $trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
                 }
             )
             ->editColumn(
@@ -4043,6 +4048,7 @@ class DataRenderer implements DataProviderInterface
                         return '';
                     }
                     elseif($trans->entry_type=='0'){
+                        $this->soa_balance += $trans->amount;
                         return number_format($trans->amount,2);
                     }else{
                         return '0.00';
@@ -4056,10 +4062,17 @@ class DataRenderer implements DataProviderInterface
                         return '';
                     }
                     elseif($trans->entry_type=='1'){
+                        $this->soa_balance -= $trans->amount;
                         return '('.number_format($trans->amount,2).')';
                     }else{
                         return '(0.00)';
                     }
+                }
+            )
+            ->addColumn(
+                'backgroundColor',
+                function($trans){
+                    return $trans->soabackgroundcolor;
                 }
             )
             ->editColumn(
@@ -4070,56 +4083,14 @@ class DataRenderer implements DataProviderInterface
                     if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                         $data = '';
                     }
-                    elseif($trans->balance<0){
-                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
+                    elseif($this->soa_balance<0){
+                        $data = '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }else{
-                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
+                        $data = '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }
                     return $data;
                 }
             )
-            /*->editColumn(
-                'debit',
-                function ($trans) {
-                    if(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){  
-                        if($trans->entry_type=='0'){
-                            return number_format($trans->amount,2);
-                        }else{
-                            return '0.00';
-                        }
-                    }
-                }
-            )
-            ->editColumn(
-                'credit',
-                function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                        return '';
-                    }
-                    elseif(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){
-                        if($trans->entry_type=='1'){
-                            return '('.number_format($trans->amount,2).')';
-                        }else{
-                            return '(0.00)';
-                        }
-                    }
-                }
-            )
-            ->editColumn(
-                'balance',
-                function ($trans) {
-                    $data = '';
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                        return '';
-                    }
-                    elseif($trans->balance<0){
-                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
-                    }else{
-                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
-                    }
-                    return $data;
-                }
-            )*/
             ->filter(function ($query) use ($request) {
 
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
@@ -4151,144 +4122,151 @@ class DataRenderer implements DataProviderInterface
     public function getColenderSoaList(Request $request, $data, $colenderCurrShare) {
         $this->colender_balance = 0;
         return DataTables::of($data)
-            ->rawColumns(['balance','narration'])
-            ->addColumn('payment_id', function($trans){
-                $co_lender_percent = $trans->co_lender_percent ?? 0;
-                $this->colender_share = round($co_lender_percent/100,2);
-                $this->colender_debit = 0;
-                $this->colender_credit = 0;
-                return $trans->payment_id;
-            })
-            ->addColumn('customer_id', function($trans){
-                $data = $trans->lmsUser->customer_id ?? '';
-                return $data;
-            })
-            ->addColumn('customer_name', function($trans){
+        ->rawColumns(['balance','narration'])
+        ->addColumn('payment_id', function($trans){
+            $co_lender_percent = $trans->co_lender_percent ?? 0;
+            $this->colender_share = round($co_lender_percent/100,2);
+            $this->colender_debit = 0;
+            $this->colender_credit = 0;
+            return $trans->payment_id;
+        })
+        ->addColumn('customer_id', function($trans){
+            $data = $trans->lmsUser->customer_id ?? '';
+            return $data;
+        })
+        ->addColumn('customer_name', function($trans){
+            $data = '';
+            if($trans->user){
+                $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
+            }
+            return $data;
+        })
+        ->addColumn('invoice_no',function($trans){
+            return $trans->invoiceno;
+        })
+        ->addColumn('batch_no',function($trans){
+            return $trans->batchNo;
+        })
+        ->addColumn('narration',function($trans){
+            return "<b>".$trans->narration."<b>";
+        })
+        ->addColumn('virtual_acc_id', function ($trans) {
+            return $trans->virtual_acc_id;
+        })
+        ->addColumn('value_date', function ($trans) {
+            return date('d-m-Y',strtotime($trans->trans_date));
+        })
+        ->editColumn('trans_date', function ($trans) {
+            return \Helpers::convertDateTimeFormat($trans->sys_created_at ?? $trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+        })
+        ->editColumn('trans_type', function ($trans) {
+            return $trans->transname;
+        })
+        ->editColumn('currency', function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }else{
+                return 'INR';
+            }
+        })
+        ->addColumn('sub_amount', function($trans) {
+            if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
+                $this->sub_amount = ($trans->amount * $this->colender_share);
+                return number_format($this->sub_amount,2);
+            }
+        })
+        ->editColumn('debit', function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }elseif($trans->entry_type=='0'){
+                $this->colender_debit = ($trans->amount*$this->colender_share);
+                return number_format($this->colender_debit, 2);
+            }else{
+                return '(0.00)';
+            }
+        })
+        ->editColumn('credit',  function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }elseif($trans->entry_type=='1'){
+                $this->colender_credit = ($trans->amount*$this->colender_share);
+                return '('.number_format($this->colender_credit, 2).')';
+            }else{
+                return '(0.00)';
+            }
+        })
+        ->addColumn(
+            'backgroundColor',
+            function($trans){
+                return $trans->soabackgroundcolor;
+            }
+        )
+        ->editColumn('balance', function ($trans) {
+            $data = '';
+            $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                 $data = '';
-                if($trans->user){
-                    $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
-                }
-                return $data;
-            })
-            ->addColumn('invoice_no',function($trans){
-                return $trans->invoiceno;
-            })
-            ->addColumn('batch_no',function($trans){
-                return $trans->batchNo;
-            })
-            ->addColumn('narration',function($trans){
-                return "<b>".$trans->narration."<b>";
-            })
-            ->addColumn('virtual_acc_id', function ($trans) {
-                return $trans->virtual_acc_id;
-            })
-            ->addColumn('value_date', function ($trans) {
-                return date('d-m-Y',strtotime($trans->trans_date));
-            })
-            ->editColumn('trans_date', function ($trans) {
-                return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
-            })
-            ->editColumn('trans_type', function ($trans) {
-                return $trans->transname;
-            })
-            ->editColumn('currency', function ($trans) {
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    return '';
-                }else{
-                    return 'INR';
-                }
-            })
-            ->addColumn('sub_amount', function($trans) {
-                if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
-                    $this->sub_amount = ($trans->amount * $this->colender_share);
-                    return number_format($this->sub_amount,2);
-                }
-            })
-            ->editColumn('debit', function ($trans) {
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    return '';
-                }elseif($trans->entry_type=='0'){
-                    $this->colender_debit = ($trans->amount*$this->colender_share);
-                    return number_format($this->colender_debit, 2);
-                }else{
-                    return '(0.00)';
-                }
-            })
-            ->editColumn('credit',  function ($trans) {
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    return '';
-                }elseif($trans->entry_type=='1'){
-                    $this->colender_credit = ($trans->amount*$this->colender_share);
-                    return '('.number_format($this->colender_credit, 2).')';
-                }else{
-                    return '(0.00)';
-                }
-            })
-            ->editColumn('balance', function ($trans) {
-                $data = '';
-                $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
-                if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                    $data = '';
-                }
-                elseif($trans->balance<0){
-                    $data = '<span style="color:red">'. number_format($this->colender_balance, 2) .'</span>';
-                }else{
-                    $data = '<span style="color:green">'. number_format($this->colender_balance, 2) .'</span>';
-                }
-                return $data;
-            })
-            ->filter(function ($query) use ($request) {
-                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                    $query->where(function ($query) use ($request) {
-                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
-                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
-                    });
-                }
-                if($request->get('user_id')!= ''){
-                    $query->where(function ($query) use ($request) {
-                        $user_id = trim($request->get('user_id'));
-                        $query->where('transactions.user_id', '=', "$user_id");
-                    });
-                }
-            })
-            ->make(true);
-        }
-        // Equipment
-        public function getEquipments(Request $request, $data)
-        {
-            return DataTables::of($data)
-                    ->rawColumns(['is_active', 'action'])
-                    
-                    ->addColumn(
-                        'id',
-                        function ($data) {
-                            return $data->id;
-                    })
-                    ->addColumn(
-                        'created_at',
-                        function ($data) {
-                        return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
-                    })
-                    ->addColumn(
-                        'is_active',
-                        function ($data) {
-                        $act = $data->is_active;
-                        $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEquipmentFrame" title="Edit Equipment Detail" data-url ="'.route('edit_equipment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
-                        $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
-                        return $status;
-                        }
-                    )
-                    ->filter(function ($query) use ($request) {
-                        if ($request->get('search_keyword') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $search_keyword = trim($request->get('search_keyword'));
-                                $query->where('equipment_name', 'like',"%$search_keyword%");
-                            });
-                        }
-                    })
-                    ->make(true);
-        }
+            }
+            elseif($this->colender_balance<0){
+                $data = '<span style="color:red">'. number_format($this->colender_balance, 2) .'</span>';
+            }else{
+                $data = '<span style="color:green">'. number_format($this->colender_balance, 2) .'</span>';
+            }
+            return $data;
+        })
+        ->filter(function ($query) use ($request) {
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+            if($request->get('user_id')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $user_id = trim($request->get('user_id'));
+                    $query->where('transactions.user_id', '=', "$user_id");
+                });
+            }
+        })
+        ->make(true);
+    }
+    
+    // Equipment
+    public function getEquipments(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEquipmentFrame" title="Edit Equipment Detail" data-url ="'.route('edit_equipment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('equipment_name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
 
     /**
      * 
@@ -4924,7 +4902,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'business_name',
                         function ($dataRecords) {
-                        return $dataRecords->getBusinessName->biz_entity_name;
+                        return $dataRecords->getUserName->biz_name;
                     })
                     ->editColumn(
                         'virtual_account',
@@ -5874,7 +5852,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment){
                 $result = '';
                 if($payment){
-                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
+                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
                 }
                 return $result;
             })
@@ -5919,7 +5897,15 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('select', function($trans){
                 $result = '';
-                if($trans->payment){
+                $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
+                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at);
+                $days = $to->diffInDays($from);
+                $flag = true;
+                if($trans->invoice_disbursed_id ){
+                    if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
+                    $flag = false;
+                }
+                if($trans->payment && $days == 1 && $flag){
                     $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
                 }
                 return $result;
@@ -5934,7 +5920,7 @@ class DataRenderer implements DataProviderInterface
     public function getRefundTrans(Request $request, $trans)
     {
         return DataTables::of($trans)
-            ->rawColumns(['select', 'pay'])
+            ->rawColumns(['select', 'refund'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
@@ -5951,6 +5937,15 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('outstanding_amt', function($trans){
                 return "₹ ".number_format($trans->refundoutstanding,2);
+            })
+            ->addColumn('refund', function($trans){
+                $result = "<input class='refund' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
+                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onRefundCheckChange(".$trans->trans_id.")'>";
+                return $result;
             })
             ->make(true);
     }

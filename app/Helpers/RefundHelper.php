@@ -23,32 +23,26 @@ class RefundHelper{
             throw new InvalidArgumentException("Payment Detail is not Valid/Settled");
         }
 
-        $repaymentTrails = Transactions::where('payment_id','=',$paymentId)->get();
-
-        $interestRefundTotal = Transactions::where('payment_id','=',$paymentId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
-        ->sum('amount');
-
-        $interestOverdueTotal = Transactions::where('payment_id','=',$paymentId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
-        ->sum('amount');
+        $repaymentTrails = Transactions::where('payment_id','=',$paymentId)->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT')])->get();
+        $interestRefundTotal = 0;
+        $interestOverdueTotal = 0;
+        $marginTotal = 0;
+        $nonFactoredAmount = 0;
+        $totalTdsAmount = 0;
         
-        $marginTotal = Transactions::where('payment_id','=',$paymentId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
-        ->sum('amount');
-        
-        $nonFactoredAmount = Transactions::where('payment_id','=',$paymentId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
-        ->sum('amount');
-
-        $totalTdsAmount = Transactions::where('payment_id','=',$paymentId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.TDS'))
-        ->sum('amount');
+        foreach ($repaymentTrails as $key => $trans) {
+            if($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.REFUND')){
+                $interestRefundTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $interestOverdueTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                $marginTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.NON_FACTORED_AMT')){
+                $nonFactoredAmount +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.TDS')){
+                $totalTdsAmount +=$trans->refundoutstanding;
+            }
+        }
         
         $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal+$totalTdsAmount;
 
@@ -176,6 +170,7 @@ class RefundHelper{
     public static function getRequest(int $refundReqId){
         $refundReq = RefundReq::find($refundReqId);
         $payment = Payment::find($refundReq->payment_id);
+        //$refundTrans = Transactions::where('payment_id',$refundReq->payment_id)->get();
         $refundTrans = Transactions::whereHas('refundReqTrans', function($query)use($refundReqId){
             $query->where('refund_req_id',$refundReqId);
         })->get();

@@ -8,7 +8,6 @@
                     <tr role="row">
                         <th>Invoice No</th>
                         <th>Disbursed Date </th>
-                        <th>Payment Due Date</th>
                         <th>Invoice Amt.</th>
                         <th>Margin(%) </th>
                         <th>Disburse Amt.</th>
@@ -27,8 +26,7 @@
 	                    <tr role="row" class="odd">
                                
 							<td> {{ $invoice->invoice_no }}</td>
-							<td> {{ ($invoice->disbursal) ? \Helpers::convertDateTimeFormat($invoice->disbursal->disburse_date, 'Y-m-d h:i:s', 'd-m-Y') : ''}}</td>
-							<td> {{ ($invoice->disbursal) ? \Helpers::convertDateTimeFormat($invoice->disbursal->payment_due_date, 'Y-m-d', 'd-m-Y') : '' }}</td>
+							<td> {{ ($invoice->invoice_disbursed->disbursal) ? \Helpers::convertDateTimeFormat($invoice->invoice_disbursed->disbursal->disburse_date, 'Y-m-d h:i:s', 'Y-m-d') : ''}}</td>
 							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount) }} </td>
 							<td> </i>{{ $margin }} %</td>
 							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100)) }} </td>

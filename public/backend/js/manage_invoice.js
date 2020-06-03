@@ -26,7 +26,59 @@
             $('input:checkbox').removeAttr('checked');
         }
     });
-
+ ///////////////////////For Invoice Approve////////////////////////
+    $(document).on('click', '.pendingApproveInv', function () {
+          
+        $("#moveCase").html('');
+        if (confirm('Are you sure? You want to approve it.'))
+        {  $(".isloader").show(); 
+            var invoice_id = $(this).attr('data-id');
+            var user_id = $(this).attr('data-user');
+            var amount = $(this).attr('data-amount');
+            var postData = ({'amount':amount,'user_id':user_id,'invoice_id': invoice_id, 'status': 8, '_token': messages.token});
+            th = this;
+            jQuery.ajax({
+                url: messages.update_icon_invoice_approve,
+                method: 'post',
+                dataType: 'json',
+                data: postData,
+                error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                },
+                success: function (data) {
+                     $(".isloader").hide(); 
+                    if (data.eod_process) {
+                        var alertmsg = '<div class="content-wrapper-msg"><div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' + data.message + '</div></div>';
+                        parent.$("#iframeMessage").html(alertmsg);
+                        return false;
+                    }                            
+                  else if(data==2)
+                 {
+                      alert('Limit Exceed');
+                 }
+                 else if(data==3)
+                 {
+                     $("#moveCase").html('(Exception Cases) Overdue');
+                     $(th).parent('td').parent('tr').remove();  
+                 }
+                 else if(data==4)
+                 {
+                      $("#moveCase").html('(Exception Cases) You cannot approve invoice as customer limit has been expired.');
+                     $(th).parent('td').parent('tr').remove(); 
+                 }
+                 else
+                 {
+                     $("#moveCase").html('Invoice successfully sent to  approve ');
+                     $(th).parent('td').parent('tr').remove(); 
+                 }
+                }
+            });
+        } else
+        {
+            return false;
+        }
+    });
+    
     ///////////////////////For Invoice Approve////////////////////////
     $(document).on('click', '.approveInv', function () {
           
