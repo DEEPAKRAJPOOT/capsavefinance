@@ -504,13 +504,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return User::getUserDetails($uid); 
+		  return Application::getSentionUserDetails($uid);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
 	   
 			   
-	}    
+	}  
 	  public static function getSingleChargeAmount($attr)
 	{
 	   try
