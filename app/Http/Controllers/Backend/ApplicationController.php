@@ -729,8 +729,10 @@ class ApplicationController extends Controller
 	 */    
 	public function sendCaseConfirmbox(Request $request) {
 		try{
+                   
 			$user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
+                        $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
 			$assign_case = $request->has('assign_case') ? $request->get('assign_case') : 0;
 			
 			$currentStage = Helpers::getCurrentWfStage($app_id);            
@@ -764,6 +766,7 @@ class ApplicationController extends Controller
 				->with('curr_role_id', $curr_role_id)
 				->with('next_role_id', $next_role_id)
 				->with('biz_id', $appData->biz_id)
+                                ->with('approvers',$approvers)
                                 ->with('nextStage', $nextStage);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -776,10 +779,13 @@ class ApplicationController extends Controller
 	 * @return view
 	 */    
 	public function AcceptNextStage(Request $request) {
+          
 		try{
+                             
 			$user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
-			$sel_assign_role = $request->get('sel_assign_role');
+                        $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
+                        $sel_assign_role = $request->get('sel_assign_role');
 			$assign_case = $request->get('assign_case');
 			$sharing_comment = $request->get('sharing_comment');
 			$curr_role_id = $request->get('curr_role_id');

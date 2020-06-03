@@ -1626,4 +1626,9 @@ class Helper extends PaypalHelper
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";         
         return $protocol;
      }
+     
+      public static function getProductWiseDoAUsersByAppId($app_id)
+     {
+        return  Application::getDoAUsersByAppId($app_id);
+     }
 }

@@ -41,6 +41,7 @@
                                 <tr role="row">
                                     <th>Level Code</th>
                                     <th>Level Name</th>
+                                    <th>Product Type</th>
                                     <th>City</th>
                                     <th>Amount</th>
                                     <th>Role(s)</th>

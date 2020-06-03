@@ -85,6 +85,17 @@
                        </label>
                        <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
+                      <div class="form-group">
+                       <label for="txtCreditPeriod">Approver List
+                       <span class="mandatory">*</span>
+                       </label>
+                    </div>
+                    @foreach($approvers as $row)  
+                   
+                        <div> <input type="checkbox" checked="checked" name="approver_list[]" class="approver_list" value="{{$row->user_id}}" id="approver_list">&nbsp; {{$row->f_name}}&nbsp;{{$row->l_name}}&nbsp; ({{$row->product_name}})</div>
+                       
+                      @endforeach
+                      </br>
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('biz_id', $biz_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
@@ -93,7 +104,7 @@
                     {!! Form::hidden('biz_id', $biz_id) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
-                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
+                <button type="submit" id="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>
@@ -150,10 +161,23 @@ var messages = {
             },
             messages: {
             }
+           
         });
+        
+        
             
     })
-    
+   
+   $(document).on("click","#submit",function(){
+        var len = $(".approver_list:checked").length;
+       if ( len === 0 )
+       {
+          parent.$('.isloader').hide();
+          alert('Please check at least 1 box');
+          return false;
+       }  
+       return true;
+    })
     
     </script>
 @endsection

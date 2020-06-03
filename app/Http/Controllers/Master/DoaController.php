@@ -37,6 +37,8 @@ class DoaController extends Controller {
      */
     public function addDoaLevel(Request $request)
     {
+       
+        $productType = $this->masterRepo->getProductType(); 
         $states = $this->masterRepo->getState();
         $stateList = [];
         $cityList = [];
@@ -45,10 +47,11 @@ class DoaController extends Controller {
         }
         $doaLevelStates = [];    
         $doa_level_id = null;
+        $product_edit_type = null;
         if ($request->has('doa_level_id')) {
             $doa_level_id = preg_replace('#[^0-9]#', '', $request->get('doa_level_id'));
             $doa_level = $this->masterRepo->getDoaLevelById($doa_level_id);
-            
+            $product_edit_type  = $this->masterRepo->getProIdByDoaLevel($doa_level_id);
             $level_code = isset($doa_level->level_code) ? $doa_level->level_code : null ;
             $doaLevelStates = isset($doa_level->doaLevelStates) ? $doa_level->doaLevelStates->toArray() : [];
             if (isset($doa_level->state_id)) {
@@ -116,7 +119,9 @@ class DoaController extends Controller {
             'doaLevelStates' => $doaLevelStates,
             'roleList' => $roleList,
             'doaLevelRoles' => $levelRoleList,
-            'doaLevelId' => $doa_level_id
+            'doaLevelId' => $doa_level_id,
+            'productType' => $productType,
+            'product_edit_type' => ($product_edit_type) ? $product_edit_type->product_id : ''
         ];
         return view('master.doa.add_doa_level', $data);
     }
@@ -181,6 +186,7 @@ class DoaController extends Controller {
             $data = [
                 'level_code' => $reqData['level_code'],
                 'level_name' => $reqData['level_name'],
+                'product_id' => $reqData['product_type'],
                 //'state_id'   => $reqData['state_id'],
                 // 'city_id'    => $reqData['city_id'],
                 'min_amount' => str_replace(',', '', $reqData['min_amount']),
