@@ -1611,6 +1611,60 @@ class CamController extends Controller
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
     }
+    
+    /**
+     * Open Reject offer Pop Up
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function rejectOfferForm(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.reject_offer')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+
+    /**
+     * Save Reject offer comment
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function rejectOffer(Request $request)
+    {   
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $cmntText = $request->get('comment_txt');
+            $appApprData = [
+                'app_id' => $appId,
+                'approver_user_id' => \Auth::user()->user_id,
+                'status' => 2
+              ];
+            $this->appRepo->saveAppApprovers($appApprData);
+            $addl_data = [];
+            $addl_data['sharing_comment'] = $cmntText;
+            $selRoleId = 7;
+            $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
+            $selUserId = $roles[0]->user_id;
+            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+            $currStage = Helpers::getCurrentWfStage($appId);
+            Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+ 
+            Session::flash('message', trans('backend_messages.offer_rejected'));
+            Session::flash('operation_status', 1);
+            return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+            //return redirect()->back();
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 
     /*function for showing offer data*/
     public function showLimitOffer(Request $request){

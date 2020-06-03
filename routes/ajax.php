@@ -461,6 +461,13 @@ Route::group(
         'as' => 'update_invoice_approve',
         'uses' => 'AjaxController@updateInvoiceApprove'
         ]
+    );
+       Route::post(
+        'update_icon_invoice_approve',
+        [
+        'as' => 'update_icon_invoice_approve',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
     );   
        Route::post(
         'update_invoice_approve_tab',

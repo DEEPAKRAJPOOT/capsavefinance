@@ -128,7 +128,7 @@ class DoaController extends Controller {
     protected function getDoaLevelCode($doa_level_id=null)
     {
         if (is_null($doa_level_id)) {
-            $doa_level = $this->masterRepo->getLatestDoaData();
+            $doa_level = $this->masterRepo->getLastDoaLevelId();
             $doa_level_id = $doa_level ? $doa_level->doa_level_id : 0;
             $code_index = $doa_level_id + 1;
         } else {

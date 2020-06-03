@@ -284,6 +284,11 @@ return [
         '3' => 'None',
         '1' => 'Limit Assignment',
         '2' => 'First Invoice Disbursement',
+    ],
+     'inv_approval' => [
+        '0' => 1,
+        '1' => 9,
+        '2' => 10
     ]
 ];
  

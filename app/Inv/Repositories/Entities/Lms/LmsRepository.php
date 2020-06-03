@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Master\GstTax;
+use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Lms\EodProcess;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Contracts\LmsInterface;
@@ -503,13 +504,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return User::getUserDetails($uid); 
+		  return Application::getSentionUserDetails($uid);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
 	   
 			   
-	}    
+	}  
 	  public static function getSingleChargeAmount($attr)
 	{
 	   try
@@ -1362,5 +1363,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
             return $result ?: false;
 	}
-
+        
+         public static function getChrgLog($id)
+	{
+	   try
+	   {
+		  return ChargeGST::getLastChargesGSTById($id);
+	   } catch (Exception $ex) {
+		  return $ex;
+	   }
+	   
+			   
+	}     
+	 
 }
