@@ -282,7 +282,7 @@
             </div>
         </li>
     -->
-        @canany(['payment_list','payment_advice'])
+        @canany(['payment_list','unsettled_payments','settled_payments'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-credit-card" aria-hidden="true"></i>
