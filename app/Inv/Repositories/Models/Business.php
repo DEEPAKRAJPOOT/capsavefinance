@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\LmsUser;
 use Carbon\Carbon;
+use Auth;
 
 class Business extends BaseModel
 {
@@ -91,14 +92,15 @@ class Business extends BaseModel
         'biz_segment'=>$attributes['segment'],
         'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
         'org_id'=>1,
-        'created_by'=>$userId,
+        'created_by'=>Auth::user()->user_id,
         'is_gst_manual'=>$attributes['is_gst_manual']
         ]);
 
         $bpga = BizPanGstApi::create([
-                'file_name'=>md5(time()),
+                'file_name'=>'PAN to GST for biz_id '.$business->biz_id.' (no API hit)',
                 'status'=>1,
-                'created_by'=>$userId
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by'=>Auth::user()->user_id
             ]);
 
         //entry for parent PAN
@@ -111,7 +113,8 @@ class Business extends BaseModel
                 'parent_pan_gst_id'=>0,
                 'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
                 'cin'=>$attributes['biz_cin'],
-                'created_by'=>$userId
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by'=>Auth::user()->user_id
             ]);
 
         //entry for parent GST
@@ -124,7 +127,8 @@ class Business extends BaseModel
                 'status'=>1,
                 'parent_pan_gst_id'=>0,
                 'biz_pan_gst_api_id'=>0,
-                'created_by'=>$userId
+                'created_at' => \Carbon\Carbon::now(),
+                'created_by'=>Auth::user()->user_id
             ]);
 
         //entry for all GST against the PAN
@@ -138,7 +142,8 @@ class Business extends BaseModel
                 $data[$key]['pan_gst_hash']=$value;
                 $data[$key]['status']=1;
                 $data[$key]['parent_pan_gst_id']=$bpg->biz_pan_gst_id;
-                $data[$key]['created_by']=$userId;
+                $data[$key]['created_at']=\Carbon\Carbon::now();
+                $data[$key]['created_by']=Auth::user()->user_id;
                 $data[$key]['biz_pan_gst_api_id']=0;
             }
             BizPanGst::insert($data);
@@ -148,7 +153,7 @@ class Business extends BaseModel
             'user_id'=>$userId,
             'biz_id'=>$business->biz_id,
             // 'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
-            'created_by'=>$userId
+            'created_by'=>Auth::user()->user_id
         ]);
 
         if(isset($attributes['product_id'])){
@@ -178,9 +183,9 @@ class Business extends BaseModel
 
         //insert address into rta_biz_addr
         $address_data=[];
-        array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_by'=>$userId,'rcu_status'=>0));
+        array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0));
         for($i=0; $i <=3 ; $i++) { 
-            $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_by'=>$userId,'rcu_status'=>0);
+            $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0);
             array_push($address_data, $temp);
         }
         BusinessAddress::insert($address_data);
@@ -253,7 +258,7 @@ class Business extends BaseModel
         'biz_segment'=>$attributes['segment'],
         'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
         'org_id'=>1,
-        'updated_by'=>$userId,
+        'updated_by'=>Auth::user()->user_id,
         ]);
 
         if(isset($attributes['is_gst_manual']) && $attributes['is_gst_manual']=='1'){
@@ -263,12 +268,12 @@ class Business extends BaseModel
             }            
         }
 
-        if(!empty($attributes->pan_api_res)){
+        if(!empty($attributes['pan_api_res'])){
             BizPanGst::where(['biz_id'=>$bizId,'biz_owner_id'=>null])->delete();
             $bpga = BizPanGstApi::create([
-                    'file_name'=>md5(time()),
+                    'file_name'=>'PAN to GST for biz_id '.$biz_id.' (no API hit)',
                     'status'=>1,
-                    'created_by'=>$userId
+                    'created_by'=>Auth::user()->user_id
                 ]);
 
             //entry for parent PAN
@@ -281,7 +286,8 @@ class Business extends BaseModel
                     'parent_pan_gst_id'=>0,
                     'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
                     'cin'=>$attributes['biz_cin'],
-                    'updated_by'=>$userId
+                    'created_at' => \Carbon\Carbon::now(),
+                    'created_by'=>Auth::user()->user_id
                 ]);
 
             //entry for parent GST
@@ -293,7 +299,8 @@ class Business extends BaseModel
                     'status'=>1,
                     'parent_pan_gst_id'=>0,
                     'biz_pan_gst_api_id'=>0,
-                    'created_by'=>$userId
+                    'created_at' => \Carbon\Carbon::now(),
+                    'created_by'=>Auth::user()->user_id
                 ]);
 
             //entry for all GST against the PAN
@@ -306,7 +313,8 @@ class Business extends BaseModel
                 $data[$key]['pan_gst_hash']=$value;
                 $data[$key]['status']=1;
                 $data[$key]['parent_pan_gst_id']=$bpg->biz_pan_gst_id;
-                $data[$key]['created_by']=$userId;
+                $data[$key]['created_at']=\Carbon\Carbon::now();
+                $data[$key]['created_by']=Auth::user()->user_id;
                 $data[$key]['biz_pan_gst_api_id']=0;
             }
             BizPanGst::insert($data);
@@ -317,17 +325,18 @@ class Business extends BaseModel
                 'gstno_pan_gst_id'=>0,
                 'is_gst_verified'=>1,
                 ]);
-        }else if(empty($attributes->pan_api_res) && !empty($attributes->biz_cin)){
+        }else if(empty($attributes['pan_api_res']) && !empty($attributes['biz_cin'])){
             //update for parent GST
             BizPanGst::where(['type'=>2,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
                     'pan_gst_hash'=>$attributes['biz_gst_number'],
-                    'updated_by'=>$userId
+                    'updated_at' => \Carbon\Carbon::now(),
+                    'updated_by'=>Auth::user()->user_id
                 ]);
 
             //update for CIN
             BizPanGst::where(['type'=>1,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
                     'cin'=>$attributes['biz_cin'],
-                    'updated_by'=>$userId
+                    'updated_by'=>Auth::user()->user_id
                 ]);
         }
 
@@ -335,7 +344,7 @@ class Business extends BaseModel
         $app = Application::where('biz_id',$bizId)->first();
         $app->update([
                 //'loan_amt'=>str_replace(',', '', $attributes['loan_amount']),
-                'updated_by'=>$userId
+                'updated_by'=>Auth::user()->user_id
             ]);
 
 
@@ -361,11 +370,11 @@ class Business extends BaseModel
         $biz_addr_ids = BusinessAddress::where('biz_id',$bizId)->pluck('biz_addr_id');
         $address_data=[];
         BusinessAddress::where('biz_addr_id',$biz_addr_ids[0])->update(
-            array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'updated_by'=>$userId)
+            array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'updated_at' => \Carbon\Carbon::now(),'updated_by'=>Auth::user()->user_id)
             );
         
         for ($i=0; $i <=3 ; $i++) { 
-            $temp = array('addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'created_by'=>$userId);
+            $temp = array('addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'updated_at' => \Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id);
             BusinessAddress::where('biz_addr_id',$biz_addr_ids[$i+1])->update($temp);
         }
 

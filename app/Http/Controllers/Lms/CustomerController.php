@@ -46,8 +46,8 @@ class CustomerController extends Controller {
 	 */
 	public function list()
 	{
-	return view('lms.customer.list');
-}
+		return view('lms.customer.list');
+	}
 
 /**
  * Display a listing of the customer.

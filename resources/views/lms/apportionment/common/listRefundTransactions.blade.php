@@ -10,7 +10,10 @@
                                     <th>Trans Date</th>       
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
-                                    <th>Refundable Amt</th>
+                                    <th>Total Refundable Amt</th>
+                                    <th>Remaining Amt</th>
+                                    <th></th>
+                                    <th><input type="checkbox" id="checkAll" onchange="apport.selectAllRefundCheck(this.id)"></th>
                                 </tr>
                             </thead>
                             <tbody>

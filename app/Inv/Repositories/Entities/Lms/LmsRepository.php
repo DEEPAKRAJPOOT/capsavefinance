@@ -313,8 +313,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						$query->whereIn('supplier_id', $userIds);
 					}
 				})
+				->groupBy('user_id')
 				->get();
-		// dd($data);
 	}    
 
 	/**
@@ -710,6 +710,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     
     public function getColenderSoaList() {
         return Transactions::getColenderSoaList();
+	}
+	
+	public function getConsolidatedSoaList() {
+        return Transactions::getConsolidatedSoaList();
     }
     
     public function getRepaymentAmount($userId, $transType)

@@ -3,7 +3,7 @@
 namespace App\Helpers;
 use DB;
 use Carbon\Carbon;
-use Dompdf\Helpers;
+use Helpers;
 use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -41,14 +41,14 @@ class ManualApportionmentHelper{
         ->where('soa_flag','=',0)
         ->whereDate('trans_date','<=',$intAccrualDate)
         ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
-        ->update(['soa_flag'=>$soaFlag]);
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
         
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
         ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
         ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
-        ->update(['soa_flag'=>$soaFlag]);
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
     }
 
     Private function setRearendInterestSoaFlag($invDisbId, $intAccrualDate, $invdueDate, $soaFlag){
@@ -57,7 +57,7 @@ class ManualApportionmentHelper{
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
         ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
-        ->update(['soa_flag'=>$soaFlag]);
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
     }
 
     private function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate){
@@ -132,7 +132,6 @@ class ManualApportionmentHelper{
                     'entry_type' => 1,
                     'soa_flag' => 1,
                     'trans_type' => config('lms.TRANS_TYPE.CANCEL')
-                    //'created_at' =>$intAccrualDate
                 ];
             }
         }
@@ -165,8 +164,7 @@ class ManualApportionmentHelper{
                 'amount' => $trans->outstanding,
                 'entry_type' => $trans->entry_type,
                 'soa_flag' => 1,
-                'trans_type' => $trans->trans_type,
-                //'created_at' =>$intAccrualDate
+                'trans_type' => $trans->trans_type
             ];
         
         }
@@ -184,7 +182,7 @@ class ManualApportionmentHelper{
         ->where('soa_flag','=',0)
         ->whereDate('trans_date','<=',$intAccrualDate)
         ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
-        ->update(['soa_flag'=>$soaFlag]);
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
     }
 
     private function getpaymentSettled($transDate, $invDisbId, $payFreq){
@@ -258,7 +256,7 @@ class ManualApportionmentHelper{
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
             ->where('entry_type','=',0)
             ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($odue->interestDate)))
-            ->update(['amount'=>0]);
+            ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
         
 
             if($transRunningId){
@@ -330,7 +328,7 @@ class ManualApportionmentHelper{
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
                 ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($interest->interestDate)))
-                ->update(['amount'=>0]);
+                ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
             }
 
             if($transId){
@@ -374,8 +372,6 @@ class ManualApportionmentHelper{
             $intAccrualData['accrued_interest'] = $interestAmt;
             $intAccrualData['interest_rate'] = null;
             $intAccrualData['overdue_interest_rate'] = $odIntRate;
-            $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone')   )->format('Y-m-d h:i:s');
-            $intAccrualData['created_by'] = Auth::user()->user_id??null;
 
             if($interest_accrual_id){
                 $recalwhereCond = [];
@@ -390,7 +386,7 @@ class ManualApportionmentHelper{
 
     public function intAccrual(int $invDisbId, $startDate = null){
         try{
-            $curdate = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+            $curdate = Helpers::getSysStartDate();
             
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
@@ -454,8 +450,6 @@ class ManualApportionmentHelper{
                     $intAccrualData['accrued_interest'] = $interestAmt;
                     $intAccrualData['interest_rate'] = ($intType==1)?$intRate:null;
                     $intAccrualData['overdue_interest_rate'] = ($intType==2)?$odIntRate:null;
-                    $intAccrualData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
-                    $intAccrualData['created_by'] = Auth::user()->user_id??null;
                     
                     if($interest_accrual_id){
                         $recalwhereCond = [];
@@ -489,7 +483,7 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
-        $curdate = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+        $curdate = Helpers::getSysStartDate();
         $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
         foreach ($invoiceList as $invId => $trans) {
             $this->intAccrual($invId);

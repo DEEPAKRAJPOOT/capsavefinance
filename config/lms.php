@@ -18,6 +18,7 @@ return [
        'PAYMENT_DISBURSED' =>'16',
        'REPAYMENT'=> '17',
        'INTEREST_OVERDUE'=>'33',
+       'ADJUSTMENT'=>'31',
        'REFUND'=>'32',
        'NON_FACTORED_AMT' => '35',
        'WAVED_OFF'=>'36',

@@ -722,7 +722,8 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return Activity::getActivity($whereCond);
     }
 
-    public function updateBaseRateEndDate($id, $bankId, $date){
+    public function updateBaseRateEndDate($id, $bankId, $date)
+    {
         return BaseRate::updateBaseRateEndDate($id, $bankId, $date);
     }     
     
