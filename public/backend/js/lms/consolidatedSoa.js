@@ -15,10 +15,6 @@ try {
                 "url": messages.lms_get_soa_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.from_date = $('input[name="from_date"]').val();
-                    d.to_date = $('input[name="to_date"]').val();
-                    d.search_keyword = $('input[name=search_keyword]').val();
-                    d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling

@@ -41,7 +41,7 @@
                 <div class="col-md-3">
                     {!!
                     Form::text('from_date',
-                    null,
+                    request()->get('from_date') ?? null,
                     [
                     'class' => 'form-control',
                     'placeholder' => 'From Date',
@@ -52,7 +52,7 @@
                  <div class="col-md-3">
                     {!!
                     Form::text('to_date',
-                    null,
+                    request()->get('to_date') ?? null,
                     [
                     'class' => 'form-control',
                     'placeholder' => 'To Date',
@@ -63,7 +63,7 @@
                 <div class="col-md-3" id="prefetch">
                     {!!
                     Form::text('search_keyword',
-                    null,
+                    request()->get('search_keyword') ?? null,
                     [
                     'class' => 'form-control',
                     'placeholder' => 'Search by Client ID/Name',
@@ -141,7 +141,7 @@
 <script>
 
     var messages = {
-        lms_get_soa_list: "{{ URL::route('lms_get_consolidated_soa_list') }}",
+        lms_get_soa_list: "{{ URL::route('lms_get_consolidated_soa_list',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'], 'from_date'=>request()->get('from_date'), 'to_date'=>request()->get('to_date') ] ) }}",
         get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
         pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",
         excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",
