@@ -3904,7 +3904,7 @@ if ($err) {
     }
 
     /**
-   * Get all transactions for soa
+   * Get all transactions for Colender soa
    *
    * @return json transaction data
    */
@@ -3927,6 +3927,19 @@ if ($err) {
         $users = $dataProvider->getSoaList($this->request, $transactionList);
         return $users;
     }
+    
+    /**
+   * Get all transactions for Consolidated soa 
+   *
+   * @return json transaction data
+   */
+    public function lmsGetConsolidatedSoaList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->lmsRepo->getConsolidatedSoaList();
+        $users = $dataProvider->getSoaList($this->request, $transactionList);
+        return $users;
+    }
+
     
      /**
    * Get all getInvoiceDueList

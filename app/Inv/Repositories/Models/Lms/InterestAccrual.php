@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
+use Helpers;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
@@ -27,14 +28,14 @@ class InterestAccrual extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -48,8 +49,12 @@ class InterestAccrual extends BaseModel {
         'accrued_interest',
         'interest_rate',
         'overdue_interest_rate',
+        'sys_created_at',
+        'sys_updated_at',
         'created_at',
-        'created_by'
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
 
     /**
@@ -66,9 +71,11 @@ class InterestAccrual extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
         
+        $data['sys_updated_at'] = Helpers::getSysStartDate();
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($data);
         } else {
+            $data['sys_created_at'] = Helpers::getSysStartDate();
             return self::create($data);
         }
     }

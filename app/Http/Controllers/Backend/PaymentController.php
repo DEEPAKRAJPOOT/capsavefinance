@@ -159,6 +159,7 @@ class PaymentController extends Controller {
 				'description' => $request->description,
 				'is_settled' => (in_array($request->action_type, [3])) ? '1':'0',
 				'is_manual' => '1',
+				'sys_date'=>\Helpers::getSysStartDate(),
 				'created_at' => $mytime,
 				'created_by' => $user_id,
 				'generated_by' => 0,
@@ -227,6 +228,7 @@ class PaymentController extends Controller {
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
 					'is_posted_in_taaly' => 0,
+					'sys_date'=>\Helpers::getSysStartDate(),
 					'created_at' =>  $mytime,
                     'created_by' =>  $user_id,
                   ];

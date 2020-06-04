@@ -620,7 +620,7 @@ trait LmsTrait
         foreach ($transactions as $key => $trans) {
             if($trans->req_amount>0){
                 $refundData = $this->createTransactionData($trans->transaction->user_id, [
-                    'amount' => $trans->req_amount,
+                    'amount' => $trans->transaction->refundoutstanding,
                     'trans_date'=>$actualRefundDate,
                     'tds_per'=>0,
                     'invoice_disbursed_id'=>$trans->transaction->invoice_disbursed_id,
@@ -921,31 +921,26 @@ trait LmsTrait
         $repayment = Payment::getPayments(['is_settled' => 1, 'payment_id' => $transId])->first();
         
         $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id'=>$transId]);
-
-        $interestRefundTotal = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
-        ->sum('amount');
-
-        $interestOverdueTotal = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
-        ->sum('amount');
         
-        $marginTotal = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
-        ->sum('amount');
+        $interestRefundTotal = 0;
+        $interestOverdueTotal = 0;
+        $marginTotal = 0;
+        $nonFactoredAmount = 0;
+        $totalTdsAmount = 0;
         
-        $nonFactoredAmount = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
-        ->sum('amount');
-
-        $totalTdsAmount = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.TDS'))
-        ->sum('amount');
+        foreach ($repaymentTrails as $key => $trans) {
+            if($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.REFUND')){
+                $interestRefundTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $interestOverdueTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                $marginTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.NON_FACTORED_AMT')){
+                $nonFactoredAmount +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.TDS')){
+                $totalTdsAmount +=$trans->refundoutstanding;
+            }
+        }
         
         $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal+$totalTdsAmount;
 

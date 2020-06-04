@@ -96,6 +96,7 @@
                 <p>Statement Of Account</p>
                 <br>
             </div>
+            @if($userInfo)
             <table class="table  table-td-right">
                 <tbody>
                     <tr>
@@ -121,6 +122,7 @@
                     @endif
                 </tbody>
             </table>
+            @endif
             @foreach($soaRecord as $soak => $soaRec)
             <div class="breakNow">
                 <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">

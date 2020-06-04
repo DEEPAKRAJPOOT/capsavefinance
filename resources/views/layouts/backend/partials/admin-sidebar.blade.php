@@ -281,7 +281,7 @@
             <div class="collapse" id="layoutsSubmenu8">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('lms_get_transaction') }}">Supplier SOA</a>
+                        <a class="nav-link" href="{{ route('soa_customer_view') }}">Supplier SOA</a>
 
                     </li>               
                 </ul>

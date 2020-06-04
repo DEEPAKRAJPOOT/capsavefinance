@@ -37,9 +37,18 @@
         @if(!$sanctionPageView)        
             @include('lms.apportionment.common.userDetails')
         @endif    
+            <form id="unsettlementFrom" action="" method="post" onsubmit="return apport.validateMarkSettled(this)">
+            @csrf	
             <div class="row">
                 @include('lms.apportionment.common.listRefundTransactions')
             </div>
+            <div class="row pull-right action-btn">
+                <div class="col-md-12" >
+                    <input type="submit" name="action" value="Adjustment" class="btn btn-success btn-sm"> 
+                    {{-- <input type="submit" name="action" value="Refund" class="btn btn-success btn-sm"> --}}
+                </div>
+            </div>
+            </form>
         </div>
     </div>
 
@@ -51,6 +60,7 @@
 
     var messages = {
         url: "{{ URL::route('apport_refund_list') }}",
+        confirm_adjustment: "{{ URL::route('apport_mark_adjustment_confirmation',[ 'user_id' => $userDetails['user_id'] , 'sanctionPageView' => $sanctionPageView ]) }}",
         user_id: "{{$userDetails['user_id']}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
