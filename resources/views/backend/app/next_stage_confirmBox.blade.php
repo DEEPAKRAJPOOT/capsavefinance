@@ -90,11 +90,18 @@
                        <span class="mandatory">*</span>
                        </label>
                     </div>
+                    @if(count($approvers) > 0)
                     @foreach($approvers as $row)  
                    
                         <div> <input type="checkbox" checked="checked" name="approver_list[]" class="approver_list" value="{{$row->user_id}}" id="approver_list">&nbsp; {{$row->f_name}}&nbsp;{{$row->l_name}}&nbsp; ({{$row->product_name}})</div>
                        
                       @endforeach
+                   
+                    @else
+                    
+                    <div class="error"> <i>Approver is not found...</i></div>
+                   
+                    @endif
                       </br>
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('biz_id', $biz_id) !!}
@@ -173,7 +180,7 @@ var messages = {
        if ( len === 0 )
        {
           parent.$('.isloader').hide();
-          alert('Please check at least 1 box');
+          alert('Please check at least 1 Approver');
           return false;
        }  
        return true;

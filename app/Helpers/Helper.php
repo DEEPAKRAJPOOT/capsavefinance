@@ -1066,18 +1066,29 @@ class Helper extends PaypalHelper
      * @param integer $app_id
      * @return mixed
      */
-    public static function saveApprAuthorityUsers($app_id = null)
+    public static function saveApprAuthorityUsers($app_id,$approver_list)
     {
         //$approvers = User::getApprAuthorityUsers();
         $approvers = Application::getDoAUsersByAppId($app_id);
+       
         $data = [];
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
 
         AppApprover::updateAppApprActiveFlag($app_id); //update rows with is_active => 0
         foreach ($approvers as $approver) {
+            /*******chk the approval is active or deactive behalf of checkbox check *********/
+             if(in_array($approver->user_id,$approver_list))
+            {
+                 $is_active =1;
+            }
+            else
+            {
+                 $is_active =0;
+            }
             $data[] = [
                 'app_id' => $app_id,
                 'approver_user_id' => $approver->user_id,
+                'is_active' => $is_active,
                 'created_by' => Auth::user()->user_id,
                 'created_at' => $curData,
                 'updated_by' => Auth::user()->user_id,
@@ -1085,21 +1096,23 @@ class Helper extends PaypalHelper
             ];
         }
         AppApprover::insert($data);
-
+            
         $application = Application::find($app_id);
         $reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$application->business->biz_id)->where('app_id','=',$application->app_id)->first();
-        
-        $allEmailData=[];
-        foreach ($approvers as $approver) {
-
-            $user = User::getfullUserDetail((int)$approver->user_id);
-            $emailData['app_id'] = \Helpers::formatIdWithPrefix($application->app_id, 'APP');
-            $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
-            $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-            $emailData['receiver_email'] = $user->email;
-            $emailData['cover_note'] = (isset($reviewerSummaryData->cover_note))?$reviewerSummaryData->cover_note:'';  
-            $allEmailData[] = $emailData;
+          foreach ($approvers as $approver) {
+            if(in_array($approver->user_id,$approver_list))
+            {
+             
+                $user = User::getfullUserDetail((int)$approver->user_id);
+                $emailData['app_id'] = \Helpers::formatIdWithPrefix($application->app_id, 'APP');
+                $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
+                $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
+                $emailData['receiver_email'] = $user->email;
+                $emailData['cover_note'] = (isset($reviewerSummaryData->cover_note))?$reviewerSummaryData->cover_note:'';  
+                $allEmailData[] = $emailData;
+            }
         }
+          
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }

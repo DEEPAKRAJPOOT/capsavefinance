@@ -779,8 +779,9 @@ class ApplicationController extends Controller
 	 * @return view
 	 */    
 	public function AcceptNextStage(Request $request) {
-          
-		try{
+                             
+		try{    
+                       $approver_list = $request->get('approver_list');
                         $user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
                         $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
@@ -802,6 +803,7 @@ class ApplicationController extends Controller
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
 			} else {
 				$currStage = Helpers::getCurrentWfStage($app_id);
+                               
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
 					$whereCondition = ['app_id' => $app_id];
@@ -966,24 +968,29 @@ class ApplicationController extends Controller
                                   $movedInLms=true;
                                   }
 				}
+                               
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
 				$roleArr = [$nextStage->role_id];
-                                
+                               
 				if ($nextStage->stage_code == 'approver') {
-					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id);
-					if (count($apprAuthUsers) == 0) {
+					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id,$approver_list);
+                                	if (count($apprAuthUsers) == 0) {
 						Session::flash('error_code', 'no_approval_users_found');
 						return redirect()->back();                           
 					}
+                                        
 					foreach($apprAuthUsers as $approver) {
+                                             if(in_array($approver->user_id,$approver_list))
+                                             {                                
 						$appAssignData = [
 							'app_id' => $app_id,
 							'to_id' => $approver->user_id,
 							'assigned_user_id' => $user_id,
-							'sharing_comment' => '',
+                                                        'sharing_comment' => '',
 						];
 						Helpers::assignAppUser($appAssignData);
+                                            }
 					}
 					$assign = false;
 					$wf_status = 1;
