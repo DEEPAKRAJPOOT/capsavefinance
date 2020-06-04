@@ -1613,6 +1613,10 @@ class Helper extends PaypalHelper
         if (is_null($sys_start_date)) {
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         }
+        else{
+            $start = new \Carbon\Carbon($sys_start_date);
+            $sys_start_date = $start->format('Y-m-d') . " " . date('H:i:s');
+        }
         return $sys_start_date;
     }     
 
