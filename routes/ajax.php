@@ -349,13 +349,10 @@ Route::group(
         ]
     );  
        
-        Route::post(
-        'backend_get_bulk_transaction',
-        [
-        'as' => 'backend_get_bulk_transaction',
-        'uses' => 'AjaxController@getBackendBulkTransaction'
-        ]
-    );  
+        Route::post('backend_get_bulk_transaction',[
+            'as' => 'backend_get_bulk_transaction',
+            'uses' => 'AjaxController@getBackendBulkTransaction'
+        ]);  
        
          Route::post(
         'backend_get_invoice_list_repaid',
@@ -805,6 +802,12 @@ Route::group(
         'as' => 'lms_get_soa_list',
         'uses' => 'AjaxController@lmsGetSoaList'
     ]);
+
+    Route::post('lms-get-consolidated-soa-list', [
+        'as' => 'lms_get_consolidated_soa_list',
+        'uses' => 'AjaxController@lmsGetConsolidatedSoaList'
+    ]);
+    
  Route::post('lms_get_due_list', [
         'as' => 'lms_get_due_list',
         'uses' => 'AjaxController@getInvoiceDueList'

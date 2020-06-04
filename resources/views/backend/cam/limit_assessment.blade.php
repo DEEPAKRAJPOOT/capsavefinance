@@ -62,10 +62,10 @@
                                         <small>Remaining Limit Balance: <i class="fa fa-inr" aria-hidden="true"></i> {{ isset($limitData->tot_limit_amt)? number_format($limitData->tot_limit_amt - $prgmLimitTotal): '' }}</small>
                                     @endif
                                     </div>
-				    <div class="relative">	
+				                    <div class="relative">	
                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" class="form-control number_format" name="limit_amt" id="limit_amt" value="{{old('limit_amt')}}" maxlength="15" placeholder="Enter Proposed Product Limit">
-				    </div>
+				                    </div>
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -110,7 +110,7 @@
                                                        <td width="24%">
                                                        <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}"  title="Edit Limit"><i class="fa fa-edit"></i></button>
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
-                                                       @if($offerStatus != 0)
+                                                       @if($offerStatus == 2)
                                                        <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="Share with Co-Lender"><i class="fa fa-share"></i></a>
                                                        <a data-toggle="modal" data-target="#viewSharedColenderFrame" data-url ="{{route('view_shared_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="View Shared Co-Lender"><i class="fa fa-eye"></i></a>
                                                        @endif

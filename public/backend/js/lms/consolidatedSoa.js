@@ -6,6 +6,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
+            deferLoading: 0,
             dom: 'lBrtip',
             bSort: false,
             responsive: true,
@@ -14,10 +15,6 @@ try {
                 "url": messages.lms_get_soa_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.from_date = $('input[name="from_date"]').val();
-                    d.to_date = $('input[name="to_date"]').val();
-                    d.search_keyword = $('input[name=search_keyword]').val();
-                    d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -27,8 +24,15 @@ try {
                 }
             },
             fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-                if(aData.backgroundColor){
-                    $(nRow).css('background', aData.backgroundColor);
+                var iscolor = 1; 
+                if (aData.trans_type.indexOf('TDS') > -1 || aData.trans_type.indexOf('Refunded') > -1 || aData.trans_type.indexOf('Non Factored Amount') > -1)
+                { iscolor = null; }
+                if(aData.payment_id && iscolor){
+                    $(nRow).css('background', '#ffcc0078');
+                    $(nRow).css('line-height', '1');
+                }
+                if(aData.trans_type==' Repayment'){
+                    $(nRow).css('background', '#f3c714');
                 }
             },
             columns: [
@@ -51,13 +55,23 @@ try {
                 {
                     text: 'PDF',
                     action: function ( e, dt, node, config ) {
-                       download('pdf');
+                        if(messages.datataledraw==1){
+                            download('pdf');
+                        }else{
+                            alert('Please select customer');
+                            $("#search_keyword").focus();
+                        }
                     }
                 },
                 {
                     text: 'Excel',
                     action: function ( e, dt, node, config ) {
-                        download('excel');
+                        if(messages.datataledraw==1){
+                            download('excel');
+                        }else{
+                            alert('Please select customer');
+                            $("#search_keyword").focus();
+                        }
                     }
                 }
             ],
@@ -65,22 +79,16 @@ try {
         });
 
         //Search
-        $('#searchbtn').on('click', function (e) {
-            $("#client_details").html('');
-            var user_id = $.trim($("#user_id").val());
-            var biz_id = $.trim($("#biz_id").val());
-            
-            //showClientDetails({user_id:user_id,biz_id:biz_id,_token: messages.token})
+        if(messages.datataledraw==1){
             oTable.draw();
-        });
-
+        }
     });
 
     function download(action){
         url = '';
+
         from_date = $('input[name="from_date"]').val().trim();
         to_date = $('input[name="to_date"]').val().trim();
-        customer_id = $('input[name=customer_id]').val().trim();
         if(action.trim() == 'pdf'){
             url = messages.pdf_soa_url;
         }

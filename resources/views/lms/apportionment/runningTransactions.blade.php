@@ -47,7 +47,7 @@
             <div class="row">
                 @include('lms.apportionment.common.listRunningTransactions')
             </div>
-            <div class="row pull-right">
+            <div class="row pull-right action-btn">
                 <div class="col-md-12" >
                     <input type="submit" value="Mark Posted" class="btn btn-success btn-sm" >
                 </div>

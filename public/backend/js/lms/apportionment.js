@@ -43,7 +43,10 @@ class Apportionment {
                 {data: 'disb_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
-                {data: 'total_repay_amt'}
+                {data: 'total_repay_amt'},
+                {data: 'outstanding_amt'},
+                {data: 'refund'},
+                {data: 'select'}
             ];
                 break;
             case 'runningTransactions':
@@ -94,7 +97,13 @@ class Apportionment {
                 if(id == 'unsettledTransactions'){
                     parentRef.setTransactionAmt();
                 }
-            }
+                var rows = this.fnGetData();
+                if ( rows.length === 0 ) {
+                    $('.action-btn').hide();
+                }else{
+                    $('.action-btn').show();
+                }
+            },
         });
     }
 
@@ -175,7 +184,7 @@ class Apportionment {
         if(check.filter(':checked').length == 0){
             message = "Please Select at least one ";
             status = false;
-        } 
+        }
 
         var action = $("input[name='action']").val();
         if(action == 'Mark Settled'){
@@ -212,6 +221,29 @@ class Apportionment {
         }
         else if (action == 'Write Off'){
             $("#unsettlementFrom").attr('action',this.data.confirm_writeoff); 
+        }
+        else if(action == 'Adjustment'){
+            $("#unsettlementFrom").attr('action',this.data.confirm_adjustment); 
+            if(status){
+                check.each(function (index, element) {
+                    if($(this). is(":checked")){
+                        var name = $(this).attr('name');
+                        name =  name.replace('check','');
+                        var value = parseFloat($("input[name='refund"+name+"']").val());
+                        if(isNaN(value)){
+                            message = "Please enter valid value in field at row no - "+(index+1);
+                            status = false;
+                        }
+                        else if(value <= 0){
+                            message = "Please enter value greater than 0 in field at row no - "+(index+1);
+                            status = false;
+                        }
+                        if(!status){
+                            return false;
+                        }   
+                    }
+                });
+            }
         }
     
         if(!status){
@@ -321,6 +353,30 @@ class Apportionment {
       this.calculateUnAppliedAmt()
     }
 
+    onRefundChange(transId){
+
+    }
+
+    onRefundCheckChange(transId){
+        if ($("input[name='check["+transId+"]']").is(":checked")) { 
+            $("input[name='refund["+transId+"]']").attr('readonly',false);
+        } else { 
+            $("input[name='refund["+transId+"]']").attr('readonly',true);
+        }
+        $("input[name='refund["+transId+"]']").val('');
+    }
+
+    selectAllRefundCheck(checkallId){
+        if ($('#' + checkallId).is(':checked')) {
+            $('.check[type="checkbox"]').prop('checked', true);
+            $('.refund[type="text"]').attr('readonly',false);
+        }else{
+            $('.check[type="checkbox"]').prop('checked', false);
+            $('.refund[type="text"]').attr('readonly',true);
+        }
+        $('.refund[type="text"]').val(''); 
+    }
+
 }
 
 var apport =  new Apportionment(messages);
@@ -341,4 +397,14 @@ jQuery(document).ready(function ($) {
         oTable = apport.datatableView('runningTransactions');
     }
 
+});
+
+$(document).on('propertychange change click keyup input paste','.pay',function(){
+    this.value = this.value.replace(/[^0-9\.]/g,'');
+    apport.onPaymentChange($(this).attr('id'));
+});
+
+$(document).on('propertychange change click keyup input paste','.refund',function(){
+    this.value = this.value.replace(/[^0-9\.]/g,'');
+    apport.onRefundChange($(this).attr('id'));
 });

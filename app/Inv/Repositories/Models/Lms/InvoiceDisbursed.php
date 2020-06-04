@@ -49,6 +49,8 @@ class InvoiceDisbursed extends BaseModel {
 		'overdue_interest_rate',
 		'is_adhoc',
 		'status_id',
+		'sys_created_at',
+		'sys_updated_at',
 		'created_at',
 		'created_by',
 		'updated_at',
@@ -129,7 +131,7 @@ class InvoiceDisbursed extends BaseModel {
 		}
 		
 		$query = self::select('*')
-			->with('invoice','accruedInterestNotNull');
+			->with('invoice','disbursal','accruedInterestNotNull');
 				
 		if (!empty($whereCondition)) {
 			if (isset($whereCondition['int_accrual_start_dt'])) {

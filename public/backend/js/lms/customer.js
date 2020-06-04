@@ -5,7 +5,7 @@ try {
         oTables = $('#customerList').DataTable({
             processing: true,
             serverSide: true,
-            pageLength: 10,
+            pageLength: 50,
             searching: false,
             bSort: true,
             ajax: {

@@ -18,19 +18,19 @@
         </div>
         <div class="header-title">
             <h3>Manual Apportionment</h3>
-            <small>Write Off Confirmation</small>
+            <small>Adjustment Confirmation</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Manage Customer</li>
                 <li style="color:#374767;">Manage Sanction Cases</li>
-                <li class="active">Unsettled Transactions</li>
+                <li class="active">Refund Transactions</li>
             </ol>
         </div>
     </section>
 
     <div class="card">
         <div class="card-body">       
-            @include('lms.apportionment.common.userDetails')           
+            @include('lms.apportionment.common.userDetails')
             <div class="row">
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -47,6 +47,7 @@
                                                     <th>Trans Type</th>		
                                                     <th>Total Repay Amt</th>
                                                     <th>Outstanding Amt</th>
+                                                    <th></th>
                                                     <th>Validated</th>
                                                 </tr>
                                             </thead>
@@ -59,6 +60,7 @@
                                                     <td>{{ $trans['trans_name'] }}</td>
                                                     <td>₹ {{ number_format($trans['total_repay_amt'],2) }}</td>
                                                     <td>₹ {{ number_format($trans['outstanding_amt'],2) }}</td>
+                                                    <td>₹ {{ number_format($trans['refund'],2) }}</td>
                                                     <td>
                                                         @if($trans['is_valid'] == 1)
                                                             <i class="fa fa-check" aria-hidden="true"></i>
@@ -78,7 +80,7 @@
                 </div>
             </div>
             
-            <form action="{{ route('apport_mark_writeOff_save',[ 'user_id' => $userId , 'sanctionPageView'=>$sanctionPageView]) }}" method="post" >
+            <form action="{{ route('apport_mark_adjustment_save',[ 'user_id' => $userId , 'sanctionPageView'=>$sanctionPageView]) }}" method="post" >
              @csrf	
                 <div class="row pull-left">
                     <div class="col-md-12">

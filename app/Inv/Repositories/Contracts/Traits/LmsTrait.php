@@ -18,6 +18,7 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
+use App\Helpers\ManualApportionmentHelper;
 
 trait LmsTrait
 {
@@ -146,14 +147,27 @@ trait LmsTrait
         * disburseType = 1 for online and 2 for manually
         */
         $disbursalData = [];
+        $disburseDate = $invoice['disburse_date'];
+        $str_to_time_date = strtotime($disburseDate);
+        $bankId = $invoice['program_offer']['bank_id'];
+        $oldIntRate = (float)$invoice['program_offer']['interest_rate'];
         $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+        $bankRatesArr = $Obj->getBankBaseRates($bankId);
+
+        if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+          $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+        } else {
+          $actIntRate = $interestRate;
+        }
+
         $interest= 0;
         $margin= 0;
 
         $tenor = $this->calculateTenorDays($invoice);
         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-        $tInterest = $this->calInterest($fundedAmount, $interestRate/100, $tenor);
+        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
         if($invoice['program_offer']['payment_frequency'] == 1) {
             $interest = $tInterest;
@@ -169,7 +183,7 @@ trait LmsTrait
         $disbursalData['inv_due_date'] = $invoice['invoice_due_date'] ?? null;
         $disbursalData['payment_due_date'] = null;
         $disbursalData['tenor_days'] =  $tenor ?? null;
-        $disbursalData['interest_rate'] = $interestRate ?? null;
+        $disbursalData['interest_rate'] = $actIntRate ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
@@ -183,6 +197,7 @@ trait LmsTrait
                         
         $dataArr['created_by'] = Auth::user()->user_id;
         $dataArr['created_at'] = $curData;
+        $dataArr['sys_created_at'] = $invoice['sys_created_at'] ?? null;
         
         return $disbursalData;
     }
@@ -605,7 +620,7 @@ trait LmsTrait
         foreach ($transactions as $key => $trans) {
             if($trans->req_amount>0){
                 $refundData = $this->createTransactionData($trans->transaction->user_id, [
-                    'amount' => $trans->req_amount,
+                    'amount' => $trans->transaction->refundoutstanding,
                     'trans_date'=>$actualRefundDate,
                     'tds_per'=>0,
                     'invoice_disbursed_id'=>$trans->transaction->invoice_disbursed_id,
@@ -906,31 +921,26 @@ trait LmsTrait
         $repayment = Payment::getPayments(['is_settled' => 1, 'payment_id' => $transId])->first();
         
         $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id'=>$transId]);
-
-        $interestRefundTotal = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
-        ->sum('amount');
-
-        $interestOverdueTotal = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
-        ->sum('amount');
         
-        $marginTotal = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.MARGIN'))
-        ->sum('amount');
+        $interestRefundTotal = 0;
+        $interestOverdueTotal = 0;
+        $marginTotal = 0;
+        $nonFactoredAmount = 0;
+        $totalTdsAmount = 0;
         
-        $nonFactoredAmount = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.NON_FACTORED_AMT'))
-        ->sum('amount');
-
-        $totalTdsAmount = Transactions::where('payment_id','=',$transId)
-        ->where('entry_type','=','1')
-        ->where('trans_type','=',config('lms.TRANS_TYPE.TDS'))
-        ->sum('amount');
+        foreach ($repaymentTrails as $key => $trans) {
+            if($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.REFUND')){
+                $interestRefundTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $interestOverdueTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                $marginTotal +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.NON_FACTORED_AMT')){
+                $nonFactoredAmount +=$trans->refundoutstanding;
+            }elseif($trans->entry_type == '1' && $trans->trans_type == config('lms.TRANS_TYPE.TDS')){
+                $totalTdsAmount +=$trans->refundoutstanding;
+            }
+        }
         
         $refundableAmount = $nonFactoredAmount+$marginTotal+$interestRefundTotal+$totalTdsAmount;
 

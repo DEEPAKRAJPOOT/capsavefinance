@@ -52,8 +52,8 @@
                             <option {{$charge_data->chrg_applicable_id == 1 ? 'selected' : ''}} value="1">Limit Amount</option>
                             <option {{$charge_data->chrg_applicable_id == 2 ? 'selected' : ''}} value="2">Outstanding Amount</option>
                             <option {{$charge_data->chrg_applicable_id == 3 ? 'selected' : ''}} value="3">Outstanding Principal</option>
-                            <option {{$charge_data->chrg_applicable_id == 4 ? 'selected' : ''}} value="4">Outstanding Interest</option>
-                            <option {{$charge_data->chrg_applicable_id == 5 ? 'selected' : ''}} value="5">Overdue Amount</option>
+                            <!-- <option {{$charge_data->chrg_applicable_id == 4 ? 'selected' : ''}} value="4">Outstanding Interest</option> -->
+                            <!-- <option {{$charge_data->chrg_applicable_id == 5 ? 'selected' : ''}} value="5">Overdue Amount</option> -->
                         </select>
                     </div>
                 </div>
@@ -108,7 +108,11 @@
                     <option value="" selected>Select</option>
                     <option {{$charge_data->chrg_tiger_id == 3 ? 'selected' : ''}} value="3">None</option>
                     <option {{$charge_data->chrg_tiger_id == 1 ? 'selected' : ''}} value="1">Limit Assignment</option>
-                    <option {{$charge_data->chrg_tiger_id == 2 ? 'selected' : ''}} value="2">First Invoice Disbursement</option>                    
+                    <option {{$charge_data->chrg_tiger_id == 2 ? 'selected' : ''}} value="2">First Invoice Disbursement</option>
+
+                    <option {{$charge_data->chrg_tiger_id == 4 ? 'selected' : ''}} value="4">Limit Enhancement</option>
+                    <option {{$charge_data->chrg_tiger_id == 5 ? 'selected' : ''}} value="5">Limit Renewal</option>
+                    <option {{$charge_data->chrg_tiger_id == 6 ? 'selected' : ''}} value="6">Limit Closure</option>
                 </select>
             </div>
             <div class="form-group col-md-6 float-md-right">

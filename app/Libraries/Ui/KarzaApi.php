@@ -340,14 +340,15 @@ class KarzaApi {
      */
     public function checkBizEntityToCin($request) {
         try {
-            $api_url = '/v2/compsearch-lite';
+            //$api_url = '/v2/compsearch-lite';
+            $api_url = '/v2/compsearch';
             $baseUrl = 'https://api.karza.in'; //config('proin.karza_auth_api_url');
             $apiKey = config('proin.karza_auth_api_key');
             $options = [
                 'base_uri' => $baseUrl,
                 'json' => [
                     'consent' => 'Y',
-                    'companyName' => $request['companyName']
+                    'company_name' => $request['companyName']
                    ],
                 'headers' => [
                     'cache-control' => "no-cache",
