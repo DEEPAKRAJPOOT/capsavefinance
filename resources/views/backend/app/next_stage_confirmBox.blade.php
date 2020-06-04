@@ -85,12 +85,14 @@
                        </label>
                        <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
+                    @if($nextStage->stage_code=='approver')  
+                    @if(count($approvers) > 0)
                       <div class="form-group">
                        <label for="txtCreditPeriod">Approver List
                        <span class="mandatory">*</span>
                        </label>
                     </div>
-                    @if(count($approvers) > 0)
+                   
                     @foreach($approvers as $row)  
                    
                         <div> <input type="checkbox" checked="checked" name="approver_list[]" class="approver_list" value="{{$row->user_id}}" id="approver_list">&nbsp; {{$row->f_name}}&nbsp;{{$row->l_name}}&nbsp; ({{$row->product_name}})</div>
@@ -100,7 +102,7 @@
                     @else
                     
                     <div class="error"> <i>Approver is not found...</i></div>
-                   
+                    @endif
                     @endif
                       </br>
                     {!! Form::hidden('app_id', $app_id) !!}
@@ -111,7 +113,7 @@
                     {!! Form::hidden('biz_id', $biz_id) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
-                <button type="submit" id="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
+                <button type="submit" @php if($nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>
