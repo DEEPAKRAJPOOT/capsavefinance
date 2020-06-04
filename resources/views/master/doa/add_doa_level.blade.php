@@ -24,7 +24,7 @@
     <div class="row">
         <div class="col-md-4">
             <div class="form-group">
-                <label for="txtCreditPeriod">Level Code
+                <label for="txtCreditPeriod">DOA Level Code
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
@@ -41,7 +41,7 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Level Name
+                <label for="txtCreditPeriod">DOA Level Name
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
