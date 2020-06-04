@@ -93,9 +93,10 @@ class EodProcessController extends Controller {
         $whereCond=[];
         //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.RUNNING'), config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
         //$whereCond['sys_start_date_eq'] = $sys_start_date_eq;        
-        $whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq;        
+        //$whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq; 
+        $whereCond['is_active'] = 1;
         $eodProcess = $this->lmsRepo->getEodProcess($whereCond);             
-        $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';
+        $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';        
         $status = $eodProcess ? $eodProcess->status : '';
         $disp_status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
         $sys_start_date = $eodProcess ? $eodProcess->sys_start_date : '';
