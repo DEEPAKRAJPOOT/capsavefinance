@@ -70,7 +70,8 @@ class EodProcessController extends Controller {
         $sys_curr_date = $today->format('Y-m-d H:i:s');
         
         $whereCond=[];
-        $whereCond['is_active'] = 0;
+        $eodCount = $this->lmsRepo->getEodDataCount();      
+        $whereCond['is_active'] = $eodCount == 1 ? 1 : 0;
         $latestEod = $this->lmsRepo->getLatestEodProcess($whereCond);
         //if ($request->has('sys_curr_date') && !empty($request->get('sys_curr_date'))) {
         //    $sys_curr_date = $request->get('sys_curr_date');            

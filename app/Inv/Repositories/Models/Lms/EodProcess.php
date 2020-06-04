@@ -179,5 +179,10 @@ class EodProcess extends BaseModel
         $result = $query->first();
         return $result ? $result : null;
     }
+    
+    public static function getEodDataCount()
+    {
+        return self::count('*');
+    }
 }
 
