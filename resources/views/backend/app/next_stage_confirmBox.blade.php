@@ -65,7 +65,7 @@
                     @endphp
                    @else
                     @if ($nextStage && $nextStage->stage_code == 'disbursed_or_in_lms')
-                    Are you sure to move in <strong>LMS</strong>?<br>
+                    Are you sure want to Activate the limit..?<br>
                     @else
                     Are you sure to move the next stage <strong>({{ isset($roles[$next_role_id]) ? $roles[$next_role_id] : '' }})</strong>?<br>
                     @endif
