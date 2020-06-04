@@ -131,7 +131,7 @@ var messages = {
                 
         $('.btn-move-next-stage').click(function() {            
             if ($('#frmMoveStage').valid()) {
-                parent.$('.isloader').show();
+               /// parent.$('.isloader').show();
             }
         });
         
