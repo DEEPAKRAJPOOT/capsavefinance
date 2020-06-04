@@ -8,8 +8,8 @@
 */
 
 return [
-    'TRANS_TYPE' => [
-        
+    'LMS_STATUS' => 0,
+    'TRANS_TYPE' => [    
        'REVERSE' => '2',
        'TDS'=>'7',
        'CANCEL'=>'8',
