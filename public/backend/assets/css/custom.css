@@ -843,6 +843,7 @@ select.form-control {
 	vertical-align: top;
 	line-height: 20px;
 	font-size: 13px;
+        margin: 0 3px;
 }
 
 .btn-success {
@@ -1245,6 +1246,7 @@ span.multiselect-native-select select {
 .card {
 	border: 0;
 	border-radius: 10px;
+        margin-bottom: 25px;
 }
 
 .form-control {
