@@ -182,7 +182,7 @@ var messages = {
        if ( len === 0 )
        {
           parent.$('.isloader').hide();
-          alert('Please check at least 1 Approver');
+          alert('Please select at least one Approver.');
           return false;
        }  
        return true;

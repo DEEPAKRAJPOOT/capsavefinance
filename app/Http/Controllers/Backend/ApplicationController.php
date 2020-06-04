@@ -729,7 +729,7 @@ class ApplicationController extends Controller
 	 */    
 	public function sendCaseConfirmbox(Request $request) {
 		try{
-                   
+                                 
 			$user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
                         $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
@@ -779,8 +779,9 @@ class ApplicationController extends Controller
 	 * @return view
 	 */    
 	public function AcceptNextStage(Request $request) {
-                             
+                          
 		try{    
+                   
                        $approver_list = $request->get('approver_list');
                         $user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');

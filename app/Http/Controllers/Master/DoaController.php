@@ -104,14 +104,8 @@ class DoaController extends Controller {
 
 
 
-
-
-
-
-
-
-
-        $data = [
+  
+   $data = [
             'doaLevel' => $doa_level,
             'stateList' => $stateList,
             'levelCode' => $level_code,
@@ -123,6 +117,7 @@ class DoaController extends Controller {
             'productType' => $productType,
             'product_edit_type' => ($product_edit_type) ? $product_edit_type->product_id : ''
         ];
+  
         return view('master.doa.add_doa_level', $data);
     }
     
@@ -183,6 +178,7 @@ class DoaController extends Controller {
     {
         $reqData = $request->all();
         try {
+            
             $data = [
                 'level_code' => $reqData['level_code'],
                 'level_name' => $reqData['level_name'],
