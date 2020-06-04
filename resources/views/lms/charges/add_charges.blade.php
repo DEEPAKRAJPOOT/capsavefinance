@@ -49,7 +49,7 @@
                     <label class="form-check-label fnt">               
                         <input type="radio" class="form-check-input" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
                 </div> </div></div>
-        <div class="row unsettledPayment">
+        <div class="row unsettledPayment" style="display: none">
             <div class="form-group col-md-12 payment">
                 <label for="chrg_type">Select Payment</label>
                 <select class="form-control" id="payment" name="payment">

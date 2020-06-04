@@ -169,11 +169,11 @@ return [
         'REVERT_BACK'=> '42'
     ],
     'CHARGE_TYPE'=>[
-        'CHEQUE_BOUNCE' => '1',
-        'NACH_BOUNCE' => '2',
+        'CHEQUE_BOUNCE' => '3',
+        'NACH_BOUNCE' => '4',
     ],
     'CHARGE_PAYMENT_TYPE_MAP'=>[
-        '1'=>'2',  // CHEQUE BOUNCE 3
-        '2'=>'3'  // NACH 4
+        '3'=>'2',  // CHEQUE BOUNCE 3
+        '4'=>'3'  // NACH 4
     ],
 ];

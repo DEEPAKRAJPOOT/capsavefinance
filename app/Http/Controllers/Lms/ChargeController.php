@@ -196,9 +196,7 @@ class ChargeController extends Controller
                                     "gst" => 1,
                                     'entry_type' => 0,
                                     "trans_date" => $paymentDetail->date_of_payment,
-                                    "trans_type" => config('lms.TRANS_TYPE.REPAYMENT'),
-                                    'created_by' => $id,
-                                    'created_at' => $mytime
+                                    "trans_type" => config('lms.TRANS_TYPE.REPAYMENT')
                                 ];
                                 
                                 $payments[] = [
@@ -210,8 +208,6 @@ class ChargeController extends Controller
                                     'entry_type' => 1,
                                     "trans_date" =>  $paymentDetail->date_of_payment,
                                     "trans_type" => config('lms.TRANS_TYPE.FAILED'),
-                                    'created_by' => $id,
-                                    'created_at' => $mytime
                                 ];
                                 foreach ($payments as $payment) {
                                     $this->lmsRepo->saveCharge($payment);
@@ -222,19 +218,19 @@ class ChargeController extends Controller
                         }
                     }
                     $getMstLog =  $this->lmsRepo->getChrgLog($request->chrg_name);
-                    $arr  = [ "user_id" =>  $request->user_id,
-                                  "payment_id"=>$paymentId,
-                                  "amount" =>   $totalSumAmount,
-                                  "soa_flag" =>1,
-                                  "gst"   => 1,
-                                  'gst_per' => ($getMstLog->gst_val) ? $getMstLog->gst_val : '',
-                                  'chrg_gst_id' => ($getMstLog->chrg_gst_id) ? $getMstLog->chrg_gst_id : '',
-                                  'entry_type' =>0,
-                                  "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
-                                  "trans_type" => $getTransType->id,
-                                  "pay_from" => $request['pay_from'],
-                                  'created_by' =>  $id, 
-                                  'created_at' =>  $mytime ];
+                    $arr  = [ 
+                            "user_id" =>  $request->user_id,
+                            "payment_id"=>$paymentId,
+                            "amount" =>   $totalSumAmount,
+                            "soa_flag" =>1,
+                            "gst"   => 1,
+                            'gst_per' => ($getMstLog->gst_val) ? $getMstLog->gst_val : '',
+                            'chrg_gst_id' => ($getMstLog->chrg_gst_id) ? $getMstLog->chrg_gst_id : '',
+                            'entry_type' =>0,
+                            "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
+                            "trans_type" => $getTransType->id,
+                            "pay_from" => $request['pay_from'] 
+                        ];
                        $res =   $this->lmsRepo->saveCharge($arr);
                     
                     
