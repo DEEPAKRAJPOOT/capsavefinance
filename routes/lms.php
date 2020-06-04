@@ -131,24 +131,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_user_invoice_unpublished',
                 'uses' => 'Lms\userInvoiceController@unpublishUsereAddr',
             ]);
-            
+
             Route::group(['prefix' => 'charges'], function () {
                 if (config('lms.LMS_STATUS')) {
                     Route::get('/manage', [
                         'as' => 'manage_charge',
                         'uses' => 'Lms\ChargeController@manageCharge',
                     ]);
-        
+
                     Route::post('save', [
                         'as' => 'save_manual_charges',
                         'uses' => 'Lms\ChargeController@saveManualCharges',
                     ]);
-        
+
                     Route::get('/list', [
                         'as' => 'list_lms_charges',
                         'uses' => 'Lms\ChargeController@listLmsCharges',
                     ]);
-        
+
                     Route::get('edit', [
                         'as' => 'get_lms_charges_edit',
                         'uses' => 'Lms\ChargeController@editLmsCharges',
@@ -162,22 +162,22 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'addr_get_customer_list',
                         'uses' => 'Lms\AddressController@list',
                     ]);
-        
+
                     Route::get('/add', [
                         'as' => 'add_addr',
                         'uses' => 'Lms\AddressController@addAddress',
                     ]);
-        
+
                     Route::post('/save', [
                         'as' => 'save_addr',
                         'uses' => 'Lms\AddressController@saveAddress',
                     ]);
-        
+
                     Route::get('/edit', [
                         'as' => 'edit_addr',
                         'uses' => 'Lms\AddressController@editAddress',
                     ]);
-        
+
                     Route::post('/copy', [
                         'as' => 'copy_app',
                         'uses' => 'Lms\CopyController@duplicateApp',
@@ -757,68 +757,71 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             });
 
             Route::group(['prefix' => 'reports'], function () {
-                if(config('lms.LMS_STATUS')){
+                if (config('lms.LMS_STATUS')) {
                     Route::get('/', [
                         'as' => 'report_summary',
-                        'uses' => 'Backend\ReportController@index'
+                        'uses' => 'Backend\ReportController@index',
                     ]);
                     Route::get('/customer', [
                         'as' => 'report_customer',
-                        'uses' => 'Backend\ReportController@customer'
+                        'uses' => 'Backend\ReportController@customer',
                     ]);
                     Route::get('/lease-register', [
                         'as' => 'lease_register',
-                        'uses' => 'Backend\ReportController@leaseRegister'
+                        'uses' => 'Backend\ReportController@leaseRegister',
                     ]);
                     Route::get('/download', [
                         'as' => 'download_reports',
-                        'uses' => 'Backend\ReportController@downloadLeaseReport'
+                        'uses' => 'Backend\ReportController@downloadLeaseReport',
                     ]);
                     Route::get('/duereport', [
                         'as' => 'report_duereport',
-                        'uses' => 'Backend\ReportController@duereport'
+                        'uses' => 'Backend\ReportController@duereport',
                     ]);
                     Route::get('/overduereport', [
                         'as' => 'report_overduereport',
-                        'uses' => 'Backend\ReportController@overduereport'
+                        'uses' => 'Backend\ReportController@overduereport',
                     ]);
-    
+
                     Route::get('/realisationreport', [
                         'as' => 'report_realisationreport',
-                        'uses' => 'Backend\ReportController@realisationreport'
+                        'uses' => 'Backend\ReportController@realisationreport',
                     ]);
                     Route::get('/pdf_invoice_due_url', [
-    
+
                         'as' => 'pdf_invoice_due_url',
-                        'uses' => 'Backend\ReportController@pdfInvoiceDue'
+                        'uses' => 'Backend\ReportController@pdfInvoiceDue',
                     ]);
                     Route::get('/pdf_invoice_over_due_url', [
                         'as' => 'pdf_invoice_over_due_url',
-                        'uses' => 'Backend\ReportController@pdfInvoiceOverDue'
+                        'uses' => 'Backend\ReportController@pdfInvoiceOverDue',
                     ]);
-                        
+
                     Route::get('/pdf_invoice_realisation_url', [
                         'as' => 'pdf_invoice_realisation_url',
-                        'uses' => 'Backend\ReportController@pdfInvoiceRealisation'
+                        'uses' => 'Backend\ReportController@pdfInvoiceRealisation',
                     ]);
                 }
             });
 
-            Route::get('view-eod-process', [
-                'as' => 'eod_process',
-                'uses' => 'Lms\EodProcessController@viewEodProcess',
-            ]);
+            Route::group(['prefix' => 'eod'], function () {
+                if (config('lms.LMS_STATUS')) {
+                    Route::get('view', [
+                        'as' => 'eod_process',
+                        'uses' => 'Lms\EodProcessController@viewEodProcess',
+                    ]);
 
-            Route::post('save-eod-process', [
-                'as' => 'save_process',
-                'uses' => 'Lms\EodProcessController@saveEodProcess',
-            ]);
+                    Route::post('save', [
+                        'as' => 'save_process',
+                        'uses' => 'Lms\EodProcessController@saveEodProcess',
+                    ]);
 
-            Route::get('do-process', [
-                'as' => 'do_process',
-                'uses' => 'Lms\EodProcessController@process',
-            ]);
-
+                    Route::get('process', [
+                        'as' => 'do_process',
+                        'uses' => 'Lms\EodProcessController@process',
+                    ]);
+                }
+            });
         });
     });
     //end of application
