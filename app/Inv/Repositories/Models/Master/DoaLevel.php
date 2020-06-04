@@ -75,7 +75,7 @@ class DoaLevel extends BaseModel {
      */
     public static function getDoaLevels()
     {
-        $groupBy = ['doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
+        $groupBy = ['doa_level.product_id','doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
         $res = self::with('product')->select('doa_level.*')
                // ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
                 //->where('doa_level.is_active', 1)

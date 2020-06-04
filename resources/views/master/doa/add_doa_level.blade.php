@@ -561,9 +561,11 @@ $(document).on('blur','.role_change', function (){
                    selector.val('');
                 }
                 selector.parents('.parent_role_div').find('.role_user').empty();
+
+               
                 $.each(optionList, function (index, data) {
                     let check = '';
-                    if (selected_value.indexOf(+index) != -1) {
+                    if (selected_value.indexOf(index) != -1) {
                         check = 'selected="selected"';
                     }
                     selector.parents('.parent_role_div').find('.role_user').append('<option  value="' + index + '"  ' + check + ' >' + data + '</option>');
