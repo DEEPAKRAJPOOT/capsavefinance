@@ -15,6 +15,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_dashboard',
                 'uses' => 'Backend\DashboardController@index'
             ]);
+            Route::get('/idfc', [
+                'as' => 'idfc',
+                'uses' => 'Backend\DashboardController@idfc'
+            ]);
         });
 
         Route::group(['prefix' => 'reports'], function () {
