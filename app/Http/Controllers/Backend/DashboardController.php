@@ -77,7 +77,7 @@ class DashboardController extends Controller
     public function idfc(){
        $idfcObj= new Idfc_lib();
        $request = $this->getIdfcRequest();
-       $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request);
+       $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $request);
        dd($result);
     }
 
@@ -85,7 +85,7 @@ class DashboardController extends Controller
        $params = array ( 
             'http_header' => array(
                 'timestamp' => date('Y-m-d H:i:s'), 
-                'txn_id' => _getRand('18'), 
+                'txn_id' => '2RFEQ02300WTFXBL50', 
             ), 
             'header' => array (
                 'Maker_ID' => 'CAPSAVE.M', 
@@ -93,22 +93,7 @@ class DashboardController extends Controller
                 'Approver_ID' => 'CAPSAVE.C2', 
             ), 
             'request' => array ( 
-                617 => array ( 
-                    'RefNo' => 'CAPVA0000003', 
-                    'Amount' => 936.04688, 
-                    'Debit_Acct_No' => '21480259346', 
-                    'Debit_Acct_Name' => 'Debit Account Name', 
-                    'Debit_Mobile' => '1234567890', 
-                    'Ben_IFSC' => 'DNSB0000021', 
-                    'Ben_Acct_No' => '33607554763', 
-                    'Ben_Name' => 'Ravi Prakash', 
-                    'Ben_BankName' => 'State Bank Of India', 
-                    'Ben_Email' => 'ravi.awasthi93@gmail.com', 
-                    'Ben_Mobile' => '8595445454', 
-                    'Mode_of_Pay' => 'IFT', 
-                    'Nature_of_Pay' => 'MPYMT', 
-                    'Remarks' => 'No remarks it is testing purpose', 
-                ), 
+                'txn_id' => '2RFEQ02300WTFXBL50', 
             ), 
         );
        return $params;
