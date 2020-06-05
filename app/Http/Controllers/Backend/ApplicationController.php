@@ -1809,6 +1809,7 @@ class ApplicationController extends Controller
 			];
 			$appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);           
 
+                        /*
 			 //Update workflow stage
 			 $addl_data = [];
 			 $currStage = Helpers::getCurrentWfStage($app_id);
@@ -1819,7 +1820,8 @@ class ApplicationController extends Controller
 			 $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;            
 			 Helpers::updateWfStage('opps_checker', $app_id, $wf_status = 1, $assign_case=true, $addl_data);
 			 Helpers::updateCurrentWfStage('disbursed_or_in_lms', $app_id, $wf_status=1);
-
+                        */
+                        
 			if($appStatus){
 				$getAppDetails = $this->appRepo->getAppData($app_id);
 				$arrAppStatusLog=[
