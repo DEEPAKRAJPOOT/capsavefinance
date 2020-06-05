@@ -167,7 +167,7 @@ function getPaginate($pages, $currpage = 1, $title = array()) {
 		return !empty($output) ? '<ul class="pagination_ul">'.$output.'</ul>' : $output;
 	}
 
-function _getRandReverse($string = '', $min_year = 1950) {
+function _getRandReverse($string = '', $randomReq = true, $min_year = 1950) {
 		if (is_numeric($string) || strlen($string) < 9) return $string;
 		$strlen = strlen($string);
 		$extra_char = extra_char($string);
@@ -184,6 +184,9 @@ function _getRandReverse($string = '', $min_year = 1950) {
 		$i = substr($time, 0, 2);
 		$s = substr($time,-2);
 		$datetime = "$y-$m-$d $h:$i:$s";
+		if (!$randomReq) {
+			return $datetime;
+		}
 		return $datetime . ($random ? "-$random" : '' );
 }
 
@@ -842,5 +845,58 @@ function getFinContent() {
 function getMechanism($id){
 	$mechanismType = ['1'=>'With direct Payment confirmation', 'W/o direct payment confirmation', 'With payment confirmation with Escrow a/c', 'W/o payment confirmation w/o Escrow a/c'];
 	return $mechanismType[$id] ?? '';
+}
+
+function logFile($data, $w_mode = 'D', $w_filename = '', $w_folder = '', $txn_id = '') {
+	  $folderTime = strtolower(date('Y-M-dmy-H'));
+	  if (!empty($txn_id)) {
+		$reverseTime = _getRandReverse($txn_id, false);
+		$folderTime = strtolower(date('Y-M-dmy-H', strtotime($reverseTime)));
+	  }
+	  list($year, $month, $date, $hour) = explode('-', $folderTime);
+      $main_dir = storage_path('app/public/user/');
+      $log_dir = $main_dir . "logs/";
+      $year_dir = $log_dir . "$year/";
+      $month_dir = $year_dir . "$month/";
+      $date_dir = $month_dir . "$date/";
+      $hour_dir = $date_dir . "$hour/";
+
+      if (!file_exists($log_dir)) {
+        mkdir($log_dir, 0777, true);
+      }
+
+      if (!file_exists($year_dir)) {
+        mkdir($year_dir, 0777, true);
+      }
+      if (!file_exists($month_dir)) {
+        mkdir($month_dir, 0777, true);
+      }
+      if (!file_exists($date_dir)) {
+        mkdir($date_dir, 0777, true);
+      }
+      if (!file_exists($hour_dir)) {
+        mkdir($hour_dir, 0777, true);
+      }
+      $data = is_array($data) || is_object($data) ? json_encode($data) : $data;
+      if (strtolower($w_mode) == 'f') {
+        $final_dir = $hour_dir;
+        $filepath = explode('/', $w_folder);
+        foreach ($filepath as $value) {
+          $final_dir .= "$value/";
+          if (!file_exists($final_dir)) {
+            mkdir($final_dir, 0777, true);
+          }
+        }
+        $my_file = $final_dir . $w_filename;
+        $handle = fopen($my_file, 'w');
+        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+      } else {
+        $my_file = $hour_dir . date('ymd') . '.log';
+        $handle = fopen($my_file, 'a');
+        $time = date('H:i:s');
+        fwrite($handle, PHP_EOL . 'Log ' . $time);
+        return fwrite($handle, PHP_EOL . $data . PHP_EOL);
+      }
+      return FALSE;
 }
 ?>
