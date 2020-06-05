@@ -616,7 +616,7 @@ class InvoiceController extends Controller {
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] = $userid) {
+                    if($invoice['supplier_id'] == $userid) {
                         
                         $interest= 0;
                         $margin= 0;
@@ -656,10 +656,11 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Mode_of_Pay'] = 'IFT';
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'test remarks';
-                    $exportData[$userid]['Value_Date'] = date("Y-m-d");
+                    // $exportData[$userid]['Value_Date'] = date("Y-m-d");
 
                 } 
             }
+            // dd($exportData);
             if($disburseType == 1 && !empty($allrecords)) {
             
                 $http_header = [
@@ -682,6 +683,7 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+                dd($result);
                 if ($result) {
                     //save transaction here
                     // for disburse type online idfc bank i.e $disburseType == 1
@@ -708,7 +710,7 @@ class InvoiceController extends Controller {
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
 
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] = $userid) {
+                    if($invoice['supplier_id'] == $userid) {
                         $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                         if ($invoiceDisbursedData == null) {

@@ -65,7 +65,7 @@ foreach ($apps as $app) {
 				<div class="form-group">
 					<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
 					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
-					 @if(Session::has('error'))
+					 @if(Session::has('error'))ad
 					 <div class="error">{{ Session::get('error') }}</div>
 					  
 					@endif
@@ -81,14 +81,14 @@ foreach ($apps as $app) {
 			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
 			@csrf
 			<div class="col-6">
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label for="txtCreditPeriod">Value Date <span class="error_message_label">*</span> </label>
 					<input type="text" id="value_date" name="value_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
 					 @if(Session::has('error'))
 					 <div class="error">{{ Session::get('error') }}</div>
 					  
 					@endif
-				</div>
+				</div> -->
 			</div>
 			<div class="col-6">
 				<input type="submit" id="submitOnlineDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2">
