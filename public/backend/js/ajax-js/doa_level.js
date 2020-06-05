@@ -26,6 +26,7 @@ try {
            columns: [
                 {data: 'level_code'},
                 {data: 'level_name'},
+                {data: 'product_type'},
                 {data: 'city'},
                 {data: 'amount'},
                 {data: 'role'},

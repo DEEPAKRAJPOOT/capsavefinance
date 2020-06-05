@@ -729,8 +729,10 @@ class ApplicationController extends Controller
 	 */    
 	public function sendCaseConfirmbox(Request $request) {
 		try{
+                                 
 			$user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
+                        $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
 			$assign_case = $request->has('assign_case') ? $request->get('assign_case') : 0;
 			
 			$currentStage = Helpers::getCurrentWfStage($app_id);            
@@ -764,6 +766,7 @@ class ApplicationController extends Controller
 				->with('curr_role_id', $curr_role_id)
 				->with('next_role_id', $next_role_id)
 				->with('biz_id', $appData->biz_id)
+                                ->with('approvers',$approvers)
                                 ->with('nextStage', $nextStage);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -776,10 +779,14 @@ class ApplicationController extends Controller
 	 * @return view
 	 */    
 	public function AcceptNextStage(Request $request) {
-		try{
-			$user_id = $request->get('user_id');
+                          
+		try{    
+                   
+                       $approver_list = $request->get('approver_list');
+                        $user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
-			$sel_assign_role = $request->get('sel_assign_role');
+                        $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
+                        $sel_assign_role = $request->get('sel_assign_role');
 			$assign_case = $request->get('assign_case');
 			$sharing_comment = $request->get('sharing_comment');
 			$curr_role_id = $request->get('curr_role_id');
@@ -797,6 +804,7 @@ class ApplicationController extends Controller
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
 			} else {
 				$currStage = Helpers::getCurrentWfStage($app_id);
+                               
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
 					$whereCondition = ['app_id' => $app_id];
@@ -961,24 +969,29 @@ class ApplicationController extends Controller
                                   $movedInLms=true;
                                   }
 				}
+                               
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
 				$roleArr = [$nextStage->role_id];
-                                
+                               
 				if ($nextStage->stage_code == 'approver') {
-					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id);
-					if (count($apprAuthUsers) == 0) {
+					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id,$approver_list);
+                                	if (count($apprAuthUsers) == 0) {
 						Session::flash('error_code', 'no_approval_users_found');
 						return redirect()->back();                           
 					}
+                                        
 					foreach($apprAuthUsers as $approver) {
+                                             if(in_array($approver->user_id,$approver_list))
+                                             {                                
 						$appAssignData = [
 							'app_id' => $app_id,
 							'to_id' => $approver->user_id,
 							'assigned_user_id' => $user_id,
-							'sharing_comment' => '',
+                                                        'sharing_comment' => '',
 						];
 						Helpers::assignAppUser($appAssignData);
+                                            }
 					}
 					$assign = false;
 					$wf_status = 1;

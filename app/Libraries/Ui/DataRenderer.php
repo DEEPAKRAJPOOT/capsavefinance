@@ -3477,6 +3477,11 @@ class DataRenderer implements DataProviderInterface
                     function ($doa) {
                 return $doa->level_name;
             })
+             ->editColumn(
+                    'product_type',
+                    function ($doa) {
+                return ($doa->product) ? $doa->product->product_name : '';
+            })
             ->editColumn(
                     'city',
                     function ($doa) {
