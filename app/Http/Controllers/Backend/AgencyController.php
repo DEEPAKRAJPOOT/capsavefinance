@@ -77,6 +77,7 @@ class AgencyController extends Controller {
         try {
             $arrAgencyData = $request->all();
             $arrAgencyData['created_at'] = \carbon\Carbon::now();
+            $arrAgencyData['created_by'] = Auth::user()->user_id;
             $status = $this->userRepo->saveAgency($arrAgencyData);
             if($status){
                 Session::flash('message', trans('backend_messages.agency_registration_success'));
