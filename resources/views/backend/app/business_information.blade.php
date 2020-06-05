@@ -27,8 +27,9 @@
 				<form id="business_information_form" method="POST" action="{{route('save_new_application')}}" onsubmit="return checkValidation();">
 				@csrf
 				<input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
-				<input type="hidden" name="biz_cin" value="">
-				<input type="hidden" name="pan_api_res" value="">
+				<!-- <input type="hidden" name="biz_cin" value=""> -->
+				<input type="hidden" name="pan_api_res" valuDe="">
+				<input type="hidden" name="cin_api_res" valuDe="">
 				<div class=" form-fields">
 					<div class="form-sections row">
 						<div class="col-md-12">
@@ -84,7 +85,16 @@
 								</div>
 								</div>
 								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group password-input" >
+											<label for="txtPassword">Select CIN
+													<span class="mandatory">*</span>
+											</label>
 
+											<select class="form-control" name="biz_cin" tabindex="2">
+											</select>
+										</div>
+									</div>
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Segment
@@ -119,6 +129,12 @@
 								            @enderror
 										</div>
 									</div>
+									
+									
+									
+								</div>
+								<div class="row">								
+
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Sub Industry</label>											
@@ -129,12 +145,6 @@
 								            @enderror
 										</div>
 									</div>
-									
-									
-									
-								</div>
-								<div class="row">								
-
 									<div class="col-md-4">
 										<div class="form-group">
 											<label for="txtEmail">Business Constitution

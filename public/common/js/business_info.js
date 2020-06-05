@@ -143,7 +143,8 @@ function getCIN(entityName){
 				$('.isloader').hide();
 			}else if(res['status-code'] == 101){
 				//$('input[name=biz_cin]').val(res.result[0].cin);
-		    	$('input[name=biz_cin]').val(res.result.result[0].cin);
+				fillCINInput(res.result);
+		    	// $('input[name=biz_cin]').val(res.result.result[0].cin);
 				$('.isloader').hide();
 		    }else{
 		    	console.error('CIN number not fetched successfully');
@@ -152,10 +153,23 @@ function getCIN(entityName){
 		}
 	});
 }
-
+function fillCINInput(datas){
+	let res ='';
+	let option_html = '<option value="">Select CIN Number</option>';
+	$(datas.result).each(function(i,data){
+		if (data.score == 1 ) {
+         	res += data.cin+',';
+		 	option_html += '<option value="'+data.cin+'">'+data.cin+'</option>';
+		}
+         return  active=1;	
+	})
+	$('select[name=biz_cin]').html(option_html);
+	$('input[name=cin_api_res]').val(res);
+}
 function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
 	unsetError('select[name=biz_gst_number]');
+	unsetError('select[name=biz_cin]');
 	//unsetError('input[name=biz_gst_number_text]');
 	unsetError('input[name=biz_entity_name]');
 	unsetError('select[name=biz_type_id]');
@@ -187,6 +201,7 @@ function checkValidation(){
 	let is_gst_manual = $('input[name=is_gst_manual]').val().trim();
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
 	let biz_gst_number = $('select[name=biz_gst_number]').val();
+	let biz_cin = $('select[name=biz_cin]').val();
 	if(is_gst_manual == 1) {
 		biz_gst_number = $('input[name=biz_gst_number_text]').val();
 	}
@@ -236,6 +251,11 @@ function checkValidation(){
 
 	if((biz_gst_number == '' || biz_gst_number == null) && is_gst_manual!=1){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
+		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
+		flag = false;
+	}
+	if((biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
+		setError('select[name=biz_cin]', 'Please select CIN Number');
 		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
 	}
