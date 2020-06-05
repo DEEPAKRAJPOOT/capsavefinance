@@ -45,6 +45,10 @@ function getInvestmentPaymentFrequency($id){
 	 return $productType[$id] ?? '';
 }
 
+function bankDetailIsOfRegisteredCompanyInInvoice() {
+	return true;
+}
+
 function getFinancialYear($date = NULL){
 	if (empty($date)) {
 		return $date;
