@@ -139,6 +139,8 @@ class userInvoiceController extends Controller
             'address' => $companyDetail->cmp_add,
             'state' => $companyDetail->getStateDetail,
             'city' => $companyDetail->city,
+            'charge_prefix' => $companyDetail->charge_prefix,
+            'interest_prefix' => $companyDetail->interest_prefix,
             'phone' => $companyDetail->cmp_mobile,
             'email' => $companyDetail->cmp_email,
             'pan_no' => $companyDetail->pan_no,
@@ -391,7 +393,7 @@ class userInvoiceController extends Controller
             $total_sum_of_rental = $inv_data[1];
             $requestedData['created_at'] = \carbon\Carbon::now();
             $requestedData['created_by'] = Auth::user()->user_id;
-            
+            unset($company_data['state']);
             $userInvoiceData = [
                 'user_id' => $requestedData['user_id'],
                 'user_invoice_rel_id' => $user_invoice_rel_id,
@@ -410,6 +412,7 @@ class userInvoiceController extends Controller
                 'tot_no_of_trans' => count($requestedData['trans_id']),
                 'tot_paid_amt' => $total_sum_of_rental ?? 0,
                 'comp_addr_id' => $company_data['comp_id'],
+                'inv_comp_data' => json_encode($company_data),
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $company_data['bank_id'],
@@ -496,12 +499,15 @@ class userInvoiceController extends Controller
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
         ];
-
-        $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
-        if ($companyDetail['status'] != 'success') {
-            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $companyDetail['message']);
+        if (empty($invData->inv_comp_data)) {
+            $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
+            if ($companyDetail['status'] != 'success') {
+                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', $companyDetail['message']);
+            }
+            $company_data = $companyDetail['data'];
+        }else{
+            $company_data = json_decode($invData->inv_comp_data, true);
         }
-        $company_data = $companyDetail['data'];
         $is_state_diffrent = ($userStateId != $companyStateId);
         $intrest_charges = [];
         $total_sum_of_rental = 0;

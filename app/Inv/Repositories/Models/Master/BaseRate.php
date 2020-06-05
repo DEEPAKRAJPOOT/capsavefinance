@@ -88,4 +88,13 @@ class BaseRate extends BaseModel {
         return $res;
     }
 
+    public static function updateBaseRateEndDate($id, $bankId, $date){
+        $query = BaseRate::where('id','<>',$id)->where('bank_id', $bankId)->orderBy('id', 'DESC')->first();
+        if($query){
+            return $query->update(['end_date'=>$date, 'is_default'=>0]);
+        }else{
+            return true;
+        }    
+    }
+
 }

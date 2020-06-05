@@ -41,8 +41,10 @@
 										<span class="text-success" id="pan-msg" style="display: none;">
 											<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 										</span>
-										<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-										<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" >
+                                                                                <div class="relative">
+                                                                                    <a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
+                                                                                    <input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" >
+                                                                                </div>
 										@error('biz_pan_number')
 							                <span class="text-danger error">{{ $message }}</span>
 							            @enderror
@@ -160,8 +162,11 @@
 									<div class="col-md-4">
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
-											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+											</label>
+                                                                                        <div class="relative">
+                                                                                            <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                                            <input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+                                                                                        </div>
 											@error('biz_turnover')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror

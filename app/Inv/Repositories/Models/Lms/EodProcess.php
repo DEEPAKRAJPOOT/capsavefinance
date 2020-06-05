@@ -151,6 +151,38 @@ class EodProcess extends BaseModel
         }  
                 
         return self::where($whereCond)->update($data);            
-    }    
+    } 
+    
+    /**
+     * Get System Start Date
+     * 
+     * @return timestamp
+     */
+    public static function getSysStartDate()
+    {
+        $result = self::select('sys_start_date')->where('is_active', 1)->first();
+        return $result ? $result->sys_start_date : null;
+    }
+    
+    /**
+     * Get Latest Eod Process
+     * 
+     * @return mixed
+     */
+    public static function getLatestEodProcess($whereCond=[])
+    {
+        $query = self::select('*');
+        if (count($whereCond)) {
+            $query->where($whereCond);
+        }
+        $query->orderBy('eod_process_id', 'DESC');
+        $result = $query->first();
+        return $result ? $result : null;
+    }
+    
+    public static function getEodDataCount()
+    {
+        return self::count('*');
+    }
 }
 

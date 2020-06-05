@@ -16,6 +16,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 class BizInvoice extends BaseModel
 {
@@ -72,6 +73,8 @@ class BizInvoice extends BaseModel
         'pay_calculation_on',
         'invoice_amount',
         'invoice_approve_amount',
+        'invoice_margin_amount',
+        'is_margin_deduct',
         'prgm_offer_id',
         'file_id',
         'status_id',
@@ -114,8 +117,14 @@ public static function saveBulkInvoice($arrInvoice)
         $updated_at  = Carbon::now()->toDateTimeString();
         $id = Auth::user()->user_id;
         InvoiceStatusLog::saveInvoiceStatusLog($invoiceId,$status);
-        return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        $marginStatus =  [7,11,14,28];
+        if(in_array($status,$marginStatus))
+        {
+            self::where(['invoice_id' => $invoiceId])->update(['is_margin_deduct' => 0]);
+        }
        
+          return self::where(['invoice_id' => $invoiceId])->update(['status_id' => $status,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
     } 
     
     public static function updateInvoiceAmount($attributes)
@@ -157,12 +166,12 @@ public static function saveBulkInvoice($arrInvoice)
         {
             $res  = User::where('user_id',$id)->first();
 
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail'])->orderBy('invoice_id', 'DESC');
 
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
@@ -276,12 +285,18 @@ public static function saveBulkInvoice($arrInvoice)
      {
        return $this->belongsTo('App\Inv\Repositories\Models\User','updated_by','user_id');
      }
-       function user()
-     {
-            return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
+     
+    function user()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
     }
-      function bulkUpload()
-     {
+    
+    function userDetail()
+    {
+       return $this->belongsTo('App\Inv\Repositories\Models\UserDetail','supplier_id','user_id'); 
+    }
+    function bulkUpload()
+    {
           return $this->belongsTo('App\Inv\Repositories\Models\InvoiceBulkUpload', 'invoice_id', 'invoice_id');
      
      }
@@ -443,5 +458,34 @@ public static function saveBulkInvoice($arrInvoice)
      return self::create($arr);   
    
     }
+    
+    /**
+     * Get Total Invoice Approval Amount
+     * 
+     * @param array $invoices
+     * @return decimal
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getTotalInvApprAmt($invoices)
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($invoices)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        return self::whereIn('invoice_id', $invoices)->sum('invoice_approve_amount');
+    }
+    
+   
+      function detail()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\UserDetail', 'supplier_id','user_id')->where('is_overdue',1); 
+     
+     }
+     
+   
+     
     
 }

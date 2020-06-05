@@ -16,6 +16,8 @@ use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Master\BaseRate;
 
 use App\Helpers\ManualApportionmentHelper;
 
@@ -364,11 +366,21 @@ class DisbursalController extends Controller
             $whereCond = [];
             $whereCond['invoice_disbursed_id'] = $disbursalId;
 			//$whereCond['interest_date_eq'] = $intAccrualDt;      
-			$disbursalData = $this->lmsRepo->getInvoiceDisbursalRequests($whereCond)->first();          
+			$disbursalData = $this->lmsRepo->getInvoiceDisbursalRequests($whereCond)->first();
+
+			$curr_int_rate = $this->getCurrentInterestRate($disbursalData->interest_rate, $disbursalData->invoice->prgm_offer_id);
 			// dd($disbursalData);
 			$intAccrualData = $this->lmsRepo->getAccruedInterestData($whereCond);    
             //dd('rrrrrr', $intAccrualData);
-            return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData]);
+            return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData, 'currentIntRate'=> $curr_int_rate]);
+        }
+
+        public function getCurrentInterestRate($intRate, $prgmOfferId){
+        	$prgm_data = AppProgramOffer::find($prgmOfferId);
+        	$base_rates = BaseRate::where(['bank_id'=> $prgm_data->bank_id, 'is_active'=> 1])->orderBy('id', 'DESC')->first();
+        	$bank_base_rate = ($base_rates)? $base_rates->base_rate: 0;
+            $curr_int_rate = $intRate - $prgm_data->base_rate + $bank_base_rate;
+        	return $curr_int_rate;
         }
 
 

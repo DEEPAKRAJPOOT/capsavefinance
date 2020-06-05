@@ -37,10 +37,12 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Models\Master\Group;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\FinanceInterface;
+use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
+use Illuminate\Http\JsonResponse;
 
 class AjaxController extends Controller {
 
@@ -57,7 +59,7 @@ class AjaxController extends Controller {
     protected $lms_repo;
 
 
-    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo) {
+    function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
         // If request is not ajax, send a bad request error
         if (!$request->ajax() && strpos(php_sapi_name(), 'cli') === false) {
             abort(400);
@@ -71,6 +73,8 @@ class AjaxController extends Controller {
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
         $this->UserInvRepo = $UserInvRepo;
+        $this->middleware('checkEodProcess');
+        $this->reportsRepo = $reportsRepo;
     }
 
     /**
@@ -2701,7 +2705,7 @@ if ($err) {
     }
 
     public function checkExistUser(Request $request) {
-        dd($request);
+        // dd($request);
         $email = $request->post('username');
         $anchUsersList = $this->userRepo->getUserByemail($email);
         return $anchUsersList;
@@ -3286,14 +3290,14 @@ if ($err) {
       }
       
         
-           public function  getChrgAmount(Request $request)
+      public function  getChrgAmount(Request $request)
       {
           $res =  $request->all();
-          
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
-              $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
+               $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
+               $gst_percentage                 = $getamount->charge->gst_percentage;
                $app = "";
                $sel ="";
                 $res =   [  1 => "Limit Amount",
@@ -3318,7 +3322,7 @@ if ($err) {
                  {
                    
                      $limitAmount  =  $this->lmsRepo->getLimitAmount($request);
-                     $limitAmount  = $limitAmount[0];
+                    /// $limitAmount  = $limitAmount[0];
                    
                  }
                  else if($getamount->chrg_applicable_id==2)
@@ -3343,7 +3347,8 @@ if ($err) {
                  'id' => $getamount->id,
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
-                 'is_gst_applicable' => $getamount->is_gst_applicable,
+                 'is_gst_applicable' => $getamount->charge->is_gst_applicable,
+                 'gst_percentage'  =>  $gst_percentage,
                  'applicable' =>$app]); 
           }
           else
@@ -3513,13 +3518,13 @@ if ($err) {
         $getOfferProgramLimit =   $this->invRepo->getOfferForLimit($request['prgm_offer_id']);
         $getProgramLimit =   $this->invRepo->getProgramForLimit($request['program_id']);
         if($request['user']==1)
-        {
+        {   
             $id = Auth::user()->user_id;
             $get_supplier = $this->invRepo->getUserProgramOfferByPrgmId($request['program_id'],$id);
        
         }
         else
-        {
+        { 
            $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
          
         }
@@ -3666,6 +3671,7 @@ if ($err) {
                         $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
                         $attr['comm_txt'] = $updateInvoice['comm_txt'];
                         $attr['status_id'] = $updateInvoice['status_id'];
+                        $attr['invoice_margin_amount'] = $updateInvoice['invoice_margin_amount'];
                         $res  =  $this->invRepo->saveFinalInvoice($attr);
                         InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']); 
 
@@ -3896,6 +3902,19 @@ if ($err) {
     }
 
     /**
+   * Get all transactions for Colender soa
+   *
+   * @return json transaction data
+   */
+    public function getColenderSoaList(DataProviderInterface $dataProvider) {
+        $soa_for_userid = $this->request->get('user_id');
+        $transactionList = $this->lmsRepo->getColenderSoaList();
+        $colenderShare = $this->lmsRepo->getColenderShareWithUserId($soa_for_userid);
+        $users = $dataProvider->getColenderSoaList($this->request, $transactionList, $colenderShare);
+        return $users;
+    }
+
+    /**
    * Get all transactions for soa
    *
    * @return json transaction data
@@ -3906,6 +3925,49 @@ if ($err) {
         $users = $dataProvider->getSoaList($this->request, $transactionList);
         return $users;
     }
+    
+    /**
+   * Get all transactions for Consolidated soa 
+   *
+   * @return json transaction data
+   */
+    public function lmsGetConsolidatedSoaList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->lmsRepo->getConsolidatedSoaList();
+        $users = $dataProvider->getSoaList($this->request, $transactionList);
+        return $users;
+    }
+
+    
+     /**
+   * Get all getInvoiceDueList
+   *
+   * @return json transaction data
+   */
+    public function getInvoiceDueList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->invRepo->getReportAllInvoice();
+        $users = $dataProvider->getReportAllInvoice($this->request, $transactionList);
+        return $users;
+    }
+    
+     /**
+   * Get all getInvoiceOverDueList
+   *
+   * @return json transaction data
+   */
+    public function getInvoiceOverDueList(DataProviderInterface $dataProvider) {
+
+        $transactionList = $this->invRepo->getReportAllOverdueInvoice();
+        $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
+        return $users;
+    }
+    
+   public function getInvoiceRealisationList(DataProviderInterface $dataProvider) {
+        $transactionList = $this->invRepo->getInvoiceRealisationList();
+        $users = $dataProvider->getInvoiceRealisationList($this->request, $transactionList);
+        return $users;
+    }  
         /**
      * Get all Equipment
      *
@@ -4055,9 +4117,11 @@ if ($err) {
     }
 
     public function getColenderAppList(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getColenderApplications();
-        $applications = $dataProvider->getColenderAppList($this->request, $appList);
-        return $applications;
+        // $appList = $this->application->getColenderApplications();
+        // $applications = $dataProvider->getColenderAppList($this->request, $appList);
+        $customerList = $this->lmsRepo->getColenderApplications();
+        $customers = $dataProvider->lmsColenderCustomers($this->request, $customerList);
+        return $customers;
     }
     public function lmsGetInvoiceByUser(Request $request ){
         $userId = $request->get('user_id');
@@ -4378,4 +4442,50 @@ if ($err) {
         $applications = $dataProvider->getRenewalAppList($this->request, $appList);
         return $applications;
     }
+
+    
+    public function checkEodProcess(Request $request)
+    {
+        $data = ['eod_process' => \Helpers::checkEodProcess()];
+        $response = $data + ['message' => trans('backend_messages.lms_eod_process_msg')];
+        return response()->json($response);  
+    }
+
+    public function updateEodProcessStatus(Request $request)
+    {
+        $waitTime = 10;
+        sleep($waitTime);
+        
+        \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
+         
+        return response()->json(['status' => 1]);
+    }    
+
+
+    public function getAllCustomers(DataProviderInterface $dataProvider) {
+        $usersList = $this->userRepo->getAllUsers();
+        $customers = $dataProvider->getAllCustomers($this->request, $usersList);
+        return $customers;  
+    }
+
+    public function leaseRegister(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'type' => 'excel',
+        ];
+        $leaseRegistersList = $this->reportsRepo->leaseRegisters();
+        $leaseRegisters = $dataProvider->leaseRegister($this->request, $leaseRegistersList);
+        $leaseRegisters     = $leaseRegisters->getData(true);
+        $leaseRegisters['excelUrl'] = route('download_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
+        return new JsonResponse($leaseRegisters);
+    }
+
 }

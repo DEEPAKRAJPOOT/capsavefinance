@@ -101,6 +101,11 @@ class PaymentController extends Controller {
 	public function  savePayment(Request $request)
 	{
 		try {
+                        if ($request->get('eod_process')) {
+                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                            return back();
+                        }
+            
 			$arrFileData = $request->all();
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
@@ -154,6 +159,7 @@ class PaymentController extends Controller {
 				'description' => $request->description,
 				'is_settled' => (in_array($request->action_type, [3])) ? '1':'0',
 				'is_manual' => '1',
+				'sys_date'=>\Helpers::getSysStartDate(),
 				'created_at' => $mytime,
 				'created_by' => $user_id,
 				'generated_by' => 0,
@@ -222,6 +228,7 @@ class PaymentController extends Controller {
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
 					'is_posted_in_taaly' => 0,
+					'sys_date'=>\Helpers::getSysStartDate(),
 					'created_at' =>  $mytime,
                     'created_by' =>  $user_id,
                   ];
@@ -245,7 +252,12 @@ class PaymentController extends Controller {
 	}
 	public function updatePayment(Request $request)
 	{
-		try {
+		try {                    
+                        if ($request->get('eod_process')) {
+                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                            return back();
+                        }
+                        
 			$arrFileData = $request->all();
 			$user_id  = Auth::user()->user_id;
 			$mytime = Carbon::now();
@@ -275,6 +287,11 @@ class PaymentController extends Controller {
    /////////* save bulk payment by excel ///////////////////////
    public function  saveExcelPayment(Request $request)
    {
+                        if ($request->get('eod_process')) {
+                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                            return back();
+                        }
+                        
 			$data = array();
 			$id  = Auth::user()->user_id;
 			$mytime = Carbon::now(); 

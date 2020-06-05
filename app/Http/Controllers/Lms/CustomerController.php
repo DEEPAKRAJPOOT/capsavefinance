@@ -46,8 +46,8 @@ class CustomerController extends Controller {
 	 */
 	public function list()
 	{
-	return view('lms.customer.list');
-}
+		return view('lms.customer.list');
+	}
 
 /**
  * Display a listing of the customer.
@@ -104,11 +104,13 @@ public function limitManagement(Request $request) {
 		$customerLimit = $this->appRepo->getUserLimit($user_id);
 		$AvaliablecustomerLimit = $this->appRepo->getAvaliableUserLimit($customerLimit);
 		$getUserProgramLimit = $this->appRepo->getUserProgramLimit($user_id);
+                $getAccountClosure =  $this->appRepo->getAccountActiveClosure($user_id);
 		// dd($getUserProgramLimit);
 		return view('lms.customer.limit_management')
 			->with(['userAppLimit' => $getUserProgramLimit,
 					'avaliablecustomerLimit' => $AvaliablecustomerLimit,
-					'userId' => $user_id
+					'userId' => $user_id,
+                                        'getAccountClosure' => $getAccountClosure
 		]);
 	} catch (Exception $ex) {
 		dd($ex);

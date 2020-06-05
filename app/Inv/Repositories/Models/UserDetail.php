@@ -26,10 +26,16 @@ class UserDetail extends BaseModel
         'user_detail_id',
         'user_id',
         'is_overdue',
+        'is_active',
+        'lms_users_log_id',
         'access_token',
         'created_by'
     ];
 
+    public function lmsUsersLog()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\LmsUsersLog', 'lms_users_log_id', 'lms_users_log_id');
+    }
      /**
      * Save User Detail
      *
@@ -58,7 +64,11 @@ class UserDetail extends BaseModel
         return ($objUsers ?: false);
     }
    
-    
+      public static function getAccountActiveClosure($uid)
+    {
+       
+        return self::where(['user_id' => $uid,'is_active' =>1])->count();
+    }
 }
 
 

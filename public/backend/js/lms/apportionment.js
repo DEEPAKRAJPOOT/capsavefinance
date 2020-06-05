@@ -43,7 +43,10 @@ class Apportionment {
                 {data: 'disb_date'},
                 {data: 'invoice_no'},
                 {data: 'trans_type'},
-                {data: 'total_repay_amt'}
+                {data: 'total_repay_amt'},
+                {data: 'outstanding_amt'},
+                {data: 'refund'},
+                {data: 'select'}
             ];
                 break;
             case 'runningTransactions':
@@ -94,7 +97,13 @@ class Apportionment {
                 if(id == 'unsettledTransactions'){
                     parentRef.setTransactionAmt();
                 }
-            }
+                var rows = this.fnGetData();
+                if ( rows.length === 0 ) {
+                    $('.action-btn').hide();
+                }else{
+                    $('.action-btn').show();
+                }
+            },
         });
     }
 
@@ -110,7 +119,7 @@ class Apportionment {
                         $(this).val(value.toFixed(2));
                         $(this).attr('readonly',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
-                        paymentAmt = paymentAmt-value;
+                        paymentAmt = paymentAmt-value.toFixed(2);
                     }else{
                         $(this).val(paymentAmt.toFixed(2));
                         $(this).attr('readonly',false);
@@ -145,9 +154,9 @@ class Apportionment {
                 settled_amt += payamt;
             }
         });
-        var unapplied_amt = payment_amt-settled_amt;
-        if(unapplied_amt < 0 ){
-            alert("Sum of your total entries is grater than Re-payment amount");
+        var unapplied_amt = payment_amt.toFixed(2)-settled_amt.toFixed(2);
+        if(unapplied_amt.toFixed(2) < 0 ){
+            alert("Sum of your total entries is Greater than Re-payment amount");
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
     }
@@ -175,37 +184,68 @@ class Apportionment {
         if(check.filter(':checked').length == 0){
             message = "Please Select at least one ";
             status = false;
-        } 
-        if(status){
-            check.each(function (index, element) {
-                if($(this). is(":checked")){
-                    var name = $(this).attr('name');
-                    name =  name.replace('check','');
-                    var value = parseFloat($("input[name='payment"+name+"']").val());
-                    if(isNaN(value)){
-                        message = "Please enter valid value in Pay at row no - "+(index+1);
-                        status = false;
-                    }
-                    else if(value <= 0){
-                        message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
-                        status = false;
-                    }else{
-                        totalSettledAmt +=value;
-                    }
-                    if(!status){
-                        return false;
-                    }   
-                }
-            });
         }
 
-        if(status){
-            if(totalSettledAmt > paymentAmt){
-                message =  "Sum of your total entries is Greater than Re-payment amount";
-                status = false;
+        var action = $("input[name='action']").val();
+        if(action == 'Mark Settled'){
+            $("#unsettlementFrom").attr('action',this.data.confirm_settle);
+            if(status){
+                check.each(function (index, element) {
+                    if($(this). is(":checked")){
+                        var name = $(this).attr('name');
+                        name =  name.replace('check','');
+                        var value = parseFloat($("input[name='payment"+name+"']").val());
+                        if(isNaN(value)){
+                            message = "Please enter valid value in Pay at row no - "+(index+1);
+                            status = false;
+                        }
+                        else if(value <= 0){
+                            message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
+                            status = false;
+                        }else{
+                            totalSettledAmt +=value;
+                        }
+                        if(!status){
+                            return false;
+                        }   
+                    }
+                });
+            }
+    
+            if(status){
+                if(totalSettledAmt > paymentAmt){
+                    message =  "Sum of your total entries is Greater than Re-payment amount";
+                    status = false;
+                }
+            } 
+        }
+        else if (action == 'Write Off'){
+            $("#unsettlementFrom").attr('action',this.data.confirm_writeoff); 
+        }
+        else if(action == 'Adjustment'){
+            $("#unsettlementFrom").attr('action',this.data.confirm_adjustment); 
+            if(status){
+                check.each(function (index, element) {
+                    if($(this). is(":checked")){
+                        var name = $(this).attr('name');
+                        name =  name.replace('check','');
+                        var value = parseFloat($("input[name='refund"+name+"']").val());
+                        if(isNaN(value)){
+                            message = "Please enter valid value in field at row no - "+(index+1);
+                            status = false;
+                        }
+                        else if(value <= 0){
+                            message = "Please enter value greater than 0 in field at row no - "+(index+1);
+                            status = false;
+                        }
+                        if(!status){
+                            return false;
+                        }   
+                    }
+                });
             }
         }
-            
+    
         if(!status){
             alert(message);
             return status;
@@ -263,6 +303,28 @@ class Apportionment {
        }
     }
 
+    onWriteOff(){
+        var data = this.data;
+        var checkedTransIds = $('.check:checked');
+        var numberOfChecked = checkedTransIds.length;
+        var transId = [];
+        if (numberOfChecked > 0) {
+            checkedTransIds.each(function (index, element) {
+                var checkedName = $(this).attr('name');
+                transId.push(checkedName.replace(/[^0-9]/g, ''))
+            });
+            
+            var transIdString = transId.toString();
+            var givenUrl = data.trans_writeoff_url;
+            var targetUrl = givenUrl + '&trans_ids=' + transIdString;
+           
+            $('.view_detail_transaction').attr('data-url', targetUrl);
+            $('.view_detail_transaction').trigger('click');
+        }else{
+            alert('Please select at least one checkbox');
+        }
+    }
+
     onReversalAmount(){
        var data = this.data;
        var numberOfChecked = $('input:checkbox:checked').length;
@@ -291,6 +353,30 @@ class Apportionment {
       this.calculateUnAppliedAmt()
     }
 
+    onRefundChange(transId){
+
+    }
+
+    onRefundCheckChange(transId){
+        if ($("input[name='check["+transId+"]']").is(":checked")) { 
+            $("input[name='refund["+transId+"]']").attr('readonly',false);
+        } else { 
+            $("input[name='refund["+transId+"]']").attr('readonly',true);
+        }
+        $("input[name='refund["+transId+"]']").val('');
+    }
+
+    selectAllRefundCheck(checkallId){
+        if ($('#' + checkallId).is(':checked')) {
+            $('.check[type="checkbox"]').prop('checked', true);
+            $('.refund[type="text"]').attr('readonly',false);
+        }else{
+            $('.check[type="checkbox"]').prop('checked', false);
+            $('.refund[type="text"]').attr('readonly',true);
+        }
+        $('.refund[type="text"]').val(''); 
+    }
+
 }
 
 var apport =  new Apportionment(messages);
@@ -311,4 +397,14 @@ jQuery(document).ready(function ($) {
         oTable = apport.datatableView('runningTransactions');
     }
 
+});
+
+$(document).on('propertychange change click keyup input paste','.pay',function(){
+    this.value = this.value.replace(/[^0-9\.]/g,'');
+    apport.onPaymentChange($(this).attr('id'));
+});
+
+$(document).on('propertychange change click keyup input paste','.refund',function(){
+    this.value = this.value.replace(/[^0-9\.]/g,'');
+    apport.onRefundChange($(this).attr('id'));
 });

@@ -18,9 +18,11 @@ return [
        'PAYMENT_DISBURSED' =>'16',
        'REPAYMENT'=> '17',
        'INTEREST_OVERDUE'=>'33',
+       'ADJUSTMENT'=>'31',
        'REFUND'=>'32',
        'NON_FACTORED_AMT' => '35',
        'WAVED_OFF'=>'36',
+       'WRITE_OFF'=>'37',
         /*
         'PAYMENT_RECEIVED' => '1',
         'DISCOUNT_ON_PAYMENT' => '3',
@@ -122,9 +124,12 @@ return [
         'lms_disbursal_request_list',
         'lms_disbursed_list',
         'payment_list',
+        'settled_payments',
         'unsettled_payments',
         'payment_advice',
-        'add_payment'
+        'add_payment',
+        'edit_payment',
+        'lms_refund_payment_advise',
     ],
     'EOD_PASS_STATUS' => 1,
     'EOD_FAIL_STATUS' => 2,
@@ -154,5 +159,13 @@ return [
         'NORMAL' => '0',
         'ADHOC' => '1',
         'TEMPORARY' => '2',
-    ],    
+    ],
+    'WRITE_OFF_STATUS' => [
+        'NEW' => '36',
+        'IN_PROCESS' => '37',
+        'APPROVED' => '38',
+        'TRANSACTION_SETTLED' => '39',
+        'COMPLETED' => '40',
+        'REVERT_BACK'=> '42'
+    ],
 ];

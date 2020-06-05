@@ -18,11 +18,15 @@ use App\Helpers\ApportionmentHelper;
 use App\Inv\Repositories\Models\Lms\RefundTransactions;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
+
+
 
 trait InvoiceTrait
 {
@@ -158,11 +162,11 @@ trait InvoiceTrait
          $inv_no_var3   = ""; 
          $inv_no_var4   = ""; 
          $inv_no_var5   = ""; 
+         $inv_no_var6   = ""; 
          $multichk['status']   = 1;
          $mytime = Carbon::now();
          $cDate   =  $mytime->toDateTimeString();
          $CFrom =  Carbon::createFromFormat('Y-m-d H:i:s', $cDate)->format('Y-m-d');
-        
          /* Current date and Invoice Date diff */
         while(($data = fgetcsv($handle, 1000, ",")) !== FALSE) 
         {   
@@ -188,7 +192,8 @@ trait InvoiceTrait
            
             $invoice_date_validate  = self::validateDate($inv_date, $format = 'd-m-Y');
             $chlLmsCusto =  self::getLimitProgram($dataAttr);
-          
+            $lmsU =  LmsUser::where(['customer_id' => $dataAttr['cusomer_id']])->first(); 
+            $getLmsActive = UserDetail::where(['user_id' => $lmsU['user_id'],'is_active' => 0])->count(); 
             if( $invoice_date_validate==false)
             {
                $multichk['status'] =0; 
@@ -242,7 +247,12 @@ trait InvoiceTrait
                  }
                  
            }
-         
+           if($getLmsActive > 0)
+           {
+                      $multichk['status'] =0;
+                      $inv_no_var6.=$inv_no.',';
+                      $multichk['multiVali7'] = '*Account has been closed for Following invoice Number ('.substr($inv_no_var6,0,-1).').';          
+           }
          
             
         }
@@ -392,14 +402,14 @@ trait InvoiceTrait
 
      public static  function    invoiceApproveLimit($attr)
    {
-        $is_enhance  =    Application::where(['user_id' => $attr['user_id'],'status' =>2,'app_type' => 2])->count();  
+        $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
        if($is_enhance==1)
        {
-         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_approve_amount');
+         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
        }
        else
        {
-        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_approve_amount');
+        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_margin_amount');
        }
    }
 
@@ -425,45 +435,56 @@ trait InvoiceTrait
             $cid = $inv_details['supplier_id'];
             $sum =  self::invoiceApproveLimit($attr);
             $limit   =  self::ProgramLimit($inv_details);
+            $getMargin =  self::invoiceMargin($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
           if($inv_details['status_id']==8)  
          {     
-              $finalsum = $sum-$inv_details['invoice_approve_amount'];
-                     if($limit  >= $finalsum)
-                    {
-                        $remain_amount = $limit-$finalsum;
-                       if($remain_amount >=$inv_details['invoice_approve_amount'])
-                        { 
-                           $status=8; 
-                           $limit_exceed='Auto Approve';
-                        }
-                        else 
-                        {
-                           $status=28; 
-                           $limit_exceed='Auto Approve, Limit exceed';
-                        }
-                       }
-                    else 
-                       {
-                           $status=28; 
-                           $limit_exceed='Auto Approve, Limit exceed';
-                       }
-                 
+               $finalsum = $sum-$inv_details['invoice_approve_amount'];
+               
                 if($isOverDue->is_overdue==1)
                 {
                    $status=28; 
                    $limit_exceed='Auto Approve, Overdue';
+                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+                
                 }   
-               if($dueDateGreaterCurrentdate)
+               else if($dueDateGreaterCurrentdate)
                 {
                           $status=28; 
-                          $limit_exceed='Customer limit has been expired.'; 
+                          $limit_exceed='Customer limit has been expired.';
+                          return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+                
                 }
-                 InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status); 
-                 return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+                    
+               else if($limit  >= $finalsum)
+                {
+                    $remain_amount = $limit-$sum;
+                   if($remain_amount >=$inv_details['invoice_approve_amount'])
+                    { 
+                       $status=8; 
+                       $limit_exceed='Auto Approve';
+                       return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['invoice_margin_amount' => $getMargin,'is_margin_deduct' =>1,'remark' =>$limit_exceed,'status_id' =>$status]);
+
+                    }
+                    else 
+                    {
+                       $status=28; 
+                       $limit_exceed='Auto Approve, Limit exceed';
+                       return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+
+                    }
+                   }
+            else 
+               {
+
+                   $status=28; 
+                   $limit_exceed='Auto Approve, Limit exceed';
+                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+
+               }
            }
-           if($inv_details['status_id']==7)  
+            if($inv_details['status_id']==7)  
            { 
                 $status_id=7; 
                 $limit_exceed='';  
@@ -478,8 +499,14 @@ trait InvoiceTrait
                     $limit_exceed='Customer limit has been expired.'; 
                 }
                   InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id); 
-                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'created_by' => $uid,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
+                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
             }
+             if($inv_details['status_id']==28)
+           {
+                  InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$inv_details['status_id']); 
+                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['status_id' =>$inv_details['status_id']]);
+          
+           }
   
   }  
   /* checked  invoice limit exceed  */
@@ -521,6 +548,7 @@ trait InvoiceTrait
             $isOverDue     =  self::isOverDue($attr['supplier_id']); /* get overdue by user_id*/
             $sum  =  self::adhocLimit($attr);
             $limit  = self::checkUserAdhoc($attr);
+            $getMargin =  self::invoiceMargin($attr);
             $finalsum = $sum-$attr['invoice_approve_amount'];
             if($limit  >= $finalsum)
            {
@@ -530,7 +558,7 @@ trait InvoiceTrait
                 
                   $limit_exceed='Auto Approve';
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount' => $getMargin,'is_margin_deduct' =>1,'remark' =>$limit_exceed,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 1;
                }
                else 
@@ -592,7 +620,7 @@ trait InvoiceTrait
                 
                   $limit_exceed='Auto Approve';
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>$limit_exceed,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount' => $attr['inv_apprv_amount'],'is_margin_deduct' =>1,'remark' =>$limit_exceed,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                   return 1;
                }
                else 
@@ -643,8 +671,10 @@ trait InvoiceTrait
             $cDate   =  $mytime->toDateTimeString();
             $uid = Auth::user()->user_id;
             $inv_details =  self::getInvoiceDetail($attr);
+            //////////* get margin amount ********///////
+            $inv_apprv_amount = self::invoiceMargin($inv_details);
             if($inv_details['is_adhoc']==1)
-            {
+            {   $inv_details['inv_apprv_amount'] = $inv_apprv_amount;
                 $inv_details['app_id']   =   $inv_details['app_id'];
                 return self::updateAdhocApproveStatus($inv_details);
             }
@@ -666,7 +696,7 @@ trait InvoiceTrait
            if($isOverDue->is_overdue==1)
             {
                 InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
-                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' => 'Overdue','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=>$inv_apprv_amount,'is_margin_deduct' =>1,'remark' => 'Overdue','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                 return 3;
 
             }   
@@ -676,7 +706,7 @@ trait InvoiceTrait
                 if($remain_amount >=$inv_details['invoice_approve_amount'])
                 {
                          InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
-                         BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                         BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=>$inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
                          return 1;
          
                 }
@@ -772,7 +802,9 @@ trait InvoiceTrait
         $sum  = self::invoiceApproveLimit($attribute);
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
+        $invoiceMargin  = self::invoiceMargin($attr);  ////*********Invoice Margin **********//////
         $uid = Auth::user()->user_id;
+       
           if($attr->status_id==8)
           {
                      if((float)$limit  >= $sum)
@@ -782,11 +814,13 @@ trait InvoiceTrait
                         { 
                             $datalist['comm_txt']  = 'Auto Aprove';
                             $datalist['status_id'] = 8;
+                            $datalist['invoice_margin_amount']  = $invoiceMargin; 
                         }
                         else 
                         {
                             $datalist['comm_txt']  = 'Limit exceed';
                             $datalist['status_id'] = 28;
+                            $datalist['invoice_margin_amount']  = $invoiceMargin; 
                         }
 
                     }
@@ -794,34 +828,46 @@ trait InvoiceTrait
                        {
                             $datalist['comm_txt']  = 'Limit exceed';
                             $datalist['status_id'] = 28;
+                            $datalist['invoice_margin_amount']  = $invoiceMargin; 
                        }
                 if($isOverDue->is_overdue==1)
                 {
                      $datalist['comm_txt']  = 'Overdue';
                      $datalist['status_id'] = 28;
+                     $datalist['invoice_margin_amount']  = $invoiceMargin;  
                 
                 } 
                 if($dueDateGreaterCurrentdate)
                 {
                       $datalist['comm_txt']  = 'User Limit has been expire';
                       $datalist['status_id'] = 28;
+                      $datalist['invoice_margin_amount']  = $invoiceMargin; 
                 }
           }
           if($attr->status_id==7)
           {
                 $datalist['comm_txt']  = '';
                 $datalist['status_id'] = 7;
+                $datalist['invoice_margin_amount']  = $invoiceMargin; 
                 if($isOverDue->is_overdue==1)
                 {
                      $datalist['comm_txt']  = 'Overdue';
                      $datalist['status_id'] = 28;
+                     $datalist['invoice_margin_amount']  = $invoiceMargin; 
                 
                 } 
                 if($dueDateGreaterCurrentdate)
                 {
                       $datalist['comm_txt']  = 'User Limit has been expire';
                       $datalist['status_id'] = 28;
+                      $datalist['invoice_margin_amount']  = $invoiceMargin;  
                 }
+          }
+          if($attr->status_id==28)
+          {
+               $datalist['comm_txt']  = '';
+               $datalist['status_id'] = 28;
+               $datalist['invoice_margin_amount']  = $invoiceMargin; 
           }
              return $datalist;
         
@@ -838,7 +884,7 @@ trait InvoiceTrait
    /* Created by gajendra chahan  */
   public static function adhocLimit($attr)
   {
-     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_approve_amount');
+     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_margin_amount');
   }
    
    public static function checkUserAdhoc($attr)
@@ -848,4 +894,76 @@ trait InvoiceTrait
         return AppOfferAdhocLimit::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`')->sum('limit_amt');
 
     }
+  public static function updateReject($attr)
+  {
+      foreach($attr as $row)
+      {
+          BizInvoice::where('invoice_id',$row->invoice_id)->update(['status_id' =>14,'remark' =>'Account closed']);
+      }
+  }
+
+  public static function getAccountClosure($attr)
+   {
+      $getBank =   BizInvoice::where(['status_id' => 10,'supplier_id' =>$attr['user_id']])->count();
+      $get_outstanding =   BizInvoice::where(['is_repayment' =>0,'status_id' => 12,'supplier_id' =>$attr['user_id']])->count();
+      $get_Payment  =  Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->where('file_id','<>', 0)->count();
+      $getReject =   BizInvoice::whereIn('status_id',[7,8,9,11,28])->where(['supplier_id' =>$attr['user_id']])->get();
+      if($getBank > 0)
+      {
+         $data['msg']  = 'You cannot close this account as some invoices are sent to bank for disbursal.';
+         $data['status'] = 0;
+          
+      }
+      else if($get_Payment==0)
+      {
+         $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
+         $data['status'] = 0;
+       
+      }
+      else if($get_outstanding > 0)
+      {
+         $data['msg']  = 'You cannot close this account as outstanding amount is pending for this customer.';
+         $data['status'] = 0;
+       
+      }
+       else if(count($getReject) > 0 && $get_outstanding==0 && $get_Payment > 0 && $getBank==0)
+      {
+         self::updateReject($getReject);
+         self::accountLock($attr['user_id']);
+         $data['msg']  = 'Customer account has been closed.';
+         $data['status'] = 1;
+       
+      }
+      else
+      {
+        self::accountLock($attr['user_id']);
+        $data['msg']  = '';
+        $data['status'] = 1;
+      }
+      return $data;
+   }
+   
+   public static function accountLock($uid)
+   {
+        $mytime = Carbon::now();
+        $cDate   =  $mytime->toDateTimeString();
+        $create_uid = Auth::user()->user_id;
+        $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 35,'created_by' => $create_uid,'created_at' => $cDate]);
+        UserDetail::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
+       
+   }
+   ////////////////* offer margin amount  **//////////////
+   public static function invoiceMargin($inv_details)
+   {
+       $res  = AppProgramOffer::where(['prgm_offer_id' => $inv_details['prgm_offer_id']])->first(); 
+      if($res->margin!=null &&  $res->margin!=0 && $inv_details['is_margin_deduct']==0)
+      {
+        $marginAmount  =  round($inv_details['invoice_approve_amount']*$res->margin/100);
+        return     $inv_details['invoice_approve_amount']-$marginAmount;
+      }
+     else 
+      {
+         return  $inv_details['invoice_approve_amount']; 
+      }
+   }
 }

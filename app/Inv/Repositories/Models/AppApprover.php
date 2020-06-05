@@ -52,7 +52,7 @@ class AppApprover extends BaseModel
     protected $fillable = [
         'app_id',
         'approver_user_id',
-        'status',  
+        'status',
         'is_active',
         'created_by',
         'created_at',

@@ -245,4 +245,10 @@ public static function saveAnchor($arrAnchor = [])
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
+    
+    function anchorAccount()
+    {
+           return $this->belongsTo('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where('anchor_id','<>', null);
+      
+    }
 }

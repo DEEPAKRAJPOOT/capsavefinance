@@ -144,8 +144,8 @@
     var messages = {
         lms_get_soa_list: "{{ URL::route('lms_get_soa_list') }}",
         get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
-        pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id']]) }}",
-        excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id']]) }}",
+        pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'customerSoa']) }}",
+        excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'customerSoa']) }}",
         get_customer: "{{ route('get_customer') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",

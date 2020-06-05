@@ -55,7 +55,7 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label for=""><span id="current-date">{{ \Helpers::convertDateTimeFormat($sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') }}</span></label>                                                        
+                                                <label for=""><span id="current-date">{{ !empty($sys_start_date) ? \Helpers::convertDateTimeFormat($sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') : '' }}</span></label>                                                        
                                             </div>
                                         </div>                                                                                                                        
                                     </div>
@@ -63,7 +63,8 @@
                                 </div>
                             </div>
                             <input type="hidden" value="1" id="sys_start_flag" name="flag">
-                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">                            
+                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">     
+                            <input type="hidden" value="{{ $sys_curr_date }}" name="sys_curr_date">
                         </form>
                         
                         <form id="frm-sys-start" method="post" action="{{ route('save_process') }}" enctype= multipart/form-data>
@@ -119,7 +120,7 @@
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label for="">{{ \Helpers::convertDateTimeFormat($sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') }}</label>                                                        
+                                                <label for="">{{ !empty($sys_end_date) ? \Helpers::convertDateTimeFormat($sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') : '' }}</label>                                                        
                                             </div>
                                         </div>
                                                                        
@@ -128,7 +129,8 @@
                                 </div>
                             </div>
                             <input type="hidden" value="2" name="flag">
-                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">                            
+                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">
+                            <input type="hidden" value="{{ $sys_curr_date }}" name="sys_curr_date">
                         </form>   
                         <div class="row">
                             <div class="col-4">

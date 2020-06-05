@@ -54,9 +54,11 @@ class CompanyController extends Controller {
     public function saveCompanies(CompanyRegRequest $request) {
         try {
             $arrCompaniesData = $request->all();
+            $arrCompaniesData['charge_prefix'] = strtoupper($request->get('charge_prefix'));
+            $arrCompaniesData['interest_prefix'] = strtoupper($request->get('interest_prefix'));
+
             $status = false;
             $company_id = false;
-//            dd($arrCompaniesData);
             if($request->get('is_reg') == 1){
                 $comp_name = trim($request->get('cmp_name'));
                 $is_reg = (int)$request->get('is_reg');

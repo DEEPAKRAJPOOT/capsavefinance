@@ -46,7 +46,7 @@ class InvoiceController extends Controller {
         $this->userRepo = $user_repo;
         $this->application  =  $application;
         $this->middleware('auth');
-        //$this->middleware('checkBackendLeadAccess');
+        $this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodProcess');
     }
 
@@ -117,6 +117,7 @@ class InvoiceController extends Controller {
         $userInfo->total_limit = number_format($totalLimit);
         $userInfo->consume_limit = number_format($totalCunsumeLimit);
         $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+        $userInfo->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id)->sum('amount'),2);
         return view('backend.invoice.user_wise_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
     } 
 
@@ -519,6 +520,7 @@ class InvoiceController extends Controller {
             }
             else 
             {
+           
                InvoiceTrait::getManualInvoiceStatus($result);
             }
             Session::flash('message', 'Invoice successfully saved');
@@ -654,15 +656,15 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Mode_of_Pay'] = 'IFT';
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'test remarks';
-                    $exportData[$userid]['Value_Date'] = date("Y-m-d", strtotime(str_replace('/','-',$valueDate)));
-
+                    $exportData[$userid]['Value_Date'] = date("Y-m-d");
 
                 } 
             }
             if($disburseType == 1 && !empty($allrecords)) {
             
                 $http_header = [
-                    'timestamp' => date('Y-m-d H:i:s', strtotime(str_replace('/','-',$valueDate))),
+
+                    'timestamp' => date('Y-m-d H:i:s'),
                     'txn_id' => $transId
                     ];
 
@@ -821,7 +823,7 @@ class InvoiceController extends Controller {
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] = $userid) {
+                    if($invoice['supplier_id'] == $userid) {
                         
                         $interest= 0;
                         $margin= 0;
@@ -885,7 +887,7 @@ class InvoiceController extends Controller {
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
 
                 foreach ($allinvoices as $invoice) {
-                    if($invoice['supplier_id'] = $userid) {
+                    if($invoice['supplier_id'] == $userid) {
                         $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                         if ($invoiceDisbursedData == null) {
@@ -1344,5 +1346,20 @@ class InvoiceController extends Controller {
 		return $randomString;
 	}
 	
+       public static function accountClosure(Request $request)
+       {
+        
+             $res = InvoiceTrait::getAccountClosure($request);
+             if($res['status']==0)
+             {
+                Session::flash('error',$res['msg']);
+                return back();
+             }
+             else
+             {
+               Session::flash('message', 'Customer account has been successfully closed');
+               return back();
+             }
+       }
 	
 }

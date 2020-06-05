@@ -349,13 +349,10 @@ Route::group(
         ]
     );  
        
-        Route::post(
-        'backend_get_bulk_transaction',
-        [
-        'as' => 'backend_get_bulk_transaction',
-        'uses' => 'AjaxController@getBackendBulkTransaction'
-        ]
-    );  
+        Route::post('backend_get_bulk_transaction',[
+            'as' => 'backend_get_bulk_transaction',
+            'uses' => 'AjaxController@getBackendBulkTransaction'
+        ]);  
        
          Route::post(
         'backend_get_invoice_list_repaid',
@@ -447,15 +444,65 @@ Route::group(
         'as' => 'invoice_document_save',
         'uses' => 'AjaxController@saveInvoiceDoc'
         ]
-    );  
+    ); 
+      Route::post(
+        'update_invoice_approve_single_tab',
+        [
+        'as' => 'update_invoice_approve_single_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );   
       Route::post(
         'update_invoice_approve',
         [
         'as' => 'update_invoice_approve',
         'uses' => 'AjaxController@updateInvoiceApprove'
         ]
+    );
+       Route::post(
+        'update_icon_invoice_approve',
+        [
+        'as' => 'update_icon_invoice_approve',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
     );   
+       Route::post(
+        'update_invoice_approve_tab',
+        [
+        'as' => 'update_invoice_approve_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    ); 
+       
+     Route::post(
+        'update_invoice_disb_que_tab',
+        [
+        'as' => 'update_invoice_disb_que_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );   
+      Route::post(
+        'update_invoice_failed_disb_tab',
+        [
+        'as' => 'update_invoice_failed_disb_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );    
+      Route::post(
+        'update_invoice_reject_tab',
+        [
+        'as' => 'update_invoice_reject_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );     
       
+     Route::post(
+        'update_invoice_exception_tab',
+        [
+        'as' => 'update_invoice_exception_tab',
+        'uses' => 'AjaxController@updateInvoiceApprove'
+        ]
+    );       
     Route::post(
         'get-role-list',
         [
@@ -755,6 +802,28 @@ Route::group(
         'as' => 'lms_get_soa_list',
         'uses' => 'AjaxController@lmsGetSoaList'
     ]);
+
+    Route::post('lms-get-consolidated-soa-list', [
+        'as' => 'lms_get_consolidated_soa_list',
+        'uses' => 'AjaxController@lmsGetConsolidatedSoaList'
+    ]);
+    
+ Route::post('lms_get_due_list', [
+        'as' => 'lms_get_due_list',
+        'uses' => 'AjaxController@getInvoiceDueList'
+    ]);
+  Route::post('lms_get_invoice_over_due_list', [
+        'as' => 'lms_get_invoice_over_due_list',
+        'uses' => 'AjaxController@getInvoiceOverDueList'
+    ]);
+   Route::post('lms_get_invoice_realisation_list', [
+        'as' => 'lms_get_invoice_realisation_list',
+        'uses' => 'AjaxController@getInvoiceRealisationList'
+    ]);
+    Route::post('get-colender-soa-list', [
+        'as' => 'get_colender_soa_list',
+        'uses' => 'AjaxController@getColenderSoaList'
+    ]);
     
     Route::post('get-bank-account-list', [
         'as' => 'get_bank_account_list',
@@ -765,7 +834,10 @@ Route::group(
         'as' => 'update_bulk_invoice',
         'uses' => 'AjaxController@updateBulkInvoice'
     ]);
-    
+     Route::post('update_disburse_bulk_invoice', [
+        'as' => 'update_disburse_bulk_invoice',
+        'uses' => 'AjaxController@updateBulkInvoice'
+    ]); 
     Route::post('set-default-account', [
         'as' => 'set_default_account',
         'uses' => 'AjaxController@setDefaultAccount'
@@ -1061,6 +1133,17 @@ Route::group(
     Route::post('get_cust_and_cap_loca',[
         'as' => 'get_cust_and_cap_loca',
         'uses' => 'AjaxController@getCustAndCapsLoc'
+        ]
+    );
+
+    Route::post('get_all_customers',[
+        'as' => 'get_all_customers',
+        'uses' => 'AjaxController@getAllCustomers'
+        ]
+    );    
+    Route::post('get_all_lease_registers',[
+        'as' => 'get_all_lease_registers',
+        'uses' => 'AjaxController@leaseRegister'
         ]
     );
 

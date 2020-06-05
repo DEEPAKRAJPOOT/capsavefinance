@@ -10,17 +10,20 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 
 class CoLenderControllers extends Controller {
 
     protected $userRepo;
+    protected $lmsRepo;
 
-    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user, InvAppRepoInterface $app_repo)
+    public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user, InvAppRepoInterface $app_repo, InvLmsRepoInterface $lms_repo)
     {
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->masterRepo = $master;
         $this->appRepo = $app_repo;
+        $this->lmsRepo = $lms_repo;
         $this->userRepo = $user;
     }
 
@@ -44,7 +47,7 @@ class CoLenderControllers extends Controller {
         $states = State::getStateList()->get();
 
         $co_lender_id = (int) $request->get('co_lender_id');
-        $coLenderData = $this->userRepo->getCoLenderData(['co_lenders_user.co_lender_id' => $co_lender_id])->first();
+        $coLenderData = $this->userRepo->getCoLenderData(['co_lenders.co_lender_id' => $co_lender_id])->first();
        // dd($coLenderData);
         Session::forget('operation_status');
         return view('backend.coLenders.add_co_lender_frm')
@@ -54,22 +57,19 @@ class CoLenderControllers extends Controller {
     public function saveCoLender(Request $request)
     {
         try {
-            //$string = Helpers::randomPassword();
             $string = time();
             $request = $request->all();
             $user_info = false;
-            $co_lender_id = $request['co_lender_id'] ? $request['co_lender_id'] : null;
-            
-            $user_id = $request['user_id'] ? $request['user_id'] : null;
+            $co_lender_id = $request['co_lender_id'] ??  null;
+            $user_id = $request['user_id'] ?? null;
             if (isset($request['email'])) {
                 $user_info = $this->userRepo->getUserByEmail($request['email']);
             }
 
-
             if (!$user_info) {
                 $data = [
                     'comp_name' => $request['comp_name'],
-                    'comp_email' => isset($request['email']) ? $request['email'] : null,
+                    'comp_email' => $request['email'] ?? null,
                     'comp_phone' => $request['phone'],
                     'comp_addr' => $request['comp_addr'],
                     'comp_state' => $request['state'],
@@ -83,8 +83,6 @@ class CoLenderControllers extends Controller {
                 if ($co_lender_id > 0) {
                     unset($data['comp_email']);
                 }
-                
-      
 
                 $lastInsertID = $this->userRepo->saveColenderUsers($data, (int) $co_lender_id);
                 $lastInsertID = $co_lender_id ? $co_lender_id : $lastInsertID;
@@ -138,9 +136,18 @@ class CoLenderControllers extends Controller {
         }
     }
 
-    public function shareToColender(){
-        $coLenders = $this->userRepo->getCoLenderData(['co_lenders_user.is_active'=>1, 'u.is_active'=>1]);
-        return view('backend.coLenders.share_colender')->with('coLenders', $coLenders);
+    public function shareToColender(Request $request){
+        $appId = $request->get('app_id');
+        $user_id = State::getUserByAPP($appId)->user_id ?? NULL;
+        $sharedColender = $this->appRepo->getSharedColender([
+            'user_id'=>$user_id,
+            'is_active'   =>  1
+        ]);
+        if($sharedColender->count()){
+          $sharedColender = $sharedColender[0];
+        }
+        $coLenders = $this->userRepo->getCoLenderData(['co_lenders.is_active'=>1, 'u.is_active'=>1]);
+        return view('backend.coLenders.share_colender')->with('coLenders', $coLenders)->with('sharedColender', $sharedColender);
     }
 
     public function saveShareToColender(Request $request){
@@ -148,25 +155,30 @@ class CoLenderControllers extends Controller {
             $arrShareColenderData = $request->all();
             $appId = $arrShareColenderData['app_id'];
             $bizId = $arrShareColenderData['biz_id'];
+            $arrShareColenderData['user_id'] = State::getUserByAPP($appId)->user_id ?? NULL;
+            $arrShareColenderData['start_date'] = \carbon\Carbon::now();
+            $arrShareColenderData['end_date'] = NULL;
+            $arrShareColenderData['is_active'] = 1;
             $arrShareColenderData['created_at'] = \carbon\Carbon::now();
             $arrShareColenderData['created_by'] = Auth::user()->user_id;
             $data = $this->appRepo->getSharedColender([
-                    'app_id'=>$arrShareColenderData['app_id'],
-                    'app_prgm_limit_id' =>  $arrShareColenderData['app_prgm_limit_id'],
-                    //'co_lender_id'      =>  $arrShareColenderData['co_lender_id'],
-                    'is_active'         =>  1
-                ]);
+                'app_id'=>$arrShareColenderData['app_id'],
+                'user_id'=>$arrShareColenderData['user_id'],
+                'app_prgm_limit_id' =>  $arrShareColenderData['app_prgm_limit_id'],
+                'is_active'   =>  1
+            ], $arrShareColenderData['co_lender_id']);
             if($data->count()){
-                Session::flash('message', 'You can\'t share this application offer to more than one co-lender.');
+                Session::flash('error', 'You can\'t share this application offer to more than one co-lender.');
                 return redirect()->back()->withInput($request->input());
             }else{
+                $this->appRepo->updateColenderData(['is_active' => 0, 'end_date' => \carbon\Carbon::now()], ['user_id' => $arrShareColenderData['user_id'], 'co_lender_id' => $arrShareColenderData['co_lender_id']]);
                 $status = $this->appRepo->saveShareToColender($arrShareColenderData);
                 if($status){
                     Session::flash('message', 'Offer shared successfully');
                     Session::flash('operation_status', 1); 
                     return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
                 }else{
-                    Session::flash('message', trans('backend_messages.something_went_wrong'));
+                    Session::flash('error', trans('backend_messages.something_went_wrong'));
                     Session::flash('operation_status', 1); 
                     return redirect()->route('limit_assessment', ['app_id'=>(int)$appId, 'biz_id'=>(int)$bizId, 'view_only'=>$arrShareColenderData['view_only']]);
                 }
@@ -179,6 +191,29 @@ class CoLenderControllers extends Controller {
     public function viewSharedColender(Request $request){
         $shared_colenders = $this->appRepo->getSharedColender(['app_id'=>$request->app_id, 'app_prgm_limit_id'=>$request->app_prgm_limit_id, 'is_active'=>1]);
         return view('backend.coLenders.view_shared_colender')->with('sharedCoLenders', $shared_colenders);
+    }
+
+    public function viewColenderSoa(Request $request){
+       $userData = [];
+        if($request->has('user_id')){
+            $user = $this->userRepo->lmsGetCustomer($request->user_id);
+            $maxInterestDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.INTEREST'));
+            $maxPrincipalDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+            if($user && $user->app_id){
+                $userData['user_id'] = $user->user_id;
+                $userData['customer_id'] = $user->customer_id;
+                $appDetail = $this->appRepo->getAppDataByAppId($user->app_id);
+                if($appDetail){
+                    $userData['app_id'] = $appDetail->app_id;
+                    $userData['biz_id'] = $appDetail->biz_id;
+                }
+            }
+        }
+        return view('backend.coLenders.view_soa')
+        ->with('user',$userData)
+        ->with('maxDPD',1)
+        ->with('maxPrincipalDPD',$maxPrincipalDPD)
+        ->with('maxInterestDPD',$maxInterestDPD);
     }
 
     /**

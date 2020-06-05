@@ -34,6 +34,14 @@
             <td>@if($maxInterestDPD){{$maxInterestDPD->dpd}} @if($maxInterestDPD->dpd>1) Days @else Day @endif @else 0 Day @endif </td>
         </tr>
         @endif
+        @if($userInfo->outstandingAmt)
+        <tr>
+            <td class="text-left" width="30%"><b>Outstanding Amt</b></td>
+            <td>{{ $userInfo->outstandingAmt }}</td>
+            <td></td>
+            <td></td>
+        </tr>
+        @endif
     </tbody>
 
 </table>

@@ -42,21 +42,29 @@
             @include('lms.apportionment.common.paymentDetails')
             @endif
         @endif
-            <form action="{{ route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" method="post" onsubmit="return apport.validateMarkSettled(this)">
+            <form id="unsettlementFrom" action="" method="post" onsubmit="return apport.validateMarkSettled(this)">
              @csrf	
             <div class="row">
                 @include('lms.apportionment.common.listUnsettledTransactions')
             </div>
-            <div class="row pull-right">
+            <div class="row pull-right action-btn">
                 <div class="col-md-12" >
-                    @if($paymentId) <input type="submit" value="Mark Settled" class="btn btn-success btn-sm"> @endif
-                    <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+                    @if($paymentId) 
+                        <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm"> 
+                    @endif
+                    @if($sanctionPageView) 
+                        <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+
+                        @if($userDetails['status_id'] == 41 && in_array($userDetails['wo_status_id'],[config('lms.WRITE_OFF_STATUS.APPROVED'),config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED')]))
+                            <input type="submit" name="action" value="Write Off" class="btn btn-success btn-sm">
+                        @endif
+                    @endif
                 </div>
             </div>
             </form>
         </div>
     </div>
-     <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
+    <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>
 {!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
 </div>
@@ -66,6 +74,8 @@
 <script>
     var messages = {
         url: "{{ URL::route('apport_unsettled_list') }}",
+        confirm_writeoff: "{{ URL::route('apport_mark_writeOff_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}",
+        confirm_settle: "{{ URL::route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}",
         trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff',['sanctionPageView' => $sanctionPageView]) }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",

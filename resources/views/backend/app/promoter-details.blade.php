@@ -207,7 +207,7 @@
                                               <a data-toggle="modal" id="ppanStatusVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter9" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_verify_data',['type'=>9,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($main[$j]['panVerifyNo']->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Veirfy Pan Status)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="3"> <i class="fa fa-eye"></i></button>
                                             <div class="relative">
                                             @if(request()->get('view_only'))
-                                            <a href="javascript:void(0);" data-id="{{isset($row->first_name) ? $i : '1'}}" id="pan_verify{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style="margin-top: 3px; pointer-events:{{isset($main[$j]['panVerifyNo']->requestId) ? 'none' : '' }}">{{isset($main[$j]['panVerifyNo']->requestId) ?  'Verified' : 'Verify' }}</a>
+                                            <a href="javascript:void(0);" data-id="{{isset($row->first_name) ? $i : '1'}}" id="pan_verify{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style="pointer-events:{{isset($main[$j]['panVerifyNo']->requestId) ? 'none' : '' }}">{{isset($main[$j]['panVerifyNo']->requestId) ?  'Verified' : 'Verify' }}</a>
                                             @endif
                                             <input type="text" name="pan_no[]" id="pan_no{{isset($row->first_name) ? $i : '1'}}" value="{{isset($main[$j]['panVerifyNo']->requestId) ?  $main[$j]['panVerifyNo']->requestId : $row->pan_number }}" class="form-control pan_no" placeholder="Enter Pan Number" {{(isset($main[$j]['panVerifyNo']->requestId)) ? 'readonly' : '' }}>
                                             </div>
@@ -289,9 +289,11 @@
                                     <div class="col-md-2" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
                                         <div class="form-group" >
                                                
-                                                <label for="txtEmail">OTP <span class="mandatory">*</span></label>  
-                                                <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileOtpNo']->request_id) ?  'Verified' : 'Verify' }}</a>
-                                                <input type="text" name="otp_no[]"   maxlength="6" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" >
+                                                <label for="txtEmail">OTP <span class="mandatory">*</span></label> 
+                                                <div class="relative">
+                                                    <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileOtpNo']->request_id) ?  'Verified' : 'Verify' }}</a>
+                                                    <input type="text" name="otp_no[]"   maxlength="6" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" >
+                                                </div>
                                                <span class="text-success float-left" id="v6successpanverify{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileNo']->request_id) ? 'Verified Successfully' : '' }} </span>
                                                 <span class="text-danger float-left" id="v6failurepanverify{{isset($row->first_name) ? $i : '1'}}"> </span>
                                                 
@@ -818,21 +820,23 @@
         var total = 0;
        if(button=='next')
        {  
+           
         ///// for upload one in three id proff..............
         for (i = 1; i <= DlLength; i++)
         {
+         
 
-
-        var dlVal = $("#dldown" + i).attr('href');
-        var vtVal = $("#voterdown" + i).attr('href');
-        var adVal = $("#aadhardown" + i).attr('href');
-         var elVal = $("#electricitydown" + i).attr('href');
-          var teVal = $("#telephonedown" + i).attr('href');
-        if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")
+        var dlVal = $("#dldown"+i).attr('href');
+        var vtVal = $("#voterdown"+i).attr('href');
+        var adVal = $("#aadhardown"+i).attr('href');
+         var elVal = $("#electricitydown"+i).attr('href');
+          var teVal = $("#telephonedown"+i).attr('href');
+        
+        if (dlVal ==undefined && vtVal ==undefined && adVal ==undefined && elVal == undefined && teVal == undefined)
         {
-        alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
-        $("#verifydl" + i).focus();
-        return false;
+            alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
+            $("#verifydl" + i).focus();
+            return false;
         }
 
         }

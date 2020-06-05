@@ -735,6 +735,10 @@ class User extends Authenticatable
     public function lms_user()
     {
         return $this->hasOne('App\Inv\Repositories\Models\LmsUser', 'user_id','user_id'); 
+    }
      
+    public function userDetail()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\UserDetail', 'user_id', 'user_id');
     }
 }

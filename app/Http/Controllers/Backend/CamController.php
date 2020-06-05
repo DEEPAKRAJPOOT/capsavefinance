@@ -1499,7 +1499,8 @@ class CamController extends Controller
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
 
-        $offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        //$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
+        $offerStatus = $this->appRepo->getAppData($appId)->status;//to check offer is sanctioned or not
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
@@ -1611,6 +1612,60 @@ class CamController extends Controller
         Session::flash('message',trans('backend_messages.offer_approved'));
         return redirect()->back();
     }
+    
+    /**
+     * Open Reject offer Pop Up
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function rejectOfferForm(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.reject_offer')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+
+    /**
+     * Save Reject offer comment
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function rejectOffer(Request $request)
+    {   
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $cmntText = $request->get('comment_txt');
+            $appApprData = [
+                'app_id' => $appId,
+                'approver_user_id' => \Auth::user()->user_id,
+                'status' => 2
+              ];
+            $this->appRepo->saveAppApprovers($appApprData);
+            $addl_data = [];
+            $addl_data['sharing_comment'] = $cmntText;
+            $selRoleId = 7;
+            $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
+            $selUserId = $roles[0]->user_id;
+            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+            $currStage = Helpers::getCurrentWfStage($appId);
+            Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+ 
+            Session::flash('message', trans('backend_messages.offer_rejected'));
+            Session::flash('operation_status', 1);
+            return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+            //return redirect()->back();
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 
     /*function for showing offer data*/
     public function showLimitOffer(Request $request){
@@ -1632,7 +1687,9 @@ class CamController extends Controller
 
 
       if ($limitData->product_id == 1) {
-        $user = $this->appRepo->getAppData($appId)->user;
+        $appData = $this->appRepo->getAppData($appId);
+        $appType = $appData->app_type;
+        $user = $appData->user;
         $user_type = $user->is_buyer;
         $anchors = $user->anchors;
         $anchorArr=[];
@@ -1641,6 +1698,7 @@ class CamController extends Controller
         }
         $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
+        $appType = '';
         $anchors = [];
         $anchorPrgms = [];
       }
@@ -1661,7 +1719,7 @@ class CamController extends Controller
       }
 
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType]);
     }
 
     /*function for updating offer data*/
@@ -1903,7 +1961,6 @@ class CamController extends Controller
             $userId = Auth::user()->user_id;
             $relationShipArr = [];
             $liftingArr = [];
-            
             $relationShipArr['biz_id']                          = $allData['biz_id'];
             $relationShipArr['app_id']                          = $allData['app_id'];
             $relationShipArr['year_of_association']             = $allData['year_of_association'];
@@ -1962,8 +2019,7 @@ class CamController extends Controller
             $totalPurMaterial = $allData['total_pur_material'];
             $countMonths = count($months);
             #dd($months, $mtType, $years, $totalPurMaterial, $countMonths);
-
-           $liftingData = $this->appRepo->getLiftingDetail($allData['app_id']);
+            $liftingData = $this->appRepo->getLiftingDetail($allData['app_id']);
             for($i = 0; $i < $countMonths; $i++){
                foreach($months[$i]['mt_value'] as $key => $value){
                    if (!empty($liftingData)) {

@@ -32,6 +32,7 @@ use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\Master\FacilityType;
 use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Master\Activity;
+use App\Inv\Repositories\Models\Master\ChargeGST;
 
 /**
  * 
@@ -719,5 +720,32 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function getActivity($whereCond=[])
     {
         return Activity::getActivity($whereCond);
-    }     
+
+    }
+
+    public function updateBaseRateEndDate($id, $bankId, $date)
+    {
+        return BaseRate::updateBaseRateEndDate($id, $bankId, $date);
+    }    
+
+   
+    public function saveChargesGST($attributes)
+    {
+     return  ChargeGST::saveChargesGST($attributes);
+    }
+    
+    public function getLastChargesGSTById($chargeId)
+    {
+      return ChargeGST::getLastChargesGSTById($chargeId);
+    }
+    
+    /**
+     * Get Last DoA Level Id
+     * 
+     * @return mixed
+     */
+    public function getLastDoaLevelId()
+    {
+        return DoaLevel::getLastDoaLevelId();
+    }    
 }

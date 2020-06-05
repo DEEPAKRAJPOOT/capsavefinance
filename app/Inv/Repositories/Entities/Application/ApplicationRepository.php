@@ -71,6 +71,8 @@ use App\Inv\Repositories\Models\UserAppDoc;
 use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\UserDetail;
+
 
 /**
  * Application repository class
@@ -1572,8 +1574,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return ColenderShare::saveShareToColender($data, $co_lenders_share_id);
     }
 
-    public function getSharedColender($where){
-        return ColenderShare::getSharedColender($where);
+    public function getSharedColender($where, $notColenderId = null){
+        return ColenderShare::getSharedColender($where, $notColenderId);
+    }
+
+    public function updateColenderData($attributes, $conditions){
+        return ColenderShare::updateColenderData($attributes, $conditions);
     }
 
     public function getTotalPrgmLimitByAppId($appId){
@@ -2283,12 +2289,25 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
     {
         return AppProgramLimit::getUtilizeLimit($appId, $productId, $checkApprLimit);
+
     }
 
     public function getAppLimitData($whereCond)
     {
         return AppLimit::getAppLimitData($whereCond);
     }    
+  
+    
+    public function getAccountActiveClosure($uid) 
+    {
+        try
+        {
+          return UserDetail::getAccountActiveClosure($uid);  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+    }
+
 }
 
 

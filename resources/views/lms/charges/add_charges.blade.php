@@ -110,20 +110,21 @@
             <div class="form-group col-md-6 text-right">
                 <span  id="submitMsg" class="error"></span>
                 <input type="hidden"   id="id" name="id" >
-                <input type="hidden"   id="app_id" name="app_id"  value="{{$user->app['app_id']}}">
+                <input type="hidden"   id="app_id" name="app_id"  value="{{$user->app_id}}">
                 <input type="hidden"   id="pay_from" name="pay_from"  value="{{$user->is_buyer}}">
                 <input type="hidden"   id="charge_type" name="charge_type"  value="">
                 <input type="hidden"   id="programamount" name="programamount" >
                 <input type="hidden"   id="chrg_applicable_hidden_id" name="chrg_applicable_hidden_id" >
                 <input type="submit" class="btn btn-success btn-sm" name="add_charge" id="add_charge" value="Submit"/>
             </div>
-            <script src="../../../../public/backend/js/ajax-js/lms/add_charge.js" type="text/javascript"></script>
         </div>
     </form>
 
 </div>
 @endsection
+
 @section('jscript')
+<script src="{{ asset('backend/js/ajax-js/lms/add_charge.js') }}"></script>
 <script type="text/javascript">
 
     var messages = {
@@ -135,5 +136,5 @@
 
 
 </script>
-<script src="{{ asset('backend/js/ajax-js/lms/add_charge.js') }}"></script>
+
 @endsection

@@ -122,8 +122,8 @@ function fillEntity(gstinId){
 			    	fillRegisteredAddress(res.result.pradr.adr);
 			    }else{
 			    	alert('No Entity associated with the entered GST.');
+			    	$('.isloader').hide();
 			    }
-			    $('.isloader').hide();
 			}
 		});
 }
@@ -140,11 +140,14 @@ function getCIN(entityName){
 		success: function(res){
 			res = res.response
 			if(res == null){
-					$('.isloader').hide();
+				$('.isloader').hide();
 			}else if(res['status-code'] == 101){
-		    	$('input[name=biz_cin]').val(res.result[0].cin);
+				//$('input[name=biz_cin]').val(res.result[0].cin);
+		    	$('input[name=biz_cin]').val(res.result.result[0].cin);
+				$('.isloader').hide();
 		    }else{
 		    	console.error('CIN number not fetched successfully');
+				$('.isloader').hide();
 		    }
 		}
 	});

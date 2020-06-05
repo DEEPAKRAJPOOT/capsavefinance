@@ -17,6 +17,53 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             ]);
         });
 
+        Route::group(['prefix' => 'reports'], function () {
+            Route::get('/', [
+                'as' => 'report_summary',
+                'uses' => 'Backend\ReportController@index'
+            ]);
+            Route::get('/customer', [
+                'as' => 'report_customer',
+                'uses' => 'Backend\ReportController@customer'
+            ]);
+            Route::get('/lease-register', [
+                'as' => 'lease_register',
+                'uses' => 'Backend\ReportController@leaseRegister'
+            ]);
+            Route::get('/download', [
+                'as' => 'download_reports',
+                'uses' => 'Backend\ReportController@downloadLeaseReport'
+            ]);
+            Route::get('/duereport', [
+                'as' => 'report_duereport',
+                'uses' => 'Backend\ReportController@duereport'
+            ]);
+            Route::get('/overduereport', [
+                'as' => 'report_overduereport',
+                'uses' => 'Backend\ReportController@overduereport'
+            ]);
+
+               Route::get('/realisationreport', [
+                'as' => 'report_realisationreport',
+                'uses' => 'Backend\ReportController@realisationreport'
+            ]);
+               Route::get('/pdf_invoice_due_url', [
+
+                'as' => 'pdf_invoice_due_url',
+                'uses' => 'Backend\ReportController@pdfInvoiceDue'
+            ]);
+            Route::get('/pdf_invoice_over_due_url', [
+                'as' => 'pdf_invoice_over_due_url',
+                'uses' => 'Backend\ReportController@pdfInvoiceOverDue'
+            ]);
+                
+             Route::get('/pdf_invoice_realisation_url', [
+                'as' => 'pdf_invoice_realisation_url',
+                'uses' => 'Backend\ReportController@pdfInvoiceRealisation'
+            ]);
+             
+        });
+
         Route::group(['prefix' => 'application'], function () {
             Route::get('/', [
                 'as' => 'application_list',
@@ -584,6 +631,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'save_bank_detail',
                     'uses' => 'Backend\CamController@saveBankDetail'
                 ]);
+                Route::get('/reject-offer-form', [
+                    'as' => 'reject_offer_form',
+                    'uses' => 'Backend\CamController@rejectOfferForm'
+                ]);
+                Route::post('reject-offer', [
+                    'as' => 'reject_offer',
+                    'uses' => 'Backend\CamController@rejectOffer'
+                ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [
@@ -911,6 +966,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/view-shared-colender', [
                 'as' => 'view_shared_colender',
                 'uses' => 'Master\CoLenderControllers@viewSharedColender'
+            ]);
+            Route::get('/get-colender-soa', [
+                'as' => 'view_colander_soa',
+                'uses' => 'Master\CoLenderControllers@viewColenderSoa'
             ]);  
             
             
@@ -1250,6 +1309,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('view-disburse-invoice', [
                 'as' => 'backend_view_disburse_invoice',
                'uses' => 'Backend\InvoiceController@viewDisburseInvoice'
+            ]);
+             Route::POST('account_closure', [
+                'as' => 'account_closure',
+               'uses' => 'Backend\InvoiceController@accountClosure'
             ]);
          });
          

@@ -12,6 +12,11 @@
         <a class=" {{( $active=='address') ? 'active': null }} " href="{{route('addr_get_customer_list',[ 'user_id' =>  request()->get('user_id') ])}}">Address </a>
     </li>
     @endcan
+    @can('write_off_customer_list')
+    <li>
+        <a class=" {{( $active=='writeOff') ? 'active': null }} " href="{{route('write_off_customer_list',[ 'user_id' =>  request()->get('user_id') ])}}">Write Off</a>
+    </li>
+    @endcan
     @can('user_invoice_location')
     <li>
         <a class=" {{($active=='userLocation') ? 'active': null }} " href="{{route('user_invoice_location', ['user_id' => request()->get('user_id')])}}">User InVoice Location</a>
@@ -62,9 +67,9 @@
 
     @endcan
         
-    @can('lms_get_transaction')
+    @can('soa_customer_view')
     <li>
-        <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('lms_get_transaction', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">SOA</a>
+        <a class=" {{ ($active=='custSoa')? 'active': null }} " href="{{route('soa_customer_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">SOA</a>
     </li>
     @endcan 
     

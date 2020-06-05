@@ -175,19 +175,21 @@ class ChargeController extends Controller
                  }
                 
                     $id  = Auth::user()->user_id;
+                    $getMstLog =  $this->lmsRepo->getChrgLog($request->chrg_name);
                     $mytime = Carbon::now(); 
                     $arr  = [ "user_id" =>  $request->user_id,
                                   "amount" =>   $totalSumAmount,
                                   "soa_flag" =>1,
                                   "gst"   => 1,
+                                  'gst_per' => ($getMstLog->gst_val) ? $getMstLog->gst_val : '',
+                                  'chrg_gst_id' => ($getMstLog->chrg_gst_id) ? $getMstLog->chrg_gst_id : '',
                                   'entry_type' =>0,
                                   "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                                   "trans_type" => $getTransType->id,
                                   "pay_from" => $request['pay_from'],
                                   'created_by' =>  $id, 
                                   'created_at' =>  $mytime ];
-                      
-                         $res =   $this->lmsRepo->saveCharge($arr);
+                       $res =   $this->lmsRepo->saveCharge($arr);
                     
                     
                     $arr  = [   "prgm_id" => $request->program_id,

@@ -27,15 +27,8 @@ try {
                 }
             },
             fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-                var iscolor = 1; 
-                if (aData.trans_type.indexOf('TDS') > -1 || aData.trans_type.indexOf('Refunded') > -1 || aData.trans_type.indexOf('Non Factored Amount') > -1)
-                { iscolor = null; }
-                if(aData.payment_id && iscolor){
-                    $(nRow).css('background', '#ffcc0078');
-                    $(nRow).css('line-height', '1');
-                }
-                if(aData.trans_type==' Repayment'){
-                    $(nRow).css('background', '#f3c714');
+                if(aData.backgroundColor){
+                    $(nRow).css('background', aData.backgroundColor);
                 }
             },
             columns: [
@@ -58,7 +51,7 @@ try {
                 {
                     text: 'PDF',
                     action: function ( e, dt, node, config ) {
-                        download('pdf');
+                       download('pdf');
                     }
                 },
                 {
@@ -103,48 +96,10 @@ try {
         if(to_date){
             url += '&to_date='+to_date;
         }
-
         window.open(url, '_blank');
     }
 
-    function showClientDetails(data){
-        $.ajax({
-            type: "POST",
-            url: messages.get_soa_client_details,
-            data: data,
-            dataType: "json",
-            success: function (res) {
-                var html = `<table class="table " cellpadding="0" cellspacing="0" style="margin-bottom: 22px;border-top-style: none;
-                border-left-style: none;
-                border-right-style: none;
-                border-bottom-style: none;">
-                            <tbody>
-                                <tr>
-                                    <td><b>Client Name</b></td>
-                                    <td>`+res.client_name+`</td>
-                                    <td><b>Date & Time</b></td>
-                                    <td>`+res.datetime+`</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Address</b></td>
-                                    <td>`+res.address+`</td>
-                                    <td><b>Currency</b></td>
-                                    <td>`+res.currency+`</td>
-                                </tr>
-                                
-                                <tr>
-                                    <td><b>Limit Amt</b></td>
-                                    <td>`+res.limit_amt+`</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>`; 
-                        //console.log(html);
-                        //$("#client_details").html(html);
-            }
-        });
-    }
+
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);

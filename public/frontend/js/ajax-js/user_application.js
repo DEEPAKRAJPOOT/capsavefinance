@@ -29,7 +29,8 @@ try {
                 {data: 'user_email'},
                 {data: 'user_phone'},
                 {data: 'assoc_anchor'},
-                {data: 'applied_loan_amount'},
+                // {data: 'applied_loan_amount'},
+                {data: 'loan_amount'},
                 {data: 'created_at'},
                 {data: 'status'},
                 {data: 'action'}

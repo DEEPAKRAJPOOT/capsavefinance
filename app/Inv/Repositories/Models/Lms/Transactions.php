@@ -2,6 +2,7 @@
 namespace App\Inv\Repositories\Models\Lms;
 
 use DB;
+use Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Factory\Models\BaseModel;
@@ -29,14 +30,14 @@ class Transactions extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -55,6 +56,8 @@ class Transactions extends BaseModel {
         'amount',
         'entry_type',
         'gst',
+        'gst_per',
+        'chrg_gst_id',
         'tds_per',
         'gl_flag',
         'soa_flag',
@@ -62,8 +65,13 @@ class Transactions extends BaseModel {
         'pay_from',
         'is_settled',
         'is_posted_in_tally',
+        'is_invoice_generated',
+        'sys_created_at',
+        'sys_updated_at',
         'created_at',
-        'created_by'
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
 
     public function payment(){
@@ -111,7 +119,7 @@ class Transactions extends BaseModel {
     }
 
     public function refundReqTrans(){
-        return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
     }
 
     public function transRunning(){
@@ -134,7 +142,7 @@ class Transactions extends BaseModel {
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
-        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND')])
+        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])
         ->sum('amount');
 
         $cr = self::where('parent_trans_id','=',$this->trans_id)
@@ -149,13 +157,12 @@ class Transactions extends BaseModel {
     }
 
     public function getDpdAttribute(){
-        $to = \Carbon\Carbon::now()->setTimezone(config('common.timezone'));
-        
+        $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
         if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-            $from = date('Y-m-d',strtotime($this->invoiceDisbursed->payment_due_date));
+            $from = Carbon::createFromFormat('Y-m-d', $this->invoiceDisbursed->payment_due_date);
         }
         elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            $from = date('Y-m-d',strtotime($this->trans_date));
+            $from = Carbon::createFromFormat('Y-m-d H:i:s', $this->trans_date);
         }
 
         return $to->diffInDays($from);
@@ -168,7 +175,7 @@ class Transactions extends BaseModel {
     public function getRefundableAmtAttribute(){
         return self::where('link_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
-        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND')]) 
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')]) 
         ->sum('amount');
     }
 
@@ -189,25 +196,35 @@ class Transactions extends BaseModel {
 
     public function getTransNameAttribute(){
         $name = ' '; 
-       
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL')])){
+        if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT')) 
+        return $this->payment->paymentname;
+
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])){
             if($this->parent_trans_id){
                 $parentTrans = self::find($this->parent_trans_id);
-                $name .= $parentTrans->transType->trans_name.' ';
+                if($parentTrans->entry_type == 0){
+                    $name .= ' '.$parentTrans->transType->debit_desc;
+                }elseif($parentTrans->entry_type == 1){
+                    $name .= ' '.$parentTrans->transType->credit_desc;
+                }
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')]))
-                        $name .= $linkTrans->transType->trans_name.' ';
+                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
+                    if($linkTrans->entry_type == 0){
+                        $name .= ' '.$linkTrans->transType->debit_desc;
+                    }elseif($linkTrans->entry_type == 1){
+                        $name .= ' '.$linkTrans->transType->credit_desc;
+                    }    
                 }
             }
         }
 
         if($this->entry_type == 0){
-            $name .= $this->transType->debit_desc;
+            $name .= ' '.$this->transType->debit_desc;
         }elseif($this->entry_type == 1){
-            $name .= $this->transType->credit_desc;
+            $name .= ' '.$this->transType->credit_desc;
         }
-        return $name;
+        return trim($name);
     }
 
     public function getBatchNoAttribute(){
@@ -224,12 +241,14 @@ class Transactions extends BaseModel {
 
     public function getNarrationAttribute(){
         $data = '';
-        if(in_array($this->trans_type,[ config('lms.TRANS_TYPE.REPAYMENT')])){
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($this->BatchNo)
             $data .= $this->BatchNo.' ';
-            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ';   
-            $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' '; 
+            if($this->payment->transactionno)
+            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.'<br> ';
+            $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' ';
         }
-        return $data;
+        return trim($data);
     }
 
     public static function get_balance($trans_code,$user_id){
@@ -248,6 +267,17 @@ class Transactions extends BaseModel {
 
         return $dr - $cr;
     }
+
+    public function getSoaBackgroundColorAttribute(){
+        $color = '';
+        if($this->payment_id){
+            if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
+            $color = '#f3c714';
+            else
+            $color = '#ffcc0078';
+        }
+        return $color;
+    }
     
     public  function getBalanceAttribute()
     {
@@ -255,25 +285,23 @@ class Transactions extends BaseModel {
     }
 
     public static function getUnsettledTrans($userId){
-        return self::whereIn('is_settled',[0,1])
-                ->whereNull('parent_trans_id')
-                ->where('user_id','=',$userId)
-                ->orderBy('invoice_disbursed_id','ASC')
-                ->with(array('invoiceDisbursed' => function($query) {
-                    $query->orderBy('int_accrual_start_dt','ASC');
-                }))
-                ->orderBy('trans_date','ASC')
-                ->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' )")
+        return self::whereNull('parent_trans_id')
+                ->whereNull('payment_id')
+                ->where('user_id',$userId)
                 ->get()
                 ->filter(function($item) {
                     return $item->outstanding > 0;
                 });
     }
 
+    public static function getUserOutstanding($userId){
+        $trans = self::getUnsettledTrans($userId);
+    }
+
     public static function getSettledTrans($userId){
         return self::where('entry_type','1')
                 //->whereNotNull('parent_trans_id')
-                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE')])
+                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
                     return $item->refundoutstanding > 0;
@@ -286,7 +314,13 @@ class Transactions extends BaseModel {
                 ->whereIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
-                   return $item->refundoutstanding > 0;
+                    if($item->refundReqTrans){
+                        return false;
+                    }
+                    if($item->trans_type == config('lms.TRANS_TYPE.TDS') && $item->payment->is_refundable == 0){
+                        return false;
+                    }
+                    return $item->refundoutstanding > 0;
                 });
     }
 
@@ -303,19 +337,12 @@ class Transactions extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
-        if (!isset($transactions['created_at'])) {
-            $transactions['created_at'] = \Carbon\Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
-        }
-        if (!isset($transactions['created_by'])) {
-            $transactions['created_by'] = \Auth::user()->user_id??null;
-        }        
-        
+        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($transactions);
-        } else if (!isset($transactions[0])) {
+        }else{
+            $transactions['sys_created_at'] = Helpers::getSysStartDate();
             return self::create($transactions);
-        } else {            
-            return self::insert($transactions);
         }
     }
 
@@ -601,30 +628,6 @@ class Transactions extends BaseModel {
         return self::whereIn('trans_id', $transIds)->update($data);
     }
 
-    public function getOppTransNameAttribute(){
-        if($this->transType->chrg_master_id!='0'){
-            if($this->is_waveoff == 1){
-                return $this->transType->charge->chrg_name.' Waved Off';
-            }if($this->is_tds == 1){
-                return $this->transType->charge->chrg_name.' TDS';
-            }elseif($this->entry_type == 0){
-                return $this->transType->charge->credit_desc;
-            }elseif($this->entry_type == 1){
-                return $this->transType->charge->debit_desc;
-            }
-        }else{
-            if($this->is_waveoff == 1){
-                return $this->transType->trans_name.' Waved Off';
-            }if($this->is_tds == 1){
-                return $this->transType->trans_name.' TDS';
-            }elseif($this->entry_type == 0){
-                return $this->transType->credit_desc;
-            }elseif($this->entry_type == 1){
-                return $this->transType->debit_desc;
-            }
-        }
-    }
-
     public function getModeOfPaymentNameAttribute(){
         $modeName = '';
         switch ($this->mode_of_pay) {
@@ -657,15 +660,30 @@ class Transactions extends BaseModel {
         return $modeNo;
     }
 
-
+    public static function getConsolidatedSoaList(){
+        return self::select('transactions.*')
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('trans_id', 'asc');
+    }
 
     public static function getSoaList(){
 
         return self::select('transactions.*')
-                    ->join('users', 'transactions.user_id', '=', 'users.user_id')
-                    ->join('lms_users','users.user_id','lms_users.user_id')
                     ->where('soa_flag','=',1)
-                    //->where('amount','>',0)
+                    ->orderBy('user_id', 'asc')
+                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('trans_id', 'asc');
+    }
+
+    public static function getColenderSoaList(){
+        return self::select('transactions.*', 'co_lenders_share.capsave_percent', 'co_lenders_share.co_lender_percent','co_lenders_share.start_date', 'co_lenders_share.end_date')
+                    ->leftJoin('co_lenders_share', function ($join){
+                        $join->on('transactions.user_id', '=' ,'co_lenders_share.user_id')
+                        ->whereRaw('trans_date >= start_date AND end_date is null AND is_active = 1')
+                        ->orWhereRaw('trans_date between start_date and end_date');
+                    })
+                    ->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
                     ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
                     ->orderBy('trans_id', 'asc');

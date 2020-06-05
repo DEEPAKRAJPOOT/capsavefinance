@@ -5,6 +5,9 @@ namespace App\Inv\Repositories\Entities\Lms;
 use DB;
 use Session;
 use Carbon\Carbon;
+use Auth;
+use App\Inv\Repositories\Models\UserDetail;
+use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Http\Requests\Request;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\LmsUser;
@@ -23,6 +26,7 @@ use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Master\GstTax;
+use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Lms\EodProcess;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Contracts\LmsInterface;
@@ -37,8 +41,10 @@ use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\RequestWfStage;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\WriteOffRequest;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
+use App\Inv\Repositories\Models\Lms\WriteOffStatusLog;
 use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
 use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
@@ -49,6 +55,7 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\ColenderShare;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
 
@@ -56,9 +63,9 @@ use InvalidDataTypeExceptions;
  * Lms Repository class
  */
 class LmsRepository extends BaseRepositories implements LmsInterface {
-
+	
 	use CommonRepositoryTraits;
-
+	
 	/**
 	 * Class constructor
 	 *
@@ -306,8 +313,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						$query->whereIn('supplier_id', $userIds);
 					}
 				})
+				->groupBy('user_id')
 				->get();
-		// dd($data);
 	}    
 
 	/**
@@ -497,13 +504,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return User::getUserDetails($uid); 
+		  return Application::getSentionUserDetails($uid);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
 	   
 			   
-	}    
+	}  
 	  public static function getSingleChargeAmount($attr)
 	{
 	   try
@@ -699,6 +706,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getSoaList()
     {
         return Transactions::getSoaList();
+    }
+    
+    public function getColenderSoaList() {
+        return Transactions::getColenderSoaList();
+	}
+	
+	public function getConsolidatedSoaList() {
+        return Transactions::getConsolidatedSoaList();
     }
     
     public function getRepaymentAmount($userId, $transType)
@@ -1241,5 +1256,138 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::with('disbursal')
 				->orderBy('created_at', 'DESC');
 	}
+        
+    /**
+     * Get System Start Date
+     * 
+     * @return timestamp
+     */
+    public function getSysStartDate()
+    {
+        return EodProcess::getSysStartDate();
+    } 
+    
+    /**
+     * Get Disbursal transactions
+     * 
+     * @param string $transStartDate
+     * @param string $transEndDate
+     * 
+     * @return mixed
+     */
+    public function checkDisbursalTrans($transStartDate, $transEndDate)
+    {
+        return Transactions::checkDisbursalTrans($transStartDate, $transEndDate);
+    }
+
+    /**
+     * Get Total Disbursed Amount
+     * 
+     * @param array $disbursalIds
+     * @return mixed
+     */
+    public function getTotalDisbursedAmt($disbursalIds)
+    {
+        return Disbursal::getTotalDisbursedAmt($disbursalIds);
+    }
+    
+    /**
+     * Get Latest Eod Process
+     * 
+     * @return mixed
+     */
+    public function getLatestEodProcess($whereCond=[])
+    {
+        return EodProcess::getLatestEodProcess($whereCond);
+
+    }  
+    
+    /**
+     * Save write off
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function saveWriteOffReq($dataArr)
+    {
+        return WriteOffRequest::saveWriteOffReq($dataArr);
+    }
+    
+    /**
+     * Get write off
+     * 
+     * @param integer $userId
+     * @return array
+     */
+    public function getWriteOff($userId)
+    {
+        return WriteOffRequest::getWriteOff((int) $userId);
+    }
+    
+    /**
+     * Save write off log
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function saveWriteOffReqLog($dataArr)
+    {
+        return WriteOffStatusLog::saveWriteOffReqLog($dataArr);
+    }
+    
+    /**
+     * Update write off
+     * 
+     * @param array $dataArr
+     * @return type
+     */
+    public function updateWriteOffReqById($woReqId, $dataArr)
+    {
+        return WriteOffRequest::updateWriteOffReqById((int) $woReqId, $dataArr);
+    }
+	
+	/**
+	 * Mark User write Off
+	 * @param int $uid
+	 * @return type
+	 */
+	public function writeOff($uid){
+		$mytime = Carbon::now();
+        $cDate   =  $mytime->toDateTimeString();
+        $create_uid = Auth::user()->user_id;
+        $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 41,'created_by' => $create_uid,'created_at' => $cDate]);
+        UserDetail::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
+	}
+    
+
+	public function getColenderShareWithUserId($userId) 
+        {
+		return ColenderShare::getColenderShareWithUserId((int)$userId);
+	}
+
+	public function getColenderApplications() 
+       {
+            $getAppId  = ColenderShare::where(['is_active' => 1, 'co_lender_id' => \Auth::user()->co_lender_id])->pluck('app_id');
+            $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
+            return $result ?: false;
+	}
+        
+         public static function getChrgLog($id)
+	{
+	   try
+	   {
+		  return ChargeGST::getLastChargesGSTById($id);
+	   } catch (Exception $ex) {
+		  return $ex;
+	   }
+	   
+			   
+	}     
+	  
+    
+    public function getEodDataCount()
+    {
+        return EodProcess::getEodDataCount();
+    }    
 
 }

@@ -78,7 +78,7 @@
                                                     <div>
                                                         <ul class="mh-line">
                                                             <li>{{$origin_of_recipient['state_code']}}/ </li>
-                                                            <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" autocomplete="off" maxlength="3" /></li>
+                                                            <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" autocomplete="off" maxlength="3" readonly /></li>
                                                             <li>/{{$origin_of_recipient['financial_year']}}/{{$origin_of_recipient['rand_4_no']}}</li>
                                                         </ul>
                                                     </div> 
@@ -210,6 +210,8 @@
        user_id: "{{ $user_id }}",
        encData: "{{ $encData }}",
        state_name: "{{ $origin_of_recipient['state_name'] }}",
+       charge_prefix: "{{ $origin_of_recipient['charge_prefix'] }}",
+       interest_prefix: "{{ $origin_of_recipient['interest_prefix'] }}",
        invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
        invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
    }
@@ -218,6 +220,7 @@
            setDate : new Date(),
            format: 'dd/mm/yyyy',
            autoclose: true,
+           startDate:  new Date(),
            minView : 2,
        });
    });
@@ -302,6 +305,14 @@
       $('#invoice_type').focus();
       return false;
     }
+    var invoice_user_code = message.charge_prefix;
+    if (invoice_type == 'I') {
+      invoice_user_code = message.interest_prefix;
+    }
+    $('#invoice_user_code').val(invoice_user_code);
+    fullInvoiceNo = message.invoice_state_code + invoice_user_code + message.invoice_fin;
+    $('#invoice_no').val(fullInvoiceNo);
+
     let data = {'invoice_type' : invoice_type};
     data['_token'] =  message.token;
     $('.isloader').show();

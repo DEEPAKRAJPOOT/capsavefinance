@@ -1,6 +1,7 @@
 <?php
 namespace App\Libraries\Ui;
 use DataTables;
+use Config;
 use Helpers;
 use DB;
 use Session;
@@ -21,7 +22,6 @@ use App\Inv\Repositories\Models\AppProgramLimit;
 class DataRenderer implements DataProviderInterface
 {
     use LmsTrait;
-
     /**
      * Helper object for DataRenderer.
      *
@@ -387,6 +387,8 @@ class DataRenderer implements DataProviderInterface
                             $status = $request->get('status');
                             if ($status == 3) {
                                 $query->where('app.app_type', 2);
+                            } else if ($status == 4) {
+                                $query->where('app.app_type', 3);
                             } else {
                                 
                                 //if ($status == 4) {
@@ -563,8 +565,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($app) use ($request) {
                         return '<div class="d-flex inline-action-btn">
-                            <a href="'.route('front_upload_invoice', ['anchor_id' =>$app->anchor_id, 'user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Upload Invoice" class="btn btn-action-btn btn-sm">Invoice</a>
-                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
+                              <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
                                 <a href="'.route('front_gstin', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Pull GST Detail" class="btn btn-action-btn btn-sm">Pull Gst</a>
                             </div>';
                     }
@@ -715,10 +716,20 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($invoice) {                        
                     
-                        return  $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
-                       
+                        $act = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
+
+                        if($invoice->invoice_disbursed) { 
+                        $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                        }
+                        return $act;
                 })
                 ->filter(function ($query) use ($request) {
+                    if ($request->get('invoice_no') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $invoice_keyword = trim($request->get('invoice_no'));
+                            $query->where('invoice_no',"$invoice_keyword");
+                        });                        
+                    }
                     
                     if ($request->get('status_id') != '') {                        
                         $query->where(function ($query) use ($request) {
@@ -745,9 +756,11 @@ class DataRenderer implements DataProviderInterface
                     'anchor_id',
                     function ($invoice) { 
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -773,15 +786,9 @@ class DataRenderer implements DataProviderInterface
                   ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
-                           if($request->front)
-                           {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
-                           }
-                        else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
-                        }
+                         return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                  
+                       
              })
              
               ->addColumn(
@@ -796,9 +803,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                  ->addColumn(
@@ -814,9 +822,11 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
+                        
                 })
                 ->addColumn(            
                     'updated_at',
@@ -836,10 +846,12 @@ class DataRenderer implements DataProviderInterface
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
                                      <input name="doc_file" id="file-input" type="file" class="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice"/></div>';
                          }   
-                       $id = Auth::user()->user_id;
+                        $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -859,7 +871,7 @@ class DataRenderer implements DataProviderInterface
                       if(in_array($customer, $expl)) 
                       {  
                         
-                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm approveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                          $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm pendingApproveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                       
                       }
                       return $action;
@@ -1006,9 +1018,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                 ->addColumn(
@@ -1024,8 +1037,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(            
@@ -1046,7 +1060,7 @@ class DataRenderer implements DataProviderInterface
                       if($chkUser->id!=11) 
                      {
                       $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
-                      $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option><option value="14">Reject</option></select></div>';
+                      $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv2"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
                      }
                      return  $action;
                 })
@@ -1103,9 +1117,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                        $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1121,7 +1136,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                     ->addColumn(            
@@ -1136,9 +1153,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                       if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1154,7 +1173,7 @@ class DataRenderer implements DataProviderInterface
                          $action = "";
                     if($customer!=3 && $chkUser->id!=11)
                       { 
-                          $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="7">Pending</option>';
+                          $action .='</br><div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv3"><option value="0">Change Status</option><option value="7">Pending</option>';
                           if(in_array($customer, $expl)) 
                           {
                             $action .='<option value="8">Approve</option>';
@@ -1213,9 +1232,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1231,8 +1251,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                 ->addColumn(            
@@ -1293,9 +1314,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1310,9 +1332,10 @@ class DataRenderer implements DataProviderInterface
               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                        $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                       $inv_amount = '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                   ->addColumn(            
@@ -1327,9 +1350,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                        $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1346,7 +1371,7 @@ class DataRenderer implements DataProviderInterface
                       if($customer!=3 && $chkUser->id!=11)
                       { 
                         
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv4"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
@@ -1409,9 +1434,10 @@ class DataRenderer implements DataProviderInterface
                     'customer_detail',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1430,8 +1456,9 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
-                })
+               })
                  ->addColumn(            
                     'updated_at',
                     function ($invoice) {                        
@@ -1501,9 +1528,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                  ->addColumn(
@@ -1519,8 +1547,9 @@ class DataRenderer implements DataProviderInterface
                     'invoice_amount',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(            
@@ -1579,9 +1608,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                    ->addColumn(
@@ -1599,6 +1629,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
                        
@@ -1615,9 +1646,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) use ($request) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                         $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1633,7 +1666,7 @@ class DataRenderer implements DataProviderInterface
                        $action = "";
                       if($customer!=3 && $chkUser->id!=11)
                       {  
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv6"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
@@ -1691,9 +1724,10 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
+                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1711,6 +1745,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount = '';
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                    ->addColumn(            
@@ -1725,9 +1760,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($invoice) {
                         $id = Auth::user()->user_id;
+                        $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                        if( $chkUser->id==1)
+                         $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
                              $customer  = 1;
                         }
@@ -1739,11 +1776,13 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                       $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
+                     if($invoice->userDetail->is_active==1)
+                     {
                        if( $chkUser->id!=11)
                       { 
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
                        $action .= '<option value="7">Pending</option>';
                        if(in_array($customer, $expl)) 
                        {
@@ -1751,6 +1790,7 @@ class DataRenderer implements DataProviderInterface
                        }
                         $action .='</select></div>';
                       }
+                     }
                         return $action;
 
                 })
@@ -1809,8 +1849,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
-                        $tdsType = ($trans->action_type == 3) ? '/TDS' : '';   
-                        return $trans->transType->trans_name . $tdsType;
+                        return $trans->paymentname;
                 })
                  ->addColumn(
                     'comment',
@@ -1860,9 +1899,7 @@ class DataRenderer implements DataProviderInterface
                         });                        
                     }
                })
-              
               ->make(true);
-         
      }
      
      /* Get Invoice list for backend
@@ -3027,7 +3064,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'created_at',
                     function ($user) {
-                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at))   : '---';
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at))   : '';
                 })
                 ->addColumn(
                     'action',
@@ -3892,6 +3929,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getSoaList(Request $request, $data)
     {
+        $this->soa_balance = 0;
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
@@ -3935,7 +3973,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'trans_date',
                 function ($trans) {
-                    return \Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+                    return \Helpers::convertDateTimeFormat($trans->sys_created_at ?? $trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
                 }
             )
             ->editColumn(
@@ -3968,6 +4006,7 @@ class DataRenderer implements DataProviderInterface
                         return '';
                     }
                     elseif($trans->entry_type=='0'){
+                        $this->soa_balance += $trans->amount;
                         return number_format($trans->amount,2);
                     }else{
                         return '0.00';
@@ -3981,10 +4020,17 @@ class DataRenderer implements DataProviderInterface
                         return '';
                     }
                     elseif($trans->entry_type=='1'){
+                        $this->soa_balance -= $trans->amount;
                         return '('.number_format($trans->amount,2).')';
                     }else{
                         return '(0.00)';
                     }
+                }
+            )
+            ->addColumn(
+                'backgroundColor',
+                function($trans){
+                    return $trans->soabackgroundcolor;
                 }
             )
             ->editColumn(
@@ -3995,56 +4041,14 @@ class DataRenderer implements DataProviderInterface
                     if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
                         $data = '';
                     }
-                    elseif($trans->balance<0){
-                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
+                    elseif($this->soa_balance<0){
+                        $data = '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }else{
-                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
+                        $data = '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }
                     return $data;
                 }
             )
-            /*->editColumn(
-                'debit',
-                function ($trans) {
-                    if(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){  
-                        if($trans->entry_type=='0'){
-                            return number_format($trans->amount,2);
-                        }else{
-                            return '0.00';
-                        }
-                    }
-                }
-            )
-            ->editColumn(
-                'credit',
-                function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                        return '';
-                    }
-                    elseif(!$trans->payment_id || ($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND')]))){
-                        if($trans->entry_type=='1'){
-                            return '('.number_format($trans->amount,2).')';
-                        }else{
-                            return '(0.00)';
-                        }
-                    }
-                }
-            )
-            ->editColumn(
-                'balance',
-                function ($trans) {
-                    $data = '';
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
-                        return '';
-                    }
-                    elseif($trans->balance<0){
-                        $data = '<span style="color:red">'.number_format(abs($trans->balance), 2).'</span>';
-                    }else{
-                        $data = '<span style="color:green">'.number_format(abs($trans->balance), 2).'</span>';
-                    }
-                    return $data;
-                }
-            )*/
             ->filter(function ($query) use ($request) {
 
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
@@ -4056,7 +4060,7 @@ class DataRenderer implements DataProviderInterface
                 }
 
                 if($request->get('customer_id')!= ''){
-                    $query->where(function ($query) use ($request) {
+                    $query->whereHas('lmsUser',function ($query) use ($request) {
                         $customer_id = trim($request->get('customer_id'));
                         $query->where('customer_id', '=', "$customer_id");
                     });
@@ -4065,41 +4069,162 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
-        // Equipment
-        public function getEquipments(Request $request, $data)
-        {
-            return DataTables::of($data)
-                    ->rawColumns(['is_active', 'action'])
-                    
-                    ->addColumn(
-                        'id',
-                        function ($data) {
-                            return $data->id;
-                    })
-                    ->addColumn(
-                        'created_at',
-                        function ($data) {
-                        return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
-                    })
-                    ->addColumn(
-                        'is_active',
-                        function ($data) {
-                        $act = $data->is_active;
-                        $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEquipmentFrame" title="Edit Equipment Detail" data-url ="'.route('edit_equipment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
-                        $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
-                        return $status;
-                        }
-                    )
-                    ->filter(function ($query) use ($request) {
-                        if ($request->get('search_keyword') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $search_keyword = trim($request->get('search_keyword'));
-                                $query->where('equipment_name', 'like',"%$search_keyword%");
-                            });
-                        }
-                    })
-                    ->make(true);
-        }
+
+    /**
+     * get Colender soa list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    public function getColenderSoaList(Request $request, $data, $colenderCurrShare) {
+        $this->colender_balance = 0;
+        return DataTables::of($data)
+        ->rawColumns(['balance','narration'])
+        ->addColumn('payment_id', function($trans){
+            $co_lender_percent = $trans->co_lender_percent ?? 0;
+            $this->colender_share = round($co_lender_percent/100,2);
+            $this->colender_debit = 0;
+            $this->colender_credit = 0;
+            return $trans->payment_id;
+        })
+        ->addColumn('customer_id', function($trans){
+            $data = $trans->lmsUser->customer_id ?? '';
+            return $data;
+        })
+        ->addColumn('customer_name', function($trans){
+            $data = '';
+            if($trans->user){
+                $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
+            }
+            return $data;
+        })
+        ->addColumn('invoice_no',function($trans){
+            return $trans->invoiceno;
+        })
+        ->addColumn('batch_no',function($trans){
+            return $trans->batchNo;
+        })
+        ->addColumn('narration',function($trans){
+            return "<b>".$trans->narration."<b>";
+        })
+        ->addColumn('virtual_acc_id', function ($trans) {
+            return $trans->virtual_acc_id;
+        })
+        ->addColumn('value_date', function ($trans) {
+            return date('d-m-Y',strtotime($trans->trans_date));
+        })
+        ->editColumn('trans_date', function ($trans) {
+            return \Helpers::convertDateTimeFormat($trans->sys_created_at ?? $trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+        })
+        ->editColumn('trans_type', function ($trans) {
+            return $trans->transname;
+        })
+        ->editColumn('currency', function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }else{
+                return 'INR';
+            }
+        })
+        ->addColumn('sub_amount', function($trans) {
+            if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
+                $this->sub_amount = ($trans->amount * $this->colender_share);
+                return number_format($this->sub_amount,2);
+            }
+        })
+        ->editColumn('debit', function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }elseif($trans->entry_type=='0'){
+                $this->colender_debit = ($trans->amount*$this->colender_share);
+                return number_format($this->colender_debit, 2);
+            }else{
+                return '(0.00)';
+            }
+        })
+        ->editColumn('credit',  function ($trans) {
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                return '';
+            }elseif($trans->entry_type=='1'){
+                $this->colender_credit = ($trans->amount*$this->colender_share);
+                return '('.number_format($this->colender_credit, 2).')';
+            }else{
+                return '(0.00)';
+            }
+        })
+        ->addColumn(
+            'backgroundColor',
+            function($trans){
+                return $trans->soabackgroundcolor;
+            }
+        )
+        ->editColumn('balance', function ($trans) {
+            $data = '';
+            $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                $data = '';
+            }
+            elseif($this->colender_balance<0){
+                $data = '<span style="color:red">'. number_format($this->colender_balance, 2) .'</span>';
+            }else{
+                $data = '<span style="color:green">'. number_format($this->colender_balance, 2) .'</span>';
+            }
+            return $data;
+        })
+        ->filter(function ($query) use ($request) {
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                });
+            }
+            if($request->get('user_id')!= ''){
+                $query->where(function ($query) use ($request) {
+                    $user_id = trim($request->get('user_id'));
+                    $query->where('transactions.user_id', '=', "$user_id");
+                });
+            }
+        })
+        ->make(true);
+    }
+    
+    // Equipment
+    public function getEquipments(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'id',
+                    function ($data) {
+                        return $data->id;
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editEquipmentFrame" title="Edit Equipment Detail" data-url ="'.route('edit_equipment', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('equipment_name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
 
     /**
      * 
@@ -4272,13 +4397,10 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($app)
                 ->rawColumns(['app_id', 'action', 'status'])
-                ->addColumn(
-                    'app_id',
-                    function ($app) {
+                ->addColumn('app_id', function ($app) {
                         $link = route('colender_view_offer', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, 'APP')  . "</a> ";
-                    }
-                )
+                })
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
@@ -4303,7 +4425,7 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId($app->anchor_id);
+                    $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
                        $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                     }else{
                       $achorName='';  
@@ -4324,19 +4446,10 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     $status = $app->colender->co_lender_status;
-                    //$app_status = config('inv_common.app_status');                    
-                    return '<label class="badge '.(($status == 0)? "badge-primary":(($status == 1)? "badge-success": "badge-warning")).'">'.(($status == 0)? "Pending":(($status == 1)? "Accepted": "Rejected")).'</label>';
+                    $soaBtn = '<a href="'. route('view_colander_soa', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id, 'user_id' => $app->user_id]) .'" class="badge badge-success">View SOA</a>';                    
+                    return '<label class="badge '.(($status == 0)? "badge-primary":(($status == 1)? "badge-success": "badge-warning")).'">'.(($status == 0)? "Pending":(($status == 1)? "Accepted": "Rejected")).'</label> &nbsp; ' . $soaBtn;
 
                 })
-                /*->addColumn(
-                    'action',
-                    function ($app) use ($request) {
-                        return '<div class="d-flex inline-action-btn">
-                                <a href="'.route('business_information_open', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="View Application" class="btn btn-action-btn btn-sm">View</a>
-                                <a href="'.route('front_gstin', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]).'" title="Pull GST Detail" class="btn btn-action-btn btn-sm">Pull Gst</a>
-                            </div>';
-                    }
-                )*/
                 ->filter(function ($query) use ($request) {
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
@@ -4350,6 +4463,89 @@ class DataRenderer implements DataProviderInterface
                         $is_status = trim($request->get('is_status'));
                             $query1->where('co_lender_status', $is_status);
                         });                        
+                    }
+                })
+                ->make(true);
+    }
+
+    /*
+     * 
+     * get all lms customer list
+     */
+    public function lmsColenderCustomers(Request $request, $customer) {
+        return DataTables::of($customer)
+                ->rawColumns(['customer_id','app_id', 'customer_name', 'status','limit', 'consume_limit', 'available_limit','anchor','action'])
+
+                ->editColumn('app_id', function ($customer) {
+                    $link = route('colender_view_offer', ['biz_id' => $customer->biz_id ?? '', 'app_id' => $customer->app_id]);
+                        return "<a id=\"app-id-" . $customer->app_id . "\" href=\"" . $link . "\" title=\"View Offer\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($customer->app_id, 'APP')  . "</a> ";
+                }) 
+                ->addColumn('customer_id', function ($customer) {
+                        $link = $customer->customer_id;
+                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('view_colander_soa', ['user_id' => $customer->user_id,'app_id' => $customer->app_id])."\" title=\"View SOA\" rel=\"tooltip\"   >$link</a> ";
+                })
+                ->addColumn('virtual_acc_id', function ($customer) {
+                        return $customer->virtual_acc_id;
+                })     
+                ->editColumn('customer_name', function ($customer) {
+                        $full_name = $customer->user->f_name.' '.$customer->user->l_name;
+                        $email = $customer->user->email;
+                        $data = '';
+                        $data .= $full_name ? '<span><b>Name:&nbsp;</b>'.$full_name.'</span>' : '';
+                        $data .= $email ? '<br><span><b>Email:&nbsp;</b>'.$email.'</span>' : '';
+                        return $data;
+                })
+                ->editColumn('limit', function ($customer) {                        
+                        $this->totalLimit = 0;
+                        $appPrgmLimit = AppProgramLimit::getProductLimit($customer->app_id, 1);
+                        foreach ($appPrgmLimit as $value) {
+                            $this->totalLimit += $value->product_limit;
+                        }
+                        return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
+                })
+                ->editColumn('consume_limit',  function ($customer) {                        
+                        $this->totalCunsumeLimit = 0;
+                        $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
+                        foreach ($appPrgmLimit as $value) {
+                            $this->totalCunsumeLimit += $value->utilize_limit;
+                        }                      
+                        return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
+                })
+                ->editColumn('available_limit', function ($customer) {
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit - $this->totalCunsumeLimit).'</i></label>';
+                })
+                ->editColumn('anchor', function ($customer) {
+                        $anchor = ($customer->user->anchor->comp_name) ?: '--';
+                        $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
+                        $data = '';
+                        $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
+                        $data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        return $data;
+                })
+                ->editColumn('status', function ($customer) {
+                        if ($customer->is_assign == 0) {
+                            return "<label class=\"badge badge-success current-status\">Sanctioned</label>";
+                        } else {
+                            return "<span style='color:green'>Assigned</span>";
+                        }
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        if ($request->has('search_keyword')) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->whereHas('user', function($query1) use ($search_keyword) {
+                                $query1->where('f_name', 'like',"%$search_keyword%")
+                                ->orWhere('l_name', 'like', "%$search_keyword%")
+                                ->orWhere('email', 'like', "%$search_keyword%");
+                            });
+
+                        }
+                    }
+                    if ($request->get('customer_id') != '') {
+                        if ($request->has('customer_id')) {
+                            $customer_id = trim($request->get('customer_id'));
+                                $query->where('customer_id', 'like',"%$customer_id%");
+                        }
                     }
                 })
                 ->make(true);
@@ -4664,7 +4860,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'business_name',
                         function ($dataRecords) {
-                        return $dataRecords->getBusinessName->biz_entity_name;
+                        return $dataRecords->getUserName->biz_name;
                     })
                     ->editColumn(
                         'virtual_account',
@@ -5614,7 +5810,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment){
                 $result = '';
                 if($payment){
-                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]' onchange='apport.onPaymentChange(".$trans->trans_id.")'>";
+                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
                 }
                 return $result;
             })
@@ -5659,7 +5855,15 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('select', function($trans){
                 $result = '';
-                if($trans->payment){
+                $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
+                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at);
+                $days = $to->diffInDays($from);
+                $flag = true;
+                if($trans->invoice_disbursed_id ){
+                    if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
+                    $flag = false;
+                }
+                if($trans->payment && $days == 1 && $flag){
                     $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
                 }
                 return $result;
@@ -5674,7 +5878,7 @@ class DataRenderer implements DataProviderInterface
     public function getRefundTrans(Request $request, $trans)
     {
         return DataTables::of($trans)
-            ->rawColumns(['select', 'pay'])
+            ->rawColumns(['select', 'refund'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->trans_date)->format('d-m-Y');
             })
@@ -5691,6 +5895,15 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('outstanding_amt', function($trans){
                 return "₹ ".number_format($trans->refundoutstanding,2);
+            })
+            ->addColumn('refund', function($trans){
+                $result = "<input class='refund' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
+                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onRefundCheckChange(".$trans->trans_id.")'>";
+                return $result;
             })
             ->make(true);
     }
@@ -5744,4 +5957,397 @@ class DataRenderer implements DataProviderInterface
            ->make(true);
    }
 
+   public function getAllCustomers(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->rawColumns(['is_active'])
+           ->editColumn('sr_no', function ($user) {
+               return $this->sr_no++;
+           })  
+           ->editColumn('customer_name', function ($user) {
+               return $user->f_name. ' '. $user->m_name. ' '. $user->l_name;
+           })  
+           ->editColumn('email', function ($user) {
+               return $user->email;
+           })  
+           ->editColumn('mobile', function ($user) {
+               return $user->mobile_no;
+           })   
+           ->editColumn('biz_name', function ($user) {
+               return $user->biz_name;
+           })  
+           ->editColumn('registered_on',  function ($user) {
+               return $user->created_at;
+           })  
+           ->addColumn('is_active',  function ($user) {
+                   $status = ($user->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label></div></b>';
+                   return $status;
+           })
+           ->filter(function ($query) use ($request) {
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('created_at', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('search_keyword')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('f_name', 'like',"%$search_keyword%");
+                    });
+                }
+              
+            })
+           
+           ->make(true);
+   }
+   public function leaseRegister(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->editColumn('state', function ($invoiceRec) {
+               return $invoiceRec->name;
+           })
+           ->editColumn('gstn', function ($invoiceRec) {
+               $inv_comp_data = json_decode($invoiceRec->inv_comp_data, TRUE);
+               return ($inv_comp_data['gst_no'] ?? $invoiceRec->biz_gst_no);
+           })    
+           ->editColumn('customer_name', function ($invoiceRec) {
+               return $invoiceRec->biz_entity_name;
+           })  
+           ->editColumn('customer_address', function ($invoiceRec) {
+               return $invoiceRec->gst_addr;
+           })   
+           ->editColumn('customer_gstn', function ($invoiceRec) {
+               return $invoiceRec->biz_gst_no;
+           })  
+           ->editColumn('sac_code',  function ($invoiceRec) {
+               return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
+           })   
+           ->editColumn('contract_no',  function ($invoiceRec) {
+               return 'HEL/'.($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
+           })     
+           ->editColumn('invoice_no', function ($invoiceRec) {
+               return $invoiceRec->invoice_no;
+           })    
+           ->editColumn('invoice_date', function ($invoiceRec) {
+               return date('d-m-Y', strtotime($invoiceRec->invoice_date));
+           })  
+           ->editColumn('base_amount',  function ($invoiceRec) {
+               return number_format($invoiceRec->base_amount, 2);
+           })    
+           ->editColumn('sgst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->sgst_rate != 0 ? $invoiceRec->sgst_rate . '%' : '-');
+           })    
+           ->editColumn('sgst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->sgst_amount != 0 ? number_format($invoiceRec->sgst_amount, 2) : '-');
+           })    
+           ->editColumn('cgst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->cgst_rate != 0 ? $invoiceRec->cgst_rate . '%' : '-');
+           })    
+           ->editColumn('cgst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->cgst_amount != 0 ? number_format($invoiceRec->cgst_amount, 2) : '-');
+           })    
+           ->editColumn('igst_rate',  function ($invoiceRec) {
+               return ($invoiceRec->igst_rate != 0 ? $invoiceRec->igst_rate . '%' : '-');
+           })      
+           ->editColumn('igst_amount',  function ($invoiceRec) {
+               return ($invoiceRec->igst_amount != 0 ? number_format($invoiceRec->igst_amount, 2) : '-');
+           })        
+           ->editColumn('total_rate',  function ($invoiceRec) {
+                $totalRate = ($invoiceRec->sgst_rate + $invoiceRec->igst_rate + $invoiceRec->cgst_rate);
+               return ($totalRate != 0 ? $totalRate . '%' : '-');
+           })          
+           ->editColumn('total_tax',  function ($invoiceRec) {
+                $totalTax = ($invoiceRec->sgst_amount + $invoiceRec->igst_amount + $invoiceRec->cgst_amount);
+               return ($totalTax != 0 ? number_format($totalTax, 2) : '-');
+           })         
+           ->editColumn('total_amt',  function ($invoiceRec) {
+               return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
+           })  
+           ->filter(function ($query) use ($request) {
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                        $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('user_id')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $user_id = trim($request->get('user_id'));
+                        $query->where('user_id', '=',$user_id);
+                    });
+                }
+              
+            })
+           
+           ->make(true);
+   }
+   
+   
+    public function getReportAllInvoice(Request $request,$invoice)
+    {  
+        
+        return DataTables::of($invoice)
+               ->rawColumns(['batch_no'])
+           
+                ->addColumn(
+                    'batch_no',
+                    function ($invoice) { 
+                        
+                        return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
+                     
+                    })
+                  ->addColumn(
+                    'batch_date',
+                    function ($invoice)  {     
+                           return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
+                  })
+             
+              ->addColumn(
+                    'bills_no',
+                    function ($invoice) {  
+                      return $invoice->invoice->invoice_no;
+                   })
+                ->addColumn(
+                    'bill_date',
+                    function ($invoice) { 
+                    return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
+                        })
+                 ->addColumn(
+                    'due_date',
+                    function ($invoice) {                        
+                      return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
+                     
+                })  
+                ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                        return   number_format($invoice->invoice->invoice_amount);
+                       
+                      
+                })
+                ->addColumn(            
+                    'invoice_appr_amount',
+                    function ($invoice) {                        
+                          return number_format($invoice->invoice->invoice_approve_amount);  
+                         })
+                ->addColumn(
+                    'balance',
+                    function ($invoice) {
+                       
+                           return   number_format($invoice->invoice->invoice_approve_amount);   
+                       
+                    })
+                   ->filter(function ($query) use ($request) {
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
+                    }
+                     if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
+                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                             });
+
+                            
+                        });                        
+                    }
+                 })
+              ->make(true);
+    }  
+    
+     public function getReportAllOverdueInvoice(Request $request,$invoice)
+    {  
+        
+        return DataTables::of($invoice)
+               ->rawColumns(['batch_no','od'])
+           
+                ->addColumn(
+                    'batch_no',
+                    function ($invoice) { 
+                        
+                        return '<b>'.$invoice->disbursal->disbursal_batch->batch_id.'</b>';
+                     
+                    })
+                  ->addColumn(
+                    'batch_date',
+                    function ($invoice)  {     
+                           return  date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at));
+                  })
+             
+              ->addColumn(
+                    'bills_no',
+                    function ($invoice) {  
+                      return $invoice->invoice->invoice_no;
+                   })
+                ->addColumn(
+                    'bill_date',
+                    function ($invoice) { 
+                    return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
+                        })
+                 ->addColumn(
+                    'due_date',
+                    function ($invoice) {                        
+                      return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
+                     
+                })  
+                ->addColumn(            
+                    'invoice_amount',
+                    function ($invoice) {                        
+                        return   number_format($invoice->invoice->invoice_amount);
+                       
+                      
+                })
+                ->addColumn(            
+                    'invoice_appr_amount',
+                    function ($invoice) {                        
+                          return number_format($invoice->invoice->invoice_approve_amount);  
+                         })
+                ->addColumn(
+                    'balance',
+                    function ($invoice) {
+                       
+                           return   number_format($invoice->invoice->invoice_approve_amount);   
+                       
+                    })
+                   ->addColumn(
+                    'od',
+                    function ($invoice) {
+                       
+                           return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                       
+                    }) 
+                   ->filter(function ($query) use ($request) {
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
+                    }
+                     if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
+                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                             });
+
+                            
+                        });                        
+                    }
+                 })
+              ->make(true);
+    }  
+     public function getInvoiceRealisationList(Request $request,$invoice)
+    {  
+        
+        return DataTables::of($invoice)
+               ->rawColumns(['debtor_name','od','business','relisation_date'])
+           
+                ->addColumn(
+                    'debtor_name',
+                    function ($invoice) { 
+                     return '<b>'.$invoice->invoice->anchor->comp_name.'</b>';
+                    })
+                  ->addColumn(
+                    'debtor_acc_no',
+                    function ($invoice)  {     
+                           return  ($invoice->Invoice->anchor->anchorAccount) ? $invoice->Invoice->anchor->anchorAccount->acc_no : '' ;
+                  })
+             
+              ->addColumn(
+                    'invoice_date',
+                    function ($invoice) {  
+                        return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
+                   })
+                ->addColumn(
+                    'invoice_due_amount_date',
+                    function ($invoice) { 
+                    return  Carbon::parse($invoice->payment_due_date)->format('d/m/Y');
+                        })
+                 ->addColumn(
+                    'grace_period',
+                    function ($invoice) {                        
+                      return  $invoice->grace_period;
+                     
+                })  
+                ->addColumn(            
+                    'relisation_date',
+                    function ($invoice) {  
+                      $payment  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->date_of_payment)
+                           {
+                             $payment.= Carbon::parse($row->payment->date_of_payment)->format('d/m/Y')."</br>";
+                           }
+                           
+                      }
+                    return substr($payment,0,-1);
+                       
+                })
+                ->addColumn(            
+                    'relisation_amount',
+                    function ($invoice) {                        
+                          return number_format($invoice->invoice->invoice_approve_amount);  
+                         })
+                ->addColumn(
+                    'cheque',
+                    function ($invoice) {
+                       
+                      $chk  = '';                   
+                       foreach($invoice->transaction as $row)
+                      {
+                           if( $row->payment->utr_no)
+                           {
+                             $chk.= $row->payment->utr_no.",";
+                           }
+                            if( $row->payment->unr_no)
+                           {
+                             $chk.= $row->payment->unr_no.",";
+                           }
+                            if( $row->payment->cheque_no)
+                           {
+                             $chk.= $row->payment->cheque_no.",";
+                           }
+                      }
+                    return substr($chk,0,-1);
+                     
+                       
+                    })
+                   ->addColumn(
+                    'od',
+                    function ($invoice) {
+                       
+                           return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                       
+                    }) 
+                    ->addColumn(
+                    'business',
+                    function ($invoice) {
+                       
+                           return '<b>'.$invoice->invoice->business->biz_entity_name.'</b>';
+                       
+                    }) 
+                   ->filter(function ($query) use ($request) {
+                    if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
+                    }
+                     if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
+                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                             });
+
+                            
+                        });                        
+                    }
+                 })
+              ->make(true);
+    }   
 }

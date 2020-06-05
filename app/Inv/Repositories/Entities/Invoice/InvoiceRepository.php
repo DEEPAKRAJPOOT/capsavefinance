@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\InvoiceBulkUpload;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -820,7 +821,7 @@ use CommonRepositoryTraits;
      * @param type $select Array
      * @return type mixed
      */
-    public function getInvoiceData($where, $select)
+    public function getInvoiceData($where, $select = ['*'])
     {
         return InvoiceModel::getInvoiceData($where, $select);
     }
@@ -1155,6 +1156,74 @@ use CommonRepositoryTraits;
              return $ex;
         }
       
+    }  
+   
+     public function getAccountClosure()
+    {
+       
+        try
+        {
+             return LmsUser::getAccountClosure();  
+        } catch (Exception $ex) {
+             return $ex;
+        }
+      
+    }  
+    
+
+    /**
+     * Get Total Invoice Approval Amount
+     * 
+     * @param array $invoices
+     * @return decimal
+     * @throws InvalidDataTypeExceptions
+     */    
+    public function getTotalInvApprAmt($invoices)
+    {
+        return InvoiceModel::getTotalInvApprAmt($invoices);
+    }
+    public function getReportAllInvoice()
+    {
+        return InvoiceDisbursed::getReportAllInvoice();
+    }
+    public function getReportAllOverdueInvoice()
+    {
+        return InvoiceDisbursed::getReportAllOverdueInvoice();
+    }
+    
+   public function getInvoiceRealisationList()
+    {
+        return InvoiceDisbursed::getInvoiceRealisationList();
+    } 
+     public function pdfInvoiceDue($attr)
+    {
+         try
+         {
+             return InvoiceDisbursed::pdfInvoiceDue($attr); 
+         } catch (Exception $ex) {
+               return $ex;
+         }
+       
+    } 
+      public function pdfInvoiceOverDue($attr)
+    {
+         try
+         {
+             return InvoiceDisbursed::pdfInvoiceOverDue($attr); 
+         } catch (Exception $ex) {
+               return $ex;
+         }
+       
+    } 
+      public function pdfInvoiceRealisation($attr)
+    {
+         try
+         {
+             return InvoiceDisbursed::pdfInvoiceRealisation($attr); 
+         } catch (Exception $ex) {
+               return $ex;
+         }
+       
     }  
     
 }

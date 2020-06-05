@@ -30,7 +30,7 @@
                <label for="txtEmail">Capsave Share (%)
                <span class="mandatory">*</span>
                </label>
-               <input type="test" name="capsave_percent" id="capsave_percent" value="{{old('capsave_percent')}}" class="form-control share_percent" placeholder="Capsave Share (%)" maxlength="5">
+               <input type="test" name="capsave_percent" id="capsave_percent" value="{{old('capsave_percent')}}" class="form-control share_percent" placeholder="Capsave Share (%)" autocomplete="off" maxlength="5">
                @error('capsave_percent')
                   <span class="error">{{ $message }}</span>
                @enderror
@@ -43,7 +43,7 @@
                <label for="txtEmail">Co-lender Share (%)
                <span class="mandatory">*</span>
                </label>
-               <input type="test" name="co_lender_percent" id="co_lender_percent" value="{{old('co_lender_percent')}}" class="form-control share_percent" placeholder="Co-lender Share (%)" maxlength="5">
+               <input type="test" name="co_lender_percent" id="co_lender_percent" value="{{old('co_lender_percent')}}" class="form-control share_percent" placeholder="Co-lender Share (%)" autocomplete="off" maxlength="5">
                @error('co_lender_percent')
                   <span class="error">{{ $message }}</span>
                @enderror
