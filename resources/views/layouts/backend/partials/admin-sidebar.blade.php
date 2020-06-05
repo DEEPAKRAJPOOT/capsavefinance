@@ -14,7 +14,7 @@
 
       </li>    
       <li class="nav-item">
-            <a class="nav-link"  href="{{ route('report_summary') }}">
+            <a class="nav-link"  href="{{ route('lease_register') }}">
                 <i class="fa fa-files-o"></i>
                 <span class="menu-title">Reports</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
