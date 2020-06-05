@@ -879,7 +879,8 @@ class ApplicationController extends Controller
 					'user_id' => $user_id, 
 					'customer_id' => $customerId,
 					'app_id' => $app_id, 
-                                        'created_by' => Auth::user()->user_id
+                    'created_by' => Auth::user()->user_id,
+                    'created_at' => \carbon\Carbon::now()
 				  );
 
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
