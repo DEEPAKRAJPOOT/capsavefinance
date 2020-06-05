@@ -27,8 +27,9 @@
 				@csrf
 				<input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
 				<input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
-				<input type="hidden" name="biz_cin" value="">
+				<!-- <input type="hidden" name="biz_cin" value=""> -->
 				<input type="hidden" name="pan_api_res" value="">
+				<input type="hidden" name="cin_api_res" value="">
 				<div class=" form-fields">
 						<div class="form-sections">
 							<div class="row">
@@ -87,6 +88,21 @@
 							</div>
 								<div class="row">
 									<div class="col-md-4">
+										<div class="form-group password-input" style="display: {{$business_info->is_gst_manual!=1 ? 'block' : 'none' }}">
+											<label for="txtPassword">Select CIN
+													<span class="mandatory">*</span>
+											</label>
+
+											<select class="form-control" name="biz_cin" tabindex="2">
+												<option value="">Select CIN Number</option>
+												@forelse($business_info->cins as $cin_key => $cin_value)
+													<option value="{{$cin_value->cin}}" {{(old('biz_cin', Helpers::customIsset($business_info->cin, 'cin')) == $cin_value->cin)? 'selected':''}}>{{$cin_value->cin}}</option>
+												@empty
+												@endforelse
+											</select>
+										</div>
+									</div>
+									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Segment
 												<span class="mandatory">*</span>
@@ -118,7 +134,9 @@
 								            @enderror
 										</div>
 									</div>
-
+																	
+								</div>
+								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Sub Industry</label>
@@ -127,10 +145,7 @@
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
 										</div>
-									</div>
-																	
-								</div>
-								<div class="row">		
+									</div>		
 									<div class="col-md-4">
 										<div class="form-group">
 											<label for="txtEmail">Business Constitution
