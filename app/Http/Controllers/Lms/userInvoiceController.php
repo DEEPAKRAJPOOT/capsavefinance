@@ -556,7 +556,7 @@ class userInvoiceController extends Controller
         }
         $registeredCompany = json_decode($invData->comp_addr_register, true);
         if (empty($registeredCompany['bank_account_id'])) {
-            /*$registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+            $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
             if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Company Registered address not found..'); 
             }
@@ -564,8 +564,8 @@ class userInvoiceController extends Controller
                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Multiple Company Registered addresses found..'); 
             }
             $registeredCompany = $registeredCompany->toArray();
-            $registeredCompany = $registeredCompany[0];*/
-          return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No bank detail found for the Registered Company.'); 
+            $registeredCompany = $registeredCompany[0];
+          // return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No bank detail found for the Registered Company.'); 
         }
         $data = [
             'company_data' => $company_data,
