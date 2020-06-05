@@ -50,7 +50,6 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
-     	dd($response);
      	logFile($url, 'D', '', '', $txn_id);
 		logFile($payload, 'D', '', '', $txn_id);
 		logFile($http_header, 'D', '', '', $txn_id);
