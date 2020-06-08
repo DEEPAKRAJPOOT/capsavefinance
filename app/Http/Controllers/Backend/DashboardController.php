@@ -75,10 +75,25 @@ class DashboardController extends Controller
     }
 
     public function idfc(){
+       $getRespWithoutParse = true;
+       $result = [];
        $idfcObj= new Idfc_lib();
        $request = $this->getIdfcRequest();
-       $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request);
-       dd($result);
+       $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request, $getRespWithoutParse);
+       $transId = NULL;
+       if ($getRespWithoutParse) {
+           $transId = $result[0];
+       }else{
+            if (!empty($result) && $result['status'] == 'success') {
+             $result = $result['result']; 
+             $transId = $result['header']['Tran_ID'];
+             sleep(5);
+           }
+       }
+       
+       $enquiryReq = $this->getIdfcEnquiryRequest($transId);
+       $enquiryRes = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $enquiryReq, $getRespWithoutParse);
+       dd($result, $enquiryRes);
     }
 
     private function getIdfcRequest() {
@@ -113,4 +128,25 @@ class DashboardController extends Controller
         );
        return $params;
     }
+
+     private function getIdfcEnquiryRequest($transId = null) {
+       if (empty($transId)) {
+          $transId = _getRand('18');
+       }
+       $params = array (
+           'http_header' => array(
+               'timestamp' => date('Y-m-d H:i:s'),
+               'txn_id' => $transId,
+           ),
+           'header' => array (
+               'Maker_ID' => 'CAPSAVE.M',
+               'Checker_ID' => 'CAPSAVE.C1',
+               'Approver_ID' => 'CAPSAVE.C2',
+           ),
+           'request' => array (
+               'txn_id' => $transId
+           ),
+       );
+      return $params;
+   }
 }

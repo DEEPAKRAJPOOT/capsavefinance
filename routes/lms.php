@@ -552,6 +552,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Lms\RefundController@refundOffline',
                     ]);
 
+                    Route::post('/refund-online', [
+                        'as' => 'refund_online',
+                        'uses' => 'Lms\RefundController@refundOnline',
+                    ]);
+
                     Route::get('/refund-update-disbursal', [
                         'as' => 'refund_udpate_disbursal',
                         'uses' => 'Lms\RefundController@refundUpdateDisbursal',

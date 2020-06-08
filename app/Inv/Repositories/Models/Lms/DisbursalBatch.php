@@ -52,6 +52,11 @@ class DisbursalBatch extends BaseModel {
 		'updated_by',
 	];
 
+
+	public function disbursal() { 
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'disbursal_batch_id', 'disbursal_batch_id'); 
+	}
+
 	public static function getAllBatches($from_date, $to_date){
 		$from_date = Carbon::createFromFormat('d/m/Y', $from_date)->format('Y-m-d');
 		$to_date = Carbon::createFromFormat('d/m/Y', $to_date)->format('Y-m-d');

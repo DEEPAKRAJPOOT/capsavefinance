@@ -3835,8 +3835,7 @@ if ($err) {
      */
     public function getDisbursalList(DataProviderInterface $dataProvider)
     {
-     $getDisList = $this->userRepo->getDisbursalList();
-     //dd($getDisList->get());
+     $getDisList = $this->lmsRepo->getBatchDisbursalList();
      return $dataProvider->getDisbursalList($this->request , $getDisList);   
     }
 

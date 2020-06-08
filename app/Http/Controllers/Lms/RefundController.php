@@ -291,6 +291,105 @@ class RefundController extends Controller
         }
     }
 
+    public function refundOnline(Request $request)
+    {
+        try{
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            
+            $transactionIds = $request->get('transaction_ids');
+            $record = array_filter(explode(",",$transactionIds));
+            $disburseDate = $request->get('disburse_date');
+            $creatorId = Auth::user()->user_id;
+            $validator = Validator::make($request->all(), [
+            'disburse_date' => 'required'
+            ]);
+            
+            if ($validator->fails()) {
+                Session::flash('error', $validator->messages()->first());
+                return redirect()->back()->withInput();
+            }
+
+            if(empty($record)){
+                return redirect()->route('request_list');
+            }
+            $allrecords = array_unique($record);
+            $allrecords = array_map('intval', $allrecords);
+            $allAprvls = $this->lmsRepo->getAprvlRqDataByIds($allrecords)->toArray();
+
+            foreach ($allAprvls as $aprvl) {
+                if($aprvl['payment']['user']['is_buyer'] == 2 && empty($aprvl['payment']['user']['anchor_bank_details'])){
+                    return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
+                } elseif ($aprvl['payment']['user']['is_buyer'] == 1 && empty($aprvl['payment']['lms_user']['bank_details'])) {
+                    return redirect()->route('request_list')->withErrors(trans('backend_messages.noBankAccount'));
+                }
+            }
+
+            $disburseAmount = 0;
+            $exportData = [];
+            $aprvlRfd = [];
+            $disbursalIds = [];
+            $batchNo= _getRand(12);
+
+            foreach ($allAprvls as $aprvl) {
+                $userid = $aprvl['payment']['user']['user_id'];
+                $disburseAmount += round($aprvl['refund_amount'], 5);
+
+                $refId = $aprvl['payment']['lms_user']['virtual_acc_id'];
+
+                $aprvlRfd['bank_account_id'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank_account_id'] : $aprvl['payment']['lms_user']['bank_details']['bank_account_id'];
+                $aprvlRfd['refund_date'] = (!empty($disburseDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                $aprvlRfd['bank_name'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['bank']['bank_name'] : $aprvl['payment']['lms_user']['bank_details']['bank']['bank_name'] ;
+                $aprvlRfd['ifsc_code'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['ifsc_code'] : $aprvl['payment']['lms_user']['bank_details']['ifsc_code'];
+                $aprvlRfd['acc_no'] = ($aprvl['payment']['user']['is_buyer'] == 2) ? $aprvl['payment']['user']['anchor_bank_details']['acc_no'] : $aprvl['payment']['lms_user']['bank_details']['acc_no'];           
+                $aprvlRfd['status'] = 7;
+            
+                if (isset($aprvlRfd)) {
+                    $refundDisbursed = $this->lmsRepo->updateAprvlRqst($aprvlRfd, $aprvl['refund_req_id']);
+                }
+
+                $exportData[$userid]['RefNo'] = $refId;
+                $exportData[$userid]['Amount'] = $disburseAmount;
+                $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
+                $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
+                $exportData[$userid]['Debit_Mobile'] = '9876543210';
+                $exportData[$userid]['Ben_IFSC'] = $aprvlRfd['ifsc_code'];
+                $exportData[$userid]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
+                $exportData[$userid]['Ben_BankName'] = $aprvlRfd['bank_name'];
+                $exportData[$userid]['Ben_Name'] = $aprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
+                $exportData[$userid]['Ben_Email'] = $aprvl['payment']['user']['email'];
+                $exportData[$userid]['Ben_Mobile'] = $aprvl['payment']['user']['mobile_no'];
+                $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
+                $exportData[$userid]['Remarks'] = 'test remarks';
+                $exportData[$userid]['Value_Date'] = date('Y-m-d');
+            } 
+            
+            $result = $this->export($exportData, $batchNo);
+            $file['file_path'] = ($result['file_path']) ?? null;
+            if ($file) {
+                $createBatchFileData = $this->createBatchFileData($file);
+                $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+                if ($createBatchFile) {
+                    $data['batch_no'] = $batchNo;
+                    $createBatch = $this->lmsRepo->createRefundBatch($createBatchFile, $data);
+                    if($createBatch) {
+                        $updateDisbursal = $this->lmsRepo->updateAprvlRqst([
+                                'refund_req_batch_id' => $createBatch->refund_req_batch_id
+                            ], $allrecords);
+                    }
+                }
+            }
+
+            Session::flash('message',trans('backend_messages.proccessed'));
+            return redirect()->route('lms_refund_sentbank');
+        }catch(Exception $exception){
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
     public function downloadSentBank()
     {
         $allAprvls = $this->lmsRepo->getAprvlRqDataByIds()->toArray();
