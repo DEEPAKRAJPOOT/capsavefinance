@@ -78,7 +78,7 @@ use RegistersUsers,
      * @return \App\User
      */
     protected function create(array $data) {
-
+//        dd($data);
         $arrData = [];
         $arrAnchUser=[];
         $arrDetailData = [];
@@ -91,6 +91,7 @@ use RegistersUsers,
         //$arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
         $arrData['biz_name'] = $data['business_name'];
+//        $arrData['pan_no'] = $data['pan_no'];
         $arrData['email'] = $data['email'];
         $arrData['password'] = bcrypt($data['password']);
         $arrData['mobile_no'] = $data['mobile_no'];

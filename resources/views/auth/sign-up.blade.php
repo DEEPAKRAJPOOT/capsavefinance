@@ -58,6 +58,15 @@
                                         <span class="text-danger error">{{$errors->first('business_name')}}</span>
                                     </div>
                                 </div>
+                                <div class="col-6">
+                              <div class="form-group">
+                                 <label for="pan_no">PAN No.
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                  <input type="text" name="pan_no" id="pan_no" value="@if($anchorDetail){{$anchorDetail->pan_no}}@else{{old('pan_no')}}@endif" maxlength="10" class="form-control pan_no" tabindex="3" placeholder="PAN Number" >
+                                 <span class="text-danger error">{{$errors->first('pan_no')}}</span>
+                              </div>
+                           </div> 
                             </div>
                             <div class="row">
                                 <div class="col-md-6">

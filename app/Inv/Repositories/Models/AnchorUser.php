@@ -57,6 +57,7 @@ class AnchorUser extends BaseModel {
         'name',
         'l_name',
         'biz_name',
+        'pan_no',
         'email',
         'phone',
         'user_type',

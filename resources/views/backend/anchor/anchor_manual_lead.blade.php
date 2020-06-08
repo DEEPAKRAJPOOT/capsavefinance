@@ -48,7 +48,18 @@
                                  {!! $errors->first('comp_name', '<span class="error">:message</span>') !!}
                               </div>
                            </div>
-                        
+                           <div class="col-6">
+                              <div class="form-group">
+                                 <label for="pan_no">PAN No.
+                                 <span class="mandatory">*</span>
+                                 </label>
+                                  <input type="text" name="pan_no" id="pan_no" value="{{ old('pan_no') }}" maxlength="10" class="form-control pan_no" tabindex="3" placeholder="PAN Number" >
+                                 {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
+                              </div>
+                           </div>   
+                           </div>
+                
+                       <div class="row">
                            <div class="col-6">
                               <div class="form-group">
                                  <label for="email">Email
@@ -61,9 +72,6 @@
                                  {!! $errors->first('email', '<span class="error">:message</span>') !!}
                               </div>
                            </div>
-                         </div>
-                
-                       <div class="row">
                            <div class="col-6">
                                  <div class="form-group">
                                     <label for="phone">Mobile
@@ -79,7 +87,14 @@
                                  </div>
                               </div>
                         
-                           <div class="col-6">
+                           
+                     </div>  
+                   @php 
+                   $role_id=Helpers::getUserRole(Auth::user()->user_id);
+                   @endphp
+                @if ($role_id[0]->pivot->role_id!= '11')
+                <div  class="row">  
+                    <div class="col-6">
                               <div class="form-group">
                                  <label for="anchor_user_type">User Type
                                  <span class="mandatory">*</span>
@@ -92,12 +107,6 @@
                                   {!! $errors->first('anchor_user_type', '<span class="error">:message</span>') !!}
                               </div>
                            </div>
-                     </div>  
-                   @php 
-                   $role_id=Helpers::getUserRole(Auth::user()->user_id);
-                   @endphp
-                @if ($role_id[0]->pivot->role_id!= '11')
-                <div  class="row">                    
                       <div class="col-6">
                               <div class="form-group">
                                  <label for="assigned_anchor">Anchor
@@ -179,6 +188,21 @@ $messages = session()->get('message', false);
                 return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
             });
             
+            $.validator.addMethod("panValidator", function(value, element) {
+                var values = value;
+                var pannoformat = new RegExp('^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
+
+                if (/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/.test(values)) {
+                    if (pannoformat.test(values)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            });
+            
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
                 let status = false;
@@ -225,6 +249,15 @@ $messages = session()->get('message', false);
                                 alphabetsnspacendot: true,
                                 messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
                             })
+                });
+                $('input.pan_no').each(function () {
+                    $(this).rules("add",
+                        {
+                            required: true,
+                            maxlength: 10,
+                            panValidator: true,
+                            messages: {'panValidator': 'Please enter correct PAN No.'}
+                        })
                 });
                 $('input.email').each(function () {
                     $(this).rules("add",

@@ -112,9 +112,9 @@ try {
                     {data: 'anchor_user_id'},
                     {data: 'name'},
                     {data: 'biz_name'},
+                    {data: 'pan_no'},
                     {data: 'email'},
                     {data: 'phone'},
-//                    {data: 'email'},
                     {data: 'created_at'},
                     {data: 'status'}
                 ],

@@ -2201,6 +2201,13 @@ class DataRenderer implements DataProviderInterface
 
                 })
                 ->editColumn(
+                    'pan_no',
+                    function ($user) {
+                    $pan_no = ($user->pan_no) ? $user->pan_no : '';
+                    return $pan_no;
+
+                })
+                ->editColumn(
                     'email',
                     function ($user) {
                     return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
