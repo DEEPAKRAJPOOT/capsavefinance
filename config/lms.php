@@ -8,7 +8,8 @@
 */
 
 return [
-    'LMS_STATUS' => 0,
+    'LMS_STATUS' => env('LMS_STATUS', 0),
+    'NPA_DAYS' => env('NPA_DAYS', 90),
     'TRANS_TYPE' => [    
        'REVERSE' => '2',
        'TDS'=>'7',
