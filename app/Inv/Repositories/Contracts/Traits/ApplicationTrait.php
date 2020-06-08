@@ -327,8 +327,7 @@ trait ApplicationTrait
             }
             */
             
-            $this->appRepo->updateAppDetails($appId, ['renewal_status' => 2]); //Ready for Renewal  
-                      
+            
             //Get and save Application data
             $appData  = $this->appRepo->getAppDataByAppId($appId);
             $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id'])) : [];                
@@ -354,7 +353,19 @@ trait ApplicationTrait
                 $newBizOwnersArr[$bizOwnerId] = $newBizOwnerId;
                                                               
             }
-
+            
+            //Save Biz Entity Cin Data
+            $whereCond=[];
+            $whereCond['biz_id'] = $bizId;  
+            $bizEntityCinData  = $this->appRepo->getBizEntityCinData($whereCond);
+            foreach($bizEntityCinData as $bizEntityCin) {
+                $newBizEntityCinData = $bizEntityCin ? $this->arrayExcept($bizEntityCin->toArray(), array_merge($excludeKeys, ['biz_entity_cin_id'])) : [];
+                $newBizEntityCinData['biz_id'] = $newBizId;                
+                $newBizEntityCinData['created_at'] = \Carbon\Carbon::now();
+		$newBizEntityCinData['created_by'] = \Auth::user()->user_id;                
+                $this->appRepo->saveBizEntityCinData($newBizEntityCinData);
+            }
+            
             //Get Biz Owner Address
             $whereCond=[];
             $whereCond['biz_id'] = $bizId;  
@@ -592,7 +603,8 @@ trait ApplicationTrait
         } catch (\Exception $e) {
             \DB::rollback();
             // something went wrong
-            dd($e->getFile(), $e->getLine(), $e->getMessage());
+            //dd($e->getFile(), $e->getLine(), $e->getMessage());       
+            return false;
         }
     }
     
