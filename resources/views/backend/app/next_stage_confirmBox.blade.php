@@ -85,7 +85,7 @@
                        </label>
                        <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
-                    @if($nextStage->stage_code=='approver')  
+                    @if($nextStage && $nextStage->stage_code=='approver')  
                     @if(count($approvers) > 0)
                       <div class="form-group">
                        <label for="txtCreditPeriod">Approver List
@@ -113,7 +113,7 @@
                     {!! Form::hidden('biz_id', $biz_id) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
-                <button type="submit" @php if($nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
+                <button type="submit" @php if($nextStage && $nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>
