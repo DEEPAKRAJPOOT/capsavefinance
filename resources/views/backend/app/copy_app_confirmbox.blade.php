@@ -21,6 +21,9 @@
                    <label class='error'>You can't create a new application before sanctions.</label><br>
                    @endif                                  
                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'app_data_error')
+                   <label class='error'>Unable to copy the application data.</label><br>
+                   @endif                      
                    
                   @if ($flag == 1)
                      You can't create a new application before sanctions.<br>

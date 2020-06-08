@@ -96,7 +96,12 @@ class RenewalController extends Controller {
             
             */
             
-            $result = $this->copyApplication($userId, $appId, $bizId, $appType);
+            $result = $this->copyApplication($userId, $appId, $bizId, $appType);            
+            if (!isset($result['new_app_id'])) {
+                Session::flash('error_code', 'app_data_error');
+                return redirect()->back();            
+            }
+            
             $newAppId = $result['new_app_id'];
             $newBizId = $result['new_biz_id'];            
             $arrActivity = [];

@@ -604,7 +604,7 @@ trait ApplicationTrait
             \DB::rollback();
             // something went wrong
             //dd($e->getFile(), $e->getLine(), $e->getMessage());       
-            return false;
+            return [];
         }
     }
     
