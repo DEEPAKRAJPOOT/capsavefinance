@@ -181,4 +181,15 @@ class AnchorUser extends BaseModel {
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
+    
+    /**
+     * function for get particular anchor detail using pan.
+     * @param type $pan
+     * @return type
+     */
+    public static function getAnchorByPan($pan){
+        $arrAnchorData = self::where('pan_no', '=', $pan)->first();
+        
+        return ($arrAnchorData ? $arrAnchorData : FALSE);
+    }
 }

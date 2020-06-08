@@ -2200,13 +2200,12 @@ class DataRenderer implements DataProviderInterface
                     return $biz_name;
 
                 })
-                ->editColumn(
-                    'pan_no',
-                    function ($user) {
-                    $pan_no = ($user->pan_no) ? $user->pan_no : '';
-                    return $pan_no;
-
-                })
+//                ->editColumn(
+//                    'pan_no',
+//                    function ($user) {
+//                    $pan_no = ($user->pan_no) ? $user->pan_no : '';
+//                    return $pan_no;
+//                })
                 ->editColumn(
                     'email',
                     function ($user) {

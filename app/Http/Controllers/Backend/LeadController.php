@@ -650,7 +650,7 @@ class LeadController extends Controller {
                     'name' => trim($arrAnchorVal['f_name']),
                     'l_name' => trim($arrAnchorVal['l_name']),
                     'biz_name' => $arrAnchorVal['comp_name'],
-                    'pan_no' => $arrAnchorVal['pan_no'],
+//                    'pan_no' => $arrAnchorVal['pan_no'],
                     'email' => trim($arrAnchorVal['email']),
                     'phone' => $arrAnchorVal['phone'],
                     'user_type' => $arrAnchorVal['anchor_user_type'],

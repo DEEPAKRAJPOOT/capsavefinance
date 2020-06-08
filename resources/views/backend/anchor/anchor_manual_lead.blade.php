@@ -48,7 +48,7 @@
                                  {!! $errors->first('comp_name', '<span class="error">:message</span>') !!}
                               </div>
                            </div>
-                           <div class="col-6">
+<!--                           <div class="col-6">
                               <div class="form-group">
                                  <label for="pan_no">PAN No.
                                  <span class="mandatory">*</span>
@@ -56,7 +56,7 @@
                                   <input type="text" name="pan_no" id="pan_no" value="{{ old('pan_no') }}" maxlength="10" class="form-control pan_no" tabindex="3" placeholder="PAN Number" >
                                  {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
                               </div>
-                           </div>   
+                           </div>   -->
                            </div>
                 
                        <div class="row">
@@ -188,20 +188,20 @@ $messages = session()->get('message', false);
                 return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
             });
             
-            $.validator.addMethod("panValidator", function(value, element) {
-                var values = value;
-                var pannoformat = new RegExp('^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
-
-                if (/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/.test(values)) {
-                    if (pannoformat.test(values)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            });
+//            $.validator.addMethod("panValidator", function(value, element) {
+//                var values = value;
+//                var pannoformat = new RegExp('^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
+//
+//                if (/^[_A-z0-9]*((-|\s)*[_A-z0-9])*$/.test(values)) {
+//                    if (pannoformat.test(values)) {
+//                        return true;
+//                    } else {
+//                        return false;
+//                    }
+//                } else {
+//                    return false;
+//                }
+//            });
             
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
@@ -250,15 +250,15 @@ $messages = session()->get('message', false);
                                 messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
                             })
                 });
-                $('input.pan_no').each(function () {
-                    $(this).rules("add",
-                        {
-                            required: true,
-                            maxlength: 10,
-                            panValidator: true,
-                            messages: {'panValidator': 'Please enter correct PAN No.'}
-                        })
-                });
+//                $('input.pan_no').each(function () {
+//                    $(this).rules("add",
+//                        {
+//                            required: true,
+//                            maxlength: 10,
+//                            panValidator: true,
+//                            messages: {'panValidator': 'Please enter correct PAN No.'}
+//                        })
+//                });
                 $('input.email').each(function () {
                     $(this).rules("add",
                     {

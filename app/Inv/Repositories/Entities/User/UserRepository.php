@@ -1666,4 +1666,8 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getBusinessDetails($biz_id){
         return Business::find($biz_id);
     }
+    
+    public function getAnchorByPan($pan){
+        return AnchorUser::getAnchorByPan($pan);
+    }
 }
