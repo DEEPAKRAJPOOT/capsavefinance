@@ -9,7 +9,7 @@
                     array(
                     'method' => 'post',
                     'route' => 'renew_application',
-                    'id' => 'frmCopyApp',
+                    'id' => 'frmCopyApp',   
                     'target' => '_top'
                     )
                     ) 
@@ -107,7 +107,7 @@ var messages = {
             //parent.$('.isloader').hide();
         }
         
-        if(messages.is_accept == 1){
+        if(messages.is_accept == 1){            
            parent.jQuery("#"+targetModel).modal('hide');  
            parent.window.location = redirect_url;
            //parent.$('.isloader').hide();           

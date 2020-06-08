@@ -109,20 +109,23 @@ class RenewalController extends Controller {
                 $arrActivity['activity_code'] = 'application_renewal';
                 $arrActivity['activity_desc'] = 'Application is renewed successfully. New App ID ' . $newAppId;
                 $this->appRepo->updateAppDetails($appId, ['renewal_status' => 2]); //Ready for Renewal  
+                $targetModel = 'confirmCopyApp';
             } else if ($appType == 2){
                 $arrActivity['activity_code'] = 'user_limit_enhancement';
                 $arrActivity['activity_desc'] = 'Application is copied from for limit enhancement successfully. New App ID '. $newAppId;
+                $targetModel = 'confirmEnhanceLimit';    
             } else if ($appType == 3){
                 $arrActivity['activity_code'] = 'reduce_limit';
                 $arrActivity['activity_desc'] = 'Application is copied for reduce limit successfully.  New App ID ' . $newAppId;
-            }
+                $targetModel = 'confirmReduceLimit';
+            }                        
             $arrActivity['user_id'] = $userId;
             $arrActivity['app_id'] = $appId;
             \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
         
             //Session::flash('message', 'Application is copied successfully');
             Session::flash('is_accept', 1);
-            //echo '<script>$(document).ready(function(){ parent.jQuery("#confirmCopyApp").modal("hide"); });</script>';
+            //echo '<script>$(document).ready(function(){ parent.jQuery("#'.$targetModel.'").modal("hide"); });</script>';
             return redirect()->route('company_details', ['user_id' => $userId,'app_id' => $newAppId, 'biz_id' => $newBizId]);
             //return redirect()->back();
         } catch (Exception $ex) {
