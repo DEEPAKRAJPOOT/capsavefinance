@@ -231,4 +231,25 @@ class Permission extends BaseModel
         return ($permission_name ? $permission_name : []);
     }
     
+    
+    /**
+     * Check Role Permission
+     *
+     * @param $route_name
+     * @param $role_id
+     * 
+     * @return boolean
+     */
+    public static function checkRolePermission($route_name, $role_id)
+    {
+
+        $arrPermissions = self::select('permissions.id')
+                ->join('permission_role', 'permissions.id', '=', 'permission_role.permission_id')                                    
+                ->where('permissions.name', $route_name)
+                ->where('permission_role.role_id', $role_id)
+                ->first();
+                
+        return $arrPermissions ? true : false;
+    }
+    
 }

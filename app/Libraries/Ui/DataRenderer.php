@@ -190,7 +190,8 @@ class DataRenderer implements DataProviderInterface
                         $app_id = $app->app_id;
                         $parent_app_id = $app->parent_app_id;
                         $ret = '';
-                        if(Helpers::checkPermission('company_details')){
+                        $permission = Helpers::checkPermission('company_details');
+                        if($permission){
                            if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
@@ -203,7 +204,11 @@ class DataRenderer implements DataProviderInterface
                         
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
-                            $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            if ($permission) {
+                                $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            } else {
+                                $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            }
                         } 
                            
                         return $ret;
