@@ -323,6 +323,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($app) use ($request) {
                         $act = '';
+                        $lmsStatus = config('lms.LMS_STATUS');
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
                         if ($view_only && in_array($app->status, [0,1,2]) ) {
                            //if(Helpers::checkPermission('add_app_note')){
@@ -336,7 +337,7 @@ class DataRenderer implements DataProviderInterface
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
                                 $roleData = Helpers::getUserRole();     
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
-                                if ($currentStage && $currentStage->order_no < 16 ) {                                                                                                           
+                                if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
                                     $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
                                     if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
                                         if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
@@ -353,7 +354,7 @@ class DataRenderer implements DataProviderInterface
                             }                                                        
                         }
                         
-                        $lmsStatus = config('lms.LMS_STATUS');
+                        
                         if ($lmsStatus && $app->renewal_status == 1) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
