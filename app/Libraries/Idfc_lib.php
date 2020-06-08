@@ -32,7 +32,7 @@ class Idfc_lib{
 			SELF::BATCH_ENQ => 'success',
 	);
 
-	public function api_call($method = NULL, array $params = array()){
+	public function api_call($method = NULL, array $params = array(), $getApiResponse = false){
 		 $resp = array(
 			'status' => 'fail',
 			'message'=> 'Some error occured. Please try again',
@@ -50,10 +50,19 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
+     	if ($getApiResponse) {
+     		return [$txn_id, $payload, $http_header, $response['result']];
+     	}
      	logFile($url, 'D', '', '', $txn_id);
 		logFile($payload, 'D', '', '', $txn_id);
 		logFile($http_header, 'D', '', '', $txn_id);
 		logFile($response['result'], 'D', '', '', $txn_id);
+
+		// $file_name = md5($txn_id).'.txt';
+		// $this->_saveLogFile($payload, $file_name, 'Outgoing');
+		// die("here");
+     	// $this->_saveLogFile($response, $file_name, 'Incoming');
+
 		if (!empty($response['error_no'])) {
 			$resp['code'] 	 = "CurlError : " . $response['error_no'];
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
@@ -138,7 +147,6 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		$output = curl_exec($curl);
-		$headerSent = curl_getinfo($curl, CURLINFO_HEADER_OUT ); // request headers
 		$resp['error'] = curl_error($curl);
 		$resp['error_no'] = curl_errno($curl);
 		$resp['curl_info'] = curl_getinfo($curl);
@@ -179,7 +187,7 @@ class Idfc_lib{
 	    	return $result;
     	}
     	$header = $response['doMultiPaymentCorpRes']['Header'];
-    	$body = $response['doMultiPaymentCorpRes']['Body'];
+    	$body = $response['doMultiPaymentCorpRes']['Body'] ?? [];
 
 	    if (strtolower($header['Status']) != 'success' ) {
 	    	$result['code'] = $header['Error_Cde'] ?? 'CAP001'; //change to Error_Code if response changes
