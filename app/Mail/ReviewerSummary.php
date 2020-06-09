@@ -107,12 +107,14 @@ class ReviewerSummary extends Mailable
         $fee = [];
         foreach($supplyOfferData as $key=>$val){
             $offerCharges = $val->offerCharges;
-            $fee[$offerCharges[0]->charge_id]['chrg_type'] = $offerCharges[0]->chrg_type;
-            $fee[$offerCharges[0]->charge_id]['chrg_name'] = $offerCharges[0]->chargeName->chrg_name;
-            $fee[$offerCharges[0]->charge_id]['chrg_value'] = $offerCharges[0]->chrg_value;
-            $fee[$offerCharges[1]->charge_id]['chrg_type'] = $offerCharges[1]->chrg_type;
-            $fee[$offerCharges[1]->charge_id]['chrg_name'] = $offerCharges[1]->chargeName->chrg_name;
-            $fee[$offerCharges[1]->charge_id]['chrg_value'] = $offerCharges[1]->chrg_value;
+            $chrg_id0 = isset($offerCharges[0]) ? $offerCharges[0]->charge_id : '';
+            $fee[$chrg_id0]['chrg_type'] = isset($offerCharges[0]) ? $offerCharges[0]->chrg_type : '';
+            $fee[$chrg_id0]['chrg_name'] = isset($offerCharges[0]) ? $offerCharges[0]->chargeName->chrg_name : '';
+            $fee[$chrg_id0]['chrg_value'] = isset($offerCharges[0]) ? $offerCharges[0]->chrg_value : '';
+            $chrg_id1 = isset($offerCharges[1]) ? $offerCharges[1]->charge_id : '';
+            $fee[$chrg_id1]['chrg_type'] = isset($offerCharges[1]) ? $offerCharges[1]->chrg_type : '';
+            $fee[$chrg_id1]['chrg_name'] = isset($offerCharges[1]) ? $offerCharges[1]->chargeName->chrg_name : '';
+            $fee[$chrg_id1]['chrg_value'] = isset($offerCharges[1]) ? $offerCharges[1]->chrg_value : '';
         }
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
