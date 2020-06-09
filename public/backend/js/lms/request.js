@@ -141,6 +141,10 @@ $(document).on('click','#sentToBankBtn', function(){
 
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#transaction_ids').val().trim();
+        if (invoiceIds.length == 0) {
+            alert('Please select at least one record!');
+            return false;
+        }
         var dataUrl = $(this).attr('data-url');
         var newUrl = dataUrl+'&transaction_ids='+invoiceIds;
         $('#openDisburseInvoice').attr('data-url', newUrl);

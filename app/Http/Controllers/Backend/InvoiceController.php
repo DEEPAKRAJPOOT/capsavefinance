@@ -699,7 +699,7 @@ class InvoiceController extends Controller {
         $totalMargin = 0;
         $batchId= _getRand(12);
         $creatorId = Auth::user()->user_id;
-        // $result = $this->export($exportData, $batchId);
+        $result = $this->export($exportData, $batchId);
         $file['file_path'] = $result['file_path'] ?? '';
         if ($file) {
             $createBatchFileData = $this->createBatchFileData($file);
