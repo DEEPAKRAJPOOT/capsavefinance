@@ -146,6 +146,7 @@ class ApplicationController extends Controller
         $editFlag = $request->get('edit'); 
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
+        $getProductType  =  $this->userRepo->checkLeasingProduct($appId);
         $getCin = $this->userRepo->getCinByUserId($bizId);
        if($getCin==false)
        {
@@ -159,7 +160,8 @@ class ApplicationController extends Controller
             'cin_no' => $getCin->cin,
             'appId' => $appId, 
             'bizId' => $bizId,
-            'edit' => $editFlag
+            'edit' => $editFlag,
+            'is_lease' => $getProductType
             ]);
              
         } catch (Exception $ex) {

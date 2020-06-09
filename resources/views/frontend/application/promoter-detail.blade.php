@@ -620,7 +620,7 @@
         
         $('.submit').on('click', function (event) {
         var button = $(this).attr("data-type");
-     
+        var is_lease = '{{$is_lease}}';
         $('input.first_name').each(function () {
         $(this).rules("add",
         {
@@ -641,20 +641,23 @@
                 required: true
                 })
                 });
-
+              if(is_lease==0)
+              {
                 $('input.pan_no').each(function () {
                 $(this).rules("add",
                 {
                 required: true
                 })
                 });
+              }
                  $('input.designation').each(function () {
                 $(this).rules("add",
                 {
                 required: true
                 })
                 });
-
+               if(is_lease==0)
+               {
                 $('input.mobileveri').each(function () {
                 $(this).rules("add",
                 {
@@ -662,7 +665,7 @@
                         number: true,
                 })
                 });
-
+               }
                 $('textarea.address').each(function () {
                 $(this).rules("add",
                 {
@@ -678,7 +681,8 @@
                 required: false
                 })
                 });
-
+              if(is_lease==0)
+              {
                 $('input.pan_no').each(function () {
                 $(this).rules("add",
                 {
@@ -693,7 +697,7 @@
                         number: false,
                 })
                 });
-
+              }
                 $('textarea.address').each(function () {
                 $(this).rules("add",
                 {
@@ -721,15 +725,18 @@
         var adVal = $("#aadhardown" + i).attr('href');
          var elVal = $("#electricitydown" + i).attr('href');
           var teVal = $("#telephonedown" + i).attr('href');
-        if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")
-        {
-        alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
-        $("#verifydl" + i).focus();
-        return false;
+         if(is_lease==0)
+         {     
+            if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")
+            {
+            alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
+            $("#verifydl" + i).focus();
+            return false;
+            }
+         } 
         }
-
-        }
-
+       if(is_lease==0)
+       {  
         //// for pan verify///
         $(".pan_no").each(function (k, v) {
         panCount++;
@@ -760,7 +767,7 @@
         
         
         });
-      
+        }
                ///// validation for where is checked then shareholder is mandaterory/////
         $(".is_promoter").each(function (k, v) {
         promoCount++;
