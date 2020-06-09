@@ -650,12 +650,12 @@
                 })
                 });
               }
-                 $('input.designation').each(function () {
+               /*  $('input.designation').each(function () {
                 $(this).rules("add",
                 {
                 required: true
                 })
-                });
+                });  */
                if(is_lease==0)
                {
                 $('input.mobileveri').each(function () {
