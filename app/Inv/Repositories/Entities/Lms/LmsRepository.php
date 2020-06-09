@@ -1390,4 +1390,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         return EodProcess::getEodDataCount();
     }    
 
+    public function getAprvlRqUserByIds($ids = [])
+    {	
+    	if (empty($ids)) {
+	        return "No record found.";
+    	} else {
+    		return RefundReq::getAprvlRqUserByIds($ids);
+    	}
+    }
 }

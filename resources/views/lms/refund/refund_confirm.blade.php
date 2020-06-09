@@ -55,7 +55,7 @@ $finalDisburseAmt = 0;
 	</div>
 	<div class="col-6 right">
 		<form id="onlineDisburse" method="POST" action="{{ Route('refund_online') }}" target="_top">
-			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
+			<input type="hidden" value="{{ $transIds }}" name="transaction_ids">
 			@csrf
 			<div class="col-6">
 				<!-- <div class="form-group">

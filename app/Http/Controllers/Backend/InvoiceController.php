@@ -655,7 +655,6 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Mode_of_Pay'] = 'IFT';
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'test remarks';
-                    $exportData[$userid]['Value_Date'] = date("Y-m-d");
 
                 } 
             }
