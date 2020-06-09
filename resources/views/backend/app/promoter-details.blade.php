@@ -766,11 +766,11 @@
           var teVal = $("#telephonedown" + i).attr('href');
           if(is_lease==0)
           {    
-            if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")
+            if (dlVal == undefined && vtVal == undefined && adVal == undefined && elVal == undefined && teVal == undefined)
             {
-            alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
-            $("#verifydl" + i).focus();
-            return false;
+                alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
+                $("#verifydl" + i).focus();
+                return false;
             }
           }
         }
