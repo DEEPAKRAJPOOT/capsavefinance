@@ -108,7 +108,7 @@ class RenewalController extends Controller {
             if ($appType == 1) {
                 $arrActivity['activity_code'] = 'application_renewal';
                 $arrActivity['activity_desc'] = 'Application is renewed successfully. New App ID ' . $newAppId;
-                $this->appRepo->updateAppDetails($appId, ['renewal_status' => 2]); //Ready for Renewal  
+                $this->appRepo->updateAppDetails($appId, ['renewal_status' => 2]); //Renewed  
                 $targetModel = 'confirmCopyApp';
             } else if ($appType == 2){
                 $arrActivity['activity_code'] = 'user_limit_enhancement';
