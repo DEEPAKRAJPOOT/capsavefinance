@@ -72,9 +72,10 @@ class AjaxController extends Controller {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
-        $this->UserInvRepo = $UserInvRepo;
-        $this->middleware('checkEodProcess');
+        $this->UserInvRepo = $UserInvRepo;        
         $this->reportsRepo = $reportsRepo;
+        $this->middleware('checkEodProcess');
+        $this->middleware('checkBackendLeadAccess');
     }
 
     /**
