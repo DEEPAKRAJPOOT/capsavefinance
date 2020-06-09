@@ -69,8 +69,7 @@ use AuthenticatesUsers;
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
     public function login(LoginRequest $request) {
-
-        try {
+       try {
             // Too many attempts blocking user  
             if ($this->hasTooManyLoginAttempts($request)) {
                 $this->fireLockoutEvent($request);

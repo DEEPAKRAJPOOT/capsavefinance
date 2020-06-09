@@ -158,6 +158,13 @@ class ApplicationController extends Controller
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
+
+        $getProductType  =  $this->userRepo->checkLeasingProduct($appId);
+       if($getCin==false)
+       {
+          return redirect()->back();
+       }
+      
         $OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
         if(!empty($getCin))
         {
@@ -172,7 +179,8 @@ class ApplicationController extends Controller
             'cin_no' => $cin,
             'appId' => $appId, 
             'bizId' => $bizId,
-            'edit' => $editFlag
+            'edit' => $editFlag,
+            'is_lease' => $getProductType
             ]);
              
         } catch (Exception $ex) {
