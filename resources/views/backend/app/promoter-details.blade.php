@@ -199,7 +199,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">PAN Number
-                                                <span class="mandatory">*</span>
+                                                <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>
                                                 <span class="text-success" id="successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{ (isset($main[$j]['panVerifyNo']->requestId)) ? 'inline' : 'none' }}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
                                                 <span class="text-danger" id="failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                             
@@ -226,7 +226,8 @@
                                  -->
                                   <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtEmail">Designation 
+                           <label for="txtEmail">Designation    <span class="mandatory"></span>
+
 
                                             </label>
                                             <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">
@@ -266,7 +267,7 @@
                                     </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="txtEmail">Mobile <span class="mandatory">*</span>  </label> 
+                                                <label for="txtEmail">Mobile <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span></label> 
                                              <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : $row->mobile }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                               
                                              <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> <i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i>{{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
@@ -731,6 +732,7 @@
         
         $('.submit').on('click', function (event) {
         var button = $(this).attr("data-type");
+        var is_lease = '{{$is_lease}}';
         $('input.first_name').each(function () {
         $(this).rules("add",
         {
@@ -751,27 +753,34 @@
                 required: true
                 })
                 });
-
+               if(is_lease==0)
+               {
                 $('input.pan_no').each(function () {
                 $(this).rules("add",
                 {
                 required: true
                 })
                 });
+
                 //   $('input.designation').each(function () {
                 // $(this).rules("add",
                 // {
                 // required: true
                 // })
                 // });
+
+               }
+  
+               if(is_lease==0)
+               {  
                 $('input.mobileveri').each(function () {
                 $(this).rules("add",
                 {
-                required: true,
-                        number: true,
+                 required: true,
+                 number: true,
                 })
                 });
-
+               }
                 $('textarea.address').each(function () {
                 $(this).rules("add",
                 {
@@ -787,22 +796,23 @@
                 required: false
                 })
                 });
+               if(is_lease==0)
+               {
+                    $('input.pan_no').each(function () {
+                    $(this).rules("add",
+                    {
+                    required: false
+                    })
+                    });
 
-                $('input.pan_no').each(function () {
-                $(this).rules("add",
-                {
-                required: false
-                })
-                });
-               
-                $('input.mobileveri').each(function () {
-                $(this).rules("add",
-                {
-                required: false,
-                        number: false,
-                })
-                });
-
+                    $('input.mobileveri').each(function () {
+                    $(this).rules("add",
+                    {
+                    required: false,
+                            number: false,
+                    })
+                    });
+                }
                 $('textarea.address').each(function () {
                 $(this).rules("add",
                 {
@@ -824,23 +834,23 @@
         ///// for upload one in three id proff..............
         for (i = 1; i <= DlLength; i++)
         {
-         
-
-        var dlVal = $("#dldown"+i).attr('href');
-        var vtVal = $("#voterdown"+i).attr('href');
-        var adVal = $("#aadhardown"+i).attr('href');
-         var elVal = $("#electricitydown"+i).attr('href');
-          var teVal = $("#telephonedown"+i).attr('href');
-        
-        if (dlVal ==undefined && vtVal ==undefined && adVal ==undefined && elVal == undefined && teVal == undefined)
-        {
-            alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
-            $("#verifydl" + i).focus();
-            return false;
+          var dlVal = $("#dldown" + i).attr('href');
+          var vtVal = $("#voterdown" + i).attr('href');
+          var adVal = $("#aadhardown" + i).attr('href');
+          var elVal = $("#electricitydown" + i).attr('href');
+          var teVal = $("#telephonedown" + i).attr('href');
+          if(is_lease==0)
+          {    
+            if((dlVal ==undefined || dlVal=='') && (vtVal ==undefined || vtVal=='') && (adVal == undefined || adVal=='') && (elVal == undefined || elVal=='') && (teVal == undefined || teVal==''))
+            {
+                alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
+                $("#verifydl" + i).focus();
+                return false;
+            }
+          }
         }
-
-        }
-
+     if(is_lease==0)
+     { 
         //// for pan verify///
         $(".pan_no").each(function (k, v) {
         panCount++;
@@ -855,7 +865,7 @@
 
         });
         
-          //// for mobile verify///
+        //// for mobile verify///
         $(".findMobileverify").each(function (k, v) {
          mobileVeriCount++;   
          var mobileVeri =   $(this).text();
@@ -870,7 +880,8 @@
         
         });
       
-               ///// validation for where is checked then shareholder is mandaterory/////
+      }
+     ///// validation for where is checked then shareholder is mandaterory/////
         $(".is_promoter").each(function (k, v) {
         promoCount++;
         var is_promoter = $("#is_promoter" + promoCount).val();

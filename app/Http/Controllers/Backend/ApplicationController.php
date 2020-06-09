@@ -73,6 +73,7 @@ class ApplicationController extends Controller
 		return view('backend.app.app_copy')->with(['res' =>$data]);              
 	} 
 
+
 	
 	/**
 	 * Render view for company detail page according to biz id
