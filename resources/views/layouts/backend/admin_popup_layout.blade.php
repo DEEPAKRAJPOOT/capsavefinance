@@ -20,8 +20,8 @@
         <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
         <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
         <link href="{{url('common/js/summernote/dist/summernote.css')}}" rel="stylesheet">
-        <link rel="stylesheet" href="http://www.codermen.com/css/bootstrap.min.css">
-        <script src="http://www.codermen.com/js/jquery.js"></script>
+        <!-- <link rel="stylesheet" href="http://www.codermen.com/css/bootstrap.min.css"> -->
+        <!-- <script src="http://www.codermen.com/js/jquery.js"></script> -->
         @yield('additional_css')
     </head>
 
@@ -45,7 +45,7 @@
             @yield('content')
         </div>
           
-        <script src="{{url('backend/assets/js/jquery.min.js')}}"></script>
+        <script src="{{url('backend/assets/js/jquery-3.5.1.min.js')}}"></script>
         <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
         <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
         <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>

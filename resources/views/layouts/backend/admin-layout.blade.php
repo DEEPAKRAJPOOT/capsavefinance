@@ -101,7 +101,7 @@
     </div>
 </body>
 
-    <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/jquery-3.5.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
     <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>
