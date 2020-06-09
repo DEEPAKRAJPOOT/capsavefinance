@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
     <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
-        <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.css" rel="stylesheet">
+    <link href="{{url('common/js/summernote/dist/summernote.css')}}" rel="stylesheet">
 
 
     </head>
@@ -46,7 +46,7 @@
         <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
         <script src="{{url('common/js/iframePopup.js')}}"></script>
         <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.js"></script>
+        <script src="{{url('common/js/summernote/dist/summernote.js')}}"></script>
 
 
         <script>
