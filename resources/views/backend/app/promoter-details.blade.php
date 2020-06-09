@@ -197,7 +197,7 @@
                                  -->
                                   <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtEmail">Designation    <span class="mandatory">*</span>
+                                            <label for="txtEmail">Designation    <span class="mandatory"></span>
 
                                             </label>
                                             <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">

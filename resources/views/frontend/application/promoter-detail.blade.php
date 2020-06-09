@@ -169,7 +169,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">PAN Number
-                                                <span class="mandatory">*</span>
+                                                <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>
                                                 <span class="text-success" id="successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{ (isset($main[$j]['panVerifyNo']->requestId)) ? 'inline' : 'none' }}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
                                                 <span class="text-danger" id="failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                             
@@ -194,7 +194,7 @@
                                  -->
                                   <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtEmail">Designation    <span class="mandatory">*</span>
+                                            <label for="txtEmail">Designation    <span class="mandatory"></span>
 
                                             </label>
                                             <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">
@@ -231,7 +231,7 @@
                                     </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="txtEmail">Mobile <span class="mandatory">*</span>  </label> 
+                                                <label for="txtEmail">Mobile <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>  </label> 
                                              <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : $row->mobile }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                               
                                              <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> <i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i>{{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
