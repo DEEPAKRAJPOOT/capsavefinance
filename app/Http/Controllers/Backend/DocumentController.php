@@ -13,6 +13,7 @@ use Session;
 use Helpers;
 use Auth;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
@@ -176,4 +177,27 @@ class DocumentController extends Controller
         }
     }
 
+    public function documentStorageFile(Request $request)
+    {
+        $fileId = $request->get('file_id');
+        $fileData = $this->docRepo->getFileByFileId($fileId);
+
+        // dd($path);
+
+        // $asset = Asset::find($id);
+        $assetPath = Storage::disk('public')->url($fileData->file_path);
+
+        header("Cache-Control: public");
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=" . basename($assetPath));
+        header("Content-Type: " . $fileData->file_type);
+
+        return readfile($assetPath);
+
+
+
+        // return Storage::download($fileData->file_path);
+        
+
+    }
 }
