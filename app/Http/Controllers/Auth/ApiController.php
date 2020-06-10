@@ -117,15 +117,16 @@ class ApiController
             $cgst_rate = 0;
             $sgst_amt = 0;
             $sgst_rate = 0;
+            $totalGST = 18;
             if ($parentRecord->gst == 1) {
-                $base_amt = $totalamount * 100/118;
+                $base_amt = $totalamount * 100/(100 + $totalGST);
                 if($userStateId == $companyStateId) {
-                    $cgst_rate = 9;
+                    $cgst_rate = ($totalGST/2);
                     $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
-                    $sgst_rate = 9;
+                    $sgst_rate = ($totalGST/2);
                     $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
                 } else {
-                   $igst_rate = 18;
+                   $igst_rate = $totalGST;
                     $igst_amt = round((($base_amt * $igst_rate)/100),2); 
                 }
             }
