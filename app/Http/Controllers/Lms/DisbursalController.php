@@ -380,7 +380,8 @@ class DisbursalController extends Controller
         	$prgm_data = AppProgramOffer::find($prgmOfferId);
         	$base_rates = BaseRate::where(['bank_id'=> $prgm_data->bank_id, 'is_active'=> 1])->orderBy('id', 'DESC')->first();
         	$bank_base_rate = ($base_rates)? $base_rates->base_rate: 0;
-            $curr_int_rate = $intRate - $prgm_data->base_rate + $bank_base_rate;
+            // $curr_int_rate = $intRate - $prgm_data->base_rate + $bank_base_rate;
+            $curr_int_rate = $prgm_data->interest_rate - $prgm_data->base_rate + $bank_base_rate;
         	return $curr_int_rate;
         }
 

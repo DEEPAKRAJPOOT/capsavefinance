@@ -150,7 +150,7 @@ trait LmsTrait
         $disburseDate = $invoice['disburse_date'];
         $str_to_time_date = strtotime($disburseDate);
         $bankId = $invoice['program_offer']['bank_id'];
-        $oldIntRate = (float)$invoice['program_offer']['interest_rate'];
+        $oldIntRate = $invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
         $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
         $bankRatesArr = $Obj->getBankBaseRates($bankId);
