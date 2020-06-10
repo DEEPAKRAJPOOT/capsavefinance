@@ -496,7 +496,7 @@ class ApplicationController extends Controller
 					break;
 			}
 
-			$wf_status = 1;                
+			$wf_status = 2;                
 			Helpers::updateWfStage('doc_upload', $appId, $wf_status);
 			
 			$document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
