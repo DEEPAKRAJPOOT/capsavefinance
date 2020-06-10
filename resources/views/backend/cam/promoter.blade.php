@@ -29,34 +29,42 @@
                                              if($row2->doc_id == 2) { 
                                                 $panNoFilePath[$key] =   $row2->userFile->file_path;
                                                 $panNoFileName[$key] =   $row2->userFile->file_name;
+                                                $panNoFileId[$key] =   $row2->userFile->file_id;
                                             }
                                             if($row2->doc_id == 31) { 
                                                 $dlNoFilePath[$key] = $row2->userFile->file_path;
                                                 $dlNoFileName[$key] =   $row2->userFile->file_name;
+                                                $dlNoFileId[$key] =   $row2->userFile->file_id;
                                             }
                                             if($row2->doc_id == 30) { 
                                                 $voterNoFilePath[$key] = $row2->userFile->file_path;
                                                 $voterNoFileName[$key] =   $row2->userFile->file_name;
+                                                $voterNoFileId[$key] =   $row2->userFile->file_id;
                                             }
                                             if($row2->doc_id == 32) { 
                                                 $passNoFilePath[$key] = $row2->userFile->file_path;
                                                 $passNoFileName[$key] =   $row2->userFile->file_name;
+                                                $passNoFileId[$key] =   $row2->userFile->file_id;
                                             }
                                              if($row2->doc_id == 22) { 
                                                 $photoFilePath[$key] = $row2->userFile->file_path;
                                                 $photoFileName[$key] =   $row2->userFile->file_name;
+                                                $photoFileId[$key] =   $row2->userFile->file_id;
                                             }
                                             if ($row2->doc_id == 34) {
                                                 $aadharFilePath[$key] = $row2->userFile->file_path;
                                                 $aadharFileName[$key] =   $row2->userFile->file_name;
+                                                $aadharFileId[$key] =   $row2->userFile->file_id;
                                             }
                                             if ($row2->doc_id == 37) {
                                                 $electricityFilePath[$key] = $row2->userFile->file_path;
                                                 $electricityFileName[$key] =   $row2->userFile->file_name;
+                                                $electricityFileId[$key] =   $row2->userFile->file_id;
                                             }
                                             if ($row2->doc_id == 38) {
                                                 $telephoneFilePath[$key] = $row2->userFile->file_path;
                                                 $telephoneFileName[$key] =   $row2->userFile->file_name;
+                                                $telephoneFileId[$key] =   $row2->userFile->file_id;
                                             }
                            
                                          } 
@@ -173,7 +181,7 @@
                                                     <div class="file-browse float-left position-seta">
                                                         <a data-toggle="modal"  data-target="#modalPromoter" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pan_data',['type'=>3,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrPan[$j]->requestId) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Pan Card Detail"  data-type="3"> <i class="fa fa-eye"></i></button>
                                                         </a>
-                                                        <a  href="{{ isset($panNoFilePath[$j]) ? Storage::url($panNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                        <a  href="{{ isset($panNoFileId[$j]) ? route('download_storage_file', ['file_id' => $panNoFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($panNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>  
                                                 </td>
                                              </tr>
@@ -193,7 +201,7 @@
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
                                                          <a data-toggle="modal" data-target="#modalPromoter1" data-height="400" data-width="100%" accesskey="" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $row->biz_owner_id ])}}" style="display:{{ (isset($arrDl[$j]->requestId)) ? 'inline' : 'none'}}">  <button class="btn-upload btn-sm" type="button" title="View Driving License Detail" data-type="5" > <i class="fa fa-eye"></i></button></a>
-                                                        <a  href="{{ isset($dlNoFilePath[$j]) ? Storage::url($dlNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                        <a  href="{{ isset($dlNoFileId[$j]) ? route('download_storage_file', ['file_id' => $dlNoFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($dlNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>            
                                                    
                                                 </td>
@@ -215,7 +223,7 @@
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
                                                         <a data-toggle="modal" data-target="#modalPromoter2" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_voter_data',['type'=>4,'ownerid' => $row->biz_owner_id ])}}" style="display:{{isset($arrVoterNo[$j]->requestId) ? 'inline' : 'none'}}">   <button class="btn-upload btn-sm" type="button" title="View Voter ID Detail" data-type="4"> <i class="fa fa-eye"></i></button></a>
-                                                        <a  href="{{ isset($voterNoFilePath[$j]) ? Storage::url($voterNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                        <a  href="{{ isset($voterNoFileId[$j]) ? route('download_storage_file', ['file_id' => $voterNoFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($voterNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>                
                                                    
                                                 </td>
@@ -237,7 +245,7 @@
                                                 <td>
                                                     <div class="file-browse float-left position-seta">
                                                         <a data-toggle="modal"  data-target="#modalPromoter3" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('show_pass_data',['type'=>6,'ownerid' => $row->biz_owner_id ])}}"  style="display:{{isset($arrPassNo[$j]->requestId) ? 'inline' : 'none'}}">     <button class="btn-upload btn-sm" type="button" title="View Passport Detail" data-type="6"> <i class="fa fa-eye"></i></button></a>
-                                                        <a  href="{{ isset($passNoFilePath[$j]) ? Storage::url($passNoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                        <a  href="{{ isset($passNoFileId[$j]) ? route('download_storage_file', ['file_id' => $passNoFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($passNoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                     </div>               
                                                    
                                                 </td>
@@ -249,7 +257,7 @@
                                                 <td></td>
                                                 <td>{{isset($photoFileName[$j]) ? $photoFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($photoFilePath[$j]) ? Storage::url($photoFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($photoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($photoFileId[$j]) ? route('download_storage_file', ['file_id' => $photoFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($photoFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>
@@ -260,7 +268,7 @@
                                                 <td></td>
                                                 <td>{{isset($aadharFileName[$j]) ? $aadharFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($aadharFilePath[$j]) ? Storage::url($aadharFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($aadharFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($aadharFileId[$j]) ? route('download_storage_file', ['file_id' => $aadharFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($aadharFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>
@@ -271,7 +279,7 @@
                                                 <td></td>
                                                 <td>{{isset($electricityFileName[$j]) ? $electricityFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($electricityFilePath[$j]) ? Storage::url($electricityFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($electricityFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($electricityFileId[$j]) ? route('download_storage_file', ['file_id' => $electricityFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($electricityFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                 </td>
                                             </tr>
 
@@ -281,7 +289,7 @@
                                                 <td></td>
                                                 <td>{{isset($telephoneFileName[$j]) ? $telephoneFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($telephoneFilePath[$j]) ? Storage::url($telephoneFilePath[$j]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($telephoneFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($telephoneFileId[$j]) ? route('download_storage_file', ['file_id' => $telephoneFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($telephoneFilePath[$j]) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                    
                                                 </td>
                                             </tr>
