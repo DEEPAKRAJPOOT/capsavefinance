@@ -23,7 +23,7 @@
                      <small>{{ $bankdoc->doc_name }}</small>
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
-                        <li><a href="{{ route('download_storage_file', ['file_id' => $bankdoc->file_id ]) }}" download target="_blank">Download Bank Statement</a></li>
+                        <li><a href="{{ route('download_storage_file', ['file_id' => $bankdoc->file_id ]) }}" target="_blank">Download Bank Statement</a></li>
                         <li>
                              <a href="javascript:void(0)" data-toggle="modal" data-target="#uploadBankDocument" data-url ="{{route('upload_bank_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'app_doc_file_id' => $bankdoc->app_doc_file_id,'doc_id' => $bankdoc->doc_id]) }}" data-height="300px" data-width="100%" class="hide" id="reprocess_{{$bankdoc->app_doc_file_id}}">Re-Process</a>
                         </li>
