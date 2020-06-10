@@ -111,5 +111,6 @@ return [
     'apport_invalid_user_id' => "Invalid User",
     'apport_invalid_repayment_id' => 'Invalid Re-Payment',
     'apport_invalid_unapplied_amt' => 'Total requested amout to settle is greater than the repayment amt',
+    'documentNotFound' => 'Document not found!',
 
     ];

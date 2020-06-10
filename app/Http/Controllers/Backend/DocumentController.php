@@ -177,27 +177,23 @@ class DocumentController extends Controller
         }
     }
 
-    public function documentStorageFile(Request $request)
+    public function downloadStorageFile(Request $request)
     {
-        $fileId = $request->get('file_id');
-        $fileData = $this->docRepo->getFileByFileId($fileId);
-
-        // dd($path);
-
-        // $asset = Asset::find($id);
-        $assetPath = Storage::disk('public')->url($fileData->file_path);
-
-        header("Cache-Control: public");
-        header("Content-Description: File Transfer");
-        header("Content-Disposition: attachment; filename=" . basename($assetPath));
-        header("Content-Type: " . $fileData->file_type);
-
-        return readfile($assetPath);
-
-
-
-        // return Storage::download($fileData->file_path);
-        
-
+        try {
+            $fileId = $request->get('file_id');
+            $fileData = $this->docRepo->getFileByFileId($fileId);
+            if (!empty($fileData->file_path )) {
+                $file = Storage::disk('public')->exists($fileData->file_path);
+                if ($file) {
+                    return Storage::disk('public')->download($fileData->file_path, $fileData->file_name);
+                } else {
+                    return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
+                }
+            } else {
+                return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
+            }
+        } catch (Exception $ex) {                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 }
