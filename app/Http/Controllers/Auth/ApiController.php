@@ -67,7 +67,7 @@ class ApiController
         }
 
         if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
-          if ($parentRecord->is_invoice_generated == 0 || ($invoice_date < $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
+          if ($parentRecord->is_invoice_generated == 0 || ($invoice_date > $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
             continue;
           }
         }
@@ -100,8 +100,9 @@ class ApiController
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
           'inst_date' =>  NULL,
-          'favoring_name' =>  '',
-          'remarks' => '',
+          'favoring_name' =>  NULL,
+          'remarks' => NULL,
+          'generated_by' => '0',
           'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $gstData = [];
@@ -116,15 +117,16 @@ class ApiController
             $cgst_rate = 0;
             $sgst_amt = 0;
             $sgst_rate = 0;
+            $totalGST = 18;
             if ($parentRecord->gst == 1) {
-                $base_amt = $totalamount * 100/118;
+                $base_amt = $totalamount * 100/(100 + $totalGST);
                 if($userStateId == $companyStateId) {
-                    $cgst_rate = 9;
+                    $cgst_rate = ($totalGST/2);
                     $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
-                    $sgst_rate = 9;
+                    $sgst_rate = ($totalGST/2);
                     $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
                 } else {
-                   $igst_rate = 18;
+                   $igst_rate = $totalGST;
                     $igst_amt = round((($base_amt * $igst_rate)/100),2); 
                 }
             }
@@ -262,6 +264,7 @@ class ApiController
             'inst_date' =>  NULL,
             'favoring_name' =>  NULL,
             'remarks' => NULL,
+            'generated_by' => '0',
             'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
        ];
        $reversalPayment[] = $reversalRow;
@@ -322,8 +325,9 @@ class ApiController
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
           'inst_date' =>  NULL,
-          'favoring_name' =>  '',
-          'remarks' => '',
+          'favoring_name' =>  NULL,
+          'remarks' => NULL,
+          'generated_by' => '0',
           'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $refundPayment[] = $CustomerRow;
@@ -350,7 +354,8 @@ class ApiController
           'inst_no' =>  $inst_no,
           'inst_date' =>  $inst_date,
           'favoring_name' =>  $userName,
-          'remarks' => '',
+          'remarks' => NULL,
+          'generated_by' => '1',
           'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $refundPayment[] = $BankRow;
@@ -395,8 +400,9 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  '',
-              'remarks' => '',
+              'favoring_name' =>  NULL,
+              'remarks' => NULL,
+              'generated_by' => '0',
               'narration' => 'Being  Payment Disbursed towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $disbursalPayment[] = $CustomerRow;
@@ -423,7 +429,8 @@ class ApiController
               'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
-              'remarks' => '',
+              'remarks' => NULL,
+              'generated_by' => '1',
               'narration' => 'Being  Payment Disbursed towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $disbursalPayment[] = $BankRow;
@@ -450,8 +457,9 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  '',
-              'remarks' => '',
+              'favoring_name' =>  NULL,
+              'remarks' => NULL,
+              'generated_by' => '1',
               'narration' => 'Being Interest Booked towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $disbursalPayment[] = $InterestRow;
@@ -513,7 +521,8 @@ class ApiController
               'inst_no' =>  $inst_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
-              'remarks' => '',
+              'remarks' => NULL,
+              'generated_by' => '1',
               'narration' => 'Being Repayment towards Batch no '. $batch_no,
      ];
      $receiptPayment[] = $BankRow;
@@ -554,10 +563,14 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  '',
-              'remarks' => '',
+              'favoring_name' =>  NULL,
+              'remarks' => NULL,
+              'generated_by' => '0',
               'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
           ];
+          if (in_array($stldTxn->trans_type, [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT')])) {
+            $settledRow['generated_by'] = 1; 
+          }
           $receiptPayment[] = $settledRow;
        }
      }
@@ -629,262 +642,6 @@ class ApiController
       }
     }else{
       $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in tally.';
-    }
-    return $response;
-  }
-
-  public function tally_entryy(){
-    $paymentRequired  = false;
-    $response = array(
-      'status' => 'failure',
-      'message' => 'Request method not allowed to execute the script.',
-    );
-    if (strpos(php_sapi_name(), 'cli') !== false) {
-        $response['sapi'] = php_sapi_name();
-        return $this->_setResponse($response, 405);
-    }
-    $where = ['is_posted_in_tally' => '0', 'user_id' => 607]; //, 'is_invoice_generated' => '1'
-    $txnsData = Transactions::getTallyTxns($where);
-    $paymentData = new Collection;
-    if ($paymentRequired) {
-      $paymentData = Payment::getTallyTxns($where);
-    }
-    $batch_no = _getRand(15);
-    $totalRecords = 0;
-    $insertedData = array();
-    $selectedPaymentData = array();
-    $selectedData = array();
-    $tally_data = [];
-    if (!$txnsData->isEmpty() || !$paymentData->isEmpty()) {
-        $i = 0;
-        $ignored_txns = [];
-        $parent_settled = [];
-        if (!empty($paymentData) && !$paymentData->isEmpty()) {
-          foreach ($paymentData as $key => $pmnt) {
-            $i++;
-            $accountDetails = $pmnt->userRelation->companyBankDetails ?? '';
-            if (empty($accountDetails)) {
-                 $response['message'] =  'No Relation Found between customer('. $pmnt->user_id .') and Company with Bank';
-                 return $response;
-            }
-            $inst_no = $pmnt->refundReq->tran_no ?? NULL;
-            $inst_date = $pmnt->refundReq->actual_refund_date ?? NULL;
-            $userName = $pmnt->user->f_name. ' ' . $pmnt->user->m_name .' '. $pmnt->user->l_name;
-            $tally_data[] = [
-              'batch_no' =>  $batch_no,
-              'transactions_id' =>  NULL,
-              'is_debit_credit' =>  '1',
-              'trans_type' =>  $pmnt->transType->trans_name,
-              'tally_trans_type_id' =>  $pmnt->transType->tally_trans_type,
-              'tally_voucher_id' =>  $pmnt->transType->voucher->tally_voucher_id,
-              'tally_voucher_code' =>  $pmnt->transType->voucher->voucher_no,
-              'tally_voucher_name' =>  $pmnt->transType->voucher->voucher_name,
-              'tally_voucher_date' =>  $pmnt->date_of_payment,
-              'invoice_no' =>   '',
-              'invoice_date' =>  NULL,
-              'ledger_name' =>  $userName,
-              'amount' =>  $pmnt->amount,
-              'ref_no' =>  '',
-              'ref_amount' =>  $pmnt->amount,
-              'acc_no' =>  $accountDetails->acc_no ?? '',
-              'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
-              'bank_name' =>  $accountDetails->bank->bank_name ?? '',
-              'cheque_amount' =>  0,
-              'cross_using' =>  $pmnt->payment_type == 2 ? 'a/c payee' : '',
-              'mode_of_pay' =>  $pmnt->payment_type,
-              'inst_no' =>  $inst_no,
-              'inst_date' =>  $inst_date,
-              'favoring_name' =>  $userName,
-              'remarks' => $pmnt->comment ?? '',
-              'narration' => $pmnt->comment ?? '',
-              ];
-              $selectedPaymentData[] = $pmnt->payment_id;
-          }
-        }
-
-
-        foreach ($txnsData as $key => $txn) {
-            if (empty($txn->transType->tally_trans_type) || $txn->transType->tally_trans_type == 0 || $txn->trans_type == 17) {
-                $ignored_txns[$txn->trans_id] = 'Tally Trans Type is empty or zero';
-                continue;
-            }
-            $userName = $txn->user->f_name. ' ' . $txn->user->m_name .' '. $txn->user->l_name;
-            $trans_type_name = $txn->getTransNameAttribute();
-            $tally_voucher_type_id = $txn->transType->tally_trans_type;
-            $cheque_amount = 0;
-            if ($txn->trans_type == 16 && $txn->entry_type == 0) {
-              $disburse_amt = $txn->invoiceDisbursed->disburse_amt;
-              $total_interest = $txn->invoiceDisbursed->total_interest;
-              $cheque_amount = round($disburse_amt - $total_interest, 2);
-              if ($total_interest == 0) {
-                  $cheque_amount = 0;
-              }
-            }
-            $invoice_no = $txn->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-            $invoice_date = $txn->userinvoicetrans->getUserInvoice->created_at ?? NULL;
-            if ($txn->trans_type == 16 && $txn->entry_type == 0) {
-              $invoice_no = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
-              $invoice_date = $txn->invoiceDisbursed->invoice->invoice_date ?? NULL;
-            }
-
-            if (!empty($txn->parent_trans_id)) {
-                $parentRecord  = $txn->getParentTxn();
-                $invoice_no = $parentRecord->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
-                $invoice_date = $parentRecord->userinvoicetrans->getUserInvoice->created_at ?? NULL;
-                if ($parentRecord->trans_type == 16) {
-                  $invoice_no = $parentRecord->invoiceDisbursed->invoice->invoice_no ?? NULL;
-                  $invoice_date = $parentRecord->invoiceDisbursed->invoice->invoice_date ?? NULL;
-                }
-                if ($txn->trans_type == $parentRecord->trans_type && $tally_voucher_type_id == 3) {
-                    $ignored_txns[$txn->trans_id] = 'Child and Parent are same type for journal';
-                    continue;
-                }
-            }
-            $accountDetails = $txn->userRelation->companyBankDetails ?? NULL;
-            if (empty($accountDetails) && !empty($invoice_no)) {
-                 $response['message'] =  'No Relation Found between customer('. $txn->user_id .') and Company with Bank';
-                 return $response;
-            }
-            if ($txn->trans_type == 16 && empty($invoice_no)) {
-                $ignored_txns[$txn->trans_id] = 'Disbursal without Invoice no';
-                continue;
-            }
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 0) {
-                $ignored_txns[$txn->trans_id] = 'Margin debit entry.';
-                continue;
-            }
-            if ($tally_voucher_type_id == 3 && is_null($txn->parent_trans_id) && ($txn->getOutstandingAttribute() > 0 || empty($txn->userinvoicetrans)) && $txn->entry_type == 0) {
-               $ignored_txns[$txn->trans_id] = 'Outstanding > 0 || Invoice not generated';
-               continue;
-            }
-            $txn_entry_type = $txn->entry_type;
-            if (!empty($txn->payment_id) && $txn->entry_type == 1) {
-                $tally_voucher_type_id = 2;
-            }
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.REFUND'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
-               $tally_voucher_type_id = 3;
-            }
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.REFUND')]) && $txn->entry_type == 0) {
-               $tally_voucher_type_id = 1;
-            }
-
-            $inst_no = $txn->invoiceDisbursed->disbursal->tran_id ?? NULL;
-            $inst_date = $txn->invoiceDisbursed->disbursal->funded_date ?? NULL;
-            if (!empty($txn->payment_id)) {
-              $inst_no = $txn->refundReq->tran_no ?? NULL;
-              $inst_date = $txn->refundReq->actual_refund_date ?? NULL;
-            }
-            $common_array = [
-                  'batch_no' =>  $batch_no,
-                  'transactions_id' =>  $txn->trans_id,
-                  'is_debit_credit' =>  $txn_entry_type,
-                  'trans_type' =>  $trans_type_name,
-                  'tally_trans_type_id' =>  $tally_voucher_type_id,
-                  'tally_voucher_id' =>  $txn->transType->voucher->tally_voucher_id,
-                  'tally_voucher_code' =>  $txn->transType->voucher->voucher_no,
-                  'tally_voucher_name' =>  $txn->transType->voucher->voucher_name,
-                  'tally_voucher_date' =>  $txn->trans_date,
-                  'invoice_no' =>  $invoice_no,
-                  'invoice_date' =>  $invoice_date,
-                  'ledger_name' =>  $userName,
-                  'amount' =>  $txn->amount,
-                  'ref_no' =>  $invoice_no,
-                  'ref_amount' =>  $txn->amount,
-                  'acc_no' =>  $accountDetails->acc_no ?? '',
-                  'ifsc_code' =>  $accountDetails->ifsc_code ?? '',
-                  'bank_name' =>  $accountDetails->bank->bank_name ?? '',
-                  'cheque_amount' =>  $cheque_amount,
-                  'cross_using' =>  '',
-                  'mode_of_pay' =>  1,
-                  'inst_no' =>  $inst_no,
-                  'inst_date' =>  $inst_date,
-                  'favoring_name' =>  $userName,
-                  'remarks' => '',
-                  'narration' => '',
-            ];
-            if (in_array($txn->trans_type, [config('lms.TRANS_TYPE.MARGIN')]) && $txn->entry_type == 1) {
-               $secondEntry = $common_array;
-               $secondEntry['tally_trans_type_id'] = 2;
-               $tally_data[] = $secondEntry;
-               $i++;
-            }
-            if (!empty($txn->userinvoicetrans->getUserInvoice->invoice_no)) {
-              $gstData['base_amount'] = $txn->userinvoicetrans->base_amount;
-              if ($txn->userinvoicetrans->sgst_amount != 0) {
-                  $gstData['sgst'] = $txn->userinvoicetrans->sgst_amount;
-              } 
-              if ($txn->userinvoicetrans->cgst_amount != 0) {
-                  $gstData['cgst'] = $txn->userinvoicetrans->cgst_amount;
-              } 
-              if ($txn->userinvoicetrans->igst_amount != 0) {
-                  $gstData['igst'] = $txn->userinvoicetrans->igst_amount;
-              }
-              foreach ($gstData as $gst_key => $gst_val) {
-                 $gst_trans_amount = $gst_val;
-                switch ($gst_key) {
-                  case 'base_amount':
-                    $gst_trans_type = $txn->transType->trans_name;
-                    break;
-                  case 'sgst':
-                    $gst_trans_type = 'SGST + CGST';
-                    break;
-                  case 'cgst':
-                    $gst_trans_type = 'SGST + CGST';
-                    break;
-                  case 'igst':
-                    $gst_trans_type = 'IGST';
-                    break;
-                }
-                $common_array['trans_type'] =  $gst_trans_type;
-                $common_array['amount'] =  $gst_trans_amount;
-                $common_array['ref_amount'] =  $gst_trans_amount;
-                $tally_data[] = $common_array;
-                $i++;
-              }
-            }else{
-              $tally_data[] = $common_array;
-              $i++;
-            }
-          $selectedData[] = $txn->trans_id;
-        }
-        // dd($ignored_txns);
-        try {
-          if (empty($tally_data)) {
-             $response['message'] =  'No Records are selected to Post in tally.';
-             return $response;
-          }
-          $res = \DB::table('tally_entry')->insert($tally_data);
-        } catch (\Exception $e) {
-          $errorInfo  = $e->errorInfo;
-          $res = $errorInfo;
-        }
-        if ($res === true) {
-          $totalTxnRecords = 0;
-          if (!empty($selectedData)) {
-            $totalTxnRecords = \DB::update('update rta_transactions set is_posted_in_tally = 1 where trans_id in(' . implode(', ', $selectedData) . ')');
-          }
-          $totalPaymentsRecords = 0;
-          if (!empty($selectedPaymentData)) {
-            $totalPaymentsRecords = \DB::update('update rta_payments set is_posted_in_tally = 1 where payment_id in(' . implode(', ', $selectedPaymentData) . ')');
-          }
-          $totalRecords = $totalTxnRecords + $totalPaymentsRecords;
-          if ($totalRecords != (count($selectedData) + count($selectedPaymentData))) {
-            $response['message'] =  'Some error occured. No Record can be posted in tally.';
-          }else{
-            $response['status'] = 'success';
-            $batchData = [
-              'batch_no' => $batch_no,
-              'record_cnt' => $i,
-              'created_at' => date('Y-m-d H:i:s'),
-            ];
-            $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
-            $response['message'] =  ($i > 1 ? $i .' Records inserted successfully' : '1 Record inserted.');
-          }
-        }else{
-          $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in tally.';
-        }
-    }else{
-      $response['message'] =  'No new record found to post in tally.';
     }
     return $response;
   }

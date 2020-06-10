@@ -47,8 +47,9 @@ class EodProcessController extends Controller {
             } else {
                 $message = "Unable to process the checks, as system is not started or stopped yet.";
             }
-            
 
+            $posting = $this->checkTallyPosting();
+            
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));        
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
@@ -264,5 +265,46 @@ class EodProcessController extends Controller {
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), $status);           
         return $result;
     }
+
+
+  public function checkTallyPosting() {
+    $debitCredits = [];
+    $debitAmt = 0;
+    $creditAmt = 0;
+    $txnRecords = $this->lmsRepo->postedTxnsInTally();
+    $tallyAmounts = $this->lmsRepo->getActualTallyAmount();
+    foreach ($txnRecords as $key => $txn) {
+      $txnInvoiceAmount = $txn->amount;
+      $waiveOffAmount = $txn->getWaiveOffAmount();
+      $invoiceTrans = $txn->userinvoicetrans;
+      if (!empty($invoiceTrans)) {
+        $txnInvoiceAmount = $invoiceTrans->base_amount + $invoiceTrans->sgst_amount + $invoiceTrans->cgst_amount + $invoiceTrans->igst_amount;
+      }
+      if ($txn->amount != $txnInvoiceAmount && !empty($waiveOffAmount)) {
+        $txn->amount = $txn->amount - $waiveOffAmount;
+      }
+      if ($txn->entry_type == 0) {
+        $debitAmt += $txn->amount;
+        // $debitCredits['debit'][] = $txn;
+      }
+      if ($txn->entry_type == 1) {
+        $creditAmt += $txn->amount;
+        // $debitCredits['credit'][] = $txn;
+      }
+    }
+    $debitCredits['debit'] = $debitAmt;
+    $debitCredits['credit'] = $creditAmt;
+    $tallyAmountsData = [
+        'debit' => 0,
+        'credit' => 0,
+    ];
+    foreach ($tallyAmounts as $tallyAmt) {
+      $tallyAmountsData[strtolower($tallyAmt->is_debit_credit)] = (float)$tallyAmt->amount; 
+    }
+
+    return [$debitCredits, $tallyAmountsData];
+    // return ($debitCredits['debit'] == $tallyAmountsData['debit'] && $debitCredits['credit'] == $tallyAmountsData['credit'])
+  }
+
 
 }

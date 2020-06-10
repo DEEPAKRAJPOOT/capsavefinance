@@ -32,7 +32,7 @@ class Idfc_lib{
 			SELF::BATCH_ENQ => 'success',
 	);
 
-	public function api_call($method = NULL, array $params = array()){
+	public function api_call($method = NULL, array $params = array(), $getApiResponse = false){
 		 $resp = array(
 			'status' => 'fail',
 			'message'=> 'Some error occured. Please try again',
@@ -50,6 +50,9 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
+     	if ($getApiResponse) {
+     		return [$txn_id, $payload, $http_header, $response['result']];
+     	}
      	logFile($url, 'D', '', '', $txn_id);
 		logFile($payload, 'D', '', '', $txn_id);
 		logFile($http_header, 'D', '', '', $txn_id);
@@ -184,7 +187,7 @@ class Idfc_lib{
 	    	return $result;
     	}
     	$header = $response['doMultiPaymentCorpRes']['Header'];
-    	$body = $response['doMultiPaymentCorpRes']['Body'];
+    	$body = $response['doMultiPaymentCorpRes']['Body'] ?? [];
 
 	    if (strtolower($header['Status']) != 'success' ) {
 	    	$result['code'] = $header['Error_Cde'] ?? 'CAP001'; //change to Error_Code if response changes
