@@ -31,5 +31,30 @@ class BizEntityCin extends BaseModel
         'created_by',
         'created_at'
     ];
+    
+    /**
+     * Get Biz Entity Cin Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public static function getBizEntityCinData($whereCond=[])
+    {
+        /**
+         * $where is not an array
+         */
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        
+        $query = self::select('*');        
+       
+        if (count($whereCond) > 0) {
+            $query->where($whereCond);            
+        }        
+        
+        $result = $query->get();
+        return $result ? $result: [];
+    }    
   
 }
