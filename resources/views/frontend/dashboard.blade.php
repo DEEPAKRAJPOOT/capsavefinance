@@ -18,7 +18,7 @@
                                     </div>
                                     <div class="suppliers-box highlight-text text-center">
                                         <p class="card-text" style="font-size: 25px;font-weight: 700;">Invoice Value</p>
-                                        <p class="statistics-number">&#8377; 674754.60</p>
+                                        <p class="statistics-number">&#8377; 6,74,07,748.60</p>
                                     </div>
                                     <!--
                                     <div class="approved-box">
@@ -56,7 +56,7 @@
                                     </div>
                                     <div class="suppliers-box highlight-text text-center">
                                         <p class="card-text" style="font-size: 25px;font-weight: 700;">Invoice Approved</p>
-                                        <p class="statistics-number">&#8377; 674754.60</p>
+                                        <p class="statistics-number">&#8377; 5,58,81,138.50</p>
                                     </div>
                                 </div>
                             </div>
@@ -77,7 +77,7 @@
                                     </div>
                                     <div class="suppliers-box highlight-text text-center">
                                         <p class="card-text" style="font-size: 25px;font-weight: 700;">Invoice Repaid</p>
-                                        <p class="statistics-number">&#8377; 674754.60</p>
+                                        <p class="statistics-number">&#8377; 2,18,24602.50</p>
                                     </div>
                                 </div>
                             </div>
@@ -98,7 +98,7 @@
                                     </div>
                                     <div class="suppliers-box highlight-text text-center">
                                         <p class="card-text" style="font-size: 25px;font-weight: 700;">Invoice Due</p>
-                                        <p class="statistics-number">&#8377; 674754.60</p>
+                                        <p class="statistics-number">&#8377; 3,40,56,536.00</p>
                                     </div>
                                 </div>
                             </div>

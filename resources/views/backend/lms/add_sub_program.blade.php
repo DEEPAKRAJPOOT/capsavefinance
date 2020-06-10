@@ -160,7 +160,7 @@
                                                                                 <label class="form-check-label fnt">
 
                                                                                     {!! Form::radio('interest_rate','1',
-                                                                                    isset($subProgramData->interest_rate) ? $subProgramData->interest_rate : 'checked',
+                                                                                    isset($subProgramData->interest_rate) && ($subProgramData->interest_rate=="1") ? "checked" : "",
                                                                                     ['class'=>'form-check-input int-checkbox '])    !!} 
                                                                                     Fixed
                                                                                 </label>
@@ -168,7 +168,7 @@
                                                                             <div class="form-check-inline">
                                                                                 <label class="form-check-label fnt">
                                                                                     {!! Form::radio('interest_rate','2',
-                                                                                    isset($subProgramData->interest_rate) ? $subProgramData->interest_rate : null,
+                                                                                    isset($subProgramData->interest_rate) && ($subProgramData->interest_rate=="2") ? "checked" : "",
                                                                                     ['class'=>'form-check-input int-checkbox']) !!} 
                                                                                     Floating
                                                                                 </label>

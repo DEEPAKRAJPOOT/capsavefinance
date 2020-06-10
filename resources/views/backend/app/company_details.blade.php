@@ -35,8 +35,9 @@
 				@csrf
 				<input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
 				<input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">
-				<input type="hidden" name="biz_cin" value="">
+				<!-- <input type="hidden" name="biz_cin" value=""> -->
 				<input type="hidden" name="pan_api_res" value="">
+				<input type="hidden" name="cin_api_res" value="">
 				<div class=" form-fields">
 					<div class="form-sections">
 						<div class="row">
@@ -99,6 +100,22 @@
 						<div class="row">
 
 							<div class="col-md-4">
+								<div class="form-group password-input" style="display: {{$business_info->is_gst_manual!=1 ? 'block' : 'none' }}">
+									<label for="txtPassword">Select CIN
+											<span class="mandatory">*</span>
+									</label>
+
+									<select class="form-control" name="biz_cin" tabindex="2">
+										<option value="">Select CIN Number</option>
+										@forelse($business_info->cins as $cin_key => $cin_value)
+											<option value="{{$cin_value->cin}}" {{(old('biz_cin', Helpers::customIsset($business_info->cin, 'cin')) == $cin_value->cin)? 'selected':''}}>{{$cin_value->cin}}</option>
+										@empty
+										@endforelse
+									</select>
+								</div>
+							</div>
+
+							<div class="col-md-4">
 								<div class="form-group password-input">
 									<label for="txtPassword">Segment
 											<span class="mandatory">*</span>
@@ -130,6 +147,13 @@
 								</div>
 							</div>
 
+							
+
+
+
+						</div>
+						<div class="row">
+
 							<div class="col-md-4">
 								<div class="form-group password-input">
 									<label for="txtPassword">Sub Industry</label>
@@ -139,13 +163,7 @@
 						            @enderror
 								</div>
 							</div>
-								
-							
-
-
-
-						</div>
-						<div class="row">		
+										
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="txtEmail">Business Constitution
@@ -177,12 +195,15 @@
 
 							
 
+						</div>
+						<div class="row">
+
 							<div class="col-md-4">
 								<div class="form-group password-input INR">
 									<label for="txtPassword">Business Turnover
 									</label>
-                                                                        <div class="relative">
-                                                                        <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <div class="relative">
+                                    <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
 									<input type="text" name="biz_turnover" value="{{old('biz_turnover', number_format($business_info->turnover_amt))}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
                                                                         </div>
 									@error('biz_turnover')
@@ -190,8 +211,6 @@
 						            @enderror
 								</div>
 							</div>
-						</div>
-						<div class="row">
 							<div class="col-md-4">
 								<div class="form-group password-input">
 									<label for="txtPassword">Share Holding % as on

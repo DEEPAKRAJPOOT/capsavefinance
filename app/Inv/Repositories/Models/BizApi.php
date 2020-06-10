@@ -23,8 +23,8 @@ class BizApi extends BaseModel
      * @var integer
      */
     protected $primaryKey = 'biz_api_id';
-    public $userstamps = false;
-    public $timestamps = false;
+    public $userstamps = true;
+    public $timestamps = true;
 
     
     protected $fillable = [
@@ -36,7 +36,9 @@ class BizApi extends BaseModel
         'biz_api_log_id',
         'status',
         'created_by',
-        'created_at'
+        'created_at',
+        'updated_at',
+        'updated_by'
     ];
 
  public static function getPromoterCibilData($biz_owner_id)

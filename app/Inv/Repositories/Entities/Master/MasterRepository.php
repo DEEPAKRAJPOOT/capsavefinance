@@ -34,6 +34,8 @@ use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Master\Activity;
 use App\Inv\Repositories\Models\Master\ChargeGST;
 
+
+
 /**
  * 
  */
@@ -720,13 +722,15 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function getActivity($whereCond=[])
     {
         return Activity::getActivity($whereCond);
+
     }
 
     public function updateBaseRateEndDate($id, $bankId, $date)
     {
         return BaseRate::updateBaseRateEndDate($id, $bankId, $date);
-    }     
-    
+    }    
+
+   
     public function saveChargesGST($attributes)
     {
      return  ChargeGST::saveChargesGST($attributes);
@@ -736,6 +740,7 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
       return ChargeGST::getLastChargesGSTById($chargeId);
     }
+
     
     /**
      * Get Last DoA Level Id
@@ -746,4 +751,23 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return DoaLevel::getLastDoaLevelId();
     }    
+
+      
+    /**
+     * Get all product type
+     * 
+    
+     */
+    public function getProductType()
+    {
+        return Product::getProductType();
+             
+    }
+    public function getProIdByDoaLevel($doid)
+    {
+        return DoaLevel::getProIdByDoaLevel($doid);
+             
+    }
+    
+
 }

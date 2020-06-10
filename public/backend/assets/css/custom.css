@@ -244,7 +244,7 @@ table.remove-tr-bg tbody tr {
 
 #PermissionsForm ul li {
 	float: left;
-	width: 25%;
+	width: 100%;
 	margin: 0 0 3px 0;
 	list-style-type: none;
 	min-height: 255px;
@@ -321,8 +321,8 @@ table.remove-tr-bg tbody tr {
 
 .verify-owner-no {
     position: absolute;
-    right: 15px;
-    padding: 1px 8px;
+    right: 0px;
+    padding: 3px 8px;
     background: #138864;
     border-top-left-radius: 0px;
     border-top-right-radius: 4px;
@@ -843,6 +843,7 @@ select.form-control {
 	vertical-align: top;
 	line-height: 20px;
 	font-size: 13px;
+        margin: 0 3px;
 }
 
 .btn-success {
@@ -1245,6 +1246,7 @@ span.multiselect-native-select select {
 .card {
 	border: 0;
 	border-radius: 10px;
+        margin-bottom: 25px;
 }
 
 .form-control {
@@ -1282,7 +1284,6 @@ span.multiselect-native-select select {
 .table-offer > tbody > tr > td:last-child, .table-offer > thead > tr > th:last-child{ border:none;}
 .table-offer > thead > tr > th{border-bottom:solid 1px #efefef; background:#e2e2e2;}
 .table-bordered th,.table-bordered td{border-right:solid 1px #e9ecef;}
-{}
 .overview-table.table .table-border-none td{border-left:none;border-right:none;}
 .multiselect-native-select .btn-group{width:100%;}
 .multiselect.dropdown-toggle{
@@ -1290,10 +1291,11 @@ span.multiselect-native-select select {
     background: #fff;
     width: 100%;
     border-radius: 7px;
-    padding: 5px;
     text-align: left;
     color: #ccc;
-    font-size: 15px;	
+    font-size: 15px;
+    height: calc(2.25rem + 1px);
+    padding: 0.5rem 0.75rem;
 	
 }
 

@@ -15,17 +15,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_dashboard',
                 'uses' => 'Backend\DashboardController@index'
             ]);
+            Route::get('/idfc', [
+                'as' => 'idfc',
+                'uses' => 'Backend\DashboardController@idfc'
+            ]);
         });
 
         Route::group(['prefix' => 'reports'], function () {
-            Route::get('/', [
-                'as' => 'report_summary',
-                'uses' => 'Backend\ReportController@index'
-            ]);
-            Route::get('/customer', [
-                'as' => 'report_customer',
-                'uses' => 'Backend\ReportController@customer'
-            ]);
             Route::get('/lease-register', [
                 'as' => 'lease_register',
                 'uses' => 'Backend\ReportController@leaseRegister'
@@ -1158,164 +1154,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
           ///////////////////////// Route for invoice controller///////////////////////
 
 
-           Route::group(['prefix' => 'invoice'], function () {
-               Route::get('backend_upload_invoice', [
-                 'as' => 'backend_upload_invoice',
-                'uses' => 'Backend\InvoiceController@getInvoice'
-            ]); 
-               
-         Route::get('backend_bulk_invoice', [
-                 'as' => 'backend_bulk_invoice',
-                'uses' => 'Backend\InvoiceController@getBulkInvoice'
-            ]); 
-            Route::get('backend_get_invoice', [
-                 'as' => 'backend_get_invoice',
-                'uses' => 'Backend\InvoiceController@viewInvoice'
-            ]); 
-           Route::get('user_wise_invoice', [
-                 'as' => 'user_wise_invoice',
-                'uses' => 'Backend\InvoiceController@UserWiseInvoice'
-            ]); 
-           Route::get('backend_get_approve_invoice', [
-                 'as' => 'backend_get_approve_invoice',
-                'uses' => 'Backend\InvoiceController@viewApproveInvoice'
-            ]); 
-           
-            Route::get('backend_get_disbursed_invoice', [
-                 'as' => 'backend_get_disbursed_invoice',
-                'uses' => 'Backend\InvoiceController@viewDisbursedInvoice'
-            ]); 
-            
-            
-            Route::get('/disburse-confirm', [
-                'as' => 'disburse_confirm',
-                'uses' => 'Backend\InvoiceController@disburseConfirm'
-            ]);
-
-            Route::post('/disburse-online', [
-                'as' => 'disburse_online',
-                'uses' => 'Backend\InvoiceController@disburseOnline'
-            ]);
-
-
-            Route::post('/disburse-offline', [
-                'as' => 'disburse_offline',
-                'uses' => 'Backend\InvoiceController@disburseOffline'
-            ]);
-            
-             Route::get('backend_get_repaid_invoice', [
-                 'as' => 'backend_get_repaid_invoice',
-                'uses' => 'Backend\InvoiceController@viewRepaidInvoice'
-            ]); 
-             
-            Route::get('backend_get_sent_to_bank', [
-                'as' => 'backend_get_sent_to_bank',
-                'uses' => 'Backend\InvoiceController@viewSentToBankInvoice'
-            ]); 
-            
-            Route::post('/download-batch-data', [
-                'as' => 'download_batch_data',
-                'uses' => 'Backend\InvoiceController@downloadBatchData'
-            ]);
-
-            Route::get('/view-batch-user-invoice', [
-                'as' => 'view_batch_user_invoice',
-                'uses' => 'Backend\InvoiceController@viewBatchUserInvoice'
-            ]); 
-
-            Route::get('/invoice-update-disbursal', [
-                'as' => 'invoice_udpate_disbursal',
-                'uses' => 'Backend\InvoiceController@invoiceUpdateDisbursal'
-            ]);
-        
-            Route::post('/update-disburse-invoice', [
-                'as' => 'updateDisburseInvoice',
-                'uses' => 'Backend\InvoiceController@updateDisburseInvoice'
-            ]);
-
-
-               Route::get('backend_get_failed_disbursment', [
-                 'as' => 'backend_get_failed_disbursment',
-                'uses' => 'Backend\InvoiceController@viewfailedDisbursment'
-            ]); 
-              
-                Route::get('backend_get_disbursed', [
-                 'as' => 'backend_get_disbursed',
-                'uses' => 'Backend\InvoiceController@viewdisbursed'
-            ]); 
-                 Route::get('backend_get_reject_invoice', [
-                 'as' => 'backend_get_reject_invoice',
-                'uses' => 'Backend\InvoiceController@viewRejectInvoice'
-            ]); 
-              
-             
-        
-           Route::POST('backend_save_invoice', [
-                 'as' => 'backend_save_invoice',
-                'uses' => 'Backend\InvoiceController@saveInvoice'
-            ]); 
-           
-             Route::POST('backend_save_bulk_invoice', [
-                 'as' => 'backend_save_bulk_invoice',
-                'uses' => 'Backend\InvoiceController@saveBulkInvoice'
-            ]); 
-             
-            Route::POST('update_invoice_amount', [
-                 'as' => 'update_invoice_amount',
-                'uses' => 'Backend\InvoiceController@saveInvoiceAmount'
-            ]);    
-             
-             
-         Route::get('backend_upload_all_invoice', [
-                 'as' => 'backend_upload_all_invoice',
-                'uses' => 'Backend\InvoiceController@getAllInvoice'
-            ]);  
-          Route::POST('backend_save_invoice', [
-                 'as' => 'backend_save_invoice',
-                'uses' => 'Backend\InvoiceController@saveInvoice'
-            ]); 
-          
-            Route::get('invoice_failed_status', [
-                 'as' => 'invoice_failed_status',
-                'uses' => 'Backend\InvoiceController@invoiceFailedStatus'
-            ]); 
-            Route::get('invoice_success_status', [
-                 'as' => 'invoice_success_status',
-                'uses' => 'Backend\InvoiceController@invoiceSuccessStatus'
-            ]); 
-            
-             Route::get('view_invoice_details', [
-                 'as' => 'view_invoice_details',
-                'uses' => 'Backend\InvoiceController@viewInvoiceDetails'
-            ]);  
-                Route::get('backend_get_exception_cases', [
-                 'as' => 'backend_get_exception_cases',
-                'uses' => 'Backend\InvoiceController@exceptionCases'
-            ]);  
-            
-            Route::get('bank-invoice', [
-                'as' => 'backend_get_bank_invoice',
-               'uses' => 'Backend\InvoiceController@viewBankInvoice'
-            ]); 
-
-            Route::get('bank-invoice-customers', [
-                'as' => 'backend_get_bank_invoice_customers',
-               'uses' => 'Backend\InvoiceController@viewBankInvoiceCustomers'
-            ]);
-            Route::POST('upload_bulk_csv_Invoice', [
-                  'as' => 'upload_bulk_csv_Invoice',
-                  'uses' => 'Backend\InvoiceController@uploadBulkCsvInvoice'
-              ]); 
-            Route::get('view-disburse-invoice', [
-                'as' => 'backend_view_disburse_invoice',
-               'uses' => 'Backend\InvoiceController@viewDisburseInvoice'
-            ]);
-             Route::POST('account_closure', [
-                'as' => 'account_closure',
-               'uses' => 'Backend\InvoiceController@accountClosure'
-            ]);
-         });
-         
         Route::group(['prefix' => 'document'], function () {
             Route::get('/list', [
                 'as' => 'pp_document_list',
@@ -1344,67 +1182,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
         });   
         
-        Route::group(['prefix' => 'payment'], function () {
-            Route::get('payment_list', [
-                'as' => 'payment_list',
-                'uses' => 'Backend\PaymentController@paymentList'
-            ]);
-
-            Route::get('unsettled_payments', [
-                'as' => 'unsettled_payments',
-                'uses' => 'Backend\PaymentController@unsettledPayment'
-            ]); 
-            
-            Route::get('settled_payments', [
-                'as' => 'settled_payments',
-                'uses' => 'Backend\PaymentController@settledPayment'
-            ]);
-
-            Route::get('excel_payment_list', [
-                 'as' => 'excel_payment_list',
-                'uses' => 'Backend\PaymentController@excelPaymentList'
-            ]);   
-            Route::get('add_payment', [
-                 'as' => 'add_payment',
-                'uses' => 'Backend\PaymentController@addPayment'
-            ]);
-            
-            Route::post('save_payment', [
-                 'as' => 'save_payment',
-                'uses' => 'Backend\PaymentController@savePayment'
-            ]);
-
-            Route::get('edit_payment', [
-                 'as' => 'edit_payment',
-                'uses' => 'Backend\PaymentController@EditPayment'
-            ]);      
-
-            Route::post('update_payment', [
-                 'as' => 'update_payment',
-                'uses' => 'Backend\PaymentController@updatePayment'
-            ]);  
-             Route::get('excel_bulk_payment', [
-                'as' => 'excel_bulk_payment',
-                'uses' => 'Backend\PaymentController@excelBulkPayment'
-            ]);
-                Route::POST('backend_save_excel_payment', [
-                 'as' => 'backend_save_excel_payment',
-                'uses' => 'Backend\PaymentController@saveExcelPayment'
-            ]); 
-
-            // Payment Advice
-            Route::get('payment_advice', [
-                'as' => 'payment_advice',
-               'uses' => 'Backend\PaymentController@paymentAdviceList'
-            ]); 
-           
-            // Payment Advice Excel Download
-            Route::get('payment_advice_excel', [
-                'as' => 'payment_advice_excel',
-               'uses' => 'Backend\PaymentController@paymentAdviceExcel'
-            ]); 
-
-         });
+        
 
         //colender route 
          Route::group(['prefix' => 'colender'], function () {
@@ -1423,14 +1201,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\CoLenderControllers@acceptOffer'
             ]);
             // Payment Advice Excel Download
-            Route::get('payment_refund_index', [
-                'as' => 'payment_refund_index',
-               'uses' => 'Backend\PaymentController@paymentInvoiceList'
-           ]); 
-            Route::post('create-payment-refund', [
-                'as' => 'create_payment_refund',
-               'uses' => 'Backend\PaymentController@createPaymentRefund'
-           ]); 
+             
          }); 
         //colender route 
 

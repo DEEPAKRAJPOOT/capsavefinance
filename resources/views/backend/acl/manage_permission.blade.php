@@ -47,7 +47,7 @@
                                 <div class="clearfix"></div>
                                 
                                 <p class="error" id="myerr" style="color:red;display:none">Check at least one CheckBox</p>
-                                <div>
+                                <div class="row">
 
                                     @foreach($getParentData as $key=> $ParentData)
                                     @php $match = 0 @endphp
@@ -58,6 +58,8 @@
                                     @php $match = 1 @endphp
                                     @endif
                                     @endif
+                                    
+                                    <div class="col-md-3">
                                     <ul>
                                         <li>
 
@@ -72,6 +74,7 @@
                                             @endif
                                         </li>
                                     </ul>
+                                    </div>
                                     @endforeach
                                 </div>
                                 

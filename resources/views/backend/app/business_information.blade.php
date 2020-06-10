@@ -27,8 +27,9 @@
 				<form id="business_information_form" method="POST" action="{{route('save_new_application')}}" onsubmit="return checkValidation();">
 				@csrf
 				<input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
-				<input type="hidden" name="biz_cin" value="">
-				<input type="hidden" name="pan_api_res" value="">
+				<!-- <input type="hidden" name="biz_cin" value=""> -->
+				<input type="hidden" name="pan_api_res" valuDe="">
+				<input type="hidden" name="cin_api_res" valuDe="">
 				<div class=" form-fields">
 					<div class="form-sections row">
 						<div class="col-md-12">
@@ -41,8 +42,10 @@
 										<span class="text-success" id="pan-msg" style="display: none;">
 											<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 										</span>
-										<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-										<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" >
+                                                                                <div class="relative">
+                                                                                    <a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
+                                                                                    <input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" >
+                                                                                </div>
 										@error('biz_pan_number')
 							                <span class="text-danger error">{{ $message }}</span>
 							            @enderror
@@ -82,7 +85,16 @@
 								</div>
 								</div>
 								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group password-input" >
+											<label for="txtPassword">Select CIN
+													<span class="mandatory">*</span>
+											</label>
 
+											<select class="form-control" name="biz_cin" tabindex="2">
+											</select>
+										</div>
+									</div>
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Segment
@@ -117,6 +129,12 @@
 								            @enderror
 										</div>
 									</div>
+									
+									
+									
+								</div>
+								<div class="row">								
+
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Sub Industry</label>											
@@ -127,12 +145,6 @@
 								            @enderror
 										</div>
 									</div>
-									
-									
-									
-								</div>
-								<div class="row">								
-
 									<div class="col-md-4">
 										<div class="form-group">
 											<label for="txtEmail">Business Constitution
@@ -160,8 +172,11 @@
 									<div class="col-md-4">
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
-											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+											</label>
+                                                                                        <div class="relative">
+                                                                                            <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                                            <input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+                                                                                        </div>
 											@error('biz_turnover')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror

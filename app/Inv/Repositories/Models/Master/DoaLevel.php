@@ -43,6 +43,7 @@ class DoaLevel extends BaseModel {
      */
     protected $fillable = [
         'level_name',
+        'product_id',
         'level_code',
         'state_id',
         'city_id',
@@ -74,13 +75,13 @@ class DoaLevel extends BaseModel {
      */
     public static function getDoaLevels()
     {
-        $groupBy = ['doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
-        $res = self::select('doa_level.*')
+        $groupBy = ['doa_level.product_id','doa_level.city_id', 'doa_level.min_amount', 'doa_level.max_amount'];
+        $res = self::with('product')->select('doa_level.*')
                // ->join('mst_city', 'mst_city.id', '=', 'doa_level.city_id')
                 //->where('doa_level.is_active', 1)
                 ->groupBy($groupBy)
                 ->orderBy('doa_level.doa_level_id', 'DESC');
-        //->get();
+       /// ->get();
         return $res ?: [];
     }
 
@@ -207,6 +208,18 @@ class DoaLevel extends BaseModel {
         $res = self::where('is_active', 1)->pluck('level_name', 'doa_level_id');
         return $res ?: false;
     }
+    
+      function product()
+     {
+          return $this->belongsTo('App\Inv\Repositories\Models\Product', 'product_id','id');  
+    
+     }
+    public static function getProIdByDoaLevel($doid)
+    {
+        $res = self::where('doa_level_id',$doid)->first();
+        return $res ?: false;
+    } 
+     
 
     /**
      * Get DoA Data
