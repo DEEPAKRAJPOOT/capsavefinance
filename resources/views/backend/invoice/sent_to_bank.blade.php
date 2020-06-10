@@ -111,7 +111,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('viewBatchSendToBankInvoice','View Invoice', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Transaction Id', 'modal-lg')!!}
 
 @endsection
 @section('jscript')

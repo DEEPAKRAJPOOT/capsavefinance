@@ -93,6 +93,7 @@
                                     </label>
 
                                     <select name="city" id="city" class="form-control" style="width:350px">
+                                        <option value="">Select City</option>
                                  </select>
                                  </div>
                               </div>

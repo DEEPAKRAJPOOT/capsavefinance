@@ -17,10 +17,11 @@
                     <div class="section-header">
                         <h4 class="section-title"> Enter One Time (OTP) </h4>
                     </div>
+                    @if(count($errors) < 1)
                     <div class="thanks-conent text-center marT50">
                         <p class="p-conent">{{trans('master.otpForm.enter_otp_below')}}</p>
                     </div> 
-
+                    @endif
                     <div class="  form-fields">
                         <div class="row">
                             <div class="col-md-12">
