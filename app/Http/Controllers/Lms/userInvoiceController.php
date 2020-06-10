@@ -648,9 +648,9 @@ class userInvoiceController extends Controller
             $user_id = $request->get('user_id');
             $userAddresswithbiz = $this->UserInvRepo->getAddressByUserId($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
-            if (empty($userAddresswithbiz) || $userAddresswithbiz->count() != 1) {
+            /*if (empty($userAddresswithbiz) || $userAddresswithbiz->count() != 1) {
                return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple / No default addresses found.');
-            }
+            }*/
             $result = $this->getUserLimitDetais($user_id);
             return view('lms.invoice.user_invoice_location')->with(['user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $userAddresswithbiz,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
