@@ -47,8 +47,6 @@ class EodProcessController extends Controller {
             } else {
                 $message = "Unable to process the checks, as system is not started or stopped yet.";
             }
-
-            $posting = $this->checkTallyPosting();
             
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));        
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
