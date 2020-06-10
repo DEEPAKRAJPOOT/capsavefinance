@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Lms;
 use Auth;
 use Session;
 use Helpers;
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\InvoiceInterface;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 class EodProcessController extends Controller {
 
@@ -43,18 +45,21 @@ class EodProcessController extends Controller {
                 $transEndDate = $eodProcess->sys_end_date;
                 
                 $this->checkDisbursal($transStartDate, $transEndDate);
+                $this->checkInterestAccrual($transStartDate, $transEndDate);
+                $this->checkRunningTransSettle($transStartDate, $transEndDate);
                 $message = "Eod Process checks are done.";
             } else {
                 $message = "Unable to process the checks, as system is not started or stopped yet.";
             }
             
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));        
-            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
+            //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
             //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'));
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'));
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'));
+            // \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.RUNNING_TRANS_POSTING_SETTLED'), config('lms.EOD_PASS_STATUS'));
         
             return $message;
             
@@ -304,5 +309,43 @@ class EodProcessController extends Controller {
     // return ($debitCredits['debit'] == $tallyAmountsData['debit'] && $debitCredits['credit'] == $tallyAmountsData['credit'])
   }
 
+    protected function checkInterestAccrual($transStartDate, $transEndDate)
+    {
+        $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true,'intAccrualStartDateLteSysDate'=>true]);
 
+        $result = true;
+        if(!empty($invoiceList)){
+            foreach ($invoiceList as $invId => $trans) {
+                $invDisbDetail = InvoiceDisbursed::find($invId);
+                $maxAccrualDate = $invDisbDetail->interests->max('interest_date');
+                $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
+                $sys_start_date = $start->format('Y-m-d');
+                if(strtotime($maxAccrualDate) != strtotime($sys_start_date)){
+                    $result = false;
+                    break;
+                }
+            }
+        }
+
+        if ($result) {                  
+            $status = config('lms.EOD_PASS_STATUS'); 
+        } else {
+            $status = config('lms.EOD_FAIL_STATUS'); 
+        }
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), $status);           
+        return $result;
+    }
+
+    protected function checkRunningTransSettle($transStartDate, $transEndDate)
+    {
+        $transactions = $this->lmsRepo->checkRunningTrans($transStartDate, $transEndDate);
+        $result = ($transactions->count() == 0)?true:false;
+        if($result){                  
+            $status = config('lms.EOD_PASS_STATUS'); 
+        } else {
+            $status = config('lms.EOD_FAIL_STATUS'); 
+        }
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.RUNNING_TRANS_POSTING_SETTLED'), $status);
+        return $result;
+    }
 }

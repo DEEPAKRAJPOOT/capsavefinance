@@ -236,7 +236,20 @@
                                     <label for="">{{ $statusLog ? $statusArr[$statusLog->disbursal_block_status] : '' }}</label>                                                        
                                 </div>
                             </div>                                                     
-                        </div>                         
+                        </div>  
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="">Manually Posted Running Transaction Status </label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->running_trans_posting_settled] : '' }}</label>                                                        
+                                </div>
+                            </div>                                                     
+                        </div>                       
                     </div>
                 </div>
             </div>

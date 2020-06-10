@@ -484,7 +484,7 @@ class ManualApportionmentHelper{
     
     public function dailyIntAccrual(){
         $curdate = Helpers::getSysStartDate();
-        $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
+        $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
         foreach ($invoiceList as $invId => $trans) {
             $this->intAccrual($invId);
         }
