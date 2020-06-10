@@ -1379,5 +1379,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	   
 			   
 	}     
-	 
+	  
+    
+    public function getEodDataCount()
+    {
+        return EodProcess::getEodDataCount();
+    }    
+
 }

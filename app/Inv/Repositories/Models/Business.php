@@ -148,6 +148,19 @@ class Business extends BaseModel
             }
             BizPanGst::insert($data);
         }
+
+        if($attributes['cin_api_res']) {
+            $cin_api_res = explode(',', rtrim($attributes['cin_api_res'],','));
+            $dataCin = [];
+            foreach ($cin_api_res as $key=>$value) {
+                $dataCin[$key]['biz_id'] = $business->biz_id;
+                $dataCin[$key]['cin'] = $value;
+                $dataCin[$key]['is_active'] = 1;
+                $dataCin[$key]['created_by'] = Auth::user()->user_id;
+                $dataCin[$key]['created_at'] = \Carbon\Carbon::now();
+            }
+            BizEntityCin::insert($dataCin);
+        }
         // insert into rta_app table
         $app = Application::create([
             'user_id'=>$userId,
@@ -214,6 +227,9 @@ class Business extends BaseModel
     public function gsts(){
         return $this->hasMany('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null])->where('parent_pan_gst_id','<>',0);
     }
+    public function cins(){
+        return $this->hasMany('App\Inv\Repositories\Models\BizEntityCin','biz_id','biz_id')->where('is_active',1);
+    }
 
     public function pan(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>1, 'biz_owner_id'=>null]);
@@ -221,6 +237,9 @@ class Business extends BaseModel
 
     public function gst(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null, 'parent_pan_gst_id'=>0]);
+    }
+    public function cin(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>1, 'biz_owner_id'=>null, 'parent_pan_gst_id'=>0]);
     }
 
     public static function getCompanyDataByBizId($biz_id)

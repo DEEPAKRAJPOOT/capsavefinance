@@ -202,6 +202,7 @@
         token: "{{ csrf_token() }}"
     }
     </script>
-    <script src="{{ asset('backend/js/number-format.js') }}"></script>    
+    <script src="{{ asset('backend/js/number-format.js') }}"></script>
+    <script src="{{ asset('common/js/check_permission.js') }}"></script>
     @yield('jscript')
 </html>

@@ -33,7 +33,7 @@ class Otp extends BaseModel
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.

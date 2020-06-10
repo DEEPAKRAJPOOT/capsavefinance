@@ -190,7 +190,8 @@ class DataRenderer implements DataProviderInterface
                         $app_id = $app->app_id;
                         $parent_app_id = $app->parent_app_id;
                         $ret = '';
-                        if(Helpers::checkPermission('company_details')){
+                        $permission = Helpers::checkPermission('company_details');
+                        if($permission){
                            if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
@@ -203,7 +204,11 @@ class DataRenderer implements DataProviderInterface
                         
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
-                            $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            if ($permission) {
+                                $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            } else {
+                                $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            }
                         } 
                            
                         return $ret;
@@ -327,6 +332,7 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($app) use ($request) {
                         $act = '';
+                        $lmsStatus = config('lms.LMS_STATUS');
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
                         if ($view_only && in_array($app->status, [0,1,2])) {
                            //if(Helpers::checkPermission('add_app_note')){
@@ -340,7 +346,7 @@ class DataRenderer implements DataProviderInterface
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
                                 $roleData = Helpers::getUserRole();     
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
-                                if ($currentStage && $currentStage->order_no <= 16 ) {                                                                                                           
+                                if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
                                     $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
                                     if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
                                         if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
@@ -356,14 +362,16 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }                                                        
                         }
-                        if ($app->renewal_status == 1) {
+                        
+                        
+                        if ($lmsStatus && $app->renewal_status == 1) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
                         $where=[];
                         $where['user_id'] = $app->user_id;
                         $where['status'] = [0,1];
                         $appData = Application::getApplicationsData($where);
-                        if ($app->status == 2 && !isset($appData[0])) { //Limit Enhancement
+                        if ($lmsStatus && $app->status == 2 && !isset($appData[0])) { //Limit Enhancement
                             $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
                             $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
                         }
@@ -3489,6 +3497,11 @@ class DataRenderer implements DataProviderInterface
                     'level_name',
                     function ($doa) {
                 return $doa->level_name;
+            })
+             ->editColumn(
+                    'product_type',
+                    function ($doa) {
+                return ($doa->product) ? $doa->product->product_name : '';
             })
             ->editColumn(
                     'city',

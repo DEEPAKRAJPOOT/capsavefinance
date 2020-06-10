@@ -28,16 +28,15 @@
                 background-color:#808080 !important;
                 -webkit-print-color-adjust: exact;
                 border-right:#c5c5c5 solid 1px;
-                padding:5px 10px;
                 color:#ffffff;
             }
             table td{
                 border-right:#c5c5c5 solid 1px;
                 border-bottom:#c5c5c5 solid 1px;
-                padding:5px 10px;
             }
             td,th{
-                font-size: 8.5px !important;
+                font-size: 9px !important;
+                padding:5px;
             }
             .pagenum:before {
                 content: counter(page);
@@ -59,10 +58,6 @@
             <span class="pagenum"></span><b> |</b> CFPL
         </footer>
         <main>
-            <div  align="center" style="margin-top:40px;">
-                <p style="font-size:13px !important;"><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
-                <br>
-            </div>
             <div class="breakNow">
                 <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                        <tr>
