@@ -579,7 +579,7 @@ class InvoiceController extends Controller {
             $disburseDate =  \Helpers::getSysStartDate();
             $disburseType = config('lms.DISBURSE_TYPE')['ONLINE'];
             $creatorId = Auth::user()->user_id;
-            
+            date_default_timezone_set("Asia/Kolkata");
             if(empty($invoiceIds)){
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }

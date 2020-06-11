@@ -87,9 +87,10 @@ class DashboardController extends Controller
             if (!empty($result) && $result['status'] == 'success') {
              $result = $result['result']; 
              $transId = $result['header']['Tran_ID'];
-             sleep(5);
            }
        }
+             sleep(5);
+      // die("here");
        
        $enquiryReq = $this->getIdfcEnquiryRequest($transId);
        $enquiryRes = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $enquiryReq, $getRespWithoutParse);
