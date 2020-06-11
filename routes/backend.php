@@ -687,8 +687,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'update_backend_lead',
                 'uses' => 'Backend\LeadController@updateBackendLead'
             ]);  
-            
-            downloadSample
+                        
+            Route::get('download-sample-lead-csv', [
+                'as' => 'download_sample_lead_csv',
+                'uses' => 'Backend\LeadController@downloadSample'
+            ]);
         });
         
         Route::group(['prefix' => 'fircu'], function () {

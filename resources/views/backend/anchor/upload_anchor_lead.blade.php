@@ -35,6 +35,10 @@
                <input type="file" class="custom-file-input" id="anchor_lead" name="anchor_lead">
                <label class="custom-file-label val_print" for="anchor_lead">Choose file</label>
             </div>
+                
+                <div class="custom-file mb-3 mt-2">
+                    <a href="{{ route('download_sample_lead_csv') }}" title="Download Template"><i class="fa fa-file-csv-o">Download Template</i></a>
+                </div>
                            
                 <br> <br>
                 <button type="submit" class="btn btn-success btn-sm float-right" id="saveAnch">Submit</button>  
